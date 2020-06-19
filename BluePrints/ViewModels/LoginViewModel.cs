@@ -167,28 +167,25 @@ namespace BluePrints.ViewModels
 
                     if (UserName != null && UserPassword != null)
                     {
-                        //if(!isUsernameLoadedFromXML)
-                        //{
-                            //IEnumerable<USER> activeDirectoryUSERS = null;
-                            //try
-                            //{
-                            //    activeDirectoryUSERS = ActiveDirectory.GetUSERS();
-                            //}
-                            //catch
-                            //{
-                            //    return UserAuthenticationResult.ActiveDirectoryError;
-                            //}
-                            
-                            //if(activeDirectoryUSERS != null)
-                            //{
-                            //    USER CaseSensitiveUser = activeDirectoryUSERS.FirstOrDefault(x => x.NAME.ToLower() == UserName.ToLower());
-                            //    if (CaseSensitiveUser != null)
-                            //        UserName = CaseSensitiveUser.NAME;
-                            //}
-                        //}
+                        IEnumerable<USER> activeDirectoryUSERS = null;
+                        try
+                        {
+                            activeDirectoryUSERS = ActiveDirectory.GetUSERS();
+                        }
+                        catch
+                        {
+                            return UserAuthenticationResult.ActiveDirectoryError;
+                        }
 
-                        //bool? result = ActiveDirectory.Authenticate(UserName, UserPassword);
-                        bool? result = true;
+                        if (activeDirectoryUSERS != null)
+                        {
+                            USER CaseSensitiveUser = activeDirectoryUSERS.FirstOrDefault(x => x.NAME.ToLower() == UserName.ToLower());
+                            if (CaseSensitiveUser != null)
+                                UserName = CaseSensitiveUser.NAME;
+                        }
+
+                        bool? result = ActiveDirectory.Authenticate(UserName, UserPassword);
+                        
                         if (result == null)
                             return UserAuthenticationResult.ActiveDirectoryError;
 
