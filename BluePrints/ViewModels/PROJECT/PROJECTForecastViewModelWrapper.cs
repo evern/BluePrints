@@ -2117,8 +2117,8 @@ namespace BluePrints.ViewModels
             List<FORECAST> costFORECASTS = findCostFORECASTS.Where(x => x.FORECAST_DATE == forecastDate.Date).ToList();
             List<FORECAST> p6FORECASTS = findP6FORECASTS.Where(x => x.FORECAST_DATE == forecastDate.Date).ToList();
 
-            FORECAST costFORECAST = costFORECASTS.Count() == 0 ? null : costFORECASTS.First();
-            FORECAST p6FORECAST = costFORECASTS.Count() == 0 ? null : p6FORECASTS.First();
+            FORECAST costFORECAST = costFORECASTS.FirstOrDefault();
+            FORECAST p6FORECAST = p6FORECASTS.FirstOrDefault();
             
             //fix duplicate entries due to concurrency issues
             foreach(FORECAST duplicateFORECAST in costFORECASTS)
