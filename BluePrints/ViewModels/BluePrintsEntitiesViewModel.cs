@@ -28,6 +28,8 @@ using BaseModel.ViewModel.Dialogs;
 using System.Threading;
 using BluePrints.View;
 using BluePrints.Common.Helpers;
+using System.Deployment.Application;
+using BluePrints.Common.ViewModel.Utils;
 
 namespace BluePrints.ViewModels
 {
@@ -149,14 +151,32 @@ namespace BluePrints.ViewModels
                         NavigateCore(myDeliverablesDescription);
             }
 
-            //DateTime? lastChangeLogDisplayDate = XMLHelpers.GetSettings_LastChangeLogDisplayDate();
-            //if (lastChangeLogDisplayDate == null || ((DateTime)lastChangeLogDisplayDate) < DateTime.Now)
-            //{
-            //    ChangeLogWindow changeLogWindow = new ChangeLogWindow();
-            //    changeLogWindow.Show();
-            //}
-            //if (LoginCredentials.CurrentUser != null && LoginCredentials.CurrentUserGuid != Guid.Empty && LoginCredentials.getPermissionStatus(DataUtils.GetNameOf(() => NavigationResources.Menu_UserDeliverables)) != LoginCredentials.PermissionStatus.None)
-            //    NavigateCore(myDeliverablesDescription);
+            string lastChangeLogDisplayVersionStr = XMLHelpers.GetSettings_LastChangeLogDisplayVersion();
+            Version currentDeploymentVersion = BluePrintsDataUtils.GetClickOncePublishVersion();
+            if (lastChangeLogDisplayVersionStr == string.Empty)
+                showChangeLogWindow();
+            else
+            {
+                Version lastChangeLogDisplayVersion = null;
+                if(Version.TryParse(lastChangeLogDisplayVersionStr, out lastChangeLogDisplayVersion))
+                {
+                    if(lastChangeLogDisplayVersion < currentDeploymentVersion)
+                    {
+                        showChangeLogWindow();
+                    }
+                }
+            }
+
+            if (LoginCredentials.CurrentUser != null && LoginCredentials.CurrentUserGuid != Guid.Empty && LoginCredentials.getPermissionStatus(DataUtils.GetNameOf(() => NavigationResources.Menu_UserDeliverables)) != LoginCredentials.PermissionStatus.None)
+                NavigateCore(myDeliverablesDescription);
+        }
+
+        private void showChangeLogWindow()
+        {
+            ChangeLogWindow changeLogWindow = new ChangeLogWindow();
+            changeLogWindow.Show();
+
+            XMLHelpers.UpdateSettingsXMLChangeLogDisplayVersion(BluePrintsDataUtils.GetClickOncePublishVersion());
         }
 
         private void CreateModules(IEnumerable<PROJECT> entities, bool isSecurityModule)

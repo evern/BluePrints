@@ -198,12 +198,12 @@ namespace BluePrints.ViewModels
                                 newXMLSettings.Password = string.Empty;
 
                             newXMLSettings.Username = UserName.Trim();
-                            XMLHelpers.UpdateSettingsXML(newXMLSettings);
+                            XMLHelpers.UpdateSettingsXMLCredentials(newXMLSettings);
                             return UserAuthenticationResult.Authenticated;
                         }
                         else
                         {
-                            XMLHelpers.UpdateSettingsXML(new XMLSettings() { Username = string.Empty, Password = string.Empty });
+                            XMLHelpers.UpdateSettingsXMLCredentials(new XMLSettings() { Username = string.Empty, Password = string.Empty });
                             return UserAuthenticationResult.InvalidUsernameOrPassword;
                         }
                     }

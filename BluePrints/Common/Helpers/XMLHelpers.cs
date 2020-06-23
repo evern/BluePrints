@@ -14,7 +14,7 @@ namespace BluePrints.Common.Helpers
         public static string SettingsRootName = "Settings_v2";
         public static string UsernameElementName = "Username";
         public static string PasswordElementName = "Password";
-        public static string LastChangeLogDisplayElementName = "LastChangeLogDisplayDate";
+        public static string LastChangeLogDisplayVersionElementName = "LastChangeLogDisplayVersion";
 
         /// <summary>
         /// Retrieve the designated file path for xml
@@ -35,14 +35,14 @@ namespace BluePrints.Common.Helpers
 
         public static void ClearSettings()
         {
-            UpdateSettingsXML(null);
+            UpdateSettingsXMLCredentials(null);
         }
 
         /// <summary>
         /// Updates the database XML
         /// </summary>
         /// <returns>Connection string</returns>
-        public static void UpdateSettingsXML(XMLSettings defaultSetting)
+        public static void UpdateSettingsXMLCredentials(XMLSettings defaultSetting)
         {
             XDocument doc = GetSettingsXML();
             var xmlFilePath = SettingsXMLFilePath(true);
@@ -62,7 +62,6 @@ namespace BluePrints.Common.Helpers
             if (!doc.Root.Descendants().Any(obj => obj.Name.LocalName == UsernameElementName))
             {
                 doc.Root.Add(new XElement(UsernameElementName, username));
-
                 if(!doc.Root.Descendants().Any(obj => obj.Name.LocalName == PasswordElementName))
                     doc.Root.Add(new XElement(PasswordElementName, password));
             }
@@ -72,11 +71,6 @@ namespace BluePrints.Common.Helpers
                 findUsernameElement.Value = username;
                 var findPasswordElement = doc.Root.Descendants().First(obj => obj.Name.LocalName == PasswordElementName);
                 findPasswordElement.Value = password;
-            }
-
-            if(!doc.Root.Descendants().Any(obj => obj.Name.LocalName == LastChangeLogDisplayElementName))
-            {
-                doc.Root.Add(new XElement(LastChangeLogDisplayElementName, string.Empty));
             }
 
             doc.Save(xmlFilePath);
@@ -110,21 +104,49 @@ namespace BluePrints.Common.Helpers
             return doc;
         }
 
-        public static DateTime? GetSettings_LastChangeLogDisplayDate()
+        public static string GetSettings_LastChangeLogDisplayVersion()
         {
             XDocument doc = GetSettingsXML();
-            DateTime? lastChangeLogDisplayDate = null;
+            string lastChangeLogDisplayVersionStr = string.Empty;
             if (doc != null)
             {
-                var findLastChangeLogDisplayDate = doc.Root.Elements().FirstOrDefault(obj => obj.Name.LocalName == LastChangeLogDisplayElementName);
-                if (findLastChangeLogDisplayDate != null)
+                var findLastChangeLogDisplayVersionElement = doc.Root.Elements().FirstOrDefault(obj => obj.Name.LocalName == LastChangeLogDisplayVersionElementName);
+                if (findLastChangeLogDisplayVersionElement != null)
                 {
-                    if(findLastChangeLogDisplayDate.Value != string.Empty)
-                        lastChangeLogDisplayDate = DateTime.Parse(findLastChangeLogDisplayDate.Value);
+                    if (findLastChangeLogDisplayVersionElement.Value != string.Empty)
+                        lastChangeLogDisplayVersionStr = findLastChangeLogDisplayVersionElement.Value;
+                }
+                else
+                {
+                    doc.Root.Add(new XElement(LastChangeLogDisplayVersionElementName, string.Empty));
+                    var xmlFilePath = SettingsXMLFilePath(true);
+                    doc.Save(xmlFilePath);
                 }
             }
 
-            return lastChangeLogDisplayDate;
+            return lastChangeLogDisplayVersionStr;
+        }
+
+        /// <summary>
+        /// Updates the database XML change log display date
+        /// </summary>
+        public static void UpdateSettingsXMLChangeLogDisplayVersion(Version version)
+        {
+            XDocument doc = GetSettingsXML();
+            var xmlFilePath = SettingsXMLFilePath(true);
+
+            string changeLogVersionString = version == null ? string.Empty : version.ToString();
+            if (!doc.Root.Descendants().Any(obj => obj.Name.LocalName == LastChangeLogDisplayVersionElementName))
+            {
+                doc.Root.Add(new XElement(LastChangeLogDisplayVersionElementName, changeLogVersionString));
+            }
+            else
+            {
+                var findChangeLogDisplayVersionElement = doc.Root.Descendants().First(obj => obj.Name.LocalName == LastChangeLogDisplayVersionElementName);
+                findChangeLogDisplayVersionElement.Value = changeLogVersionString;
+            }
+
+            doc.Save(xmlFilePath);
         }
 
         public static string GetSettings_Username()

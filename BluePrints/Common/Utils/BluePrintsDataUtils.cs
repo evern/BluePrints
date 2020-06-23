@@ -20,6 +20,7 @@ using DevExpress.Xpf.Grid;
 using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
+using System.Deployment.Application;
 using System.Linq;
 using System.Security.Cryptography;
 using System.Text;
@@ -650,6 +651,14 @@ namespace BluePrints.Common.ViewModel.Utils
 
             primeroUOW.AutoDetectChangesEnabled(true);
             return materialDataPoints;
+        }
+
+        public static Version GetClickOncePublishVersion()
+        {
+            if (ApplicationDeployment.IsNetworkDeployed)
+                return ApplicationDeployment.CurrentDeployment.CurrentVersion;
+
+            return null;
         }
 
         public static string normalizeVariationCode(string variationCode)
