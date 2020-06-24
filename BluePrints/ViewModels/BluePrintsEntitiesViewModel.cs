@@ -173,8 +173,11 @@ namespace BluePrints.ViewModels
 
         private void showChangeLogWindow()
         {
-            ChangeLogWindow changeLogWindow = new ChangeLogWindow();
-            changeLogWindow.Show();
+            if(LoginCredentials.getPermissionStatus(DataUtils.GetNameOf(() => NavigationResources.Menu_Project_Forecast_Indirect)) != LoginCredentials.PermissionStatus.None)
+            {
+                ChangeLogWindow changeLogWindow = new ChangeLogWindow();
+                changeLogWindow.Show();
+            }
 
             XMLHelpers.UpdateSettingsXMLChangeLogDisplayVersion(BluePrintsDataUtils.GetClickOncePublishVersion());
         }
