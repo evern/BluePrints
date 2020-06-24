@@ -1584,13 +1584,15 @@ namespace BluePrints.ViewModels
                                 ForecastJobData job = (ForecastJobData)newRow[columnEntity];
                                 decimal totalCosts = 0;
                                 if (job.IsProcurement)
+                                {
                                     totalCosts = getMasterRowResetValue(compareDataTable, copyColumn.FieldName);
 
-                                if (decimal_value >= totalCosts)
-                                {
-                                    findExistingOrAddNewForecast(newRow, columnDateTime, decimal_value, newRow[copyColumn.FieldName], !isLastRow);
-                                    EntitiesUndoRedoManager.AddUndo(newRow, copyColumn.FieldName, oldValue, decimal_value, EntityMessageType.Changed);
-                                    newRow[copyColumn.FieldName] = decimal_value;
+                                    if (decimal_value >= totalCosts)
+                                    {
+                                        findExistingOrAddNewForecast(newRow, columnDateTime, decimal_value, newRow[copyColumn.FieldName], !isLastRow);
+                                        EntitiesUndoRedoManager.AddUndo(newRow, copyColumn.FieldName, oldValue, decimal_value, EntityMessageType.Changed);
+                                        newRow[copyColumn.FieldName] = decimal_value;
+                                    }
                                 }
                             }
                             //when this called from child grid no validation required
@@ -1866,11 +1868,20 @@ namespace BluePrints.ViewModels
                 }
                 else if (DateTime.TryParse(e.Column.FieldName, out dateTime))
                 {
-                    decimal defaultCosts = getMasterRowResetValue((DataTable)(((DataRowView)e.Row)[columnCompare]), e.Column.FieldName);
-                    if ((decimal)e.Value < defaultCosts)
+                    ForecastJobData job = (ForecastJobData)((DataRowView)e.Row)[columnEntity];
+                    if(!job.IsProcurement)
                     {
-                        e.ErrorContent = "Cannot set costs below forecasted costs";
+                        e.ErrorContent = "Cannot set uncommitted cost for non procurement job";
                         e.IsValid = false;
+                    }
+                    else
+                    {
+                        decimal defaultCosts = getMasterRowResetValue((DataTable)(((DataRowView)e.Row)[columnCompare]), e.Column.FieldName);
+                        if ((decimal)e.Value < defaultCosts)
+                        {
+                            e.ErrorContent = "Cannot set costs below forecasted costs";
+                            e.IsValid = false;
+                        }
                     }
                 }
                 else if(e.Column.FieldName.Contains(BindableBase.GetPropertyName(() => new ForecastJobData().Budget)))
