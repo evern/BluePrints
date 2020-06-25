@@ -153,16 +153,19 @@ namespace BluePrints.ViewModels
 
             string lastChangeLogDisplayVersionStr = XMLHelpers.GetSettings_LastChangeLogDisplayVersion();
             Version currentDeploymentVersion = BluePrintsDataUtils.GetClickOncePublishVersion();
-            if (lastChangeLogDisplayVersionStr == string.Empty)
-                showChangeLogWindow();
-            else
+            if(currentDeploymentVersion != null)
             {
-                Version lastChangeLogDisplayVersion = null;
-                if(Version.TryParse(lastChangeLogDisplayVersionStr, out lastChangeLogDisplayVersion))
+                if (lastChangeLogDisplayVersionStr == string.Empty)
+                    showChangeLogWindow();
+                else
                 {
-                    if(lastChangeLogDisplayVersion < currentDeploymentVersion)
+                    Version lastChangeLogDisplayVersion = null;
+                    if (Version.TryParse(lastChangeLogDisplayVersionStr, out lastChangeLogDisplayVersion))
                     {
-                        showChangeLogWindow();
+                        if (lastChangeLogDisplayVersion < currentDeploymentVersion)
+                        {
+                            showChangeLogWindow();
+                        }
                     }
                 }
             }
@@ -173,12 +176,14 @@ namespace BluePrints.ViewModels
 
         private void showChangeLogWindow()
         {
-            if(LoginCredentials.getPermissionStatus(DataUtils.GetNameOf(() => NavigationResources.Menu_Project_Forecast_Indirect)) != LoginCredentials.PermissionStatus.None)
-            {
-                ChangeLogWindow changeLogWindow = new ChangeLogWindow();
-                changeLogWindow.Show();
-            }
+            //if(LoginCredentials.getPermissionStatus(DataUtils.GetNameOf(() => NavigationResources.Menu_Project_Forecast_Indirect)) != LoginCredentials.PermissionStatus.None)
+            //{
+            //    ChangeLogWindow changeLogWindow = new ChangeLogWindow();
+            //    changeLogWindow.Show();
+            //}
 
+            ChangeLogWindow changeLogWindow = new ChangeLogWindow();
+            changeLogWindow.Show();
             XMLHelpers.UpdateSettingsXMLChangeLogDisplayVersion(BluePrintsDataUtils.GetClickOncePublishVersion());
         }
 
