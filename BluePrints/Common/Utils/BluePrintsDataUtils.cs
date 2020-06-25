@@ -221,13 +221,20 @@ namespace BluePrints.Common.ViewModel.Utils
             }
         }
 
-        public static void LoadExoAuthorisation<TProjection>(IEnumerable<TProjection> projections, ref List<ExoTimeAuthorisation> exoAuthorisations, List<ProjectUnitOfWorkContext> projectContexts, List<UserIdsAuthorisationContext> userIdForCanBook)
+        public static void LoadExoAuthorisation<TProjection>(IEnumerable<TProjection> projections, ref List<ExoTimeAuthorisation> exoAuthorisations, List<ProjectUnitOfWorkContext> projectContexts, List<UserIdsAuthorisationContext> userIdForCanBook, bool useFirstFoundStaffNo = false)
             where TProjection : IReportable, IBookable
         {
             List<ExoTimeAuthorisation> cacheExoAuthorisations = new List<ExoTimeAuthorisation>();
             foreach (var projectContext in projectContexts)
             {
-                List<ExoTimeAuthorisation> projectExoTimeAuths = ExoQueries.GetExoLinesAuthorisations(projectContext.PrimeroEntitiesUnitOfWork, projectContext.ProjectNumber);
+                int? firstFoundStaffNo = null;
+                if(useFirstFoundStaffNo && userIdForCanBook != null && userIdForCanBook.Count > 0)
+                {
+                    UserIdsAuthorisationContext userIdAuthorisation = userIdForCanBook.First();
+                    firstFoundStaffNo = userIdAuthorisation.Id;
+                }
+
+                List<ExoTimeAuthorisation> projectExoTimeAuths = ExoQueries.GetExoLinesAuthorisations(projectContext.PrimeroEntitiesUnitOfWork, projectContext.ProjectNumber, firstFoundStaffNo);
                 projectExoTimeAuths.ForEach(x => x.OfficeName = projectContext.OfficeName);
                 cacheExoAuthorisations.AddRange(projectExoTimeAuths);
             }

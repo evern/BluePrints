@@ -503,7 +503,7 @@ namespace BluePrints.ViewModels
                 authorisationId = LoginCredentials.CurrentUser.EXO_STAFF_ID;
 
             contextIdForAuthorisation.Add(new UserIdsAuthorisationContext(loadPROJECT.OfficeNameForExo, authorisationId));
-            BluePrintsUtils.LoadExoAuthorisation<BASELINE_ITEMProgress>(Entities, ref exoAuthorisations, projectContexts, contextIdForAuthorisation);
+            BluePrintsUtils.LoadExoAuthorisation<BASELINE_ITEMProgress>(Entities, ref exoAuthorisations, projectContexts, contextIdForAuthorisation, LoginCredentials.getPermissionStatus(DataUtils.GetNameOf(() => NavigationResources.Permission_DesignDeliverables_BookTimeForOthers)) != LoginCredentials.PermissionStatus.None);
             this.RaisePropertyChanged(x => x.IsExoDataLoaded);
         }
 
@@ -1757,7 +1757,7 @@ namespace BluePrints.ViewModels
             get
             {
                 //return "BASELINE_ITEMSViewModelWrapper" + view_project_specific_affix;
-                return "BASELINE_ITEMSViewModelWrapper_v5";
+                return "BASELINE_ITEMSViewModelWrapper_v6";
             }
         }
 

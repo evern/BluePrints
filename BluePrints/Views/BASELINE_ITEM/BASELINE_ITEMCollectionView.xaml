@@ -517,6 +517,9 @@
                                 <dxg:UniqueDuplicateRuleFormatCondition FieldName="Entity.Entity.GUID_ORIGINAL">
                                     <dxc:Format Background="#FFFF9B98" />
                                 </dxg:UniqueDuplicateRuleFormatCondition>
+                                <dxg:UniqueDuplicateRuleFormatCondition FieldName="Entity.Entity.CLIENT_NUM">
+                                    <dxc:Format Background="#FFFF9B98" />
+                                </dxg:UniqueDuplicateRuleFormatCondition>
                                 <dxg:FormatCondition Expression="[Total_Costs] = '0.00'" FieldName="Total_Costs">
                                     <dxc:Format Background="#FFFF9B98" />
                                 </dxg:FormatCondition>
