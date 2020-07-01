@@ -627,6 +627,7 @@ namespace BluePrints.ViewModels
             else if (securityKey == DataUtils.GetNameOf(() => NavigationResources.Menu_Project_EXO_Transactions))
             {
                 Modules.Add(new BluePrintsEntitiesModuleDescription(DataUtils.GetNameOf(() => NavigationResources.Permission_EXO_Transactions_ShowCosts), securityKey, parentNavigationId, NavigationResources.Permission_EXO_Transactions_ShowCosts, NavigationResources.Permission_EXO_Transactions_ShowCosts));
+                Modules.Add(new BluePrintsEntitiesModuleDescription(DataUtils.GetNameOf(() => NavigationResources.Permission_EXO_Transactions_ChangeQuantity), securityKey, parentNavigationId, NavigationResources.Permission_EXO_Transactions_ChangeQuantity, NavigationResources.Permission_EXO_Transactions_ChangeQuantity));
             }
             else if (securityKey == DataUtils.GetNameOf(() => NavigationResources.Menu_Project_EXO_Timesheets))
             {

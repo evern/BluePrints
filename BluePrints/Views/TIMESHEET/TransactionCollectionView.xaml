@@ -120,7 +120,7 @@
                                 </dxg:GridColumn.EditSettings>
                             </dxg:GridColumn>
                             <dxg:GridColumn FieldName="transdate" AllowBestFit="false" Width="80" Header="Transdate" ReadOnly="True" FilterPopupMode="DateAlt"/>
-                            <dxg:GridColumn FieldName="quantity" AllowBestFit="false" Width="100" Header="Quantity" ReadOnly="True" >
+                            <dxg:GridColumn FieldName="quantity" AllowBestFit="false" Width="100" Header="Quantity" ReadOnly="{Binding CanEditQuantity, Converter={StaticResource BooleanNegationConverter}}" >
                                 <dxg:GridColumn.EditSettings>
                                     <dxe:SpinEditSettings Mask="n" MaskType="Numeric" MaskUseAsDisplayFormat="True" />
                                 </dxg:GridColumn.EditSettings>

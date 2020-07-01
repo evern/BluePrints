@@ -59,11 +59,13 @@ namespace BluePrints.ViewModels
         }
 
         public bool IsCostsVisible { get; set; }
+        public bool CanEditQuantity { get; set; }
         protected override string readOnlyMessage => "Cells are read only because you do not have authority to edit transactions";
         protected TransactionCollectionViewModelWrapper()
         {
             IsReadOnly = LoginCredentials.getPermissionStatus(DataUtils.GetNameOf(() => NavigationResources.Menu_Project_EXO_Transactions)) == LoginCredentials.PermissionStatus.ReadOnly;
             IsCostsVisible = LoginCredentials.getPermissionStatus(DataUtils.GetNameOf(() => NavigationResources.Permission_EXO_Transactions_ShowCosts)) == LoginCredentials.PermissionStatus.All;
+            CanEditQuantity = LoginCredentials.getPermissionStatus(DataUtils.GetNameOf(() => NavigationResources.Permission_EXO_Transactions_ChangeQuantity)) == LoginCredentials.PermissionStatus.All;
         }
         
         #region Database Operation
@@ -123,11 +125,35 @@ namespace BluePrints.ViewModels
                 findJOB_TRANSACTION.X_VARIATIONCODE = projection.X_VARIATIONCODE;
                 findJOB_TRANSACTION.DESCRIPTION = projection.description;
                 findJOB_TRANSACTION.STAFFNO = projection.accno;
+                findJOB_TRANSACTION.QUANTITY = projection.quantity;
+
+                if(projection.QtyEdited && CanEditQuantity)
+                {
+                    if (findJOB_TRANSACTION.QUANTITY != null)
+                    {
+                        if (findJOB_TRANSACTION.UNITCOST != null)
+                            findJOB_TRANSACTION.LINECOST = findJOB_TRANSACTION.UNITCOST * findJOB_TRANSACTION.QUANTITY;
+
+                        if (findJOB_TRANSACTION.UNITPRICE != null)
+                        {
+                            findJOB_TRANSACTION.LINECHARGE = findJOB_TRANSACTION.UNITPRICE * findJOB_TRANSACTION.QUANTITY;
+                            findJOB_TRANSACTION.LINETOTAL = findJOB_TRANSACTION.LINECHARGE;
+                        }
+
+                        findJOB_TRANSACTION.LINETOTAL_TAX = (double)((findJOB_TRANSACTION.LINETOTAL * findJOB_TRANSACTION.TAXRATE) / 100);
+                        findJOB_TRANSACTION.LINE_TAX = findJOB_TRANSACTION.LINETOTAL_TAX;
+
+                        findJOB_TRANSACTION.LINETOTAL_INCTAX = findJOB_TRANSACTION.LINETOTAL + findJOB_TRANSACTION.LINETOTAL_TAX;
+                        projection.CostActual = findJOB_TRANSACTION.LINECOST;
+                        projection.Update();
+                    }
+                }
             }
 
+            projection.QtyEdited = false;
             return OperationInterceptMode.SkipOneAndAllDbSaves;
         }
-
+        
         protected override void OnAfterProjectionsSave(IEnumerable<X_JOB_TRANSACTIONS_DETAIL_SeqNo> projections)
         {
             primeroUnitOfWork.SaveChanges();
@@ -174,6 +200,14 @@ namespace BluePrints.ViewModels
             }
         }
         #endregion
+
+        public override void UnifiedCellValueChanged(string field_name, object old_value, object new_value, X_JOB_TRANSACTIONS_DETAIL_SeqNo projection, bool isNew)
+        {
+            if (field_name == BindableBase.GetPropertyName(() => new X_JOB_TRANSACTIONS_DETAIL_SeqNo().quantity))
+                projection.QtyEdited = true;
+
+            base.UnifiedCellValueChanged(field_name, old_value, new_value, projection, isNew);
+        }
 
         public override string UnifiedValueValidation(X_JOB_TRANSACTIONS_DETAIL_SeqNo projection, string field_name, object new_value, bool isPaste)
         {

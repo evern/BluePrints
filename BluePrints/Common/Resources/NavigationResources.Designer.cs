@@ -880,6 +880,15 @@ namespace BluePrints.Common.Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Allow changing quantity in EXO transaction.
+        /// </summary>
+        internal static string Permission_EXO_Transactions_ChangeQuantity {
+            get {
+                return ResourceManager.GetString("Permission_EXO_Transactions_ChangeQuantity", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Show costs on EXO transactions.
         /// </summary>
         internal static string Permission_EXO_Transactions_ShowCosts {

@@ -405,4 +405,7 @@
   <data name="Menu_ReviewTimesheet" xml:space="preserve">
     <value>User's timesheet review</value>
   </data>
+  <data name="Permission_EXO_Transactions_ChangeQuantity" xml:space="preserve">
+    <value>Allow changing quantity in EXO transaction</value>
+  </data>
 </root>

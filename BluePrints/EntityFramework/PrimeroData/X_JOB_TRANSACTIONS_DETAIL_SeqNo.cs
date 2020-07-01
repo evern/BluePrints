@@ -128,5 +128,8 @@
         public double INVOICED { get; set; }
 
         public DateTime? INVOICEDATE { get; set; }
+
+        [NotMapped]
+        public bool QtyEdited { get; set; }
     }
 }
