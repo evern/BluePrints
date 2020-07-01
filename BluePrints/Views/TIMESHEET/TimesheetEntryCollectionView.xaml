@@ -89,7 +89,7 @@
                         Visible="{Binding Path=(dxci:DependencyObjectExtensions.DataContext).Visible, RelativeSource={RelativeSource Self}, Mode=TwoWay}"
                         HeaderToolTip="{Binding Path=(dxci:DependencyObjectExtensions.DataContext).HeaderToolTip, RelativeSource={RelativeSource Self}}" >
                         <dxg:GridColumn.EditSettings>
-                            <dxe:ComboBoxEditSettings AutoComplete="True" DisplayMember="{Binding Path=(dxci:DependencyObjectExtensions.DataContext).DisplayMember, RelativeSource={RelativeSource Self}}" IsTextEditable="True" ItemsSource="{Binding Path=(dxci:DependencyObjectExtensions.DataContext).ItemsSource, RelativeSource={RelativeSource Self}}" ValueMember="{Binding Path=(dxci:DependencyObjectExtensions.DataContext).ValueMember, RelativeSource={RelativeSource Self}}" />
+                            <dxe:ComboBoxEditSettings PopupWidth="200" AutoComplete="True" DisplayMember="{Binding Path=(dxci:DependencyObjectExtensions.DataContext).DisplayMember, RelativeSource={RelativeSource Self}}" IsTextEditable="True" ItemsSource="{Binding Path=(dxci:DependencyObjectExtensions.DataContext).ItemsSource, RelativeSource={RelativeSource Self}}" ValueMember="{Binding Path=(dxci:DependencyObjectExtensions.DataContext).ValueMember, RelativeSource={RelativeSource Self}}" />
                         </dxg:GridColumn.EditSettings>
                     </dxg:GridColumn>
                 </ContentControl>

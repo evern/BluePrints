@@ -15,6 +15,7 @@ using BluePrints.Common.Reports;
 using BluePrints.Common.Resources;
 using BluePrints.Common.ViewModel.Misc;
 using BluePrints.Common.ViewModel.Reporting;
+using BluePrints.Common.ViewModel.Utils;
 using BluePrints.Data;
 using BluePrints.P6Data;
 using BluePrints.P6EntitiesDataModel;
@@ -776,6 +777,7 @@ namespace BluePrints.ViewModels
 
                     isReadOnly = false;
                     timesheet.DAY1 = dblTime;
+                    timesheet.DAY1_NARRATIVE = BluePrintsUtils.FindExistingOrAddNewNarrative(timesheet.X_NARRATIVE, primeroUnitOfWork);
                     break;
                 case 2:
                     if (timesheet.DAY2_POSTED == "Y")
@@ -786,6 +788,7 @@ namespace BluePrints.ViewModels
 
                     isReadOnly = false;
                     timesheet.DAY2 = dblTime;
+                    timesheet.DAY2_NARRATIVE = BluePrintsUtils.FindExistingOrAddNewNarrative(timesheet.X_NARRATIVE, primeroUnitOfWork);
                     break;
                 case 3:
                     if (timesheet.DAY3_POSTED == "Y")
@@ -796,6 +799,7 @@ namespace BluePrints.ViewModels
 
                     isReadOnly = false;
                     timesheet.DAY3 = dblTime;
+                    timesheet.DAY3_NARRATIVE = BluePrintsUtils.FindExistingOrAddNewNarrative(timesheet.X_NARRATIVE, primeroUnitOfWork);
                     break;
                 case 4:
                     if (timesheet.DAY4_POSTED == "Y")
@@ -806,6 +810,7 @@ namespace BluePrints.ViewModels
 
                     isReadOnly = false;
                     timesheet.DAY4 = dblTime;
+                    timesheet.DAY4_NARRATIVE = BluePrintsUtils.FindExistingOrAddNewNarrative(timesheet.X_NARRATIVE, primeroUnitOfWork);
                     break;
                 case 5:
                     if (timesheet.DAY5_POSTED == "Y")
@@ -816,6 +821,7 @@ namespace BluePrints.ViewModels
 
                     isReadOnly = false;
                     timesheet.DAY5 = dblTime;
+                    timesheet.DAY5_NARRATIVE = BluePrintsUtils.FindExistingOrAddNewNarrative(timesheet.X_NARRATIVE, primeroUnitOfWork);
                     break;
                 case 6:
                     if (timesheet.DAY6_POSTED == "Y")
@@ -826,6 +832,7 @@ namespace BluePrints.ViewModels
 
                     isReadOnly = false;
                     timesheet.DAY6 = dblTime;
+                    timesheet.DAY6_NARRATIVE = BluePrintsUtils.FindExistingOrAddNewNarrative(timesheet.X_NARRATIVE, primeroUnitOfWork);
                     break;
                 case 7:
                     if (timesheet.DAY7_POSTED == "Y")
@@ -836,6 +843,7 @@ namespace BluePrints.ViewModels
 
                     isReadOnly = false;
                     timesheet.DAY7 = dblTime;
+                    timesheet.DAY7_NARRATIVE = BluePrintsUtils.FindExistingOrAddNewNarrative(timesheet.X_NARRATIVE, primeroUnitOfWork);
                     break;
                 default:
                     isReadOnly = false;
