@@ -25,6 +25,7 @@ using System.Linq;
 using System.Security.Cryptography;
 using System.Text;
 using System.Threading.Tasks;
+using System.Transactions;
 
 namespace BluePrints.Common.ViewModel.Utils
 {
@@ -504,83 +505,87 @@ namespace BluePrints.Common.ViewModel.Utils
             HashSet<string> missingSubJobNames = new HashSet<string>();
 
             primeroUOW.AutoDetectChangesEnabled(false);
-            var jobTransactions = from JOBTRANS in primeroUOW.JOB_TRANSACTIONS
-                                  join JOBCOST_HDR2 in primeroUOW.JOBCOST_HDR
-                                  on JOBTRANS.MASTER_JOBNO equals JOBCOST_HDR2.JOBNO
-                                  join JOBCOST_HDR1 in primeroUOW.JOBCOST_HDR
-                                  on JOBTRANS.JOBNO equals JOBCOST_HDR1.JOBNO
-                                  join JOBCOST_RESOURCE in primeroUOW.JOBCOST_RESOURCE
-                                  on JOBTRANS.STAFFNO equals JOBCOST_RESOURCE.SEQNO
-                                  join JOB_COSTGROUPS in primeroUOW.JOB_COSTGROUPS
-                                  on JOBTRANS.COST_GROUP equals JOB_COSTGROUPS.SEQNO
-                                  join JOB_COSTTYPES in primeroUOW.JOB_COSTTYPES
-                                  on JOBTRANS.COST_TYPE equals JOB_COSTTYPES.SEQNO
-                                  join NARRATIVES in primeroUOW.NARRATIVES
-                                  on JOBTRANS.NARRATIVE_SEQNO equals NARRATIVES.SEQNO into PONarratives
-                                  from PONarrate in PONarratives.DefaultIfEmpty()
-                                  where JOBCOST_HDR2.JOBCODE == projectNumber && JOBTRANS.TRANSTYPE == "T" && JOBTRANS.LINE_STATUS != "X" && JOBTRANS.TRANSDATE <= dataDate
-                                  select new { JOBCOST_HDR1.JOBCODE, JOBTRANS.EXCHRATE, JOBTRANS.QUANTITY, JOBTRANS.STOCKCODE, JOBTRANS.LINETOTAL, JOBTRANS.LINECOST, JOBTRANS.TRANSDATE, JOBCOST_RESOURCE.RESOURCENAME, JOBCOST_RESOURCE.TITLE, JOB_COSTGROUPS.COSTDESC, COSTDESC3 = JOB_COSTTYPES.COSTDESC, VARIATIONCODE = JOBTRANS.X_VARIATIONCODE, JOBTRANS.INVOICED, JOBTRANS.INVOICEDATE, JOBTRANS.INVSEQNO, PONarrate.NARRATIVE };
-
-            var jobTransactionsList = jobTransactions.ToList();
-            if (showLoadingScreen)
+            using (var t = new TransactionScope(TransactionScopeOption.Required, new TransactionOptions { IsolationLevel = System.Transactions.IsolationLevel.ReadUncommitted }))
             {
-                LoadingScreenManager.ShowLoadingScreen(jobTransactionsList.Count());
-                LoadingScreenManager.SetMessage("Loading Actuals...");
-            }
+                var jobTransactions = from JOBTRANS in primeroUOW.JOB_TRANSACTIONS
+                                      join JOBCOST_HDR2 in primeroUOW.JOBCOST_HDR
+                                      on JOBTRANS.MASTER_JOBNO equals JOBCOST_HDR2.JOBNO
+                                      join JOBCOST_HDR1 in primeroUOW.JOBCOST_HDR
+                                      on JOBTRANS.JOBNO equals JOBCOST_HDR1.JOBNO
+                                      join JOBCOST_RESOURCE in primeroUOW.JOBCOST_RESOURCE
+                                      on JOBTRANS.STAFFNO equals JOBCOST_RESOURCE.SEQNO
+                                      join JOB_COSTGROUPS in primeroUOW.JOB_COSTGROUPS
+                                      on JOBTRANS.COST_GROUP equals JOB_COSTGROUPS.SEQNO
+                                      join JOB_COSTTYPES in primeroUOW.JOB_COSTTYPES
+                                      on JOBTRANS.COST_TYPE equals JOB_COSTTYPES.SEQNO
+                                      join NARRATIVES in primeroUOW.NARRATIVES
+                                      on JOBTRANS.NARRATIVE_SEQNO equals NARRATIVES.SEQNO into PONarratives
+                                      from PONarrate in PONarratives.DefaultIfEmpty()
+                                      where JOBCOST_HDR2.JOBCODE == projectNumber && JOBTRANS.TRANSTYPE == "T" && JOBTRANS.LINE_STATUS != "X" && JOBTRANS.TRANSDATE <= dataDate
+                                      select new { JOBCOST_HDR1.JOBCODE, JOBTRANS.EXCHRATE, JOBTRANS.QUANTITY, JOBTRANS.STOCKCODE, JOBTRANS.LINETOTAL, JOBTRANS.LINECOST, JOBTRANS.TRANSDATE, JOBCOST_RESOURCE.RESOURCENAME, JOBCOST_RESOURCE.TITLE, JOB_COSTGROUPS.COSTDESC, COSTDESC3 = JOB_COSTTYPES.COSTDESC, VARIATIONCODE = JOBTRANS.X_VARIATIONCODE, JOBTRANS.INVOICED, JOBTRANS.INVOICEDATE, JOBTRANS.INVSEQNO, PONarrate.NARRATIVE };
 
-            foreach (var jobTransaction in jobTransactionsList)
-            {
-                if (qualifiedSubjobs == null || qualifiedSubjobs.Contains(jobTransaction.JOBCODE))
+                var jobTransactionsList = jobTransactions.ToList();
+                if (showLoadingScreen)
                 {
-                    if (qualifiedSubjobs == null || (jobTransaction.COSTDESC3 != null && (jobTransaction.COSTDESC3.Length >= 3 && (!jobTransaction.COSTDESC3.Substring(0, 3).Contains("G99") && !jobTransaction.COSTDESC3.Substring(0, 3).Contains("010")))))
-                    {
-                        ExoDataPoint burnedDataPoint = new ExoDataPoint();
-                        burnedDataPoint.BudgetedUnits = 0;
-                        burnedDataPoint.BudgetedCosts = 0;
-                        burnedDataPoint.Units = jobTransaction.QUANTITY == null ? 0 : (decimal)jobTransaction.QUANTITY;
-                        //burnedDataPoint.Costs = (decimal)jobTransaction.LINETOTAL * currencyConversion;
-                        burnedDataPoint.Costs = jobTransaction.LINECOST == null ? 0 : (decimal)jobTransaction.LINECOST * currencyConversion;
-                        burnedDataPoint.CostPerQty = burnedDataPoint.Units == 0 ? 0 : burnedDataPoint.Costs / burnedDataPoint.Units;
-                        //burnedDataPoint.ProgressDate = alignedDataDates.FirstOrDefault(dates => dates.Date >= jobTransaction.TRANSDATE);
-                        burnedDataPoint.ActualDate = jobTransaction.TRANSDATE == null ? DateTime.Now : (DateTime)jobTransaction.TRANSDATE;
-                        burnedDataPoint.ProgressDate = burnedDataPoint.ActualDate;
-                        burnedDataPoint.Subjob_Name = jobTransaction.JOBCODE;
-                        burnedDataPoint.ResourceName = jobTransaction.RESOURCENAME;
-                        burnedDataPoint.Description = jobTransaction.RESOURCENAME;
-                        burnedDataPoint.Quantity = jobTransaction.QUANTITY == null ? 0 :(decimal)jobTransaction.QUANTITY;
-                        burnedDataPoint.Role = jobTransaction.TITLE;
-                        burnedDataPoint.CostGroup = jobTransaction.COSTDESC;
-                        burnedDataPoint.CostType = jobTransaction.COSTDESC3;
-                        burnedDataPoint.StockCode = jobTransaction.STOCKCODE;
-                        burnedDataPoint.Narrative = jobTransaction.NARRATIVE;
-                        burnedDataPoint.Variation_Code = BluePrintsDataUtils.normalizeVariationCode(jobTransaction.VARIATIONCODE);
-                        burnedDataPoint.InvoiceNo = jobTransaction.INVSEQNO.ToString();
-                        burnedDataPoint.InvoiceAmount = Convert.ToDecimal(jobTransaction.INVOICED);
-                        burnedDataPoint.InvoiceDate = jobTransaction.INVOICEDATE;
-
-                        burnedDataPoints.Add(burnedDataPoint);
-                    }
+                    LoadingScreenManager.ShowLoadingScreen(jobTransactionsList.Count());
+                    LoadingScreenManager.SetMessage("Loading Actuals...");
                 }
-                else
-                    missingSubJobNames.Add(jobTransaction.JOBCODE);
+
+                foreach (var jobTransaction in jobTransactionsList)
+                {
+                    if (qualifiedSubjobs == null || qualifiedSubjobs.Contains(jobTransaction.JOBCODE))
+                    {
+                        if (qualifiedSubjobs == null || (jobTransaction.COSTDESC3 != null && (jobTransaction.COSTDESC3.Length >= 3 && (!jobTransaction.COSTDESC3.Substring(0, 3).Contains("G99") && !jobTransaction.COSTDESC3.Substring(0, 3).Contains("010")))))
+                        {
+                            ExoDataPoint burnedDataPoint = new ExoDataPoint();
+                            burnedDataPoint.BudgetedUnits = 0;
+                            burnedDataPoint.BudgetedCosts = 0;
+                            burnedDataPoint.Units = jobTransaction.QUANTITY == null ? 0 : (decimal)jobTransaction.QUANTITY;
+                            //burnedDataPoint.Costs = (decimal)jobTransaction.LINETOTAL * currencyConversion;
+                            burnedDataPoint.Costs = jobTransaction.LINECOST == null ? 0 : (decimal)jobTransaction.LINECOST * currencyConversion;
+                            burnedDataPoint.CostPerQty = burnedDataPoint.Units == 0 ? 0 : burnedDataPoint.Costs / burnedDataPoint.Units;
+                            //burnedDataPoint.ProgressDate = alignedDataDates.FirstOrDefault(dates => dates.Date >= jobTransaction.TRANSDATE);
+                            burnedDataPoint.ActualDate = jobTransaction.TRANSDATE == null ? DateTime.Now : (DateTime)jobTransaction.TRANSDATE;
+                            burnedDataPoint.ProgressDate = burnedDataPoint.ActualDate;
+                            burnedDataPoint.Subjob_Name = jobTransaction.JOBCODE;
+                            burnedDataPoint.ResourceName = jobTransaction.RESOURCENAME;
+                            burnedDataPoint.Description = jobTransaction.RESOURCENAME;
+                            burnedDataPoint.Quantity = jobTransaction.QUANTITY == null ? 0 : (decimal)jobTransaction.QUANTITY;
+                            burnedDataPoint.Role = jobTransaction.TITLE;
+                            burnedDataPoint.CostGroup = jobTransaction.COSTDESC;
+                            burnedDataPoint.CostType = jobTransaction.COSTDESC3;
+                            burnedDataPoint.StockCode = jobTransaction.STOCKCODE;
+                            burnedDataPoint.Narrative = jobTransaction.NARRATIVE;
+                            burnedDataPoint.Variation_Code = BluePrintsDataUtils.normalizeVariationCode(jobTransaction.VARIATIONCODE);
+                            burnedDataPoint.InvoiceNo = jobTransaction.INVSEQNO.ToString();
+                            burnedDataPoint.InvoiceAmount = Convert.ToDecimal(jobTransaction.INVOICED);
+                            burnedDataPoint.InvoiceDate = jobTransaction.INVOICEDATE;
+
+                            burnedDataPoints.Add(burnedDataPoint);
+                        }
+                    }
+                    else
+                        missingSubJobNames.Add(jobTransaction.JOBCODE);
+
+                    if (showLoadingScreen)
+                        LoadingScreenManager.Progress();
+                }
+
+                if (missingSUBJOBS != null)
+                    foreach (string missingSubJobName in missingSubJobNames)
+                    {
+                        SUBJOB missingSUBJOB = new SUBJOB();
+                        missingSUBJOB.INTERNAL_NAME1 = missingSubJobName;
+                        missingSUBJOB.MissingQuantity = Convert.ToDecimal(jobTransactionsList.Where(x => x.JOBCODE == missingSubJobName && x.QUANTITY != null).Sum(x => x.QUANTITY));
+                        missingSUBJOBS.Add(missingSUBJOB);
+                    }
 
                 if (showLoadingScreen)
-                    LoadingScreenManager.Progress();
+                    LoadingScreenManager.CloseLoadingScreen();
+
+                primeroUOW.AutoDetectChangesEnabled(true);
             }
-
-            if(missingSUBJOBS != null)
-                foreach (string missingSubJobName in missingSubJobNames)
-                {
-                    SUBJOB missingSUBJOB = new SUBJOB();
-                    missingSUBJOB.INTERNAL_NAME1 = missingSubJobName;
-                    missingSUBJOB.MissingQuantity = Convert.ToDecimal(jobTransactionsList.Where(x => x.JOBCODE == missingSubJobName && x.QUANTITY != null).Sum(x => x.QUANTITY));
-                    missingSUBJOBS.Add(missingSUBJOB);
-                }
-
-            if (showLoadingScreen)
-                LoadingScreenManager.CloseLoadingScreen();
-
-            primeroUOW.AutoDetectChangesEnabled(true);
+            
             return burnedDataPoints;
         }
 
@@ -589,74 +594,79 @@ namespace BluePrints.Common.ViewModel.Utils
             List<ExoDataPoint> materialDataPoints = new List<ExoDataPoint>();
             primeroUOW.AutoDetectChangesEnabled(false);
             DateTime invoiceCutOffDate = dataDate.Date.AddDays(1).AddHours(-1);
-            var jobMaterials = from X_JOB_TRANSACTIONS_DETAIL in primeroUOW.X_JOB_TRANSACTIONS_DETAILS
-                               join JOBCOST_HDR in primeroUOW.JOBCOST_HDR
-                               on X_JOB_TRANSACTIONS_DETAIL.jobno equals JOBCOST_HDR.JOBNO
-                               join JOBCOST_HDR2 in primeroUOW.JOBCOST_HDR
-                               on JOBCOST_HDR.MASTER_JOBNO equals JOBCOST_HDR2.JOBNO
-                               join DR_ACCS in primeroUOW.DR_ACCS
-                               on JOBCOST_HDR.ACCNO equals DR_ACCS.ACCNO
-                               join STOCK_ITEMS in primeroUOW.STOCK_ITEMS
-                               on X_JOB_TRANSACTIONS_DETAIL.stockcode equals STOCK_ITEMS.STOCKCODE
-                               join GLP in primeroUOW.GLACCS
-                               on STOCK_ITEMS.PURCH_GL_CODE equals GLP.ACCNO
-                               join GLCOS in primeroUOW.GLACCS
-                               on STOCK_ITEMS.COS_GL_CODE equals GLCOS.ACCNO
-                               where X_JOB_TRANSACTIONS_DETAIL.linecharge == 0 && X_JOB_TRANSACTIONS_DETAIL.transtype == "C" && JOBCOST_HDR2.JOBCODE == projectNumber && X_JOB_TRANSACTIONS_DETAIL.transdate <= invoiceCutOffDate
-                               select new { X_JOB_TRANSACTIONS_DETAIL.jobno, X_JOB_TRANSACTIONS_DETAIL.EXCHRATE, X_JOB_TRANSACTIONS_DETAIL.master_jobno, X_JOB_TRANSACTIONS_DETAIL.jobcode, X_JOB_TRANSACTIONS_DETAIL.transdate, X_JOB_TRANSACTIONS_DETAIL.transtype, X_JOB_TRANSACTIONS_DETAIL.stockcode, X_JOB_TRANSACTIONS_DETAIL.description, X_JOB_TRANSACTIONS_DETAIL.quantity, X_JOB_TRANSACTIONS_DETAIL.unitcost, X_JOB_TRANSACTIONS_DETAIL.UNITPRICE, X_JOB_TRANSACTIONS_DETAIL.LINECOST, X_JOB_TRANSACTIONS_DETAIL.linecharge, X_JOB_TRANSACTIONS_DETAIL.LINETOTAL, X_JOB_TRANSACTIONS_DETAIL.LINETOTAL_INCTAX, X_JOB_TRANSACTIONS_DETAIL.LINETOTAL_TAX, X_JOB_TRANSACTIONS_DETAIL.LINE_STATUS, X_JOB_TRANSACTIONS_DETAIL.CostType, X_JOB_TRANSACTIONS_DETAIL.CostTypeDesc, X_JOB_TRANSACTIONS_DETAIL.Typeshortcode, X_JOB_TRANSACTIONS_DETAIL.COST_GROUP, X_JOB_TRANSACTIONS_DETAIL.CostGroupDesc, X_JOB_TRANSACTIONS_DETAIL.GroupShortcode, X_JOB_TRANSACTIONS_DETAIL.branchno, X_JOB_TRANSACTIONS_DETAIL.LINE_SOURCE, X_JOB_TRANSACTIONS_DETAIL.SOURCE_SEQNO, X_JOB_TRANSACTIONS_DETAIL.PO_LINESEQNO, X_JOB_TRANSACTIONS_DETAIL.POno, X_JOB_TRANSACTIONS_DETAIL.invseqno, X_JOB_TRANSACTIONS_DETAIL.refno, X_JOB_TRANSACTIONS_DETAIL.name, X_JOB_TRANSACTIONS_DETAIL.invno, X_JOB_TRANSACTIONS_DETAIL.INVOICED, X_JOB_TRANSACTIONS_DETAIL.INVOICEDATE, X_JOB_TRANSACTIONS_DETAIL.CostActual, X_JOB_TRANSACTIONS_DETAIL.glcode, X_JOB_TRANSACTIONS_DETAIL.accno, JOBCOST_HDR.QUOTEDATE, JOBCOST_HDR.STARTDATE, JOBCOST_HDR.DUEDATE, JOBCOST_HDR.CUSTORDNO, JOBCOST_HDR.TITLE, NAME_2 = DR_ACCS.NAME, MasterJobcode = JOBCOST_HDR2.JOBCODE, STOCK_ITEMS.PURCH_GL_CODE, PurchGLName = GLP.NAME, STOCK_ITEMS.COS_GL_CODE, COSGlName = GLCOS.NAME, VariationCode = X_JOB_TRANSACTIONS_DETAIL.X_VARIATIONCODE };
 
-            if (showLoadingScreen)
+            using (var t = new TransactionScope(TransactionScopeOption.Required, new TransactionOptions { IsolationLevel = System.Transactions.IsolationLevel.ReadUncommitted }))
             {
-                LoadingScreenManager.ShowLoadingScreen(jobMaterials.Count());
-                LoadingScreenManager.SetMessage("Loading Materials...");
-            }
+                var jobMaterials = from X_JOB_TRANSACTIONS_DETAIL in primeroUOW.X_JOB_TRANSACTIONS_DETAILS
+                                   join JOBCOST_HDR in primeroUOW.JOBCOST_HDR
+                                   on X_JOB_TRANSACTIONS_DETAIL.jobno equals JOBCOST_HDR.JOBNO
+                                   join JOBCOST_HDR2 in primeroUOW.JOBCOST_HDR
+                                   on JOBCOST_HDR.MASTER_JOBNO equals JOBCOST_HDR2.JOBNO
+                                   join DR_ACCS in primeroUOW.DR_ACCS
+                                   on JOBCOST_HDR.ACCNO equals DR_ACCS.ACCNO
+                                   join STOCK_ITEMS in primeroUOW.STOCK_ITEMS
+                                   on X_JOB_TRANSACTIONS_DETAIL.stockcode equals STOCK_ITEMS.STOCKCODE
+                                   join GLP in primeroUOW.GLACCS
+                                   on STOCK_ITEMS.PURCH_GL_CODE equals GLP.ACCNO
+                                   join GLCOS in primeroUOW.GLACCS
+                                   on STOCK_ITEMS.COS_GL_CODE equals GLCOS.ACCNO
+                                   where X_JOB_TRANSACTIONS_DETAIL.linecharge == 0 && X_JOB_TRANSACTIONS_DETAIL.transtype == "C" && JOBCOST_HDR2.JOBCODE == projectNumber && X_JOB_TRANSACTIONS_DETAIL.transdate <= invoiceCutOffDate
+                                   select new { X_JOB_TRANSACTIONS_DETAIL.jobno, X_JOB_TRANSACTIONS_DETAIL.EXCHRATE, X_JOB_TRANSACTIONS_DETAIL.master_jobno, X_JOB_TRANSACTIONS_DETAIL.jobcode, X_JOB_TRANSACTIONS_DETAIL.transdate, X_JOB_TRANSACTIONS_DETAIL.transtype, X_JOB_TRANSACTIONS_DETAIL.stockcode, X_JOB_TRANSACTIONS_DETAIL.description, X_JOB_TRANSACTIONS_DETAIL.quantity, X_JOB_TRANSACTIONS_DETAIL.unitcost, X_JOB_TRANSACTIONS_DETAIL.UNITPRICE, X_JOB_TRANSACTIONS_DETAIL.LINECOST, X_JOB_TRANSACTIONS_DETAIL.linecharge, X_JOB_TRANSACTIONS_DETAIL.LINETOTAL, X_JOB_TRANSACTIONS_DETAIL.LINETOTAL_INCTAX, X_JOB_TRANSACTIONS_DETAIL.LINETOTAL_TAX, X_JOB_TRANSACTIONS_DETAIL.LINE_STATUS, X_JOB_TRANSACTIONS_DETAIL.CostType, X_JOB_TRANSACTIONS_DETAIL.CostTypeDesc, X_JOB_TRANSACTIONS_DETAIL.Typeshortcode, X_JOB_TRANSACTIONS_DETAIL.COST_GROUP, X_JOB_TRANSACTIONS_DETAIL.CostGroupDesc, X_JOB_TRANSACTIONS_DETAIL.GroupShortcode, X_JOB_TRANSACTIONS_DETAIL.branchno, X_JOB_TRANSACTIONS_DETAIL.LINE_SOURCE, X_JOB_TRANSACTIONS_DETAIL.SOURCE_SEQNO, X_JOB_TRANSACTIONS_DETAIL.PO_LINESEQNO, X_JOB_TRANSACTIONS_DETAIL.POno, X_JOB_TRANSACTIONS_DETAIL.invseqno, X_JOB_TRANSACTIONS_DETAIL.refno, X_JOB_TRANSACTIONS_DETAIL.name, X_JOB_TRANSACTIONS_DETAIL.invno, X_JOB_TRANSACTIONS_DETAIL.INVOICED, X_JOB_TRANSACTIONS_DETAIL.INVOICEDATE, X_JOB_TRANSACTIONS_DETAIL.CostActual, X_JOB_TRANSACTIONS_DETAIL.glcode, X_JOB_TRANSACTIONS_DETAIL.accno, JOBCOST_HDR.QUOTEDATE, JOBCOST_HDR.STARTDATE, JOBCOST_HDR.DUEDATE, JOBCOST_HDR.CUSTORDNO, JOBCOST_HDR.TITLE, NAME_2 = DR_ACCS.NAME, MasterJobcode = JOBCOST_HDR2.JOBCODE, STOCK_ITEMS.PURCH_GL_CODE, PurchGLName = GLP.NAME, STOCK_ITEMS.COS_GL_CODE, COSGlName = GLCOS.NAME, VariationCode = X_JOB_TRANSACTIONS_DETAIL.X_VARIATIONCODE };
 
-            var jobMaterialsList = jobMaterials.ToList();
-            foreach(var jobMaterial in jobMaterialsList)
-            {
-                if (jobMaterial.CostGroupDesc != null && (jobMaterial.CostGroupDesc.Length >= 3 && (!jobMaterial.CostGroupDesc.Substring(0, 3).Contains("G99") && !jobMaterial.CostGroupDesc.Substring(0, 3).Contains("010"))))
+                if (showLoadingScreen)
                 {
-                    ExoDataPoint materialDataPoint = new ExoDataPoint();
-                    materialDataPoint.BudgetedUnits = 0;
-                    materialDataPoint.BudgetedCosts = 0;
+                    LoadingScreenManager.ShowLoadingScreen(jobMaterials.Count());
+                    LoadingScreenManager.SetMessage("Loading Materials...");
+                }
 
-                    decimal qty = jobMaterial.quantity == null ? 0 : (decimal)jobMaterial.quantity;
-                    decimal lineCost = jobMaterial.LINECOST == null ? 0 : (decimal)jobMaterial.LINECOST;
-                    materialDataPoint.Units = qty;
-                    materialDataPoint.Costs = lineCost * currencyConversion;
-                    materialDataPoint.CostPerQty = materialDataPoint.Units == 0 ? 0 : materialDataPoint.Costs / materialDataPoint.Units;
+                var jobMaterialsList = jobMaterials.ToList();
+                foreach (var jobMaterial in jobMaterialsList)
+                {
+                    if (jobMaterial.CostGroupDesc != null && (jobMaterial.CostGroupDesc.Length >= 3 && (!jobMaterial.CostGroupDesc.Substring(0, 3).Contains("G99") && !jobMaterial.CostGroupDesc.Substring(0, 3).Contains("010"))))
+                    {
+                        ExoDataPoint materialDataPoint = new ExoDataPoint();
+                        materialDataPoint.BudgetedUnits = 0;
+                        materialDataPoint.BudgetedCosts = 0;
 
-                    if (alignedDataDates != null)
-                        materialDataPoint.ProgressDate = alignedDataDates.FirstOrDefault(dates => dates.Date >= jobMaterial.transdate);
+                        decimal qty = jobMaterial.quantity == null ? 0 : (decimal)jobMaterial.quantity;
+                        decimal lineCost = jobMaterial.LINECOST == null ? 0 : (decimal)jobMaterial.LINECOST;
+                        materialDataPoint.Units = qty;
+                        materialDataPoint.Costs = lineCost * currencyConversion;
+                        materialDataPoint.CostPerQty = materialDataPoint.Units == 0 ? 0 : materialDataPoint.Costs / materialDataPoint.Units;
 
-                    materialDataPoint.ActualDate = jobMaterial.transdate == null ? DateTime.Now : (DateTime)jobMaterial.transdate;
-                    materialDataPoint.Subjob_Name = jobMaterial.jobcode;
-                    materialDataPoint.ResourceName = string.Empty;
-                    materialDataPoint.Quantity = qty;
-                    materialDataPoint.Description = jobMaterial.description;
-                    materialDataPoint.Supplier = jobMaterial.name;
-                    materialDataPoint.InvoiceNo = jobMaterial.invno;
-                    materialDataPoint.CostGroup = jobMaterial.CostGroupDesc;
-                    materialDataPoint.CostType = jobMaterial.CostTypeDesc;
-                    materialDataPoint.StockCode = jobMaterial.stockcode;
-                    materialDataPoint.Cost_GLName = jobMaterial.COSGlName;
-                    materialDataPoint.Purchase_GLName = jobMaterial.PurchGLName;
-                    materialDataPoint.Variation_Code = normalizeVariationCode(jobMaterial.VariationCode);
-                    materialDataPoint.InvoiceAmount = Convert.ToDecimal(jobMaterial.INVOICED);
-                    materialDataPoint.InvoiceDate = jobMaterial.INVOICEDATE;
-                    materialDataPoint.PONumber = jobMaterial.POno == null ? string.Empty : ((int)jobMaterial.POno).ToString();
+                        if (alignedDataDates != null)
+                            materialDataPoint.ProgressDate = alignedDataDates.FirstOrDefault(dates => dates.Date >= jobMaterial.transdate);
 
-                    materialDataPoints.Add(materialDataPoint);
+                        materialDataPoint.ActualDate = jobMaterial.transdate == null ? DateTime.Now : (DateTime)jobMaterial.transdate;
+                        materialDataPoint.Subjob_Name = jobMaterial.jobcode;
+                        materialDataPoint.ResourceName = string.Empty;
+                        materialDataPoint.Quantity = qty;
+                        materialDataPoint.Description = jobMaterial.description;
+                        materialDataPoint.Supplier = jobMaterial.name;
+                        materialDataPoint.InvoiceNo = jobMaterial.invno;
+                        materialDataPoint.CostGroup = jobMaterial.CostGroupDesc;
+                        materialDataPoint.CostType = jobMaterial.CostTypeDesc;
+                        materialDataPoint.StockCode = jobMaterial.stockcode;
+                        materialDataPoint.Cost_GLName = jobMaterial.COSGlName;
+                        materialDataPoint.Purchase_GLName = jobMaterial.PurchGLName;
+                        materialDataPoint.Variation_Code = normalizeVariationCode(jobMaterial.VariationCode);
+                        materialDataPoint.InvoiceAmount = Convert.ToDecimal(jobMaterial.INVOICED);
+                        materialDataPoint.InvoiceDate = jobMaterial.INVOICEDATE;
+                        materialDataPoint.PONumber = jobMaterial.POno == null ? string.Empty : ((int)jobMaterial.POno).ToString();
+
+                        materialDataPoints.Add(materialDataPoint);
+                    }
+
+                    if (showLoadingScreen)
+                        LoadingScreenManager.Progress();
                 }
 
                 if (showLoadingScreen)
-                    LoadingScreenManager.Progress();
+                    LoadingScreenManager.CloseLoadingScreen();
+
+                primeroUOW.AutoDetectChangesEnabled(true);
             }
 
-            if (showLoadingScreen)
-                LoadingScreenManager.CloseLoadingScreen();
-
-            primeroUOW.AutoDetectChangesEnabled(true);
             return materialDataPoints;
         }
 

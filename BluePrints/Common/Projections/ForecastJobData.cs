@@ -124,6 +124,39 @@ namespace BluePrints.Common.Projections
             }
         }
 
+        public bool IsConstruction
+        {
+            get
+            {
+                if (Projection == null || Projection.SubJobCode == null || Projection.SubJobCode == string.Empty)
+                    return false;
+
+                return Projection.SubJobCode.ToUpper().Contains("C");
+            }
+        }
+
+        public bool IsDesign
+        {
+            get
+            {
+                if (Projection == null || Projection.SubJobCode == null || Projection.SubJobCode == string.Empty)
+                    return false;
+
+                return Projection.SubJobCode.ToUpper().Contains("D");
+            }
+        }
+
+        public bool IsIndirect
+        {
+            get
+            {
+                if (Projection == null || Projection.SubJobCode == null || Projection.SubJobCode == string.Empty)
+                    return false;
+
+                return Projection.SubJobCode.ToUpper().Contains("I");
+            }
+        }
+
         public decimal PctCompleteCosts => EstimateAtCompletion == 0 ? 1 : ActualCosts / EstimateAtCompletion;
         public decimal PctCompleteUnits => P6BudgetedUnits == 0 ? 1 : (P6BudgetedUnits - P6RemainingUnits) / P6BudgetedUnits;
         public decimal PctComplete => IsProcurement ? PctCompleteCosts : PctCompleteUnits;

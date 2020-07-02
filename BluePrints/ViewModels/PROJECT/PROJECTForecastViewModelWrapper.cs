@@ -666,6 +666,19 @@ namespace BluePrints.ViewModels
 
             GridControlService.GridControl.EndDataUpdate();
             LoadingScreenManager.CloseLoadingScreen();
+
+            ForecastSummary.Reset();
+
+            //calculate project summary, needs to be done after uncommitted is calculated
+            ForecastSummary.Budget_Cost = commodityJobs.Sum(x => x.Budget);
+            ForecastSummary.Current_Cost = commodityJobs.Sum(x => x.ActualCosts);
+            ForecastSummary.Commitments = commodityJobs.Sum(x => x.Outstanding);
+            ForecastSummary.Uncommitted_Forecast = commodityJobs.Sum(x => x.Uncommitted);
+            ForecastSummary.OriginalEstimateAtCompletion = commodityJobs.Sum(x => x.OriginalEstimateAtCompletion);
+            ForecastSummary.EstimateAtCompletion = commodityJobs.Sum(x => x.EstimateAtCompletion);
+            ForecastSummary.CurrentEstimateAtCompletion = commodityJobs.Sum(x => x.CurrentEstimateAtCompletion);
+            ForecastSummary.Contingency = commodityJobs.Where(x => x.Projection.CommodityCode == BluePrintsResources.ContingencyCostType).Sum(x => x.EstimateAtCompletion);
+
             this.RaisePropertyChanged(x => x.ForecastSummary);
             this.RaisePropertyChanged(x => x.ExportTable);
         }
@@ -939,18 +952,6 @@ namespace BluePrints.ViewModels
             commodityJob.P6RemainingUnitsOverride = P6TotalCurrentRemainingUnits;
             updateViewForecastsOnDatesFromDb(commodityRow);
             updateTotalUncommittedOnJob(commodityRow);
-
-            //calculate project summary, needs to be done after uncommitted is calculated
-            ForecastSummary.Budget_Cost += commodityJob.Budget;
-            ForecastSummary.Current_Cost += commodityJob.ActualCosts;
-            ForecastSummary.Commitments += commodityJob.Outstanding;
-            ForecastSummary.Uncommitted_Forecast += commodityJob.Uncommitted;
-            ForecastSummary.OriginalEstimateAtCompletion += commodityJob.OriginalEstimateAtCompletion;
-            ForecastSummary.EstimateAtCompletion += commodityJob.EstimateAtCompletion;
-            ForecastSummary.CurrentEstimateAtCompletion += commodityJob.CurrentEstimateAtCompletion;
-
-            if (commodityJob.Projection.CommodityCode == BluePrintsResources.ContingencyCostType)
-                ForecastSummary.Contingency += commodityJob.EstimateAtCompletion;
 
             return commodityRow;
         }
@@ -1583,7 +1584,7 @@ namespace BluePrints.ViewModels
                             {
                                 ForecastJobData job = (ForecastJobData)newRow[columnEntity];
                                 decimal totalCosts = 0;
-                                if (job.IsProcurement)
+                                if ((P6ForecastProject == null && (job.IsProcurement || job.IsConstruction)) || (P6ForecastProject != null && job.IsProcurement))
                                 {
                                     totalCosts = getMasterRowResetValue(compareDataTable, copyColumn.FieldName);
 
@@ -1869,7 +1870,15 @@ namespace BluePrints.ViewModels
                 else if (DateTime.TryParse(e.Column.FieldName, out dateTime))
                 {
                     ForecastJobData job = (ForecastJobData)((DataRowView)e.Row)[columnEntity];
-                    if(!job.IsProcurement)
+                    if(P6ForecastProject == null)
+                    {
+                        if(!job.IsProcurement && !job.IsConstruction)
+                        {
+                            e.ErrorContent = "Cannot set uncommitted cost for non procurement/construction job";
+                            e.IsValid = false;
+                        }
+                    }
+                    else if(!job.IsProcurement)
                     {
                         e.ErrorContent = "Cannot set uncommitted cost for non procurement job";
                         e.IsValid = false;

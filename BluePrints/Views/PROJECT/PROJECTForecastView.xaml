@@ -418,6 +418,12 @@
                                                 <dxg:FormatCondition FieldName="Entity.PeriodMovement" Value1="-1" ValueRule="Less">
                                                     <dxc:Format Background="#FFFF9B98"/>
                                                 </dxg:FormatCondition>
+                                                <dxg:FormatCondition FieldName="Entity.Productivity" Value1="1" ValueRule="Greater">
+                                                    <dxc:Format Background="Chartreuse" />
+                                                </dxg:FormatCondition>
+                                                <dxg:FormatCondition FieldName="Entity.Productivity" Value1="1" ValueRule="Less">
+                                                    <dxc:Format Background="#FFFF9B98"/>
+                                                </dxg:FormatCondition>
                                             </dxg:TableView.FormatConditions>
                                             <dxmvvm:Interaction.Behaviors>
                                                 <dxmvvm:EventToCommand Command="{Binding ValidateCellCommand}" EventName="ValidateCell" PassEventArgsToCommand="True" />

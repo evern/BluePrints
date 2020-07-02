@@ -47,20 +47,23 @@ namespace BluePrints.Common.ViewModel.Converters
                                 decimal materialCosts = dateCost.MaterialCosts;
                                 decimal actualCosts = dateCost.ActualCosts;
 
-                                decimal totalCosts = poForecastCosts + p6RemainingCosts + indirectCosts + materialCosts + actualCosts;
+                                decimal totalCosts = poForecastCosts + indirectCosts + materialCosts + actualCosts;
                                 totalCosts = Math.Round(totalCosts);
                                 decimal currentValue = (decimal)values[2];
 
-                                if (totalCosts != 0)
+                                if(p6RemainingCosts <= 0)
                                 {
-                                    currentValue = Math.Round(currentValue);
-                                    if (currentValue > totalCosts)
+                                    if (totalCosts != 0)
+                                    {
+                                        currentValue = Math.Round(currentValue);
+                                        if (currentValue > totalCosts)
+                                            return new System.Windows.Media.SolidColorBrush(Colors.Chartreuse);
+                                        else if (currentValue < totalCosts)
+                                            return new System.Windows.Media.SolidColorBrush(Colors.LightSalmon);
+                                    }
+                                    else if (currentValue > 0)
                                         return new System.Windows.Media.SolidColorBrush(Colors.Chartreuse);
-                                    else if (currentValue < totalCosts)
-                                        return new System.Windows.Media.SolidColorBrush(Colors.LightSalmon);
                                 }
-                                else if (currentValue > 0)
-                                    return new System.Windows.Media.SolidColorBrush(Colors.Chartreuse);
                             }
                         }
                     }
