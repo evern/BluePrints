@@ -235,6 +235,16 @@
                                 <dxg:GridColumn FieldName="Entity.Entity.Entity.INTERNAL_NUM" Width="140" Fixed="Left" Header="Internal Number" IsEnabled="False" ReadOnly="True" />
                                 <dxg:GridColumn FieldName="Entity.Entity.Entity.CLIENT_NUM" Fixed="Left" Header="Client Number" IsEnabled="False" ReadOnly="True" />
                                 <dxg:GridColumn FieldName="Entity.Entity.Entity.PRIMARY_TITLE" Fixed="Left" Header="Primary Title" IsEnabled="False" />
+                                <dxg:GridColumn FieldName="Entity.Budget_Units" Header="Adjusted Budget" AllowBestFit="false" Width="70" HeaderToolTip="Additional hours added from the variation page and original budget, approved and checked as budget adjustment" ReadOnly="True" >
+                                    <dxg:GridColumn.EditSettings>
+                                        <dxe:SpinEditSettings Mask="###,##0 hrs" MaskType="Numeric" MaskUseAsDisplayFormat="True" />
+                                    </dxg:GridColumn.EditSettings>
+                                </dxg:GridColumn>
+                                <dxg:GridColumn FieldName="Entity.Variation_Units" AllowBestFit="false" Width="70" Header="Variation Hours" HeaderToolTip="Variation hours have to be added from the variation page and approved to be shown here" IsEnabled="False" ReadOnly="True">
+                                    <dxg:GridColumn.EditSettings>
+                                        <dxe:SpinEditSettings Increment="1" Mask="n" MaskType="Numeric" MaskUseAsDisplayFormat="True" />
+                                    </dxg:GridColumn.EditSettings>
+                                </dxg:GridColumn>
                                 <dxg:GridColumn FieldName="Entity.Total_Units" Fixed="Left" Width="70" Header="Total Hours" HeaderToolTip="Budget Hours + Variation Hours" IsEnabled="False" ReadOnly="True">
                                     <dxg:GridColumn.EditSettings>
                                         <dxe:SpinEditSettings Increment="1" Mask="n" MaskType="Numeric" MaskUseAsDisplayFormat="True" MinValue="0" />

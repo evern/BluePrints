@@ -859,6 +859,10 @@ namespace BluePrints.ViewModels
             columns.Add(new ColumnDescriptor() { FieldName = "Entity.Entity.Entity.INTERNAL_NUM", ReadOnly = true, Header = "Internal Number", Fixed = FixedStyle.Left, Width = 140, Settings = SettingsType.Default });
             columns.Add(new ColumnDescriptor() { FieldName = "Entity.Entity.Entity.CLIENT_NUM", ReadOnly = true, Header = "Client Number", Fixed = FixedStyle.Left, Width = 100, Settings = SettingsType.Default });
             columns.Add(new ColumnDescriptor() { FieldName = "Entity.Entity.Entity.PRIMARY_TITLE", ReadOnly = true, Header = "Primary Title", Fixed = FixedStyle.Left, Width = 200, Settings = SettingsType.Default });
+            columns.Add(new ColumnDescriptor() { FieldName = "Entity.Budget_Units", Mask = "###,##0 hrs", ReadOnly = true, Header = "Budget Hours", Fixed = FixedStyle.Left, Width = 70, Settings = SettingsType.Number });
+            summaries.Add(new SummaryDescriptor() { FieldName = "Entity.Budget_Units", DisplayFormat = "###,##0 hrs", Type = SummaryItemType.Sum });
+            columns.Add(new ColumnDescriptor() { FieldName = "Entity.Variation_Units", Mask = "###,##0 hrs", ReadOnly = true, Header = "Variation Hours", Fixed = FixedStyle.Left, Width = 70, Settings = SettingsType.Number });
+            summaries.Add(new SummaryDescriptor() { FieldName = "Entity.Variation_Units", DisplayFormat = "###,##0 hrs", Type = SummaryItemType.Sum });
             columns.Add(new ColumnDescriptor() { FieldName = "Entity.Total_Units", Mask = "###,##0 hrs", ReadOnly = true, Header = "Total Hours", Fixed = FixedStyle.Left, Width = 70, Settings = SettingsType.Number });
             summaries.Add(new SummaryDescriptor() { FieldName = "Entity.Total_Units", DisplayFormat = "###,##0 hrs", Type = SummaryItemType.Sum });
             columns.Add(new ColumnDescriptor() { FieldName = "Entity.Earned_Units_ToDate", Mask= "###,##0 hrs", ReadOnly = true, Header = "Total Earn", Fixed = FixedStyle.Left, Width = 70, Settings = SettingsType.Number });
@@ -1004,7 +1008,7 @@ namespace BluePrints.ViewModels
         public override string ViewName
         {
             //get { return "OffsiteDirectProgressViewModelWrapper" + view_project_specific_affix; }
-            get { return "OffsiteDirectProgressDistributionViewModelWrapper_v4"; }
+            get { return "OffsiteDirectProgressDistributionViewModelWrapper_v5"; }
         }
 
         private string view_project_specific_affix
