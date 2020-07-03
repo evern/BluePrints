@@ -209,7 +209,7 @@ namespace BaseModel.ViewModel.Dialogs
                 if (selectedSubJob == null || selectedDiscipline == null || Selected_CommodityCode == null || Selected_CommodityCode == string.Empty || Selected_Resource == null || Selected_Commodity == null)
                     return new List<string>();
 
-                IEnumerable<string> authorisedVariationCodes = exoAuthorisations.Where(x => x.SubJobNo == selectedSubJob.Id && x.DisciplineId == selectedDiscipline.Id && x.CommodityId == Selected_Commodity.Id).Select(x => x.VariationCode).Distinct().ToList();
+                IEnumerable<string> authorisedVariationCodes = exoAuthorisations.Where(x => x.SubJobNo == selectedSubJob.Id).Select(x => x.VariationCode).Distinct().ToList();
                 List<string> authorised_variations = new List<string>();
 
                 foreach(string authorisedVariationCode in authorisedVariationCodes)
