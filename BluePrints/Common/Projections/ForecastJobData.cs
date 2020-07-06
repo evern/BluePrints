@@ -113,6 +113,18 @@ namespace BluePrints.Common.Projections
         public decimal EstimateAtCompletion => ActualCosts + Outstanding + Uncommitted;
         public decimal CurrentEstimateAtCompletion => ActualCosts + Outstanding + CurrentUncommitted;
         public decimal PeriodMovement => PreviousEAC - EstimateAtCompletion;
+
+        public bool IsContingency
+        {
+            get
+            {
+                if (Projection == null || Projection.SubJobCode == null || Projection.SubJobCode == string.Empty)
+                    return false;
+
+                return (Projection.CommodityCode == BluePrintsResources.ContingencyCostType);
+            }
+        }
+
         public bool IsProcurement
         {
             get

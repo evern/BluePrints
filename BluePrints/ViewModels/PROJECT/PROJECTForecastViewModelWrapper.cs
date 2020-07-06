@@ -677,7 +677,7 @@ namespace BluePrints.ViewModels
             ForecastSummary.OriginalEstimateAtCompletion = commodityJobs.Sum(x => x.OriginalEstimateAtCompletion);
             ForecastSummary.EstimateAtCompletion = commodityJobs.Sum(x => x.EstimateAtCompletion);
             ForecastSummary.CurrentEstimateAtCompletion = commodityJobs.Sum(x => x.CurrentEstimateAtCompletion);
-            ForecastSummary.Contingency = commodityJobs.Where(x => x.Projection.CommodityCode == BluePrintsResources.ContingencyCostType).Sum(x => x.EstimateAtCompletion);
+            ForecastSummary.Contingency = commodityJobs.Where(x => x.IsContingency).Sum(x => x.EstimateAtCompletion);
 
             this.RaisePropertyChanged(x => x.ForecastSummary);
             this.RaisePropertyChanged(x => x.ExportTable);
@@ -1584,7 +1584,7 @@ namespace BluePrints.ViewModels
                             {
                                 ForecastJobData job = (ForecastJobData)newRow[columnEntity];
                                 decimal totalCosts = 0;
-                                if ((P6ForecastProject == null && (job.IsProcurement || job.IsConstruction)) || (P6ForecastProject != null && job.IsProcurement))
+                                if (job.IsContingency || (P6ForecastProject == null && (job.IsProcurement || job.IsConstruction)) || (P6ForecastProject != null && job.IsProcurement))
                                 {
                                     totalCosts = getMasterRowResetValue(compareDataTable, copyColumn.FieldName);
 
@@ -1872,13 +1872,13 @@ namespace BluePrints.ViewModels
                     ForecastJobData job = (ForecastJobData)((DataRowView)e.Row)[columnEntity];
                     if(P6ForecastProject == null)
                     {
-                        if(!job.IsProcurement && !job.IsConstruction)
+                        if(!job.IsProcurement && !job.IsConstruction && !job.IsContingency)
                         {
                             e.ErrorContent = "Cannot set uncommitted cost for non procurement/construction job";
                             e.IsValid = false;
                         }
                     }
-                    else if(!job.IsProcurement)
+                    else if(!job.IsProcurement && !job.IsContingency)
                     {
                         e.ErrorContent = "Cannot set uncommitted cost for non procurement job";
                         e.IsValid = false;
@@ -2275,7 +2275,7 @@ namespace BluePrints.ViewModels
                 ForecastSummary.CurrentEstimateAtCompletion += job.CurrentEstimateAtCompletion;
                 ForecastSummary.Uncommitted_Forecast += job.Uncommitted;
 
-                if (job.Projection.CommodityCode == BluePrintsResources.ContingencyCostType)
+                if (job.IsContingency)
                     ForecastSummary.Contingency += job.EstimateAtCompletion;
             }
 
