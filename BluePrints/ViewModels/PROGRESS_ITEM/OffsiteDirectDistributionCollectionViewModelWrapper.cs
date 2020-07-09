@@ -636,6 +636,8 @@ namespace BluePrints.ViewModels
                         newPROGRESS_ITEM.GUID_PROGRESS = loadPROGRESS.GUID;
                         newPROGRESS_ITEM.EARNED_DATE = currentProgressDate;
                         newPROGRESS_ITEM.EARNED_UNITS = totalUnitsDifferences;
+                        newPROGRESS_ITEM.CREATED = DateTime.Now;
+                        newPROGRESS_ITEM.CREATEDBY = LoginCredentials.CurrentUserGuid;
                         PROGRESS_ITEMSCollectionViewModel.EntitiesUndoRedoManager.AddUndo(newPROGRESS_ITEM, null, null, null, EntityMessageType.Added);
                         progressToSave.Add(newPROGRESS_ITEM);
                     }
