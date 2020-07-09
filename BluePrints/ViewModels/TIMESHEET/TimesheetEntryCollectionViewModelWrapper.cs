@@ -673,7 +673,7 @@ namespace BluePrints.ViewModels
         private bool IsValidJobCode(int subJobNo, int costGroupNo, int costTypeNo, string variationCode)
         {
             bool isVariationCodeNull = variationCode == string.Empty || variationCode == null;
-            ExoTimeAuthorisation findExoLine = preloadedExoLinesWithCostInfo.FirstOrDefault(x => x.SubJobNo == subJobNo && x.DisciplineId == costGroupNo && x.CommodityId == costTypeNo && (x.VariationCode == null || x.VariationCode == string.Empty));
+            ExoTimeAuthorisation findExoLine = preloadedExoLinesWithCostInfo.FirstOrDefault(x => x.SubJobNo == subJobNo && x.DisciplineId == costGroupNo && x.CommodityId == costTypeNo);
             if (isVariationCodeNull)
             {
                 if (findExoLine != null)
