@@ -617,7 +617,7 @@ namespace BluePrints.ViewModels
                         if(alignedDataDateCollection.Count > 0)
                         {
                             DateTime? alignDateTime = alignedDataDateCollection.OrderByDescending(x => x).FirstOrDefault(x => unalignedPROGRESS_ITEM.EARNED_DATE > x.Date);
-                            if (alignDateTime != null)
+                            if (alignDateTime != null && ((DateTime)alignDateTime).Year > 1)
                                 unalignedPROGRESS_ITEM.EARNED_DATE = (DateTime)alignDateTime;
 
                             progressToSave.Add(unalignedPROGRESS_ITEM);
@@ -627,7 +627,7 @@ namespace BluePrints.ViewModels
                     IEnumerable<PROGRESS_ITEM> previousProgresses = entity.PROGRESS_ITEMS.Where(x => x.EARNED_DATE < currentProgressDate).OrderByDescending(x => x.EARNED_DATE);
                     PROGRESS_ITEM currentPeriodPROGRESS_ITEM = entity.PROGRESS_ITEMS.FirstOrDefault(x => x.EARNED_DATE.Date == currentProgressDate.Date);
                     List<PROGRESS_ITEM> futureProgressToEdit = entity.PROGRESS_ITEMS.Where(x => x.EARNED_DATE > currentProgressDate).OrderBy(x => x.EARNED_DATE).ToList();
-                    
+
                     //maximum and minimum is controlled here by the spinedit ability to set max as 100% and min as 0%, and that includes variation validatation, so there is no need to validate here
                     if (currentPeriodPROGRESS_ITEM == null && totalUnitsDifferences > 0)
                     {
@@ -636,6 +636,8 @@ namespace BluePrints.ViewModels
                         newPROGRESS_ITEM.GUID_PROGRESS = loadPROGRESS.GUID;
                         newPROGRESS_ITEM.EARNED_DATE = currentProgressDate;
                         newPROGRESS_ITEM.EARNED_UNITS = totalUnitsDifferences;
+                        newPROGRESS_ITEM.CREATED = DateTime.Now;
+                        newPROGRESS_ITEM.CREATEDBY = LoginCredentials.CurrentUserGuid;
                         PROGRESS_ITEMSCollectionViewModel.EntitiesUndoRedoManager.AddUndo(newPROGRESS_ITEM, null, null, null, EntityMessageType.Added);
                         progressToSave.Add(newPROGRESS_ITEM);
                     }
@@ -661,7 +663,7 @@ namespace BluePrints.ViewModels
                     else
                     {
                         decimal oldValueDecimal;
-                        if(oldValue != null && Decimal.TryParse(oldValue.ToString(), out oldValueDecimal))
+                        if (oldValue != null && Decimal.TryParse(oldValue.ToString(), out oldValueDecimal))
                         {
                             errorMessage = new ErrorMessage(entity.Deliverable_Name, "There is no datapoint to edit on this date, if you wish to reduce it please do so on the first instance of " + string.Format(oldValueDecimal.ToString("P")));
                             Messenger.Default.Send(new EntityMessage<BASELINE_ITEM, Guid>(entity.GUID, MainViewModel.Key, EntityMessageType.Changed, PROGRESS_ITEMSCollectionViewModel));
@@ -901,7 +903,6 @@ namespace BluePrints.ViewModels
                     dataPointsTable = new DataTable();
                     TimeSpan interval = ChronologicalHelpers.ConvertProgressIntervalToPeriod(loadPROGRESS);
                     DateTime firstAlignedDataDate = ChronologicalHelpers.GenerateFirstAlignedDataDate(loadPROGRESS);
-
                     DateTime? lastEarnedDate = null;
                     if(Entities.Where(x => x.LastDataDate != null).Count() > 0)
                         lastEarnedDate = Entities.Where(x => x.LastDataDate != null).Max(x => x.LastDataDate);

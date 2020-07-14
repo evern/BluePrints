@@ -770,45 +770,45 @@ namespace BluePrints.ViewModels
                     var earnedUnitsItems = earnedUnitsQuery.ToList();
                     decimal earnedUnits = earnedUnitsItems.Count == 0 ? 0 : earnedUnitsItems.Sum(x => x.PROGRESS_ITEM.EARNED_UNITS);
                     decimal reducedUnits = (deliverable.DisplayTotalUnits - deliverable.DisplayVariationUnits);
-                    if (reducedUnits < earnedUnits)
-                        errorMessages.Add(new ErrorMessage(deliverable.Deliverable_Name, "Cannot unapprove this item because reduced units (" + reducedUnits.ToString() + ") will be less than earned units (" + earnedUnits.ToString() + ")"));
-                    else
-                    {
+                    //if (reducedUnits < earnedUnits)
+                    //    errorMessages.Add(new ErrorMessage(deliverable.Deliverable_Name, "Cannot unapprove this item because reduced units (" + reducedUnits.ToString() + ") will be less than earned units (" + earnedUnits.ToString() + ")"));
+                    //else
+                    //{
                         //remove deliverable only when none of the attached variations are associated with it
                         //BASELINE_ITEM.GUID_VARIATION != null only finds deliverable's that was added through variation, so we don't touch any deliverable that weren't added through variation
-                        var deliverableVariationQuery = from BASELINE_ITEM in bluePrintsUnitOfWork.BASELINE_ITEMS
-                                                        join BASELINE in bluePrintsUnitOfWork.BASELINES
-                                                        on BASELINE_ITEM.GUID_BASELINE equals BASELINE.GUID
-                                                        join VARIATION_ITEMS in bluePrintsUnitOfWork.VARIATION_ITEMS
-                                                        on BASELINE_ITEM.GUID_ORIGINAL equals VARIATION_ITEMS.GUID_ORIBASEITEM
-                                                        join VARIATIONS in bluePrintsUnitOfWork.VARIATIONS
-                                                        on VARIATION_ITEMS.GUID_VARIATION equals VARIATIONS.GUID
-                                                        where BASELINE.GUID == liveBASELINE.GUID && BASELINE_ITEM.GUID_ORIGINAL == deliverable.GUID_ORIGINAL && BASELINE_ITEM.GUID_VARIATION != null
-                                                        select new { BASELINE_ITEM, VARIATIONS };
+                    var deliverableVariationQuery = from BASELINE_ITEM in bluePrintsUnitOfWork.BASELINE_ITEMS
+                                                    join BASELINE in bluePrintsUnitOfWork.BASELINES
+                                                    on BASELINE_ITEM.GUID_BASELINE equals BASELINE.GUID
+                                                    join VARIATION_ITEMS in bluePrintsUnitOfWork.VARIATION_ITEMS
+                                                    on BASELINE_ITEM.GUID_ORIGINAL equals VARIATION_ITEMS.GUID_ORIBASEITEM
+                                                    join VARIATIONS in bluePrintsUnitOfWork.VARIATIONS
+                                                    on VARIATION_ITEMS.GUID_VARIATION equals VARIATIONS.GUID
+                                                    where BASELINE.GUID == liveBASELINE.GUID && BASELINE_ITEM.GUID_ORIGINAL == deliverable.GUID_ORIGINAL && BASELINE_ITEM.GUID_VARIATION != null
+                                                    select new { BASELINE_ITEM, VARIATIONS };
 
-                        List<BASELINE_ITEM_VARIATIONContainer> deliverableVariations = deliverableVariationQuery.Select(x => new BASELINE_ITEM_VARIATIONContainer() { BASELINE_ITEM = x.BASELINE_ITEM, VARIATION = x.VARIATIONS }).ToList();
+                    List<BASELINE_ITEM_VARIATIONContainer> deliverableVariations = deliverableVariationQuery.Select(x => new BASELINE_ITEM_VARIATIONContainer() { BASELINE_ITEM = x.BASELINE_ITEM, VARIATION = x.VARIATIONS }).ToList();
 
-                        //only remove this deliverable is only the variation responsible of adding it exists
-                        if (deliverableVariations.Count > 0 && deliverableVariations.All(x => x.BASELINE_ITEM.GUID_VARIATION == SelectedEntity.GUID))
+                    //only remove this deliverable is only the variation responsible of adding it exists
+                    if (deliverableVariations.Count > 0 && deliverableVariations.All(x => x.BASELINE_ITEM.GUID_VARIATION == SelectedEntity.GUID))
+                    {
+                        BASELINE_ITEM removeDeliverable = deliverableVariations.First().BASELINE_ITEM;
+                        BASELINE_ITEM variationDeliverable = bluePrintsUnitOfWork.BASELINE_ITEMS.FirstOrDefault(x => x.GUID_ORIGINAL == deliverable.GUID_ORIGINAL && x.GUID_BASELINE == null && x.GUID_VARIATION == removeDeliverable.GUID_VARIATION);
+                        if (variationDeliverable != null)
                         {
-                            BASELINE_ITEM removeDeliverable = deliverableVariations.First().BASELINE_ITEM;
-                            BASELINE_ITEM variationDeliverable = bluePrintsUnitOfWork.BASELINE_ITEMS.FirstOrDefault(x => x.GUID_ORIGINAL == deliverable.GUID_ORIGINAL && x.GUID_BASELINE == null && x.GUID_VARIATION == removeDeliverable.GUID_VARIATION);
-                            if (variationDeliverable != null)
-                            {
-                                //copy everything from existing deliverable to variation deliverable before deleting
-                                Guid variationDeliverableGuid = variationDeliverable.GUID;
-                                DataUtils.ShallowCopy(variationDeliverable, removeDeliverable);
-                                variationDeliverable.GUID_BASELINE = null;
-                                variationDeliverable.GUID = variationDeliverableGuid;
-                            }
-
-                            Messenger.Default.Send(new EntityMessage<BASELINE_ITEM, Guid>(removeDeliverable.GUID, MainViewModel.Key, EntityMessageType.Deleted, this, CurrentHWID, false));
-                            bluePrintsUnitOfWork.BASELINE_ITEMS.Remove(removeDeliverable);
-                            
-                            bluePrintsUnitOfWork.SaveChanges();
+                            //copy everything from existing deliverable to variation deliverable before deleting
+                            Guid variationDeliverableGuid = variationDeliverable.GUID;
+                            DataUtils.ShallowCopy(variationDeliverable, removeDeliverable);
+                            variationDeliverable.GUID_BASELINE = null;
+                            variationDeliverable.GUID = variationDeliverableGuid;
                         }
+
+                        Messenger.Default.Send(new EntityMessage<BASELINE_ITEM, Guid>(removeDeliverable.GUID, MainViewModel.Key, EntityMessageType.Deleted, this, CurrentHWID, false));
+                        bluePrintsUnitOfWork.BASELINE_ITEMS.Remove(removeDeliverable);
+                            
+                        bluePrintsUnitOfWork.SaveChanges();
                     }
                 }
+                //}
                 //only revise when new baseline is created
                 else if(variationStage == VariationStages.Approve && revisedBaseline != null && revisedBaseline.GUID != Guid.Empty)
                 {
