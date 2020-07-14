@@ -817,6 +817,15 @@ namespace BluePrints.Common.Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Allow editing uncommitted costs on construction.
+        /// </summary>
+        internal static string Permission_ConstructionUncommitted {
+            get {
+                return ResourceManager.GetString("Permission_ConstructionUncommitted", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Book time for other users.
         /// </summary>
         internal static string Permission_DesignDeliverables_BookTimeForOthers {

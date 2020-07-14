@@ -89,6 +89,7 @@ namespace BluePrints.ViewModels
             projectSavingBackgroundWorker.WorkerSupportsCancellation = true;
 
             isShowActualsHistory = LoginCredentials.GetUserPreferenceBool(DataUtils.GetNameOf(() => UserPreferences.Forecast_ShowActuals));
+            canEditConstructionUncommitted = LoginCredentials.getPermissionStatus(DataUtils.GetNameOf(() => NavigationResources.Permission_ConstructionUncommitted)) == LoginCredentials.PermissionStatus.All;
         }
 
         protected override void addEntitiesLoader()
@@ -284,6 +285,7 @@ namespace BluePrints.ViewModels
         }
 
         public bool FullScreenView = true;
+        bool canEditConstructionUncommitted = false;
         protected IPrimeroEntitiesUnitOfWork primeroEntitiesUnitOfWork;
         protected override void resolveParameters(object parameter)
         {
@@ -1584,7 +1586,7 @@ namespace BluePrints.ViewModels
                             {
                                 ForecastJobData job = (ForecastJobData)newRow[columnEntity];
                                 decimal totalCosts = 0;
-                                if (job.IsContingency || (P6ForecastProject == null && (job.IsProcurement || job.IsConstruction)) || (P6ForecastProject != null && job.IsProcurement))
+                                if (!job.IsIndirect && (canEditConstructionUncommitted && job.IsConstruction) || job.IsContingency || (P6ForecastProject == null && (job.IsProcurement || job.IsConstruction)) || (P6ForecastProject != null && job.IsProcurement))
                                 {
                                     totalCosts = getMasterRowResetValue(compareDataTable, copyColumn.FieldName);
 
@@ -1870,17 +1872,17 @@ namespace BluePrints.ViewModels
                 else if (DateTime.TryParse(e.Column.FieldName, out dateTime))
                 {
                     ForecastJobData job = (ForecastJobData)((DataRowView)e.Row)[columnEntity];
-                    if(P6ForecastProject == null)
+                    if (job.IsConstruction)
                     {
-                        if(!job.IsProcurement && !job.IsConstruction && !job.IsContingency)
+                        if(!canEditConstructionUncommitted && P6ForecastProject != null)
                         {
                             e.ErrorContent = "Cannot set uncommitted cost for non procurement/construction job";
                             e.IsValid = false;
                         }
                     }
-                    else if(!job.IsProcurement && !job.IsContingency)
+                    else if (job.IsDesign || job.IsIndirect)
                     {
-                        e.ErrorContent = "Cannot set uncommitted cost for non procurement job";
+                        e.ErrorContent = "Cannot set uncommitted cost for non procurement/construction job";
                         e.IsValid = false;
                     }
                     else

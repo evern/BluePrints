@@ -408,4 +408,7 @@
   <data name="Permission_EXO_Transactions_ChangeQuantity" xml:space="preserve">
     <value>Allow changing quantity in EXO transaction</value>
   </data>
+  <data name="Permission_ConstructionUncommitted" xml:space="preserve">
+    <value>Allow editing uncommitted costs on construction</value>
+  </data>
 </root>
