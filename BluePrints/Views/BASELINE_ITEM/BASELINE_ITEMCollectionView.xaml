@@ -361,6 +361,11 @@
                                     <dxe:SpinEditSettings Mask="###,##0 hrs" MaskType="Numeric" MaskUseAsDisplayFormat="True" />
                                 </dxg:GridColumn.EditSettings>
                             </dxg:GridColumn>
+                            <dxg:GridColumn x:Name="colFORECAST_EXCL_HOURS" FieldName="Entity.Entity.FORECAST_EXCL_HOURS" AllowBestFit="false" Width="90" Header="Forecast Excl. Hours" HeaderToolTip="Hours to be excluded from forecast" Visible="False">
+                                <dxg:GridColumn.EditSettings>
+                                    <dxe:SpinEditSettings Mask="###,##0 hrs" MaskType="Numeric" MaskUseAsDisplayFormat="True" />
+                                </dxg:GridColumn.EditSettings>
+                            </dxg:GridColumn>
                         </dxg:GridControlBand>
                         <dxg:GridControlBand Header="Dates">
                             <dxg:GridColumn FieldName="Entity.Entity.START_DATE" Visible="{Binding IsTender}" AllowBestFit="false" Width="80" Header="Start" FilterPopupMode="DateAlt" HeaderToolTip="Planned date when the deliverable is going to start, this will override subjob start date, only affects planned S-Curve">

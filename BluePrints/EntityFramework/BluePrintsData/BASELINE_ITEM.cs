@@ -65,6 +65,8 @@ namespace BluePrints.Data
 
         public decimal DC_HOURS { get; set; }
 
+        public decimal FORECAST_EXCL_HOURS { get; set; }
+
         [StringLength(50)]
         public string REVISION_NUMBER { get; set; }
 
