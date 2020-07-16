@@ -2386,11 +2386,11 @@ namespace BluePrints.ViewModels
 
             job.Uncommitted = uncommittedPOValues + uncommitedP6Values + job.P6RemainingCosts;
             if (job.CurrentProductivity > 0)
-                job.CurrentUncommitted = uncommittedPOValues + (job.P6RemainingCosts / job.CurrentProductivity);
+                job.CurrentUncommitted = uncommittedPOValues + uncommitedP6Values + (job.P6RemainingCosts / job.CurrentProductivity);
             else
                 job.CurrentUncommitted = job.Uncommitted;
 
-            job.OriginalUncommitted = uncommittedPOValues + job.P6RemainingCosts;
+            job.OriginalUncommitted = uncommittedPOValues + uncommitedP6Values + job.P6RemainingCosts;
         }
 
         public bool CanSaveCurrentMonthEAC()
