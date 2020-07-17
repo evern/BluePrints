@@ -385,6 +385,13 @@ namespace BluePrints.ViewModels
                         return "You do not have authority to set or change budget";
                 }
             }
+            else if(field_name.ToUpper().Contains("VARIATIONCODE"))
+            {
+                if (new_value != null && new_value.ToString().Length > 50)
+                {
+                    return "Variation code cannot be more than 50 characters";
+                }
+            }
 
             return string.Empty;
         }

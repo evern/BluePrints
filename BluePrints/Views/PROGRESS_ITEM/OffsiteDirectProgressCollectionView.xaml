@@ -255,6 +255,31 @@
                                     <dxe:SpinEditSettings Increment="1" Mask="n" MaskType="Numeric" MaskUseAsDisplayFormat="True" />
                                 </dxg:GridColumn.EditSettings>
                             </dxg:GridColumn>
+                            <dxg:GridColumn AllowSearchPanel="False" Visible="True" Header="Approved Variations" AllowBestFit="false" Width="70" HeaderToolTip="Details on all approved variations" ReadOnly="True">
+                                <dxg:GridColumn.CellTemplate>
+                                    <DataTemplate>
+                                        <dxg:LookUpEdit Name="PART_Editor" AutoComplete="True" AutoPopulateColumns="False" IncrementalFiltering="True" IsTextEditable="False" ItemsSource="{Binding RowData.Row.ApprovedVariations}" NullText="Expand to View" NullValueButtonPlacement="None" PopupMinWidth="500" ShowNullTextForEmptyValue="True">
+                                            <dxg:LookUpEdit.StyleSettings>
+                                                <dxg:SearchLookUpEditStyleSettings />
+                                            </dxg:LookUpEdit.StyleSettings>
+                                            <dxg:LookUpEdit.PopupContentTemplate>
+                                                <ControlTemplate TargetType="ContentControl">
+                                                    <dxg:GridControl x:Name="PART_GridControl" SelectionMode="Row" ShowBorder="False">
+                                                        <dxg:GridControl.Columns>
+                                                            <dxg:GridColumn FieldName="VariationName" Header="Variation Name" ReadOnly="True" SortIndex="1" SortOrder="Descending"/>
+                                                            <dxg:GridColumn FieldName="AdjustmentUnits" Header="Approved Units" ReadOnly="True" >
+                                                                <dxg:GridColumn.EditSettings>
+                                                                    <dxe:TextEditSettings DisplayFormat="n2" MaskUseAsDisplayFormat="True" />
+                                                                </dxg:GridColumn.EditSettings>
+                                                            </dxg:GridColumn>
+                                                        </dxg:GridControl.Columns>
+                                                    </dxg:GridControl>
+                                                </ControlTemplate>
+                                            </dxg:LookUpEdit.PopupContentTemplate>
+                                        </dxg:LookUpEdit>
+                                    </DataTemplate>
+                                </dxg:GridColumn.CellTemplate>
+                            </dxg:GridColumn>
                             <dxg:GridColumn FieldName="Total_Units" AllowBestFit="false" Width="70" Header="Total Hours" HeaderToolTip="Budget Hours + Variation Hours" IsEnabled="False" ReadOnly="True">
                                 <dxg:GridColumn.EditSettings>
                                     <dxe:SpinEditSettings Increment="1" Mask="n" MaskType="Numeric" MaskUseAsDisplayFormat="True" MinValue="0" />
