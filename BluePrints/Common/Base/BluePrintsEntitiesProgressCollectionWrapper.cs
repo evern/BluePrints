@@ -226,8 +226,8 @@ namespace BluePrints.Common.Base
 
         protected override void OnAfterAssignedCallbackAndRaisePropertyChanged()
         {
-            IsLoading = false;
-            this.RaisePropertyChanged(x => x.IsLoading);
+            //IsLoading = false;
+            //this.RaisePropertyChanged(x => x.IsLoading);
             Task.Run(() => loadExoData());
             base.OnAfterAssignedCallbackAndRaisePropertyChanged();
         }
@@ -376,6 +376,8 @@ namespace BluePrints.Common.Base
             if(!statsCalculatedOnProjection)
             {
                 InitializeSummarizer();
+                IsLoading = true;
+                this.RaisePropertyChanged(x => x.IsLoading);
                 calculatePlannedBackgroundWorker.RunWorkerAsync();
             }
         }
@@ -426,6 +428,8 @@ namespace BluePrints.Common.Base
         public bool IsCalculationCompleted { get; set; }
         protected void CalculatePlannedBackgroundWorker_RunWorkerCompleted(object sender, RunWorkerCompletedEventArgs e)
         {
+            IsLoading = false;
+            this.RaisePropertyChanged(x => x.IsLoading);
             isBusy = false;
             IsCalculationCompleted = true;
             mainThreadDispatcher.BeginInvoke(new Action(() => BackgroundRefresh()));
