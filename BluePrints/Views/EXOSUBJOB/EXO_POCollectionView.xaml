@@ -228,6 +228,7 @@
                                         <dxg:GridColumn BestFitWidth="100" FieldName="Subjob_Name" Header="Subjob" ReadOnly="True" SortIndex="12" VisibleIndex="12" />
                                         <dxg:GridColumn BestFitWidth="60" FieldName="Discipline_Code" Header="Discipline" ReadOnly="True" SortIndex="20" VisibleIndex="20" />
                                         <dxg:GridColumn BestFitWidth="60" FieldName="Commodity_Code" Header="Commodity" ReadOnly="True" SortIndex="30" VisibleIndex="30" />
+                                        <dxg:GridColumn BestFitWidth="60" FieldName="StockCode" Header="Stock Code" ReadOnly="True" SortIndex="35" VisibleIndex="35" />
                                         <dxg:GridColumn FieldName="Variation_Code" Header="Variation" ReadOnly="True" SortIndex="40" Visible="True" VisibleIndex="40" />
                                         <dxg:GridColumn BestFitWidth="75" FieldName="ActualDate" Header="Trans. Date" FilterPopupMode="DateAlt" ReadOnly="True" SortIndex="50" VisibleIndex="50" />
                                         <dxg:GridColumn BestFitWidth="75" FieldName="PONumber" Header="PO Number" ReadOnly="True" VisibleIndex="60" />

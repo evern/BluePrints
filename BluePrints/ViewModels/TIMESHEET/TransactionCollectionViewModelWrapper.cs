@@ -122,6 +122,7 @@ namespace BluePrints.ViewModels
                 findJOB_TRANSACTION.JOBNO = projection.jobno;
                 findJOB_TRANSACTION.COST_GROUP = projection.COST_GROUP;
                 findJOB_TRANSACTION.COST_TYPE = projection.CostType;
+                findJOB_TRANSACTION.STOCKCODE = projection.stockcode;
                 findJOB_TRANSACTION.X_VARIATIONCODE = projection.X_VARIATIONCODE;
                 findJOB_TRANSACTION.DESCRIPTION = projection.description;
                 findJOB_TRANSACTION.STAFFNO = projection.accno;
