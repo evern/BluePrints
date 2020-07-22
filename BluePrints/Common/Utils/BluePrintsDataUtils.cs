@@ -1418,8 +1418,8 @@ namespace BluePrints.Common.ViewModel.Utils
 
         public static void SaveUserPreference(string preferenceName, string preferenceValue)
         {
-            //if (LoginCredentials.IsAdmin)
-            //    return;
+            if (LoginCredentials.IsAdmin)
+                return;
 
             if (LoginCredentials.CurrentUser == null)
                 return;

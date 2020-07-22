@@ -44,9 +44,9 @@ namespace BluePrints.Common.ViewModel.Converters
                             decimal parentValue = (decimal)values[2];
 
                             if (parentValue <= previouslyForecastedCosts)
-                                return "Color is green because actuals are less than or equal to previously forecasted costs";
+                                return "Actuals are less than or equal to previously forecasted costs";
                             else
-                                return "Color is red because actuals are more than previously forecasted costs";
+                                return "Actuals are more than previously forecasted costs";
                         }
                     }
                 }

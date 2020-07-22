@@ -14,7 +14,9 @@ namespace BluePrints.Common.ViewModel.Converters
         public object Convert(object[] values, Type targetType, object parameter,
             System.Globalization.CultureInfo culture)
         {
-            SolidColorBrush paleGreenColor = new System.Windows.Media.SolidColorBrush(Colors.Chartreuse);
+            SolidColorBrush goodColor = new System.Windows.Media.SolidColorBrush(Colors.Transparent);
+            SolidColorBrush badColor = new System.Windows.Media.SolidColorBrush(Colors.Transparent);
+
             SolidColorBrush transparentColor = new System.Windows.Media.SolidColorBrush(Colors.Transparent);
             try
             {
@@ -46,9 +48,9 @@ namespace BluePrints.Common.ViewModel.Converters
                             decimal parentValue = (decimal)values[2];
 
                             if (parentValue <= previouslyForecastedCosts)
-                                return paleGreenColor;
+                                return goodColor;
                             else
-                                return new System.Windows.Media.SolidColorBrush(Colors.LightSalmon);
+                                return badColor;
                         }
                     }
                 }
