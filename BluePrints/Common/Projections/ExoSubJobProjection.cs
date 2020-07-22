@@ -325,7 +325,7 @@ namespace BluePrints.Common.Projections
         {
             if (projection.LineId != null)
             {
-                JOBCOST_LINES line = localPrimeroUnitOfWork.JOBCOST_LINES.First(x => x.SEQNO == projection.LineId);
+                JOBCOST_LINES line = localPrimeroUnitOfWork.JOBCOST_LINES.FirstOrDefault(x => x.SEQNO == projection.LineId);
                 if (line != null)
                 {
                     line.QUOTE_QTY = 1;

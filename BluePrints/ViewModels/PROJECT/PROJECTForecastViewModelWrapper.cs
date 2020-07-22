@@ -1643,6 +1643,9 @@ namespace BluePrints.ViewModels
                 DateTime deleteCellDate;
                 if(DateTime.TryParse(columnFieldName, out deleteCellDate))
                 {
+                    if (deleteCellDate <= FixedDataDate)
+                        continue;
+
                     resetViewRemainingOnJob(editing_row, columnFieldName, true);
                     findExistingOrAddNewForecast(editing_row, deleteCellDate, null);
                     //editing_row[columnFieldName] = 0.00m;
