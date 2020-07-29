@@ -103,7 +103,7 @@ namespace BluePrints.Common.ViewModel.Misc
             IEnumerable<SummaryStats> actualStats = summaryStats.Where(x => x.Actual != null && x.Actual.DataPoints != null);
             if (actualStats.Count() > 0)
             {
-                actualDataPoints.AddRange(actualStats.SelectMany(x => x.Actual.ExoDataPoints));
+                actualDataPoints.AddRange(actualStats.SelectMany(x => x.Actual.ExoDataPoints.Where(y => y.ActualDate <= dataDate)));
                 jobForecastSummary.ActualUnits = actualDataPoints.Where(x => x.ActualDate <= dataDate).Sum(x => x.Units);
                 jobForecastSummary.ActualUnitsPostDataDate = actualDataPoints.Where(x => x.ActualDate > dataDate).Sum(x => x.Units);
                 jobForecastSummary.ActualCosts = actualDataPoints.Where(x => x.ActualDate <= dataDate).Sum(x => x.Costs);
@@ -115,7 +115,7 @@ namespace BluePrints.Common.ViewModel.Misc
             IEnumerable<SummaryStats> materialStats = summaryStats.Where(x => x.Material != null && x.Material.DataPoints != null);
             if (materialStats != null && materialStats.Count() > 0)
             {
-                materialDataPoints.AddRange(materialStats.SelectMany(x => x.Material.ExoDataPoints));
+                materialDataPoints.AddRange(materialStats.SelectMany(x => x.Material.ExoDataPoints.Where(y => y.ActualDate <= dataDate)));
                 jobForecastSummary.ActualCosts += materialDataPoints.Where(x => x.ActualDate <= dataDate).Sum(x => x.Costs);
                 jobForecastSummary.Invoiced = materialDataPoints.Sum(x => x.InvoiceAmount);
             }

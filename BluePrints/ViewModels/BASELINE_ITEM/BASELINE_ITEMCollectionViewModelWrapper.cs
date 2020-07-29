@@ -493,6 +493,7 @@ namespace BluePrints.ViewModels
                 return;
 
             List<ProjectUnitOfWorkContext> projectContexts = new List<ProjectUnitOfWorkContext>();
+
             projectContexts.Add(new ProjectUnitOfWorkContext(loadPROJECT, primeroUnitOfWork));
             List<UserIdsAuthorisationContext> contextIdForAuthorisation = new List<UserIdsAuthorisationContext>();
 

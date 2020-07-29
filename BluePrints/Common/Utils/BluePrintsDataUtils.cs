@@ -234,7 +234,6 @@ namespace BluePrints.Common.ViewModel.Utils
                     UserIdsAuthorisationContext userIdAuthorisation = userIdForCanBook.First();
                     firstFoundStaffNo = userIdAuthorisation.Id;
                 }
-
                 List<ExoTimeAuthorisation> projectExoTimeAuths = ExoQueries.GetExoLinesAuthorisations(projectContext.PrimeroEntitiesUnitOfWork, projectContext.ProjectNumber, firstFoundStaffNo);
                 projectExoTimeAuths.ForEach(x => x.OfficeName = projectContext.OfficeName);
                 cacheExoAuthorisations.AddRange(projectExoTimeAuths);

@@ -228,7 +228,7 @@ namespace BluePrints.ViewModels
                 }
 
                 exoGuessUserName2 = exoGuessUserName2.Trim();
-                STAFF exoSTAFF2 = PerthSTAFFCollection.FirstOrDefault(x => x.NAME == exoGuessUserName2);
+                STAFF exoSTAFF2 = officeSpecificStaffCollection.FirstOrDefault(x => x.NAME == exoGuessUserName2);
                 if (exoSTAFF2 != null)
                 {
                     return exoSTAFF2.STAFFNO;
