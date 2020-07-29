@@ -87,6 +87,7 @@ namespace BluePrints.Common.Projections
         public decimal Variation { get; set; }
         public decimal ActualCosts { get; set; }
         public decimal ActualUnits { get; set; }
+        public decimal ActualUnitsPostDataDate { get; set; }
         public decimal Invoiced { get; set; }
         public decimal Outstanding { get; set; }
         public decimal P6BudgetedUnits { get; set; }

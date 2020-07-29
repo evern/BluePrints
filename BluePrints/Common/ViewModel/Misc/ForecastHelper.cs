@@ -47,9 +47,9 @@ namespace BluePrints.Common.ViewModel.Misc
                 {
                     ForecastJobData commodityJobForecastSummary = createJobForecastSummary(commodityJob.SubJobCode, commodityJob.SubJobTitle, commodityJob.DisciplineCode, commodityJob.DisciplineName, commodityJob.CommodityCode, commodityJob.CommodityName, commodityJob.CommodityDescription, commodityJob.CommodityUOM, commodityJob.VariationCode, queryJobLines, COMMODITY_CODECollection);
                     commodityJobForecastSummary.JobErrorMessage = commodityJob.ForecastErrorString;
-
+                    
                     IEnumerable<DashboardFlatStructure> commodityDashboards = disciplineDashboards.Where(x => x.CommodityCode == commodityJob.CommodityCode);
-                    PopulateProjection(commodityJobForecastSummary, commodityDashboards, FORECAST_POCollection, FORECAST_EACCollection, FORECAST_JOBCollection, FORECAST_JOB_SETTINGCollection, dates, isWeeks, true);
+                    PopulateProjection(commodityJobForecastSummary, commodityDashboards, FORECAST_POCollection, FORECAST_EACCollection, FORECAST_JOBCollection, FORECAST_JOB_SETTINGCollection, dates, isWeeks, true, dataDate);
                     //moved out of this routine so that EAC will be refreshed when refreshing the view, instead of it being populated only on load
                     //PopulateEAC(commodityJobForecastSummary, FORECASTCollection, dataDate);
                     commodityJobs.Add(commodityJobForecastSummary);
@@ -73,7 +73,7 @@ namespace BluePrints.Common.ViewModel.Misc
         /// <summary>
         /// Populates data row with dashboards summary
         /// </summary>
-        public static void PopulateProjection(ForecastJobData jobForecastSummary, IEnumerable<DashboardFlatStructure> DashboardCollection, IEnumerable<FORECAST_PO> FORECAST_POCollection, IEnumerable<FORECAST_EAC> FORECAST_EACCollection, IEnumerable<FORECAST_JOB> FORECAST_JOBCollection, IEnumerable<FORECAST_JOB_SETTING> FORECAST_JOB_SETTINGCollection, List<DateTime> dates, bool isWeeks, bool isDataFiltered)
+        public static void PopulateProjection(ForecastJobData jobForecastSummary, IEnumerable<DashboardFlatStructure> DashboardCollection, IEnumerable<FORECAST_PO> FORECAST_POCollection, IEnumerable<FORECAST_EAC> FORECAST_EACCollection, IEnumerable<FORECAST_JOB> FORECAST_JOBCollection, IEnumerable<FORECAST_JOB_SETTING> FORECAST_JOB_SETTINGCollection, List<DateTime> dates, bool isWeeks, bool isDataFiltered, DateTime dataDate)
         {
             ExoSubJobProjection projection = jobForecastSummary.Projection;
             List<DashboardFlatStructure> relevantDashboards;
@@ -104,8 +104,9 @@ namespace BluePrints.Common.ViewModel.Misc
             if (actualStats.Count() > 0)
             {
                 actualDataPoints.AddRange(actualStats.SelectMany(x => x.Actual.ExoDataPoints));
-                jobForecastSummary.ActualUnits = actualDataPoints.Sum(x => x.Units);
-                jobForecastSummary.ActualCosts = actualDataPoints.Sum(x => x.Costs);
+                jobForecastSummary.ActualUnits = actualDataPoints.Where(x => x.ActualDate <= dataDate).Sum(x => x.Units);
+                jobForecastSummary.ActualUnitsPostDataDate = actualDataPoints.Where(x => x.ActualDate > dataDate).Sum(x => x.Units);
+                jobForecastSummary.ActualCosts = actualDataPoints.Where(x => x.ActualDate <= dataDate).Sum(x => x.Costs);
                 jobForecastSummary.Invoiced = actualDataPoints.Sum(x => x.InvoiceAmount);
             }
 
@@ -115,7 +116,7 @@ namespace BluePrints.Common.ViewModel.Misc
             if (materialStats != null && materialStats.Count() > 0)
             {
                 materialDataPoints.AddRange(materialStats.SelectMany(x => x.Material.ExoDataPoints));
-                jobForecastSummary.ActualCosts += materialDataPoints.Sum(x => x.Costs);
+                jobForecastSummary.ActualCosts += materialDataPoints.Where(x => x.ActualDate <= dataDate).Sum(x => x.Costs);
                 jobForecastSummary.Invoiced = materialDataPoints.Sum(x => x.InvoiceAmount);
             }
 

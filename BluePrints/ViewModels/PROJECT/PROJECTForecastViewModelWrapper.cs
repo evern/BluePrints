@@ -294,7 +294,7 @@ namespace BluePrints.ViewModels
             bluePrintsUnitOfWork = BluePrintsEntitiesUnitOfWorkSource.GetUnitOfWorkFactory().CreateUnitOfWork();
             ForecastSummary = new ForecastSummary();
             ForceRetrieveAllJobs = true; //force exo burned to retrieve subjobs that aren't defined
-            ForceRetrieveAllUnits = false; //force exo burned to retrieve units that are beyond data date
+            ForceRetrieveAllUnits = true; //force exo burned to retrieve units that are beyond data date
             UseProductivityFactorOnRemaining = false; //calculate remaining costs using productivity factor
             IsLoadingForecast = true;
             IsLoading = true;
@@ -661,7 +661,7 @@ namespace BluePrints.ViewModels
             {
                 ForecastHelper.PopulateEAC(commodityJob, FORECAST_EACCollection, (DateTime)FixedDataDate);
                 updateAdditionalJobInfo(commodityJob);
-
+                
                 DataRow commodityRow = updateDataTable(commodityJob, isNewData);
                 LoadingScreenManager.Progress();
             }
@@ -852,9 +852,9 @@ namespace BluePrints.ViewModels
             //add the compare data table into a single column in parent row
             commodityRow[columnCompare] = compareDataTable;
             dataPointsTable.Rows.Add(commodityRow);
-
+            
             if (!isNew)
-                ForecastHelper.PopulateProjection(commodityJob, AllProjectDashboards, FORECAST_POCollection, FORECAST_EACCollection, FORECAST_JOBCollection, FORECAST_JOB_SETTINGCollection, alignedDataDateCollection, IsWeeks, false);
+                ForecastHelper.PopulateProjection(commodityJob, AllProjectDashboards, FORECAST_POCollection, FORECAST_EACCollection, FORECAST_JOBCollection, FORECAST_JOB_SETTINGCollection, alignedDataDateCollection, IsWeeks, false, (DateTime)FixedDataDate);
 
             ExoSubJobProjection projection = commodityJob.Projection;
             List<FORECAST> relevantFORECASTS = FORECASTCollection.Where(x => x.SUBJOB_CODE == projection.SubJobCode && x.DISCIPLINE_CODE == projection.DisciplineCode && x.COMMODITY_CODE == projection.CommodityCode && x.VARIATION_CODE == projection.VariationCode).ToList();
@@ -981,6 +981,8 @@ namespace BluePrints.ViewModels
                 summaries.Add(new SummaryDescriptor() { FieldName = "Entity.DeliverableUnits", DisplayFormat = "n0", Type = SummaryItemType.Sum });
                 columns.Add(new ColumnDescriptor() { FieldName = "Entity.ActualUnits", ReadOnly = true, Header = "Actual Units", Fixed = FixedStyle.Left, Width = 50, Settings = SettingsType.Number, Mask = "n0", HeaderToolTip = "Actual units to date" });
                 summaries.Add(new SummaryDescriptor() { FieldName = "Entity.ActualUnits", DisplayFormat = "n0", Type = SummaryItemType.Sum });
+                columns.Add(new ColumnDescriptor() { FieldName = "Entity.ActualUnitsPostDataDate", ReadOnly = true, Header = "Actual Units Post DD", Fixed = FixedStyle.Left, Width = 50, Settings = SettingsType.Number, Mask = "n0", HeaderToolTip = "Actual units post data date" });
+                summaries.Add(new SummaryDescriptor() { FieldName = "Entity.ActualUnitsPostDataDate", DisplayFormat = "n0", Type = SummaryItemType.Sum });
                 columns.Add(new ColumnDescriptor() { FieldName = "Entity.P6RemainingUnits", ReadOnly = true, Header = "Remaining Units", Fixed = FixedStyle.Left, Width = 50, Settings = SettingsType.Number, Mask = "n0", HeaderToolTip = "Remaining units from refreshing P6" });
                 summaries.Add(new SummaryDescriptor() { FieldName = "Entity.P6RemainingUnits", DisplayFormat = "n0", Type = SummaryItemType.Sum });
                 columns.Add(new ColumnDescriptor() { FieldName = "Entity.P6RemainingUnitsOverride", ReadOnly = true, Header = "PF Units", Fixed = FixedStyle.Left, Width = 50, Settings = SettingsType.Number, Mask = "n0", HeaderToolTip = "Remaining units from refreshing P6" });
