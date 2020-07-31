@@ -385,6 +385,15 @@ namespace BluePrints.Common.Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Project construction variation maintenance menu.
+        /// </summary>
+        internal static string Menu_Project_ConstructionVariation {
+            get {
+                return ResourceManager.GetString("Menu_Project_ConstructionVariation", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Project dashboard menu.
         /// </summary>
         internal static string Menu_Project_Dashboard {

@@ -6,9 +6,9 @@ namespace BluePrints.Views
     /// <summary>
     /// Interaction logic for PHASECollectionView.xaml
     /// </summary>
-    public partial class VARIATION_REGISTERCollectionView : UserControl
+    public partial class VARIATION_CONSTRUCTIONCollectionView : UserControl
     {
-        public VARIATION_REGISTERCollectionView()
+        public VARIATION_CONSTRUCTIONCollectionView()
         {
             InitializeComponent();
         }

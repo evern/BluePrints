@@ -8,7 +8,7 @@ namespace BluePrints.Data
     using System;
     using System.ComponentModel.DataAnnotations.Schema;
 
-    public partial class VARIATION_REGISTER : EntityBase, IGuidEntityKey, ICanSync, IHaveCreatedDate
+    public partial class VARIATION_CONSTRUCTION : EntityBase, IGuidEntityKey, ICanSync, IHaveCreatedDate
     {
         [NotMapped]
         public DateTime EntityCreatedDate
@@ -16,12 +16,6 @@ namespace BluePrints.Data
             get { return CREATED; }
             set { CREATED = value; }
         }
-
-        [NotMapped]
-        public decimal Margin => CURRENT_VALUE - COST;
-
-        [NotMapped]
-        public decimal Margin_Percentage => CURRENT_VALUE == 0 ? 0 : Margin / CURRENT_VALUE;
 
         public string Office => this.PROJECT.NUMBER + " " + this.PROJECT.OfficeName;
     }

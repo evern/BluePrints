@@ -411,4 +411,7 @@
   <data name="Permission_ConstructionUncommitted" xml:space="preserve">
     <value>Allow editing uncommitted costs on construction</value>
   </data>
+  <data name="Menu_Project_ConstructionVariation" xml:space="preserve">
+    <value>Project construction variation maintenance menu</value>
+  </data>
 </root>

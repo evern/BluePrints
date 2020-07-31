@@ -91,7 +91,7 @@ namespace BluePrints.Data
         public virtual DbSet<VARIATION_ITEM> VARIATION_ITEM { get; set; }
         public virtual DbSet<SUBJOB> SUBJOB { get; set; }
         public virtual DbSet<SUBJOB_ASSIGNMENT> SUBJOB_ASSIGNMENT { get; set; }
-        public virtual DbSet<VARIATION_REGISTER> VARIATION_REGISTER { get; set; }
+        public virtual DbSet<VARIATION_CONSTRUCTION> VARIATION_REGISTER { get; set; }
 
         protected override void OnModelCreating(DbModelBuilder modelBuilder)
         {
@@ -679,12 +679,6 @@ namespace BluePrints.Data
                 .WillCascadeOnDelete(false);
 
             modelBuilder.Entity<PROJECT>()
-                .HasMany(e => e.VARIATION_REGISTER)
-                .WithRequired(e => e.PROJECT)
-                .HasForeignKey(e => e.GUID_PROJECT)
-                .WillCascadeOnDelete(false);
-
-            modelBuilder.Entity<PROJECT>()
                 .HasMany(e => e.PROJECT_SUMMARY)
                 .WithRequired(e => e.PROJECT)
                 .HasForeignKey(e => e.GUID_PROJECT)
@@ -722,6 +716,12 @@ namespace BluePrints.Data
 
             modelBuilder.Entity<PROJECT>()
                 .HasMany(e => e.PROJECT_PERMISSION)
+                .WithRequired(e => e.PROJECT)
+                .HasForeignKey(e => e.GUID_PROJECT)
+                .WillCascadeOnDelete(false);
+
+            modelBuilder.Entity<PROJECT>()
+                .HasMany(e => e.VARIATION_CONSTRUCTION)
                 .WithRequired(e => e.PROJECT)
                 .HasForeignKey(e => e.GUID_PROJECT)
                 .WillCascadeOnDelete(false);
@@ -964,6 +964,12 @@ namespace BluePrints.Data
             modelBuilder.Entity<VARIATION>()
                 .HasMany(e => e.VARIATION_ITEM)
                 .WithRequired(e => e.VARIATION)
+                .HasForeignKey(e => e.GUID_VARIATION)
+                .WillCascadeOnDelete(false);
+
+            modelBuilder.Entity<VARIATION_CONSTRUCTION>()
+                .HasMany(e => e.VARIATION_CONSTRUCTION_ITEM)
+                .WithRequired(e => e.VARIATION_CONSTRUCTION)
                 .HasForeignKey(e => e.GUID_VARIATION)
                 .WillCascadeOnDelete(false);
 

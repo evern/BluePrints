@@ -442,9 +442,14 @@ namespace BluePrints.BluePrintsEntitiesDataModel
             get { return GetRepository((WORKPACK x) => x.GUID); }
         }
 
-        IRepository<VARIATION_REGISTER, Guid> IBluePrintsEntitiesUnitOfWork.VARIATION_REGISTERS
+        IRepository<VARIATION_CONSTRUCTION, Guid> IBluePrintsEntitiesUnitOfWork.VARIATION_CONSTRUCTIONS
         {
-            get { return GetRepository((VARIATION_REGISTER x) => x.GUID); }
+            get { return GetRepository((VARIATION_CONSTRUCTION x) => x.GUID); }
+        }
+
+        IRepository<VARIATION_CONSTRUCTION_ITEM, Guid> IBluePrintsEntitiesUnitOfWork.VARIATION_CONSTRUCTION_ITEMS
+        {
+            get { return GetRepository((VARIATION_CONSTRUCTION_ITEM x) => x.GUID); }
         }
     }
 }
