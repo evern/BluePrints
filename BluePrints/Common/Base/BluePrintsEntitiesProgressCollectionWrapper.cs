@@ -419,7 +419,7 @@ namespace BluePrints.Common.Base
                 fullSummarizer.BuildBudgeted();
                 fullSummarizer.BuildEarned();
                 fullSummarizer.BuildRemaining();
-                fullSummarizer.BuildBurnedDataPoints(false, false, false, true);
+                fullSummarizer.BuildBurnedDataPoints(false, false, false, false, true);
                 fullSummarizer.Summarize();
             }
         }
