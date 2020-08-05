@@ -106,6 +106,7 @@ namespace BluePrints.Common.ViewModel.Misc
                 actualDataPoints.AddRange(actualStats.SelectMany(x => x.Actual.ExoDataPoints.Where(y => y.ActualDate <= dataDate)));
                 jobForecastSummary.ActualUnits = actualDataPoints.Where(x => x.ActualDate <= dataDate).Sum(x => x.Units);
                 jobForecastSummary.ActualUnitsPostDataDate = actualDataPoints.Where(x => x.ActualDate > dataDate).Sum(x => x.Units);
+                jobForecastSummary.ActualCostsPostDataDate = actualDataPoints.Where(x => x.ActualDate > dataDate).Sum(x => x.Costs);
                 jobForecastSummary.ActualCosts = actualDataPoints.Where(x => x.ActualDate <= dataDate).Sum(x => x.Costs);
                 jobForecastSummary.Invoiced = actualDataPoints.Sum(x => x.InvoiceAmount);
             }
