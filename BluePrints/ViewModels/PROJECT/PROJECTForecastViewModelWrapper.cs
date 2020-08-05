@@ -626,7 +626,10 @@ namespace BluePrints.ViewModels
             if (allDataPoints.Count == 0)
                 firstDataPointsDate = DateTime.Now;
             else
-                firstDataPointsDate = allDataPoints.Min(x => x.ActualDate);
+            {
+                DateTime fixedDate = (DateTime)FixedDataDate;
+                firstDataPointsDate = allDataPoints.Where(x => x.ActualDate.Year > fixedDate.Year - 10).Min(x => x.ActualDate);
+            }
 
             alignedDataDateCollection = generateDates();
             InitializeColumnSource(ParentViewColumns, ParentSummaries, alignedDataDateCollection, false);
