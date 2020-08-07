@@ -1,15 +1,18 @@
 ﻿using BaseModel.DataModel;
 using BaseModel.Misc;
 using BaseModel.ViewModel;
+using BaseModel.ViewModel.Base;
 using BaseModel.ViewModel.Document;
 using BaseModel.ViewModel.Loader;
 using BluePrints.BluePrintsEntitiesDataModel;
+using BluePrints.Common;
 using BluePrints.Common.Base;
 using BluePrints.Data;
 using DevExpress.Mvvm;
 using DevExpress.Mvvm.POCO;
 using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Linq;
 
 namespace BluePrints.ViewModels
@@ -40,9 +43,7 @@ namespace BluePrints.ViewModels
         }
 
         #region Database Operations
-
-        private IUnitOfWorkFactory<IBluePrintsEntitiesUnitOfWork> bluePrintsUnitOfWorkFactory =
-            BluePrintsEntitiesUnitOfWorkSource.GetUnitOfWorkFactory();
+        private IUnitOfWorkFactory<IBluePrintsEntitiesUnitOfWork> bluePrintsUnitOfWorkFactory = BluePrintsEntitiesUnitOfWorkSource.GetUnitOfWorkFactory();
         private Data.PROJECT loadPROJECT;
         protected override void resolveParameters(object parameter)
         {
@@ -52,8 +53,14 @@ namespace BluePrints.ViewModels
 
         protected override void addEntitiesLoader()
         {
+            loaderCollection.AddLoaderDescription(bluePrintsUnitOfWorkFactory, x => x.VARIATION_CONSTRUCTION_IMPACTS, VARIATION_CONSTRUCTION_IMPACTProjectionFunc);
         }
-        
+
+        protected virtual Func<IRepositoryQuery<VARIATION_CONSTRUCTION_IMPACT>, IQueryable<VARIATION_CONSTRUCTION_IMPACT>> VARIATION_CONSTRUCTION_IMPACTProjectionFunc()
+        {
+            return query => query.Where(x => x.VARIATION_CONSTRUCTION.GUID_PROJECT == loadPROJECT.GUID);
+        }
+
         protected override void onAuxiliaryEntitiesCollectionLoaded()
         {
             CreateMainViewModel(bluePrintsUnitOfWorkFactory, x => x.VARIATION_CONSTRUCTIONS);
@@ -61,7 +68,18 @@ namespace BluePrints.ViewModels
 
         protected override Func<IRepositoryQuery<VARIATION_CONSTRUCTION>, IQueryable<VARIATION_CONSTRUCTION>> specifyMainViewModelProjection()
         {
-            return query => query.Where(x => x.GUID_PROJECT == loadPROJECT.GUID);
+            return query => setAssignedImpacts(query.Where(x => x.GUID_PROJECT == loadPROJECT.GUID), VARIATION_CONSTRUCTION_IMPACTCollection);
+        }
+
+        private IQueryable<VARIATION_CONSTRUCTION> setAssignedImpacts(IQueryable<VARIATION_CONSTRUCTION> query, IEnumerable<VARIATION_CONSTRUCTION_IMPACT> VARIATION_CONSTRUCTION_IMPACTCollection)
+        {
+            List<VARIATION_CONSTRUCTION> VARIATION_CONSTRUCTIONCollection = query.ToList();
+            foreach (var VARIATION_CONSTRUCTION in VARIATION_CONSTRUCTIONCollection)
+            {
+                VARIATION_CONSTRUCTION.SetAssignedImpacts(AllVARIATION_CONSTRUCTION_IMPACTCollection, VARIATION_CONSTRUCTION_IMPACTCollection.Where(x => x.GUID_CONSTRUCTION_VARIATION == VARIATION_CONSTRUCTION.GUID));
+            }
+
+            return VARIATION_CONSTRUCTIONCollection.AsQueryable();
         }
 
         protected override void AssignCallBacksAndRaisePropertyChange(IEnumerable<VARIATION_CONSTRUCTION> entities)
@@ -69,6 +87,7 @@ namespace BluePrints.ViewModels
             MainViewModel.SetParentViewModel(this);
             base.AssignCallBacksAndRaisePropertyChange(entities);
         }
+        #endregion
 
         #region Collection Call Backs
         protected override OperationInterceptMode OnBeforeProjectionSaveIsContinue(VARIATION_CONSTRUCTION projection, out bool isNew)
@@ -88,6 +107,57 @@ namespace BluePrints.ViewModels
         }
         #endregion
 
+        #region View Behaviours
+        protected override void OnAfterProjectionSave(VARIATION_CONSTRUCTION projection, VARIATION_CONSTRUCTION entity, bool isNew)
+        {
+            DeleteProjectionImpacts(projection);
+            SaveProjectionImpacts(projection);
+            base.OnAfterProjectionSave(projection, entity, isNew);
+        }
+
+        private void DeleteProjectionImpacts(VARIATION_CONSTRUCTION projectionEntity)
+        {
+            List<VARIATION_CONSTRUCTION_IMPACT> assignedProjectionImpacts = projectionEntity.GetAssignedImpacts();
+            List<VARIATION_CONSTRUCTION_IMPACT> deleteProjectionImpacts = new List<VARIATION_CONSTRUCTION_IMPACT>();
+
+            foreach (VARIATION_CONSTRUCTION_IMPACT impact in VARIATION_CONSTRUCTION_IMPACTCollection.Where(x => x.GUID_CONSTRUCTION_VARIATION == projectionEntity.GUID))
+            {
+                if (assignedProjectionImpacts == null)
+                    deleteProjectionImpacts.Add(impact);
+                else
+                {
+                    var assignedImpact = assignedProjectionImpacts.FirstOrDefault(x => x.IMPACT == impact.IMPACT);
+                    if (assignedImpact == null)
+                        deleteProjectionImpacts.Add(impact);
+                }
+            }
+
+            foreach (VARIATION_CONSTRUCTION_IMPACT deleteProjectionImpact in deleteProjectionImpacts)
+            {
+                VARIATION_CONSTRUCTION_IMPACTCollectionViewModel.Delete(deleteProjectionImpact);
+            }
+        }
+
+        private void SaveProjectionImpacts(VARIATION_CONSTRUCTION projectionEntity)
+        {
+            List<VARIATION_CONSTRUCTION_IMPACT> projectionImpacts = projectionEntity.GetAssignedImpacts();
+            if (projectionImpacts == null)
+                return;
+
+            foreach (VARIATION_CONSTRUCTION_IMPACT projectionImpact in projectionImpacts)
+            {
+                VARIATION_CONSTRUCTION_IMPACT repositoryAssignedImpact = VARIATION_CONSTRUCTION_IMPACTCollection.FirstOrDefault(x => x.GUID_CONSTRUCTION_VARIATION == projectionEntity.GUID && x.IMPACT == projectionImpact.IMPACT);
+                if (repositoryAssignedImpact == null)
+                {
+                    VARIATION_CONSTRUCTION_IMPACT newImpact = new VARIATION_CONSTRUCTION_IMPACT();
+                    newImpact.GUID = Guid.Empty;
+                    newImpact.GUID_CONSTRUCTION_VARIATION = projectionEntity.GUID;
+                    newImpact.IMPACT = projectionImpact.IMPACT;
+                    VARIATION_CONSTRUCTION_IMPACTCollectionViewModel.Save(newImpact);
+                }
+            }
+
+        }
         #endregion
 
         #region View Properties
@@ -124,6 +194,47 @@ namespace BluePrints.ViewModels
             get { return "VARIATION_CONSTRUCTIONCollectionViewModelWrapper_v2"; }
         }
 
+        public IEnumerable<VARIATION_CONSTRUCTION_IMPACT> VARIATION_CONSTRUCTION_IMPACTCollection
+        {
+            get
+            {
+                return GetEntities<VARIATION_CONSTRUCTION_IMPACT>();
+            }
+        }
+
+        List<VARIATION_CONSTRUCTION_IMPACT> VARIATION_CONSTRUCTION_IMPACTS;
+        public IEnumerable<VARIATION_CONSTRUCTION_IMPACT> AllVARIATION_CONSTRUCTION_IMPACTCollection
+        {
+            get
+            {
+                if(VARIATION_CONSTRUCTION_IMPACTS == null)
+                {
+                    VARIATION_CONSTRUCTION_IMPACTS = new List<VARIATION_CONSTRUCTION_IMPACT>();
+                    IEnumerable<VariationConstructionImpact> Impacts = Enum.GetValues(typeof(VariationConstructionImpact)).Cast<VariationConstructionImpact>();
+                    foreach (VariationConstructionImpact impact in Impacts)
+                    {
+                        VARIATION_CONSTRUCTION_IMPACT newVARIATION_CONSTRUCTION_IMPACT = new VARIATION_CONSTRUCTION_IMPACT();
+                        newVARIATION_CONSTRUCTION_IMPACT.IMPACT = impact;
+                        VARIATION_CONSTRUCTION_IMPACTS.Add(newVARIATION_CONSTRUCTION_IMPACT);
+                    }
+                }
+
+                return VARIATION_CONSTRUCTION_IMPACTS;
+            }
+        }
+
+        public CollectionViewModel<VARIATION_CONSTRUCTION_IMPACT, VARIATION_CONSTRUCTION_IMPACT, Guid, IBluePrintsEntitiesUnitOfWork> VARIATION_CONSTRUCTION_IMPACTCollectionViewModel
+        {
+            get
+            {
+                if (MainViewModel == null)
+                    return null;
+
+                return
+                    (CollectionViewModel<VARIATION_CONSTRUCTION_IMPACT, VARIATION_CONSTRUCTION_IMPACT, Guid, IBluePrintsEntitiesUnitOfWork>)
+                    loaderCollection.GetViewModel<VARIATION_CONSTRUCTION_IMPACT>();
+            }
+        }
         #endregion
     }
 }

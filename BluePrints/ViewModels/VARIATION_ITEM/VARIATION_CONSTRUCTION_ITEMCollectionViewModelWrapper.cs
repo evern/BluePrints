@@ -1,5 +1,6 @@
 ﻿using BaseModel.Data.Helpers;
 using BaseModel.DataModel;
+using BaseModel.Helpers;
 using BaseModel.Misc;
 using BaseModel.ViewModel.Base;
 using BaseModel.ViewModel.Loader;
@@ -12,10 +13,12 @@ using BluePrints.Common.Resources;
 using BluePrints.Common.ViewModel.Reporting;
 using BluePrints.Common.ViewModel.Utils;
 using BluePrints.Data;
+using BluePrints.PrimeroData;
 using BluePrints.PrimeroData.PrimeroEntitiesDataModel;
 using DevExpress.Mvvm;
 using DevExpress.Mvvm.POCO;
 using DevExpress.Xpf.Bars;
+using DevExpress.Xpf.Editors;
 using DevExpress.Xpf.Grid;
 using System;
 using System.Collections.Generic;
@@ -40,31 +43,59 @@ namespace BluePrints.ViewModels
         }
 
         protected PROJECT loadPROJECT;
-        protected VARIATION_CONSTRUCTION loadVARIATION;
-        protected IUnitOfWorkFactory<IPrimeroEntitiesUnitOfWork> primeroUnitOfWorkFactory;
+        public VARIATION_CONSTRUCTION loadVARIATION { get; set; }
+        protected List<JOB_COSTGROUPS> JOB_COSTGROUPS;
+        protected List<JOB_COSTTYPES> JOB_COSTTYPES;
+        protected List<JOBCOST_HDR> JOBCOST_HDRS;
+        protected List<JOBCOST_RESOURCE> JOBCOST_RESOURCES;
+        protected List<STOCK_ITEMS> STOCK_ITEMS;
         protected readonly IUnitOfWorkFactory<IBluePrintsEntitiesUnitOfWork> bluePrintsUnitOfWorkFactory = BluePrintsEntitiesUnitOfWorkSource.GetUnitOfWorkFactory();
-        protected IPrimeroEntitiesUnitOfWork primeroUnitOfWork;
+        protected IUnitOfWorkFactory<IPrimeroEntitiesUnitOfWork> localPrimeroUnitOfWorkFactory;
+        protected IPrimeroEntitiesUnitOfWork localPrimeroUnitOfWork;
         protected IBluePrintsEntitiesUnitOfWork bluePrintsUnitOfWork;
         protected override void resolveParameters(object parameter)
         {            
             var receiveParameter = (DualEntitiesParameter<PROJECT, VARIATION_CONSTRUCTION>)parameter;
             loadPROJECT = receiveParameter.GetFirstEntity();
-            primeroUnitOfWorkFactory = PrimeroEntitiesUnitOfWorkSource.GetUnitOfWorkFactory(loadPROJECT.OfficeNameForExo == BluePrintsResources.OfficeMontreal);
-            primeroUnitOfWork = primeroUnitOfWorkFactory.CreateUnitOfWork();
             bluePrintsUnitOfWork = BluePrintsEntitiesUnitOfWorkSource.GetUnitOfWorkFactory().CreateUnitOfWork();
             loadVARIATION = receiveParameter.GetSecondEntity();
-            //base.resolveParameters(parameter);
+            initializeCompulsoryViewProperties(loadPROJECT);
+
+            //need to get actual entity for editing
+            loadVARIATION = bluePrintsUnitOfWork.VARIATION_CONSTRUCTIONS.FirstOrDefault(x => x.GUID == loadVARIATION.GUID);
+
+            string stringValueToFill = loadVARIATION.NUMBER;
+            int numericFieldLength = 0;
+            long valueToFillNumberOnly = 0;
+            string valueToFillStringOnly = StringFormatUtils.ParseStringIntoComponents(stringValueToFill, out numericFieldLength, out valueToFillNumberOnly);
+
+            VariationNumber = valueToFillNumberOnly.ToString("D3");
+            DocumentNumber = string.Concat(loadPROJECT.NUMBER, "-VAR-PM-", VariationNumber);
+            Client = loadPROJECT.CLIENT;
         }
         
         protected override void addEntitiesLoader()
         {
         }
 
+        public string Client { get; set; }
+        public string VariationNumber { get; set; }
+        public string DocumentNumber { get; set; }
         public override string ViewName => "CONSTRUCTION_VARIATION_ITEMSViewModelWrapper_v4";
 
         protected override Func<IRepositoryQuery<VARIATION_CONSTRUCTION_ITEM>, IQueryable<VARIATION_CONSTRUCTION_ITEM>> specifyMainViewModelProjection()
         {
-            return query => query.Where(x => x.GUID_VARIATION == loadVARIATION.GUID);
+            return query => VARIATION_CONSTRUCTION_ITEMQuery(query.Where(x => x.GUID_VARIATION == loadVARIATION.GUID));
+        }
+
+        public IQueryable<VARIATION_CONSTRUCTION_ITEM> VARIATION_CONSTRUCTION_ITEMQuery(IQueryable<VARIATION_CONSTRUCTION_ITEM> VARIATION_CONSTRUCTION_ITEMS)
+        {
+            foreach(VARIATION_CONSTRUCTION_ITEM VARIATION_CONSTRUCTION_ITEM in VARIATION_CONSTRUCTION_ITEMS)
+            {
+                VARIATION_CONSTRUCTION_ITEM.SetUnitOfWork(localPrimeroUnitOfWork);
+            }
+
+            return VARIATION_CONSTRUCTION_ITEMS;
         }
 
         protected override void onAuxiliaryEntitiesCollectionLoaded()
@@ -76,6 +107,31 @@ namespace BluePrints.ViewModels
         {
             MainViewModel.SetParentViewModel(this);
             base.AssignCallBacksAndRaisePropertyChange(entities);
+        }
+
+        protected void initializeCompulsoryViewProperties(Data.PROJECT project)
+        {
+            localPrimeroUnitOfWorkFactory = PrimeroEntitiesUnitOfWorkSource.GetUnitOfWorkFactory(loadPROJECT.OfficeNameForExo == BluePrintsResources.OfficeMontreal);
+            localPrimeroUnitOfWork = localPrimeroUnitOfWorkFactory.CreateUnitOfWork();
+            JOBCOST_HDRS = ExoQueries.GetProjectSubJobs(localPrimeroUnitOfWork, loadPROJECT.NUMBER).ToList();
+            JOB_COSTGROUPS = ExoQueries.GetCostGroups(localPrimeroUnitOfWork).ToList();
+            JOB_COSTTYPES = localPrimeroUnitOfWork.JOB_COSTTYPES.ToList();
+            JOBCOST_RESOURCES = localPrimeroUnitOfWork.JOBCOST_RESOURCE.Where(x => x.ISACTIVE == "Y").ToList();
+            STOCK_ITEMS = ExoQueries.GetMiscStockItems(localPrimeroUnitOfWork).ToList();
+        }
+
+        public override void FullRefresh()
+        {
+            if (!CanFullRefresh())
+                return;
+
+            initializeCompulsoryViewProperties(loadPROJECT);
+            base.FullRefresh();
+        }
+
+        public override void UnifiedNewRowInitializationFromView(VARIATION_CONSTRUCTION_ITEM projection)
+        {
+            projection.SetUnitOfWork(localPrimeroUnitOfWork);
         }
 
         #region Tag saving behavior
@@ -97,7 +153,102 @@ namespace BluePrints.ViewModels
         }
         #endregion
 
+        #region View Events
+        public void EditValueChanged(EditValueChangedEventArgs e)
+        {
+            if (MainViewModel == null || loadVARIATION == null)
+                return;
+
+            string fieldName = ((BaseEdit)e.OriginalSource).Tag.ToString();
+            DataUtils.TrySetNestedValue(fieldName, loadVARIATION, e.NewValue);
+
+            loadVARIATION.Update();
+            bluePrintsUnitOfWork.SaveChanges();
+        }
+
+        public override void UnifiedCellValueChanged(string field_name, object old_value, object new_value, VARIATION_CONSTRUCTION_ITEM projection, bool isNew)
+        {
+            if (field_name == BindableBase.GetPropertyName(() => new VARIATION_CONSTRUCTION_ITEM().TYPE))
+            {
+                VariationConstructionItemType type = (VariationConstructionItemType)new_value;
+
+                string itemNumberStr;
+                if (type == VariationConstructionItemType.Management)
+                    itemNumberStr = "1.";
+                else if (type == VariationConstructionItemType.Engineering)
+                    itemNumberStr = "2.";
+                else if (type == VariationConstructionItemType.TradesAndLabour)
+                    itemNumberStr = "3.";
+                else if (type == VariationConstructionItemType.Equipment)
+                    itemNumberStr = "4.";
+                else
+                    itemNumberStr = "5.";
+
+                int currentEntitiesTypeCount = Entities.Count(x => x.TYPE == type);
+                itemNumberStr += currentEntitiesTypeCount.ToString();
+                MainViewModel.EntitiesUndoRedoManager.AddUndo(projection, BindableBase.GetPropertyName(() => new VARIATION_CONSTRUCTION_ITEM().ITEM_ID), projection.ITEM_ID, itemNumberStr, EntityMessageType.Changed);
+                projection.ITEM_ID = itemNumberStr;
+            }
+
+            base.UnifiedCellValueChanging(field_name, old_value, new_value, projection, isNew);
+        }
+        #endregion
+
         #region View Property
+        public IEnumerable<string> JOBCOST_HDRNameCollection
+        {
+            get
+            {
+                if (JOBCOST_HDRS == null)
+                    return null;
+
+                return JOBCOST_HDRS.OrderBy(x => x.JOBCODE).Select(x => x.JOBCODE);
+            }
+        }
+
+        public IEnumerable<JOB_COSTGROUPS> JOB_COSTGROUPCollection
+        {
+            get
+            {
+                if (JOB_COSTGROUPS == null)
+                    return null;
+
+                return JOB_COSTGROUPS;
+            }
+        }
+
+        public IEnumerable<JOB_COSTTYPES> JOB_COSTTYPECollection
+        {
+            get
+            {
+                if (JOB_COSTTYPES == null)
+                    return null;
+
+                return JOB_COSTTYPES;
+            }
+        }
+
+        public IEnumerable<string> JOBCOST_RESOURCENameCollection
+        {
+            get
+            {
+                if (JOBCOST_RESOURCES == null)
+                    return null;
+
+                return JOBCOST_RESOURCES.Select(x => x.RESOURCENAME).OrderBy(x => x).ToList();
+            }
+        }
+
+        public IEnumerable<STOCK_ITEMS> STOCK_ITEMCollection
+        {
+            get
+            {
+                if (STOCK_ITEMS == null)
+                    return null;
+
+                return STOCK_ITEMS;
+            }
+        }
         #endregion
     }
 }

@@ -42,7 +42,7 @@ namespace BluePrints.Data
         public string DESCRIPTION { get; set; }
 
         [StringLength(500)]
-        public string RESOURCE_NAME { get; set; }
+        public string RESOURCENAME { get; set; }
 
         [StringLength(1000)]
         public string NOTES { get; set; }

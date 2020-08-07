@@ -380,6 +380,11 @@ namespace BluePrints.BluePrintsEntitiesDataModel
         IRepository<VARIATION_CONSTRUCTION_ITEM, Guid> VARIATION_CONSTRUCTION_ITEMS { get; }
 
         /// <summary>
+        /// The VARIATION_CONSTRUCTION_IMPACT entities repository.
+        /// </summary>
+        IRepository<VARIATION_CONSTRUCTION_IMPACT, Guid> VARIATION_CONSTRUCTION_IMPACTS { get; }
+
+        /// <summary>
         /// The VARIATION entities repository.
         /// </summary>
         IRepository<VARIATION, Guid> VARIATIONS { get; }

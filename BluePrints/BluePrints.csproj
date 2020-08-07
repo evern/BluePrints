@@ -858,6 +858,7 @@
     <Compile Include="EntityFramework\Annotations\BASELINE_ITEM_WORK.cs" />
     <Compile Include="EntityFramework\Annotations\DSTATUS_DOCTYPE.cs" />
     <Compile Include="EntityFramework\Annotations\FORECAST.cs" />
+    <Compile Include="EntityFramework\Annotations\VARIATION_CONSTRUCTION_IMPACT.cs" />
     <Compile Include="EntityFramework\Annotations\VARIATION_CONSTRUCTION_ITEM.cs" />
     <Compile Include="EntityFramework\Annotations\VARIATION_CONSTRUCTION.cs" />
     <Compile Include="EntityFramework\Annotations\TENDER_PROFILE_ITEM.cs" />
@@ -992,6 +993,7 @@
     <Compile Include="EntityFramework\BluePrintsData\USER.cs" />
     <Compile Include="EntityFramework\BluePrintsData\USER_PREFERENCE.cs" />
     <Compile Include="EntityFramework\BluePrintsData\VARIATION.cs" />
+    <Compile Include="EntityFramework\BluePrintsData\VARIATION_CONSTRUCTION_IMPACT.cs" />
     <Compile Include="EntityFramework\BluePrintsData\VARIATION_CONSTRUCTION_ITEM.cs" />
     <Compile Include="EntityFramework\BluePrintsData\VARIATION_ITEM.cs" />
     <Compile Include="EntityFramework\BluePrintsData\SUBJOB.cs" />

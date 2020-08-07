@@ -14,6 +14,7 @@ namespace BluePrints.Data
         public VARIATION_CONSTRUCTION()
         {
             VARIATION_CONSTRUCTION_ITEM = new HashSet<VARIATION_CONSTRUCTION_ITEM>();
+            VARIATION_CONSTRUCTION_IMPACT = new HashSet<VARIATION_CONSTRUCTION_IMPACT>();
         }
 
         [Key]
@@ -53,6 +54,11 @@ namespace BluePrints.Data
         [StringLength(1000)]
         public string NOTES { get; set; }
 
+        public DateTime? REQUEST_DATE { get; set; }
+
+        [StringLength(100)]
+        public string REQUESTED_BY { get; set; }
+
         public DateTime CREATED { get; set; }
 
         public Guid CREATEDBY { get; set; }
@@ -69,5 +75,9 @@ namespace BluePrints.Data
 
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
         public virtual ICollection<VARIATION_CONSTRUCTION_ITEM> VARIATION_CONSTRUCTION_ITEM { get; set; }
+
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
+        public virtual ICollection<VARIATION_CONSTRUCTION_IMPACT> VARIATION_CONSTRUCTION_IMPACT { get; set; }
+
     }
 }

@@ -1613,6 +1613,15 @@ namespace BluePrints.Common.Projections
             return querySTAFF;
         }
 
+        public static IEnumerable<STOCK_ITEMS> GetMiscStockItems(IPrimeroEntitiesUnitOfWork primeroUnitOfWork)
+        {
+            var querySTOCK_ITEMS = from STOCK_ITEMS in primeroUnitOfWork.STOCK_ITEMS
+                             where STOCK_ITEMS.STOCKGROUP == 0
+                             select STOCK_ITEMS;
+
+            return querySTOCK_ITEMS;
+        }
+
         public static IEnumerable<JOBCOST_HDR> GetProjectSubJobs(IPrimeroEntitiesUnitOfWork primeroUnitOfWork, string projectNumber)
         {
             var subJobs = from SUBJOB in primeroUnitOfWork.JOBCOST_HDR

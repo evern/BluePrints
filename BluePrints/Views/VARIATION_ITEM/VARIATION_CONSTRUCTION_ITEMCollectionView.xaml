@@ -1,10 +1,52 @@
-﻿<UserControl x:Class="BluePrints.Views.VARIATION_CONSTRUCTION_ITEMCollectionView" xmlns="http://schemas.microsoft.com/netfx/2009/xaml/presentation" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" xmlns:common="clr-namespace:BluePrints.Common" xmlns:converter="clr-namespace:BluePrints.Common.ViewModel.Converters" xmlns:custom="clr-namespace:BaseModel.Misc;assembly=BaseModel" xmlns:d="http://schemas.microsoft.com/expression/blend/2008" xmlns:dx="http://schemas.devexpress.com/winfx/2008/xaml/core" xmlns:dxb="http://schemas.devexpress.com/winfx/2008/xaml/bars" xmlns:dxc="http://schemas.devexpress.com/winfx/2008/xaml/core" xmlns:dxe="http://schemas.devexpress.com/winfx/2008/xaml/editors" xmlns:dxg="http://schemas.devexpress.com/winfx/2008/xaml/grid" xmlns:dxlc="http://schemas.devexpress.com/winfx/2008/xaml/layoutcontrol" xmlns:dxmvvm="http://schemas.devexpress.com/winfx/2008/xaml/mvvm" xmlns:dxr="http://schemas.devexpress.com/winfx/2008/xaml/ribbon" xmlns:dxrudex="http://schemas.devexpress.com/winfx/2008/xaml/reports/userdesignerextensions" xmlns:filter="clr-namespace:BluePrints.Common.Filtering" xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" xmlns:view="clr-namespace:BluePrints.Views" xmlns:viewmodel="clr-namespace:BluePrints.ViewModels" x:Name="userControl" d:DesignHeight="400" d:DesignWidth="600" DataContext="{dxmvvm:ViewModelSource viewmodel:VARIATION_CONSTRUCTION_ITEMCollectionViewModelWrapper}" mc:Ignorable="d">
+﻿<UserControl x:Class="BluePrints.Views.VARIATION_CONSTRUCTION_ITEMCollectionView" xmlns="http://schemas.microsoft.com/netfx/2009/xaml/presentation" xmlns:ExtraLayout="clr-namespace:BaseModel.View.ExtraLayout;assembly=BaseModel" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" xmlns:common="clr-namespace:BluePrints.Common" xmlns:converter="clr-namespace:BluePrints.Common.ViewModel.Converters" xmlns:custom="clr-namespace:BaseModel.Misc;assembly=BaseModel" xmlns:d="http://schemas.microsoft.com/expression/blend/2008" xmlns:dx="http://schemas.devexpress.com/winfx/2008/xaml/core" xmlns:dxb="http://schemas.devexpress.com/winfx/2008/xaml/bars" xmlns:dxc="http://schemas.devexpress.com/winfx/2008/xaml/core" xmlns:dxe="http://schemas.devexpress.com/winfx/2008/xaml/editors" xmlns:dxg="http://schemas.devexpress.com/winfx/2008/xaml/grid" xmlns:dxlc="http://schemas.devexpress.com/winfx/2008/xaml/layoutcontrol" xmlns:dxmvvm="http://schemas.devexpress.com/winfx/2008/xaml/mvvm" xmlns:dxr="http://schemas.devexpress.com/winfx/2008/xaml/ribbon" xmlns:dxrudex="http://schemas.devexpress.com/winfx/2008/xaml/reports/userdesignerextensions" xmlns:filter="clr-namespace:BluePrints.Common.Filtering" xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" xmlns:view="clr-namespace:BluePrints.Views" xmlns:viewmodel="clr-namespace:BluePrints.ViewModels" x:Name="userControl" d:DesignHeight="400" d:DesignWidth="600" DataContext="{dxmvvm:ViewModelSource viewmodel:VARIATION_CONSTRUCTION_ITEMCollectionViewModelWrapper}" mc:Ignorable="d">
     <UserControl.Resources>
         <ResourceDictionary>
+            <Style x:Key="SingleObjectView.TextEditControlContainer" TargetType="dxe:TextEdit">
+                <Setter Property="dxmvvm:Interaction.BehaviorsTemplate">
+                    <Setter.Value>
+                        <DataTemplate>
+                            <ItemsControl>
+                                <dxmvvm:EventToCommand Command="{Binding DataContext.EditValueChangedCommand, ElementName=userControl}" EventName="EditValueChanged" MarkRoutedEventsAsHandled="True" PassEventArgsToCommand="True" />
+                            </ItemsControl>
+                        </DataTemplate>
+                    </Setter.Value>
+                </Setter>
+                <Setter Property="TextWrapping" Value="Wrap" />
+                <Setter Property="AcceptsReturn" Value="True" />
+                <Setter Property="VerticalScrollBarVisibility" Value="Auto" />
+            </Style>
+            <Style x:Key="SingleObjectView.DateEditControlContainer" TargetType="dxe:DateEdit">
+                <Setter Property="dxmvvm:Interaction.BehaviorsTemplate">
+                    <Setter.Value>
+                        <DataTemplate>
+                            <ItemsControl>
+                                <dxmvvm:EventToCommand Command="{Binding DataContext.EditValueChangedCommand, ElementName=userControl}" EventName="EditValueChanged" MarkRoutedEventsAsHandled="True" PassEventArgsToCommand="True" />
+                            </ItemsControl>
+                        </DataTemplate>
+                    </Setter.Value>
+                </Setter>
+            </Style>
+            <Style x:Key="groupBoxStyle" TargetType="{x:Type dxlc:GroupBox}">
+                <Setter Property="TitleVisibility" Value="Collapsed" />
+            </Style>
+            <Style x:Key="layoutControlLine" TargetType="{x:Type dxlc:LayoutGroup}">
+                <Setter Property="Padding" Value="0" />
+                <Setter Property="Margin" Value="0, -1, 0, 0" />
+                <Setter Property="Orientation" Value="Horizontal" />
+                <Setter Property="View" Value="GroupBox" />
+                <Setter Property="GroupBoxStyle" Value="{StaticResource groupBoxStyle}" />
+                <Setter Property="VerticalAlignment" Value="Top" />
+                <Setter Property="ItemSpace" Value="10" />
+            </Style>
+            <Style x:Key="layoutSeparatorStyle" TargetType="{x:Type dxlc:LayerSeparator}">
+                <Setter Property="Width" Value="1" />
+                <Setter Property="Margin" Value="1, -12, 5, -12" />
+            </Style>
             <ResourceDictionary.MergedDictionaries>
                 <ResourceDictionary Source="pack://application:,,,/Common/View/ResourceDictionaries/DefaultBluePrintsResourceDictionary.xaml" />
                 <ResourceDictionary Source="pack://application:,,,/BaseModel;component/View/ResourceDictionaries/DefaultControlResourceDictionary.xaml" />
                 <ResourceDictionary Source="pack://application:,,,/Common/View/ResourceDictionaries/ConverterResourceDictionary.xaml" />
+                <ResourceDictionary Source="pack://application:,,,/Common/View/ResourceDictionaries/CustomControlResourceDictionary.xaml" />
             </ResourceDictionary.MergedDictionaries>
         </ResourceDictionary>
     </UserControl.Resources>
@@ -12,6 +54,9 @@
         <dxb:BarManager>
             <dxb:BarManager.Items>
                 <dxb:BarSubItem ItemLinksSource="{StaticResource RibbonDefaultGridButtons}" />
+                <dxb:BarButtonItem x:Name="contextMenuFillUp" Command="{Binding FillUpCommand}" CommandParameter="{Binding RelativeSource={RelativeSource Self}}" Content="Fill Up" Glyph="{dx:DXImageOffice2013 Image=MoveUp_16x16.png}" RibbonStyle="SmallWithText" ToolTip="Replicate column values for selected rows starting from last selection" />
+                <dxb:BarButtonItem x:Name="contextMenuFillDown" Command="{Binding FillDownCommand}" CommandParameter="{Binding RelativeSource={RelativeSource Self}}" Content="Fill Down" Glyph="{dx:DXImageOffice2013 Image=MoveDown_16x16.png}" RibbonStyle="SmallWithText" ToolTip="Replicate column values for selected rows starting from first selection" />
+                <dxb:BarButtonItem x:Name="contextMenuBulkEdit" Command="{Binding BulkColumnEditCommand}" CommandParameter="{Binding RelativeSource={RelativeSource Self}}" Content="Bulk Edit" Glyph="{dx:DXImageOffice2013 Image=CustomizeGrid_16x16.png}" RibbonStyle="SmallWithText" ToolTip="Change column values for selected rows" />
             </dxb:BarManager.Items>
             <DockPanel>
                 <dxr:RibbonControl Style="{StaticResource DefaultRibbonControlStyle}">
@@ -35,79 +80,180 @@
                         </dxr:RibbonPage>
                     </dxr:RibbonDefaultPageCategory>
                 </dxr:RibbonControl>
-                <custom:GridControlEx x:Name="GridControl" dxc:DXSerializer.SerializationID="GridControlVARIATION_CONSTRUCTION_ITEM" dxc:DXSerializer.StoreLayoutMode="All" Style="{StaticResource DefaultGridControlTemplate}">
-                    <dxg:GridControl.Columns>
-                        <dxg:GridColumn FieldName="TYPE" Header="Type" >
-                            <dxg:GridColumn.EditSettings>
-                                <dxe:ComboBoxEditSettings AutoComplete="True" IsTextEditable="True" ItemsSource="{dxe:EnumItemsSource EnumType={x:Type common:VariationConstructionItemType}}" />
-                            </dxg:GridColumn.EditSettings>
-                        </dxg:GridColumn>
-                        <dxg:GridColumn FieldName="ITEM_ID" Header="Item" />
-                        <dxg:GridColumn FieldName="SUBJOB" Header="Sub Job" AllowBestFit="false" Width="50">
-                            <dxg:GridColumn.EditSettings>
-                                <dxe:ComboBoxEditSettings AutoComplete="True" IsTextEditable="True" ItemsSource="{Binding SUBJOBCollection}" />
-                            </dxg:GridColumn.EditSettings>
-                        </dxg:GridColumn>
-                        <dxg:GridColumn FieldName="COSTGROUP" Header="Cost Group" AllowBestFit="false" Width="50">
-                            <dxg:GridColumn.EditSettings>
-                                <dxe:ComboBoxEditSettings AutoComplete="True" IsTextEditable="True" ItemsSource="{Binding COSTGROUPCollection}" />
-                            </dxg:GridColumn.EditSettings>
-                        </dxg:GridColumn>
-                        <dxg:GridColumn FieldName="COSTTYPE" Header="Cost Type" AllowBestFit="false" Width="50">
-                            <dxg:GridColumn.EditSettings>
-                                <dxe:ComboBoxEditSettings AutoComplete="True" IsTextEditable="True" ItemsSource="{Binding COSTTYPECollection}" />
-                            </dxg:GridColumn.EditSettings>
-                        </dxg:GridColumn>
-                        <dxg:GridColumn FieldName="STOCKCODE" Header="Stock Code" AllowBestFit="false" Width="50">
-                            <dxg:GridColumn.EditSettings>
-                                <dxe:ComboBoxEditSettings AutoComplete="True" IsTextEditable="True" ItemsSource="{Binding STOCKCODECollection}" />
-                            </dxg:GridColumn.EditSettings>
-                        </dxg:GridColumn>
-                        <dxg:GridColumn FieldName="DESCRIPTION" Header="Description" />
-                        <dxg:GridColumn FieldName="RESOURCE_NAME" Header="Resource Name" >
-                            <dxg:GridColumn.EditSettings>
-                                <dxe:ComboBoxEditSettings AutoComplete="True" IsTextEditable="True" ItemsSource="{Binding RESOURCE_NAMECollection}" />
-                            </dxg:GridColumn.EditSettings>
-                        </dxg:GridColumn>
-                        <dxg:GridColumn FieldName="NOTES" Header="Notes" />
-                        <dxg:GridColumn FieldName="HOURS" AllowBestFit="false" Width="90" Header="Hours">
-                            <dxg:GridColumn.EditSettings>
-                                <dxe:SpinEditSettings Mask="###,##0 hrs" MaskType="Numeric" MaskUseAsDisplayFormat="True" />
-                            </dxg:GridColumn.EditSettings>
-                        </dxg:GridColumn>
-                        <dxg:GridColumn FieldName="RATE" AllowBestFit="false" Width="90" Header="Rate">
-                            <dxg:GridColumn.EditSettings>
-                                <dxe:SpinEditSettings Mask="c2" MaskType="Numeric" MaskUseAsDisplayFormat="True" />
-                            </dxg:GridColumn.EditSettings>
-                        </dxg:GridColumn>
-                    </dxg:GridControl.Columns>
-                    <dxg:GridControl.GroupSummary>
-                    </dxg:GridControl.GroupSummary>
-                    <dxg:GridControl.TotalSummary>
-                    </dxg:GridControl.TotalSummary>
-                    <dxg:GridControl.View>
-                        <dxg:TableView x:Name="tableView" GroupSummaryDisplayMode="AlignByColumns" ShowTotalSummary="True" Style="{StaticResource DefaultTableViewTemplate}">
-                            <dxg:TableView.RowCellMenuCustomizations>
-                                <dxb:BarButtonItemLink BarItemName="biCopyWithHeader1" />
-                                <dxb:BarButtonItemLink BarItemName="contextMenuBulkEdit" />
-                                <dxb:BarButtonItemLink BarItemName="contextMenuFillUp" />
-                                <dxb:BarButtonItemLink BarItemName="contextMenuFillDown" />
-                                <dxb:BarItemLinkSeparator />
-                                <dxb:BarButtonItemLink BarItemName="contextMenuPopulate" />
-                                <dxb:BarButtonItemLink BarItemName="biFindReplace1" />
-                                <dxb:BarItemLinkSeparator />
-                                <dxb:BarButtonItemLink BarItemName="contextMenuDuplicate" />
-                                <dxb:BarButtonItemLink BarItemName="contextMenuInsert" />
-                                <dxb:BarItemLinkSeparator />
-                                <dxb:BarSubItemLink BarItemName="contextMenuDuplicateMulti" />
-                                <dxb:BarSubItemLink BarItemName="contextMenuInsertMulti" />
-                                <dxb:BarItemLinkSeparator />
-                                <dxb:BarButtonItemLink BarItemName="biBulkDelete" />
-                                <dxb:BarButtonItemLink BarItemName="biFullRefresh1" />
-                            </dxg:TableView.RowCellMenuCustomizations>
-                        </dxg:TableView>
-                    </dxg:GridControl.View>
-                </custom:GridControlEx>
+                <dx:LoadingDecorator IsSplashScreenShown="{Binding DataContext.IsLoading, ElementName=userControl}">
+                    <Grid>
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="110" />
+                            <RowDefinition Height="*" />
+                            <RowDefinition Height="150" />
+                        </Grid.RowDefinitions>
+                        <ExtraLayout:ExtraLayoutControl Grid.Row="0" Margin="0" Padding="0" dx:DXSerializer.Enabled="False" ItemSpace="0" Orientation="Horizontal">
+                            <ExtraLayout:ExtraLayoutGroup Margin="0" Padding="0" VerticalAlignment="Top" ItemSpace="0" LayoutItemSize="3*" Orientation="Horizontal">
+                                <ExtraLayout:ExtraLayoutControl Margin="0" Padding="0" ItemSpace="10" Orientation="Vertical" View="Group">
+                                    <ExtraLayout:ExtraLayoutGroup Orientation="Vertical" Style="{StaticResource layoutControlLine}">
+                                        <dxlc:LayoutItem Label="Document No:">
+                                            <Label Content="{Binding DocumentNumber}" />
+                                        </dxlc:LayoutItem>
+                                        <dxlc:LayoutItem DataContext="{Binding loadVARIATION}" Label="Variation Requested By:">
+                                            <dxe:TextEdit EditValue="{Binding REQUESTED_BY}" Tag="REQUESTED_BY" Style="{StaticResource SingleObjectView.TextEditControlContainer}" />
+                                        </dxlc:LayoutItem>
+                                        <dxlc:LayoutItem DataContext="{Binding loadVARIATION}" Label="Description of Work:">
+                                            <dxe:TextEdit EditValue="{Binding DESCRIPTION}" Tag="DESCRIPTION" Style="{StaticResource SingleObjectView.TextEditControlContainer}" />
+                                        </dxlc:LayoutItem>
+                                    </ExtraLayout:ExtraLayoutGroup>
+                                </ExtraLayout:ExtraLayoutControl>
+                                <ExtraLayout:ExtraLayoutControl Margin="0" Padding="0" ItemSpace="10" Orientation="Vertical" View="Group">
+                                    <ExtraLayout:ExtraLayoutGroup Orientation="Vertical" Style="{StaticResource layoutControlLine}">
+                                        <dxlc:LayoutItem DataContext="{Binding loadVARIATION}" Label="Date:">
+                                            <dxe:DateEdit EditValue="{Binding REQUEST_DATE}" Tag="REQUEST_DATE" Style="{StaticResource SingleObjectView.DateEditControlContainer}" />
+                                        </dxlc:LayoutItem>
+                                        <dxlc:LayoutItem Label="Client:">
+                                            <Label Content="{Binding Client}" />
+                                        </dxlc:LayoutItem>
+                                        <dxlc:LayoutItem Label="Variation Number:">
+                                            <Label Content="{Binding VariationNumber}" />
+                                        </dxlc:LayoutItem>
+                                    </ExtraLayout:ExtraLayoutGroup>
+                                </ExtraLayout:ExtraLayoutControl>
+                            </ExtraLayout:ExtraLayoutGroup>
+                        </ExtraLayout:ExtraLayoutControl>
+                        <custom:GridControlEx x:Name="GridControl" Grid.Row="1" MaxHeight="2000" MaxWidth="2000" dxc:DXSerializer.SerializationID="GridControlVARIATION_CONSTRUCTION_ITEM" AutoExpandAllGroups="True" dxc:DXSerializer.StoreLayoutMode="All" Style="{StaticResource DefaultGridControlTemplate}">
+                            <dxg:GridControl.Columns>
+                                <dxg:GridColumn FieldName="TYPE" Header="Type" AllowBestFit="false" Width="100" GroupIndex="1">
+                                    <dxg:GridColumn.EditSettings>
+                                        <dxe:ComboBoxEditSettings AutoComplete="True" IsTextEditable="True" ItemsSource="{dxe:EnumItemsSource EnumType={x:Type common:VariationConstructionItemType}}" />
+                                    </dxg:GridColumn.EditSettings>
+                                </dxg:GridColumn>
+                                <dxg:GridColumn FieldName="ITEM_ID" Header="Item" AllowBestFit="false" Width="75" SortIndex="1" SortOrder="Ascending" />
+                                <dxg:GridColumn FieldName="SUBJOB" Header="Sub Job" AllowBestFit="false" Width="150">
+                                    <!--Must use CellTemplate for incremental filtering-->
+                                    <dxg:GridColumn.CellTemplate>
+                                        <DataTemplate>
+                                            <dxe:ComboBoxEdit x:Name="PART_Editor" AutoComplete="True" ValidateOnTextInput="False" IncrementalFiltering="False" IsTextEditable="True" ItemsSource="{Binding View.DataContext.JOBCOST_HDRNameCollection}" />
+                                        </DataTemplate>
+                                    </dxg:GridColumn.CellTemplate>
+                                </dxg:GridColumn>
+                                <dxg:GridColumn FieldName="COSTGROUPProxy" Header="Cost Group" AllowBestFit="false" Width="60">
+                                    <dxg:GridColumn.EditSettings>
+                                        <dxe:ComboBoxEditSettings AutoComplete="True" DisplayMember="SHORTCODE" ValueMember="SHORTCODE" IsTextEditable="True" ItemsSource="{Binding JOB_COSTGROUPCollection}" />
+                                    </dxg:GridColumn.EditSettings>
+                                </dxg:GridColumn>
+                                <dxg:GridColumn FieldName="COSTTYPEProxy" AllowBestFit="false" Width="60" Header="Cost Type" >
+                                    <dxg:GridColumn.CellTemplate>
+                                        <DataTemplate>
+                                            <dxg:LookUpEdit Name="PART_Editor" AutoComplete="True" AutoPopulateColumns="False" DisplayMember="SHORTCODE" ValueMember="SHORTCODE" IncrementalFiltering="True" IsTextEditable="False" ItemsSource="{Binding RowData.Row.TaggedValidJOB_COSTTYPES}"  PopupMinWidth="700">
+                                                <dxg:LookUpEdit.StyleSettings>
+                                                    <dxg:SearchLookUpEditStyleSettings />
+                                                </dxg:LookUpEdit.StyleSettings>
+                                                <dxg:LookUpEdit.PopupContentTemplate>
+                                                    <ControlTemplate TargetType="ContentControl">
+                                                        <dxg:GridControl x:Name="PART_GridControl" SelectionMode="Row" ShowBorder="False" FilterString="[IsValid] = 'True'">
+                                                            <dxg:GridControl.Columns>
+                                                                <dxg:GridColumn Width="50" FieldName="SHORTCODE" Header="Code" ReadOnly="True" />
+                                                                <dxg:GridColumn Width="*" FieldName="COSTDESC" Header="Description" ReadOnly="True" />
+                                                                <dxg:GridColumn Width="15" FieldName="IsValid" Header="Is Valid" ReadOnly="True" />
+                                                            </dxg:GridControl.Columns>
+                                                            <dxg:GridControl.View>
+                                                                <dxg:TableView RowStyle="{StaticResource SelectionBackgroundStyle}" ShowFocusedRectangle="True" ShowGroupPanel="False" ShowSelectionRectangle="True" />
+                                                            </dxg:GridControl.View>
+                                                        </dxg:GridControl>
+                                                    </ControlTemplate>
+                                                </dxg:LookUpEdit.PopupContentTemplate>
+                                            </dxg:LookUpEdit>
+                                        </DataTemplate>
+                                    </dxg:GridColumn.CellTemplate>
+                                    <dxg:GridColumn.EditSettings>
+                                        <dxe:ComboBoxEditSettings AutoComplete="True" IsTextEditable="False" ItemsSource="{Binding JOB_COSTTYPECollection}" />
+                                    </dxg:GridColumn.EditSettings>
+                                </dxg:GridColumn>
+                                <dxg:GridColumn FieldName="STOCKCODE" Header="Stock Code" AllowBestFit="false" Width="100">
+                                    <dxg:GridColumn.CellTemplate>
+                                        <DataTemplate>
+                                            <dxg:LookUpEdit Name="PART_Editor" AutoComplete="True" AutoPopulateColumns="False" DisplayMember="STOCKCODE" ValueMember="STOCKCODE" IncrementalFiltering="True" IsTextEditable="False" ItemsSource="{Binding RowData.Row.TaggedValidSTOCK_ITEMS}"  PopupMinWidth="700">
+                                                <dxg:LookUpEdit.StyleSettings>
+                                                    <dxg:SearchLookUpEditStyleSettings />
+                                                </dxg:LookUpEdit.StyleSettings>
+                                                <dxg:LookUpEdit.PopupContentTemplate>
+                                                    <ControlTemplate TargetType="ContentControl">
+                                                        <dxg:GridControl x:Name="PART_GridControl" SelectionMode="Row" ShowBorder="False" FilterString="[IsValid] = 'True'">
+                                                            <dxg:GridControl.Columns>
+                                                                <dxg:GridColumn Width="50" FieldName="STOCKCODE" Header="Code" ReadOnly="True" />
+                                                                <dxg:GridColumn Width="*" FieldName="DESCRIPTION" Header="Description" ReadOnly="True" />
+                                                                <dxg:GridColumn Width="15" FieldName="IsValid" Header="Is Valid" ReadOnly="True" />
+                                                            </dxg:GridControl.Columns>
+                                                            <dxg:GridControl.View>
+                                                                <dxg:TableView RowStyle="{StaticResource SelectionBackgroundStyle}" ShowFocusedRectangle="True" ShowGroupPanel="False" ShowSelectionRectangle="True" />
+                                                            </dxg:GridControl.View>
+                                                        </dxg:GridControl>
+                                                    </ControlTemplate>
+                                                </dxg:LookUpEdit.PopupContentTemplate>
+                                            </dxg:LookUpEdit>
+                                        </DataTemplate>
+                                    </dxg:GridColumn.CellTemplate>
+                                    <dxg:GridColumn.EditSettings>
+                                        <dxe:ComboBoxEditSettings AutoComplete="True" IsTextEditable="True" ItemsSource="{Binding STOCK_ITEMCollection}" />
+                                    </dxg:GridColumn.EditSettings>
+                                </dxg:GridColumn>
+                                <dxg:GridColumn FieldName="DESCRIPTION" Header="Description" AllowBestFit="false" Width="*" />
+                                <dxg:GridColumn FieldName="RESOURCENAME" Header="Resource Name" AllowBestFit="false" Width="200" >
+                                    <!--Must use CellTemplate for incremental filtering-->
+                                    <dxg:GridColumn.CellTemplate>
+                                        <DataTemplate>
+                                            <dxe:ComboBoxEdit x:Name="PART_Editor" AutoComplete="True" ValidateOnTextInput="False" IncrementalFiltering="False" IsTextEditable="True" ItemsSource="{Binding View.DataContext.JOBCOST_RESOURCENameCollection}" />
+                                        </DataTemplate>
+                                    </dxg:GridColumn.CellTemplate>
+                                </dxg:GridColumn>
+                                <dxg:GridColumn FieldName="NOTES" Header="Notes" AllowBestFit="false" Width="200" />
+                                <dxg:GridColumn FieldName="HOURS" AllowBestFit="false" Width="100" Header="Hours">
+                                    <dxg:GridColumn.EditSettings>
+                                        <dxe:SpinEditSettings Mask="###,##0 hrs" MaskType="Numeric" MaskUseAsDisplayFormat="True" />
+                                    </dxg:GridColumn.EditSettings>
+                                </dxg:GridColumn>
+                                <dxg:GridColumn FieldName="RATE" AllowBestFit="false" Width="100" Header="Rate">
+                                    <dxg:GridColumn.EditSettings>
+                                        <dxe:SpinEditSettings Mask="c2" MaskType="Numeric" MaskUseAsDisplayFormat="True" />
+                                    </dxg:GridColumn.EditSettings>
+                                </dxg:GridColumn>
+                                <dxg:GridColumn FieldName="TotalCosts" ReadOnly="True" AllowBestFit="false" Width="100" Header="Total">
+                                    <dxg:GridColumn.EditSettings>
+                                        <dxe:SpinEditSettings Mask="c2" MaskType="Numeric" MaskUseAsDisplayFormat="True" />
+                                    </dxg:GridColumn.EditSettings>
+                                </dxg:GridColumn>
+                            </dxg:GridControl.Columns>
+                            <dxg:GridControl.GroupSummary>
+                                <dxg:GridSummaryItem dxc:DXSerializer.Enabled="False" Alignment="Right" SummaryType="Count" />
+                                <dxg:GridSummaryItem dxc:DXSerializer.Enabled="False" DisplayFormat="n" FieldName="HOURS" SummaryType="Sum" />
+                                <dxg:GridSummaryItem dxc:DXSerializer.Enabled="False" DisplayFormat="c" FieldName="TotalCosts" SummaryType="Sum" />
+                            </dxg:GridControl.GroupSummary>
+                            <dxg:GridControl.TotalSummary>
+                                <dxg:GridSummaryItem dxc:DXSerializer.Enabled="False" Alignment="Right" SummaryType="Count" />
+                                <dxg:GridSummaryItem dxc:DXSerializer.Enabled="False" DisplayFormat="n" FieldName="HOURS" SummaryType="Sum" />
+                                <dxg:GridSummaryItem dxc:DXSerializer.Enabled="False" DisplayFormat="c" FieldName="TotalCosts" SummaryType="Sum" />
+                            </dxg:GridControl.TotalSummary>
+                            <dxg:GridControl.View>
+                                <dxg:TableView x:Name="tableView" GroupSummaryDisplayMode="AlignByColumns" ShowTotalSummary="True" Style="{StaticResource DefaultTableViewTemplate}">
+                                    <dxg:TableView.RowCellMenuCustomizations>
+                                        <dxb:BarButtonItemLink BarItemName="biCopyWithHeader1" />
+                                        <dxb:BarButtonItemLink BarItemName="contextMenuBulkEdit" />
+                                        <dxb:BarButtonItemLink BarItemName="contextMenuFillUp" />
+                                        <dxb:BarButtonItemLink BarItemName="contextMenuFillDown" />
+                                        <dxb:BarItemLinkSeparator />
+                                        <dxb:BarButtonItemLink BarItemName="biBulkDelete1" />
+                                        <dxb:BarButtonItemLink BarItemName="biFullRefresh1" />
+                                    </dxg:TableView.RowCellMenuCustomizations>
+                                </dxg:TableView>
+                            </dxg:GridControl.View>
+                        </custom:GridControlEx>
+                        <ExtraLayout:ExtraLayoutControl Grid.Row="3" Margin="5, 0, 5, 5" Padding="0" dx:DXSerializer.Enabled="False" ItemSpace="0" Orientation="Horizontal">
+                            <ExtraLayout:ExtraLayoutGroup Margin="0" Padding="0" VerticalAlignment="Top" ItemSpace="0" LayoutItemSize="1*" Orientation="Vertical">
+                                <dxlc:LayoutItem Label="NOTES" Height="30" />
+                                <dxlc:LayoutItem DataContext="{Binding loadVARIATION}">
+                                    <dxe:TextEdit NullText="Example exclusions or clarifications" Height="110" MaxHeight="110" EditValue="{Binding NOTES}" Tag="NOTES" Style="{StaticResource SingleObjectView.TextEditControlContainer}" />
+                                </dxlc:LayoutItem>
+                            </ExtraLayout:ExtraLayoutGroup>
+                        </ExtraLayout:ExtraLayoutControl>
+                    </Grid>
+                </dx:LoadingDecorator>
             </DockPanel>
         </dxb:BarManager>
     </Grid>
