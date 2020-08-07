@@ -159,6 +159,7 @@ namespace BluePrints.ViewModels
             projectForecastViewModel.SetParentViewModel(this);
             var projectForecastParameter = projectForecastViewModel as ISupportParameter;
             projectForecastParameter.Parameter = new DualEntitiesParameter<PROJECT, Action<object>>(loadPROJECT, obj => { });
+            projectForecastViewModel.ForceRetrieveAllUnits = false;
         }
 
         private void onForecastDataTableLoaded(DataTable dataTable)
