@@ -86,12 +86,16 @@ namespace BluePrints.Common.Projections
                     taggedValidCommodityCodes = new List<COMMODITY_CODE>();
                     foreach (COMMODITY_CODE commodityCode in COMMODITY_CODES.OrderBy(x => x.CODE))
                     {
+                        if (taggedValidCommodityCodes.Any(x => x.CODE == commodityCode.CODE))
+                            continue;
+
                         COMMODITY_CODE newCommodityCode = new COMMODITY_CODE();
                         newCommodityCode.GUID = commodityCode.GUID;
                         newCommodityCode.CODE = commodityCode.CODE;
                         newCommodityCode.NAME = commodityCode.NAME;
                         newCommodityCode.DESCRIPTION = commodityCode.DESCRIPTION;
                         newCommodityCode.UOM = commodityCode.UOM;
+
                         taggedValidCommodityCodes.Add(newCommodityCode);
                     }
                 }
