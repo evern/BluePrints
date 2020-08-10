@@ -196,7 +196,7 @@ namespace BluePrints.ViewModels
                 if (user != null)
                 {
                     emailReportList.Add(new EmailReport() { Number = internalNumberBaseline.PROJECT.NUMBER, Sent = user.NAME, Type = "Internal Number" });
-                    ActiveDirectory.SendEmailFromDocControl(LoginCredentials.CurrentUser.NAME, "Deliverable(s) internal number in project " + internalNumberBaseline.PROJECT.NUMBER + " has been approved!", "Deliverable Internal Numbers Approved for " + internalNumberBaseline.PROJECT.NUMBER, user.NAME + "@primero.com.au");
+                    EmailService.SendEmailFromDocControl(LoginCredentials.CurrentUser.NAME, "Deliverable(s) internal number in project " + internalNumberBaseline.PROJECT.NUMBER + " has been approved!", "Deliverable Internal Numbers Approved for " + internalNumberBaseline.PROJECT.NUMBER, user.NAME + "@primero.com.au");
                 }
             }
 
@@ -206,7 +206,7 @@ namespace BluePrints.ViewModels
                 if (user != null)
                 {
                     emailReportList.Add(new EmailReport() { Number = clientNumberBaselines.PROJECT.NUMBER, Sent = user.NAME, Type = "Client Number" });
-                    ActiveDirectory.SendEmailFromDocControl(LoginCredentials.CurrentUser.NAME, "Deliverable(s) client number in project " + clientNumberBaselines.PROJECT.NUMBER + " has been approved!", "Deliverable Client Numbers Approved for " + clientNumberBaselines.PROJECT.NUMBER, user.NAME + "@primero.com.au");
+                    EmailService.SendEmailFromDocControl(LoginCredentials.CurrentUser.NAME, "Deliverable(s) client number in project " + clientNumberBaselines.PROJECT.NUMBER + " has been approved!", "Deliverable Client Numbers Approved for " + clientNumberBaselines.PROJECT.NUMBER, user.NAME + "@primero.com.au");
                 }
             }
 
