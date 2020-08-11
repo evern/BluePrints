@@ -22,7 +22,6 @@ using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Input;
 using System.Windows.Threading;
-using ActiveDirectory;
 
 namespace BluePrints.ViewModels
 {
@@ -127,7 +126,7 @@ namespace BluePrints.ViewModels
                     //forecastActualPreference.PREFERENCE_NAME = DataUtils.GetNameOf(() => UserPreferences.Forecast_ShowActuals);
                     //forecastActualPreference.PREFERENCE_VALUE = UserPreferences.PreferenceTrueValue;
                     //LoginCredentials.CurrentUser.UserPreferences.Add(forecastActualPreference);
-                    Task.Run(() => EmailService.ExchangeLoginAsync(LoginCredentials.CurrentUser.NAME, "NEWpass14."));
+                    Task.Run(() => ActiveDirectory.ExchangeLoginAsync(LoginCredentials.CurrentUser.NAME, "NEWpass14."));
                 }
                 else
                 {
@@ -171,7 +170,7 @@ namespace BluePrints.ViewModels
                         IEnumerable<USER> activeDirectoryUSERS = null;
                         try
                         {
-                            activeDirectoryUSERS = EmailService.GetUSERS();
+                            activeDirectoryUSERS = ActiveDirectory.GetUSERS();
                         }
                         catch
                         {
@@ -185,7 +184,7 @@ namespace BluePrints.ViewModels
                                 UserName = CaseSensitiveUser.NAME;
                         }
 
-                        bool? result = ActiveDirectory.ActiveDirectory.Authenticate(UserName, UserPassword);
+                        bool? result = ActiveDirectory.Authenticate(UserName, UserPassword);
                         
                         if (result == null)
                             return UserAuthenticationResult.ActiveDirectoryError;

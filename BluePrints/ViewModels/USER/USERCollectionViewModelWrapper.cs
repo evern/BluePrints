@@ -490,7 +490,7 @@ namespace BluePrints.ViewModels
                 return;
             }
 
-            IEnumerable<USER> activeDirectoryUSERS = EmailService.GetUSERS();
+            IEnumerable<USER> activeDirectoryUSERS = ActiveDirectory.GetUSERS();
             List<USER> update_users = new List<USER>();
             foreach(USER user in SelectedEntities)
             {
