@@ -22,7 +22,8 @@ namespace BluePrints.Common
             Connection = new HubConnection(System.Configuration.ConfigurationManager.ConnectionStrings["SignalR"].ConnectionString, new Dictionary<string, string> { { "UserName", userName } });
             
             HubProxy = Connection.CreateHubProxy("MyHub");
-            HubProxy.On<string, string, string, string, string>("AddMessage", (entityName, key, messageType, sender, hwid) => Application.Current.Dispatcher.Invoke(() => HubReceiveMessage(entityName, key, messageType, sender, hwid)));
+            //HubProxy.On<string, string, string, string, string>("AddMessage", (entityName, key, messageType, sender, hwid) => Application.Current.Dispatcher.Invoke(() => HubReceiveMessage(entityName, key, messageType, sender, hwid)));
+            HubProxy.On<string, string>("AddMessage", (key, authenticationResult) => Application.Current.Dispatcher.Invoke(() => AuthenticateMessage(key, authenticationResult)));
 
             try
             {
@@ -58,6 +59,11 @@ namespace BluePrints.Common
                 HubProxy.Invoke("Log", message);
             else if (Connection.State == ConnectionState.Disconnected)
                 ConnectAsync(LoginCredentials.CurrentUser.NAME);
+        }
+
+        public static void HubAuthenticate(string username, string password, string key)
+        {
+            HubProxy.Invoke("Authenticate", username, password, key);
         }
 
         public static void HubReceiveMessage(string entityName, string key, string messageType, string sender, string hwid)
@@ -139,5 +145,16 @@ namespace BluePrints.Common
             Guid keyGuid = new Guid(key);
             Messenger.Default.Send(new EntityMessage<TEntity, TPrimaryKey>(primaryKey, keyGuid, messageType, sender, hwid));
         }
+
+        private static void AuthenticateMessage(string key, string authenticationResult)
+        {
+            Messenger.Default.Send(new AuthenticationResult() { Key = key, Result = authenticationResult });
+        }
+    }
+
+    public class AuthenticationResult
+    {
+        public string Key { get; set; }
+        public string Result { get; set; }
     }
 }
