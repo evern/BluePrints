@@ -23,8 +23,8 @@
     <UpdatePeriodically>false</UpdatePeriodically>
     <UpdateRequired>true</UpdateRequired>
     <MapFileExtensions>true</MapFileExtensions>
-    <MinimumRequiredVersion>1.0.6.113</MinimumRequiredVersion>
-    <ApplicationRevision>113</ApplicationRevision>
+    <MinimumRequiredVersion>1.0.6.115</MinimumRequiredVersion>
+    <ApplicationRevision>115</ApplicationRevision>
     <ApplicationVersion>1.0.6.%2a</ApplicationVersion>
     <UseApplicationTrust>false</UseApplicationTrust>
     <PublishWizardCompleted>true</PublishWizardCompleted>
@@ -5185,6 +5185,10 @@
     <Resource Include="Views\DXSplashScreen\Logo.png" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\..\ActiveDirectory\ActiveDirectory\ActiveDirectory.csproj">
+      <Project>{51614976-21bd-4383-bd1f-4c1120ff8a6f}</Project>
+      <Name>ActiveDirectory</Name>
+    </ProjectReference>
     <ProjectReference Include="..\..\BaseModel\BaseModel\BaseModel\BaseModel.csproj">
       <Project>{25f838cc-cf00-4ba1-a2dd-21b4c02592ce}</Project>
       <Name>BaseModel</Name>

@@ -123,6 +123,7 @@ namespace BluePrints.ViewModels
             //when Microsoft.DirectoryServices fail to load on some device
             catch (Exception ex)
             {
+                string s = ex.ToString();
                 if (SignalR.Connection == null)
                 {
                     SignalR.ConnectAsync(UserName);
@@ -213,7 +214,7 @@ namespace BluePrints.ViewModels
                         IEnumerable<USER> activeDirectoryUSERS = null;
                         try
                         {
-                            activeDirectoryUSERS = ActiveDirectory.GetUSERS();
+                            activeDirectoryUSERS = EmailServices.GetUSERS();
                         }
                         catch
                         {
@@ -227,7 +228,7 @@ namespace BluePrints.ViewModels
                                 UserName = CaseSensitiveUser.NAME;
                         }
 
-                        bool? result = ActiveDirectory.Authenticate(UserName, UserPassword);
+                        bool? result = ActiveDirectory.ActiveDirectory.Authenticate(UserName, UserPassword);
                         
                         if (result == null)
                             return UserAuthenticationResult.ActiveDirectoryError;

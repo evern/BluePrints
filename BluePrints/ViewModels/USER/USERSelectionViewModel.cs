@@ -29,7 +29,7 @@ namespace BluePrints.ViewModels
 
         private void Refresh()
         {
-            IEnumerable<USER> activeDirectoryUSERS = ActiveDirectory.GetUSERS();
+            IEnumerable<USER> activeDirectoryUSERS = EmailServices.GetUSERS();
             var existingUSERS = ExistingUSERS;
             foreach (var activeDirectoryUSER in activeDirectoryUSERS)
                 if (!existingUSERS.Any(x => x.NAME == activeDirectoryUSER.NAME))
