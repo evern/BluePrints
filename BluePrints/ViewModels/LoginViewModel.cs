@@ -115,7 +115,10 @@ namespace BluePrints.ViewModels
             try
             {
                 if (UserName == BluePrintsResources.Default_AdminUsername && UserPassword == BluePrintsResources.Default_AdminPassword)
+                {
                     loadWindow(UserAuthenticationResult.Authenticated.ToString());
+                    return;
+                }
 
                 UserAuthenticationResult authenticationResult = UserAuthenticate;
                 if (authenticationResult == UserAuthenticationResult.ActiveDirectoryError)
