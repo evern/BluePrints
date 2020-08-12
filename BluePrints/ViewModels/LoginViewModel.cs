@@ -114,9 +114,12 @@ namespace BluePrints.ViewModels
         {
             try
             {
-                UserAuthenticationResult authenticationResult = UserAuthenticate;
                 if (UserName == BluePrintsResources.Default_AdminUsername && UserPassword == BluePrintsResources.Default_AdminPassword)
                     loadWindow(UserAuthenticationResult.Authenticated.ToString());
+
+                UserAuthenticationResult authenticationResult = UserAuthenticate;
+                if (authenticationResult == UserAuthenticationResult.ActiveDirectoryError)
+                    signalRLogin();
                 else
                     loadWindow(authenticationResult.ToString());
             }
@@ -124,17 +127,22 @@ namespace BluePrints.ViewModels
             catch (Exception ex)
             {
                 string s = ex.ToString();
-                if (SignalR.Connection == null)
-                {
-                    SignalR.ConnectAsync(UserName);
-                    do
-                    {
-                        Thread.Sleep(100);
-                    } while (SignalR.Connection.State != Microsoft.AspNet.SignalR.Client.ConnectionState.Connected);
-                }
-
-                SignalR.HubAuthenticate(UserName, UserPassword, authenticateKey.ToString());
+                signalRLogin();
             }
+        }
+
+        private void signalRLogin()
+        {
+            if (SignalR.Connection == null)
+            {
+                SignalR.ConnectAsync(UserName);
+                do
+                {
+                    Thread.Sleep(100);
+                } while (SignalR.Connection.State != Microsoft.AspNet.SignalR.Client.ConnectionState.Connected);
+            }
+
+            SignalR.HubAuthenticate(UserName, UserPassword, authenticateKey.ToString());
         }
 
         private void signalRLoadWindow(AuthenticationResult authenticationResult)
