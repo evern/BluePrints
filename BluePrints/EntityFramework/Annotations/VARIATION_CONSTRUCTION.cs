@@ -128,7 +128,7 @@ namespace BluePrints.Data
 
         public string Office => this.PROJECT.NUMBER + " " + this.PROJECT.OfficeName;
 
-        public List<ExoSubJobProjection> GetConstructionItemsForExoCommit()
+        public List<ExoSubJobProjection> GetConstructionItemsForExoCommit(bool includeBudget)
         {
             List<ExoSubJobProjection> tempExoVariations = new List<ExoSubJobProjection>();
             if (VARIATION_CONSTRUCTION_ITEM != null && VARIATION_CONSTRUCTION_ITEM.Count > 0)
@@ -142,7 +142,10 @@ namespace BluePrints.Data
                     exoJob.SubJobCode = groupedItem.SubJob;
                     exoJob.DisciplineCode = groupedItem.DisciplineCode;
                     exoJob.CommodityCode = groupedItem.CommodityCode;
-                    exoJob.ExoBudget = groupedItem.BudgetInternalCosts;
+
+                    if(includeBudget)
+                        exoJob.ExoBudget = groupedItem.BudgetInternalCosts;
+
                     exoJob.VariationCode = this.NUMBER;
                     tempExoVariations.Add(exoJob);
                 }

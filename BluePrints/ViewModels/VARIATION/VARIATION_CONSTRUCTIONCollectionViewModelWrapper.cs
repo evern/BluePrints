@@ -138,14 +138,19 @@ namespace BluePrints.ViewModels
             {
                 VariationConstructionStatus variationConstructionStatusOldValue = (VariationConstructionStatus)old_value;
                 VariationConstructionStatus variationConstructionStatus = (VariationConstructionStatus)new_value;
-                if ((variationConstructionStatusOldValue == VariationConstructionStatus.Cancelled || variationConstructionStatusOldValue == VariationConstructionStatus.Pending
-                   || variationConstructionStatusOldValue == VariationConstructionStatus.Rejected) && (variationConstructionStatus == VariationConstructionStatus.Submitted || variationConstructionStatus == VariationConstructionStatus.Approved))
+
+                //when changing from approved to submitted, budget will be set to zero
+                //when changing from submitted to approved, budget will be populated
+                //when changing from cancelled, pending, rejected to submitted/approved, budget will be set depending on whether it's approved
+                if ((variationConstructionStatusOldValue == VariationConstructionStatus.Approved && variationConstructionStatus == VariationConstructionStatus.Submitted) ||
+                    (variationConstructionStatusOldValue == VariationConstructionStatus.Submitted && variationConstructionStatus == VariationConstructionStatus.Approved) || 
+                    ((variationConstructionStatusOldValue == VariationConstructionStatus.Cancelled || variationConstructionStatusOldValue == VariationConstructionStatus.Pending || variationConstructionStatusOldValue == VariationConstructionStatus.Rejected) && (variationConstructionStatus == VariationConstructionStatus.Submitted || variationConstructionStatus == VariationConstructionStatus.Approved)))
                 {
-                    List<ExoSubJobProjection> exoJobs = projection.GetConstructionItemsForExoCommit();
+                    List<ExoSubJobProjection> exoJobs = projection.GetConstructionItemsForExoCommit(variationConstructionStatus == VariationConstructionStatus.Approved);
                     if (exoJobs.Count > 0)
                     {
                         List<ErrorMessage> errorMessages;
-                        IEnumerable<ExoSubJobProjection> addedProjections = ExoMethods.CommitToExo(exoJobs, MessageBoxService, masterJob, copyLine, loadPROJECT, USERCollection, localPrimeroUnitOfWork, BulkColumnEditDialogService, out errorMessages);
+                        IEnumerable<ExoSubJobProjection> addedProjections = ExoMethods.CommitToExo(exoJobs, MessageBoxService, masterJob, copyLine, loadPROJECT, USERCollection, localPrimeroUnitOfWork, BulkColumnEditDialogService, out errorMessages, null, true);
                         if (errorMessages.Count > 0)
                         {
                             DialogCollectionViewModel<ErrorMessage> errorMessagesViewModel = DialogCollectionViewModel<ErrorMessage>.Create(errorMessages, "These jobs cannot commit to EXO because of the following error");
@@ -162,7 +167,7 @@ namespace BluePrints.ViewModels
                 else if ((variationConstructionStatus == VariationConstructionStatus.Cancelled || variationConstructionStatus == VariationConstructionStatus.Pending
                    || variationConstructionStatus == VariationConstructionStatus.Rejected) && (variationConstructionStatusOldValue == VariationConstructionStatus.Submitted || variationConstructionStatusOldValue == VariationConstructionStatus.Approved))
                 {
-                    List<ExoSubJobProjection> exoJobs = projection.GetConstructionItemsForExoCommit();
+                    List<ExoSubJobProjection> exoJobs = projection.GetConstructionItemsForExoCommit(false);
                     if (exoJobs.Count > 0)
                     {
                         List<ExoSubJobProjection> removedJobs = new List<ExoSubJobProjection>();

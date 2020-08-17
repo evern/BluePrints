@@ -350,7 +350,7 @@ namespace BluePrints.Common.Projections
             return false;
         }
 
-        public static IEnumerable<ExoSubJobProjection> CommitToExo(IEnumerable<ExoSubJobProjection> projections, IMessageBoxService MessageBoxService, JOBCOST_HDR masterJob, JOBCOST_LINES copyLine, PROJECT loadPROJECT, IEnumerable<USER> USERCollection, IPrimeroEntitiesUnitOfWork localPrimeroUnitOfWork, IDialogService BulkColumnEditDialogService, out List<ErrorMessage> errorMessages, ObservableCollection<ExoSubJobProjection> DisplayEntities = null)
+        public static IEnumerable<ExoSubJobProjection> CommitToExo(IEnumerable<ExoSubJobProjection> projections, IMessageBoxService MessageBoxService, JOBCOST_HDR masterJob, JOBCOST_LINES copyLine, PROJECT loadPROJECT, IEnumerable<USER> USERCollection, IPrimeroEntitiesUnitOfWork localPrimeroUnitOfWork, IDialogService BulkColumnEditDialogService, out List<ErrorMessage> errorMessages, ObservableCollection<ExoSubJobProjection> DisplayEntities = null, bool updateBudgetIfExist = false)
         {
             errorMessages = new List<ErrorMessage>();
             List<ExoSubJobProjection> addedProjections = new List<ExoSubJobProjection>();
@@ -446,7 +446,7 @@ namespace BluePrints.Common.Projections
                                 projection.StockName = stock_item.DESCRIPTION;
                                 if (ExoMethods.CommitLineCommodity(projection, stock_item, false, BulkColumnEditDialogService, masterJob, loadPROJECT.NUMBER, localPrimeroUnitOfWork))
                                 {
-                                    JOBCOST_LINES findExistingOrAddLine = ExoMethods.findExistingOrAddLine(localPrimeroUnitOfWork, projection, copyLine, loadPROJECT.NUMBER);
+                                    JOBCOST_LINES findExistingOrAddLine = ExoMethods.findExistingOrAddLine(localPrimeroUnitOfWork, projection, copyLine, loadPROJECT.NUMBER, updateBudgetIfExist);
                                     projection.LineId = findExistingOrAddLine.SEQNO;
                                     if (projection.LineId != null)
                                     {
@@ -660,7 +660,7 @@ namespace BluePrints.Common.Projections
         //    }
         //}
 
-        public static JOBCOST_LINES findExistingOrAddLine(IPrimeroEntitiesUnitOfWork pUnitOfWork, ExoSubJobProjection exoLine, JOBCOST_LINES copyLine, string projectNumber)
+        public static JOBCOST_LINES findExistingOrAddLine(IPrimeroEntitiesUnitOfWork pUnitOfWork, ExoSubJobProjection exoLine, JOBCOST_LINES copyLine, string projectNumber, bool updateBudgetIfExists = false)
         {
             if (exoLine.SubJobId == null || exoLine.DisciplineId == null || exoLine.CommodityId == null)
                 return null;
@@ -668,7 +668,19 @@ namespace BluePrints.Common.Projections
             {
                 JOBCOST_LINES line = ExoQueries.GetProjectLine(pUnitOfWork, projectNumber, exoLine);
                 if (line != null)
+                {
+                    if(updateBudgetIfExists)
+                    {
+                        double exoBudget = Convert.ToDouble(exoLine.ExoBudget);
+                        if (line.ACTUAL_UNITCOST != exoBudget)
+                        {
+                            line.ACTUAL_UNITCOST = exoLine.ExoBudget == 0 ? (Double?)null : Convert.ToDouble(exoLine.ExoBudget);
+                            pUnitOfWork.SaveChanges();
+                        }
+                    }
+
                     return line;
+                }
 
                 int? maxJOBCOSTLINEID = ExoQueries.GetJOBCODELINEID(pUnitOfWork);
                 if (maxJOBCOSTLINEID != null)
