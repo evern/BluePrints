@@ -209,6 +209,18 @@ namespace BluePrints.Common.Projections
                 return fullCode;
             }
         }
+
+        public string ErrorMessageIdentificationCode
+        {
+            get
+            {
+                string subJobCode = SubJobCode == null || SubJobCode == string.Empty ? "XXXXX-XXX-XX-XX" : SubJobCode;
+                string disciplineCode = DisciplineCode == null || DisciplineCode == string.Empty ? "XX00" : DisciplineCode;
+                string commodityCode = CommodityCode == null || CommodityCode == string.Empty ? "X00" : CommodityCode;
+
+                return subJobCode + "-" + disciplineCode + "-" + commodityCode;
+            }
+        }
     }
 
     public static class ExoMethods
@@ -386,37 +398,37 @@ namespace BluePrints.Common.Projections
             {
                 if (projection.SubJobCode == null || projection.SubJobCode == string.Empty || !Regex.IsMatch(projection.SubJobCode, loadPROJECT.NUMBER + BluePrintsResources.Regex_SUBJOB))
                 {
-                    errorMessages.Add(new ErrorMessage(projection.FullCode, "Invalid sub job code"));
+                    errorMessages.Add(new ErrorMessage(projection.ErrorMessageIdentificationCode, "Invalid sub job code"));
                     continue;
                 }
                 else if (projection.SubJobCode.Length > 15)
                 {
-                    errorMessages.Add(new ErrorMessage(projection.FullCode, "Subjob code must be 15 characters"));
+                    errorMessages.Add(new ErrorMessage(projection.ErrorMessageIdentificationCode, "Subjob code must be 15 characters"));
                     continue;
                 }
                 else if (projection.DisciplineCode == null || projection.DisciplineCode == string.Empty || !Regex.IsMatch(projection.DisciplineCode, BluePrintsResources.Regex_DISCIPLINE))
                 {
-                    errorMessages.Add(new ErrorMessage(projection.FullCode, "Invalid discipline code"));
+                    errorMessages.Add(new ErrorMessage(projection.ErrorMessageIdentificationCode, "Invalid discipline code"));
                     continue;
                 }
                 else if (projection.DisciplineCode.Length > 4)
                 {
-                    errorMessages.Add(new ErrorMessage(projection.FullCode, "discipline code must be 4 characters"));
+                    errorMessages.Add(new ErrorMessage(projection.ErrorMessageIdentificationCode, "discipline code must be 4 characters"));
                     continue;
                 }
                 else if (projection.CommodityCode == null || projection.CommodityCode == string.Empty)
                 {
-                    errorMessages.Add(new ErrorMessage(projection.FullCode, "missing commodity code"));
+                    errorMessages.Add(new ErrorMessage(projection.ErrorMessageIdentificationCode, "missing commodity code"));
                     continue;
                 }
                 else if (projection.CommodityCode.Length > 4)
                 {
-                    errorMessages.Add(new ErrorMessage(projection.FullCode, "commodity code must be 4 characters"));
+                    errorMessages.Add(new ErrorMessage(projection.ErrorMessageIdentificationCode, "commodity code must be 4 characters"));
                     continue;
                 }
                 else if (projection.PhaseType != null && projection.PhaseType == PhaseType.Design && projection.CommodityIsIndirectOnly)
                 {
-                    errorMessages.Add(new ErrorMessage(projection.FullCode, projection.CommodityCode + " can only be assigned to indirect subjobs, please change the subjob or assign a different commodity in the deliverable's list"));
+                    errorMessages.Add(new ErrorMessage(projection.ErrorMessageIdentificationCode, projection.CommodityCode + " can only be assigned to indirect subjobs, please change the subjob or assign a different commodity in the deliverable's list"));
                     continue;
                 }
 
@@ -461,13 +473,13 @@ namespace BluePrints.Common.Projections
                                 }
                                 else
                                 {
-                                    errorMessages.Add(new ErrorMessage(projection.FullCode, projection.CommodityCode + " cost type does not exists in exo, please request it from " + BluePrintsResources.Default_CFO));
+                                    errorMessages.Add(new ErrorMessage(projection.ErrorMessageIdentificationCode, projection.CommodityCode + " cost type does not exists in exo, please request it from " + BluePrintsResources.Default_CFO));
                                     continue;
                                 }
                             }
                             else
                             {
-                                errorMessages.Add(new ErrorMessage(projection.FullCode, stockCode + " stock code does not exists in exo, please request it from " + BluePrintsResources.Default_CFO));
+                                errorMessages.Add(new ErrorMessage(projection.ErrorMessageIdentificationCode, stockCode + " stock code does not exists in exo, please request it from " + BluePrintsResources.Default_CFO));
                                 continue;
                             }
                         }

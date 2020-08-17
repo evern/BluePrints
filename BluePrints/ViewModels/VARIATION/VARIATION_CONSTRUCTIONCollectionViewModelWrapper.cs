@@ -2,18 +2,24 @@
 using BaseModel.Misc;
 using BaseModel.ViewModel;
 using BaseModel.ViewModel.Base;
+using BaseModel.ViewModel.Dialogs;
 using BaseModel.ViewModel.Document;
 using BaseModel.ViewModel.Loader;
 using BluePrints.BluePrintsEntitiesDataModel;
 using BluePrints.Common;
 using BluePrints.Common.Base;
+using BluePrints.Common.Projections;
+using BluePrints.Common.Resources;
 using BluePrints.Data;
+using BluePrints.PrimeroData;
+using BluePrints.PrimeroData.PrimeroEntitiesDataModel;
 using DevExpress.Mvvm;
 using DevExpress.Mvvm.POCO;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Linq;
+using System.Threading.Tasks;
 
 namespace BluePrints.ViewModels
 {
@@ -44,16 +50,30 @@ namespace BluePrints.ViewModels
 
         #region Database Operations
         private IUnitOfWorkFactory<IBluePrintsEntitiesUnitOfWork> bluePrintsUnitOfWorkFactory = BluePrintsEntitiesUnitOfWorkSource.GetUnitOfWorkFactory();
+        BackgroundWorker exoLoadingBackgroundWorker;
         private Data.PROJECT loadPROJECT;
+        protected JOBCOST_HDR masterJob;
+        protected JOBCOST_LINES copyLine;
+        protected IUnitOfWorkFactory<IPrimeroEntitiesUnitOfWork> localPrimeroUnitOfWorkFactory;
+        protected IPrimeroEntitiesUnitOfWork localPrimeroUnitOfWork;
         protected override void resolveParameters(object parameter)
         {
             var PROJECTParameter = (EntitiesParameter<Data.PROJECT>)parameter;
             loadPROJECT = PROJECTParameter.GetEntity();
+
+            localPrimeroUnitOfWorkFactory = PrimeroEntitiesUnitOfWorkSource.GetUnitOfWorkFactory(loadPROJECT.OfficeNameForExo == BluePrintsResources.OfficeMontreal);
+            localPrimeroUnitOfWork = localPrimeroUnitOfWorkFactory.CreateUnitOfWork();
         }
 
         protected override void addEntitiesLoader()
         {
             loaderCollection.AddLoaderDescription(bluePrintsUnitOfWorkFactory, x => x.VARIATION_CONSTRUCTION_IMPACTS, VARIATION_CONSTRUCTION_IMPACTProjectionFunc);
+            loaderCollection.AddLoaderDescription(bluePrintsUnitOfWorkFactory, x => x.USERS, USERProjectionFunc);
+        }
+
+        protected virtual Func<IRepositoryQuery<USER>, IQueryable<USER>> USERProjectionFunc()
+        {
+            return query => query.Where(x => x.LEAVE_DATE == null || x.LEAVE_DATE > DateTime.Now);
         }
 
         protected virtual Func<IRepositoryQuery<VARIATION_CONSTRUCTION_IMPACT>, IQueryable<VARIATION_CONSTRUCTION_IMPACT>> VARIATION_CONSTRUCTION_IMPACTProjectionFunc()
@@ -82,6 +102,12 @@ namespace BluePrints.ViewModels
             return VARIATION_CONSTRUCTIONCollection.AsQueryable();
         }
 
+        protected override bool OnMainViewModelLoaded(IEnumerable<VARIATION_CONSTRUCTION> entities)
+        {
+            loadExoMethodsData();
+            return base.OnMainViewModelLoaded(entities);
+        }
+
         protected override void AssignCallBacksAndRaisePropertyChange(IEnumerable<VARIATION_CONSTRUCTION> entities)
         {
             MainViewModel.SetParentViewModel(this);
@@ -104,6 +130,63 @@ namespace BluePrints.ViewModels
         public override string UnifiedValueValidation(VARIATION_CONSTRUCTION projection, string field_name, object new_value, bool isPaste)
         {
             return string.Empty;
+        }
+
+        public override void UnifiedCellValueChanged(string field_name, object old_value, object new_value, VARIATION_CONSTRUCTION projection, bool isNew)
+        {
+            if (field_name == BindableBase.GetPropertyName(() => new VARIATION_CONSTRUCTION().STATUS))
+            {
+                VariationConstructionStatus variationConstructionStatusOldValue = (VariationConstructionStatus)old_value;
+                VariationConstructionStatus variationConstructionStatus = (VariationConstructionStatus)new_value;
+                if ((variationConstructionStatusOldValue == VariationConstructionStatus.Cancelled || variationConstructionStatusOldValue == VariationConstructionStatus.Pending
+                   || variationConstructionStatusOldValue == VariationConstructionStatus.Rejected) && (variationConstructionStatus == VariationConstructionStatus.Submitted || variationConstructionStatus == VariationConstructionStatus.Approved))
+                {
+                    List<ExoSubJobProjection> exoJobs = projection.GetConstructionItemsForExoCommit();
+                    if (exoJobs.Count > 0)
+                    {
+                        List<ErrorMessage> errorMessages;
+                        IEnumerable<ExoSubJobProjection> addedProjections = ExoMethods.CommitToExo(exoJobs, MessageBoxService, masterJob, copyLine, loadPROJECT, USERCollection, localPrimeroUnitOfWork, BulkColumnEditDialogService, out errorMessages);
+                        if (errorMessages.Count > 0)
+                        {
+                            DialogCollectionViewModel<ErrorMessage> errorMessagesViewModel = DialogCollectionViewModel<ErrorMessage>.Create(errorMessages, "These jobs cannot commit to EXO because of the following error");
+                            ErrorMessagesDialogService.ShowDialog(MessageButton.OK, string.Empty, "ListErrorMessages", errorMessagesViewModel);
+                        }
+
+                        if (addedProjections.Count() > 0)
+                        {
+                            DialogCollectionViewModel<ExoSubJobProjection> viewModel = DialogCollectionViewModel<ExoSubJobProjection>.Create(addedProjections, addedProjections.Count() + " variation job(s) pushed to exo");
+                            ConfirmationDialogService.ShowDialog(MessageButton.OK, string.Empty, "ExoVariationConfirmation", viewModel);
+                        }
+                    }
+                }
+                else if ((variationConstructionStatus == VariationConstructionStatus.Cancelled || variationConstructionStatus == VariationConstructionStatus.Pending
+                   || variationConstructionStatus == VariationConstructionStatus.Rejected) && (variationConstructionStatusOldValue == VariationConstructionStatus.Submitted || variationConstructionStatusOldValue == VariationConstructionStatus.Approved))
+                {
+                    List<ExoSubJobProjection> exoJobs = projection.GetConstructionItemsForExoCommit();
+                    if (exoJobs.Count > 0)
+                    {
+                        List<ExoSubJobProjection> removedJobs = new List<ExoSubJobProjection>();
+                        foreach(ExoSubJobProjection exoJob in exoJobs)
+                        {
+                            JOBCOST_LINES line = ExoQueries.GetProjectLine(localPrimeroUnitOfWork, loadPROJECT.NUMBER, exoJob);
+                            if (line != null)
+                            {
+                                localPrimeroUnitOfWork.JOBCOST_LINES.Remove(line);
+                                removedJobs.Add(exoJob);
+                            }
+                        }
+
+                        if (removedJobs.Count > 0)
+                        {
+                            localPrimeroUnitOfWork.SaveChanges();
+                            DialogCollectionViewModel<ExoSubJobProjection> viewModel = DialogCollectionViewModel<ExoSubJobProjection>.Create(removedJobs, removedJobs.Count() + " variation job(s) removed from exo");
+                            ConfirmationDialogService.ShowDialog(MessageButton.OK, string.Empty, "ExoVariationConfirmation", viewModel);
+                        }
+                    }
+                }
+            }
+
+            base.UnifiedCellValueChanged(field_name, old_value, new_value, projection, isNew);
         }
         #endregion
 
@@ -186,6 +269,13 @@ namespace BluePrints.ViewModels
             DocumentManagerService.ShowExistingEntityDocumentWithLogging(DocumentInfo, this);
         }
 
+        private void loadExoMethodsData()
+        {
+            IPrimeroEntitiesUnitOfWork threadSafePrimeroEntitiesUnitOfWork = PrimeroEntitiesUnitOfWorkSource.GetUnitOfWorkFactory(loadPROJECT.OfficeNameForExo == BluePrintsResources.OfficeMontreal).CreateUnitOfWork();
+            masterJob = ExoQueries.GetProjectSubJob(threadSafePrimeroEntitiesUnitOfWork, loadPROJECT.NUMBER, loadPROJECT.NUMBER);
+            copyLine = ExoQueries.GetAnyProjectLineByJobNumber(threadSafePrimeroEntitiesUnitOfWork, loadPROJECT.NUMBER);
+        }
+
         /// <summary>
         /// The view name to be used when saving layout for IDocumentContent
         /// </summary>
@@ -194,11 +284,27 @@ namespace BluePrints.ViewModels
             get { return "VARIATION_CONSTRUCTIONCollectionViewModelWrapper_v2"; }
         }
 
+        private DevExpress.Mvvm.IDialogService ConfirmationDialogService
+        {
+            get { return this.GetRequiredService<DevExpress.Mvvm.IDialogService>("ConfirmationDialogService"); }
+        }
+
         public IEnumerable<VARIATION_CONSTRUCTION_IMPACT> VARIATION_CONSTRUCTION_IMPACTCollection
         {
             get
             {
                 return GetEntities<VARIATION_CONSTRUCTION_IMPACT>();
+            }
+        }
+
+        public IEnumerable<USER> USERCollection
+        {
+            get
+            {
+                var collection = GetEntities<USER>();
+                if (collection != null)
+                    collection = collection.OrderBy(x => x.NAME);
+                return collection;
             }
         }
 

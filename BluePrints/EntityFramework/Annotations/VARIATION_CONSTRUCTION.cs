@@ -5,6 +5,7 @@ namespace BluePrints.Data
     using BaseModel.Misc;
     using BluePrints.Common;
     using BluePrints.Common.Base;
+    using BluePrints.Common.Projections;
     using DevExpress.Mvvm;
     using DevExpress.XtraEditors.DXErrorProvider;
     using System;
@@ -127,6 +128,28 @@ namespace BluePrints.Data
 
         public string Office => this.PROJECT.NUMBER + " " + this.PROJECT.OfficeName;
 
+        public List<ExoSubJobProjection> GetConstructionItemsForExoCommit()
+        {
+            List<ExoSubJobProjection> tempExoVariations = new List<ExoSubJobProjection>();
+            if (VARIATION_CONSTRUCTION_ITEM != null && VARIATION_CONSTRUCTION_ITEM.Count > 0)
+            {
+                var groupedItems = VARIATION_CONSTRUCTION_ITEM.GroupBy(x => new { SubJob = x.SUBJOB, DisciplineCode = x.COSTGROUP, CommodityCode = x.COSTTYPE })
+              .Select(group => new { group.Key.SubJob, group.Key.DisciplineCode, group.Key.CommodityCode, BudgetInternalCosts = group.Sum(x => x.TotalCosts) });
+
+                foreach (var groupedItem in groupedItems)
+                {
+                    ExoSubJobProjection exoJob = new ExoSubJobProjection();
+                    exoJob.SubJobCode = groupedItem.SubJob;
+                    exoJob.DisciplineCode = groupedItem.DisciplineCode;
+                    exoJob.CommodityCode = groupedItem.CommodityCode;
+                    exoJob.ExoBudget = groupedItem.BudgetInternalCosts;
+                    exoJob.VariationCode = this.NUMBER;
+                    tempExoVariations.Add(exoJob);
+                }
+            }
+
+            return tempExoVariations;
+        }
 
         public void GetPropertyError(string propertyName, ErrorInfo info)
         {

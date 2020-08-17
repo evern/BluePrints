@@ -12,9 +12,15 @@
                             <dxg:GridColumn Header="Cost Group" FieldName="DisciplineCode" ReadOnly="True" IsSmart="True" />
                             <dxg:GridColumn Header="Cost Type" FieldName="CommodityCode" ReadOnly="True" IsSmart="True" />
                             <dxg:GridColumn Header="Variation" FieldName="VariationCode" ReadOnly="True" IsSmart="True" />
+                            <dxg:GridColumn Header="Budget" FieldName="ExoBudget" ReadOnly="True" IsSmart="True" >
+                                <dxg:GridColumn.EditSettings>
+                                    <dxe:TextEditSettings Mask="c2" MaskType="Numeric" MaskUseAsDisplayFormat="True" />
+                                </dxg:GridColumn.EditSettings>
+                            </dxg:GridColumn>
                         </dxg:GridControl.Columns>
                         <dxg:GridControl.TotalSummary>
                             <dxg:GridSummaryItem dx:DXSerializer.Enabled="False" Alignment="Right" SummaryType="Count" />
+                            <dxg:GridSummaryItem dx:DXSerializer.Enabled="False" FieldName="Budget" DisplayFormat="c" Alignment="Right" SummaryType="Sum" />
                         </dxg:GridControl.TotalSummary>
                         <dxg:GridControl.View>
                             <dxg:TableView x:Name="tableView" ShowGroupPanel="False" ShowGroupedColumns="False" AutoWidth="True" />

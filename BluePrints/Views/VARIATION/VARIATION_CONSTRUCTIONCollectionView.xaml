@@ -9,6 +9,17 @@
         </ResourceDictionary>
     </UserControl.Resources>
     <Grid Style="{StaticResource CollectionView.RootContainer}">
+        <dxmvvm:Interaction.Behaviors>
+            <dx:DialogService x:Name="ConfirmationDialogService">
+                <dx:DialogService.DialogStyle>
+                    <Style TargetType="dx:DXDialogWindow">
+                        <Setter Property="SizeToContent" Value="WidthAndHeight" />
+                        <Setter Property="MinWidth" Value="600" />
+                        <Setter Property="MinHeight" Value="600" />
+                    </Style>
+                </dx:DialogService.DialogStyle>
+            </dx:DialogService>
+        </dxmvvm:Interaction.Behaviors>
         <dxb:BarManager>
             <dxb:BarManager.Items>
                 <dxb:BarSubItem ItemLinksSource="{StaticResource RibbonDefaultGridButtons}" />
@@ -49,7 +60,7 @@
                         </dxmvvm:EventToCommand>
                     </dxmvvm:Interaction.Behaviors>
                     <custom:GridControlEx.Columns>
-                        <dxg:GridColumn FieldName="SUBMISSION_DATE" Header="Date" >
+                        <dxg:GridColumn FieldName="SUBMISSION_DATE" Header="Date" AllowBestFit="False" Width="75">
                             <dxg:GridColumn.EditSettings>
                                 <dxe:DateEditSettings NullValueButtonPlacement="Popup" />
                             </dxg:GridColumn.EditSettings>
@@ -78,7 +89,7 @@
                                 </dxe:ComboBoxEditSettings>
                             </dxg:GridColumn.EditSettings>
                         </dxg:GridColumn>
-                        <dxg:GridColumn FieldName="STATUS" Header="Status">
+                        <dxg:GridColumn FieldName="STATUS" Header="Status" AllowBestFit="False" Width="75">
                             <dxg:GridColumn.EditSettings>
                                 <dxe:ComboBoxEditSettings AutoComplete="True" IsTextEditable="True" ItemsSource="{dxe:EnumItemsSource EnumType={x:Type common:VariationConstructionStatus}}" />
                             </dxg:GridColumn.EditSettings>
