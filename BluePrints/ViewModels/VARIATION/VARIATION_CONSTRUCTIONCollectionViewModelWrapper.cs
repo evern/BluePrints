@@ -153,7 +153,7 @@ namespace BluePrints.ViewModels
                         IEnumerable<ExoSubJobProjection> addedProjections = ExoMethods.CommitToExo(exoJobs, MessageBoxService, masterJob, copyLine, loadPROJECT, USERCollection, localPrimeroUnitOfWork, BulkColumnEditDialogService, out errorMessages, null, true);
                         if (errorMessages.Count > 0)
                         {
-                            DialogCollectionViewModel<ErrorMessage> errorMessagesViewModel = DialogCollectionViewModel<ErrorMessage>.Create(errorMessages, "These jobs cannot commit to EXO because of the following error");
+                            DialogCollectionViewModel<ErrorMessage> errorMessagesViewModel = DialogCollectionViewModel<ErrorMessage>.Create(errorMessages, "These variation job(s) cannot be commit to EXO because of the following error");
                             ErrorMessagesDialogService.ShowDialog(MessageButton.OK, string.Empty, "ListErrorMessages", errorMessagesViewModel);
                         }
 

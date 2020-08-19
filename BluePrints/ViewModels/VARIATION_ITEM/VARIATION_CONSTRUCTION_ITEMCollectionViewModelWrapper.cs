@@ -9,20 +9,24 @@ using BluePrints.Common;
 using BluePrints.Common.Base;
 using BluePrints.Common.Filtering;
 using BluePrints.Common.Projections;
+using BluePrints.Common.Reports;
 using BluePrints.Common.Resources;
 using BluePrints.Common.ViewModel.Reporting;
 using BluePrints.Common.ViewModel.Utils;
 using BluePrints.Data;
 using BluePrints.PrimeroData;
 using BluePrints.PrimeroData.PrimeroEntitiesDataModel;
+using BluePrints.Reports;
 using DevExpress.Mvvm;
 using DevExpress.Mvvm.POCO;
 using DevExpress.Xpf.Bars;
 using DevExpress.Xpf.Editors;
 using DevExpress.Xpf.Grid;
+using DevExpress.Xpf.Printing;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
+using System.IO;
 using System.Linq;
 using System.Windows;
 
@@ -76,6 +80,7 @@ namespace BluePrints.ViewModels
         
         protected override void addEntitiesLoader()
         {
+            loaderCollection.AddLoaderDescription(bluePrintsUnitOfWorkFactory, x => x.PROJECT_REPORTS, PROJECT_REPORTProjectionFunc, null, true);
         }
 
         public string Client { get; set; }
@@ -86,6 +91,11 @@ namespace BluePrints.ViewModels
         protected override Func<IRepositoryQuery<VARIATION_CONSTRUCTION_ITEM>, IQueryable<VARIATION_CONSTRUCTION_ITEM>> specifyMainViewModelProjection()
         {
             return query => VARIATION_CONSTRUCTION_ITEMQuery(query.Where(x => x.GUID_VARIATION == loadVARIATION.GUID));
+        }
+
+        protected virtual Func<IRepositoryQuery<PROJECT_REPORT>, IQueryable<PROJECT_REPORT>> PROJECT_REPORTProjectionFunc()
+        {
+            return query => query.Where(x => x.GUID_PROJECT == loadPROJECT.GUID && x.REPORT_TYPE == ReportType.Construction_Variation_Report.ToString());
         }
 
         public IQueryable<VARIATION_CONSTRUCTION_ITEM> VARIATION_CONSTRUCTION_ITEMQuery(IQueryable<VARIATION_CONSTRUCTION_ITEM> VARIATION_CONSTRUCTION_ITEMS)
@@ -192,6 +202,52 @@ namespace BluePrints.ViewModels
 
             base.UnifiedCellValueChanging(field_name, old_value, new_value, projection, isNew);
         }
+
+        public bool CanViewReport()
+        {
+            if (IsLoading || MainViewModel == null || MainViewModel.Entities.Count == 0)
+                return false;
+
+            return true;
+        }
+
+        public void EditReport()
+        {
+            var reportDesigner = new UserReportDesigner(loadPROJECT, (CollectionViewModel<PROJECT_REPORT, PROJECT_REPORT, Guid, IBluePrintsEntitiesUnitOfWork>)loaderCollection.GetViewModel<PROJECT_REPORT>(), ReportType.Baseline_Report);
+            if (reportDesigner.ShowDialog() == System.Windows.Forms.DialogResult.OK)
+                reportDesigner.Dispose();
+            else
+                reportDesigner.Dispose();
+        }
+
+        public void ViewReport()
+        {
+            LoadingScreenManager.ShowLoadingScreen(1);
+            var constructionVariationReport = new XtraReportConstructionVariation();
+            var dbProjectReport = loaderCollection.GetObject<PROJECT_REPORT>();
+            if (dbProjectReport != null)
+            {
+                var reportString = dbProjectReport.REPORT.ToString();
+                using (var sw = new StreamWriter(new MemoryStream()))
+                {
+                    sw.Write(reportString);
+                    sw.Flush();
+                    constructionVariationReport.LoadLayout(sw.BaseStream);
+                }
+            }
+
+            IEnumerable<object> gridVisibleRows = GridControlService.GetVisibleRowObjects();
+            constructionVariationReport.AssignProperties(loadPROJECT, loadVARIATION, MainViewModel.Entities);
+            var previewWindow = new DocumentPreviewWindow();
+            previewWindow.PreviewControl.DocumentSource = constructionVariationReport;
+            previewWindow.WindowStartupLocation = WindowStartupLocation.CenterScreen;
+            previewWindow.WindowState = WindowState.Maximized;
+            constructionVariationReport.RequestParameters = false;
+            constructionVariationReport.CreateDocument(true);
+            LoadingScreenManager.CloseLoadingScreen();
+            previewWindow.Show();
+        }
+
         #endregion
 
         #region View Property
