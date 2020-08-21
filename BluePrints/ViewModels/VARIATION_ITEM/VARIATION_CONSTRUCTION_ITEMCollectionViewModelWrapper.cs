@@ -65,8 +65,6 @@ namespace BluePrints.ViewModels
             loadVARIATION = receiveParameter.GetSecondEntity();
             initializeCompulsoryViewProperties(loadPROJECT);
 
-            //need to get actual entity for editing
-            loadVARIATION = bluePrintsUnitOfWork.VARIATION_CONSTRUCTIONS.FirstOrDefault(x => x.GUID == loadVARIATION.GUID);
             string stringValueToFill = loadVARIATION.NUMBER;
             int numericFieldLength = 0;
             long valueToFillNumberOnly = 0;
@@ -80,6 +78,7 @@ namespace BluePrints.ViewModels
         protected override void addEntitiesLoader()
         {
             loaderCollection.AddLoaderDescription(bluePrintsUnitOfWorkFactory, x => x.PROJECT_REPORTS, PROJECT_REPORTProjectionFunc, null, true);
+            loaderCollection.AddLoaderDescription(bluePrintsUnitOfWorkFactory, x => x.VARIATION_CONSTRUCTIONS, VARIATION_CONSTRUCTIONProjectionFunc, null, true);
         }
 
         public string Client { get; set; }
@@ -95,6 +94,11 @@ namespace BluePrints.ViewModels
         protected virtual Func<IRepositoryQuery<PROJECT_REPORT>, IQueryable<PROJECT_REPORT>> PROJECT_REPORTProjectionFunc()
         {
             return query => query.Where(x => x.GUID_PROJECT == loadPROJECT.GUID && x.REPORT_TYPE == ReportType.Construction_Variation_Report.ToString());
+        }
+
+        protected virtual Func<IRepositoryQuery<VARIATION_CONSTRUCTION>, IQueryable<VARIATION_CONSTRUCTION>> VARIATION_CONSTRUCTIONProjectionFunc()
+        {
+            return query => query.Where(x => x.GUID == loadVARIATION.GUID);
         }
 
         public IQueryable<VARIATION_CONSTRUCTION_ITEM> VARIATION_CONSTRUCTION_ITEMQuery(IQueryable<VARIATION_CONSTRUCTION_ITEM> VARIATION_CONSTRUCTION_ITEMS)
@@ -114,6 +118,7 @@ namespace BluePrints.ViewModels
 
         protected override void AssignCallBacksAndRaisePropertyChange(IEnumerable<VARIATION_CONSTRUCTION_ITEM> entities)
         {
+            loadVARIATION = VARIATION_CONSTRUCTIONCollectionViewModel.Entities.FirstOrDefault();
             MainViewModel.SetParentViewModel(this);
             base.AssignCallBacksAndRaisePropertyChange(entities);
         }
@@ -171,8 +176,8 @@ namespace BluePrints.ViewModels
             string fieldName = ((BaseEdit)e.OriginalSource).Tag.ToString();
             DataUtils.TrySetNestedValue(fieldName, loadVARIATION, e.NewValue);
 
+            VARIATION_CONSTRUCTIONCollectionViewModel.Save(loadVARIATION);
             loadVARIATION.Update();
-            bluePrintsUnitOfWork.SaveChanges();
         }
 
         public override void UnifiedCellValueChanged(string field_name, object old_value, object new_value, VARIATION_CONSTRUCTION_ITEM projection, bool isNew)
@@ -251,6 +256,19 @@ namespace BluePrints.ViewModels
         #endregion
 
         #region View Property
+        public CollectionViewModel<VARIATION_CONSTRUCTION, VARIATION_CONSTRUCTION, Guid, IBluePrintsEntitiesUnitOfWork> VARIATION_CONSTRUCTIONCollectionViewModel
+        {
+            get
+            {
+                if (MainViewModel == null)
+                    return null;
+
+                return
+                    (CollectionViewModel<VARIATION_CONSTRUCTION, VARIATION_CONSTRUCTION, Guid, IBluePrintsEntitiesUnitOfWork>)
+                    loaderCollection.GetViewModel<VARIATION_CONSTRUCTION>();
+            }
+        }
+
         public IEnumerable<string> JOBCOST_HDRNameCollection
         {
             get
