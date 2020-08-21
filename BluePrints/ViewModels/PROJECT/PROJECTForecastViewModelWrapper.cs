@@ -108,6 +108,7 @@ namespace BluePrints.ViewModels
             loaderCollection.AddLoaderDescription(bluePrintsUnitOfWorkFactory, x => x.FORECAST_JOBS, FORECAST_JOBProjectionFunc);
             loaderCollection.AddLoaderDescription(bluePrintsUnitOfWorkFactory, x => x.FORECAST_EACS, FORECAST_EACProjectionFunc);
             loaderCollection.AddLoaderDescription(bluePrintsUnitOfWorkFactory, x => x.FORECAST_JOB_SETTINGS, FORECAST_JOB_SETTINGProjectionFunc);
+            loaderCollection.AddLoaderDescription(bluePrintsUnitOfWorkFactory, x => x.VARIATION_CONSTRUCTIONS, VARIATION_CONSTRUCTIONProjectionFunc);
             loaderCollection.AddLoaderDescription<JOB_COSTTYPES, JOB_COSTTYPES, int, IPrimeroEntitiesUnitOfWork>(primeroUnitOfWorkFactory, x => x.JOB_COSTTYPES);
         }
 
@@ -185,6 +186,11 @@ namespace BluePrints.ViewModels
         }
 
         protected virtual Func<IRepositoryQuery<FORECAST_JOB_SETTING>, IQueryable<FORECAST_JOB_SETTING>> FORECAST_JOB_SETTINGProjectionFunc()
+        {
+            return query => query.Where(x => x.GUID_PROJECT == LoadPROJECT.GUID);
+        }
+
+        protected virtual Func<IRepositoryQuery<VARIATION_CONSTRUCTION>, IQueryable<VARIATION_CONSTRUCTION>> VARIATION_CONSTRUCTIONProjectionFunc()
         {
             return query => query.Where(x => x.GUID_PROJECT == LoadPROJECT.GUID);
         }
@@ -342,8 +348,8 @@ namespace BluePrints.ViewModels
             //dynamic revenueLine = ExoQueries.GetProjectRevenue(primeroEntitiesUnitOfWork, loadPROJECT.NUMBER);
             //if (revenueLine != null)
             ForecastSummary.Original_Revenue = LoadPROJECT.ORI_REVENUE == null ? 0 : (decimal)LoadPROJECT.ORI_REVENUE;
-            ForecastSummary.Approved_Var_Revenue = LoadPROJECT.VAR_REVENUE == null ? 0 : (decimal)LoadPROJECT.VAR_REVENUE;
-            ForecastSummary.Unapproved_Var_Revenue = LoadPROJECT.UNAPPROVED_VAR_REVENUE == null ? 0 : (decimal)LoadPROJECT.UNAPPROVED_VAR_REVENUE;
+            ForecastSummary.Approved_Var_Revenue = LoadPROJECT.VAR_REVENUE == null || LoadPROJECT.VAR_REVENUE == 0 ? VARIATION_CONSTRUCTIONCollection.Where(x => x.STATUS == VariationConstructionStatus.Approved).Sum(x => x.APPROVED_VALUE) : (decimal)LoadPROJECT.VAR_REVENUE;
+            ForecastSummary.Unapproved_Var_Revenue = LoadPROJECT.UNAPPROVED_VAR_REVENUE == null || LoadPROJECT.UNAPPROVED_VAR_REVENUE == 0 ? VARIATION_CONSTRUCTIONCollection.Where(x => x.STATUS == VariationConstructionStatus.Submitted).Sum(x => x.APPROVED_VALUE) : (decimal)LoadPROJECT.UNAPPROVED_VAR_REVENUE;
             ForecastSummary.Total_Unapproved_Var_Revenue = LoadPROJECT.TOTAL_UNAPPROVED_VAR_REVENUE == null ? 0 : (decimal)LoadPROJECT.TOTAL_UNAPPROVED_VAR_REVENUE;
             //ForecastSummary.EAC_Revenue = LoadPROJECT.EAC_REVENUE == null ? 0 : (decimal)LoadPROJECT.EAC_REVENUE;
 
@@ -2850,6 +2856,14 @@ namespace BluePrints.ViewModels
             get
             {
                 return bluePrintsUnitOfWork.FORECASTS.Where(x => x.GUID_PROJECT == LoadPROJECT.GUID);
+            }
+        }
+
+        public IEnumerable<VARIATION_CONSTRUCTION> VARIATION_CONSTRUCTIONCollection
+        {
+            get
+            {
+                return GetEntities<VARIATION_CONSTRUCTION>();
             }
         }
 
