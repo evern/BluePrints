@@ -17,6 +17,8 @@ namespace BluePrints.BluePrintsEntitiesDataModel
         {
         }
 
+        public BluePrintsEntities Context => null;
+
         IRepository<AREA, Guid> IBluePrintsEntitiesUnitOfWork.AREAS
         {
             get { return GetRepository((AREA x) => x.GUID); }

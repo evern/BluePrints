@@ -27,7 +27,7 @@ namespace BluePrints.Common.Reports
             VARIATION_CONSTRUCTION = variationConstruction;
             objectDataSource1.DataSource = variationConstructionItems;
             Title.Value = project.NAME;
-            DocumentNo.Value = project.NUMBER + "-VAR-PM-" + variationConstruction.NUMBER;
+            DocumentNo.Value = variationConstruction.DocumentNumber;
             VariationDate.Value = variationConstruction.REQUEST_DATE;
             RequestedBy.Value = variationConstruction.REQUESTED_BY;
             Client.Value = project.CLIENT;

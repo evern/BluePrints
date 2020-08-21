@@ -1,6 +1,7 @@
 ﻿using BaseModel.DataModel;
 using BluePrints.Data;
 using System;
+using System.Data.Entity;
 
 namespace BluePrints.BluePrintsEntitiesDataModel
 {
@@ -9,6 +10,8 @@ namespace BluePrints.BluePrintsEntitiesDataModel
     /// </summary>
     public interface IBluePrintsEntitiesUnitOfWork : IUnitOfWork
     {
+        BluePrintsEntities Context { get; }
+
         /// <summary>
         /// The AREA entities repository.
         /// </summary>

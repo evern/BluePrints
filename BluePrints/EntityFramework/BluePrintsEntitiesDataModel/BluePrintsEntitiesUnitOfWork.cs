@@ -2,6 +2,7 @@
 using BaseModel.DataModel.EntityFramework;
 using BluePrints.Data;
 using System;
+using System.Data.Entity;
 
 namespace BluePrints.BluePrintsEntitiesDataModel
 {

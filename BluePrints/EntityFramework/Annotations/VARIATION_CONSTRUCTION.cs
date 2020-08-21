@@ -39,6 +39,8 @@ namespace BluePrints.Data
             }
         }
 
+        public string DocumentNumber => PROJECT.NUMBER + "-VAR-PM-" + NUMBER;
+
         public List<VARIATION_CONSTRUCTION_IMPACT> GetAssignedImpacts()
         {
             List<VARIATION_CONSTRUCTION_IMPACT> tempAssignedImpacts;
@@ -69,14 +71,32 @@ namespace BluePrints.Data
             MultipleAssignedImpactObject = AllVARIATION_CONSTRUCTION_IMPACTCollection.Where(allImpact => VARIATION_CONSTRUCTION_IMPACTCollection.Any(assignedImpact => allImpact.IMPACT == assignedImpact.IMPACT)).ToList();
         }
 
+        [NotMapped]
+        private List<VARIATION_CONSTRUCTION_ITEM> updatedVARIATION_CONSTRUCTION_ITEMS = null;
+        public void UpdateVariationConstructionItems(IEnumerable<VARIATION_CONSTRUCTION_ITEM> VARIATION_CONSTRUCTION_ITEMS)
+        {
+            updatedVARIATION_CONSTRUCTION_ITEMS = VARIATION_CONSTRUCTION_ITEMS.ToList();
+        }
+
+        public IEnumerable<VARIATION_CONSTRUCTION_ITEM> UpdatableVariationConstructionItems
+        {
+            get
+            {
+                if (updatedVARIATION_CONSTRUCTION_ITEMS == null)
+                    return VARIATION_CONSTRUCTION_ITEM;
+
+                return updatedVARIATION_CONSTRUCTION_ITEMS;
+            }
+        }
+
         public decimal ManagementTotal
         {
             get
             {
-                if (VARIATION_CONSTRUCTION_ITEM == null)
+                if (UpdatableVariationConstructionItems == null)
                     return 0;
 
-                return VARIATION_CONSTRUCTION_ITEM.Where(x => x.TYPE == VariationConstructionItemType.Management).Sum(x => x.TotalCosts);
+                return UpdatableVariationConstructionItems.Where(x => x.TYPE == VariationConstructionItemType.Management).Sum(x => x.TotalCosts);
             }
         }
 
@@ -84,10 +104,10 @@ namespace BluePrints.Data
         {
             get
             {
-                if (VARIATION_CONSTRUCTION_ITEM == null)
+                if (UpdatableVariationConstructionItems == null)
                     return 0;
 
-                return VARIATION_CONSTRUCTION_ITEM.Where(x => x.TYPE == VariationConstructionItemType.Engineering).Sum(x => x.TotalCosts);
+                return UpdatableVariationConstructionItems.Where(x => x.TYPE == VariationConstructionItemType.Engineering).Sum(x => x.TotalCosts);
             }
         }
 
@@ -95,10 +115,10 @@ namespace BluePrints.Data
         {
             get
             {
-                if (VARIATION_CONSTRUCTION_ITEM == null)
+                if (UpdatableVariationConstructionItems == null)
                     return 0;
 
-                return VARIATION_CONSTRUCTION_ITEM.Where(x => x.TYPE == VariationConstructionItemType.TradesAndLabour).Sum(x => x.TotalCosts);
+                return UpdatableVariationConstructionItems.Where(x => x.TYPE == VariationConstructionItemType.TradesAndLabour).Sum(x => x.TotalCosts);
             }
         }
 
@@ -106,10 +126,10 @@ namespace BluePrints.Data
         {
             get
             {
-                if (VARIATION_CONSTRUCTION_ITEM == null)
+                if (UpdatableVariationConstructionItems == null)
                     return 0;
 
-                return VARIATION_CONSTRUCTION_ITEM.Where(x => x.TYPE == VariationConstructionItemType.Equipment).Sum(x => x.TotalCosts);
+                return UpdatableVariationConstructionItems.Where(x => x.TYPE == VariationConstructionItemType.Equipment).Sum(x => x.TotalCosts);
             }
         }
 
@@ -117,10 +137,10 @@ namespace BluePrints.Data
         {
             get
             {
-                if (VARIATION_CONSTRUCTION_ITEM == null)
+                if (UpdatableVariationConstructionItems == null)
                     return 0;
 
-                return VARIATION_CONSTRUCTION_ITEM.Where(x => x.TYPE == VariationConstructionItemType.Material).Sum(x => x.TotalCosts);
+                return UpdatableVariationConstructionItems.Where(x => x.TYPE == VariationConstructionItemType.Material).Sum(x => x.TotalCosts);
             }
         }
 

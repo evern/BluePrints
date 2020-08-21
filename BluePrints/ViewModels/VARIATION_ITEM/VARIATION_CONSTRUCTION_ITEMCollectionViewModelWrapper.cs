@@ -67,7 +67,6 @@ namespace BluePrints.ViewModels
 
             //need to get actual entity for editing
             loadVARIATION = bluePrintsUnitOfWork.VARIATION_CONSTRUCTIONS.FirstOrDefault(x => x.GUID == loadVARIATION.GUID);
-
             string stringValueToFill = loadVARIATION.NUMBER;
             int numericFieldLength = 0;
             long valueToFillNumberOnly = 0;
@@ -213,7 +212,8 @@ namespace BluePrints.ViewModels
 
         public void EditReport()
         {
-            var reportDesigner = new UserReportDesigner(loadPROJECT, (CollectionViewModel<PROJECT_REPORT, PROJECT_REPORT, Guid, IBluePrintsEntitiesUnitOfWork>)loaderCollection.GetViewModel<PROJECT_REPORT>(), ReportType.Baseline_Report);
+            var reportDesigner = new UserReportDesigner(loadPROJECT, (CollectionViewModel<PROJECT_REPORT, PROJECT_REPORT, Guid, IBluePrintsEntitiesUnitOfWork>)loaderCollection.GetViewModel<PROJECT_REPORT>(), ReportType.Construction_Variation_Report);
+
             if (reportDesigner.ShowDialog() == System.Windows.Forms.DialogResult.OK)
                 reportDesigner.Dispose();
             else
@@ -236,7 +236,7 @@ namespace BluePrints.ViewModels
                 }
             }
 
-            IEnumerable<object> gridVisibleRows = GridControlService.GetVisibleRowObjects();
+            
             constructionVariationReport.AssignProperties(loadPROJECT, loadVARIATION, MainViewModel.Entities);
             var previewWindow = new DocumentPreviewWindow();
             previewWindow.PreviewControl.DocumentSource = constructionVariationReport;

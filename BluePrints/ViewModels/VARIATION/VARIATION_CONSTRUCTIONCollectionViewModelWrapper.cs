@@ -9,17 +9,23 @@ using BluePrints.BluePrintsEntitiesDataModel;
 using BluePrints.Common;
 using BluePrints.Common.Base;
 using BluePrints.Common.Projections;
+using BluePrints.Common.Reports;
 using BluePrints.Common.Resources;
 using BluePrints.Data;
 using BluePrints.PrimeroData;
 using BluePrints.PrimeroData.PrimeroEntitiesDataModel;
+using BluePrints.Common.Misc;
 using DevExpress.Mvvm;
 using DevExpress.Mvvm.POCO;
+using DevExpress.Xpf.Printing;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
+using System.Data.Entity.Infrastructure;
+using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
+using System.Windows;
 
 namespace BluePrints.ViewModels
 {
@@ -50,7 +56,6 @@ namespace BluePrints.ViewModels
 
         #region Database Operations
         private IUnitOfWorkFactory<IBluePrintsEntitiesUnitOfWork> bluePrintsUnitOfWorkFactory = BluePrintsEntitiesUnitOfWorkSource.GetUnitOfWorkFactory();
-        BackgroundWorker exoLoadingBackgroundWorker;
         private Data.PROJECT loadPROJECT;
         protected JOBCOST_HDR masterJob;
         protected JOBCOST_LINES copyLine;
@@ -67,8 +72,15 @@ namespace BluePrints.ViewModels
 
         protected override void addEntitiesLoader()
         {
+            loaderCollection.AddLoaderDescription(bluePrintsUnitOfWorkFactory, x => x.VARIATION_CONSTRUCTION_ITEMS, VARIATION_CONSTRUCTION_ITEMProjectionFunc);
             loaderCollection.AddLoaderDescription(bluePrintsUnitOfWorkFactory, x => x.VARIATION_CONSTRUCTION_IMPACTS, VARIATION_CONSTRUCTION_IMPACTProjectionFunc);
             loaderCollection.AddLoaderDescription(bluePrintsUnitOfWorkFactory, x => x.USERS, USERProjectionFunc);
+            loaderCollection.AddLoaderDescription(bluePrintsUnitOfWorkFactory, x => x.PROJECT_REPORTS, PROJECT_REPORTProjectionFunc, null, true);
+        }
+
+        protected virtual Func<IRepositoryQuery<PROJECT_REPORT>, IQueryable<PROJECT_REPORT>> PROJECT_REPORTProjectionFunc()
+        {
+            return query => query.Where(x => x.GUID_PROJECT == loadPROJECT.GUID && x.REPORT_TYPE == ReportType.Construction_Variation_Report.ToString());
         }
 
         protected virtual Func<IRepositoryQuery<USER>, IQueryable<USER>> USERProjectionFunc()
@@ -77,6 +89,11 @@ namespace BluePrints.ViewModels
         }
 
         protected virtual Func<IRepositoryQuery<VARIATION_CONSTRUCTION_IMPACT>, IQueryable<VARIATION_CONSTRUCTION_IMPACT>> VARIATION_CONSTRUCTION_IMPACTProjectionFunc()
+        {
+            return query => query.Where(x => x.VARIATION_CONSTRUCTION.GUID_PROJECT == loadPROJECT.GUID);
+        }
+
+        protected virtual Func<IRepositoryQuery<VARIATION_CONSTRUCTION_ITEM>, IQueryable<VARIATION_CONSTRUCTION_ITEM>> VARIATION_CONSTRUCTION_ITEMProjectionFunc()
         {
             return query => query.Where(x => x.VARIATION_CONSTRUCTION.GUID_PROJECT == loadPROJECT.GUID);
         }
@@ -116,6 +133,27 @@ namespace BluePrints.ViewModels
         #endregion
 
         #region Collection Call Backs
+        public override void OnAfterAuxiliaryEntitiesChanged(object key, Type changedType, EntityMessageType messageType, object sender, bool isBulkRefresh)
+        {
+            if(changedType == typeof(VARIATION_CONSTRUCTION_ITEM))
+            {
+                Guid variationConstructionItemKey = new Guid(key.ToString());
+                VARIATION_CONSTRUCTION_ITEM findVARIATION_CONSTRUCTION_ITEM = VARIATION_CONSTRUCTION_ITEMCollection.FirstOrDefault(x => x.GUID == variationConstructionItemKey);
+                if(findVARIATION_CONSTRUCTION_ITEM != null)
+                {
+                    VARIATION_CONSTRUCTION findVARIATION_CONSTRUCTION = MainViewModel.Entities.FirstOrDefault(x => x.GUID == findVARIATION_CONSTRUCTION_ITEM.GUID_VARIATION);
+                    if(findVARIATION_CONSTRUCTION != null)
+                    {
+                        IEnumerable<VARIATION_CONSTRUCTION_ITEM> variationConstructionItems = VARIATION_CONSTRUCTION_ITEMCollection.Where(x => x.GUID_VARIATION == findVARIATION_CONSTRUCTION.GUID);
+                        findVARIATION_CONSTRUCTION.UpdateVariationConstructionItems(variationConstructionItems);
+                        findVARIATION_CONSTRUCTION.Update();
+                    }
+                }
+            }
+
+            base.OnAfterAuxiliaryEntitiesChanged(key, changedType, messageType, sender, isBulkRefresh);
+        }
+
         protected override OperationInterceptMode OnBeforeProjectionSaveIsContinue(VARIATION_CONSTRUCTION projection, out bool isNew)
         {
             projection.GUID_PROJECT = loadPROJECT.GUID;
@@ -281,6 +319,95 @@ namespace BluePrints.ViewModels
             copyLine = ExoQueries.GetAnyProjectLineByJobNumber(threadSafePrimeroEntitiesUnitOfWork, loadPROJECT.NUMBER);
         }
 
+
+        public bool CanViewReport()
+        {
+            if (IsLoading || MainViewModel == null || MainViewModel.Entities.Count == 0)
+                return false;
+
+            return true;
+        }
+
+        public void EditReport()
+        {
+            var reportDesigner = new UserReportDesigner(loadPROJECT, (CollectionViewModel<PROJECT_REPORT, PROJECT_REPORT, Guid, IBluePrintsEntitiesUnitOfWork>)loaderCollection.GetViewModel<PROJECT_REPORT>(), ReportType.Construction_Variation_Report);
+            
+            if (reportDesigner.ShowDialog() == System.Windows.Forms.DialogResult.OK)
+                reportDesigner.Dispose();
+            else
+                reportDesigner.Dispose();
+        }
+
+        public void ViewReport()
+        {
+            LoadingScreenManager.ShowLoadingScreen(1);
+            var constructionVariationReport = new XtraReportConstructionVariation();
+            var dbProjectReport = loaderCollection.GetObject<PROJECT_REPORT>();
+            if (dbProjectReport != null)
+            {
+                var reportString = dbProjectReport.REPORT.ToString();
+                using (var sw = new StreamWriter(new MemoryStream()))
+                {
+                    sw.Write(reportString);
+                    sw.Flush();
+                    constructionVariationReport.LoadLayout(sw.BaseStream);
+                }
+            }
+
+            constructionVariationReport.AssignProperties(loadPROJECT, SelectedEntity, SelectedEntity.UpdatableVariationConstructionItems);
+            var previewWindow = new DocumentPreviewWindow();
+            previewWindow.PreviewControl.DocumentSource = constructionVariationReport;
+            previewWindow.WindowStartupLocation = WindowStartupLocation.CenterScreen;
+            previewWindow.WindowState = WindowState.Maximized;
+            constructionVariationReport.RequestParameters = false;
+            constructionVariationReport.CreateDocument(true);
+            LoadingScreenManager.CloseLoadingScreen();
+            previewWindow.Show();
+        }
+
+        public bool CanExportSelected()
+        {
+            return !IsLoading;
+        }
+
+        public void ExportSelected()
+        {
+            if(SelectedEntities.Count == 0)
+            {
+                MessageBoxService.ShowMessage("Please select variation(s) to export");
+                return;
+            }
+
+            if (FolderBrowserDialogService.ShowDialog())
+            {
+                string exportPath = FolderBrowserDialogService.ResultPath + "\\";
+                var constructionVariationReport = new XtraReportConstructionVariation();
+                var dbProjectReport = loaderCollection.GetObject<PROJECT_REPORT>();
+                if (dbProjectReport != null)
+                {
+                    var reportString = dbProjectReport.REPORT.ToString();
+                    using (var sw = new StreamWriter(new MemoryStream()))
+                    {
+                        sw.Write(reportString);
+                        sw.Flush();
+                        constructionVariationReport.LoadLayout(sw.BaseStream);
+                    }
+                }
+
+                LoadingScreenManager.ShowLoadingScreen(SelectedEntities.Count);
+                foreach (VARIATION_CONSTRUCTION variationConstruction in SelectedEntities)
+                {
+                    LoadingScreenManager.SetMessage("Exporting " + variationConstruction.DocumentNumber + "...");
+                    constructionVariationReport.AssignProperties(loadPROJECT, variationConstruction, variationConstruction.UpdatableVariationConstructionItems);
+                    constructionVariationReport.RequestParameters = false;
+                    constructionVariationReport.CreateDocument(true);
+                    constructionVariationReport.ExportToPdf(exportPath + variationConstruction.DocumentNumber + ".pdf");
+                    LoadingScreenManager.Progress();
+                }
+                LoadingScreenManager.CloseLoadingScreen();
+            }
+        }
+
         /// <summary>
         /// The view name to be used when saving layout for IDocumentContent
         /// </summary>
@@ -331,6 +458,14 @@ namespace BluePrints.ViewModels
                 }
 
                 return VARIATION_CONSTRUCTION_IMPACTS;
+            }
+        }
+
+        public IEnumerable<VARIATION_CONSTRUCTION_ITEM> VARIATION_CONSTRUCTION_ITEMCollection
+        {
+            get
+            {
+                return GetEntities<VARIATION_CONSTRUCTION_ITEM>();
             }
         }
 

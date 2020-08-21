@@ -53,7 +53,7 @@ namespace BluePrints.Common.Reports
             }
 
             currentREPORT = reportSelector();
-            if(currentReportType != ReportType.Timesheet_Report)
+            if(currentReportType != ReportType.Timesheet_Report && currentREPORT.PaperKind != System.Drawing.Printing.PaperKind.A4)
             {
                 //set paperkind depending on project location
                 if (currentPROJECT.OFFICE.NAME.ToUpper().Contains("PERTH"))
@@ -119,6 +119,12 @@ namespace BluePrints.Common.Reports
             else if (currentReportType == ReportType.Timesheet_Report)
             {
                 returnReport = new XtraReportTimesheet();
+                reportDesigner1.OpenReport(returnReport);
+            }
+            else if (currentReportType == ReportType.Construction_Variation_Report)
+            {
+                returnReport = new XtraReportConstructionVariation();
+                returnReport.PaperKind = System.Drawing.Printing.PaperKind.A4;
                 reportDesigner1.OpenReport(returnReport);
             }
 
