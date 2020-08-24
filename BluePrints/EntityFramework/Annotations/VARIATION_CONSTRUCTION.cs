@@ -15,6 +15,13 @@ namespace BluePrints.Data
 
     public partial class VARIATION_CONSTRUCTION : EntityBase, IGuidEntityKey, ICanSync, IHaveCreatedDate, IDXDataErrorInfo
     {
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2214:DoNotCallOverridableMethodsInConstructors")]
+        public VARIATION_CONSTRUCTION()
+        {
+            VARIATION_CONSTRUCTION_ITEM = new HashSet<VARIATION_CONSTRUCTION_ITEM>();
+            VARIATION_CONSTRUCTION_IMPACT = new HashSet<VARIATION_CONSTRUCTION_IMPACT>();
+        }
+
         [NotMapped]
         public DateTime EntityCreatedDate
         {
@@ -39,6 +46,7 @@ namespace BluePrints.Data
             }
         }
 
+        [NotMapped]
         public string DocumentNumber => PROJECT.NUMBER + "-VAR-PM-" + NUMBER;
 
         public List<VARIATION_CONSTRUCTION_IMPACT> GetAssignedImpacts()
@@ -78,17 +86,20 @@ namespace BluePrints.Data
             updatedVARIATION_CONSTRUCTION_ITEMS = VARIATION_CONSTRUCTION_ITEMS.ToList();
         }
 
+        [NotMapped]
         public IEnumerable<VARIATION_CONSTRUCTION_ITEM> UpdatableVariationConstructionItems
         {
             get
             {
-                if (updatedVARIATION_CONSTRUCTION_ITEMS == null)
-                    return VARIATION_CONSTRUCTION_ITEM;
+                //cannot use this because once VARIATION_CONSTRUCTION_ITEM is loaded and this is deleted EF will try to set FK as null
+                //if (updatedVARIATION_CONSTRUCTION_ITEMS == null)
+                //    return VARIATION_CONSTRUCTION_ITEM;
 
                 return updatedVARIATION_CONSTRUCTION_ITEMS;
             }
         }
 
+        [NotMapped]
         public decimal ManagementTotal
         {
             get
@@ -100,6 +111,7 @@ namespace BluePrints.Data
             }
         }
 
+        [NotMapped]
         public decimal EngineeringTotal
         {
             get
@@ -111,6 +123,7 @@ namespace BluePrints.Data
             }
         }
 
+        [NotMapped]
         public decimal TradesAndLabourTotal
         {
             get
@@ -122,6 +135,7 @@ namespace BluePrints.Data
             }
         }
 
+        [NotMapped]
         public decimal EquipmentTotal
         {
             get
@@ -133,6 +147,7 @@ namespace BluePrints.Data
             }
         }
 
+        [NotMapped]
         public decimal MaterialTotal
         {
             get
@@ -144,16 +159,18 @@ namespace BluePrints.Data
             }
         }
 
+        [NotMapped]
         public decimal TotalEstimatedValue => ManagementTotal + EngineeringTotal + TradesAndLabourTotal + EquipmentTotal + MaterialTotal;
 
+        [NotMapped]
         public string Office => this.PROJECT.NUMBER + " " + this.PROJECT.OfficeName;
 
         public List<ExoSubJobProjection> GetConstructionItemsForExoCommit(bool includeBudget)
         {
             List<ExoSubJobProjection> tempExoVariations = new List<ExoSubJobProjection>();
-            if (VARIATION_CONSTRUCTION_ITEM != null && VARIATION_CONSTRUCTION_ITEM.Count > 0)
+            if (updatedVARIATION_CONSTRUCTION_ITEMS != null && updatedVARIATION_CONSTRUCTION_ITEMS.Count > 0)
             {
-                var groupedItems = VARIATION_CONSTRUCTION_ITEM.GroupBy(x => new { SubJob = x.SUBJOB, DisciplineCode = x.COSTGROUP, CommodityCode = x.COSTTYPE })
+                var groupedItems = updatedVARIATION_CONSTRUCTION_ITEMS.GroupBy(x => new { SubJob = x.SUBJOB, DisciplineCode = x.COSTGROUP, CommodityCode = x.COSTTYPE })
               .Select(group => new { group.Key.SubJob, group.Key.DisciplineCode, group.Key.CommodityCode, BudgetInternalCosts = group.Sum(x => x.TotalCosts) });
 
                 foreach (var groupedItem in groupedItems)

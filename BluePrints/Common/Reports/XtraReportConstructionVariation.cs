@@ -16,11 +16,6 @@ namespace BluePrints.Common.Reports
         }
 
         private VARIATION_CONSTRUCTION VARIATION_CONSTRUCTION { get; set; }
-        public void AssignProperties(VARIATION_CONSTRUCTION variationConstruction)
-        {
-            VARIATION_CONSTRUCTION = variationConstruction;
-            objectDataSource1.DataSource = variationConstruction.VARIATION_CONSTRUCTION_ITEM;
-        }
 
         public void AssignProperties(PROJECT project, VARIATION_CONSTRUCTION variationConstruction, IEnumerable<VARIATION_CONSTRUCTION_ITEM> variationConstructionItems)
         {

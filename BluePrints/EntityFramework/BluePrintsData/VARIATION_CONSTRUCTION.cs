@@ -10,13 +10,6 @@ namespace BluePrints.Data
 {
     public partial class VARIATION_CONSTRUCTION
     {
-        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2214:DoNotCallOverridableMethodsInConstructors")]
-        public VARIATION_CONSTRUCTION()
-        {
-            VARIATION_CONSTRUCTION_ITEM = new HashSet<VARIATION_CONSTRUCTION_ITEM>();
-            VARIATION_CONSTRUCTION_IMPACT = new HashSet<VARIATION_CONSTRUCTION_IMPACT>();
-        }
-
         [Key]
         public Guid GUID { get; set; }
 

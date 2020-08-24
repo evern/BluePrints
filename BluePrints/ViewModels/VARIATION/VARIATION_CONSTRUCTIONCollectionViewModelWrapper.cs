@@ -105,14 +105,15 @@ namespace BluePrints.ViewModels
 
         protected override Func<IRepositoryQuery<VARIATION_CONSTRUCTION>, IQueryable<VARIATION_CONSTRUCTION>> specifyMainViewModelProjection()
         {
-            return query => setAssignedImpacts(query.Where(x => x.GUID_PROJECT == loadPROJECT.GUID), VARIATION_CONSTRUCTION_IMPACTCollection);
+            return query => setAuxiliaryCollections(query.Where(x => x.GUID_PROJECT == loadPROJECT.GUID), VARIATION_CONSTRUCTION_IMPACTCollection, VARIATION_CONSTRUCTION_ITEMCollection);
         }
 
-        private IQueryable<VARIATION_CONSTRUCTION> setAssignedImpacts(IQueryable<VARIATION_CONSTRUCTION> query, IEnumerable<VARIATION_CONSTRUCTION_IMPACT> VARIATION_CONSTRUCTION_IMPACTCollection)
+        private IQueryable<VARIATION_CONSTRUCTION> setAuxiliaryCollections(IQueryable<VARIATION_CONSTRUCTION> query, IEnumerable<VARIATION_CONSTRUCTION_IMPACT> VARIATION_CONSTRUCTION_IMPACTCollection, IEnumerable<VARIATION_CONSTRUCTION_ITEM> VARIATION_CONSTRUCTION_ITEMCollection)
         {
             List<VARIATION_CONSTRUCTION> VARIATION_CONSTRUCTIONCollection = query.ToList();
             foreach (var VARIATION_CONSTRUCTION in VARIATION_CONSTRUCTIONCollection)
             {
+                VARIATION_CONSTRUCTION.UpdateVariationConstructionItems(VARIATION_CONSTRUCTION_ITEMCollection.Where(x => x.GUID_VARIATION == VARIATION_CONSTRUCTION.GUID));
                 VARIATION_CONSTRUCTION.SetAssignedImpacts(AllVARIATION_CONSTRUCTION_IMPACTCollection, VARIATION_CONSTRUCTION_IMPACTCollection.Where(x => x.GUID_CONSTRUCTION_VARIATION == VARIATION_CONSTRUCTION.GUID));
             }
 
@@ -135,14 +136,14 @@ namespace BluePrints.ViewModels
         #region Collection Call Backs
         public override void OnAfterAuxiliaryEntitiesChanged(object key, Type changedType, EntityMessageType messageType, object sender, bool isBulkRefresh)
         {
-            if(changedType == typeof(VARIATION_CONSTRUCTION_ITEM))
+            if (changedType == typeof(VARIATION_CONSTRUCTION_ITEM))
             {
                 Guid variationConstructionItemKey = new Guid(key.ToString());
                 VARIATION_CONSTRUCTION_ITEM findVARIATION_CONSTRUCTION_ITEM = VARIATION_CONSTRUCTION_ITEMCollection.FirstOrDefault(x => x.GUID == variationConstructionItemKey);
-                if(findVARIATION_CONSTRUCTION_ITEM != null)
+                if (findVARIATION_CONSTRUCTION_ITEM != null)
                 {
                     VARIATION_CONSTRUCTION findVARIATION_CONSTRUCTION = MainViewModel.Entities.FirstOrDefault(x => x.GUID == findVARIATION_CONSTRUCTION_ITEM.GUID_VARIATION);
-                    if(findVARIATION_CONSTRUCTION != null)
+                    if (findVARIATION_CONSTRUCTION != null)
                     {
                         IEnumerable<VARIATION_CONSTRUCTION_ITEM> variationConstructionItems = VARIATION_CONSTRUCTION_ITEMCollection.Where(x => x.GUID_VARIATION == findVARIATION_CONSTRUCTION.GUID);
                         findVARIATION_CONSTRUCTION.UpdateVariationConstructionItems(variationConstructionItems);
@@ -466,6 +467,19 @@ namespace BluePrints.ViewModels
             get
             {
                 return GetEntities<VARIATION_CONSTRUCTION_ITEM>();
+            }
+        }
+
+        public CollectionViewModel<VARIATION_CONSTRUCTION_ITEM, VARIATION_CONSTRUCTION_ITEM, Guid, IBluePrintsEntitiesUnitOfWork> VARIATION_CONSTRUCTION_ITEMCollectionViewModel
+        {
+            get
+            {
+                if (MainViewModel == null)
+                    return null;
+
+                return
+                    (CollectionViewModel<VARIATION_CONSTRUCTION_ITEM, VARIATION_CONSTRUCTION_ITEM, Guid, IBluePrintsEntitiesUnitOfWork>)
+                    loaderCollection.GetViewModel<VARIATION_CONSTRUCTION_ITEM>();
             }
         }
 
