@@ -84,6 +84,7 @@ namespace BluePrints.ViewModels
         private Action<object> navigateCore;
         public bool ForceRetrieveAllJobs { get; set; } //force exo burned to retrieve subjobs that aren't defined
         public bool ForceRetrieveAllUnits { get; set; } //force exo burned to retrieve units that are beyond data date
+        public bool ForceRetrieveAllPOs { get; set; } //force exo burned to retrieve units that are beyond data date
         public bool UseProductivityFactorOnRemaining { get; set; } //calculate remaining costs using productivity factor
         public bool IsVariationSeparated { get; set; } //whether to split variation out from main job
         IBluePrintsEntitiesUnitOfWork bluePrintsUnitOfWork;
@@ -293,7 +294,7 @@ namespace BluePrints.ViewModels
             
             if(project != null)
             {
-                project.BuildStats(ShowLoadingScreen, false, 1, ForceRetrieveAllJobs, ForceRetrieveAllUnits, getForecastTypes(), UseProductivityFactorOnRemaining);
+                project.BuildStats(ShowLoadingScreen, false, 1, ForceRetrieveAllJobs, ForceRetrieveAllUnits, ForceRetrieveAllPOs, getForecastTypes(), UseProductivityFactorOnRemaining);
                 project.RecalculateStats(false, true);
                 project.Subjob_Dashboards = getDashboardStructure(project, IsVariationSeparated, ForceRetrieveRemainingDataPoints);
                 project.Update();

@@ -499,7 +499,12 @@ namespace BluePrints.ViewModels
                         string fullDisciplineCode = string.Concat(disciplineCode, disciplineNum);
                         string fullWBSCode = exoLine.SubJobCode + "-" + fullDisciplineCode + "-" + exoLine.CommodityCode;
 
-                        ESTIMATE_ITEMProgress findESTIMATE_ITEM = Entities.FirstOrDefault(x => x.Deliverable_Name.ToUpper() == fullWBSCode.ToUpper() && x.Variation_Code.ToUpper() == exoLine.VariationCode.ToUpper());
+                        ESTIMATE_ITEMProgress findESTIMATE_ITEM = null;
+                        if (exoLine.VariationCode == null || exoLine.VariationCode == string.Empty)
+                            findESTIMATE_ITEM = Entities.FirstOrDefault(x => x.Deliverable_Name.ToUpper() == fullWBSCode.ToUpper());
+                        else
+                            findESTIMATE_ITEM = Entities.Where(x => x.Variation_Code != null).FirstOrDefault(x => x.Deliverable_Name.ToUpper() == fullWBSCode.ToUpper() && x.Variation_Code.ToUpper() == fullWBSCode.ToUpper());
+                        
                         if (findESTIMATE_ITEM == null)
                         {
                             if(findESTIMATE_ITEM == null)

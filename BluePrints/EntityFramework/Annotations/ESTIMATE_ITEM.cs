@@ -329,7 +329,16 @@ namespace BluePrints.Data
         [NotMapped]
         public decimal Total_Quantity => DC_QUANTITY + Budget_Quantity;
 
-        public string Variation_Code => VARIATION_CODE;
+        public string Variation_Code
+        {
+            get
+            {
+                if (VARIATION_CODE == null)
+                    return string.Empty;
+
+                return VARIATION_CODE;
+            }
+        }
 
         public string Office
         {

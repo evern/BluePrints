@@ -1,4 +1,4 @@
-﻿<?xml version="1.0" encoding="utf-8"?>
+<?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="12.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
   <PropertyGroup>
@@ -23,8 +23,8 @@
     <UpdatePeriodically>false</UpdatePeriodically>
     <UpdateRequired>true</UpdateRequired>
     <MapFileExtensions>true</MapFileExtensions>
-    <MinimumRequiredVersion>1.0.6.100</MinimumRequiredVersion>
-    <ApplicationRevision>100</ApplicationRevision>
+    <MinimumRequiredVersion>1.0.6.119</MinimumRequiredVersion>
+    <ApplicationRevision>119</ApplicationRevision>
     <ApplicationVersion>1.0.6.%2a</ApplicationVersion>
     <UseApplicationTrust>false</UseApplicationTrust>
     <PublishWizardCompleted>true</PublishWizardCompleted>
@@ -124,7 +124,7 @@
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Perth_Debug|AnyCPU' ">
     <AssemblyName>BluePrints</AssemblyName>
     <ApplicationIcon>Common\Images\LogoBeta.ico</ApplicationIcon>
-    <PublishUrl>\\canadafile\Data\general\BLUEPRINTS_CANADA\BETA_LIVE\</PublishUrl>
+    <PublishUrl>\\Fileserver\Data3\General\BLUEPRINTS\</PublishUrl>
     <DebugSymbols>true</DebugSymbols>
     <OutputPath>bin\Perth_Debug\</OutputPath>
     <DefineConstants>TRACE;DEBUG;BETA</DefineConstants>
@@ -513,8 +513,13 @@
     </Reference>
     <Reference Include="System.Deployment" />
     <Reference Include="System.Design" />
-    <Reference Include="System.DirectoryServices" />
-    <Reference Include="System.DirectoryServices.AccountManagement" />
+    <Reference Include="System.DirectoryServices, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="System.DirectoryServices.AccountManagement, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <Private>False</Private>
+    </Reference>
     <Reference Include="System.Drawing" />
     <Reference Include="System.Drawing.Design" />
     <Reference Include="System.Management" />
@@ -5201,6 +5206,10 @@
     <Resource Include="Views\DXSplashScreen\Logo.png" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\..\ActiveDirectory\ActiveDirectory\ActiveDirectory.csproj">
+      <Project>{51614976-21bd-4383-bd1f-4c1120ff8a6f}</Project>
+      <Name>ActiveDirectory</Name>
+    </ProjectReference>
     <ProjectReference Include="..\..\BaseModel\BaseModel\BaseModel\BaseModel.csproj">
       <Project>{25f838cc-cf00-4ba1-a2dd-21b4c02592ce}</Project>
       <Name>BaseModel</Name>

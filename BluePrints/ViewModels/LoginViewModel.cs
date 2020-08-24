@@ -30,6 +30,7 @@ namespace BluePrints.ViewModels
         public string UserName { get; set; }
         public string UserPassword { get; set; }
         public bool RememberPassword { get; set; }
+        private Guid authenticateKey;
         enum UserAuthenticationResult
         {
             UsernameNotAdded,
@@ -63,22 +64,23 @@ namespace BluePrints.ViewModels
             UserName = XMLHelpers.GetSettings_Username();
             UserPassword = XMLHelpers.GetSettings_Password();
 
-#if DEBUG
-            Application.Current.Dispatcher.BeginInvoke(new Action(() => immediateLogin()));
-#else
+            Messenger.Default.Register<AuthenticationResult>(this, (AuthenticationResult) => signalRLoadWindow(AuthenticationResult));
+            authenticateKey = Guid.NewGuid();
+//#if DEBUG
+//            Application.Current.Dispatcher.BeginInvoke(new Action(() => immediateLogin()));
+//#else
             if (UserName != string.Empty && UserPassword != string.Empty)
             {
                 RememberPassword = true;
                 Application.Current.Dispatcher.BeginInvoke(new Action(() => Login()));
             }
-#endif
+//#endif
         }
 
         private void DelayedConnectDispatcher_Tick(object sender, EventArgs e)
         {
             delayedConnectDispatcher.Stop();
-
-            //SignalR.ConnectAsync(UserName);
+            SignalR.ConnectAsync(UserName);
         }
 
         public void OnLoaded()
@@ -110,9 +112,63 @@ namespace BluePrints.ViewModels
 
         public void Login()
         {
-            UserAuthenticationResult authenticationResult = UserAuthenticate;
-            if (authenticationResult == UserAuthenticationResult.Authenticated || UserName == BluePrintsResources.Default_AdminUsername && UserPassword == BluePrintsResources.Default_AdminPassword)
+            try
             {
+                if (UserName == BluePrintsResources.Default_AdminUsername && UserPassword == BluePrintsResources.Default_AdminPassword)
+                {
+                    loadWindow(UserAuthenticationResult.Authenticated.ToString());
+                    return;
+                }
+
+                UserAuthenticationResult authenticationResult = UserAuthenticate;
+                if (authenticationResult == UserAuthenticationResult.ActiveDirectoryError)
+                    signalRLogin();
+                else
+                    loadWindow(authenticationResult.ToString());
+            }
+            //when Microsoft.DirectoryServices fail to load on some device
+            catch (Exception ex)
+            {
+                string s = ex.ToString();
+                signalRLogin();
+            }
+        }
+
+        private void signalRLogin()
+        {
+            if (SignalR.Connection == null)
+            {
+                SignalR.ConnectAsync(UserName);
+                do
+                {
+                    Thread.Sleep(100);
+                } while (SignalR.Connection.State != Microsoft.AspNet.SignalR.Client.ConnectionState.Connected);
+            }
+
+            SignalR.HubAuthenticate(UserName, UserPassword, authenticateKey.ToString());
+        }
+
+        private void signalRLoadWindow(AuthenticationResult authenticationResult)
+        {
+            if(authenticationResult.Key == authenticateKey.ToString())
+            {
+                loadWindow(authenticationResult.Result);
+            }
+        }
+
+        private void loadWindow(string authenticationResult)
+        {
+            if (authenticationResult == UserAuthenticationResult.Authenticated.ToString())
+            {
+                XMLSettings newXMLSettings = new XMLSettings();
+                if (RememberPassword)
+                    newXMLSettings.Password = BluePrintsUtils.Encrypt(UserPassword.Trim(), true);
+                else
+                    newXMLSettings.Password = string.Empty;
+
+                newXMLSettings.Username = UserName.Trim();
+                XMLHelpers.UpdateSettingsXMLCredentials(newXMLSettings);
+
                 if (UserName == BluePrintsResources.Default_AdminUsername && UserPassword == BluePrintsResources.Default_AdminPassword)
                     LoginCredentials.IsAdmin = true;
                 else
@@ -126,7 +182,7 @@ namespace BluePrints.ViewModels
                     //forecastActualPreference.PREFERENCE_NAME = DataUtils.GetNameOf(() => UserPreferences.Forecast_ShowActuals);
                     //forecastActualPreference.PREFERENCE_VALUE = UserPreferences.PreferenceTrueValue;
                     //LoginCredentials.CurrentUser.UserPreferences.Add(forecastActualPreference);
-                    Task.Run(() => ActiveDirectory.ExchangeLoginAsync(LoginCredentials.CurrentUser.NAME, "NEWpass14."));
+                    //Task.Run(() => ActiveDirectory.ExchangeLoginAsync(LoginCredentials.CurrentUser.NAME, "NEWpass14."));
                 }
                 else
                 {
@@ -141,7 +197,6 @@ namespace BluePrints.ViewModels
             else
                 SetUsernamePasswordError(authenticationResult);
         }
-
 
         protected IMessageBoxService MessageBoxService
         {
@@ -170,7 +225,7 @@ namespace BluePrints.ViewModels
                         IEnumerable<USER> activeDirectoryUSERS = null;
                         try
                         {
-                            activeDirectoryUSERS = ActiveDirectory.GetUSERS();
+                            activeDirectoryUSERS = EmailServices.GetUSERS();
                         }
                         catch
                         {
@@ -184,21 +239,13 @@ namespace BluePrints.ViewModels
                                 UserName = CaseSensitiveUser.NAME;
                         }
 
-                        bool? result = ActiveDirectory.Authenticate(UserName, UserPassword);
+                        bool? result = ActiveDirectory.ActiveDirectory.Authenticate(UserName, UserPassword);
                         
                         if (result == null)
                             return UserAuthenticationResult.ActiveDirectoryError;
 
                         if (((bool)result))
                         {
-                            XMLSettings newXMLSettings = new XMLSettings();
-                            if (RememberPassword)
-                                newXMLSettings.Password = BluePrintsUtils.Encrypt(UserPassword.Trim(), true);
-                            else
-                                newXMLSettings.Password = string.Empty;
-
-                            newXMLSettings.Username = UserName.Trim();
-                            XMLHelpers.UpdateSettingsXMLCredentials(newXMLSettings);
                             return UserAuthenticationResult.Authenticated;
                         }
                         else
@@ -214,25 +261,25 @@ namespace BluePrints.ViewModels
             }
         }
 
-        private void SetUsernamePasswordError(UserAuthenticationResult authenticationResult)
+        private void SetUsernamePasswordError(string authenticationResult)
         {
             String errorText = string.Empty;
-            if(authenticationResult == UserAuthenticationResult.InvalidUsernameOrPassword)
+            if(authenticationResult == UserAuthenticationResult.InvalidUsernameOrPassword.ToString())
             {
                 errorText = "Invalid username or password";
                 ShowError(true, errorText);
             }
-            else if (authenticationResult == UserAuthenticationResult.RoleNotAssigned)
+            else if (authenticationResult == UserAuthenticationResult.RoleNotAssigned.ToString())
             {
                 errorText = "Please email " + BluePrintsResources.ITEmail + " to assign a role to you";
                 ShowError(false, errorText);
             }
-            else if (authenticationResult == UserAuthenticationResult.UsernameNotAdded)
+            else if (authenticationResult == UserAuthenticationResult.UsernameNotAdded.ToString())
             {
                 errorText = "Please email " + BluePrintsResources.ITEmail + " to add you as a BluePrint user";
                 ShowError(false, errorText);
             }
-            else if (authenticationResult == UserAuthenticationResult.ActiveDirectoryError)
+            else if (authenticationResult == UserAuthenticationResult.ActiveDirectoryError.ToString())
             {
                 errorText = "Active directory not responding";
                 ShowError(false, errorText);
@@ -254,7 +301,11 @@ namespace BluePrints.ViewModels
         BluePrintsEntitiesWindow mainWindow;
         public void ShowMainWindow()
         {
-            mainWindow = new BluePrintsEntitiesWindow();
+            if(mainWindow == null)
+            {
+                mainWindow = new BluePrintsEntitiesWindow();
+            }
+
             mainWindow.Show();
         }
 

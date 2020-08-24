@@ -322,6 +322,7 @@ namespace BluePrints.ViewModels
             ForecastSummary = new ForecastSummary();
             ForceRetrieveAllJobs = true; //force exo burned to retrieve subjobs that aren't defined
             ForceRetrieveAllUnits = true; //force exo burned to retrieve units that are beyond data date
+            ForceRetrieveAllPOs = false; //force retrieve all EXO pos that are beyond data date
             UseProductivityFactorOnRemaining = false; //calculate remaining costs using productivity factor
             IsLoadingForecast = true;
             IsLoading = true;
@@ -656,7 +657,10 @@ namespace BluePrints.ViewModels
             if (allDataPoints.Count == 0)
                 firstDataPointsDate = DateTime.Now;
             else
-                firstDataPointsDate = allDataPoints.Min(x => x.ActualDate);
+            {
+                DateTime fixedDate = (DateTime)FixedDataDate;
+                firstDataPointsDate = allDataPoints.Where(x => x.ActualDate.Year > fixedDate.Year - 10).Min(x => x.ActualDate);
+            }
 
             alignedDataDateCollection = generateDates();
             InitializeColumnSource(ParentViewColumns, ParentSummaries, alignedDataDateCollection, false);
@@ -1011,8 +1015,6 @@ namespace BluePrints.ViewModels
                 summaries.Add(new SummaryDescriptor() { FieldName = "Entity.DeliverableUnits", DisplayFormat = "n0", Type = SummaryItemType.Sum });
                 columns.Add(new ColumnDescriptor() { FieldName = "Entity.ActualUnits", ReadOnly = true, Header = "Actual Units", Fixed = FixedStyle.Left, Width = 50, Settings = SettingsType.Number, Mask = "n0", HeaderToolTip = "Actual units to date" });
                 summaries.Add(new SummaryDescriptor() { FieldName = "Entity.ActualUnits", DisplayFormat = "n0", Type = SummaryItemType.Sum });
-                columns.Add(new ColumnDescriptor() { FieldName = "Entity.ActualUnitsPostDataDate", ReadOnly = true, Header = "Actual Units Post DD", Fixed = FixedStyle.Left, Width = 50, Settings = SettingsType.Number, Mask = "n0", HeaderToolTip = "Actual units post data date" });
-                summaries.Add(new SummaryDescriptor() { FieldName = "Entity.ActualUnitsPostDataDate", DisplayFormat = "n0", Type = SummaryItemType.Sum });
                 columns.Add(new ColumnDescriptor() { FieldName = "Entity.P6RemainingUnits", ReadOnly = true, Header = "Remaining Units", Fixed = FixedStyle.Left, Width = 50, Settings = SettingsType.Number, Mask = "n0", HeaderToolTip = "Remaining units from refreshing P6" });
                 summaries.Add(new SummaryDescriptor() { FieldName = "Entity.P6RemainingUnits", DisplayFormat = "n0", Type = SummaryItemType.Sum });
                 columns.Add(new ColumnDescriptor() { FieldName = "Entity.P6RemainingUnitsOverride", ReadOnly = true, Header = "PF Units", Fixed = FixedStyle.Left, Width = 50, Settings = SettingsType.Number, Mask = "n0", HeaderToolTip = "Remaining units from refreshing P6" });
@@ -1022,6 +1024,8 @@ namespace BluePrints.ViewModels
                 columns.Add(new ColumnDescriptor() { FieldName = "Entity.IsProductivityFloating", Visible = false, ReadOnly = true, Header = "Floating PF", Fixed = FixedStyle.Left, Width = 50, Settings = SettingsType.Default, HeaderToolTip = "Productivity on job with floating productivity can be updated to match current productivity" });
                 columns.Add(new ColumnDescriptor() { FieldName = "Entity.ActualCosts", ReadOnly = true, Header = "Actual Costs (B)", Fixed = FixedStyle.Left, Width = 70, Settings = SettingsType.Number, Mask = "c0", HeaderToolTip = "Costs burned to Date" });
                 summaries.Add(new SummaryDescriptor() { FieldName = "Entity.ActualCosts", DisplayFormat = "c0", Type = SummaryItemType.Sum });
+                columns.Add(new ColumnDescriptor() { FieldName = "Entity.ActualCostsPostDataDate", ReadOnly = true, Header = "Actual Costs Post DD", Fixed = FixedStyle.Left, Width = 50, Settings = SettingsType.Number, Mask = "c0", HeaderToolTip = "Actual costs post data date" });
+                summaries.Add(new SummaryDescriptor() { FieldName = "Entity.ActualCostsPostDataDate", DisplayFormat = "c0", Type = SummaryItemType.Sum });
                 columns.Add(new ColumnDescriptor() { FieldName = "Entity.PctComplete", ReadOnly = true, Visible = false, Header = "% Complete", Fixed = FixedStyle.Left, Width = 40, Settings = SettingsType.Number, Mask = "p0", HeaderToolTip = "Procurement: Actuals / EAC, Others: (Budgeted Units - Remaining Units)/ Budgeted Units" });
                 columns.Add(new ColumnDescriptor() { FieldName = "Entity.Outstanding", ReadOnly = true, Header = "Outstanding (C)", Fixed = FixedStyle.Left, Width = 70, Settings = SettingsType.Number, Mask = "c0", HeaderToolTip = "Open Commitment, amount left on purchase order (outstanding PO) or amount left on P6 forecasts" });
                 summaries.Add(new SummaryDescriptor() { FieldName = "Entity.Outstanding", DisplayFormat = "c0", Type = SummaryItemType.Sum });
@@ -1326,13 +1330,28 @@ namespace BluePrints.ViewModels
                 this.RaisePropertyChanged(x => x.FilterCriteria);
                 this.RaisePropertyChanged(x => x.IsPOColumnsVisible);
             }
+            else if (gridColumn.FieldName.ToUpper().Contains("POSTDATADATE"))
+            {
+                DateTime dataDate = (DateTime)FixedDataDate;
+                ExoSubJobProjection entity = ((ForecastJobData)dataRowView[columnEntity]).Projection;
+                if (entity.CommodityCode != string.Empty)
+                    FilterCriteria = CriteriaOperator.Parse("[Subjob_Name] = '" + entity.SubJobCode + "' And [Discipline_Code] = '" + entity.DisciplineCode + "' And [Variation_Code] = '" + entity.VariationCode + "' And [Commodity_Code] = '" + entity.CommodityCode + "' And [IsPO] = 'False'" + " And [ActualDate] > #" + dataDate.Year + "-" + dataDate.Month + "-" + dataDate.Day + "#");
+                else
+                    FilterCriteria = CriteriaOperator.Parse("[Subjob_Name] = '" + entity.SubJobCode + "' And [Discipline_Code] = '" + entity.DisciplineCode + "' And [Variation_Code] = '" + entity.VariationCode + "' And [IsPO] = 'False'" + " And [ActualDate] > #" + dataDate.Year + "-" + dataDate.Month + "-" + dataDate.Day + "#");
+
+                IsHidden = false;
+                IsPOColumnsVisible = false;
+                this.RaisePropertyChanged(x => x.FilterCriteria);
+                this.RaisePropertyChanged(x => x.IsPOColumnsVisible);
+            }
             else if (gridColumn.FieldName.ToUpper().Contains("ACTUAL"))
             {
+                DateTime dataDate = (DateTime)FixedDataDate;
                 ExoSubJobProjection entity = ((ForecastJobData)dataRowView[columnEntity]).Projection;
                 if(entity.CommodityCode != string.Empty)
-                    FilterCriteria = CriteriaOperator.Parse("[Subjob_Name] = '" + entity.SubJobCode + "' And [Discipline_Code] = '" + entity.DisciplineCode + "' And [Variation_Code] = '" + entity.VariationCode + "' And [Commodity_Code] = '" + entity.CommodityCode + "' And [IsPO] = 'False'");
+                    FilterCriteria = CriteriaOperator.Parse("[Subjob_Name] = '" + entity.SubJobCode + "' And [Discipline_Code] = '" + entity.DisciplineCode + "' And [Variation_Code] = '" + entity.VariationCode + "' And [Commodity_Code] = '" + entity.CommodityCode + "' And [IsPO] = 'False'" + " And [ActualDate] <= #" + dataDate.Year + "-" + dataDate.Month + "-" + dataDate.Day + "#");
                 else
-                    FilterCriteria = CriteriaOperator.Parse("[Subjob_Name] = '" + entity.SubJobCode + "' And [Discipline_Code] = '" + entity.DisciplineCode + "' And [Variation_Code] = '" + entity.VariationCode + "' And [IsPO] = 'False'");
+                    FilterCriteria = CriteriaOperator.Parse("[Subjob_Name] = '" + entity.SubJobCode + "' And [Discipline_Code] = '" + entity.DisciplineCode + "' And [Variation_Code] = '" + entity.VariationCode + "' And [IsPO] = 'False'" + " And [ActualDate] <= #" + dataDate.Year + "-" + dataDate.Month + "-" + dataDate.Day + "#");
 
                 IsHidden = false;
                 IsPOColumnsVisible = false;

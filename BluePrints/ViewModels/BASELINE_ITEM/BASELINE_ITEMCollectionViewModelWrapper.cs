@@ -117,7 +117,7 @@ namespace BluePrints.ViewModels
                 GridControlService.RefreshData();
 
                 //if(loadBASELINE.FIN_CLIENTNUM_BY == null)
-                ActiveDirectory.SendEmail(LoginCredentials.CurrentUser.NAME, "Deliverable(s) client number in project " + loadPROJECT.NUMBER + " has been finalised, please review project deliverable(s) in document control module", "Deliverable Client Numbers Locked in " + loadPROJECT.NUMBER, true);
+                EmailServices.SendEmail(LoginCredentials.CurrentUser.NAME, "Deliverable(s) client number in project " + loadPROJECT.NUMBER + " has been finalised, please review project deliverable(s) in document control module", "Deliverable Client Numbers Locked in " + loadPROJECT.NUMBER, true);
 
                 loadBASELINE.FIN_CLIENTNUM_BY = LoginCredentials.CurrentUserGuid;
                 BASELINECollectionViewModel.Save(loadBASELINE);
@@ -145,7 +145,7 @@ namespace BluePrints.ViewModels
                 GridControlService.RefreshData();
 
                 //if (loadBASELINE.FIN_CLIENTNUM_BY == null)
-                ActiveDirectory.SendEmail(LoginCredentials.CurrentUser.NAME, "Deliverable(s) internal number in project " + loadPROJECT.NUMBER + " has been finalised, please review project deliverable(s) in document control module", "Deliverable Internal Numbers Locked In " + loadPROJECT.NUMBER, true);
+                EmailServices.SendEmail(LoginCredentials.CurrentUser.NAME, "Deliverable(s) internal number in project " + loadPROJECT.NUMBER + " has been finalised, please review project deliverable(s) in document control module", "Deliverable Internal Numbers Locked In " + loadPROJECT.NUMBER, true);
 
                 loadBASELINE.FIN_INTERNALNUM_BY = LoginCredentials.CurrentUserGuid;
                 BASELINECollectionViewModel.Save(loadBASELINE);

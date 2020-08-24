@@ -32,41 +32,46 @@ namespace BluePrints.Common.ViewModel.Converters
                     DataTable compareDataTable = (DataTable)dataRow["CompareEntities"];
                     ForecastJobData commodityJob = (ForecastJobData)dataRow["Entity"];
 
-                    if (compareDataTable.TableName == BluePrintsResources.ForecastCompareTableName)
+                    if (commodityJob.P6RemainingUnitsOverride == 0)
                     {
-                        string fieldname = values[1].ToString();
-                        DateTime parseDateTime;
-                        if (DateTime.TryParse(fieldname, out parseDateTime))
+                        if (compareDataTable.TableName == BluePrintsResources.ForecastCompareTableName)
                         {
-                            ForecastDateCost dateCost = commodityJob.DateCosts.FirstOrDefault(x => x.Date.Date == parseDateTime.Date);
-                            if(dateCost != null)
+                            string fieldname = values[1].ToString();
+                            DateTime parseDateTime;
+                            if (DateTime.TryParse(fieldname, out parseDateTime))
                             {
-                                decimal p6RemainingCosts = dateCost.P6Costs;
-                                decimal poForecastCosts = dateCost.POForecastCosts;
-                                decimal indirectCosts = dateCost.IndirectForecastCosts;
-                                decimal materialCosts = dateCost.MaterialCosts;
-                                decimal actualCosts = dateCost.ActualCosts;
-
-                                decimal totalCosts = poForecastCosts + indirectCosts + materialCosts + actualCosts;
-                                totalCosts = Math.Round(totalCosts);
-                                decimal currentValue = (decimal)values[2];
-
-                                if(p6RemainingCosts <= 0)
+                                ForecastDateCost dateCost = commodityJob.DateCosts.FirstOrDefault(x => x.Date.Date == parseDateTime.Date);
+                                if (dateCost != null)
                                 {
-                                    if (totalCosts != 0)
+                                    decimal p6RemainingCosts = dateCost.P6Costs;
+                                    decimal poForecastCosts = dateCost.POForecastCosts;
+                                    decimal indirectCosts = dateCost.IndirectForecastCosts;
+                                    decimal materialCosts = dateCost.MaterialCosts;
+                                    decimal actualCosts = dateCost.ActualCosts;
+
+                                    decimal totalCosts = poForecastCosts + indirectCosts + materialCosts + actualCosts;
+                                    totalCosts = Math.Round(totalCosts);
+                                    decimal currentValue = (decimal)values[2];
+
+                                    if (p6RemainingCosts <= 0)
                                     {
-                                        currentValue = Math.Round(currentValue);
-                                        if (currentValue > totalCosts)
+                                        if (totalCosts != 0)
+                                        {
+                                            currentValue = Math.Round(currentValue);
+                                            if (currentValue > totalCosts)
+                                                return new System.Windows.Media.SolidColorBrush(Colors.Chartreuse);
+                                            else if (currentValue < totalCosts)
+                                                return new System.Windows.Media.SolidColorBrush(Colors.LightSalmon);
+                                        }
+                                        else if (currentValue > 0)
                                             return new System.Windows.Media.SolidColorBrush(Colors.Chartreuse);
-                                        else if (currentValue < totalCosts)
-                                            return new System.Windows.Media.SolidColorBrush(Colors.LightSalmon);
                                     }
-                                    else if (currentValue > 0)
-                                        return new System.Windows.Media.SolidColorBrush(Colors.Chartreuse);
                                 }
                             }
                         }
                     }
+                    else
+                        return transparentColor;
                 }
             }
             catch(Exception ex)

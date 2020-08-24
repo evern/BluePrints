@@ -258,11 +258,17 @@ namespace BluePrints.ViewModels
             }
 
             List<ExoDataPoint> allDataPoints = new List<ExoDataPoint>();
+            List<FORECAST_JOB> deleteJobs = new List<FORECAST_JOB>();
+
             foreach (FORECAST_JOB job in MainViewModel.Entities)
             {
+                //when job doesn't exist in EXO delete it
                 ExoSubJobProjection projection = QueryJobs.Where(x => x.CommodityId != null && x.DisciplineId != null && x.SubJobId != null).FirstOrDefault(x => x.CommodityCode == job.COMMODITY_CODE && x.DisciplineCode == job.DISCIPLINE_CODE && x.SubJobCode == job.SUBJOB_CODE && x.VariationCode == job.VARIATION_CODE);
                 if (projection == null)
+                {
+                    deleteJobs.Add(job);
                     continue;
+                }
 
                 DataRow newRow = dataPointsTable.NewRow();
                 newRow[columnFullCode] = projection.FullCode;
@@ -287,6 +293,9 @@ namespace BluePrints.ViewModels
             }
 
             GridControlService.GridControl.EndDataUpdate();
+
+            LoadingScreenManager.SetMessage("Deleting deprecated indirect forecasts");
+            MainViewModel.BaseBulkDelete(deleteJobs);
             LoadingScreenManager.CloseLoadingScreen();
         }
 
