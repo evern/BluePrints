@@ -283,7 +283,7 @@ namespace BluePrints.Common
             qt.Add(createThread<SUBJOB_ASSIGNMENT>(24));
             qt.Add(createThread<TENDER_PROFILE>(24));
             qt.Add(createThread<VARIATION_ITEM>(24));
-            qt.Add(createThread<VARIATION_REGISTER>(25));
+            qt.Add(createThread<VARIATION_CONSTRUCTION>(25));
             qt.Add(createThread<TENDER_PROFILE_ITEM>(25));
 
             updateQueue();

@@ -165,11 +165,68 @@ namespace BluePrints.Common
         [Display(Name = "Lead")] Lead = 6
     }
 
-    public enum VariationRegisterStatus
+    public enum VariationConstructionType
     {
-        [Display(Name = "Identified")] Identified = 0,
+        [Display(Name = "QTY - An increase to in scope qty's from tender")]
+        QTY = 0,
+        [Display(Name = "RFQ - Any Client issued Site instruction or Request for Quotation that requires an estimate")]
+        RFQ = 1,
+        [Display(Name = "NOT - Any Client issued Variation notice or letter (might be rates based or fully estimated)")]
+        NOT = 2,
+        [Display(Name = "DWX - Any Dayworks captured (should consider separate register for these) - These should be formalised as a Primero CHG and then cancelled once they become a CHG. Remember Dayworks are a verification of works and do not constitute payment approval")]
+        DWX = 3,
+        [Display(Name = "CHG - Any 'change' types submitted as formal letters with supporting docs etc. that was not prompted by the client but Primero believe to be a claim. This may also include grouped dayworks for payment")]
+        CHG = 4,
+        [Display(Name = "RWX - Any costs associated with remedying Primero mistakes, whatever the cause")]
+        RWX = 4,
+        [Display(Name = "EOT - Any direct delays or Project extension of time claims")]
+        EOT = 5,
+        [Display(Name = "NCR - Any Non conformances raised on subcontractors or the Client that may have financial consequences")]
+        NCR = 6,
+        [Display(Name = "TQ - Any Technical Query that may have financial consequences to solve")]
+        TQ = 7,
+        [Display(Name = "BUD - Tracking of budget transfers made by the P.M. or delegate for record purposes")]
+        BUD = 8,
+    }
+
+    public enum VariationConstructionStatus
+    {
+        [Display(Name = "Pending")] Pending = 0,
         [Display(Name = "Submitted")] Submitted = 1,
         [Display(Name = "Approved")] Approved = 2,
+        [Display(Name = "Rejected")] Rejected = 3,
+        [Display(Name = "Cancelled")] Cancelled = 4,
+    }
+
+    public enum VariationConstructionItemType
+    {
+        [Display(Name = "Management")] Management = 0,
+        [Display(Name = "Engineering")] Engineering = 1,
+        [Display(Name = "Trades and Labour")] TradesAndLabour = 2, 
+        [Display(Name = "Equipment")] Equipment = 3,
+        [Display(Name = "Materials and Other")] Material = 4
+    }
+
+    public enum VariationConstructionImpact
+    {
+        [Display(Name = "Estimate")] Estimate = 0,
+        [Display(Name = "Engineering")] Engineering = 1,
+        [Display(Name = "Design")] Design = 2,
+        [Display(Name = "Procurement  / Vendor management")] ProcurementVendoManagement = 3,
+        [Display(Name = "Mobilisation")] Mobilisation = 4,
+        [Display(Name = "HSE")] HSE = 5,
+        [Display(Name = "HR")] HR = 6,
+        [Display(Name = "Plant & Equipment")] PlantEquipment = 7,
+        [Display(Name = "QA/QC")] QAQC = 8,
+        [Display(Name = "Document Control")] DocumentControl = 9,
+        [Display(Name = "Administration")] Administration = 10,
+        [Display(Name = "Training")] Training = 11,
+        [Display(Name = "Construction")] Construction = 12,
+        [Display(Name = "Material Handling Logistics / Goods Inwards & Outwards")] MaterialHandlingLogisticsGoodsInwardsOutwards = 13,
+        [Display(Name = "Project Management / Project Controls (budget/reporting/documentation)")] ProjectManagementProjectControls = 14,
+        [Display(Name = "Testing & Commissioning")] TestingCommissioning = 15,
+        [Display(Name = "Demobilisation")] Demobilisation = 16,
+        [Display(Name = "Customer Satisfaction")] CustomerSatisfaction = 17
     }
 
     public enum BaselineStatus
@@ -297,7 +354,8 @@ namespace BluePrints.Common
         RateDisciplineRole_Report,
         Project_Summary,
         Issues_Register,
-        Timesheet_Report
+        Timesheet_Report,
+        Construction_Variation_Report
     }
 
     public enum P6TASKTYPE

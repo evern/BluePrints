@@ -98,7 +98,6 @@ namespace BluePrints.ViewModels
             //need to reassign project because forecast dates information on project might changed since navigation is loaded since loadPROJECT comes from navigation
             loaderCollection.AddLoaderDescription(bluePrintsUnitOfWorkFactory, x => x.PROJECTS, PROJECTProjectionFunc, x => setProject(x));
             loaderCollection.AddLoaderDescription(bluePrintsUnitOfWorkFactory, x => x.FORECASTS, FORECASTProjectionFunc);
-            loaderCollection.AddLoaderDescription(bluePrintsUnitOfWorkFactory, x => x.VARIATION_REGISTERS, VARIATION_REGISTERProjectionFunc);
             loaderCollection.AddLoaderDescription(bluePrintsUnitOfWorkFactory, x => x.COMMODITY_CODES, COMMODITY_CODEProjectionFunc);
             loaderCollection.AddLoaderDescription(bluePrintsUnitOfWorkFactory, x => x.FORECAST_POS, FORECAST_POProjectionFunc);
             loaderCollection.AddLoaderDescription(p6UnitOfWorkFactory, x => x.PROJWBS, P6PROJECTProjectionFunc);
@@ -109,6 +108,7 @@ namespace BluePrints.ViewModels
             loaderCollection.AddLoaderDescription(bluePrintsUnitOfWorkFactory, x => x.FORECAST_JOBS, FORECAST_JOBProjectionFunc);
             loaderCollection.AddLoaderDescription(bluePrintsUnitOfWorkFactory, x => x.FORECAST_EACS, FORECAST_EACProjectionFunc);
             loaderCollection.AddLoaderDescription(bluePrintsUnitOfWorkFactory, x => x.FORECAST_JOB_SETTINGS, FORECAST_JOB_SETTINGProjectionFunc);
+            loaderCollection.AddLoaderDescription(bluePrintsUnitOfWorkFactory, x => x.VARIATION_CONSTRUCTIONS, VARIATION_CONSTRUCTIONProjectionFunc);
             loaderCollection.AddLoaderDescription<JOB_COSTTYPES, JOB_COSTTYPES, int, IPrimeroEntitiesUnitOfWork>(primeroUnitOfWorkFactory, x => x.JOB_COSTTYPES);
         }
 
@@ -160,7 +160,7 @@ namespace BluePrints.ViewModels
             return query => query.Where(x => x.GUID == LoadPROJECT.GUID);
         }
 
-        private Func<IRepositoryQuery<VARIATION_REGISTER>, IQueryable<VARIATION_REGISTER>> VARIATION_REGISTERProjectionFunc()
+        private Func<IRepositoryQuery<VARIATION_CONSTRUCTION>, IQueryable<VARIATION_CONSTRUCTION>> VARIATION_REGISTERProjectionFunc()
         {
             return query => query.Where(x => x.GUID_PROJECT == LoadPROJECT.GUID);
         }
@@ -186,6 +186,11 @@ namespace BluePrints.ViewModels
         }
 
         protected virtual Func<IRepositoryQuery<FORECAST_JOB_SETTING>, IQueryable<FORECAST_JOB_SETTING>> FORECAST_JOB_SETTINGProjectionFunc()
+        {
+            return query => query.Where(x => x.GUID_PROJECT == LoadPROJECT.GUID);
+        }
+
+        protected virtual Func<IRepositoryQuery<VARIATION_CONSTRUCTION>, IQueryable<VARIATION_CONSTRUCTION>> VARIATION_CONSTRUCTIONProjectionFunc()
         {
             return query => query.Where(x => x.GUID_PROJECT == LoadPROJECT.GUID);
         }
@@ -267,6 +272,28 @@ namespace BluePrints.ViewModels
             }
         }
 
+        public bool IsManualApprovedVariationRevenue
+        {
+            get
+            {
+                if (IsLoadingForecast)
+                    return false;
+
+                return ForecastSummary.Approved_Var_Revenue != VARIATION_CONSTRUCTIONCollection.Where(x => x.STATUS == VariationConstructionStatus.Approved).Sum(x => x.APPROVED_VALUE);
+            }
+        }
+
+        public bool IsManualRevisedVariationRevenue
+        {
+            get
+            {
+                if (IsLoadingForecast)
+                    return false;
+
+                return ForecastSummary.Unapproved_Var_Revenue != VARIATION_CONSTRUCTIONCollection.Where(x => x.STATUS == VariationConstructionStatus.Submitted).Sum(x => x.APPROVED_VALUE);
+            }
+        }
+
         public Action<DataTable> OnDataTableLoaded { get; set; }
         private void loadDataPointsTable()
         {
@@ -344,8 +371,8 @@ namespace BluePrints.ViewModels
             //dynamic revenueLine = ExoQueries.GetProjectRevenue(primeroEntitiesUnitOfWork, loadPROJECT.NUMBER);
             //if (revenueLine != null)
             ForecastSummary.Original_Revenue = LoadPROJECT.ORI_REVENUE == null ? 0 : (decimal)LoadPROJECT.ORI_REVENUE;
-            ForecastSummary.Approved_Var_Revenue = LoadPROJECT.VAR_REVENUE == null ? 0 : (decimal)LoadPROJECT.VAR_REVENUE;
-            ForecastSummary.Unapproved_Var_Revenue = LoadPROJECT.UNAPPROVED_VAR_REVENUE == null ? 0 : (decimal)LoadPROJECT.UNAPPROVED_VAR_REVENUE;
+            ForecastSummary.Approved_Var_Revenue = LoadPROJECT.VAR_REVENUE == null || LoadPROJECT.VAR_REVENUE == 0 ? VARIATION_CONSTRUCTIONCollection.Where(x => x.STATUS == VariationConstructionStatus.Approved).Sum(x => x.APPROVED_VALUE) : (decimal)LoadPROJECT.VAR_REVENUE;
+            ForecastSummary.Unapproved_Var_Revenue = LoadPROJECT.UNAPPROVED_VAR_REVENUE == null || LoadPROJECT.UNAPPROVED_VAR_REVENUE == 0 ? VARIATION_CONSTRUCTIONCollection.Where(x => x.STATUS == VariationConstructionStatus.Submitted).Sum(x => x.APPROVED_VALUE) : (decimal)LoadPROJECT.UNAPPROVED_VAR_REVENUE;
             ForecastSummary.Total_Unapproved_Var_Revenue = LoadPROJECT.TOTAL_UNAPPROVED_VAR_REVENUE == null ? 0 : (decimal)LoadPROJECT.TOTAL_UNAPPROVED_VAR_REVENUE;
             //ForecastSummary.EAC_Revenue = LoadPROJECT.EAC_REVENUE == null ? 0 : (decimal)LoadPROJECT.EAC_REVENUE;
 
@@ -528,6 +555,9 @@ namespace BluePrints.ViewModels
 
             IsLoadingForecast = false;
             this.RaisePropertyChanged(x => x.IsLoadingForecast);
+            this.RaisePropertyChanged(x => x.IsManualApprovedVariationRevenue);
+            this.RaisePropertyChanged(x => x.IsManualRevisedVariationRevenue);
+
             backgroundProcessCompleted();
 
             base.onSummaryCalculateComplete();
@@ -2566,24 +2596,43 @@ namespace BluePrints.ViewModels
             if (IsLoadingForecast)
                 return;
 
-            if (MainViewModel == null || LoadPROJECT == null || ForecastSummary == null || e.NewValue == null)
+            if (MainViewModel == null || LoadPROJECT == null || ForecastSummary == null)
                 return;
 
-            decimal newValueDecimal = 0;
-            decimal.TryParse(e.NewValue.ToString(), out newValueDecimal);
+            decimal? newValueDecimal = null;
+            decimal notNullDecimalValue = 0;
+            if (e.NewValue != null)
+            {
+                decimal.TryParse(e.NewValue.ToString(), out notNullDecimalValue);
+                newValueDecimal = notNullDecimalValue;
+            }
+
             string fieldName = ((BaseEdit)e.OriginalSource).Tag.ToString();
-            
             DataUtils.TrySetNestedValue(fieldName, LoadPROJECT, newValueDecimal);
             savePROJECT();
 
             if (fieldName == BindableBase.GetPropertyName(() => new Data.PROJECT().ORI_REVENUE))
-                ForecastSummary.Original_Revenue = newValueDecimal;
+                ForecastSummary.Original_Revenue = notNullDecimalValue;
             else if (fieldName == BindableBase.GetPropertyName(() => new Data.PROJECT().VAR_REVENUE))
-                ForecastSummary.Approved_Var_Revenue = newValueDecimal;
+            {
+                if (newValueDecimal == null)
+                    ForecastSummary.Approved_Var_Revenue = VARIATION_CONSTRUCTIONCollection.Where(x => x.STATUS == VariationConstructionStatus.Approved).Sum(x => x.APPROVED_VALUE);
+                else
+                    ForecastSummary.Approved_Var_Revenue = notNullDecimalValue;
+
+                this.RaisePropertyChanged(x => x.IsManualApprovedVariationRevenue);
+            }
             else if (fieldName == BindableBase.GetPropertyName(() => new Data.PROJECT().UNAPPROVED_VAR_REVENUE))
-                ForecastSummary.Unapproved_Var_Revenue = newValueDecimal;
+            {
+                if (newValueDecimal == null)
+                    ForecastSummary.Unapproved_Var_Revenue = VARIATION_CONSTRUCTIONCollection.Where(x => x.STATUS == VariationConstructionStatus.Submitted).Sum(x => x.APPROVED_VALUE);
+                else
+                    ForecastSummary.Unapproved_Var_Revenue = notNullDecimalValue;
+
+                this.RaisePropertyChanged(x => x.IsManualRevisedVariationRevenue);
+            }
             else if (fieldName == BindableBase.GetPropertyName(() => new Data.PROJECT().TOTAL_UNAPPROVED_VAR_REVENUE))
-                ForecastSummary.Total_Unapproved_Var_Revenue = newValueDecimal;
+                ForecastSummary.Total_Unapproved_Var_Revenue = notNullDecimalValue;
             //else if (fieldName == BindableBase.GetPropertyName(() => new Data.PROJECT().EAC_REVENUE))
             //    ForecastSummary.EAC_Revenue = newValueDecimal;
 
@@ -2873,6 +2922,14 @@ namespace BluePrints.ViewModels
             }
         }
 
+        public IEnumerable<VARIATION_CONSTRUCTION> VARIATION_CONSTRUCTIONCollection
+        {
+            get
+            {
+                return GetEntities<VARIATION_CONSTRUCTION>();
+            }
+        }
+
         public IEnumerable<FORECAST_PO> FORECAST_POCollection
         {
             get
@@ -2984,14 +3041,14 @@ namespace BluePrints.ViewModels
             }
         }
 
-        public CollectionViewModel<VARIATION_REGISTER, VARIATION_REGISTER, Guid, IBluePrintsEntitiesUnitOfWork> VARIATION_REGISTERCollectionViewModel
+        public CollectionViewModel<VARIATION_CONSTRUCTION, VARIATION_CONSTRUCTION, Guid, IBluePrintsEntitiesUnitOfWork> VARIATION_REGISTERCollectionViewModel
         {
             get
             {
                 if (MainViewModel == null)
                     return null;
 
-                return (CollectionViewModel<VARIATION_REGISTER, VARIATION_REGISTER, Guid, IBluePrintsEntitiesUnitOfWork>)loaderCollection.GetViewModel<VARIATION_REGISTER>();
+                return (CollectionViewModel<VARIATION_CONSTRUCTION, VARIATION_CONSTRUCTION, Guid, IBluePrintsEntitiesUnitOfWork>)loaderCollection.GetViewModel<VARIATION_CONSTRUCTION>();
             }
         }
 

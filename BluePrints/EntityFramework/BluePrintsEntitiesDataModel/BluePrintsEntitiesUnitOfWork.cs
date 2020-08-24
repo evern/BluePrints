@@ -2,6 +2,7 @@
 using BaseModel.DataModel.EntityFramework;
 using BluePrints.Data;
 using System;
+using System.Data.Entity;
 
 namespace BluePrints.BluePrintsEntitiesDataModel
 {
@@ -441,9 +442,19 @@ namespace BluePrints.BluePrintsEntitiesDataModel
             get { return GetRepository(x => x.Set<WORKPACK>(), (WORKPACK x) => x.GUID); }
         }
 
-        IRepository<VARIATION_REGISTER, Guid> IBluePrintsEntitiesUnitOfWork.VARIATION_REGISTERS
+        IRepository<VARIATION_CONSTRUCTION, Guid> IBluePrintsEntitiesUnitOfWork.VARIATION_CONSTRUCTIONS
         {
-            get { return GetRepository(x => x.Set<VARIATION_REGISTER>(), (VARIATION_REGISTER x) => x.GUID); }
+            get { return GetRepository(x => x.Set<VARIATION_CONSTRUCTION>(), (VARIATION_CONSTRUCTION x) => x.GUID); }
+        }
+
+        IRepository<VARIATION_CONSTRUCTION_ITEM, Guid> IBluePrintsEntitiesUnitOfWork.VARIATION_CONSTRUCTION_ITEMS
+        {
+            get { return GetRepository(x => x.Set<VARIATION_CONSTRUCTION_ITEM>(), (VARIATION_CONSTRUCTION_ITEM x) => x.GUID); }
+        }
+
+        IRepository<VARIATION_CONSTRUCTION_IMPACT, Guid> IBluePrintsEntitiesUnitOfWork.VARIATION_CONSTRUCTION_IMPACTS
+        {
+            get { return GetRepository(x => x.Set<VARIATION_CONSTRUCTION_IMPACT>(), (VARIATION_CONSTRUCTION_IMPACT x) => x.GUID); }
         }
     }
 }

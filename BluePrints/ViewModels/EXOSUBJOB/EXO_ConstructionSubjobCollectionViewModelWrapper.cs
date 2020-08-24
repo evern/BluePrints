@@ -90,6 +90,12 @@ namespace BluePrints.ViewModels
             base.addEntitiesLoader();
         }
 
+        protected new void initializeCompulsoryViewProperties(Data.PROJECT project)
+        {
+            localPrimeroUnitOfWorkFactory = PrimeroEntitiesUnitOfWorkSource.GetUnitOfWorkFactory(loadPROJECT.OfficeNameForExo == BluePrintsResources.OfficeMontreal);
+            localPrimeroUnitOfWork = localPrimeroUnitOfWorkFactory.CreateUnitOfWork();
+        }
+
         private void assign_estimation_direct(ESTIMATE estimation_direct)
         {
             liveESTIMATE = estimation_direct;

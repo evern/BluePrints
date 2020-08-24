@@ -648,6 +648,12 @@
     <Compile Include="Common\Reports\XtraReportBASELINE_ITEMS.Designer.cs">
       <DependentUpon>XtraReportBASELINE_ITEMS.cs</DependentUpon>
     </Compile>
+    <Compile Include="Common\Reports\XtraReportConstructionVariation.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="Common\Reports\XtraReportConstructionVariation.Designer.cs">
+      <DependentUpon>XtraReportConstructionVariation.cs</DependentUpon>
+    </Compile>
     <Compile Include="Common\Reports\XtraReportDashboardLookahead.cs">
       <SubType>Component</SubType>
     </Compile>
@@ -863,7 +869,9 @@
     <Compile Include="EntityFramework\Annotations\BASELINE_ITEM_WORK.cs" />
     <Compile Include="EntityFramework\Annotations\DSTATUS_DOCTYPE.cs" />
     <Compile Include="EntityFramework\Annotations\FORECAST.cs" />
-    <Compile Include="EntityFramework\Annotations\VARIATION_REGISTER.cs" />
+    <Compile Include="EntityFramework\Annotations\VARIATION_CONSTRUCTION_IMPACT.cs" />
+    <Compile Include="EntityFramework\Annotations\VARIATION_CONSTRUCTION_ITEM.cs" />
+    <Compile Include="EntityFramework\Annotations\VARIATION_CONSTRUCTION.cs" />
     <Compile Include="EntityFramework\Annotations\TENDER_PROFILE_ITEM.cs" />
     <Compile Include="EntityFramework\Annotations\TENDER_PROFILE.cs" />
     <Compile Include="EntityFramework\Annotations\CONSTRUCTION_CONFIG.cs" />
@@ -996,6 +1004,8 @@
     <Compile Include="EntityFramework\BluePrintsData\USER.cs" />
     <Compile Include="EntityFramework\BluePrintsData\USER_PREFERENCE.cs" />
     <Compile Include="EntityFramework\BluePrintsData\VARIATION.cs" />
+    <Compile Include="EntityFramework\BluePrintsData\VARIATION_CONSTRUCTION_IMPACT.cs" />
+    <Compile Include="EntityFramework\BluePrintsData\VARIATION_CONSTRUCTION_ITEM.cs" />
     <Compile Include="EntityFramework\BluePrintsData\VARIATION_ITEM.cs" />
     <Compile Include="EntityFramework\BluePrintsData\SUBJOB.cs" />
     <Compile Include="EntityFramework\BluePrintsData\P6_ASSIGNMENT.cs" />
@@ -1022,7 +1032,7 @@
     <Compile Include="EntityFramework\Annotations\VARIATION_ITEM.cs" />
     <Compile Include="EntityFramework\Annotations\SUBJOB.cs" />
     <Compile Include="EntityFramework\Annotations\SUBJOB_ASSIGNMENT.cs" />
-    <Compile Include="EntityFramework\BluePrintsData\VARIATION_REGISTER.cs" />
+    <Compile Include="EntityFramework\BluePrintsData\VARIATION_CONSTRUCTION.cs" />
     <Compile Include="EntityFramework\BluePrintsData\WORKPACK.cs" />
     <Compile Include="EntityFramework\BluePrintsEntitiesDataModel\BluePrintsEntitiesUnitOfWork.cs" />
     <Compile Include="EntityFramework\BluePrintsEntitiesDataModel\DesignTimeBluePrintsEntitiesUnitOfWork.cs" />
@@ -1087,7 +1097,8 @@
     <Compile Include="ViewModels\TIMESHEET\TransactionCollectionViewModelWrapper.cs" />
     <Compile Include="ViewModels\TIMESHEET\TimesheetEntryCollectionViewModelWrapper.cs" />
     <Compile Include="ViewModels\USER\PROJECT_USERDashboardViewModelWrapper.cs" />
-    <Compile Include="ViewModels\VARIATION\VARIATION_REGISTERCollectionViewModelWrapper.cs" />
+    <Compile Include="ViewModels\VARIATION\VARIATION_CONSTRUCTIONCollectionViewModelWrapper.cs" />
+    <Compile Include="ViewModels\VARIATION_ITEM\VARIATION_CONSTRUCTION_ITEMCollectionViewModelWrapper.cs" />
     <Compile Include="ViewModels\VARIATION_ITEM\OffsiteDirectVariationCollectionViewModelWrapper.cs" />
     <Compile Include="ViewModels\WORKPACK\WORKPACKCollectionViewModelWrapper.cs" />
     <Compile Include="Views\BASELINE_ITEM\BASELINE_ITEMRATECollectionView.xaml.cs">
@@ -1892,8 +1903,8 @@
     <Compile Include="Views\PROGRESS\PROGRESSCollectionView.xaml.cs">
       <DependentUpon>PROGRESSCollectionView.xaml</DependentUpon>
     </Compile>
-    <Compile Include="Views\VARIATION\VARIATION_REGISTERCollectionView.xaml.cs">
-      <DependentUpon>VARIATION_REGISTERCollectionView.xaml</DependentUpon>
+    <Compile Include="Views\VARIATION\VARIATION_CONSTRUCTIONCollectionView.xaml.cs">
+      <DependentUpon>VARIATION_CONSTRUCTIONCollectionView.xaml</DependentUpon>
     </Compile>
     <Compile Include="Views\VARIATION\VARIATIONCollectionView.xaml.cs">
       <DependentUpon>VARIATIONCollectionView.xaml</DependentUpon>
@@ -1909,6 +1920,9 @@
     </Compile>
     <Compile Include="Views\USER\USERCollectionView.xaml.cs">
       <DependentUpon>USERCollectionView.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Views\VARIATION_ITEM\VARIATION_CONSTRUCTION_ITEMCollectionView.xaml.cs">
+      <DependentUpon>VARIATION_CONSTRUCTION_ITEMCollectionView.xaml</DependentUpon>
     </Compile>
     <Compile Include="Views\VARIATION_ITEM\OffsiteDirectVariationCollectionView.xaml.cs">
       <DependentUpon>OffsiteDirectVariationCollectionView.xaml</DependentUpon>
@@ -2340,7 +2354,7 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>
-    <Page Include="Views\VARIATION\VARIATION_REGISTERCollectionView.xaml">
+    <Page Include="Views\VARIATION\VARIATION_CONSTRUCTIONCollectionView.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>
@@ -2361,6 +2375,10 @@
       <SubType>Designer</SubType>
     </Page>
     <Page Include="Views\USER\USERCollectionView.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Views\VARIATION_ITEM\VARIATION_CONSTRUCTION_ITEMCollectionView.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>
@@ -2394,6 +2412,9 @@
     <EmbeddedResource Include="Common\Reports\XtraReportBASELINE_ITEMS.resx">
       <DependentUpon>XtraReportBASELINE_ITEMS.cs</DependentUpon>
       <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Common\Reports\XtraReportConstructionVariation.resx">
+      <DependentUpon>XtraReportConstructionVariation.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Common\Reports\XtraReportDashboardLookahead.resx">
       <DependentUpon>XtraReportDashboardLookahead.cs</DependentUpon>
