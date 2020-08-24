@@ -344,6 +344,14 @@ namespace BluePrints.ViewModels
             return true;
         }
 
+        public bool CanEditReport()
+        {
+            if (IsLoading || MainViewModel == null || MainViewModel.Entities.Count == 0)
+                return false;
+
+            return true;
+        }
+
         public void EditReport()
         {
             var reportDesigner = new UserReportDesigner(loadPROJECT, (CollectionViewModel<PROJECT_REPORT, PROJECT_REPORT, Guid, IBluePrintsEntitiesUnitOfWork>)loaderCollection.GetViewModel<PROJECT_REPORT>(), ReportType.Construction_Variation_Report);

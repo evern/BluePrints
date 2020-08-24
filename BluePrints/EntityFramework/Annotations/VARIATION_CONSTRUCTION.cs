@@ -20,6 +20,7 @@ namespace BluePrints.Data
         {
             VARIATION_CONSTRUCTION_ITEM = new HashSet<VARIATION_CONSTRUCTION_ITEM>();
             VARIATION_CONSTRUCTION_IMPACT = new HashSet<VARIATION_CONSTRUCTION_IMPACT>();
+            SUBMISSION_DATE = DateTime.Now;
         }
 
         [NotMapped]
