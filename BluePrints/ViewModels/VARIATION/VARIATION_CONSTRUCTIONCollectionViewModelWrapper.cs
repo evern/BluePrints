@@ -76,6 +76,12 @@ namespace BluePrints.ViewModels
             loaderCollection.AddLoaderDescription(bluePrintsUnitOfWorkFactory, x => x.VARIATION_CONSTRUCTION_IMPACTS, VARIATION_CONSTRUCTION_IMPACTProjectionFunc);
             loaderCollection.AddLoaderDescription(bluePrintsUnitOfWorkFactory, x => x.USERS, USERProjectionFunc);
             loaderCollection.AddLoaderDescription(bluePrintsUnitOfWorkFactory, x => x.PROJECT_REPORTS, PROJECT_REPORTProjectionFunc, null, true);
+            loaderCollection.AddLoaderDescription(bluePrintsUnitOfWorkFactory, x => x.COMMODITY_CODES, COMMODITY_CODEProjectionFunc);
+        }
+
+        protected virtual Func<IRepositoryQuery<COMMODITY_CODE>, IQueryable<COMMODITY_CODE>> COMMODITY_CODEProjectionFunc()
+        {
+            return query => query.Where(x => x.GUID_PROJECT == null);
         }
 
         protected virtual Func<IRepositoryQuery<PROJECT_REPORT>, IQueryable<PROJECT_REPORT>> PROJECT_REPORTProjectionFunc()
@@ -188,6 +194,12 @@ namespace BluePrints.ViewModels
                     List<ExoSubJobProjection> exoJobs = projection.GetConstructionItemsForExoCommit(variationConstructionStatus == VariationConstructionStatus.Approved);
                     if (exoJobs.Count > 0)
                     {
+                        foreach(ExoSubJobProjection exoJob in exoJobs)
+                        {
+                            exoJob.IgnoreExoBudgetError = true;
+                            exoJob.PopulateCommodityCodes(COMMODITY_CODECollection);
+                        }
+
                         List<ErrorMessage> errorMessages;
                         IEnumerable<ExoSubJobProjection> addedProjections = ExoMethods.CommitToExo(exoJobs, MessageBoxService, masterJob, copyLine, loadPROJECT, USERCollection, localPrimeroUnitOfWork, BulkColumnEditDialogService, out errorMessages, null, true);
                         if (errorMessages.Count > 0)
@@ -212,6 +224,9 @@ namespace BluePrints.ViewModels
                         List<ExoSubJobProjection> removedJobs = new List<ExoSubJobProjection>();
                         foreach(ExoSubJobProjection exoJob in exoJobs)
                         {
+                            exoJob.IgnoreExoBudgetError = true;
+                            exoJob.PopulateCommodityCodes(COMMODITY_CODECollection);
+
                             JOBCOST_LINES line = ExoQueries.GetProjectLine(localPrimeroUnitOfWork, loadPROJECT.NUMBER, exoJob);
                             if (line != null)
                             {
@@ -467,6 +482,39 @@ namespace BluePrints.ViewModels
             get
             {
                 return GetEntities<VARIATION_CONSTRUCTION_ITEM>();
+            }
+        }
+
+        public IEnumerable<COMMODITY_CODE> COMMODITY_CODECollection
+        {
+            get
+            {
+                var collection = GetEntities<COMMODITY_CODE>();
+                if (collection != null)
+                    collection = collection.OrderBy(x => x.CODE);
+                return collection;
+            }
+        }
+
+        public IEnumerable<PrimeroData.STOCK_ITEMS> STOCK_ITEMSCollection
+        {
+            get
+            {
+                var collection = GetEntities<PrimeroData.STOCK_ITEMS>();
+                if (collection != null)
+                    collection = collection.OrderBy(x => x.STOCKCODE);
+                return collection;
+            }
+        }
+
+        public IEnumerable<JOB_COSTTYPES> JOB_COSTTYPESCollection
+        {
+            get
+            {
+                var collection = GetEntities<JOB_COSTTYPES>();
+                if (collection != null)
+                    collection = collection.OrderBy(x => x.SHORTCODE);
+                return collection;
             }
         }
 
