@@ -272,6 +272,28 @@ namespace BluePrints.ViewModels
             }
         }
 
+        public bool IsManualApprovedVariationRevenue
+        {
+            get
+            {
+                if (IsLoadingForecast)
+                    return false;
+
+                return ForecastSummary.Approved_Var_Revenue != VARIATION_CONSTRUCTIONCollection.Where(x => x.STATUS == VariationConstructionStatus.Approved).Sum(x => x.APPROVED_VALUE);
+            }
+        }
+
+        public bool IsManualRevisedVariationRevenue
+        {
+            get
+            {
+                if (IsLoadingForecast)
+                    return false;
+
+                return ForecastSummary.Unapproved_Var_Revenue != VARIATION_CONSTRUCTIONCollection.Where(x => x.STATUS == VariationConstructionStatus.Submitted).Sum(x => x.APPROVED_VALUE);
+            }
+        }
+
         public Action<DataTable> OnDataTableLoaded { get; set; }
         private void loadDataPointsTable()
         {
@@ -532,6 +554,9 @@ namespace BluePrints.ViewModels
 
             IsLoadingForecast = false;
             this.RaisePropertyChanged(x => x.IsLoadingForecast);
+            this.RaisePropertyChanged(x => x.IsManualApprovedVariationRevenue);
+            this.RaisePropertyChanged(x => x.IsManualRevisedVariationRevenue);
+
             backgroundProcessCompleted();
 
             base.onSummaryCalculateComplete();
@@ -2552,24 +2577,43 @@ namespace BluePrints.ViewModels
             if (IsLoadingForecast)
                 return;
 
-            if (MainViewModel == null || LoadPROJECT == null || ForecastSummary == null || e.NewValue == null)
+            if (MainViewModel == null || LoadPROJECT == null || ForecastSummary == null)
                 return;
 
-            decimal newValueDecimal = 0;
-            decimal.TryParse(e.NewValue.ToString(), out newValueDecimal);
+            decimal? newValueDecimal = null;
+            decimal notNullDecimalValue = 0;
+            if (e.NewValue != null)
+            {
+                decimal.TryParse(e.NewValue.ToString(), out notNullDecimalValue);
+                newValueDecimal = notNullDecimalValue;
+            }
+
             string fieldName = ((BaseEdit)e.OriginalSource).Tag.ToString();
-            
             DataUtils.TrySetNestedValue(fieldName, LoadPROJECT, newValueDecimal);
             savePROJECT();
 
             if (fieldName == BindableBase.GetPropertyName(() => new Data.PROJECT().ORI_REVENUE))
-                ForecastSummary.Original_Revenue = newValueDecimal;
+                ForecastSummary.Original_Revenue = notNullDecimalValue;
             else if (fieldName == BindableBase.GetPropertyName(() => new Data.PROJECT().VAR_REVENUE))
-                ForecastSummary.Approved_Var_Revenue = newValueDecimal;
+            {
+                if (newValueDecimal == null)
+                    ForecastSummary.Approved_Var_Revenue = VARIATION_CONSTRUCTIONCollection.Where(x => x.STATUS == VariationConstructionStatus.Approved).Sum(x => x.APPROVED_VALUE);
+                else
+                    ForecastSummary.Approved_Var_Revenue = notNullDecimalValue;
+
+                this.RaisePropertyChanged(x => x.IsManualApprovedVariationRevenue);
+            }
             else if (fieldName == BindableBase.GetPropertyName(() => new Data.PROJECT().UNAPPROVED_VAR_REVENUE))
-                ForecastSummary.Unapproved_Var_Revenue = newValueDecimal;
+            {
+                if (newValueDecimal == null)
+                    ForecastSummary.Unapproved_Var_Revenue = VARIATION_CONSTRUCTIONCollection.Where(x => x.STATUS == VariationConstructionStatus.Submitted).Sum(x => x.APPROVED_VALUE);
+                else
+                    ForecastSummary.Unapproved_Var_Revenue = notNullDecimalValue;
+
+                this.RaisePropertyChanged(x => x.IsManualRevisedVariationRevenue);
+            }
             else if (fieldName == BindableBase.GetPropertyName(() => new Data.PROJECT().TOTAL_UNAPPROVED_VAR_REVENUE))
-                ForecastSummary.Total_Unapproved_Var_Revenue = newValueDecimal;
+                ForecastSummary.Total_Unapproved_Var_Revenue = notNullDecimalValue;
             //else if (fieldName == BindableBase.GetPropertyName(() => new Data.PROJECT().EAC_REVENUE))
             //    ForecastSummary.EAC_Revenue = newValueDecimal;
 
