@@ -18,7 +18,7 @@ namespace BluePrints.Data
         [Key]
         public Guid GUID { get; set; }
 
-        public Guid GUID_VARIATION { get; set; }
+        public Guid GUID_VARIATION_CONSTRUCTION { get; set; }
 
         public VariationConstructionItemType TYPE { get; set; }
 

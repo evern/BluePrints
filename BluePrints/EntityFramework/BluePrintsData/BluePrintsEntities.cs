@@ -972,7 +972,7 @@ namespace BluePrints.Data
             modelBuilder.Entity<VARIATION_CONSTRUCTION>()
                 .HasMany(e => e.VARIATION_CONSTRUCTION_ITEM)
                 .WithRequired(e => e.VARIATION_CONSTRUCTION)
-                .HasForeignKey(e => e.GUID_VARIATION)
+                .HasForeignKey(e => e.GUID_VARIATION_CONSTRUCTION)
                 .WillCascadeOnDelete(false);
 
             modelBuilder.Entity<VARIATION_CONSTRUCTION>()

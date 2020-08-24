@@ -88,7 +88,7 @@ namespace BluePrints.ViewModels
 
         protected override Func<IRepositoryQuery<VARIATION_CONSTRUCTION_ITEM>, IQueryable<VARIATION_CONSTRUCTION_ITEM>> specifyMainViewModelProjection()
         {
-            return query => VARIATION_CONSTRUCTION_ITEMQuery(query.Where(x => x.GUID_VARIATION == loadVARIATION.GUID));
+            return query => VARIATION_CONSTRUCTION_ITEMQuery(query.Where(x => x.GUID_VARIATION_CONSTRUCTION == loadVARIATION.GUID));
         }
 
         protected virtual Func<IRepositoryQuery<PROJECT_REPORT>, IQueryable<PROJECT_REPORT>> PROJECT_REPORTProjectionFunc()
@@ -151,7 +151,7 @@ namespace BluePrints.ViewModels
         #region Tag saving behavior
         protected override OperationInterceptMode OnBeforeProjectionSaveIsContinue(VARIATION_CONSTRUCTION_ITEM projection, out bool isNew)
         {
-            projection.GUID_VARIATION = loadVARIATION.GUID;
+            projection.GUID_VARIATION_CONSTRUCTION = loadVARIATION.GUID;
             isNew = false;
             return base.OnBeforeProjectionSaveIsContinue(projection, out isNew);
         }
