@@ -204,6 +204,7 @@ namespace BluePrints.ViewModels
                 projection.ITEM_ID = itemNumberStr;
             }
 
+            GridControlService.RefreshSummary();
             base.UnifiedCellValueChanging(field_name, old_value, new_value, projection, isNew);
         }
 
