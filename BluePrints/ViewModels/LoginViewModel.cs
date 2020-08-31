@@ -47,11 +47,16 @@ namespace BluePrints.ViewModels
 
         private IEnumerable<USER> USERS { get; set; }
         private DispatcherTimer delayedHideDispatcher;
+        private DispatcherTimer delayedMainWindowCloseDispatcher;
         private DispatcherTimer delayedConnectDispatcher;
         protected virtual BaseModel.ViewModel.Services.IWindowService WindowService { get { return this.GetService<BaseModel.ViewModel.Services.IWindowService>(); } }
 
         public LoginViewModel()
         {
+            delayedMainWindowCloseDispatcher = new DispatcherTimer();
+            delayedMainWindowCloseDispatcher.Interval = new TimeSpan(0, 0, 0, 1);
+            delayedMainWindowCloseDispatcher.Tick += DelayedMainWindowCloseDispatcher_Tick;
+
             //preloadMainWindow();
             delayedHideDispatcher = new DispatcherTimer();
             delayedHideDispatcher.Interval = new TimeSpan(0, 0, 0, 0, 1);
@@ -299,22 +304,17 @@ namespace BluePrints.ViewModels
         }
 
         BluePrintsEntitiesWindow mainWindow;
+        BluePrintsEntitiesWindow oldMainWindow;
         public void ShowMainWindow()
         {
-            if(mainWindow == null)
-            {
-                mainWindow = new BluePrintsEntitiesWindow();
-            }
-
+            mainWindow = new BluePrintsEntitiesWindow();
             mainWindow.Show();
         }
 
         public void SignalRShutdown(string message)
         {
             WindowService.Show();
-
-            if(mainWindow != null)
-                mainWindow.Hide();
+            delayedMainWindowCloseDispatcher.Start();
 
             UserName = string.Empty;
             UserPassword = string.Empty;
@@ -325,6 +325,16 @@ namespace BluePrints.ViewModels
             {
                 MessageBoxService.ShowMessage(message);
                 Environment.Exit(1);
+            }
+        }
+
+        private void DelayedMainWindowCloseDispatcher_Tick(object sender, EventArgs e)
+        {
+            delayedMainWindowCloseDispatcher.Stop();
+            if (mainWindow != null)
+            {
+                ((BluePrintsEntitiesViewModel)mainWindow.DataContext).isLoggingOut = false;
+                mainWindow.Close();
             }
         }
 
