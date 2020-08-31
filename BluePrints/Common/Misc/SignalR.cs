@@ -21,7 +21,7 @@ namespace BluePrints.Common
         {
             Connection = new HubConnection(System.Configuration.ConfigurationManager.ConnectionStrings["SignalR"].ConnectionString, new Dictionary<string, string> { { "UserName", userName } });
             
-            HubProxy = Connection.CreateHubProxy("MyHub");
+            HubProxy = Connection.CreateHubProxy("BluePrintsHub");
             HubProxy.On<string, string, string, string, string>("AddMessage", (entityName, key, messageType, sender, hwid) => Application.Current.Dispatcher.Invoke(() => HubReceiveMessage(entityName, key, messageType, sender, hwid)));
             HubProxy.On<string, string>("AuthenticatedMessage", (key, authenticationResult) => Application.Current.Dispatcher.Invoke(() => AuthenticateMessage(key, authenticationResult)));
 
