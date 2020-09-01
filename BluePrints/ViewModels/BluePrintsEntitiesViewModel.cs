@@ -44,7 +44,7 @@ namespace BluePrints.ViewModels
         protected Dispatcher MainThreadDispatcher = Application.Current.Dispatcher;
         private CollectionViewModel<PROJECT, Guid, IBluePrintsEntitiesUnitOfWork> _projectCollectionViewModel;
         private DispatcherTimer onAfterNavigationLoadedDispatcher;
-
+        public bool isLoggingOut = true;
         protected BluePrintsEntitiesViewModel()
             : base(BluePrintsEntitiesUnitOfWorkSource.GetUnitOfWorkFactory())
         {
@@ -128,7 +128,9 @@ namespace BluePrints.ViewModels
         {
             Properties.Settings.Default["ThemeName"] = ApplicationThemeHelper.ApplicationThemeName;
             Properties.Settings.Default.Save();
-            Environment.Exit(1);
+
+            if(isLoggingOut)
+                Environment.Exit(1);
         }
 
         private void OnEntitiesLoadedCallBack(IEnumerable<PROJECT> entities)
