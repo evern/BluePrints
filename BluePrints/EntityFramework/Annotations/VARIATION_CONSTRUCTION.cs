@@ -6,6 +6,7 @@ namespace BluePrints.Data
     using BluePrints.Common;
     using BluePrints.Common.Base;
     using BluePrints.Common.Projections;
+    using BluePrints.Common.Resources;
     using DevExpress.Mvvm;
     using DevExpress.XtraEditors.DXErrorProvider;
     using System;
@@ -171,15 +172,14 @@ namespace BluePrints.Data
             List<ExoSubJobProjection> tempExoVariations = new List<ExoSubJobProjection>();
             if (updatedVARIATION_CONSTRUCTION_ITEMS != null && updatedVARIATION_CONSTRUCTION_ITEMS.Count > 0)
             {
-                var groupedItems = updatedVARIATION_CONSTRUCTION_ITEMS.GroupBy(x => new { SubJob = x.SUBJOB, DisciplineCode = x.COSTGROUP, CommodityCode = x.COSTTYPE })
-              .Select(group => new { group.Key.SubJob, group.Key.DisciplineCode, group.Key.CommodityCode, BudgetInternalCosts = group.Sum(x => x.TotalCosts) });
+                var groupedItems = updatedVARIATION_CONSTRUCTION_ITEMS.GroupBy(x => new { SubJob = x.SUBJOB })
+              .Select(group => new { group.Key.SubJob, BudgetInternalCosts = group.Sum(x => x.TotalCosts) });
 
                 foreach (var groupedItem in groupedItems)
                 {
                     ExoSubJobProjection exoJob = new ExoSubJobProjection();
                     exoJob.SubJobCode = groupedItem.SubJob;
-                    exoJob.DisciplineCode = groupedItem.DisciplineCode;
-                    exoJob.CommodityCode = groupedItem.CommodityCode;
+                    exoJob.StockCode = BluePrintsResources.VariationStockCode;
 
                     if(includeBudget)
                         exoJob.ExoBudget = groupedItem.BudgetInternalCosts;

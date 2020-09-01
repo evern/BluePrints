@@ -28,6 +28,7 @@ namespace BluePrints.Common.Projections
         protected abstract decimal budget { get; }
         protected abstract bool isLineExists { get; }
         protected abstract bool ignoreBudgetError { get; }
+        protected abstract string variationCode { get; }
 
         #region Commodity Codes
         private IEnumerable<COMMODITY_CODE> COMMODITY_CODES { get; set; }
@@ -240,20 +241,23 @@ namespace BluePrints.Common.Projections
         {
             if (subJobCode != null && subJobCode.Length == 15)
             {
-                if (propertyName == commodityCodePropertyName && !IsCommodityCodeValid)
+                if (stockCode != BluePrintsResources.VariationStockCode)
                 {
-                    info.ErrorText = "Invalid commodity code, please check phase and discipline";
-                }
+                    if (propertyName == commodityCodePropertyName && !IsCommodityCodeValid)
+                    {
+                        info.ErrorText = "Invalid commodity code, please check phase and discipline";
+                    }
 
-                if (propertyName == stockCodePropertyName && !IsStockCodeValid)
-                {
-                    info.ErrorText = "Invalid stock code, please check commodity code";
-                }
+                    if (propertyName == stockCodePropertyName && !IsStockCodeValid)
+                    {
+                        info.ErrorText = "Invalid stock code, please check commodity code";
+                    }
 
-                if (propertyName == exoBudgetPropertyName)
-                {
-                    if (isLineExists && !ignoreBudgetError && Math.Round(exoBudget, 0) != Math.Round(budget, 0))
-                        info.ErrorText = "Exo budget doesn't equal to budget from deliverables list";
+                    if (propertyName == exoBudgetPropertyName)
+                    {
+                        if (isLineExists && !ignoreBudgetError && Math.Round(exoBudget, 0) != Math.Round(budget, 0))
+                            info.ErrorText = "Exo budget doesn't equal to budget from deliverables list";
+                    }
                 }
             }
             else

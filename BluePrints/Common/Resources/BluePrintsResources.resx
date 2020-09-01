@@ -372,4 +372,7 @@
   <data name="Default_Tender_Phase" xml:space="preserve">
     <value>I1</value>
   </data>
+  <data name="VariationStockCode" xml:space="preserve">
+    <value>VA-001</value>
+  </data>
 </root>

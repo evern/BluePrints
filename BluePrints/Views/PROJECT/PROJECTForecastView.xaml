@@ -567,10 +567,7 @@
                                                 <dxe:TextEdit IsReadOnly="True" Mask="c0" MaskType="Numeric" MaskUseAsDisplayFormat="True" Text="{Binding ForecastSummary.Revised_Revenue, Mode=OneWay}" />
                                             </dxlc:LayoutItem>
                                             <dxlc:LayoutItem Label="Unapproved Variation" LabelPosition="Left">
-                                                <dxe:SpinEdit Style="{StaticResource SingleObjectView.SpinEditControlContainer}" NullValueButtonPlacement="EditBox" Tag="UNAPPROVED_VAR_REVENUE" Mask="c0" MaskType="Numeric" MaskUseAsDisplayFormat="True" EditValue="{Binding ForecastSummary.Unapproved_Var_Revenue, Mode=OneWay}" />
-                                            </dxlc:LayoutItem>
-                                            <dxlc:LayoutItem>
-                                                <dxe:CheckEdit Content="Manual" IsChecked="{Binding IsManualRevisedVariationRevenue, Mode=OneWay}" ToolTip="Approved variation revenue is manual" />
+                                                <dxe:SpinEdit Style="{StaticResource SingleObjectView.SpinEditControlContainer}" Tag="UNAPPROVED_VAR_REVENUE" Mask="c0" MaskType="Numeric" MaskUseAsDisplayFormat="True" EditValue="{Binding ForecastSummary.Unapproved_Var_Revenue, Mode=OneWay}" />
                                             </dxlc:LayoutItem>
                                             <dxlc:LayoutItem Label="EAC Revenue" LabelPosition="Left">
                                                 <dxe:TextEdit IsReadOnly="True" Mask="c0" MaskType="Numeric" MaskUseAsDisplayFormat="True" Text="{Binding ForecastSummary.EAC_Revenue, Mode=OneWay}" />
@@ -629,7 +626,10 @@
                                         </dxlc:LayoutGroup>
                                         <dxlc:LayoutGroup Orientation="Vertical" Header="Total Unapproved Variation" View="GroupBox">
                                             <dxlc:LayoutItem Label="Total Unapproved Variation" LabelPosition="Left">
-                                                <dxe:SpinEdit Style="{StaticResource SingleObjectView.SpinEditControlContainer}" Tag="TOTAL_UNAPPROVED_VAR_REVENUE" Mask="c0" MaskType="Numeric" MaskUseAsDisplayFormat="True" EditValue="{Binding LoadPROJECT.TOTAL_UNAPPROVED_VAR_REVENUE, Mode=OneWay}" />
+                                                <dxe:SpinEdit Style="{StaticResource SingleObjectView.SpinEditControlContainer}" NullValueButtonPlacement="EditBox" Tag="TOTAL_UNAPPROVED_VAR_REVENUE" Mask="c0" MaskType="Numeric" MaskUseAsDisplayFormat="True" EditValue="{Binding ForecastSummary.Total_Unapproved_Var_Revenue, Mode=OneWay}" />
+                                            </dxlc:LayoutItem>
+                                            <dxlc:LayoutItem>
+                                                <dxe:CheckEdit Content="Manual" IsChecked="{Binding IsManualRevisedVariationRevenue, Mode=OneWay}" ToolTip="Total unapproved variation is manual" />
                                             </dxlc:LayoutItem>
                                         </dxlc:LayoutGroup>
                                     </dxlc:LayoutControl>

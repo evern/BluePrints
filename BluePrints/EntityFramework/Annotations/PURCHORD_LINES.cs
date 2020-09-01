@@ -84,6 +84,8 @@ namespace BluePrints.PrimeroData
 
         protected override string stockCode => STOCKCODE;
 
+        protected override string variationCode => string.Empty;
+
         //this property will not be used here because it validates on exoBudgetPropertyName
         protected override decimal exoBudget => 0;
 

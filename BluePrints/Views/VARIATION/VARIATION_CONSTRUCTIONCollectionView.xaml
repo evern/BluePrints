@@ -79,7 +79,7 @@
                                 <dxe:ComboBoxEditSettings AutoComplete="True" IsTextEditable="True" ItemsSource="{dxe:EnumItemsSource EnumType={x:Type common:VariationConstructionType}}" />
                             </dxg:GridColumn.EditSettings>
                         </dxg:GridColumn>
-                        <dxg:GridColumn Header="Impacts" AllowBestFit="false" Width="150" SortMode="DisplayText" FieldName="MultipleAssignedImpactObject">
+                        <!--<dxg:GridColumn Header="Impacts" AllowBestFit="false" Width="150" SortMode="DisplayText" FieldName="MultipleAssignedImpactObject">
                             <dxg:GridColumn.EditSettings>
                                 <dxe:ComboBoxEditSettings
                                                 ItemsSource="{Binding AllVARIATION_CONSTRUCTION_IMPACTCollection}" 
@@ -94,7 +94,7 @@
                                     </dxe:ComboBoxEditSettings.StyleSettings>
                                 </dxe:ComboBoxEditSettings>
                             </dxg:GridColumn.EditSettings>
-                        </dxg:GridColumn>
+                        </dxg:GridColumn>-->
                         <dxg:GridColumn FieldName="STATUS" Header="Status" AllowBestFit="False" Width="75">
                             <dxg:GridColumn.EditSettings>
                                 <dxe:ComboBoxEditSettings AutoComplete="True" IsTextEditable="True" ItemsSource="{dxe:EnumItemsSource EnumType={x:Type common:VariationConstructionStatus}}" />

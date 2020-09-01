@@ -9,8 +9,6 @@
                     <dxg:GridControl x:Name="GridControl" dx:DXSerializer.SerializationID="GridControlList" dx:DXSerializer.StoreLayoutMode="All" ItemsSource="{Binding SourceObjects}" SelectionMode="Row">
                         <dxg:GridControl.Columns>
                             <dxg:GridColumn Header="Sub Job" FieldName="SubJobCode" ReadOnly="True" IsSmart="True" />
-                            <dxg:GridColumn Header="Cost Group" FieldName="DisciplineCode" ReadOnly="True" IsSmart="True" />
-                            <dxg:GridColumn Header="Cost Type" FieldName="CommodityCode" ReadOnly="True" IsSmart="True" />
                             <dxg:GridColumn Header="Variation" FieldName="VariationCode" ReadOnly="True" IsSmart="True" />
                             <dxg:GridColumn Header="Budget" FieldName="ExoBudget" ReadOnly="True" IsSmart="True" >
                                 <dxg:GridColumn.EditSettings>

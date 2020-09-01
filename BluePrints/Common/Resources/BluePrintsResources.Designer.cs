@@ -817,6 +817,15 @@ namespace BluePrints.Common.Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to VA-001.
+        /// </summary>
+        internal static string VariationStockCode {
+            get {
+                return ResourceManager.GetString("VariationStockCode", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Warning.
         /// </summary>
         internal static string Warning_Caption {
