@@ -97,6 +97,21 @@ namespace BluePrints.ViewModels
         }
 
         #region Collection Call Backs
+        public override void UnifiedCellValueChanged(string field_name, object old_value, object new_value, PROGRESS projection, bool isNew)
+        {
+            //always save data date as end of day
+            if(field_name == BindableBase.GetPropertyName(() => new PROGRESS().DATA_DATE))
+            {
+                if(new_value != null)
+                {
+                    DateTime dataDate = (DateTime)new_value;
+                    projection.DATA_DATE = dataDate.Date.AddDays(1).AddSeconds(-1);
+                }
+            }
+
+            base.UnifiedCellValueChanged(field_name, old_value, new_value, projection, isNew);
+        }
+
         public override void UnifiedNewRowInitializationFromView(PROGRESS projection)
         {
             projection.GUID_PROJECT = loadPROJECT.GUID;

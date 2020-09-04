@@ -135,10 +135,11 @@ namespace BluePrints.Common.ViewModel.Utils
         public static bool ProgressDateChange(DateNavigationType navigationType, PROGRESS loadPROGRESS)
         {
             var interval = ChronologicalHelpers.ConvertProgressIntervalToPeriod(loadPROGRESS);
+            DateTime endOfDayToday = DateTime.Now.Date.AddDays(1).AddSeconds(-1);
             int multiplier;
             if (navigationType == DateNavigationType.Current)
             {
-                DateTime oneWeekAgo = DateTime.Now.AddDays(-1 * interval.Days);
+                DateTime oneWeekAgo = endOfDayToday.AddDays(-1 * (interval.Days));
                 if (loadPROGRESS.DATA_DATE < oneWeekAgo)
                 {
                     do
@@ -148,12 +149,12 @@ namespace BluePrints.Common.ViewModel.Utils
 
                     return true;
                 }
-                else if (loadPROGRESS.DATA_DATE > DateTime.Now)
+                else if (loadPROGRESS.DATA_DATE > endOfDayToday)
                 {
                     do
                     {
                         loadPROGRESS.DATA_DATE = loadPROGRESS.DATA_DATE.AddDays(-1 * interval.Days);
-                    } while (loadPROGRESS.DATA_DATE > DateTime.Now);
+                    } while (loadPROGRESS.DATA_DATE > endOfDayToday);
                     return true;
                 }
                 else
