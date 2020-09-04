@@ -139,7 +139,7 @@ namespace BluePrints.Common.ViewModel.Utils
             int multiplier;
             if (navigationType == DateNavigationType.Current)
             {
-                DateTime oneWeekAgo = endOfDayToday.AddDays(-1 * (interval.Days));
+                DateTime oneWeekAgo = endOfDayToday.Date.AddDays(-1 * (interval.Days)).AddDays(1);
                 if (loadPROGRESS.DATA_DATE < oneWeekAgo)
                 {
                     do
