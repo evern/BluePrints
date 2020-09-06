@@ -1352,13 +1352,6 @@ namespace BluePrints.Common.Base
                             break;
                         }
 
-                        TASKRSRC P6TASKRSRC = p6UOW.TASKRSRC.FirstOrDefault(x => x.task_id == P6TASK.task_id);
-                        if(P6TASKRSRC != null)
-                        {
-                            P6TASKRSRC.act_reg_qty = P6TASK.act_work_qty;
-                            P6TASKRSRC.remain_qty = P6TASK.remain_work_qty;
-                        }
-
                         if (P6TASK.target_work_qty <= 0)
                         {
                             if(!isDeliverableCancelled)
@@ -1370,6 +1363,13 @@ namespace BluePrints.Common.Base
 
                         if (P6TASK.remain_work_qty >= 0)
                             P6TASK.remain_work_qty = P6TASK.target_work_qty - P6TASK.act_work_qty;
+
+                        TASKRSRC P6TASKRSRC = p6UOW.TASKRSRC.FirstOrDefault(x => x.task_id == P6TASK.task_id);
+                        if (P6TASKRSRC != null)
+                        {
+                            P6TASKRSRC.act_reg_qty = P6TASK.act_work_qty;
+                            P6TASKRSRC.remain_qty = P6TASK.remain_work_qty;
+                        }
 
                         if (P6TASK.remain_work_qty < 0)
                         {
