@@ -200,10 +200,10 @@ namespace BluePrints.Common
         }
 
         List<ThreadPriority> qt;
-        //int qtPriority = 11;
-        //int qtPriorityCompletionCount = 22;
-        int qtPriority = 0;
-        int qtPriorityCompletionCount = 0;
+        int qtPriority = 11;
+        int qtPriorityCompletionCount = 22;
+        //int qtPriority = 0;
+        //int qtPriorityCompletionCount = 0;
         public void SyncData()
         {
             //ThreadPool.SetMaxThreads(1, 1);
