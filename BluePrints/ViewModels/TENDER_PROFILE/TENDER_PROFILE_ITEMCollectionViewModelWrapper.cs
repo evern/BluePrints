@@ -74,7 +74,9 @@ namespace BluePrints.ViewModels
         #region Collection Call Backs
         protected override OperationInterceptMode OnBeforeProjectionSaveIsContinue(TENDER_PROFILE_ITEM projection, out bool isNew)
         {
-            projection.GUID_TENDER_PROFILE = loadTENDER_PROFILE.GUID;
+            if(loadTENDER_PROFILE != null)
+                projection.GUID_TENDER_PROFILE = loadTENDER_PROFILE.GUID;
+
             return base.OnBeforeProjectionSaveIsContinue(projection, out isNew);
         }
 
