@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?>
+﻿<?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="12.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
   <PropertyGroup>
@@ -852,6 +852,8 @@
     </Compile>
     <Compile Include="EntityFramework\Annotations\JOB_TIMESHEETS.cs" />
     <Compile Include="EntityFramework\Annotations\JOB_TRANSACTIONS.cs" />
+    <Compile Include="EntityFramework\Annotations\PIPELINE.cs" />
+    <Compile Include="EntityFramework\Annotations\PIPELINE_PROFILE_ITEM.cs" />
     <Compile Include="EntityFramework\Annotations\STOCK_ITEMS.cs" />
     <Compile Include="EntityFramework\Annotations\JOB_COSTTYPES.cs" />
     <Compile Include="EntityFramework\Annotations\PURCHORD_LINES.cs" />
@@ -924,6 +926,8 @@
     <Compile Include="EntityFramework\Annotations\X_JOB_TIMESHEETS.cs" />
     <Compile Include="EntityFramework\Annotations\X_JOB_TRANSACTIONS_DETAIL_SeqNo.cs" />
     <Compile Include="EntityFramework\BluePrintsData\FORECAST_EAC.cs" />
+    <Compile Include="EntityFramework\BluePrintsData\PIPELINE.cs" />
+    <Compile Include="EntityFramework\BluePrintsData\PIPELINE_PROFILE_ITEM.cs" />
     <Compile Include="EntityFramework\BluePrintsData\PROJECT_PERMISSION.cs" />
     <Compile Include="EntityFramework\BluePrintsData\PROJECT_REVENUE.cs" />
     <Compile Include="EntityFramework\BluePrintsData\FORECAST_JOB_SETTING.cs" />
