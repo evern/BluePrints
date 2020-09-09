@@ -43,8 +43,6 @@
                         </dxb:BarEditItem.EditSettings>
                     </dxb:BarEditItem>
                 </dxb:BarSubItem>
-                <dxb:BarButtonItem x:Name="biSendToChangeRegister" Content="Change Register" ToolTip="Send selected issue to change register. Cannot send if item is already sent to hold/change register" Command="{Binding SendToChangeRegisterCommand}" LargeGlyph="{dx:DXImage Image=BOTask_32x32.png}" Glyph="{dx:DXImage Image=BOTask_16x16.png}" />
-                <dxb:BarButtonItem x:Name="biSendToHoldRegister" Content="Hold Register" ToolTip="Send selected issue to hold register. Cannot send if item is already sent to hold/change register" Command="{Binding SendToHoldRegisterCommand}" LargeGlyph="{dx:DXImage Image=BORules_32x32.png}" Glyph="{dx:DXImage Image=BORules_16x16.png}" />
             </dxb:BarManager.Items>
             <DockPanel>
                 <dxr:RibbonControl Style="{StaticResource DefaultRibbonControlStyle}">

@@ -71,15 +71,15 @@ namespace BluePrints.ViewModels
 
             Messenger.Default.Register<AuthenticationResult>(this, (AuthenticationResult) => signalRLoadWindow(AuthenticationResult));
             authenticateKey = Guid.NewGuid();
-//#if DEBUG
-//            Application.Current.Dispatcher.BeginInvoke(new Action(() => immediateLogin()));
-//#else
+#if DEBUG
+            Application.Current.Dispatcher.BeginInvoke(new Action(() => immediateLogin()));
+#else
             if (UserName != string.Empty && UserPassword != string.Empty)
             {
                 RememberPassword = true;
                 Application.Current.Dispatcher.BeginInvoke(new Action(() => Login()));
             }
-//#endif
+#endif
         }
 
         private void DelayedConnectDispatcher_Tick(object sender, EventArgs e)

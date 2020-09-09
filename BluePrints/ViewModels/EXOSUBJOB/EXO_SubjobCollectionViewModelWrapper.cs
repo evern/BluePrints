@@ -361,7 +361,7 @@ namespace BluePrints.ViewModels
             List<ExoSubJobProjection> viewRemoveProjections = new List<ExoSubJobProjection>();
             foreach (ExoSubJobProjection removeProjection in removeProjections)
             {
-                JOBCOST_LINES line = localPrimeroUnitOfWork.JOBCOST_LINES.First(x => x.SEQNO == removeProjection.LineId);
+                JOBCOST_LINES line = localPrimeroUnitOfWork.JOBCOST_LINES.FirstOrDefault(x => x.SEQNO == removeProjection.LineId);
                 if (line != null)
                 {
                     localPrimeroUnitOfWork.JOBCOST_LINES.Remove(line);

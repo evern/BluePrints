@@ -14,10 +14,10 @@ namespace BluePrints.Common.Misc
             Register_RiskLikelihood? Likelihood = likelihood;
             Register_RiskRanking? Ranking = null;
 
-            if (likelihood == Register_RiskLikelihood.Certain)
+            if (likelihood == Register_RiskLikelihood.AlmostCertain)
             {
                 if (consequences == Register_RiskConsequence.Insignificant)
-                    Ranking = Register_RiskRanking.Medium11;
+                    Ranking = Register_RiskRanking.Moderate11;
                 else if (consequences == Register_RiskConsequence.Minor)
                     Ranking = Register_RiskRanking.High16;
                 else if (consequences == Register_RiskConsequence.Moderate)
@@ -30,7 +30,7 @@ namespace BluePrints.Common.Misc
             else if(likelihood == Register_RiskLikelihood.Likely)
             {
                 if (consequences == Register_RiskConsequence.Insignificant)
-                    Ranking = Register_RiskRanking.Medium7;
+                    Ranking = Register_RiskRanking.Moderate7;
                 else if (consequences == Register_RiskConsequence.Minor)
                     Ranking = Register_RiskRanking.High12;
                 else if (consequences == Register_RiskConsequence.Moderate)
@@ -45,11 +45,11 @@ namespace BluePrints.Common.Misc
                 if (consequences == Register_RiskConsequence.Insignificant)
                     Ranking = Register_RiskRanking.Low4;
                 else if (consequences == Register_RiskConsequence.Minor)
-                    Ranking = Register_RiskRanking.Medium8;
+                    Ranking = Register_RiskRanking.Moderate8;
                 else if (consequences == Register_RiskConsequence.Moderate)
                     Ranking = Register_RiskRanking.High13;
                 else if (consequences == Register_RiskConsequence.Major)
-                    Ranking = Register_RiskRanking.High18;
+                    Ranking = Register_RiskRanking.Extreme18;
                 else
                     Ranking = Register_RiskRanking.Extreme22;
             }
@@ -60,11 +60,11 @@ namespace BluePrints.Common.Misc
                 else if (consequences == Register_RiskConsequence.Minor)
                     Ranking = Register_RiskRanking.Low5;
                 else if (consequences == Register_RiskConsequence.Moderate)
-                    Ranking = Register_RiskRanking.Medium9;
+                    Ranking = Register_RiskRanking.Moderate9;
                 else if (consequences == Register_RiskConsequence.Major)
                     Ranking = Register_RiskRanking.High14;
                 else
-                    Ranking = Register_RiskRanking.High19;
+                    Ranking = Register_RiskRanking.Extreme19;
             }
             else if (likelihood == Register_RiskLikelihood.Rare)
             {
@@ -73,9 +73,9 @@ namespace BluePrints.Common.Misc
                 else if (consequences == Register_RiskConsequence.Minor)
                     Ranking = Register_RiskRanking.Low3;
                 else if (consequences == Register_RiskConsequence.Moderate)
-                    Ranking = Register_RiskRanking.Low6;
+                    Ranking = Register_RiskRanking.Moderate6;
                 else if (consequences == Register_RiskConsequence.Major)
-                    Ranking = Register_RiskRanking.Medium10;
+                    Ranking = Register_RiskRanking.Moderate10;
                 else
                     Ranking = Register_RiskRanking.High15;
             }
