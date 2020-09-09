@@ -533,8 +533,8 @@ namespace BluePrints.Common
 
     public enum Register_RiskLikelihood
     {
-        [Display(Name = "A Certain")]
-        Certain = 0,
+        [Display(Name = "A Almost Certain")]
+        AlmostCertain = 0,
         [Display(Name = "B Likely")]
         Likely = 1,
         [Display(Name = "C Possible")]
@@ -581,18 +581,18 @@ namespace BluePrints.Common
         Low4 = 3,
         [Display(Name = "5 Low")]
         Low5 = 4,
-        [Display(Name = "6 Low")]
-        Low6 = 5,
-        [Display(Name = "7 Medium")]
-        Medium7 = 6,
-        [Display(Name = "8 Medium")]
-        Medium8 = 7,
-        [Display(Name = "9 Medium")]
-        Medium9 = 8,
-        [Display(Name = "10 Medium")]
-        Medium10 = 9,
-        [Display(Name = "11 Medium")]
-        Medium11 = 10,
+        [Display(Name = "6 Moderate")]
+        Moderate6 = 5,
+        [Display(Name = "7 Moderate")]
+        Moderate7 = 6,
+        [Display(Name = "8 Moderate")]
+        Moderate8 = 7,
+        [Display(Name = "9 Moderate")]
+        Moderate9 = 8,
+        [Display(Name = "10 Moderate")]
+        Moderate10 = 9,
+        [Display(Name = "11 Moderate")]
+        Moderate11 = 10,
         [Display(Name = "12 High")]
         High12 = 11,
         [Display(Name = "13 High")]
@@ -605,10 +605,10 @@ namespace BluePrints.Common
         High16 = 15,
         [Display(Name = "17 High")]
         High17 = 16,
-        [Display(Name = "18 High")]
-        High18 = 17,
-        [Display(Name = "19 High")]
-        High19 = 18,
+        [Display(Name = "18 Extreme")]
+        Extreme18 = 17,
+        [Display(Name = "19 Extreme")]
+        Extreme19 = 18,
         [Display(Name = "20 Extreme")]
         Extreme20 = 19,
         [Display(Name = "21 Extreme")]
