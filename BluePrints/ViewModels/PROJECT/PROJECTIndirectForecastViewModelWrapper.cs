@@ -479,10 +479,10 @@ namespace BluePrints.ViewModels
                                 invalidRows.Add(new ErrorMessage(fullCode, "Row is not pasted, because exo job doesn't exists"));
                         }
                         else
-                            invalidRows.Add(new ErrorMessage(fullCode, "Row is not pasted, because exo job doesn't exists"));
+                            invalidRows.Add(new ErrorMessage(fullCode, "Row is not pasted, because commodity code doesn't exists"));
                     }
                     else
-                        invalidRows.Add(new ErrorMessage(fullCode, "Row is not pasted, because exo job doesn't exists"));
+                        invalidRows.Add(new ErrorMessage(fullCode, "Row is not pasted, because of invalid WBS code doesn't exists"));
                 }
 
                 LoadingScreenManager.Progress();
