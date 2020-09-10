@@ -228,7 +228,13 @@ namespace BluePrints.Common.Projections
         {
             get
             {
-                if (Projection == null || Projection.CommodityCode == null || ValidCommodityCodes.Count() == 0 || Projection.CommodityCode.Length < 2)
+                if (Projection == null)
+                    return true;
+
+                if (Projection.DisciplineCode == null || Projection.DisciplineCode == string.Empty)
+                    return false;
+
+                if (Projection.CommodityCode.Length < 2 || Projection.CommodityCode == null || ValidCommodityCodes.Count() == 0)
                     return true;
 
                 if (Projection.CommodityCode == BluePrintsResources.ContingencyCostType)

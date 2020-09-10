@@ -1240,7 +1240,7 @@ namespace BluePrints.Common.Projections
         public static IQueryable<ExoSubJobProjection> GetNativeExoSubJobProjection(
             IPrimeroEntitiesUnitOfWork primeroUnitOfWork, Data.PROJECT PROJECT, ref List<ExoTimeAuthorisation> exoLines)
         {
-            exoLines = GetProjectLines(primeroUnitOfWork, PROJECT.NUMBER);
+            exoLines = GetProjectLinesIgnoreCostCentres(primeroUnitOfWork, PROJECT.NUMBER);
             List<ExoTimeAuthorisation> exoAuthorisations = GetExoLinesAuthorisations(primeroUnitOfWork, PROJECT.NUMBER);
             List<ExoSubJobProjection> exoSubJobs = new List<ExoSubJobProjection>();
             foreach (ExoTimeAuthorisation exoLine in exoLines)
