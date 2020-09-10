@@ -720,7 +720,7 @@ namespace BluePrints.Common.ViewModel.Utils
                 LoadingScreenManager.SetMessage("Loading POs...");
             }
 
-            DateTime poCutOffDate = queryDate.Date.AddDays(1).AddHours(-1);
+            DateTime poCutOffDate = queryDate.Date.AddDays(1).AddMinutes(-1);
             var pos = from PURCHORD_LINES in primeroUOW.PURCHORD_LINES
                       join PURCHORD_HDR in primeroUOW.PURCHORD_HDR
                       on PURCHORD_LINES.HDR_SEQNO equals PURCHORD_HDR.SEQNO
