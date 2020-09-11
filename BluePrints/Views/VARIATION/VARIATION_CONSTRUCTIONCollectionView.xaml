@@ -102,37 +102,37 @@
                         </dxg:GridColumn>
                         <dxg:GridColumn FieldName="APPROVED_VALUE" Header="Revenue Amount">
                             <dxg:GridColumn.EditSettings>
-                                <dxe:SpinEditSettings Increment="10" Mask="c2" MaskType="Numeric" MaskUseAsDisplayFormat="True" MinValue="0" />
+                                <dxe:SpinEditSettings Increment="10" Mask="c2" MaskType="Numeric" MaskUseAsDisplayFormat="True" />
                             </dxg:GridColumn.EditSettings>
                         </dxg:GridColumn>
                         <dxg:GridColumn FieldName="ManagementTotal" Header="Management Total" AllowBestFit="false" Width="90" ReadOnly="True">
                             <dxg:GridColumn.EditSettings>
-                                <dxe:SpinEditSettings Increment="10" Mask="c2" MaskType="Numeric" MaskUseAsDisplayFormat="True" MinValue="0" />
+                                <dxe:SpinEditSettings Increment="10" Mask="c2" MaskType="Numeric" MaskUseAsDisplayFormat="True" />
                             </dxg:GridColumn.EditSettings>
                         </dxg:GridColumn>
                         <dxg:GridColumn FieldName="EngineeringTotal" Header="Engineering Total" AllowBestFit="false" Width="90" ReadOnly="True">
                             <dxg:GridColumn.EditSettings>
-                                <dxe:SpinEditSettings Increment="10" Mask="c2" MaskType="Numeric" MaskUseAsDisplayFormat="True" MinValue="0" />
+                                <dxe:SpinEditSettings Increment="10" Mask="c2" MaskType="Numeric" MaskUseAsDisplayFormat="True" />
                             </dxg:GridColumn.EditSettings>
                         </dxg:GridColumn>
                         <dxg:GridColumn FieldName="TradesAndLabourTotal" Header="Trades and Labour Total" AllowBestFit="false" Width="90" ReadOnly="True">
                             <dxg:GridColumn.EditSettings>
-                                <dxe:SpinEditSettings Increment="10" Mask="c2" MaskType="Numeric" MaskUseAsDisplayFormat="True" MinValue="0" />
+                                <dxe:SpinEditSettings Increment="10" Mask="c2" MaskType="Numeric" MaskUseAsDisplayFormat="True" />
                             </dxg:GridColumn.EditSettings>
                         </dxg:GridColumn>
                         <dxg:GridColumn FieldName="EquipmentTotal" Header="Equipment Total" AllowBestFit="false" Width="90" ReadOnly="True">
                             <dxg:GridColumn.EditSettings>
-                                <dxe:SpinEditSettings Increment="10" Mask="c2" MaskType="Numeric" MaskUseAsDisplayFormat="True" MinValue="0" />
+                                <dxe:SpinEditSettings Increment="10" Mask="c2" MaskType="Numeric" MaskUseAsDisplayFormat="True" />
                             </dxg:GridColumn.EditSettings>
                         </dxg:GridColumn>
                         <dxg:GridColumn FieldName="MaterialTotal" Header="Material Total" AllowBestFit="false" Width="90" ReadOnly="True">
                             <dxg:GridColumn.EditSettings>
-                                <dxe:SpinEditSettings Increment="10" Mask="c2" MaskType="Numeric" MaskUseAsDisplayFormat="True" MinValue="0" />
+                                <dxe:SpinEditSettings Increment="10" Mask="c2" MaskType="Numeric" MaskUseAsDisplayFormat="True" />
                             </dxg:GridColumn.EditSettings>
                         </dxg:GridColumn>
                         <dxg:GridColumn FieldName="TotalEstimatedValue" Header="Total Estimated Value" AllowBestFit="false" Width="90" ReadOnly="True">
                             <dxg:GridColumn.EditSettings>
-                                <dxe:SpinEditSettings Increment="10" Mask="c2" MaskType="Numeric" MaskUseAsDisplayFormat="True" MinValue="0" />
+                                <dxe:SpinEditSettings Increment="10" Mask="c2" MaskType="Numeric" MaskUseAsDisplayFormat="True" />
                             </dxg:GridColumn.EditSettings>
                         </dxg:GridColumn>
                     </custom:GridControlEx.Columns>
