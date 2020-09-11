@@ -102,6 +102,11 @@
                                 <dxe:ComboBoxEditSettings AutoComplete="True" DisplayMember="wbs_short_name" IsTextEditable="True" ItemsSource="{Binding P6PROJECTSCollection}" NullValueButtonPlacement="Popup" ValueMember="wbs_short_name" />
                             </dxg:GridColumn.EditSettings>
                         </dxg:GridColumn>
+                        <dxg:GridColumn Header="Use Current Week" FieldName="USE_CURRENT_WEEK" HeaderToolTip="Progress will be set to the current week automatically instead of previous week">
+                            <dxg:GridColumn.EditSettings>
+                                <dxe:CheckEditSettings />
+                            </dxg:GridColumn.EditSettings>
+                        </dxg:GridColumn>
                     </dxg:GridControl.Columns>
                     <dxg:GridControl.TotalSummary>
                         <dxg:GridSummaryItem dx:DXSerializer.Enabled="False" Alignment="Right" SummaryType="Count" />

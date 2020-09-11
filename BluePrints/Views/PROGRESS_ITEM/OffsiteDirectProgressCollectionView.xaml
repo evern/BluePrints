@@ -45,6 +45,7 @@
                 <dxb:BarCheckItem x:Name="bcShowBookable" Content="Show Bookable Only" IsEnabled="{Binding IsExoDataLoaded}" Glyph="{dxc:DXImage Image=Date&amp;Time_16x16.png}" IsChecked="{Binding ShowBookable}" LargeGlyph="{dxc:DXImage Image=Date&amp;Time_32x32.png}" ToolTip="Show bookable only" />
                 <dxb:BarButtonItem x:Name="biUpdateAll" Command="{Binding UpdateAllPercentagesByStatusCommand}" Content="Update % by Gates" Glyph="{dx:DXImage Image=ClearFormatting_16x16.png}" LargeGlyph="{dx:DXImage Image=ClearFormatting_32x32.png}" ToolTip="Bulk update all deliverables progress by it's gate. Deliverables without gates will be ignored. When deliverables status % is lower than current %, previous progresses will be reduced starting from previous interval." />
                 <dxb:BarButtonItem x:Name="biPushToP6" Command="{Binding PushToP6OriginalCommand}" Content="Progress To P6" Glyph="{dx:DXImage Image=DoubleNext_16x16.png}" LargeGlyph="{dx:DXImage Image=DoubleNext_32x32.png}" ToolTip="Update P6 earned units to current deliverables earned units." />
+                <dxb:BarButtonItem x:Name="biUpdateTargetDates" Command="{Binding UpdateTargetDatesCommand}" Content="Update Target Dates" Glyph="{dxc:DXImage Images/RichEdit/UpdateTableOfContents_32x32.png}" LargeGlyph="{dx:DXImage Images/RichEdit/UpdateTableOfContents_16x16.png}" RibbonStyle="SmallWithText" ToolTip="Update target dates with start date and due date" />
             </dxb:BarManager.Items>
              <DockPanel>
                 <dxr:RibbonControl Style="{StaticResource DefaultRibbonControlStyle}">
@@ -75,6 +76,7 @@
                                 <dxb:BarCheckItemLink BarItemName="bcShowBookable" />
                                 <dxb:BarButtonItemLink BarItemName="biUpdateAll" />
                                 <dxb:BarButtonItemLink BarItemName="biPushToP6" />
+                                <dxb:BarButtonItemLink BarItemName="biUpdateTargetDates" />
                             </dxr:RibbonPageGroup>
                         </dxr:RibbonPage>
                     </dxr:RibbonDefaultPageCategory>

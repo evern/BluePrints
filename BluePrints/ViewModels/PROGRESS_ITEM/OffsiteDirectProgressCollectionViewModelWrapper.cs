@@ -327,6 +327,33 @@ namespace BluePrints.ViewModels
             notification1.ShowAsync();
         }
 
+        public bool CanUpdateTargetDates()
+        {
+            return !IsLoading;
+        }
+
+        public void UpdateTargetDates()
+        {
+            if (MessageBoxService.ShowMessage("This will copy start dates and due dates to target dates, do you wish to continue?", "Confirmation", MessageButton.OKCancel) == MessageResult.Cancel)
+                return;
+
+            List<BASELINE_ITEMProgress> saveProgresses = new List<BASELINE_ITEMProgress>();
+
+            IBluePrintsEntitiesUnitOfWork bluePrintsUnitOfWork = bluePrintsUnitOfWorkFactory.CreateUnitOfWork();
+            foreach (BASELINE_ITEMProgress progress in MainViewModel.Entities)
+            {
+                BASELINE_ITEM repositoryBASELINE_ITEM = bluePrintsUnitOfWork.BASELINE_ITEMS.FirstOrDefault(x => x.GUID == progress.Entity.Entity.GUID);
+                if(repositoryBASELINE_ITEM != null)
+                {
+                    repositoryBASELINE_ITEM.FORECAST_START_DATE = progress.StartDate;
+                    repositoryBASELINE_ITEM.TARGET_DATE = progress.DueDate;
+                }
+            }
+
+            bluePrintsUnitOfWork.SaveChanges();
+            FullRefresh();
+        }
+
         public bool CanViewReport()
         {
             return !IsLoading;

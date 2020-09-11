@@ -139,17 +139,36 @@ namespace BluePrints.Common.ViewModel.Utils
             int multiplier;
             if (navigationType == DateNavigationType.Current)
             {
-                DateTime oneWeekAgo = endOfDayToday.Date.AddDays(-1 * (interval.Days)).AddDays(1);
-                if (loadPROGRESS.DATA_DATE < oneWeekAgo)
+                if (loadPROGRESS.USE_CURRENT_WEEK)
                 {
-                    do
+                    DateTime endOfCurrentWeek = DateTime.Today.Date.AddDays(-(int)loadPROGRESS.DATA_DATE.DayOfWeek).AddDays(6).AddSeconds(-1);
+                    if (loadPROGRESS.DATA_DATE < endOfCurrentWeek)
                     {
-                        loadPROGRESS.DATA_DATE = loadPROGRESS.DATA_DATE.AddDays(1 * interval.Days);
-                    } while (loadPROGRESS.DATA_DATE < oneWeekAgo);
+                        do
+                        {
+                            loadPROGRESS.DATA_DATE = loadPROGRESS.DATA_DATE.AddDays(1 * interval.Days);
+                        } while (loadPROGRESS.DATA_DATE < endOfCurrentWeek);
 
-                    return true;
+                        return true;
+                    }
                 }
-                else if (loadPROGRESS.DATA_DATE > endOfDayToday)
+                else
+                {
+                    DateTime oneWeekAgo = endOfDayToday.Date.AddDays(-1 * (interval.Days)).AddDays(1);
+
+                    if (loadPROGRESS.DATA_DATE < oneWeekAgo)
+                    {
+                        do
+                        {
+                            loadPROGRESS.DATA_DATE = loadPROGRESS.DATA_DATE.AddDays(1 * interval.Days);
+                        } while (loadPROGRESS.DATA_DATE < oneWeekAgo);
+
+                        return true;
+                    }
+
+                }
+
+                if (loadPROGRESS.DATA_DATE > endOfDayToday)
                 {
                     do
                     {
