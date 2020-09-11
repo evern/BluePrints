@@ -106,6 +106,7 @@ namespace BluePrints.ViewModels
             foreach(VARIATION_CONSTRUCTION_ITEM VARIATION_CONSTRUCTION_ITEM in VARIATION_CONSTRUCTION_ITEMS)
             {
                 VARIATION_CONSTRUCTION_ITEM.SetUnitOfWork(localPrimeroUnitOfWork);
+                VARIATION_CONSTRUCTION_ITEM.SetJOBCOST_HDRS(JOBCOST_HDRS);
             }
 
             return VARIATION_CONSTRUCTION_ITEMS;
@@ -146,6 +147,7 @@ namespace BluePrints.ViewModels
         public override void UnifiedNewRowInitializationFromView(VARIATION_CONSTRUCTION_ITEM projection)
         {
             projection.SetUnitOfWork(localPrimeroUnitOfWork);
+            projection.SetJOBCOST_HDRS(JOBCOST_HDRS);
         }
 
         #region Tag saving behavior

@@ -3,23 +3,37 @@ namespace BluePrints.Data
     using BaseModel.Attributes;
     using BaseModel.DataModel;
     using BaseModel.Misc;
+    using BluePrints.Common;
     using BluePrints.Common.Base;
     using BluePrints.PrimeroData;
     using BluePrints.PrimeroData.PrimeroEntitiesDataModel;
     using DevExpress.Mvvm;
+    using DevExpress.XtraEditors.DXErrorProvider;
     using System;
     using System.Collections.Generic;
     using System.ComponentModel.DataAnnotations;
     using System.ComponentModel.DataAnnotations.Schema;
     using System.Linq;
 
-    public partial class VARIATION_CONSTRUCTION_ITEM : EntityBase, IGuidEntityKey, ICanSync, IHaveCreatedDate
+    public partial class VARIATION_CONSTRUCTION_ITEM : EntityBase, IGuidEntityKey, ICanSync, IHaveCreatedDate, IDXDataErrorInfo
     {
         [NotMapped]
         public DateTime EntityCreatedDate
         {
             get { return CREATED; }
             set { CREATED = value; }
+        }
+
+        [NotMapped]
+        public VariationConstructionItemType TYPEProxy
+        {
+            get => TYPE;
+            set
+            {
+                TYPE = value;
+                validJOBCOST_HDRNames = null;
+                Update();
+            }
         }
 
         [NotMapped]
@@ -63,6 +77,48 @@ namespace BluePrints.Data
         public void SetUnitOfWork(IPrimeroEntitiesUnitOfWork primeroEntitiesUnitOfWork)
         {
             primeroUOW = primeroEntitiesUnitOfWork;
+        }
+
+        public void SetJOBCOST_HDRS(List<JOBCOST_HDR> ProjectJOBCOST_HDRS)
+        {
+            JOBCOST_HDRNames = ProjectJOBCOST_HDRS.OrderBy(x => x.JOBCODE).Select(x => x.JOBCODE).ToList();
+            establishValidJOBCOST_HDRNames();
+        }
+
+        [NotMapped]
+        List<string> JOBCOST_HDRNames;
+
+        [NotMapped]
+        List<string> validJOBCOST_HDRNames;
+
+        [NotMapped]
+        public IEnumerable<string> JOBCOST_HDRNameCollection
+        {
+            get
+            {
+                if (primeroUOW == null || JOBCOST_HDRNames == null)
+                    return null;
+
+                establishValidJOBCOST_HDRNames();
+                return validJOBCOST_HDRNames;
+            }
+        }
+
+        private void establishValidJOBCOST_HDRNames()
+        {
+            if (validJOBCOST_HDRNames == null)
+            {
+                if (TYPE == Common.VariationConstructionItemType.Engineering)
+                    validJOBCOST_HDRNames = JOBCOST_HDRNames.Where(x => x.Contains("D")).ToList();
+                else if (TYPE == Common.VariationConstructionItemType.Equipment)
+                    validJOBCOST_HDRNames = JOBCOST_HDRNames.Where(x => x.Contains("I")).ToList();
+                else if (TYPE == Common.VariationConstructionItemType.Management)
+                    validJOBCOST_HDRNames = JOBCOST_HDRNames.Where(x => x.Contains("I")).ToList();
+                else if (TYPE == Common.VariationConstructionItemType.Material)
+                    validJOBCOST_HDRNames = JOBCOST_HDRNames.Where(x => x.Contains("P")).ToList();
+                else
+                    validJOBCOST_HDRNames = JOBCOST_HDRNames.Where(x => x.Contains("C")).ToList();
+            }
         }
 
         [NotMapped]
@@ -147,5 +203,23 @@ namespace BluePrints.Data
 
         [NotMapped]
         public string Office => this.VARIATION_CONSTRUCTION.PROJECT.NUMBER + " " + this.VARIATION_CONSTRUCTION.PROJECT.OfficeName;
+
+        public void GetPropertyError(string propertyName, ErrorInfo info)
+        {
+            if (propertyName == BindableBase.GetPropertyName(() => new VARIATION_CONSTRUCTION_ITEM().SUBJOB))
+            {
+                if (validJOBCOST_HDRNames != null)
+                {
+                    if (!validJOBCOST_HDRNames.Any(x => x == SUBJOB))
+                    {
+                        info.ErrorText = "Invalid sub job code, please check type";
+                    }
+                }
+            }
+        }
+
+        public void GetError(ErrorInfo info)
+        {
+        }
     }
 }

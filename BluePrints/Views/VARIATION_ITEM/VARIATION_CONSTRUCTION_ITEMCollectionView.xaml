@@ -121,7 +121,7 @@
                         </ExtraLayout:ExtraLayoutControl>
                         <custom:GridControlEx x:Name="GridControl" Grid.Row="1" MaxHeight="2000" MaxWidth="2000" dxc:DXSerializer.SerializationID="GridControlVARIATION_CONSTRUCTION_ITEM" AutoExpandAllGroups="True" dxc:DXSerializer.StoreLayoutMode="All" Style="{StaticResource DefaultGridControlTemplate}">
                             <dxg:GridControl.Columns>
-                                <dxg:GridColumn FieldName="TYPE" Header="Type" AllowBestFit="false" Width="100" GroupIndex="1">
+                                <dxg:GridColumn FieldName="TYPEProxy" Header="Type" AllowBestFit="false" Width="100" GroupIndex="1">
                                     <dxg:GridColumn.EditSettings>
                                         <dxe:ComboBoxEditSettings AutoComplete="True" IsTextEditable="True" ItemsSource="{dxe:EnumItemsSource EnumType={x:Type common:VariationConstructionItemType}}" />
                                     </dxg:GridColumn.EditSettings>
@@ -131,16 +131,16 @@
                                     <!--Must use CellTemplate for incremental filtering-->
                                     <dxg:GridColumn.CellTemplate>
                                         <DataTemplate>
-                                            <dxe:ComboBoxEdit x:Name="PART_Editor" AutoComplete="True" ValidateOnTextInput="False" IncrementalFiltering="False" IsTextEditable="True" ItemsSource="{Binding View.DataContext.JOBCOST_HDRNameCollection}" />
+                                            <dxe:ComboBoxEdit x:Name="PART_Editor" AutoComplete="True" ValidateOnTextInput="False" IncrementalFiltering="False" IsTextEditable="True" ItemsSource="{Binding RowData.Row.JOBCOST_HDRNameCollection}" />
                                         </DataTemplate>
                                     </dxg:GridColumn.CellTemplate>
                                 </dxg:GridColumn>
-                                <dxg:GridColumn FieldName="COSTGROUPProxy" Header="Cost Group" AllowBestFit="false" Width="60">
+                                <dxg:GridColumn FieldName="COSTGROUPProxy" Header="Cost Group" AllowBestFit="false" Visible="False" Width="60">
                                     <dxg:GridColumn.EditSettings>
                                         <dxe:ComboBoxEditSettings AutoComplete="True" DisplayMember="SHORTCODE" ValueMember="SHORTCODE" IsTextEditable="True" ItemsSource="{Binding JOB_COSTGROUPCollection}" />
                                     </dxg:GridColumn.EditSettings>
                                 </dxg:GridColumn>
-                                <dxg:GridColumn FieldName="COSTTYPEProxy" AllowBestFit="false" Width="60" Header="Cost Type" >
+                                <dxg:GridColumn FieldName="COSTTYPEProxy" AllowBestFit="false" Width="60" Visible="False" Header="Cost Type" >
                                     <dxg:GridColumn.CellTemplate>
                                         <DataTemplate>
                                             <dxg:LookUpEdit Name="PART_Editor" AutoComplete="True" AutoPopulateColumns="False" DisplayMember="SHORTCODE" ValueMember="SHORTCODE" IncrementalFiltering="True" IsTextEditable="False" ItemsSource="{Binding RowData.Row.TaggedValidJOB_COSTTYPES}"  PopupMinWidth="700">
@@ -168,7 +168,7 @@
                                         <dxe:ComboBoxEditSettings AutoComplete="True" IsTextEditable="False" ItemsSource="{Binding JOB_COSTTYPECollection}" />
                                     </dxg:GridColumn.EditSettings>
                                 </dxg:GridColumn>
-                                <dxg:GridColumn FieldName="STOCKCODE" Header="Stock Code" AllowBestFit="false" Width="100">
+                                <dxg:GridColumn FieldName="STOCKCODE" Header="Stock Code" Visible="False" AllowBestFit="false" Width="100">
                                     <dxg:GridColumn.CellTemplate>
                                         <DataTemplate>
                                             <dxg:LookUpEdit Name="PART_Editor" AutoComplete="True" AutoPopulateColumns="False" DisplayMember="STOCKCODE" ValueMember="STOCKCODE" IncrementalFiltering="True" IsTextEditable="False" ItemsSource="{Binding RowData.Row.TaggedValidSTOCK_ITEMS}"  PopupMinWidth="700">
