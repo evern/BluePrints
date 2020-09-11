@@ -967,8 +967,8 @@ namespace BluePrints.Common.Projections
             newLINE.STOCKCODE = projection.StockCode.ToUpper();
             newLINE.DESCRIPTION = projection.StockName;
             newLINE.SHOW_ON_INVOICE = copyLine.SHOW_ON_INVOICE;
-            newLINE.COST_CENTRE = ignoreCostGroupCostType ? -1 : projection.CommodityId;
-            newLINE.COST_CENTRE2 = ignoreCostGroupCostType ? -1 : projection.DisciplineId;
+            newLINE.COST_CENTRE = projection.CommodityId == null && ignoreCostGroupCostType ? -1 : projection.CommodityId;
+            newLINE.COST_CENTRE2 = projection.DisciplineId == null && ignoreCostGroupCostType ? -1 : projection.DisciplineId;
             newLINE.NARRATIVE = "N";
             newLINE.LINE_STATUS = "Q";
             newLINE.TAXNO = copyLine.TAXNO;

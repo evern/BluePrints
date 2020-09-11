@@ -25,7 +25,6 @@ namespace BluePrints.ViewModels
             return ViewModelSource.Create(() => new CLIENTCollectionViewModelWrapper(unitOfWorkFactory));
         }
 
-
         /// <summary>
         /// Initializes a new instance of the CLIENTCollectionViewModelWrapper class.
         /// This constructor is declared protected to avoid undesired instantiation of the CLIENTCollectionViewModelWrapper type without the POCO proxy factory.

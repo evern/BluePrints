@@ -1174,6 +1174,9 @@
     <Compile Include="Views\OFFICE\OFFICECollectionView.xaml.cs">
       <DependentUpon>OFFICECollectionView.xaml</DependentUpon>
     </Compile>
+    <Compile Include="Views\PIPELINE\PIPELINECollectionView.xaml.cs">
+      <DependentUpon>PIPELINECollectionView.xaml</DependentUpon>
+    </Compile>
     <Compile Include="Views\PROGRESS_ITEM\OffsiteDirectDistributionCollectionView.xaml.cs">
       <DependentUpon>OffsiteDirectDistributionCollectionView.xaml</DependentUpon>
     </Compile>
@@ -2119,6 +2122,10 @@
       <SubType>Designer</SubType>
     </Page>
     <Page Include="Views\OFFICE\OFFICECollectionView.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Views\PIPELINE\PIPELINECollectionView.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>
@@ -5225,6 +5232,9 @@
   <ItemGroup>
     <Content Include="Common\BluePrintsSQL.sql" />
     <Content Include="DatabaseScript.sql" />
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="ViewModels\PIPELINE\" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <Import Project="..\packages\Microsoft.VisualStudio.SlowCheetah.3.0.61\build\Microsoft.VisualStudio.SlowCheetah.targets" Condition="Exists('..\packages\Microsoft.VisualStudio.SlowCheetah.3.0.61\build\Microsoft.VisualStudio.SlowCheetah.targets')" />
