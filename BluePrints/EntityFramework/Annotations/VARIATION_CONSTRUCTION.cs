@@ -196,7 +196,7 @@ namespace BluePrints.Data
         {
             if (propertyName == BindableBase.GetPropertyName(() => new VARIATION_CONSTRUCTION().APPROVED_VALUE))
             {
-                if(APPROVED_VALUE <= 0 && STATUS == VariationConstructionStatus.Approved)
+                if(APPROVED_VALUE == 0 && STATUS == VariationConstructionStatus.Approved)
                     info.ErrorText = "Approved variation must have approved value";
             }
         }
