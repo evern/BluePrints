@@ -107,33 +107,7 @@ namespace BluePrints.ViewModels
             primeroUnitOfWorkFactory = PrimeroEntitiesUnitOfWorkSource.GetUnitOfWorkFactory(LoadPROJECT.OfficeNameForExo == BluePrintsResources.OfficeMontreal);
             primeroEntitiesUnitOfWork = primeroUnitOfWorkFactory.CreateUnitOfWork();
             IsWeeks = true;
-            List<ExoTimeAuthorisation> jobLines = new List<ExoTimeAuthorisation>();
-            IBluePrintsEntitiesUnitOfWork bluePrintsEntitiesUnitOfWork = bluePrintsUnitOfWorkFactory.CreateUnitOfWork();
-            List<string> indirectPhases = bluePrintsEntitiesUnitOfWork.PHASES.Where(x => x.PHASE_TYPE == Common.PhaseType.Indirect).Select(x => x.INTERNAL_NUM).ToList();
-            List<ExoSubJobProjection> tempQueryJobs = ExoQueries.GetNativeExoSubJobProjection(primeroEntitiesUnitOfWork, LoadPROJECT, ref jobLines).ToList();
-            QueryJobs = new List<ExoSubJobProjection>();
-            foreach (ExoSubJobProjection tempQueryJob in tempQueryJobs)
-            {
-                if (tempQueryJob.SubJobId == null)
-                    continue;
-
-                foreach(string indirectPhase in indirectPhases)
-                {
-                    if (tempQueryJob.SubJobCode.Contains(indirectPhase))
-                        QueryJobs.Add(tempQueryJob);
-                }
-            }
-
-            List<ExoSubJobProjection> uniqueQueryJobs = new List<ExoSubJobProjection>();
-
-            foreach(ExoSubJobProjection queryJob in QueryJobs)
-            {
-                if (!uniqueQueryJobs.Any(x => x.FullCode == queryJob.FullCode))
-                    uniqueQueryJobs.Add(queryJob);
-            }
-
-            QueryJobs = uniqueQueryJobs.OrderBy(x => x.FullCode).ToList();
-            queryJobLines = jobLines;
+            refreshJobs();
             IsLoading = true;
             this.RaisePropertyChanged(x => x.IsLoading);
 
@@ -201,6 +175,37 @@ namespace BluePrints.ViewModels
         {
             loadDataPointsTable();
             base.OnAfterAssignedCallbackAndRaisePropertyChanged();
+        }
+
+        private void refreshJobs()
+        {
+            List<ExoTimeAuthorisation> jobLines = new List<ExoTimeAuthorisation>();
+            IBluePrintsEntitiesUnitOfWork bluePrintsEntitiesUnitOfWork = bluePrintsUnitOfWorkFactory.CreateUnitOfWork();
+            List<string> indirectPhases = bluePrintsEntitiesUnitOfWork.PHASES.Where(x => x.PHASE_TYPE == Common.PhaseType.Indirect).Select(x => x.INTERNAL_NUM).ToList();
+            List<ExoSubJobProjection> tempQueryJobs = ExoQueries.GetNativeExoSubJobProjection(primeroEntitiesUnitOfWork, LoadPROJECT, ref jobLines).ToList();
+            QueryJobs = new List<ExoSubJobProjection>();
+            foreach (ExoSubJobProjection tempQueryJob in tempQueryJobs)
+            {
+                if (tempQueryJob.SubJobId == null)
+                    continue;
+
+                foreach (string indirectPhase in indirectPhases)
+                {
+                    if (tempQueryJob.SubJobCode.Contains(indirectPhase))
+                        QueryJobs.Add(tempQueryJob);
+                }
+            }
+
+            List<ExoSubJobProjection> uniqueQueryJobs = new List<ExoSubJobProjection>();
+
+            foreach (ExoSubJobProjection queryJob in QueryJobs)
+            {
+                if (!uniqueQueryJobs.Any(x => x.FullCode == queryJob.FullCode))
+                    uniqueQueryJobs.Add(queryJob);
+            }
+
+            QueryJobs = uniqueQueryJobs.OrderBy(x => x.FullCode).ToList();
+            queryJobLines = jobLines;
         }
         #endregion
         #region View Properties
@@ -502,6 +507,7 @@ namespace BluePrints.ViewModels
         public override void FullRefresh()
         {
             EntitiesUndoRedoManager.Clear();
+            refreshJobs();
             base.FullRefresh();
         }
 
