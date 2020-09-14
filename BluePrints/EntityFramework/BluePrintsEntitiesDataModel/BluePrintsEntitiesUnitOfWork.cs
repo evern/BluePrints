@@ -192,6 +192,16 @@ namespace BluePrints.BluePrintsEntitiesDataModel
             get { return GetRepository(x => x.Set<PROGRESS>(), (PROGRESS x) => x.GUID); }
         }
 
+        IRepository<PIPELINE, Guid> IBluePrintsEntitiesUnitOfWork.PIPELINES
+        {
+            get { return GetRepository(x => x.Set<PIPELINE>(), (PIPELINE x) => x.GUID); }
+        }
+
+        IRepository<PIPELINE_PROFILE_ITEM, Guid> IBluePrintsEntitiesUnitOfWork.PIPELINE_PROFILE_ITEMS
+        {
+            get { return GetRepository(x => x.Set<PIPELINE_PROFILE_ITEM>(), (PIPELINE_PROFILE_ITEM x) => x.GUID); }
+        }
+
         IRepository<PROJECT_REPORT, Guid> IBluePrintsEntitiesUnitOfWork.PROJECT_REPORTS
         {
             get { return GetRepository(x => x.Set<PROJECT_REPORT>(), (PROJECT_REPORT x) => x.GUID); }

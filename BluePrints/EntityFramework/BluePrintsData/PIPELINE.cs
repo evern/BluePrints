@@ -3,6 +3,7 @@ using System.ComponentModel.DataAnnotations.Schema;
 
 namespace BluePrints.Data
 {
+    using BluePrints.Common;
     using System;
     using System.Collections.Generic;
 
@@ -30,15 +31,15 @@ namespace BluePrints.Data
         [StringLength(100)]
         public string CLIENT { get; set; }
 
-        public int TYPE { get; set; }
+        public PipelineType TYPE { get; set; }
 
-        public int DIVISION { get; set; }
+        public PipelineDivision DIVISION { get; set; }
 
-        public int COMMODITY { get; set; }
+        public PipelineCommodity COMMODITY { get; set; }
 
-        public int CONTRACT { get; set; }
+        public PipelineContract CONTRACT { get; set; }
 
-        public int STATUS { get; set; }
+        public PipelineStatus STATUS { get; set; }
 
         public DateTime? START_DATE { get; set; }
 

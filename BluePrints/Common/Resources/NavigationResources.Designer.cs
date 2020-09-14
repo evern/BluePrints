@@ -349,6 +349,15 @@ namespace BluePrints.Common.Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Pipeline maintenance menu.
+        /// </summary>
+        internal static string Menu_Pipeline {
+            get {
+                return ResourceManager.GetString("Menu_Pipeline", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Project areas menu.
         /// </summary>
         internal static string Menu_Project_Areas {

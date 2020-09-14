@@ -203,6 +203,16 @@ namespace BluePrints.BluePrintsEntitiesDataModel
         IRepository<PROJECT, Guid> PROJECTS { get; }
 
         /// <summary>
+        /// The PIPELINE entities repository.
+        /// </summary>
+        IRepository<PIPELINE, Guid> PIPELINES { get; }
+
+        /// <summary>
+        /// The PIPELINE_PROFILE_ITEM entities repository.
+        /// </summary>
+        IRepository<PIPELINE_PROFILE_ITEM, Guid> PIPELINE_PROFILE_ITEMS { get; }
+
+        /// <summary>
         /// The PROJECT_SUMMARY entities repository.
         /// </summary>
         IRepository<PROJECT_SUMMARY, Guid> PROJECT_SUMMARIES { get; }

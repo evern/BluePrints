@@ -3,9 +3,9 @@ using System.Windows.Controls;
 
 namespace BluePrints.Views
 {
-    public partial class CLIENTCollectionView : UserControl
+    public partial class PIPELINECollectionView : UserControl
     {
-        public CLIENTCollectionView()
+        public PIPELINECollectionView()
         {
             InitializeComponent();
         }

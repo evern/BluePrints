@@ -1,4 +1,4 @@
-﻿<UserControl x:Class="BluePrints.Views.PIPELINECollectionView" xmlns="http://schemas.microsoft.com/netfx/2009/xaml/presentation" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" xmlns:custom="clr-namespace:BaseModel.Misc;assembly=BaseModel" xmlns:d="http://schemas.microsoft.com/expression/blend/2008" xmlns:dx="http://schemas.devexpress.com/winfx/2008/xaml/core" xmlns:dxb="http://schemas.devexpress.com/winfx/2008/xaml/bars" xmlns:dxe="http://schemas.devexpress.com/winfx/2008/xaml/editors" xmlns:dxg="http://schemas.devexpress.com/winfx/2008/xaml/grid" xmlns:dxlc="http://schemas.devexpress.com/winfx/2008/xaml/layoutcontrol" xmlns:dxmvvm="http://schemas.devexpress.com/winfx/2008/xaml/mvvm" xmlns:dxr="http://schemas.devexpress.com/winfx/2008/xaml/ribbon" xmlns:dxrudex="http://schemas.devexpress.com/winfx/2008/xaml/reports/userdesignerextensions" xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" xmlns:view="clr-namespace:BluePrints.Views" xmlns:viewmodel="clr-namespace:BluePrints.ViewModels" x:Name="userControl" d:DesignHeight="400" d:DesignWidth="600" DataContext="{dxmvvm:ViewModelSource viewmodel:PIPELINECollectionViewModelWrapper}" mc:Ignorable="d">
+﻿<UserControl x:Class="BluePrints.Views.PIPELINECollectionView" xmlns="http://schemas.microsoft.com/netfx/2009/xaml/presentation" xmlns:common="clr-namespace:BluePrints.Common" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" xmlns:custom="clr-namespace:BaseModel.Misc;assembly=BaseModel" xmlns:d="http://schemas.microsoft.com/expression/blend/2008" xmlns:dx="http://schemas.devexpress.com/winfx/2008/xaml/core" xmlns:dxb="http://schemas.devexpress.com/winfx/2008/xaml/bars" xmlns:dxe="http://schemas.devexpress.com/winfx/2008/xaml/editors" xmlns:dxg="http://schemas.devexpress.com/winfx/2008/xaml/grid" xmlns:dxlc="http://schemas.devexpress.com/winfx/2008/xaml/layoutcontrol" xmlns:dxmvvm="http://schemas.devexpress.com/winfx/2008/xaml/mvvm" xmlns:dxr="http://schemas.devexpress.com/winfx/2008/xaml/ribbon" xmlns:dxrudex="http://schemas.devexpress.com/winfx/2008/xaml/reports/userdesignerextensions" xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" xmlns:view="clr-namespace:BluePrints.Views" xmlns:viewmodel="clr-namespace:BluePrints.ViewModels" x:Name="userControl" d:DesignHeight="400" d:DesignWidth="600" DataContext="{dxmvvm:ViewModelSource viewmodel:PIPELINECollectionViewModelWrapper}" mc:Ignorable="d">
     <UserControl.Resources>
         <ResourceDictionary>
             <ResourceDictionary.MergedDictionaries>
@@ -37,16 +37,57 @@
                 </dxr:RibbonControl>
                 <custom:GridControlEx x:Name="GridControl" dx:DXSerializer.SerializationID="GridControlPIPELINE" dx:DXSerializer.StoreLayoutMode="All" Style="{StaticResource DefaultGridControlTemplate}">
                     <dxg:GridControl.Columns>
-                        <dxg:GridColumn Header="Code" FieldName="CODE" />
-                        <dxg:GridColumn Header="First Name" FieldName="FIRST_NAME" />
-                        <dxg:GridColumn Header="Last Name" FieldName="LAST_NAME" />
-                        <dxg:GridColumn Header="Projects" FieldName="Projects">
+                        <dxg:GridColumn Header="Number" FieldName="NUMBER" />
+                        <dxg:GridColumn Header="Name" FieldName="NAME" />
+                        <dxg:GridColumn Header="Client" FieldName="CLIENT" />
+                        <dxg:GridColumn Header="Type" FieldName="TYPE">
                             <dxg:GridColumn.EditSettings>
-                                <dxe:ComboBoxEditSettings DisplayMember="NUMBER" IncrementalFiltering="True" ItemsSource="{Binding PROJECTCollection}" ValidateOnEnterKeyPressed="True" ValidateOnTextInput="True">
-                                    <dxe:ComboBoxEditSettings.StyleSettings>
-                                        <dxe:CheckedComboBoxStyleSettings />
-                                    </dxe:ComboBoxEditSettings.StyleSettings>
-                                </dxe:ComboBoxEditSettings>
+                                <dxe:ComboBoxEditSettings AutoComplete="True" IsTextEditable="True" ItemsSource="{dxe:EnumItemsSource EnumType={x:Type common:PipelineType}}" />
+                            </dxg:GridColumn.EditSettings>
+                        </dxg:GridColumn>
+                        <dxg:GridColumn Header="Division" FieldName="DIVISION">
+                            <dxg:GridColumn.EditSettings>
+                                <dxe:ComboBoxEditSettings AutoComplete="True" IsTextEditable="True" ItemsSource="{dxe:EnumItemsSource EnumType={x:Type common:PipelineDivision}}" />
+                            </dxg:GridColumn.EditSettings>
+                        </dxg:GridColumn>
+                        <dxg:GridColumn Header="Commodity" FieldName="COMMODITY">
+                            <dxg:GridColumn.EditSettings>
+                                <dxe:ComboBoxEditSettings AutoComplete="True" IsTextEditable="True" ItemsSource="{dxe:EnumItemsSource EnumType={x:Type common:PipelineCommodity}}" />
+                            </dxg:GridColumn.EditSettings>
+                        </dxg:GridColumn>
+                        <dxg:GridColumn Header="Contract" FieldName="CONTRACT">
+                            <dxg:GridColumn.EditSettings>
+                                <dxe:ComboBoxEditSettings AutoComplete="True" IsTextEditable="True" ItemsSource="{dxe:EnumItemsSource EnumType={x:Type common:PipelineContract}}" />
+                            </dxg:GridColumn.EditSettings>
+                        </dxg:GridColumn>
+                        <dxg:GridColumn Header="Status" FieldName="STATUS">
+                            <dxg:GridColumn.EditSettings>
+                                <dxe:ComboBoxEditSettings AutoComplete="True" IsTextEditable="True" ItemsSource="{dxe:EnumItemsSource EnumType={x:Type common:PipelineStatus}}" />
+                            </dxg:GridColumn.EditSettings>
+                        </dxg:GridColumn>
+                        <dxg:GridColumn Header="Start Date" FieldName="START_DATE">
+                            <dxg:GridColumn.EditSettings>
+                                <dxe:DateEditSettings NullValueButtonPlacement="Popup" />
+                            </dxg:GridColumn.EditSettings>
+                        </dxg:GridColumn>
+                        <dxg:GridColumn Header="Duration" FieldName="DURATION">
+                            <dxg:GridColumn.EditSettings>
+                                <dxe:SpinEditSettings Mask="###,##0 Months" MaskType="Numeric" MaskUseAsDisplayFormat="True" />
+                            </dxg:GridColumn.EditSettings>
+                        </dxg:GridColumn>
+                        <dxg:GridColumn Header="Gross Profit" FieldName="GROSS_PROFIT" >
+                            <dxg:GridColumn.EditSettings>
+                                <dxe:SpinEditSettings Mask="c2" MaskType="Numeric" Increment="1" MaskUseAsDisplayFormat="True" />
+                            </dxg:GridColumn.EditSettings>
+                        </dxg:GridColumn>
+                        <dxg:GridColumn Header="Total Value" FieldName="TOTAL_VALUE" >
+                            <dxg:GridColumn.EditSettings>
+                                <dxe:SpinEditSettings Mask="c2" MaskType="Numeric" Increment="1" MaskUseAsDisplayFormat="True" />
+                            </dxg:GridColumn.EditSettings>
+                        </dxg:GridColumn>
+                        <dxg:GridColumn Header="Scope %" FieldName="SCOPE_PCT" >
+                            <dxg:GridColumn.EditSettings>
+                                <dxe:SpinEditSettings Mask="p2" MaskType="Numeric" Increment="0.1" MaskUseAsDisplayFormat="True" />
                             </dxg:GridColumn.EditSettings>
                         </dxg:GridColumn>
                     </dxg:GridControl.Columns>
