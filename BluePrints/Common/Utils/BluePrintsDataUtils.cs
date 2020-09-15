@@ -737,7 +737,7 @@ namespace BluePrints.Common.ViewModel.Utils
                       join NARRATIVES in primeroUOW.NARRATIVES
                       on PURCHORD_LINES.NARRATIVE_SEQNO equals NARRATIVES.SEQNO into PONarratives
                       from PONarrate in PONarratives.DefaultIfEmpty()
-                      where PURCHORD_HDR.STATUS != 2 && JOBCOST_HDR2.JOBCODE == projectNumber && PURCHORD_HDR.ORDERDATE < poCutOffDate
+                      where JOBCOST_HDR2.JOBCODE == projectNumber && PURCHORD_HDR.ORDERDATE < poCutOffDate
                       select new { PURCHORD_HDR.EXCHRATE, PURCHORD_LINES.POLINEID, PURCHORD_LINES.STOCKCODE, PURCHORD_LINES.DESCRIPTION, PONarrate.NARRATIVE, PURCHORD_HDR.SEQNO, PURCHORD_LINES.LINETOTAL, CR_ACCS.NAME, JOBCOST_HDR.JOBCODE, JOBCOST_HDR.TITLE, COSTTYPEDESC = JOB_COSTTYPES.COSTDESC, COSTGROUPDESC = JOB_COSTGROUPS.COSTDESC, PURCHORD_LINES.ORD_QUANT, PURCHORD_LINES.SUP_QUANT, PURCHORD_LINES.UNITPRICE, PURCHORD_HDR.STATUS, PURCHORD_HDR.DUEDATE, PURCHORD_HDR.ORDERDATE, PURCHORD_LINES.X_VARIATIONCODE };
 
             var poList = pos.ToList();
@@ -749,7 +749,7 @@ namespace BluePrints.Common.ViewModel.Utils
                                                           on PURCHORD_LINES.JOBNO equals SUBJOB.JOBNO
                                                           join MASTERJOB in primeroUOW.JOBCOST_HDR
                                                           on SUBJOB.MASTER_JOBNO equals MASTERJOB.JOBNO
-                                                          where MASTERJOB.JOBCODE == projectNumber && INWARDS_GOODS_LINES.INV_TRANSDATE < poCutOffDate
+                                                          where MASTERJOB.JOBCODE == projectNumber
                                                           select INWARDS_GOODS_LINES;
 
             List<INWARDS_GOODS_LINES> inwardGoodsList = inwardGoods.ToList();
@@ -769,8 +769,17 @@ namespace BluePrints.Common.ViewModel.Utils
                     poDataPoint.BudgetedCosts = 0;
                     decimal orderQty = po.ORD_QUANT == null ? 0 : ((decimal)po.ORD_QUANT);
 
-                    List<INWARDS_GOODS_LINES> currentPOInwardGoods = inwardGoodsList.Where(x => x.PO_LINE_NUM == po.POLINEID).Where(x => x.QUANTITY != null).ToList();
+                    List<INWARDS_GOODS_LINES> allPOInwardGoods = inwardGoodsList.Where(x => x.PO_LINE_NUM == po.POLINEID).Where(x => x.QUANTITY != null).ToList();
+                    List<INWARDS_GOODS_LINES> currentPOInwardGoods = allPOInwardGoods.Where(x => x.INV_TRANSDATE < poCutOffDate).ToList();
                     double supplyQty = currentPOInwardGoods.Sum(x => (double)x.QUANTITY);
+
+                    if (po.STATUS == 2)
+                    {
+                        List<INWARDS_GOODS_LINES> POInwardGoodsAfterDataDate = allPOInwardGoods.Where(x => x.INV_TRANSDATE > poCutOffDate).ToList();
+                        if (POInwardGoodsAfterDataDate.Count() == 0)
+                            continue;
+                    }
+
                     decimal unitPrice = po.UNITPRICE == null ? 0 : po.EXCHRATE == null || po.EXCHRATE == 0 ? ((decimal)po.UNITPRICE) : ((decimal)po.UNITPRICE) / ((decimal)po.EXCHRATE);
                     poDataPoint.TotalUnits = orderQty;
 
