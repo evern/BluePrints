@@ -783,7 +783,8 @@ namespace BluePrints.Common.ViewModel.Utils
                     decimal unitPrice = po.UNITPRICE == null ? 0 : po.EXCHRATE == null || po.EXCHRATE == 0 ? ((decimal)po.UNITPRICE) : ((decimal)po.UNITPRICE) / ((decimal)po.EXCHRATE);
                     poDataPoint.TotalUnits = orderQty;
 
-                    poDataPoint.Units = orderQty - (decimal)supplyQty;
+                    decimal remainingQty = orderQty - (decimal)supplyQty;
+                    poDataPoint.Units = remainingQty < 0 ? 0 : remainingQty;
                     poDataPoint.Costs = poDataPoint.Units * unitPrice;
                     poDataPoint.CostPerQty = unitPrice;
                     poDataPoint.TotalCosts = po.LINETOTAL == null ? 0 : (decimal)po.LINETOTAL;
