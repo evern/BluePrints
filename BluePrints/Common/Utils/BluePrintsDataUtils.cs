@@ -773,6 +773,8 @@ namespace BluePrints.Common.ViewModel.Utils
                     List<INWARDS_GOODS_LINES> currentPOInwardGoods = allPOInwardGoods.Where(x => x.INV_TRANSDATE < poCutOffDate).ToList();
                     double supplyQty = currentPOInwardGoods.Sum(x => (double)x.QUANTITY);
 
+                    //don't omit any PO where it's fully receipted but there are quantities being receipted after data date
+                    //this is because status 2 could mean cancelled
                     if (po.STATUS == 2)
                     {
                         List<INWARDS_GOODS_LINES> POInwardGoodsAfterDataDate = allPOInwardGoods.Where(x => x.INV_TRANSDATE > poCutOffDate).ToList();

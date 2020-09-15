@@ -126,7 +126,7 @@
                         </dxg:GridColumn>
                         <dxg:GridColumn FieldName="VariationCode" Header="Variation" HeaderToolTip="Select from combobox or type in new">
                             <dxg:GridColumn.EditSettings>
-                                <dxe:ComboBoxEditSettings AutoComplete="True" IsTextEditable="True" ItemsSource="{Binding VariationCodeStringCollection}" NullValueButtonPlacement="Popup" ValidateOnTextInput="False" />
+                                <dxe:ComboBoxEditSettings IsTextEditable="True" ItemsSource="{Binding VariationCodeStringCollection}" NullValueButtonPlacement="Popup" ValidateOnTextInput="False" />
                             </dxg:GridColumn.EditSettings>
                         </dxg:GridColumn>
                         <dxg:GridColumn FieldName="ExoBudget" Header="Budget Cost" AllowBestFit="false" Width="90" HeaderToolTip="Budget in Exo">
