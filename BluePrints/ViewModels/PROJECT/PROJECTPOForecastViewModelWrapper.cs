@@ -1002,53 +1002,15 @@ namespace BluePrints.ViewModels
 
         public void SaveDateAndRefresh()
         {
-            if (ForecastStartDate != LoadDataDate)
-            {
-                if (ForecastStartDate < LoadDataDate)
-                {
-                    if (FORECAST_EACCollection.Count() > 0)
-                    {
-                        DateTime lastEACDataDate = FORECAST_EACCollection.Max(x => x.FORECAST_DATE);
-                        if (ForecastStartDate < lastEACDataDate)
-                        {
-                            if (LoginCredentials.getPermissionStatus(DataUtils.GetNameOf(() => NavigationResources.Permission_Forecast_MoveDataDate)) == LoginCredentials.PermissionStatus.None)
-                            {
-                                MessageBoxService.ShowMessage("Cannot move data date backwards because EAC is finalised for " + ((DateTime)lastEACDataDate).ToShortDateString(), "Error", MessageButton.OK, MessageIcon.Exclamation);
-                                ForecastStartDate = LoadDataDate;
-                                this.RaisePropertyChanged(x => x.ForecastStartDate);
-                                return;
-                            }
-                        }
-
-                    }
-                }                   
-                //restrict user from moving data date forward if there are forecast but EAC isn't saved
-                else if (ForecastStartDate > LoadDataDate)
-                {
-                    bool hasEACOnCurrentDataDate = FORECAST_EACCollection.Where(x => x.FORECAST_DATE == LoadDataDate).Count() > 0;
-                    if (LoadDataDate != null && !hasEACOnCurrentDataDate)
-                    {
-                        if (LoginCredentials.getPermissionStatus(DataUtils.GetNameOf(() => NavigationResources.Permission_Forecast_MoveDataDate)) == LoginCredentials.PermissionStatus.None)
-                        {
-                            MessageBoxService.ShowMessage("Cannot move data date forward because EAC isn't saved for " + ((DateTime)LoadDataDate).ToShortDateString(), "Error", MessageButton.OK, MessageIcon.Exclamation);
-                            ForecastStartDate = LoadDataDate;
-                            this.RaisePropertyChanged(x => x.ForecastStartDate);
-                            return;
-                        }
-                    }
-                }
-            }
+            DateTime? changedDate = ForecastStartDate;
+            BluePrintsDataUtils.SaveDateAndRefresh(loadPROJECT, LoadDataDate, ref changedDate, ForecastEndDate, FORECAST_EACCollection, PROJECTCollectionViewModel, MessageBoxService);
 
             EntitiesUndoRedoManager.Clear();
-            DateTime saveDateTime = new DateTime(((DateTime)ForecastStartDate).Year, ((DateTime)ForecastStartDate).Month, 1).AddMonths(1).AddDays(-1);
-            loadPROJECT.FORECAST_END_DATE = ForecastEndDate;
-            loadPROJECT.FORECAST_DATA_DATE = saveDateTime;
-            PROJECTCollectionViewModel.Save(loadPROJECT);
-            ForecastStartDate = saveDateTime;
-            LoadDataDate = saveDateTime;
             refreshDataTable();
 
+            ForecastStartDate = changedDate;
             this.RaisePropertyChanged(x => x.ForecastStartDate);
+            this.RaisePropertyChanged(x => x.ForecastEndDate);
         }
 
         public DateTime? LastAlignedDate

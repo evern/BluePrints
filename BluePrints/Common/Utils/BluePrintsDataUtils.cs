@@ -1475,5 +1475,50 @@ namespace BluePrints.Common.ViewModel.Utils
             else
                 LoginCredentials.CurrentUser.UserPreferences.Add(dbCurrentUserPreference);
         }
+
+        public static void SaveDateAndRefresh(PROJECT project, DateTime? LoadDataDate, ref DateTime? ChangedStartDataDate, DateTime endDate, IEnumerable<FORECAST_EAC> FORECAST_EACCollection, CollectionViewModel<PROJECT, PROJECT, Guid, IBluePrintsEntitiesUnitOfWork> PROJECTCollectionViewModel, IMessageBoxService messageBoxService)
+        {
+            if (ChangedStartDataDate != LoadDataDate)
+            {
+                if (ChangedStartDataDate < LoadDataDate)
+                {
+                    if (FORECAST_EACCollection.Count() > 0)
+                    {
+                        DateTime lastEACDataDate = FORECAST_EACCollection.Max(x => x.FORECAST_DATE);
+                        if (ChangedStartDataDate < lastEACDataDate)
+                        {
+                            if (LoginCredentials.getPermissionStatus(DataUtils.GetNameOf(() => NavigationResources.Permission_Forecast_MoveDataDate)) == LoginCredentials.PermissionStatus.None)
+                            {
+                                messageBoxService.ShowMessage("Cannot move data date backwards because EAC is finalised for " + ((DateTime)lastEACDataDate).ToShortDateString(), "Error", MessageButton.OK, MessageIcon.Exclamation);
+                                ChangedStartDataDate = LoadDataDate;
+                                return;
+                            }
+                        }
+
+                    }
+                }
+                //restrict user from moving data date forward if there are forecast but EAC isn't saved
+                else if (ChangedStartDataDate > LoadDataDate)
+                {
+                    bool hasEACOnCurrentDataDate = FORECAST_EACCollection.Where(x => x.FORECAST_DATE == LoadDataDate).Count() > 0;
+                    if (LoadDataDate != null && !hasEACOnCurrentDataDate)
+                    {
+                        if (LoginCredentials.getPermissionStatus(DataUtils.GetNameOf(() => NavigationResources.Permission_Forecast_MoveDataDate)) == LoginCredentials.PermissionStatus.None)
+                        {
+                            messageBoxService.ShowMessage("Cannot move data date forward because EAC isn't saved for " + ((DateTime)LoadDataDate).ToShortDateString(), "Error", MessageButton.OK, MessageIcon.Exclamation);
+                            ChangedStartDataDate = LoadDataDate;
+                            return;
+                        }
+                    }
+                }
+            }
+
+            DateTime saveDateTime = new DateTime(((DateTime)ChangedStartDataDate).Year, ((DateTime)ChangedStartDataDate).Month, 1).AddMonths(1).AddDays(-1);
+            project.FORECAST_END_DATE = endDate;
+            project.FORECAST_DATA_DATE = saveDateTime;
+            PROJECTCollectionViewModel.Save(project);
+            ChangedStartDataDate = saveDateTime;
+            LoadDataDate = saveDateTime;
+        }
     }
 }

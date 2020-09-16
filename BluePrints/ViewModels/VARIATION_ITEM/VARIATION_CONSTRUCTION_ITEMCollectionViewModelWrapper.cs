@@ -184,7 +184,7 @@ namespace BluePrints.ViewModels
 
         public override void UnifiedCellValueChanged(string field_name, object old_value, object new_value, VARIATION_CONSTRUCTION_ITEM projection, bool isNew)
         {
-            if (field_name == BindableBase.GetPropertyName(() => new VARIATION_CONSTRUCTION_ITEM().TYPE))
+            if (field_name == BindableBase.GetPropertyName(() => new VARIATION_CONSTRUCTION_ITEM().TYPEProxy))
             {
                 VariationConstructionItemType type = (VariationConstructionItemType)new_value;
 
