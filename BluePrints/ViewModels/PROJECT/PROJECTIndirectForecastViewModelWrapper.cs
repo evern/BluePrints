@@ -13,6 +13,7 @@ using BluePrints.Common.Projections;
 using BluePrints.Common.Resources;
 using BluePrints.Common.ViewModel.Misc;
 using BluePrints.Common.ViewModel.Reporting;
+using BluePrints.Common.ViewModel.Utils;
 using BluePrints.Data;
 using BluePrints.PrimeroData;
 using BluePrints.PrimeroData.PrimeroEntitiesDataModel;
@@ -60,16 +61,22 @@ namespace BluePrints.ViewModels
 
         #region Database Operations
         public PROJECT LoadPROJECT { get; set; }
-        public DateTime FixedDataDateMonthEnd => new DateTime((FixedDataDate).Year, (FixedDataDate).Month, 1).AddMonths(1).AddDays(-1);
+        public DateTime? FixedDataDateMonthEnd => FixedDataDate == null ? (DateTime?)null : new DateTime(((DateTime)FixedDataDate).Year, ((DateTime)FixedDataDate).Month, 1).AddMonths(1).AddDays(-1);
 
-        public DateTime fixedDataDate;
-        public DateTime FixedDataDate
+        public DateTime? fixedDataDate;
+        public DateTime? FixedDataDate
         {
             get => fixedDataDate;
             set
             {
+                if (value == null)
+                {
+                    fixedDataDate = null;
+                    return;
+                }
+
                 //when switching tabs this value will be anonymously set by new DateTime()
-                if (value.Year == new DateTime().Year)
+                if (((DateTime)value).Year == new DateTime().Year)
                     return;
 
                 fixedDataDate = value;
@@ -124,6 +131,7 @@ namespace BluePrints.ViewModels
             loaderCollection.AddLoaderDescription(primeroUnitOfWorkFactory, x => x.STOCK_ITEMS, STOCK_ITEMSProjectionFunc);
             loaderCollection.AddLoaderDescription<JOB_COSTTYPES, JOB_COSTTYPES, int, IPrimeroEntitiesUnitOfWork>(primeroUnitOfWorkFactory, x => x.JOB_COSTTYPES);
             loaderCollection.AddLoaderDescription<JOB_COSTGROUPS, JOB_COSTGROUPS, int, IPrimeroEntitiesUnitOfWork>(primeroUnitOfWorkFactory, x => x.JOB_COSTGROUPS);
+            loaderCollection.AddLoaderDescription(bluePrintsUnitOfWorkFactory, x => x.FORECAST_EACS, FORECAST_EACProjectionFunc);
         }
 
         private Func<IRepositoryQuery<Data.PROJECT>, IQueryable<Data.PROJECT>> PROJECTProjectionFunc()
@@ -146,6 +154,12 @@ namespace BluePrints.ViewModels
             return query => query.Where(x => x.ISACTIVE == "Y");
         }
 
+        protected virtual Func<IRepositoryQuery<FORECAST_EAC>, IQueryable<FORECAST_EAC>> FORECAST_EACProjectionFunc()
+        {
+            return query => query.Where(x => x.GUID_PROJECT == LoadPROJECT.GUID);
+        }
+
+        public DateTime? LoadDataDate { get; set; }
         private void setProject(Data.PROJECT project)
         {
             LoadPROJECT = project;
@@ -156,6 +170,7 @@ namespace BluePrints.ViewModels
             else
                 dataDate = (DateTime)LoadPROJECT.FORECAST_DATA_DATE;
 
+            LoadDataDate = dataDate;
             FixedDataDate = dataDate;
 
             DateTime endDate;
@@ -165,9 +180,6 @@ namespace BluePrints.ViewModels
                 endDate = (DateTime)LoadPROJECT.FORECAST_END_DATE;
 
             FixedEndDate = endDate;
-
-            //get immutable data
-            alignedDataDateCollection = generateDates();
             this.RaisePropertiesChanged();
         }
 
@@ -224,6 +236,8 @@ namespace BluePrints.ViewModels
         private void loadDataPointsTable()
         {
             IsLoading = true;
+            //get immutable data
+            alignedDataDateCollection = generateDates();
             this.RaisePropertyChanged(x => x.IsLoading);
             dataPointsTable = null;
             updateDataPointsTable();
@@ -1283,6 +1297,24 @@ namespace BluePrints.ViewModels
                 EntitiesUndoRedoManager.AddUndo(updatedForecastJobFromDataRow(selectedRow.Row), null, null, null, EntityMessageType.Deleted);
         }
 
+        public bool CanSaveDateAndRefresh()
+        {
+            return !IsLoading && FixedDataDate != null;
+        }
+
+        public void SaveDateAndRefresh()
+        {
+            DateTime? changedDate = FixedDataDate;
+            BluePrintsDataUtils.SaveDateAndRefresh(LoadPROJECT, LoadDataDate, ref changedDate, FixedEndDate, FORECAST_EACCollection, PROJECTCollectionViewModel, MessageBoxService);
+
+            EntitiesUndoRedoManager.Clear();
+            loadDataPointsTable();
+
+            FixedDataDate = changedDate;
+            this.RaisePropertyChanged(x => x.FixedDataDate);
+            this.RaisePropertyChanged(x => x.FixedEndDate);
+        }
+
         public override bool CanUndo()
         {
             if (IsLoading)
@@ -1527,6 +1559,27 @@ namespace BluePrints.ViewModels
                 return
                     (CollectionViewModel<FORECAST_JOB_HOUR, FORECAST_JOB_HOUR, Guid, IBluePrintsEntitiesUnitOfWork>)
                     loaderCollection.GetViewModel<FORECAST_JOB_HOUR>();
+            }
+        }
+
+        public CollectionViewModel<PROJECT, PROJECT, Guid, IBluePrintsEntitiesUnitOfWork> PROJECTCollectionViewModel
+        {
+            get
+            {
+                if (MainViewModel == null)
+                    return null;
+
+                return
+                    (CollectionViewModel<PROJECT, PROJECT, Guid, IBluePrintsEntitiesUnitOfWork>)
+                    loaderCollection.GetViewModel<PROJECT>();
+            }
+        }
+
+        public IEnumerable<FORECAST_EAC> FORECAST_EACCollection
+        {
+            get
+            {
+                return GetEntities<FORECAST_EAC>();
             }
         }
 
