@@ -119,15 +119,25 @@ namespace BluePrints.ViewModels
             DataUtils.ShallowCopy(remoteProjection, projection);
 
             string upperCaseName = projection.RESOURCENAME.ToUpper();
-            int primeroNameCount;
-            //use new unit of work to prevent concurrency issues
-            string generatedShortCodeFromPrimero = ExoQueries.GetStaffShortcode(primeroUnitOfWork, upperCaseName, out primeroNameCount);
 
-            int pgaNameCount;
+            string partialShortCode;
             //use new unit of work to prevent concurrency issues
-            string generatedShortCodeFromPga = ExoQueries.GetStaffShortcode(pgaUnitOfWork, upperCaseName, out pgaNameCount);
+            List<int> availablePrimeroEnumerations = ExoQueries.GetAvailableStaffEnumerations(primeroUnitOfWork, upperCaseName, out partialShortCode);
 
-            string newResourceShortCode = primeroNameCount > pgaNameCount ? generatedShortCodeFromPrimero : generatedShortCodeFromPga;
+            //use new unit of work to prevent concurrency issues
+            List<int> availablePgaEnumerations = ExoQueries.GetAvailableStaffEnumerations(pgaUnitOfWork, upperCaseName, out partialShortCode);
+
+            int commonAvailableNameCount = -1;
+            foreach(int primeroEnumeration in availablePrimeroEnumerations)
+            {
+                if(availablePgaEnumerations.Any(x => x == primeroEnumeration))
+                {
+                    commonAvailableNameCount = primeroEnumeration;
+                    break;
+                }
+            }
+
+            string newResourceShortCode = commonAvailableNameCount == -1 ? "N/A" : string.Concat(partialShortCode, commonAvailableNameCount.ToString());
             string primaryDbStaffName;
 
             string newItemSearchName = projection.STAFFNO == null ? projection.RESOURCENAME.ToUpper() : string.Empty;

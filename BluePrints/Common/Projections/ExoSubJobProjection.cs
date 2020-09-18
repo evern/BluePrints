@@ -834,9 +834,15 @@ namespace BluePrints.Common.Projections
             newJOBCOST_RESOURCE.TITLE = title;
             newJOBCOST_RESOURCE.ISACTIVE = "Y";
 
-            int nameCount;
+            string generatedShortCode;
+            string partialShortCode;
             //use new unit of work to prevent concurrency issues
-            string generatedShortCode = ExoQueries.GetStaffShortcode(pUnitOfWork, name, out nameCount);
+            List<int> availableEnumerations = ExoQueries.GetAvailableStaffEnumerations(pUnitOfWork, name, out partialShortCode);
+            if (availableEnumerations.Count == 0)
+                generatedShortCode = "N/A";
+            else
+                generatedShortCode = string.Concat(partialShortCode, availableEnumerations.First().ToString());
+
             newJOBCOST_RESOURCE.STAFFNO = staffId;
             newJOBCOST_RESOURCE.SHORTCODE = shortCode == string.Empty ? generatedShortCode : shortCode;
             newJOBCOST_RESOURCE.DEFAULT_STOCKCODE = defaultStockCode == string.Empty ? shortCode != string.Empty ? shortCode : generatedShortCode : defaultStockCode;
@@ -1740,11 +1746,10 @@ namespace BluePrints.Common.Projections
             return string.Concat(firstName, largestNumber.ToString());
         }
 
-        public static string GetStaffShortcode(IPrimeroEntitiesUnitOfWork primeroUnitOfWork, string name, out int nameCount)
+        public static List<int> GetAvailableStaffEnumerations(IPrimeroEntitiesUnitOfWork primeroUnitOfWork, string name, out string partialShortCode)
         {
-            nameCount = 0;
             Regex initials = new Regex(@"(\b[a-zA-Z])[a-zA-Z]* ?");
-            string partialShortCode = initials.Replace(name, "$1");
+            partialShortCode = initials.Replace(name, "$1");
 
             string formatPartialShortCode = partialShortCode.Length > 2 ? partialShortCode.Substring(0, 2) : partialShortCode;
             var resources = from JOBCOST_RESOURCE in primeroUnitOfWork.JOBCOST_RESOURCE
@@ -1752,19 +1757,25 @@ namespace BluePrints.Common.Projections
                             select JOBCOST_RESOURCE;
 
             List<JOBCOST_RESOURCE> allResources = resources.ToList();
+            List<int> availableStaffEnumerations = new List<int>();
+            List<int> occupiedStaffEnumerations = new List<int>();
             foreach(var resource in allResources)
             {
                 string resultString = Regex.Match(resource.SHORTCODE, @"\d+").Value;
                 if(resultString != string.Empty)
                 {
                     int affixValue = Int32.Parse(resultString);
-                    affixValue += 1;
-                    if (affixValue > nameCount)
-                        nameCount = affixValue;
+                    occupiedStaffEnumerations.Add(affixValue);
                 }
             }
 
-            return string.Concat(formatPartialShortCode, nameCount.ToString());
+            for(int i=0;i < 99;i++)
+            {
+                if (!occupiedStaffEnumerations.Any(x => x == i))
+                    availableStaffEnumerations.Add(i);
+            }
+
+            return availableStaffEnumerations;
         }
 
         public static JOB_COSTTYPES GetCommodity(IPrimeroEntitiesUnitOfWork primeroUnitOfWork, string commodityCode)
