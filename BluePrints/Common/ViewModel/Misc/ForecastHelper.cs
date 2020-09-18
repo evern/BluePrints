@@ -213,7 +213,7 @@ namespace BluePrints.Common.ViewModel.Misc
             ForecastJobData forecastProjection = ViewModelSource.Create(() => new ForecastJobData());
             forecastProjection.PopulateCommodityCodes(COMMODITY_CODECollection);
             forecastProjection.IsBudgetReadOnly = LoginCredentials.getPermissionStatus(DataUtils.GetNameOf(() => NavigationResources.Permission_EXO_ChangeBudget)) == LoginCredentials.PermissionStatus.None;
-            variationCode = NormalizeVariationCode(variationCode);
+            variationCode = NormalizeCode(variationCode);
             forecastProjection.Projection = new ExoSubJobProjection() { SubJobCode = subJobCode, SubJobTitle = subJobTitle, DisciplineCode = disciplineCode, DisciplineName = disciplineName, CommodityCode = commodityCode, CommodityName = commodityName, CommodityDescription = commodityDescription, CommodityUOM = commodityUOM, VariationCode = variationCode };
 
             //construct relevant exo lines collection
@@ -254,12 +254,12 @@ namespace BluePrints.Common.ViewModel.Misc
         /// For the purpose of presentation, variation code must always be empty
         /// But when budget is edited, findExistingOrAddNewLine will handle the difference between null and string.empty values
         /// </summary>
-        private static string NormalizeVariationCode(string variationCode)
+        private static string NormalizeCode(string code)
         {
-            if (variationCode == null)
+            if (code == null)
                 return string.Empty;
 
-            return variationCode;
+            return code;
         }
 
         /// <summary>
@@ -288,14 +288,14 @@ namespace BluePrints.Common.ViewModel.Misc
             if (showLoadingScreen)
                 LoadingScreenManager.CloseLoadingScreen();
 
-            List<string> dataPointsConcatNames = allDataPoints.Select(x => x.Subjob_Name + ";" + x.Discipline_Code + ";" + x.Commodity_Code + ";" + NormalizeVariationCode(x.Variation_Code)).ToList();
+            List<string> dataPointsConcatNames = allDataPoints.Select(x => x.Subjob_Name + ";" + NormalizeCode(x.Discipline_Code) + ";" + NormalizeCode(x.Commodity_Code) + ";" + NormalizeCode(x.Variation_Code)).ToList();
             List<string> dashboardConcatNames = new List<string>(); 
             foreach (DashboardFlatStructure dashboardJob in dashboardJobs)
             {
                 decimal remainingUnits = dashboardJob.Stats.Remaining.DataPoints == null ? 0 : dashboardJob.Stats.Remaining.GetData().Where(x => x.IsRemaining).Sum(x => x.Units);
                 //use more than 1 because of anomaly on duration based units which could amount up to 1
                 if(remainingUnits > 1)
-                    dashboardConcatNames.Add(dashboardJob.SubjobCode + ";" + dashboardJob.DisciplineCode + ";" + dashboardJob.CommodityCode + ";" + NormalizeVariationCode(dashboardJob.Variation_Code));
+                    dashboardConcatNames.Add(dashboardJob.SubjobCode + ";" + NormalizeCode(dashboardJob.DisciplineCode) + ";" + NormalizeCode(dashboardJob.CommodityCode) + ";" + NormalizeCode(dashboardJob.Variation_Code));
             }
 
             List<string> allExoJobConcatNames = dataPointsConcatNames.ToList();
@@ -381,12 +381,12 @@ namespace BluePrints.Common.ViewModel.Misc
             {
                 if (!combinedSubJobs.Any(x => x.SubJobCode == subJobCode && x.DisciplineCode == disciplineCode && x.CommodityCode == commodityCode && (x.VariationCode == null || x.VariationCode == string.Empty)))
                 {
-                    combinedSubJobs.Add(new ExoSubJobProjection() { ForecastErrorString = possibleErrorMessage, SubJobCode = subJobCode, SubJobTitle = subJobTitle, DisciplineCode = disciplineCode, DisciplineName = disciplineName, CommodityCode = commodityCode, CommodityName = commodityCodeName, CommodityDescription = commodityCodeDescription, CommodityUOM = commodityCodeUOM, VariationCode = NormalizeVariationCode(variationCode) });
+                    combinedSubJobs.Add(new ExoSubJobProjection() { ForecastErrorString = possibleErrorMessage, SubJobCode = subJobCode, SubJobTitle = subJobTitle, DisciplineCode = NormalizeCode(disciplineCode), DisciplineName = disciplineName, CommodityCode = NormalizeCode(commodityCode), CommodityName = commodityCodeName, CommodityDescription = commodityCodeDescription, CommodityUOM = commodityCodeUOM, VariationCode = NormalizeCode(variationCode) });
                 }
             }
             else if (!combinedSubJobs.Any(x => x.SubJobCode == subJobCode && x.DisciplineCode == disciplineCode && x.CommodityCode == commodityCode && x.VariationCode == variationCode))
             {
-                combinedSubJobs.Add(new ExoSubJobProjection() { ForecastErrorString = possibleErrorMessage, SubJobCode = subJobCode, SubJobTitle = subJobTitle, DisciplineCode = disciplineCode, DisciplineName = disciplineName, CommodityCode = commodityCode, CommodityName = commodityCodeName, CommodityDescription = commodityCodeDescription, CommodityUOM = commodityCodeUOM, VariationCode = NormalizeVariationCode(variationCode) });
+                combinedSubJobs.Add(new ExoSubJobProjection() { ForecastErrorString = possibleErrorMessage, SubJobCode = subJobCode, SubJobTitle = subJobTitle, DisciplineCode = NormalizeCode(disciplineCode), DisciplineName = disciplineName, CommodityCode = NormalizeCode(commodityCode), CommodityName = commodityCodeName, CommodityDescription = commodityCodeDescription, CommodityUOM = commodityCodeUOM, VariationCode = NormalizeCode(variationCode) });
             }
         }
     }

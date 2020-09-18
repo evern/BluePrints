@@ -23,11 +23,9 @@ namespace BluePrints.Data
         [StringLength(50)]
         public string SUBJOB_CODE { get; set; }
 
-        [Required]
         [StringLength(50)]
         public string DISCIPLINE_CODE { get; set; }
 
-        [Required]
         [StringLength(50)]
         public string COMMODITY_CODE { get; set; }
 
