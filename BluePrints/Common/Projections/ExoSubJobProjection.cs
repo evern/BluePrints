@@ -1752,6 +1752,7 @@ namespace BluePrints.Common.Projections
             partialShortCode = initials.Replace(name, "$1");
 
             string formatPartialShortCode = partialShortCode.Length > 2 ? partialShortCode.Substring(0, 2) : partialShortCode;
+            partialShortCode = formatPartialShortCode;
             var resources = from JOBCOST_RESOURCE in primeroUnitOfWork.JOBCOST_RESOURCE
                             where JOBCOST_RESOURCE.SHORTCODE.StartsWith(formatPartialShortCode)
                             select JOBCOST_RESOURCE;
