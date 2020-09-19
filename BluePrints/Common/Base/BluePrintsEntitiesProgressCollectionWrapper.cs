@@ -1236,7 +1236,7 @@ namespace BluePrints.Common.Base
 
         private List<P6Simulation> push_units_to_p6(IEnumerable<ICanAssignP6> deliverables, bool isSimulation, string errorMessage)
         {
-            List<string> processedP6Task = new List<string>();
+            List<TASK> processedP6Task = new List<TASK>();
             TimeSpan intervalTimeSpan = ChronologicalHelpers.ConvertProgressIntervalToPeriod(loadPROGRESS);
             LoadingScreenManager.ShowLoadingScreen(deliverables.Count(), false);
             if (isSimulation)
@@ -1339,7 +1339,7 @@ namespace BluePrints.Common.Base
 
                         //if this is the first time processing the task
                         //another way of doing this is to reset everything to zero and not started, but we do not want to override user changes on the p6 schedule
-                        if (!processedP6Task.Any(x => x == P6TASK.task_code))
+                        if (!processedP6Task.Any(x => x.task_code == P6TASK.task_code))
                             P6TASK.act_work_qty = current_assignment_units;
                         else
                             P6TASK.act_work_qty += current_assignment_units;
@@ -1460,7 +1460,7 @@ namespace BluePrints.Common.Base
                                     //currently user isn't familiar with productivity calculation so set productivity to 1
                                     decimal override_productivity = 1;
                                     decimal current_assignment_remaining_duration_per_productivity = current_assignment_remaining_duration / override_productivity;
-                                    if (!processedP6Task.Any(x => x == P6TASK.task_code))
+                                    if (!processedP6Task.Any(x => x.task_code == P6TASK.task_code))
                                         P6TASK.remain_drtn_hr_cnt = current_assignment_remaining_duration_per_productivity;
                                     else
                                         P6TASK.remain_drtn_hr_cnt += current_assignment_remaining_duration_per_productivity;
@@ -1468,7 +1468,7 @@ namespace BluePrints.Common.Base
                             }
                             else
                             {
-                                if (!processedP6Task.Any(x => x == P6TASK.task_code))
+                                if (!processedP6Task.Any(x => x.task_code == P6TASK.task_code))
                                     P6TASK.remain_drtn_hr_cnt = current_assignment_remaining_duration;
                                 else
                                     P6TASK.remain_drtn_hr_cnt += current_assignment_remaining_duration;
@@ -1477,8 +1477,8 @@ namespace BluePrints.Common.Base
                         else if (P6TASK.status_code == P6TASKSTATUS.TK_NotStart.ToString())
                             P6TASK.status_code = P6TASKSTATUS.TK_Active.ToString();
 
-                        if (!processedP6Task.Any(x => x == P6TASK.task_code))
-                            processedP6Task.Add(P6TASK.task_code);
+                        if (!processedP6Task.Any(x => x.task_code == P6TASK.task_code))
+                            processedP6Task.Add(P6TASK);
 
                         TASK repositoryTASK = p6UOW.TASK.FirstOrDefault(x => x.task_id == P6TASK.task_id);
                         DataUtils.ShallowCopy(repositoryTASK, P6TASK);
@@ -1489,6 +1489,21 @@ namespace BluePrints.Common.Base
                         errorMessage = "P6 activity named " + p6_assignment.P6_ACTIVITYID + " not found, please check deliverable's assignment";
                         break;
                     }
+                }
+            }
+
+
+            //second pass to make sure at completion work quantity is same for resource and activity
+            foreach(TASK P6TASK in processedP6Task)
+            {
+                if (P6TASK.remain_work_qty >= 0)
+                    P6TASK.remain_work_qty = P6TASK.target_work_qty - P6TASK.act_work_qty;
+
+                TASKRSRC P6TASKRSRC = p6UOW.TASKRSRC.FirstOrDefault(x => x.task_id == P6TASK.task_id);
+                if (P6TASKRSRC != null)
+                {
+                    P6TASKRSRC.act_reg_qty = P6TASK.act_work_qty;
+                    P6TASKRSRC.remain_qty = P6TASK.remain_work_qty;
                 }
             }
 
