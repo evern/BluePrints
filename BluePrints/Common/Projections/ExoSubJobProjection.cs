@@ -834,14 +834,17 @@ namespace BluePrints.Common.Projections
             newJOBCOST_RESOURCE.TITLE = title;
             newJOBCOST_RESOURCE.ISACTIVE = "Y";
 
-            string generatedShortCode;
-            string partialShortCode;
-            //use new unit of work to prevent concurrency issues
-            List<int> availableEnumerations = ExoQueries.GetAvailableStaffEnumerations(pUnitOfWork, name, out partialShortCode);
-            if (availableEnumerations.Count == 0)
-                generatedShortCode = "N/A";
-            else
-                generatedShortCode = string.Concat(partialShortCode, availableEnumerations.First().ToString());
+            string generatedShortCode = string.Empty;
+            if (shortCode == string.Empty)
+            {
+                string partialShortCode;
+                //use new unit of work to prevent concurrency issues
+                List<int> availableEnumerations = ExoQueries.GetAvailableStaffEnumerations(pUnitOfWork, name, out partialShortCode);
+                if (availableEnumerations.Count == 0)
+                    generatedShortCode = "N/A";
+                else
+                    generatedShortCode = string.Concat(partialShortCode, availableEnumerations.First().ToString());
+            }
 
             newJOBCOST_RESOURCE.STAFFNO = staffId;
             newJOBCOST_RESOURCE.SHORTCODE = shortCode == string.Empty ? generatedShortCode : shortCode;
@@ -1753,20 +1756,33 @@ namespace BluePrints.Common.Projections
 
             string formatPartialShortCode = partialShortCode.Length > 2 ? partialShortCode.Substring(0, 2) : partialShortCode;
             partialShortCode = formatPartialShortCode;
-            var resources = from JOBCOST_RESOURCE in primeroUnitOfWork.JOBCOST_RESOURCE
-                            where JOBCOST_RESOURCE.SHORTCODE.StartsWith(formatPartialShortCode)
+            var resourceShortCodes = from JOBCOST_RESOURCE in primeroUnitOfWork.JOBCOST_RESOURCE
+                            where JOBCOST_RESOURCE.SHORTCODE.StartsWith(formatPartialShortCode) || JOBCOST_RESOURCE.DEFAULT_STOCKCODE.StartsWith(formatPartialShortCode)
                             select JOBCOST_RESOURCE;
 
-            List<JOBCOST_RESOURCE> allResources = resources.ToList();
+            List<JOBCOST_RESOURCE> allResourceShortCodes = resourceShortCodes.ToList();
             List<int> availableStaffEnumerations = new List<int>();
             List<int> occupiedStaffEnumerations = new List<int>();
-            foreach(var resource in allResources)
+
+            string regexString = @"\d+";
+            foreach (var resource in allResourceShortCodes)
             {
-                string resultString = Regex.Match(resource.SHORTCODE, @"\d+").Value;
-                if(resultString != string.Empty)
+                string shortCodeString = Regex.Match(resource.SHORTCODE, regexString).Value;
+                string defaultShortCodeString = resource.DEFAULT_STOCKCODE.Contains(formatPartialShortCode) ? Regex.Match(resource.DEFAULT_STOCKCODE, regexString).Value : string.Empty;
+
+                string s;
+                if (shortCodeString != defaultShortCodeString)
+                    s = string.Empty;
+                if (shortCodeString != string.Empty)
                 {
-                    int affixValue = Int32.Parse(resultString);
-                    occupiedStaffEnumerations.Add(affixValue);
+                    int affixShortCodeValue = Int32.Parse(shortCodeString);
+                    occupiedStaffEnumerations.Add(affixShortCodeValue);
+                }
+
+                if (defaultShortCodeString != string.Empty)
+                {
+                    int affixdefaultShortCodeValue = Int32.Parse(defaultShortCodeString);
+                    occupiedStaffEnumerations.Add(affixdefaultShortCodeValue);
                 }
             }
 
