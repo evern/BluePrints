@@ -850,6 +850,7 @@
     <Compile Include="Common\View\PrimaveraAffinityReport.xaml.cs">
       <DependentUpon>PrimaveraAffinityReport.xaml</DependentUpon>
     </Compile>
+    <Compile Include="EntityFramework\Annotations\PIPELINE_REVENUE.cs" />
     <Compile Include="EntityFramework\Annotations\JOB_TIMESHEETS.cs" />
     <Compile Include="EntityFramework\Annotations\JOB_TRANSACTIONS.cs" />
     <Compile Include="EntityFramework\Annotations\PIPELINE.cs" />
@@ -925,6 +926,7 @@
     <Compile Include="EntityFramework\Annotations\WORKPACK.cs" />
     <Compile Include="EntityFramework\Annotations\X_JOB_TIMESHEETS.cs" />
     <Compile Include="EntityFramework\Annotations\X_JOB_TRANSACTIONS_DETAIL_SeqNo.cs" />
+    <Compile Include="EntityFramework\BluePrintsData\PIPELINE_REVENUE.cs" />
     <Compile Include="EntityFramework\BluePrintsData\FORECAST_EAC.cs" />
     <Compile Include="EntityFramework\BluePrintsData\PIPELINE.cs" />
     <Compile Include="EntityFramework\BluePrintsData\PIPELINE_PROFILE_ITEM.cs" />

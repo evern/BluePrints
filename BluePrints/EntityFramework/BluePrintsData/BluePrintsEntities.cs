@@ -448,6 +448,12 @@ namespace BluePrints.Data
                 .HasForeignKey(e => e.GUID_PIPELINE)
                 .WillCascadeOnDelete(false);
 
+            modelBuilder.Entity<PIPELINE>()
+                .HasMany(e => e.PIPELINE_REVENUE)
+                .WithRequired(e => e.PIPELINE)
+                .HasForeignKey(e => e.GUID_PIPELINE)
+                .WillCascadeOnDelete(false);
+
             modelBuilder.Entity<PROGRESS>()
                 .HasMany(e => e.PROGRESS_ITEM)
                 .WithRequired(e => e.PROGRESS)

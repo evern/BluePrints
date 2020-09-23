@@ -14,6 +14,7 @@ namespace BluePrints.Data
         public PIPELINE()
         {
             PIPELINE_PROFILE_ITEM = new HashSet<PIPELINE_PROFILE_ITEM>();
+            PIPELINE_REVENUE = new HashSet<PIPELINE_REVENUE>();
         }
 
         [Key]
@@ -45,6 +46,10 @@ namespace BluePrints.Data
 
         public int DURATION { get; set; }
 
+        public DateTime? DESIGN_START_DATE { get; set; }
+
+        public int DESIGN_DURATION { get; set; }
+
         public decimal GROSS_PROFIT { get; set; }
 
         public decimal TOTAL_VALUE { get; set; }
@@ -65,5 +70,8 @@ namespace BluePrints.Data
 
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
         public virtual ICollection<PIPELINE_PROFILE_ITEM> PIPELINE_PROFILE_ITEM { get; set; }
+
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
+        public virtual ICollection<PIPELINE_REVENUE> PIPELINE_REVENUE { get; set; }
     }
 }
