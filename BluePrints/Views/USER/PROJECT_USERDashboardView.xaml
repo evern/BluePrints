@@ -94,6 +94,9 @@
                     <dx:LoadingDecorator IsSplashScreenShown="{Binding IsLoading}">
                         <dxlc:LayoutGroup Name="LayoutGroupChart" Orientation="Vertical" View="Group">
                             <dxc:ChartControl x:Name="ChartControl" Grid.Row="2" Margin="0" Padding="0" dx:DXSerializer.Enabled="False" AnimationMode="OnLoad" AutoLayout="False">
+                                <dxc:ChartControl.CrosshairOptions>
+                                    <dxc:CrosshairOptions GroupHeaderPattern="{}{A:d}" />
+                                </dxc:ChartControl.CrosshairOptions>
                                 <dxc:XYDiagram2D AllowSeriesBitmapCaching="False" SeriesItemsSource="{StaticResource dashboardXYChartSeries}">
                                     <dxc:XYDiagram2D.AxisX>
                                         <dxc:AxisX2D>
