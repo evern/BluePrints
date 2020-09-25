@@ -88,6 +88,22 @@
 
         public DateTime? FORECAST_PO_LAST_ALIGNED { get; set; }
 
+        public PipelineType PIPELINE_TYPE { get; set; }
+
+        public PipelineDivision PIPELINE_DIVISION { get; set; }
+
+        public PipelineCommodity PIPELINE_COMMODITY { get; set; }
+
+        public PipelineContract PIPELINE_CONTRACT { get; set; }
+
+        public PipelineStatus PIPELINE_STATUS { get; set; }
+
+        public decimal? PIPELINE_GROSS_PROFIT { get; set; }
+
+        public decimal? PIPELINE_TOTAL_VALUE { get; set; }
+
+        public decimal? PIPELINE_SCOPE_PCT { get; set; }
+
         public DateTime CREATED { get; set; }
 
         public Guid CREATEDBY { get; set; }

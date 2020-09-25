@@ -69,7 +69,7 @@ namespace BluePrints.ViewModels
 
         private IQueryable<PROJECT> populatePROJECTPlanProject(IQueryable<PROJECT> query)
         {
-            List<PROJECT> PROJECTPlan = query.Where(x => x.STATUS == ProjectStatus.Lead || x.STATUS == ProjectStatus.Tender || x.STATUS == ProjectStatus.TenderSubmitted);
+            List<PROJECT> PROJECTPlan = query.Where(x => x.STATUS == ProjectStatus.Lead || x.STATUS == ProjectStatus.Tender || x.STATUS == ProjectStatus.TenderSubmitted).ToList();
             return PROJECTPlan.AsQueryable();
         }
 
@@ -231,19 +231,20 @@ namespace BluePrints.ViewModels
             columns.Clear();
             summaries.Clear();
 
-            columns.Add(new ColumnDescriptor() { FieldName = "Number", ReadOnly = true, Header = "Number", Fixed = FixedStyle.Left, Width = 50, Settings = SettingsType.Default });
-            summaries.Add(new SummaryDescriptor() { FieldName = "Number", DisplayFormat = "{0} Record(s)", Type = SummaryItemType.Count });
-            columns.Add(new ColumnDescriptor() { FieldName = "Name", ReadOnly = true, Header = "Name", Fixed = FixedStyle.Left, Width = 110, Settings = SettingsType.Default });
-            columns.Add(new ColumnDescriptor() { FieldName = "TYPE", Header = "Type", Fixed = FixedStyle.Left, Width = 70, ItemsSource = PROJECTPlanTypeCollection, Settings = SettingsType.Collection });
-            columns.Add(new ColumnDescriptor() { FieldName = "DIVISION", Header = "Division", Fixed = FixedStyle.Left, Width = 70, ItemsSource = PROJECTPlanDivisionCollection, Settings = SettingsType.Collection });
-            columns.Add(new ColumnDescriptor() { FieldName = "COMMODITY", Header = "Commodity", Fixed = FixedStyle.Left, Width = 70, ItemsSource = PROJECTPlanCommodityCollection, Settings = SettingsType.Collection });
-            columns.Add(new ColumnDescriptor() { FieldName = "CONTRACT", Header = "Contract", Fixed = FixedStyle.Left, Width = 70, ItemsSource = PROJECTPlanContractCollection, Settings = SettingsType.Collection });
-            columns.Add(new ColumnDescriptor() { FieldName = "STATUS", Header = "Status", Fixed = FixedStyle.Left, Width = 70, ItemsSource = PROJECTPlanStatusCollection, Settings = SettingsType.Collection });
-            columns.Add(new ColumnDescriptor() { FieldName = "START_DATE", Header = "Start Date", ReadOnly = false, Fixed = FixedStyle.Left, Width = 70, Settings = SettingsType.Date });
-            columns.Add(new ColumnDescriptor() { FieldName = "DURATION", ReadOnly = false, Visible = true, Header = "Duration", Mask = "###,##0 Months", Increment = 1, Fixed = FixedStyle.Left, Width = 75, Settings = SettingsType.Number });
-            columns.Add(new ColumnDescriptor() { FieldName = "GROSS_PROFIT", ReadOnly = false, Visible = true, Header = "Gross Profit", Mask = "c2", Increment = 1, Fixed = FixedStyle.Left, Width = 75, Settings = SettingsType.Number });
-            columns.Add(new ColumnDescriptor() { FieldName = "TOTAL_VALUE", ReadOnly = false, Visible = true, Header = "Total Value", Mask = "c2", Increment = 1, Fixed = FixedStyle.Left, Width = 75, Settings = SettingsType.Number });
-            columns.Add(new ColumnDescriptor() { FieldName = "SCOPE_PCT", ReadOnly = false, Visible = true, Header = "Scope %", Mask = "p2", Increment = 0.1m, Fixed = FixedStyle.Left, Width = 75, Settings = SettingsType.Number });
+            columns.Add(new ColumnDescriptor() { FieldName = columnEntity + ".NUMBER", ReadOnly = true, Header = "Number", Fixed = FixedStyle.Left, Width = 50, Settings = SettingsType.Default });
+            summaries.Add(new SummaryDescriptor() { FieldName = columnEntity + ".NUMBER", DisplayFormat = "{0} Record(s)", Type = SummaryItemType.Count });
+            columns.Add(new ColumnDescriptor() { FieldName = columnEntity + ".NAME", ReadOnly = true, Header = "Name", Fixed = FixedStyle.Left, Width = 110, Settings = SettingsType.Default });
+            columns.Add(new ColumnDescriptor() { FieldName = columnEntity + ".STATUS", Header = "Status", Fixed = FixedStyle.Left, Width = 70, ItemsSource = ProjectStatusCollection, Settings = SettingsType.Collection });
+            columns.Add(new ColumnDescriptor() { FieldName = "PIPELINE_TYPE", Header = "Type", Fixed = FixedStyle.Left, Width = 70, ItemsSource = PipelineTypeCollection, Settings = SettingsType.Collection });
+            columns.Add(new ColumnDescriptor() { FieldName = "PIPELINE_DIVISION", Header = "Division", Fixed = FixedStyle.Left, Width = 70, ItemsSource = PipelineDivisionCollection, Settings = SettingsType.Collection });
+            columns.Add(new ColumnDescriptor() { FieldName = "PIPELINE_COMMODITY", Header = "Commodity", Fixed = FixedStyle.Left, Width = 70, ItemsSource = PipelineCommodityCollection, Settings = SettingsType.Collection });
+            columns.Add(new ColumnDescriptor() { FieldName = "PIPELINE_CONTRACT", Header = "Contract", Fixed = FixedStyle.Left, Width = 70, ItemsSource = PipelineContractCollection, Settings = SettingsType.Collection });
+            columns.Add(new ColumnDescriptor() { FieldName = "PIPELINE_STATUS", Header = "Status", Fixed = FixedStyle.Left, Width = 70, ItemsSource = PipelineStatusCollection, Settings = SettingsType.Collection });
+            columns.Add(new ColumnDescriptor() { FieldName = "TENDER_PROJECT_START", Header = "Start Date", ReadOnly = false, Fixed = FixedStyle.Left, Width = 70, Settings = SettingsType.Date });
+            columns.Add(new ColumnDescriptor() { FieldName = "TENDER_PROJECT_DURATION", ReadOnly = false, Visible = true, Header = "Duration", Mask = "###,##0 Months", Increment = 1, Fixed = FixedStyle.Left, Width = 75, Settings = SettingsType.Number });
+            columns.Add(new ColumnDescriptor() { FieldName = "PIPELINE_GROSS_PROFIT", ReadOnly = false, Visible = true, Header = "Gross Profit", Mask = "c2", Increment = 1, Fixed = FixedStyle.Left, Width = 75, Settings = SettingsType.Number });
+            columns.Add(new ColumnDescriptor() { FieldName = "PIPELINE_TOTAL_VALUE", ReadOnly = false, Visible = true, Header = "Total Value", Mask = "c2", Increment = 1, Fixed = FixedStyle.Left, Width = 75, Settings = SettingsType.Number });
+            columns.Add(new ColumnDescriptor() { FieldName = "PIPELINE_SCOPE_PCT", ReadOnly = false, Visible = true, Header = "Scope %", Mask = "p2", Increment = 0.1m, Fixed = FixedStyle.Left, Width = 75, Settings = SettingsType.Number });
 
             foreach (DateTime alignedDate in alignedDates.OrderBy(x => x))
             {
@@ -274,6 +275,14 @@ namespace BluePrints.ViewModels
             }
         }
 
+        public IEnumerable<ProjectStatus> ProjectStatusCollection
+        {
+            get
+            {
+                return DataUtils.GetValuesOf(() => new ProjectStatus());
+            }
+        }
+
         public IEnumerable<PROJECT> PipelineTypeCollection
         {
             get
@@ -282,7 +291,7 @@ namespace BluePrints.ViewModels
             }
         }
 
-        public IEnumerable<PipelineDivision> PROJECTPlanDivisionCollection
+        public IEnumerable<PipelineDivision> PipelineDivisionCollection
         {
             get
             {
@@ -290,7 +299,7 @@ namespace BluePrints.ViewModels
             }
         }
 
-        public IEnumerable<PipelineCommodity> PROJECTPlanCommodityCollection
+        public IEnumerable<PipelineCommodity> PipelineCommodityCollection
         {
             get
             {
@@ -306,7 +315,7 @@ namespace BluePrints.ViewModels
             }
         }
 
-        public IEnumerable<PipelineStatus> PROJECTPlanStatusCollection
+        public IEnumerable<PipelineStatus> PipelineStatusCollection
         {
             get
             {

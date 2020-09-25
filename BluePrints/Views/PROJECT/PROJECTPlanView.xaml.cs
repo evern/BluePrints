@@ -10,9 +10,9 @@ using System.Windows.Interop;
 
 namespace BluePrints.Views
 {
-    public partial class PROJECTView : UserControl
+    public partial class PROJECTPlanView : UserControl
     {
-        public PROJECTView()
+        public PROJECTPlanView()
         {
             InitializeComponent();
             //HwndSource source = (HwndSource)HwndSource.FromVisual(this);
