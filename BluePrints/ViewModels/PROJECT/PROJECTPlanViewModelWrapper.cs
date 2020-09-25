@@ -1,5 +1,6 @@
 ﻿using BaseModel.Data.Helpers;
 using BaseModel.DataModel;
+using BaseModel.Misc;
 using BaseModel.ViewModel.Base;
 using BaseModel.ViewModel.Loader;
 using BluePrints.BluePrintsEntitiesDataModel;
@@ -21,7 +22,7 @@ using System.Linq;
 
 namespace BluePrints.ViewModels
 {
-    public class PROJECTPlanCollectionViewModelWrapper :
+    public class PROJECTPlanViewModelWrapper :
         BluePrintsEntitiesCollectionWrapper
         <PROJECT, PROJECT, Guid, IBluePrintsEntitiesUnitOfWork>
     {
@@ -29,10 +30,10 @@ namespace BluePrints.ViewModels
         /// Creates a new instance of PROJECTPlanCollectionViewModelWrapper as a POCO view model.
         /// </summary>
         /// <param name="unitOfWorkFactory">A factory used to create a unit of work instance.</param>
-        public static PROJECTPlanCollectionViewModelWrapper Create(
+        public static PROJECTPlanViewModelWrapper Create(
             IUnitOfWorkFactory<IBluePrintsEntitiesUnitOfWork> unitOfWorkFactory = null)
         {
-            return ViewModelSource.Create(() => new PROJECTPlanCollectionViewModelWrapper(unitOfWorkFactory));
+            return ViewModelSource.Create(() => new PROJECTPlanViewModelWrapper(unitOfWorkFactory));
         }
 
         /// <summary>
@@ -40,7 +41,7 @@ namespace BluePrints.ViewModels
         /// This constructor is declared protected to avoid undesired instantiation of the PROJECTPlanCollectionViewModelWrapper type without the POCO proxy factory.
         /// </summary>
         /// <param name="unitOfWorkFactory">A factory used to create a unit of work instance.</param>
-        protected PROJECTPlanCollectionViewModelWrapper(
+        protected PROJECTPlanViewModelWrapper(
             IUnitOfWorkFactory<IBluePrintsEntitiesUnitOfWork> unitOfWorkFactory = null)
         {
         }
@@ -94,7 +95,7 @@ namespace BluePrints.ViewModels
                 {
                     DateTime PROJECTPlanStartDate = ((DateTime)PROJECT.TENDER_PROJECT_START);
                     int duration = PROJECT.TENDER_PROJECT_DURATION == null ? 1 : (int)PROJECT.TENDER_PROJECT_DURATION;
-                    DateTime PROJECTPlanEndDate = PROJECTPlanStartDate.AddMonths(duration);
+                    DateTime PROJECTPlanEndDate = PROJECTPlanStartDate.AddDays(duration * 7);
                     if (startDate > PROJECTPlanStartDate)
                         startDate = new DateTime(PROJECTPlanStartDate.Year, PROJECTPlanStartDate.Month, 1);
                     if (endDate < PROJECTPlanEndDate)
@@ -115,6 +116,72 @@ namespace BluePrints.ViewModels
         private void onAfterPROJECTPlanSaved(PROJECT entity)
         {
 
+        }
+
+        public void NewRowAddUndoAndSave(RowEventArgs e)
+        {
+            if (e.RowHandle == DataControlBase.NewItemRowHandle)
+            {
+                MainViewModel.EntitiesUndoRedoManager.PauseActionId();
+
+                DataRowView row = (DataRowView)e.Row;
+
+                //findExistingOrAddNewFORECAST_JOB(row.Row);
+                //MainViewModel.EntitiesUndoRedoManager.AddUndo(updatedForecastJobFromDataRow(row.Row), null, null, null, EntityMessageType.Added);
+                //focusNewlyAddedProjectionTimer.Start();
+                ////added not working well atm because when row is removed from datatable its itemarray is cleared
+                ////EntitiesUndoRedoManager.AddUndo(row.Row, null, null, null, EntityMessageType.Added);
+                //MainViewModel.EntitiesUndoRedoManager.UnpauseActionId();
+            }
+        }
+
+        public override void ValidateRow(GridRowValidationEventArgs e)
+        {
+            DataRow dataRow = ((DataRowView)e.Row).Row;
+            string errorMessage = UnifiedRowValidation((PROJECT)dataRow[columnEntity]);
+
+            if (errorMessage != string.Empty)
+            {
+                e.IsValid = false;
+                e.ErrorType = DevExpress.XtraEditors.DXErrorProvider.ErrorType.Critical;
+                e.ErrorContent = errorMessage;
+            }
+        }
+
+        /// <summary>
+        /// Influence column(s) when changes happens in other column
+        /// </summary>
+        public void CellValueChangedUpdate(CellValueChangedEventArgs e)
+        {
+            DataRowView dataRowView = (DataRowView)e.Row;
+            if (e.RowHandle == GridControl.AutoFilterRowHandle)
+                return;
+
+            //new item handling
+            if (e.RowHandle == GridControl.NewItemRowHandle)
+            {
+
+                PROJECT newPROJECT;
+                if (dataRowView[columnEntity] == DBNull.Value)
+                {
+                    newPROJECT = new PROJECT();
+                    dataRowView[columnEntity] = newPROJECT;
+                }
+                else
+                    newPROJECT = (PROJECT)dataRowView[columnEntity];
+
+                return;
+            }
+
+            //existing item handling
+            MainViewModel.EntitiesUndoRedoManager.PauseActionId();
+            string fieldName = e.Column.FieldName;
+
+            //commitCellValue(fieldName, dataRowView.Row, e.Value);
+            //MainViewModel.EntitiesUndoRedoManager.AddUndo(updatedForecastJobFromDataRow(dataRowView.Row), fieldName, e.OldValue, e.Value, EntityMessageType.Changed);
+            MainViewModel.EntitiesUndoRedoManager.UnpauseActionId();
+
+            e.Handled = true;
         }
 
         public override string UnifiedRowValidation(PROJECT projection)
@@ -233,23 +300,23 @@ namespace BluePrints.ViewModels
 
             columns.Add(new ColumnDescriptor() { FieldName = columnEntity + ".NUMBER", ReadOnly = true, Header = "Number", Fixed = FixedStyle.Left, Width = 50, Settings = SettingsType.Default });
             summaries.Add(new SummaryDescriptor() { FieldName = columnEntity + ".NUMBER", DisplayFormat = "{0} Record(s)", Type = SummaryItemType.Count });
-            columns.Add(new ColumnDescriptor() { FieldName = columnEntity + ".NAME", ReadOnly = true, Header = "Name", Fixed = FixedStyle.Left, Width = 110, Settings = SettingsType.Default });
+            columns.Add(new ColumnDescriptor() { FieldName = columnEntity + ".NAME", ReadOnly = true, Header = "Name", Fixed = FixedStyle.Left, Width = 200, Settings = SettingsType.Default });
             columns.Add(new ColumnDescriptor() { FieldName = columnEntity + ".STATUS", Header = "Status", Fixed = FixedStyle.Left, Width = 70, ItemsSource = ProjectStatusCollection, Settings = SettingsType.Collection });
-            columns.Add(new ColumnDescriptor() { FieldName = "PIPELINE_TYPE", Header = "Type", Fixed = FixedStyle.Left, Width = 70, ItemsSource = PipelineTypeCollection, Settings = SettingsType.Collection });
-            columns.Add(new ColumnDescriptor() { FieldName = "PIPELINE_DIVISION", Header = "Division", Fixed = FixedStyle.Left, Width = 70, ItemsSource = PipelineDivisionCollection, Settings = SettingsType.Collection });
-            columns.Add(new ColumnDescriptor() { FieldName = "PIPELINE_COMMODITY", Header = "Commodity", Fixed = FixedStyle.Left, Width = 70, ItemsSource = PipelineCommodityCollection, Settings = SettingsType.Collection });
-            columns.Add(new ColumnDescriptor() { FieldName = "PIPELINE_CONTRACT", Header = "Contract", Fixed = FixedStyle.Left, Width = 70, ItemsSource = PipelineContractCollection, Settings = SettingsType.Collection });
-            columns.Add(new ColumnDescriptor() { FieldName = "PIPELINE_STATUS", Header = "Status", Fixed = FixedStyle.Left, Width = 70, ItemsSource = PipelineStatusCollection, Settings = SettingsType.Collection });
-            columns.Add(new ColumnDescriptor() { FieldName = "TENDER_PROJECT_START", Header = "Start Date", ReadOnly = false, Fixed = FixedStyle.Left, Width = 70, Settings = SettingsType.Date });
-            columns.Add(new ColumnDescriptor() { FieldName = "TENDER_PROJECT_DURATION", ReadOnly = false, Visible = true, Header = "Duration", Mask = "###,##0 Months", Increment = 1, Fixed = FixedStyle.Left, Width = 75, Settings = SettingsType.Number });
-            columns.Add(new ColumnDescriptor() { FieldName = "PIPELINE_GROSS_PROFIT", ReadOnly = false, Visible = true, Header = "Gross Profit", Mask = "c2", Increment = 1, Fixed = FixedStyle.Left, Width = 75, Settings = SettingsType.Number });
-            columns.Add(new ColumnDescriptor() { FieldName = "PIPELINE_TOTAL_VALUE", ReadOnly = false, Visible = true, Header = "Total Value", Mask = "c2", Increment = 1, Fixed = FixedStyle.Left, Width = 75, Settings = SettingsType.Number });
-            columns.Add(new ColumnDescriptor() { FieldName = "PIPELINE_SCOPE_PCT", ReadOnly = false, Visible = true, Header = "Scope %", Mask = "p2", Increment = 0.1m, Fixed = FixedStyle.Left, Width = 75, Settings = SettingsType.Number });
+            columns.Add(new ColumnDescriptor() { FieldName = columnEntity + ".PIPELINE_TYPE", Header = "Type", Fixed = FixedStyle.Left, Width = 70, ItemsSource = PipelineTypeCollection, Settings = SettingsType.Collection });
+            columns.Add(new ColumnDescriptor() { FieldName = columnEntity + ".PIPELINE_DIVISION", Header = "Division", Fixed = FixedStyle.Left, Width = 70, ItemsSource = PipelineDivisionCollection, Settings = SettingsType.Collection });
+            columns.Add(new ColumnDescriptor() { FieldName = columnEntity + ".PIPELINE_COMMODITY", Header = "Commodity", Fixed = FixedStyle.Left, Width = 70, ItemsSource = PipelineCommodityCollection, Settings = SettingsType.Collection });
+            columns.Add(new ColumnDescriptor() { FieldName = columnEntity + ".PIPELINE_CONTRACT", Header = "Contract", Fixed = FixedStyle.Left, Width = 70, ItemsSource = PipelineContractCollection, Settings = SettingsType.Collection });
+            columns.Add(new ColumnDescriptor() { FieldName = columnEntity + ".PIPELINE_STATUS", Header = "Status", Fixed = FixedStyle.Left, Width = 70, ItemsSource = PipelineStatusCollection, Settings = SettingsType.Collection });
+            columns.Add(new ColumnDescriptor() { FieldName = columnEntity + ".TENDER_PROJECT_START", Header = "Start Date", ReadOnly = false, Fixed = FixedStyle.Left, Width = 70, Settings = SettingsType.Date });
+            columns.Add(new ColumnDescriptor() { FieldName = columnEntity + ".TENDER_PROJECT_DURATION", ReadOnly = false, Visible = true, Header = "Duration", Mask = "###,##0 Weeks", Increment = 1, Fixed = FixedStyle.Left, Width = 75, Settings = SettingsType.Number });
+            columns.Add(new ColumnDescriptor() { FieldName = columnEntity + ".PIPELINE_GROSS_PROFIT", ReadOnly = false, Visible = true, Header = "Gross Profit", Mask = "c2", Increment = 1, Fixed = FixedStyle.Left, Width = 75, Settings = SettingsType.Number });
+            columns.Add(new ColumnDescriptor() { FieldName = columnEntity + ".PIPELINE_TOTAL_VALUE", ReadOnly = false, Visible = true, Header = "Total Value", Mask = "c2", Increment = 1, Fixed = FixedStyle.Left, Width = 75, Settings = SettingsType.Number });
+            columns.Add(new ColumnDescriptor() { FieldName = columnEntity + ".PIPELINE_SCOPE_PCT", ReadOnly = false, Visible = true, Header = "Scope %", Mask = "p2", Increment = 0.1m, Fixed = FixedStyle.Left, Width = 75, Settings = SettingsType.Number });
 
             foreach (DateTime alignedDate in alignedDates.OrderBy(x => x))
             {
                 string columnFieldName = alignedDate.Date.ToString(BluePrintsResources.ColumnDateFormat);
-                columns.Add(new ColumnDescriptor() { FieldName = columnFieldName, ReadOnly = false, Header = columnFieldName, Fixed = FixedStyle.None, Width = 60, Settings = SettingsType.ForecastChild });
+                columns.Add(new ColumnDescriptor() { FieldName = columnFieldName, ReadOnly = false, Header = columnFieldName, Fixed = FixedStyle.None, Width = 60, Settings = SettingsType.Date });
                 summaries.Add(new SummaryDescriptor() { FieldName = columnFieldName, DisplayFormat = "c0", Type = SummaryItemType.Sum });
             }
         }
@@ -283,11 +350,11 @@ namespace BluePrints.ViewModels
             }
         }
 
-        public IEnumerable<PROJECT> PipelineTypeCollection
+        public IEnumerable<PipelineType> PipelineTypeCollection
         {
             get
             {
-                return DataUtils.GetValuesOf(() => new PROJECT());
+                return DataUtils.GetValuesOf(() => new PipelineType());
             }
         }
 

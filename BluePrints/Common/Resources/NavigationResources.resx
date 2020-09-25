@@ -414,4 +414,7 @@
   <data name="Menu_Project_ConstructionVariation" xml:space="preserve">
     <value>Project construction variation maintenance menu</value>
   </data>
+  <data name="Menu_Project_Pipelines" xml:space="preserve">
+    <value>Project pipelines maintenance menu</value>
+  </data>
 </root>
