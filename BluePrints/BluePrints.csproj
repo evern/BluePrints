@@ -1071,6 +1071,7 @@
     <Compile Include="ViewModels\PROGRESS_ITEM\OffsiteDirectProgressCollectionViewModelWrapper.cs" />
     <Compile Include="ViewModels\EXOSUBJOB\EXO_POCollectionViewModelWrapper.cs" />
     <Compile Include="ViewModels\PROJECT\PROJECTForecastEACReportViewModelWrapper.cs" />
+    <Compile Include="ViewModels\PROJECT\PROJECTPlanViewModelWrapper.cs" />
     <Compile Include="ViewModels\PROJECT\PROJECT_REVENUECollectionViewModelWrapper.cs" />
     <Compile Include="ViewModels\PROJECT\PROJECTIndirectForecastViewModelWrapper.cs" />
     <Compile Include="ViewModels\PROJECT\POSpreadViewModel.cs" />
@@ -1182,6 +1183,9 @@
     </Compile>
     <Compile Include="Views\PROJECT\PROJECTPOCollectionView.xaml.cs">
       <DependentUpon>PROJECTPOCollectionView.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Views\PROJECT\PROJECTPlanView.xaml.cs">
+      <DependentUpon>PROJECTPlanView.xaml</DependentUpon>
     </Compile>
     <Compile Include="Views\PROJECT\PROJECT_REVENUECollectionView.xaml.cs">
       <DependentUpon>PROJECT_REVENUECollectionView.xaml</DependentUpon>
@@ -2131,6 +2135,10 @@
       <SubType>Designer</SubType>
     </Page>
     <Page Include="Views\PROJECT\PROJECTPOCollectionView.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Views\PROJECT\PROJECTPlanView.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>
