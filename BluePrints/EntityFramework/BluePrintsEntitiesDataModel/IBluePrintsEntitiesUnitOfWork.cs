@@ -163,6 +163,11 @@ namespace BluePrints.BluePrintsEntitiesDataModel
         IRepository<HSE_INJURY, Guid> HSE_INJURIES { get; }
 
         /// <summary>
+        /// The JOBCOST_LINES_AUDIT entities repository.
+        /// </summary>
+        IRepository<JOBCOST_LINES_AUDIT, Guid> JOBCOST_LINES_AUDITS { get; }
+
+        /// <summary>
         /// The OFFICE entities repository.
         /// </summary>
         IRepository<OFFICE, Guid> OFFICES { get; }

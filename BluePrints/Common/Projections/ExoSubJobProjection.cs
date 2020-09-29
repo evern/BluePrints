@@ -24,6 +24,7 @@ using System.Text.RegularExpressions;
 using System.Data.Linq.SqlClient;
 using BluePrints.Common.Misc;
 using BluePrints.Common.ViewModel.Utils;
+using BluePrints.BluePrintsEntitiesDataModel;
 
 namespace BluePrints.Common.Projections
 {
@@ -330,13 +331,14 @@ namespace BluePrints.Common.Projections
         }
 
 
-        public static bool CommitLineBudgetCost(ExoSubJobProjection projection, IPrimeroEntitiesUnitOfWork localPrimeroUnitOfWork)
+        public static bool CommitLineBudgetCost(ExoSubJobProjection projection, IPrimeroEntitiesUnitOfWork localPrimeroUnitOfWork, IBluePrintsEntitiesUnitOfWork bluePrintsUnitOfWork)
         {
             if (projection.LineId != null)
             {
                 JOBCOST_LINES line = localPrimeroUnitOfWork.JOBCOST_LINES.FirstOrDefault(x => x.SEQNO == projection.LineId);
                 if (line != null)
                 {
+                    UpdateJOBCOST_LINES_AUDIT(bluePrintsUnitOfWork, projection, line);
                     line.QUOTE_QTY = 1;
                     line.ACTUAL_UNITCOST = Convert.ToDouble(projection.ExoBudget);
                     localPrimeroUnitOfWork.SaveChanges();
@@ -347,7 +349,7 @@ namespace BluePrints.Common.Projections
             return false;
         }
 
-        public static IEnumerable<ExoSubJobProjection> CommitToExo(IEnumerable<ExoSubJobProjection> projections, IMessageBoxService MessageBoxService, JOBCOST_HDR masterJob, JOBCOST_LINES copyLine, PROJECT loadPROJECT, IEnumerable<USER> USERCollection, IPrimeroEntitiesUnitOfWork localPrimeroUnitOfWork, IDialogService BulkColumnEditDialogService, out List<ErrorMessage> errorMessages, ObservableCollection<ExoSubJobProjection> DisplayEntities = null, bool updateBudgetIfExist = false, bool ignoreCostGroupCostType = false)
+        public static IEnumerable<ExoSubJobProjection> CommitToExo(IEnumerable<ExoSubJobProjection> projections, IMessageBoxService MessageBoxService, JOBCOST_HDR masterJob, JOBCOST_LINES copyLine, PROJECT loadPROJECT, IEnumerable<USER> USERCollection, IPrimeroEntitiesUnitOfWork localPrimeroUnitOfWork, IBluePrintsEntitiesUnitOfWork bluePrintsEntitiesUnitOfWork, IDialogService BulkColumnEditDialogService, out List<ErrorMessage> errorMessages, ObservableCollection<ExoSubJobProjection> DisplayEntities = null, bool updateBudgetIfExist = false, bool ignoreCostGroupCostType = false)
         {
             errorMessages = new List<ErrorMessage>();
             List<ExoSubJobProjection> addedProjections = new List<ExoSubJobProjection>();
@@ -447,7 +449,7 @@ namespace BluePrints.Common.Projections
                                 projection.StockName = stock_item.DESCRIPTION;
                                 if (ignoreCostGroupCostType || ExoMethods.CommitLineCommodity(projection, stock_item, false, BulkColumnEditDialogService, masterJob, loadPROJECT.NUMBER, localPrimeroUnitOfWork))
                                 {
-                                    JOBCOST_LINES findExistingOrAddLine = ExoMethods.findExistingOrAddLine(localPrimeroUnitOfWork, projection, copyLine, loadPROJECT.NUMBER, updateBudgetIfExist, ignoreCostGroupCostType);
+                                    JOBCOST_LINES findExistingOrAddLine = ExoMethods.findExistingOrAddLine(localPrimeroUnitOfWork, bluePrintsEntitiesUnitOfWork, projection, copyLine, loadPROJECT.NUMBER, updateBudgetIfExist, ignoreCostGroupCostType);
                                     projection.LineId = findExistingOrAddLine.SEQNO;
                                     if (projection.LineId != null)
                                     {
@@ -661,13 +663,14 @@ namespace BluePrints.Common.Projections
         //    }
         //}
 
-        public static JOBCOST_LINES findExistingOrAddLine(IPrimeroEntitiesUnitOfWork pUnitOfWork, ExoSubJobProjection exoLine, JOBCOST_LINES copyLine, string projectNumber, bool updateBudgetIfExists = false, bool ignoreCostGroupCostType = false)
+        public static JOBCOST_LINES findExistingOrAddLine(IPrimeroEntitiesUnitOfWork pUnitOfWork, IBluePrintsEntitiesUnitOfWork bluePrintsUnitOfWork, ExoSubJobProjection exoLine, JOBCOST_LINES copyLine, string projectNumber, bool updateBudgetIfExists = false, bool ignoreCostGroupCostType = false)
         {
             if (!ignoreCostGroupCostType && (exoLine.SubJobId == null || exoLine.DisciplineId == null || exoLine.CommodityId == null))
                 return null;
             else
             {
                 JOBCOST_LINES line = ExoQueries.GetProjectLine(pUnitOfWork, projectNumber, exoLine, ignoreCostGroupCostType);
+
                 if (line != null)
                 {
                     if(updateBudgetIfExists)
@@ -675,8 +678,10 @@ namespace BluePrints.Common.Projections
                         double exoBudget = Convert.ToDouble(exoLine.ExoBudget);
                         if (line.ACTUAL_UNITCOST != exoBudget)
                         {
+                            UpdateJOBCOST_LINES_AUDIT(bluePrintsUnitOfWork, exoLine, line);
                             line.ACTUAL_UNITCOST = exoLine.ExoBudget == 0 ? (Double?)null : Convert.ToDouble(exoLine.ExoBudget);
                             pUnitOfWork.SaveChanges();
+
                         }
                     }
 
@@ -689,6 +694,7 @@ namespace BluePrints.Common.Projections
                     JOBCOST_LINES newLine = CreateNewLine(copyLine, exoLine, (int)maxJOBCOSTLINEID, ignoreCostGroupCostType);
                     pUnitOfWork.JOBCOST_LINES.Add(newLine);
                     pUnitOfWork.SaveChanges();
+                    UpdateJOBCOST_LINES_AUDIT(bluePrintsUnitOfWork, exoLine, newLine);
 
                     return newLine;
                 }
@@ -696,6 +702,53 @@ namespace BluePrints.Common.Projections
                 {
                     return null;
                 }
+            }
+        }
+
+        public static JOBCOST_LINES_AUDIT UpdateJOBCOST_LINES_AUDIT(IBluePrintsEntitiesUnitOfWork bluePrintsEntitiesUnitOfWork, ExoSubJobProjection exoLine, JOBCOST_LINES line, bool isDelete = false)
+        {
+            JOBCOST_LINES_AUDIT jobCostLinesAudit = FindExistingOrAddJOBCOST_LINES_AUDIT(bluePrintsEntitiesUnitOfWork, line.SEQNO);
+            jobCostLinesAudit.JOBCODE = exoLine.SubJobCode;
+            jobCostLinesAudit.DISCIPLINE_CODE = exoLine.DisciplineCode;
+            jobCostLinesAudit.COMMODITY_CODE = exoLine.CommodityCode;
+            jobCostLinesAudit.STOCK_CODE = exoLine.StockCode;
+            jobCostLinesAudit.VARIATION_CODE = exoLine.VariationCode;
+            jobCostLinesAudit.BUDGET_FROM = line.ACTUAL_UNITCOST == null ? 0 : Convert.ToDecimal((double)line.ACTUAL_UNITCOST);
+            jobCostLinesAudit.BUDGET_TO = exoLine.ExoBudget;
+
+            if(jobCostLinesAudit.BUDGET_FROM != jobCostLinesAudit.BUDGET_TO)
+            {
+                jobCostLinesAudit.BUDGET_UPDATED = DateTime.Now;
+                jobCostLinesAudit.BUDGET_UPDATEDBY = LoginCredentials.CurrentUserGuid;
+            }
+
+            bluePrintsEntitiesUnitOfWork.SaveChanges();
+            if(isDelete)
+            {
+                bluePrintsEntitiesUnitOfWork.JOBCOST_LINES_AUDITS.Remove(jobCostLinesAudit);
+                bluePrintsEntitiesUnitOfWork.SaveChanges();
+            }
+
+            return jobCostLinesAudit;
+        }
+
+        public static JOBCOST_LINES_AUDIT FindExistingOrAddJOBCOST_LINES_AUDIT(IBluePrintsEntitiesUnitOfWork bluePrintsEntitiesUnitOfWork, int JOBCOST_LINES_SEQNO)
+        {
+            JOBCOST_LINES_AUDIT jobCostLinesAudit = bluePrintsEntitiesUnitOfWork.JOBCOST_LINES_AUDITS.FirstOrDefault(x => x.JOBCOST_LINES_SEQNO == JOBCOST_LINES_SEQNO);
+            if (jobCostLinesAudit != null)
+            {
+                jobCostLinesAudit.UPDATED = DateTime.Now;
+                jobCostLinesAudit.UPDATEDBY = LoginCredentials.CurrentUserGuid;
+                return jobCostLinesAudit;
+            }
+            else
+            {
+                jobCostLinesAudit = new JOBCOST_LINES_AUDIT();
+                jobCostLinesAudit.JOBCOST_LINES_SEQNO = JOBCOST_LINES_SEQNO;
+                jobCostLinesAudit.CREATED = DateTime.Now;
+                jobCostLinesAudit.CREATEDBY = LoginCredentials.CurrentUserGuid;
+                bluePrintsEntitiesUnitOfWork.JOBCOST_LINES_AUDITS.Add(jobCostLinesAudit);
+                return jobCostLinesAudit;
             }
         }
 

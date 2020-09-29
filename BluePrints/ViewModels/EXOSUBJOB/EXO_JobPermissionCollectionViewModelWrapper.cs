@@ -68,7 +68,7 @@ namespace BluePrints.ViewModels
         #region Code Properties
         private readonly IUnitOfWorkFactory<IBluePrintsEntitiesUnitOfWork> bluePrintsUnitOfWorkFactory = BluePrintsEntitiesUnitOfWorkSource.GetUnitOfWorkFactory();
         protected DispatcherTimer delayedPermissionRefreshDispatcher;
-
+        private IBluePrintsEntitiesUnitOfWork bluePrintsEntitiesUnitOfWork;
         #endregion
 
         #region Loading Operations
@@ -86,6 +86,8 @@ namespace BluePrints.ViewModels
             delayedPermissionRefreshDispatcher.Interval = new TimeSpan(0, 0, 0, 0, 1);
             delayedPermissionRefreshDispatcher.Tick += DelayedPermissionRefreshDispatcher_Tick;
             ignoreCostGroupCostTypeError = true;
+
+            bluePrintsEntitiesUnitOfWork = bluePrintsUnitOfWorkFactory.CreateUnitOfWork();
         }
 
         private void DelayedPermissionRefreshDispatcher_Tick(object sender, EventArgs e)
@@ -136,7 +138,7 @@ namespace BluePrints.ViewModels
         private bool uploadToExo()
         {
             List<ErrorMessage> errorMessages;
-            IEnumerable<ExoSubJobProjection> addedSubJobs = ExoMethods.CommitToExo(SelectedEntities, MessageBoxService, masterJob, copyLine, loadPROJECT, USERCollection, localPrimeroUnitOfWork, BulkColumnEditDialogService, out errorMessages, Entities);
+            IEnumerable<ExoSubJobProjection> addedSubJobs = ExoMethods.CommitToExo(SelectedEntities, MessageBoxService, masterJob, copyLine, loadPROJECT, USERCollection, localPrimeroUnitOfWork, bluePrintsEntitiesUnitOfWork, BulkColumnEditDialogService, out errorMessages, Entities);
 
             if (errorMessages.Count > 0)
             {
@@ -173,6 +175,7 @@ namespace BluePrints.ViewModels
                     JOBCOST_LINES line = localPrimeroUnitOfWork.JOBCOST_LINES.First(x => x.SEQNO == projection.LineId);
                     if (line != null)
                     {
+                        ExoMethods.UpdateJOBCOST_LINES_AUDIT(bluePrintsEntitiesUnitOfWork, projection, line, true);
                         localPrimeroUnitOfWork.JOBCOST_LINES.Remove(line);
                         localPrimeroUnitOfWork.SaveChanges();
                     }

@@ -1,4 +1,5 @@
-﻿using BluePrints.Common.Projections;
+﻿using BluePrints.BluePrintsEntitiesDataModel;
+using BluePrints.Common.Projections;
 using BluePrints.Data;
 using BluePrints.PrimeroData;
 using BluePrints.PrimeroData.PrimeroEntitiesDataModel;
@@ -34,7 +35,7 @@ namespace BluePrints.Common.Helpers
             return volumeSerial;
         }
 
-        public static void SubJobLineValueChanged(string field_name, object old_value, object new_value, ExoSubJobProjection projection, IEnumerable<ExoSubJobProjection> projections, bool isNew, string projectNumber, IPrimeroEntitiesUnitOfWork localPrimeroUnitOfWork, IMessageBoxService MessageBoxService, IDialogService BulkColumnEditDialogService, JOBCOST_HDR masterJob, Action raiseCommodityCodesChangeAction = null, Action raiseStockCodesChangeAction = null)
+        public static void SubJobLineValueChanged(string field_name, object old_value, object new_value, ExoSubJobProjection projection, IEnumerable<ExoSubJobProjection> projections, bool isNew, string projectNumber, IPrimeroEntitiesUnitOfWork localPrimeroUnitOfWork, IBluePrintsEntitiesUnitOfWork bluePrintsEntitiesUnitOfWork, IMessageBoxService MessageBoxService, IDialogService BulkColumnEditDialogService, JOBCOST_HDR masterJob, Action raiseCommodityCodesChangeAction = null, Action raiseStockCodesChangeAction = null)
         {
             if (field_name.Contains(BindableBase.GetPropertyName(() => new ExoSubJobProjection().SubJobTitle)))
             {
@@ -82,7 +83,7 @@ namespace BluePrints.Common.Helpers
             }
             else if (field_name.Contains(BindableBase.GetPropertyName(() => new ExoSubJobProjection().ExoBudget)))
             {
-                ExoMethods.CommitLineBudgetCost(projection, localPrimeroUnitOfWork);
+                ExoMethods.CommitLineBudgetCost(projection, localPrimeroUnitOfWork, bluePrintsEntitiesUnitOfWork);
             }
 
             projection.Update();

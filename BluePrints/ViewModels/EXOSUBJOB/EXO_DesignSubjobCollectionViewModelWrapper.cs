@@ -186,7 +186,7 @@ namespace BluePrints.ViewModels
             foreach (ExoSubJobProjection subJob in SelectedEntities.Where(x => x.IsLineExistsInExo))
             {
                 subJob.ExoBudget = subJob.Budget;
-                ExoMethods.CommitLineBudgetCost(subJob, localPrimeroUnitOfWork);
+                ExoMethods.CommitLineBudgetCost(subJob, localPrimeroUnitOfWork, bluePrintsEntitiesUnitOfWork);
                 subJob.Update();
             }
         }

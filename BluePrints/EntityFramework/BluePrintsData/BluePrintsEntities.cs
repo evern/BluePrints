@@ -40,6 +40,7 @@ namespace BluePrints.Data
         public virtual DbSet<FORECAST_JOB> FORECAST_JOB { get; set; }
         public virtual DbSet<FORECAST_JOB_SETTING> FORECAST_JOB_SETTING { get; set; }
         public virtual DbSet<FORECAST> FORECAST { get; set; }
+        public virtual DbSet<JOBCOST_LINES_AUDIT> JOBCOST_LINES_AUDIT { get; set; }
         public virtual DbSet<HSE> HSE { get; set; }
         public virtual DbSet<HSE_INCIDENT> HSE_INCIDENT { get; set; }
         public virtual DbSet<HSE_INJURY> HSE_INJURY { get; set; }

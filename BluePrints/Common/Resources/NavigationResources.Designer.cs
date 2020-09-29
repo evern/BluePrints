@@ -520,6 +520,15 @@ namespace BluePrints.Common.Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Show all EXO job changes from BluePrints.
+        /// </summary>
+        internal static string Menu_Project_EXO_JobsHistory {
+            get {
+                return ResourceManager.GetString("Menu_Project_EXO_JobsHistory", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Project EXO timesheet maintenance menu.
         /// </summary>
         internal static string Menu_Project_EXO_Timesheets {

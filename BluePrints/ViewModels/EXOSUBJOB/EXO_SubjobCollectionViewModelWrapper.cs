@@ -71,6 +71,7 @@ namespace BluePrints.ViewModels
         private readonly IUnitOfWorkFactory<IBluePrintsEntitiesUnitOfWork> bluePrintsUnitOfWorkFactory = BluePrintsEntitiesUnitOfWorkSource.GetUnitOfWorkFactory();
         protected IUnitOfWorkFactory<IPrimeroEntitiesUnitOfWork> localPrimeroUnitOfWorkFactory;
         protected IPrimeroEntitiesUnitOfWork localPrimeroUnitOfWork;
+        protected IBluePrintsEntitiesUnitOfWork bluePrintsEntitiesUnitOfWork;
         protected IEnumerable<JOB_COSTGROUPS> costGroups;
         protected IEnumerable<JOBCOST_HDR> existingSubJobs;
         protected JOBCOST_HDR masterJob;
@@ -98,6 +99,7 @@ namespace BluePrints.ViewModels
             backgroundBudgetChecker.DoWork += BackgroundBudgetChecker_DoWork;
             backgroundBudgetChecker.WorkerSupportsCancellation = true;
             ignoreExoBudgetError = true;
+            bluePrintsEntitiesUnitOfWork = BluePrintsEntitiesUnitOfWorkSource.GetUnitOfWorkFactory().CreateUnitOfWork();
             initializeOptionalViewCollections();
         }
 
@@ -273,7 +275,7 @@ namespace BluePrints.ViewModels
             List<KeyValuePair<string, string>> constraintIssues;
             if (MainViewModel.IsValidEntity(projection, null, ref errorMessage, out constraintIssues) && projection.IsLineExistsInExo)
             {
-                CommonMethods.SubJobLineValueChanged(field_name, old_value, new_value, projection, Entities, isNew, loadPROJECT.NUMBER, localPrimeroUnitOfWork, MessageBoxService, BulkColumnEditDialogService, masterJob, () => this.RaisePropertyChanged(x => x.COMMODITY_CODEStringCollection), () => this.RaisePropertyChanged(x => x.STOCK_CODEStringCollection));
+                CommonMethods.SubJobLineValueChanged(field_name, old_value, new_value, projection, Entities, isNew, loadPROJECT.NUMBER, localPrimeroUnitOfWork, bluePrintsEntitiesUnitOfWork, MessageBoxService, BulkColumnEditDialogService, masterJob, () => this.RaisePropertyChanged(x => x.COMMODITY_CODEStringCollection), () => this.RaisePropertyChanged(x => x.STOCK_CODEStringCollection));
             }
 
             base.UnifiedCellValueChanged(field_name, old_value, new_value, projection, isNew);
@@ -364,6 +366,7 @@ namespace BluePrints.ViewModels
                 JOBCOST_LINES line = localPrimeroUnitOfWork.JOBCOST_LINES.FirstOrDefault(x => x.SEQNO == removeProjection.LineId);
                 if (line != null)
                 {
+                    ExoMethods.UpdateJOBCOST_LINES_AUDIT(bluePrintsEntitiesUnitOfWork, removeProjection, line, true);
                     localPrimeroUnitOfWork.JOBCOST_LINES.Remove(line);
                     removeProjection.LineId = null;
                     removeProjection.IsLineExistsInExo = false;
@@ -437,7 +440,7 @@ namespace BluePrints.ViewModels
         public IEnumerable<ExoSubJobProjection> CommitToExo(IEnumerable<ExoSubJobProjection> projections)
         {
             List<ErrorMessage> errorMessages;
-            IEnumerable<ExoSubJobProjection> addedProjections = ExoMethods.CommitToExo(projections, MessageBoxService, masterJob, copyLine, loadPROJECT, USERCollection, localPrimeroUnitOfWork, BulkColumnEditDialogService, out errorMessages, Entities, false, false);
+            IEnumerable<ExoSubJobProjection> addedProjections = ExoMethods.CommitToExo(projections, MessageBoxService, masterJob, copyLine, loadPROJECT, USERCollection, localPrimeroUnitOfWork, bluePrintsEntitiesUnitOfWork, BulkColumnEditDialogService, out errorMessages, Entities, false, false);
 
             ShowErrorMessage("Errors", errorMessages);
             if (addedProjections.Count() > 0)

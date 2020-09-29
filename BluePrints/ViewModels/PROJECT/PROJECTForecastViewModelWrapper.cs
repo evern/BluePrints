@@ -1997,7 +1997,7 @@ namespace BluePrints.ViewModels
                 projections.Add(projection);
 
                 List<ErrorMessage> errorMessages;
-                IEnumerable<ExoSubJobProjection> addedProjections = ExoMethods.CommitToExo(projections, MessageBoxService, masterJob, copyLine, LoadPROJECT, USERCollection, primeroUnitOfWork, BulkColumnEditDialogService, out errorMessages);
+                IEnumerable<ExoSubJobProjection> addedProjections = ExoMethods.CommitToExo(projections, MessageBoxService, masterJob, copyLine, LoadPROJECT, USERCollection, primeroUnitOfWork, bluePrintsUnitOfWork, BulkColumnEditDialogService, out errorMessages);
                 if (errorMessages.Count > 0)
                 {
                     DialogCollectionViewModel<ErrorMessage> viewModel = DialogCollectionViewModel<ErrorMessage>.Create(errorMessages, "Errors");
