@@ -413,25 +413,28 @@ namespace BluePrints.Common.Projections
 
                 if (!ignoreCostGroupCostType)
                 {
-                    if (projection.DisciplineCode == null || projection.DisciplineCode == string.Empty || !Regex.IsMatch(projection.DisciplineCode, BluePrintsResources.Regex_DISCIPLINE))
+                    if(projection.StockCode != BluePrintsResources.VariationStockCode)
                     {
-                        errorMessages.Add(new ErrorMessage(projection.ErrorMessageIdentificationCode, "Invalid discipline code"));
-                        continue;
-                    }
-                    else if (projection.DisciplineCode.Length > 4)
-                    {
-                        errorMessages.Add(new ErrorMessage(projection.ErrorMessageIdentificationCode, "discipline code must be 4 characters"));
-                        continue;
-                    }
-                    else if (projection.CommodityCode == null || projection.CommodityCode == string.Empty)
-                    {
-                        errorMessages.Add(new ErrorMessage(projection.ErrorMessageIdentificationCode, "missing commodity code"));
-                        continue;
-                    }
-                    else if (projection.CommodityCode.Length > 4)
-                    {
-                        errorMessages.Add(new ErrorMessage(projection.ErrorMessageIdentificationCode, "commodity code must be 4 characters"));
-                        continue;
+                        if (projection.DisciplineCode == null || projection.DisciplineCode == string.Empty || !Regex.IsMatch(projection.DisciplineCode, BluePrintsResources.Regex_DISCIPLINE))
+                        {
+                            errorMessages.Add(new ErrorMessage(projection.ErrorMessageIdentificationCode, "Invalid discipline code"));
+                            continue;
+                        }
+                        else if (projection.DisciplineCode.Length > 4)
+                        {
+                            errorMessages.Add(new ErrorMessage(projection.ErrorMessageIdentificationCode, "discipline code must be 4 characters"));
+                            continue;
+                        }
+                        else if (projection.CommodityCode == null || projection.CommodityCode == string.Empty)
+                        {
+                            errorMessages.Add(new ErrorMessage(projection.ErrorMessageIdentificationCode, "missing commodity code"));
+                            continue;
+                        }
+                        else if (projection.CommodityCode.Length > 4)
+                        {
+                            errorMessages.Add(new ErrorMessage(projection.ErrorMessageIdentificationCode, "commodity code must be 4 characters"));
+                            continue;
+                        }
                     }
                 }
 
@@ -708,11 +711,11 @@ namespace BluePrints.Common.Projections
         public static JOBCOST_LINES_AUDIT UpdateJOBCOST_LINES_AUDIT(IBluePrintsEntitiesUnitOfWork bluePrintsEntitiesUnitOfWork, ExoSubJobProjection exoLine, JOBCOST_LINES line, bool isDelete = false)
         {
             JOBCOST_LINES_AUDIT jobCostLinesAudit = FindExistingOrAddJOBCOST_LINES_AUDIT(bluePrintsEntitiesUnitOfWork, line.SEQNO);
-            jobCostLinesAudit.JOBCODE = exoLine.SubJobCode;
-            jobCostLinesAudit.DISCIPLINE_CODE = exoLine.DisciplineCode;
-            jobCostLinesAudit.COMMODITY_CODE = exoLine.CommodityCode;
-            jobCostLinesAudit.STOCK_CODE = exoLine.StockCode;
-            jobCostLinesAudit.VARIATION_CODE = exoLine.VariationCode;
+            jobCostLinesAudit.JOBCODE = DataUtils.NormalizeString(exoLine.SubJobCode);
+            jobCostLinesAudit.DISCIPLINE_CODE = DataUtils.NormalizeString(exoLine.DisciplineCode);
+            jobCostLinesAudit.COMMODITY_CODE = DataUtils.NormalizeString(exoLine.CommodityCode);
+            jobCostLinesAudit.STOCK_CODE = DataUtils.NormalizeString(exoLine.StockCode);
+            jobCostLinesAudit.VARIATION_CODE = DataUtils.NormalizeString(exoLine.VariationCode);
             jobCostLinesAudit.BUDGET_FROM = line.ACTUAL_UNITCOST == null ? 0 : Convert.ToDecimal((double)line.ACTUAL_UNITCOST);
             jobCostLinesAudit.BUDGET_TO = exoLine.ExoBudget;
 
@@ -1050,7 +1053,7 @@ namespace BluePrints.Common.Projections
             newLINE.KITSEQNO = -1;
             newLINE.KITCODE = string.Empty;
             newLINE.PRICE_OVERRIDDEN = "N";
-            newLINE.LINKED_STOCKCODE = ignoreCostGroupCostType ? string.Empty : projection.StockCode.ToUpper();
+            newLINE.LINKED_STOCKCODE = projection.StockCode.ToUpper();
             newLINE.LINKED_QTY = 1;
             newLINE.HIDDEN_COST = 0;
             newLINE.HIDDEN_SELL = 0;

@@ -1087,17 +1087,6 @@ namespace BluePrints.ViewModels
             }
         }
 
-        /// <summary>
-        /// For the purpose of presentation, variation code must always be empty
-        /// But when budget is edited, findExistingOrAddNewLine will handle the difference between null and string.empty values
-        /// </summary>
-        private string normalizeCodes(string code)
-        {
-            if (code == null)
-                return string.Empty;
-
-            return code;
-        }
 
         private void setDateFieldsEmpty(DataRow dataRow, bool test)
         {
@@ -1150,8 +1139,8 @@ namespace BluePrints.ViewModels
                 FORECAST_JOB_SETTING newFORECAST_JOB_SETTING = new FORECAST_JOB_SETTING();
                 newFORECAST_JOB_SETTING.GUID_PROJECT = LoadPROJECT.GUID;
                 newFORECAST_JOB_SETTING.SUBJOB_CODE = projection.SubJobCode;
-                newFORECAST_JOB_SETTING.DISCIPLINE_CODE = normalizeCodes(projection.DisciplineCode);
-                newFORECAST_JOB_SETTING.COMMODITY_CODE = normalizeCodes(projection.CommodityCode);
+                newFORECAST_JOB_SETTING.DISCIPLINE_CODE = DataUtils.NormalizeString(projection.DisciplineCode);
+                newFORECAST_JOB_SETTING.COMMODITY_CODE = DataUtils.NormalizeString(projection.CommodityCode);
 
                 if (projection.VariationCode != null && projection.VariationCode != string.Empty)
                     newFORECAST_JOB_SETTING.VARIATION_CODE = projection.VariationCode;
@@ -2230,9 +2219,9 @@ namespace BluePrints.ViewModels
                 editFORECAST.GUID = Guid.Empty;
                 editFORECAST.GUID_PROJECT = LoadPROJECT.GUID;
                 editFORECAST.SUBJOB_CODE = entity.SubJobCode;
-                editFORECAST.DISCIPLINE_CODE = normalizeCodes(entity.DisciplineCode);
-                editFORECAST.COMMODITY_CODE = normalizeCodes(entity.CommodityCode);
-                editFORECAST.VARIATION_CODE = normalizeCodes(entity.VariationCode);
+                editFORECAST.DISCIPLINE_CODE = DataUtils.NormalizeString(entity.DisciplineCode);
+                editFORECAST.COMMODITY_CODE = DataUtils.NormalizeString(entity.CommodityCode);
+                editFORECAST.VARIATION_CODE = DataUtils.NormalizeString(entity.VariationCode);
                 editFORECAST.FORECAST_DATE = forecastDate.Date;
                 editFORECAST.FORECAST_UNITS = saveNewValue;
                 editFORECAST.FORECAST_TYPE = editForecastDataType;
@@ -2487,9 +2476,9 @@ namespace BluePrints.ViewModels
                     findFORECASTS.GUID = Guid.Empty;
                     findFORECASTS.GUID_PROJECT = LoadPROJECT.GUID;
                     findFORECASTS.SUBJOB_CODE = projection.SubJobCode;
-                    findFORECASTS.DISCIPLINE_CODE = normalizeCodes(projection.DisciplineCode);
-                    findFORECASTS.COMMODITY_CODE = normalizeCodes(projection.CommodityCode);
-                    findFORECASTS.VARIATION_CODE = normalizeCodes(projection.VariationCode);
+                    findFORECASTS.DISCIPLINE_CODE = DataUtils.NormalizeString(projection.DisciplineCode);
+                    findFORECASTS.COMMODITY_CODE = DataUtils.NormalizeString(projection.CommodityCode);
+                    findFORECASTS.VARIATION_CODE = DataUtils.NormalizeString(projection.VariationCode);
                     findFORECASTS.FORECAST_DATE = firstForecastDate;
                     findFORECASTS.FORECAST_UNITS = firstForecastDateValue;
                     findFORECASTS.FORECAST_TYPE = ForecastDataType.DataDateForecast;
@@ -2516,9 +2505,9 @@ namespace BluePrints.ViewModels
             newFORECAST_EAC.GUID = Guid.Empty;
             newFORECAST_EAC.GUID_PROJECT = LoadPROJECT.GUID;
             newFORECAST_EAC.SUBJOB_CODE = projection.SubJobCode;
-            newFORECAST_EAC.DISCIPLINE_CODE = normalizeCodes(projection.DisciplineCode);
-            newFORECAST_EAC.COMMODITY_CODE = normalizeCodes(projection.CommodityCode);
-            newFORECAST_EAC.VARIATION_CODE = normalizeCodes(projection.VariationCode);
+            newFORECAST_EAC.DISCIPLINE_CODE = DataUtils.NormalizeString(projection.DisciplineCode);
+            newFORECAST_EAC.COMMODITY_CODE = DataUtils.NormalizeString(projection.CommodityCode);
+            newFORECAST_EAC.VARIATION_CODE = DataUtils.NormalizeString(projection.VariationCode);
             newFORECAST_EAC.FORECAST_DATE = forecastDate.Date;
             newFORECAST_EAC.FORECAST_COSTS = newPreviousEAC;
 
@@ -2531,7 +2520,7 @@ namespace BluePrints.ViewModels
             if (projection.SubJobCode == null)
                 return;
 
-            string normalizedVariationCode = normalizeCodes(projection.VariationCode);
+            string normalizedVariationCode = DataUtils.NormalizeString(projection.VariationCode);
             FORECAST_EAC forecast_EAC = bluePrintsEntitiesUnitOfWork.FORECAST_EACS.FirstOrDefault(x => x.FORECAST_DATE == forecastDate.Date && 
             x.GUID_PROJECT == LoadPROJECT.GUID && x.SUBJOB_CODE == projection.SubJobCode && 
             x.DISCIPLINE_CODE == projection.DisciplineCode && x.COMMODITY_CODE == projection.CommodityCode && x.VARIATION_CODE == normalizedVariationCode);

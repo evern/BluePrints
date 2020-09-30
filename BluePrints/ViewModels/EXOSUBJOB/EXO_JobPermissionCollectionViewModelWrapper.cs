@@ -85,7 +85,7 @@ namespace BluePrints.ViewModels
             delayedPermissionRefreshDispatcher = new DispatcherTimer();
             delayedPermissionRefreshDispatcher.Interval = new TimeSpan(0, 0, 0, 0, 1);
             delayedPermissionRefreshDispatcher.Tick += DelayedPermissionRefreshDispatcher_Tick;
-            ignoreCostGroupCostTypeError = true;
+            IgnoreCostGroupCostType = true;
 
             bluePrintsEntitiesUnitOfWork = bluePrintsUnitOfWorkFactory.CreateUnitOfWork();
         }

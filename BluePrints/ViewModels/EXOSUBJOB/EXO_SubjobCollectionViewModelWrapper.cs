@@ -83,7 +83,7 @@ namespace BluePrints.ViewModels
         protected bool tryCombineLocalUsers = false;
         public string SubJobRegex { get; set; }
         public string DisciplineRegex { get; set; }
-        protected bool ignoreCostGroupCostTypeError { get; set; }
+        public bool IgnoreCostGroupCostType { get; set; }
         protected bool ignoreExoBudgetError { get; set; }
         #endregion
 
@@ -230,40 +230,39 @@ namespace BluePrints.ViewModels
         #region Events
         public override string UnifiedRowValidation(ExoSubJobProjection projection)
         {
-            if(!ignoreCostGroupCostTypeError)
+            if (projection.SubJobCode == null || projection.SubJobCode == string.Empty)
+                return "Sub Job not assigned";
+
+            if (!IgnoreCostGroupCostType)
             {
                 if(projection.StockCode != BluePrintsResources.VariationStockCode)
                 {
-                    if (projection.DisciplineCode == null || projection.DisciplineCode == string.Empty)
-                        return "Discipline code not assigned";
-
-                    if (projection.CommodityCode == null || projection.CommodityCode == string.Empty)
-                        return "Commodity code not assigned";
-
-                    if (projection.DisciplineCode.Length > 4)
+                    //only validate cost group and cost type for new row
+                    if(projection.LineId == null)
                     {
-                        return "Discipline code cannot be more than 4 characters";
-                    }
+                        if (projection.DisciplineCode == null || projection.DisciplineCode == string.Empty)
+                            return "Discipline code not assigned";
 
-                    if (projection.CommodityCode.Length > 4)
-                    {
-                        return "Commodity code cannot be more than 4 characters";
+                        if (projection.CommodityCode == null || projection.CommodityCode == string.Empty)
+                            return "Commodity code not assigned";
+
+                        if ((projection.DisciplineCode != null && projection.DisciplineCode != string.Empty) && projection.DisciplineCode.Length > 4)
+                            return "Discipline code cannot be more than 4 characters";
+
+                        if ((projection.DisciplineCode != null && projection.DisciplineCode != string.Empty) && projection.CommodityCode.Length > 4)
+                            return "Commodity code cannot be more than 4 characters";
                     }
                 }
 
-                if (projection.SubJobCode == null || projection.SubJobCode == string.Empty)
-                    return "Sub Job not assigned";
-
-
-                if (projection.SubJobCode.Length > 15)
+                if ((projection.DisciplineCode != null && projection.DisciplineCode != string.Empty) && projection.SubJobCode.Length > 15)
                 {
                     return "Sub Job code cannot be more than 15 characters";
                 }
+            }
 
-                if (Entities.Any(x => x.SubJobCode == projection.SubJobCode && x.DisciplineCode == projection.DisciplineCode && x.CommodityCode == projection.CommodityCode && x.VariationCode == projection.VariationCode))
-                {
-                    return "Duplicate Subjob: " + formatCodeError(projection.SubJobCode) + " Discipline: " + formatCodeError(projection.DisciplineCode) + " Commodity: " + formatCodeError(projection.CommodityCode) + " Variation: " + formatCodeError(projection.VariationCode);
-                }
+            if (projection.LineId == null && Entities.Any(x => x.SubJobCode == projection.SubJobCode && x.DisciplineCode == projection.DisciplineCode && x.CommodityCode == projection.CommodityCode && x.VariationCode == projection.VariationCode))
+            {
+                return "Duplicate Subjob: " + formatCodeError(projection.SubJobCode) + " Discipline: " + formatCodeError(projection.DisciplineCode) + " Commodity: " + formatCodeError(projection.CommodityCode) + " Variation: " + formatCodeError(projection.VariationCode);
             }
 
             return string.Empty;
@@ -453,7 +452,7 @@ namespace BluePrints.ViewModels
         public IEnumerable<ExoSubJobProjection> CommitToExo(IEnumerable<ExoSubJobProjection> projections)
         {
             List<ErrorMessage> errorMessages;
-            IEnumerable<ExoSubJobProjection> addedProjections = ExoMethods.CommitToExo(projections, MessageBoxService, masterJob, copyLine, loadPROJECT, USERCollection, localPrimeroUnitOfWork, bluePrintsEntitiesUnitOfWork, BulkColumnEditDialogService, out errorMessages, Entities, false, false);
+            IEnumerable<ExoSubJobProjection> addedProjections = ExoMethods.CommitToExo(projections, MessageBoxService, masterJob, copyLine, loadPROJECT, USERCollection, localPrimeroUnitOfWork, bluePrintsEntitiesUnitOfWork, BulkColumnEditDialogService, out errorMessages, Entities, false, IgnoreCostGroupCostType);
 
             ShowErrorMessage("Errors", errorMessages);
             if (addedProjections.Count() > 0)

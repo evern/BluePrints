@@ -71,6 +71,7 @@ namespace BluePrints.ViewModels
             exoJobCollectionViewModel = EXO_SubjobCollectionViewModelWrapper.Create(bluePrintsUnitOfWorkFactory);
             exoJobCollectionViewModel.OnParameterChange(new EntitiesParameter<Data.PROJECT>(loadPROJECT));
             exoJobCollectionViewModel.AlwaysSkipMessage = true;
+            exoJobCollectionViewModel.IgnoreCostGroupCostType = true;
             exoJobCollectionViewModel.SetParentViewModel(this);
         }
 
@@ -889,10 +890,10 @@ namespace BluePrints.ViewModels
                     string disciplineCode = deliverable.Discipline_Code;
                     string commodityCode = deliverable.Commodity_Code;
 
-                    ExoSubJobProjection exoVariation = exoVariations.FirstOrDefault((x => x.SubJobCode == subJobCode && x.DisciplineCode == disciplineCode && x.CommodityCode == commodityCode && x.VariationCode == variationCode));
+                    ExoSubJobProjection exoVariation = exoVariations.FirstOrDefault((x => x.SubJobCode == subJobCode && x.VariationCode == variationCode));
                     if (exoVariation == null)
                     {
-                        ExoSubJobProjection newVariationSubJob = new ExoSubJobProjection() { SubJobCode = subJobCode, DisciplineCode = disciplineCode, CommodityCode = commodityCode, VariationCode = variationCode };
+                        ExoSubJobProjection newVariationSubJob = new ExoSubJobProjection() { SubJobCode = subJobCode, VariationCode = variationCode, StockCode = BluePrintsResources.VariationStockCode };
                         //set commodity code convention so that error can be raised natively within model with GetPropertyError
                         newVariationSubJob.PopulateCommodityCodes(COMMODITY_CODECollection);
                         exoVariations.Add(newVariationSubJob);
@@ -1000,7 +1001,7 @@ namespace BluePrints.ViewModels
             bool isAnyVariationJobNotExists = false;
             foreach (var exoVariationJob in exoVariationJobs)
             {
-                JOBCOST_LINES line = ExoQueries.GetProjectLine(primeroUnitOfWork, loadPROJECT.NUMBER, exoVariationJob);
+                JOBCOST_LINES line = ExoQueries.GetProjectLine(primeroUnitOfWork, loadPROJECT.NUMBER, exoVariationJob, true);
                 if (line != null)
                     isAnyVariationJobsExists = true;
                 else
@@ -1050,7 +1051,7 @@ namespace BluePrints.ViewModels
                     bool hasRemoved = false;
                     foreach (var exoVariationJob in exoVariationJobs)
                     {
-                        JOBCOST_LINES line = ExoQueries.GetProjectLine(primeroUnitOfWork, loadPROJECT.NUMBER, exoVariationJob);
+                        JOBCOST_LINES line = ExoQueries.GetProjectLine(primeroUnitOfWork, loadPROJECT.NUMBER, exoVariationJob, true);
                         if (line != null)
                         {
                             hasRemoved = true;
