@@ -259,9 +259,22 @@ namespace BluePrints.ViewModels
                 {
                     return "Sub Job code cannot be more than 15 characters";
                 }
+
+                if (Entities.Any(x => x.SubJobCode == projection.SubJobCode && x.DisciplineCode == projection.DisciplineCode && x.CommodityCode == projection.CommodityCode && x.VariationCode == projection.VariationCode))
+                {
+                    return "Duplicate Subjob: " + formatCodeError(projection.SubJobCode) + " Discipline: " + formatCodeError(projection.DisciplineCode) + " Commodity: " + formatCodeError(projection.CommodityCode) + " Variation: " + formatCodeError(projection.VariationCode);
+                }
             }
 
             return string.Empty;
+        }
+
+        private string formatCodeError(string code)
+        {
+            if (code == null || code == string.Empty)
+                return "(Blank)";
+
+            return code;
         }
 
         public override void UnifiedCellValueChanged(string field_name, object old_value, object new_value, ExoSubJobProjection projection, bool isNew)

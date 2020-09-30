@@ -1050,7 +1050,7 @@ namespace BluePrints.Common.Projections
             newLINE.KITSEQNO = -1;
             newLINE.KITCODE = string.Empty;
             newLINE.PRICE_OVERRIDDEN = "N";
-            newLINE.LINKED_STOCKCODE = projection.StockCode.ToUpper();
+            newLINE.LINKED_STOCKCODE = ignoreCostGroupCostType ? string.Empty : projection.StockCode.ToUpper();
             newLINE.LINKED_QTY = 1;
             newLINE.HIDDEN_COST = 0;
             newLINE.HIDDEN_SELL = 0;
