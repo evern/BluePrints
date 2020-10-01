@@ -260,7 +260,7 @@ namespace BluePrints.ViewModels
                 }
             }
 
-            if (projection.LineId == null && Entities.Any(x => x.SubJobCode == projection.SubJobCode && x.DisciplineCode == projection.DisciplineCode && x.CommodityCode == projection.CommodityCode && x.VariationCode == projection.VariationCode))
+            if (projection.LineId == null && Entities.Any(x => x.LineId != null && x.SubJobCode == projection.SubJobCode && x.DisciplineCode == projection.DisciplineCode && x.CommodityCode == projection.CommodityCode && x.VariationCode == projection.VariationCode))
             {
                 return "Duplicate Subjob: " + formatCodeError(projection.SubJobCode) + " Discipline: " + formatCodeError(projection.DisciplineCode) + " Commodity: " + formatCodeError(projection.CommodityCode) + " Variation: " + formatCodeError(projection.VariationCode);
             }
