@@ -152,6 +152,9 @@ namespace BluePrints.Data
             }
         }
 
+        [NotMapped]
+        public List<TENDER_PROFILE_ITEM> TenderProfileItems { get; set; }
+
         public string Office => this.NUMBER + " " + this.OfficeName;
 
         public Guid project_guid => GUID;

@@ -56,6 +56,9 @@ namespace BluePrints.ViewModels
 
         protected override void addEntitiesLoader()
         {
+            loaderCollection.AddLoaderDescription<TENDER_PROFILE_ITEM, TENDER_PROFILE_ITEM, Guid, IBluePrintsEntitiesUnitOfWork>(bluePrintsUnitOfWorkFactory, x => x.TENDER_PROFILE_ITEMS);
+            loaderCollection.AddLoaderDescription<DEPARTMENT, DEPARTMENT, Guid, IBluePrintsEntitiesUnitOfWork>(bluePrintsUnitOfWorkFactory, x => x.DEPARTMENTS);
+            loaderCollection.AddLoaderDescription<DISCIPLINE, DISCIPLINE, Guid, IBluePrintsEntitiesUnitOfWork>(bluePrintsUnitOfWorkFactory, x => x.DISCIPLINES);
         }
 
         protected override void onAuxiliaryEntitiesCollectionLoaded()
@@ -70,8 +73,13 @@ namespace BluePrints.ViewModels
 
         private IQueryable<PROJECT> populatePROJECTPlanProject(IQueryable<PROJECT> query)
         {
-            List<PROJECT> PROJECTPlan = query.Where(x => x.STATUS == ProjectStatus.Lead || x.STATUS == ProjectStatus.Tender || x.STATUS == ProjectStatus.TenderSubmitted).ToList();
-            return PROJECTPlan.AsQueryable();
+            List<PROJECT> PROJECTS = query.Where(x => x.STATUS == ProjectStatus.Lead || x.STATUS == ProjectStatus.Tender || x.STATUS == ProjectStatus.TenderSubmitted).ToList();
+            foreach(PROJECT project in PROJECTS)
+            {
+                project.TenderProfileItems = TENDER_PROFILE_ITEMCollection.Where(x => x.TENDER_PROFILE.GUID_PROJECT == project.GUID).ToList();
+            }
+
+            return PROJECTS.AsQueryable();
         }
 
         protected override void AssignCallBacksAndRaisePropertyChange(IEnumerable<PROJECT> entities)
@@ -197,31 +205,57 @@ namespace BluePrints.ViewModels
 
         #region View Properties
         DataTable dataPointsTable = null;
-        string columnEntity = "Entity";
-
-        protected ObservableCollection<ColumnDescriptor> columnDescriptors;
-        public ObservableCollection<ColumnDescriptor> ColumnDescriptors
+        protected string columnEntity = "Entity";
+        protected string columnTenderProfiles = "TenderProfiles";
+        protected ObservableCollection<ColumnDescriptor> parentColumns;
+        public ObservableCollection<ColumnDescriptor> ParentColumns
         {
             get
             {
-                if (columnDescriptors == null)
+                if (parentColumns == null)
                 {
-                    columnDescriptors = new ObservableCollection<ColumnDescriptor>();
+                    parentColumns = new ObservableCollection<ColumnDescriptor>();
                 }
-                return columnDescriptors;
+                return parentColumns;
             }
         }
 
-        protected ObservableCollection<SummaryDescriptor> summaryDescriptors;
-        public ObservableCollection<SummaryDescriptor> SummaryDescriptors
+        protected ObservableCollection<ColumnDescriptor> childColumns;
+        public ObservableCollection<ColumnDescriptor> ChildColumns
         {
             get
             {
-                if (summaryDescriptors == null)
+                if (childColumns == null)
                 {
-                    summaryDescriptors = new ObservableCollection<SummaryDescriptor>();
+                    childColumns = new ObservableCollection<ColumnDescriptor>();
                 }
-                return summaryDescriptors;
+                return childColumns;
+            }
+        }
+
+        protected ObservableCollection<SummaryDescriptor> parentSummaries;
+        public ObservableCollection<SummaryDescriptor> ParentSummaries
+        {
+            get
+            {
+                if (parentSummaries == null)
+                {
+                    parentSummaries = new ObservableCollection<SummaryDescriptor>();
+                }
+                return parentSummaries;
+            }
+        }
+
+        protected ObservableCollection<SummaryDescriptor> childSummaries;
+        public ObservableCollection<SummaryDescriptor> ChildSummaries
+        {
+            get
+            {
+                if (childSummaries == null)
+                {
+                    childSummaries = new ObservableCollection<SummaryDescriptor>();
+                }
+                return childSummaries;
             }
         }
 
@@ -240,10 +274,12 @@ namespace BluePrints.ViewModels
                     if (alignedDateCollection == null)
                     {
                         alignedDateCollection = generateDates(Entities);
-                        InitializeColumnSource(ColumnDescriptors, SummaryDescriptors, alignedDateCollection);
+                        InitializeParentColumnSource(ParentColumns, ParentSummaries, alignedDateCollection);
+                        InitializeChildColumnSource(ChildColumns, ParentSummaries, alignedDateCollection);
                     }
 
                     dataPointsTable.Columns.Add(columnEntity, typeof(PROJECT));
+                    dataPointsTable.Columns.Add(columnTenderProfiles, typeof(DataTable));
                     foreach (DateTime alignedDataDate in alignedDateCollection)
                     {
                         string columnFieldName = alignedDataDate.Date.ToShortDateString();
@@ -269,7 +305,9 @@ namespace BluePrints.ViewModels
 
             DataRow newDataRow;
             if (!isUpdate)
+            {
                 newDataRow = dataPointsTable.NewRow();
+            }
             else
             {
                 newDataRow = (from DataRow dr in dataPointsTable.Rows
@@ -289,11 +327,18 @@ namespace BluePrints.ViewModels
                     newDataRow[columnName] = 0.00m;
             }
 
+            //populate tender profiles
+            DataTable tenderProfileDataTable = (DataTable)newDataRow[columnTenderProfiles];
+            foreach(TENDER_PROFILE_ITEM tenderProfileItem in entity.TenderProfileItems)
+            {
+                
+            }
+
             if (!isUpdate)
                 dataPointsTable.Rows.Add(newDataRow);
         }
 
-        private void InitializeColumnSource(ObservableCollection<ColumnDescriptor> columns, ObservableCollection<SummaryDescriptor> summaries, List<DateTime> alignedDates)
+        private void InitializeParentColumnSource(ObservableCollection<ColumnDescriptor> columns, ObservableCollection<SummaryDescriptor> summaries, List<DateTime> alignedDates)
         {
             columns.Clear();
             summaries.Clear();
@@ -316,8 +361,28 @@ namespace BluePrints.ViewModels
             foreach (DateTime alignedDate in alignedDates.OrderBy(x => x))
             {
                 string columnFieldName = alignedDate.Date.ToString(BluePrintsResources.ColumnDateFormat);
-                columns.Add(new ColumnDescriptor() { FieldName = columnFieldName, ReadOnly = false, Header = columnFieldName, Fixed = FixedStyle.None, Width = 60, Settings = SettingsType.Date });
-                summaries.Add(new SummaryDescriptor() { FieldName = columnFieldName, DisplayFormat = "c0", Type = SummaryItemType.Sum });
+                columns.Add(new ColumnDescriptor() { FieldName = columnFieldName, ReadOnly = true, Header = columnFieldName, Fixed = FixedStyle.None, Width = 60, Settings = SettingsType.Date });
+                summaries.Add(new SummaryDescriptor() { FieldName = columnFieldName, DisplayFormat = "n", Type = SummaryItemType.Sum });
+            }
+        }
+
+        private void InitializeChildColumnSource(ObservableCollection<ColumnDescriptor> columns, ObservableCollection<SummaryDescriptor> summaries, List<DateTime> alignedDates)
+        {
+            columns.Clear();
+            summaries.Clear();
+
+            columns.Add(new ColumnDescriptor() { FieldName = columnTenderProfiles + ".GUID_DEPARTMENT", Header = "Department", Fixed = FixedStyle.Left, Width = 70, ItemsSource = DEPARTMENTCollection, Settings = SettingsType.Collection });
+            columns.Add(new ColumnDescriptor() { FieldName = columnTenderProfiles + ".GUID_DISCIPLINE", Header = "Discipline", Fixed = FixedStyle.Left, Width = 70, ItemsSource = DISCIPLINECollection, Settings = SettingsType.Collection });
+            columns.Add(new ColumnDescriptor() { FieldName = columnTenderProfiles + ".HOURS_PERCENTAGE", Header = "Hours %", Mask = "p2", Increment = 0.1m, Fixed = FixedStyle.Left, Width = 75, Settings = SettingsType.Number });
+            columns.Add(new ColumnDescriptor() { FieldName = columnTenderProfiles + ".SCHEDULE_START_PERCENTAGE", Header = "Schedule Start %", Mask = "p2", Increment = 0.1m, Fixed = FixedStyle.Left, Width = 75, Settings = SettingsType.Number });
+            columns.Add(new ColumnDescriptor() { FieldName = columnTenderProfiles + ".SCHEDULE_FINISH_PERCENTAGE", Header = "Schedule Finish %", Mask = "p2", Increment = 0.1m, Fixed = FixedStyle.Left, Width = 75, Settings = SettingsType.Number });
+            columns.Add(new ColumnDescriptor() { FieldName = columnTenderProfiles + ".BELLCURVESHAPE", Header = "Bell Curve", Fixed = FixedStyle.Left, Width = 70, ItemsSource = BellCurveShapeCollection, Settings = SettingsType.Collection });
+
+            foreach (DateTime alignedDate in alignedDates.OrderBy(x => x))
+            {
+                string columnFieldName = alignedDate.Date.ToString(BluePrintsResources.ColumnDateFormat);
+                columns.Add(new ColumnDescriptor() { FieldName = columnFieldName, ReadOnly = true, Header = columnFieldName, Fixed = FixedStyle.None, Width = 60, Settings = SettingsType.Date });
+                summaries.Add(new SummaryDescriptor() { FieldName = columnFieldName, DisplayFormat = "n", Type = SummaryItemType.Sum });
             }
         }
 
@@ -339,6 +404,41 @@ namespace BluePrints.ViewModels
 
                 //need to call ToList for tokenComboBoxEditSettings to work
                 return collection.OrderBy(x => x.NUMBER).ToList();
+            }
+        }
+
+        public IEnumerable<TENDER_PROFILE_ITEM> TENDER_PROFILE_ITEMCollection
+        {
+            get
+            {
+                var collection = GetEntities<TENDER_PROFILE_ITEM>();
+                return collection;
+            }
+        }
+
+        public IEnumerable<DEPARTMENT> DEPARTMENTCollection
+        {
+            get
+            {
+                var collection = GetEntities<DEPARTMENT>();
+                return collection;
+            }
+        }
+
+        public IEnumerable<DISCIPLINE> DISCIPLINECollection
+        {
+            get
+            {
+                var collection = GetEntities<DISCIPLINE>();
+                return collection;
+            }
+        }
+
+        public IEnumerable<BellCurveShape> BellCurveShapeCollection
+        {
+            get
+            {
+                return DataUtils.GetValuesOf(() => new BellCurveShape());
             }
         }
 
