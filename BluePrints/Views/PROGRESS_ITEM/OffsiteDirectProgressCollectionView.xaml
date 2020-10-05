@@ -25,13 +25,13 @@
                 <dxb:BarSubItem ItemLinksSource="{StaticResource RibbonDefaultGridButtons}" />
                 <dxb:BarButtonItem x:Name="biEditReport1" Command="{Binding EditReportCommand}" Content="Edit Report" Glyph="{dx:DXImage Image=Edit_16x16.png}" LargeGlyph="{dx:DXImage Image=Edit_32x32.png}" RibbonStyle="SmallWithText" ToolTip="Redesign the current report layout" />
                 <dxb:BarButtonItem x:Name="biViewReport1" Command="{Binding ViewReportCommand}" Content="View Report" Glyph="{dx:DXImage Image=Report_16x16.png}" LargeGlyph="{dx:DXImage Image=Report_32x32.png}" RibbonStyle="SmallWithText" ToolTip="View report. Report will be sorted and filtered according to what is shown in this table" />
-                <dxb:BarButtonItem x:Name="biDateBackwards" Command="{Binding DateBackwardCommand}" Content="Backward" Glyph="{dx:DXImage Image=HistoryItem_16x16.png}" LargeGlyph="{dx:DXImage Image=HistoryItem_32x32.png}" ToolTip="Rewind data date to previous interval" />
+                <dxb:BarButtonItem x:Name="biDateBackwards" Command="{Binding DateBackwardCommand}" IsVisible="{Binding IsDataDateChangeVisible}" Content="Backward" Glyph="{dx:DXImage Image=HistoryItem_16x16.png}" LargeGlyph="{dx:DXImage Image=HistoryItem_32x32.png}" ToolTip="Rewind data date to previous interval" />
                 <dxb:BarEditItem x:Name="beDataDate" EditValue="{Binding DataDate}" IsReadOnly="True" ToolTip="Data date">
                     <dxb:BarEditItem.EditSettings>
                         <dxe:DateEditSettings />
                     </dxb:BarEditItem.EditSettings>
                 </dxb:BarEditItem>
-                <dxb:BarButtonItem x:Name="biDateForward" Command="{Binding DateForwardCommand}" Content="Forward" Glyph="{dx:DXImage Image=HistoryItem_16x16.png}" LargeGlyph="{dx:DXImage Image=HistoryItem_32x32.png}" ToolTip="Forward data date to next interval">
+                <dxb:BarButtonItem x:Name="biDateForward" IsVisible="{Binding IsDataDateChangeVisible}" Command="{Binding DateForwardCommand}" Content="Forward" Glyph="{dx:DXImage Image=HistoryItem_16x16.png}" LargeGlyph="{dx:DXImage Image=HistoryItem_32x32.png}" ToolTip="Forward data date to next interval">
                     <dxb:BarButtonItem.GlyphTemplate>
                         <DataTemplate>
                             <Image RenderTransformOrigin="0.5,0.5" Source="{Binding RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=dxb:BarItemLinkInfo}, Path=Item.LargeGlyph}">
@@ -68,9 +68,9 @@
                                 <dxb:BarButtonItemLink BarItemName="biViewReport1" />
                             </dxr:RibbonPageGroup>
                             <dxr:RibbonPageGroup MergeType="Replace" Caption="Data Date">
-                                <!--<dxb:BarButtonItemLink BarItemName="biDateBackwards" />-->
+                                <dxb:BarButtonItemLink BarItemName="biDateBackwards" />
                                 <dxb:BarEditItemLink BarItemName="beDataDate" />
-                                <!--<dxb:BarButtonItemLink BarItemName="biDateForward" />-->
+                                <dxb:BarButtonItemLink BarItemName="biDateForward" />
                             </dxr:RibbonPageGroup>
                             <dxr:RibbonPageGroup MergeType="Replace" Caption="Tools">
                                 <dxb:BarCheckItemLink BarItemName="bcShowBookable" />

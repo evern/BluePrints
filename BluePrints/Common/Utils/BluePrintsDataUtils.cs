@@ -132,93 +132,111 @@ namespace BluePrints.Common.ViewModel.Utils
         /// <param name="navigationType">Forward, backward or last week ending</param>
         /// <param name="loadPROGRESS">Progress to change</param>
         /// <returns>Whether should save</returns>
-        public static bool ProgressDateChange(DateNavigationType navigationType, PROGRESS loadPROGRESS)
+        public static bool ProgressDateChange(DateNavigationType navigationType, PROGRESS loadPROGRESS, bool isReportDate)
         {
             var interval = ChronologicalHelpers.ConvertProgressIntervalToPeriod(loadPROGRESS);
             DateTime endOfDayToday = DateTime.Now.Date.AddDays(1).AddSeconds(-1);
             int multiplier;
             if (navigationType == DateNavigationType.Current)
             {
-                //rewind the data one week when progress is updated for the current week but reporting is done on the previous week
-                //will be saved when data date is saved
-                if (loadPROGRESS.USE_CURRENT_WEEK)
+                if(isReportDate)
                 {
-                    DateTime oneWeekAgo = endOfDayToday.Date.AddDays(-1 * (interval.Days)).AddDays(1);
-                    if (loadPROGRESS.REPORT_DATE == null)
-                        loadPROGRESS.REPORT_DATE = loadPROGRESS.DATA_DATE;
-
-                    if (loadPROGRESS.REPORT_DATE < oneWeekAgo)
+                    //rewind the data one week when progress is updated for the current week but reporting is done on the previous week
+                    //will be saved when data date is saved
+                    if (loadPROGRESS.USE_CURRENT_WEEK)
                     {
-                        do
-                        {
-                            loadPROGRESS.REPORT_DATE = ((DateTime)loadPROGRESS.REPORT_DATE).AddDays(1 * interval.Days);
-                        } while (loadPROGRESS.REPORT_DATE < oneWeekAgo);
-                    }
+                        DateTime oneWeekAgo = endOfDayToday.Date.AddDays(-1 * (interval.Days)).AddDays(1);
+                        if (loadPROGRESS.REPORT_DATE == null)
+                            loadPROGRESS.REPORT_DATE = loadPROGRESS.DATA_DATE;
 
-                    if (loadPROGRESS.REPORT_DATE > endOfDayToday)
-                    {
-                        do
+                        if (loadPROGRESS.REPORT_DATE < oneWeekAgo)
                         {
-                            loadPROGRESS.REPORT_DATE = ((DateTime)loadPROGRESS.REPORT_DATE).AddDays(-1 * interval.Days);
-                        } while (loadPROGRESS.REPORT_DATE > endOfDayToday);
-                    }
-                }
+                            do
+                            {
+                                loadPROGRESS.REPORT_DATE = ((DateTime)loadPROGRESS.REPORT_DATE).AddDays(1 * interval.Days);
+                            } while (loadPROGRESS.REPORT_DATE < oneWeekAgo);
+                            return true;
+                        }
 
-                if (loadPROGRESS.USE_CURRENT_WEEK)
-                {   
-                    DateTime endOfCurrentWeek = DateTime.Today.Date.AddDays(-(int)loadPROGRESS.DATA_DATE.DayOfWeek).AddDays(6).AddSeconds(-1);
-                    if (loadPROGRESS.DATA_DATE < endOfCurrentWeek)
-                    {
-                        do
+                        if (loadPROGRESS.REPORT_DATE > endOfDayToday)
                         {
-                            loadPROGRESS.DATA_DATE = loadPROGRESS.DATA_DATE.AddDays(1 * interval.Days);
-                        } while (loadPROGRESS.DATA_DATE < endOfCurrentWeek);
-
-                        return true;
+                            do
+                            {
+                                loadPROGRESS.REPORT_DATE = ((DateTime)loadPROGRESS.REPORT_DATE).AddDays(-1 * interval.Days);
+                            } while (loadPROGRESS.REPORT_DATE > endOfDayToday);
+                            return true;
+                        }
+                        else
+                            return false;
                     }
-
-                    if (loadPROGRESS.DATA_DATE > endOfDayToday.AddDays(7))
-                    {
-                        do
-                        {
-                            loadPROGRESS.DATA_DATE = loadPROGRESS.DATA_DATE.AddDays(-1 * interval.Days);
-                        } while (loadPROGRESS.DATA_DATE > endOfDayToday);
-                        return true;
-                    }
-                    else
-                        return false;
                 }
                 else
                 {
-                    DateTime oneWeekAgo = endOfDayToday.Date.AddDays(-1 * (interval.Days)).AddDays(1);
-                    DateTime dataDate = loadPROGRESS.DATA_DATE;
-
-                    if (loadPROGRESS.DATA_DATE < oneWeekAgo)
+                    if (loadPROGRESS.USE_CURRENT_WEEK)
                     {
-                        do
+                        DateTime endOfCurrentWeek = DateTime.Today.Date.AddDays(-(int)loadPROGRESS.DATA_DATE.DayOfWeek).AddDays(6).AddSeconds(-1);
+                        if (loadPROGRESS.DATA_DATE < endOfCurrentWeek)
                         {
-                            loadPROGRESS.DATA_DATE = loadPROGRESS.DATA_DATE.AddDays(1 * interval.Days);
-                        } while (loadPROGRESS.DATA_DATE < oneWeekAgo);
+                            do
+                            {
+                                loadPROGRESS.DATA_DATE = loadPROGRESS.DATA_DATE.AddDays(1 * interval.Days);
+                            } while (loadPROGRESS.DATA_DATE < endOfCurrentWeek);
 
-                        return true;
-                    }
+                            return true;
+                        }
 
-                    if (loadPROGRESS.DATA_DATE > endOfDayToday)
-                    {
-                        do
+                        if (loadPROGRESS.DATA_DATE > endOfDayToday.AddDays(7))
                         {
-                            loadPROGRESS.DATA_DATE = loadPROGRESS.DATA_DATE.AddDays(-1 * interval.Days);
-                        } while (loadPROGRESS.DATA_DATE > endOfDayToday);
-                        return true;
+                            do
+                            {
+                                loadPROGRESS.DATA_DATE = loadPROGRESS.DATA_DATE.AddDays(-1 * interval.Days);
+                            } while (loadPROGRESS.DATA_DATE > endOfDayToday);
+                            return true;
+                        }
+                        else
+                            return false;
                     }
                     else
-                        return false;
+                    {
+                        DateTime oneWeekAgo = endOfDayToday.Date.AddDays(-1 * (interval.Days)).AddDays(1);
+                        DateTime dataDate = loadPROGRESS.DATA_DATE;
+
+                        if (loadPROGRESS.DATA_DATE < oneWeekAgo)
+                        {
+                            do
+                            {
+                                loadPROGRESS.DATA_DATE = loadPROGRESS.DATA_DATE.AddDays(1 * interval.Days);
+                            } while (loadPROGRESS.DATA_DATE < oneWeekAgo);
+
+                            return true;
+                        }
+
+                        if (loadPROGRESS.DATA_DATE > endOfDayToday)
+                        {
+                            do
+                            {
+                                loadPROGRESS.DATA_DATE = loadPROGRESS.DATA_DATE.AddDays(-1 * interval.Days);
+                            } while (loadPROGRESS.DATA_DATE > endOfDayToday);
+                            return true;
+                        }
+                        else
+                            return false;
+                    }
                 }
+
+                return false;
             }
             else
             {
                 multiplier = navigationType == DateNavigationType.Forward ? 1 : -1;
-                loadPROGRESS.DATA_DATE = loadPROGRESS.DATA_DATE.AddDays(multiplier * interval.Days);
+                if (loadPROGRESS.REPORT_DATE == null)
+                    loadPROGRESS.REPORT_DATE = loadPROGRESS.DATA_DATE;
+
+                if(isReportDate)
+                    loadPROGRESS.REPORT_DATE = ((DateTime)loadPROGRESS.REPORT_DATE).AddDays(multiplier * interval.Days);
+                else
+                    loadPROGRESS.DATA_DATE = loadPROGRESS.DATA_DATE.AddDays(multiplier * interval.Days);
+
                 return true;
             }
         }

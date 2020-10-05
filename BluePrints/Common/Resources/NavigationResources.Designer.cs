@@ -880,7 +880,7 @@ namespace BluePrints.Common.Resources {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Always use previous week&apos;s date for progress.
+        ///   Looks up a localized string similar to Always use previous week&apos;s date for progress and can change progress screen date.
         /// </summary>
         internal static string Permission_DesignDeliverables_ProgressPreviousWeeksDate {
             get {

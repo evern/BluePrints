@@ -467,13 +467,13 @@ namespace BluePrints.Common.Base
             get => loadPROGRESS == null ? DateTime.Now : isUseReportDate ? loadPROGRESS.REPORT_DATE == null ? loadPROGRESS.DATA_DATE : (DateTime)loadPROGRESS.REPORT_DATE : loadPROGRESS.DATA_DATE;
             set
             {
-                if (!IsLoading)
+                if (!IsLoading && isUseReportDate)
                 {
                     DateTime newValue = value.Date.AddDays(1).AddSeconds(-1);
-                    if (loadPROGRESS.DATA_DATE == newValue)
+                    if (loadPROGRESS.REPORT_DATE == newValue)
                         return;
 
-                    loadPROGRESS.DATA_DATE = newValue;
+                    loadPROGRESS.REPORT_DATE = newValue;
 
                     //!= null is used because set method can be invoked in quick succession (when full refresh is called and PROGRESSCollectionViewModel is disposed)
                     if(PROGRESSCollectionViewModel != null)
@@ -578,7 +578,7 @@ namespace BluePrints.Common.Base
             if (isBusy)
                 return;
 
-            if(BluePrintsUtils.ProgressDateChange(navigationType, loadPROGRESS))
+            if(BluePrintsUtils.ProgressDateChange(navigationType, loadPROGRESS, isUseReportDate))
                 delayedPROGRESSSavingDispatcher.Start();
         }
         #endregion

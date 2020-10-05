@@ -55,6 +55,7 @@ namespace BluePrints.ViewModels
         protected override void resolveParameters(object parameter)
         {
             is_load_p6_task = true;
+            isUseReportDate = LoginCredentials.getPermissionStatus(DataUtils.GetNameOf(() => NavigationResources.Permission_DesignDeliverables_ProgressPreviousWeeksDate)) != LoginCredentials.PermissionStatus.None;
             base.resolveParameters(parameter);
         }
 
@@ -189,6 +190,8 @@ namespace BluePrints.ViewModels
             //get { return "OffsiteDirectProgressViewModelWrapper" + view_project_specific_affix; }
             get { return "OffsiteDirectProgressViewModelWrapper_v5"; }
         }
+
+        public bool IsDataDateChangeVisible => isUseReportDate;
 
         private string view_project_specific_affix
         {
