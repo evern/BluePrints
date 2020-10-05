@@ -113,14 +113,14 @@ namespace BluePrints.ViewModels
             PROGRESS liveDesignProgress = bluePrintsUnitOfWork.PROGRESSES.FirstOrDefault(x => x.TYPE == PhaseType.Design && x.STATUS == ProgressStatus.Live && x.GUID_PROJECT == LoadPROJECT.GUID);
             if(liveDesignProgress != null)
             {
-                if (BluePrintsUtils.ProgressDateChange(DateNavigationType.Current, liveDesignProgress))
+                if (BluePrintsUtils.ProgressDateChange(DateNavigationType.Current, liveDesignProgress, true))
                     bluePrintsUnitOfWork.SaveChanges();
             }
 
             PROGRESS liveConstructProgress = bluePrintsUnitOfWork.PROGRESSES.FirstOrDefault(x => x.TYPE == PhaseType.Construct && x.STATUS == ProgressStatus.Live && x.GUID_PROJECT == LoadPROJECT.GUID);
             if (liveConstructProgress != null)
             {
-                if (BluePrintsUtils.ProgressDateChange(DateNavigationType.Current, liveConstructProgress))
+                if (BluePrintsUtils.ProgressDateChange(DateNavigationType.Current, liveConstructProgress, true))
                     bluePrintsUnitOfWork.SaveChanges();
             }
         }
