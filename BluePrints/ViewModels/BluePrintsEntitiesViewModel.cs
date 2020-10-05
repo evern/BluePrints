@@ -624,6 +624,7 @@ namespace BluePrints.ViewModels
                 Modules.Add(new BluePrintsEntitiesModuleDescription(DataUtils.GetNameOf(() => NavigationResources.Permission_DesignDeliverables_InternalNumbersUnapproval), string.Empty, parentNavigationId, NavigationResources.Permission_DesignDeliverables_InternalNumbersUnapproval, NavigationResources.Permission_DesignDeliverables_InternalNumbersUnapproval));
                 Modules.Add(new BluePrintsEntitiesModuleDescription(DataUtils.GetNameOf(() => NavigationResources.Permission_DesignDeliverables_BookTimeForOthers), string.Empty, parentNavigationId, NavigationResources.Permission_DesignDeliverables_BookTimeForOthers, NavigationResources.Permission_DesignDeliverables_BookTimeForOthers));
                 Modules.Add(new BluePrintsEntitiesModuleDescription(DataUtils.GetNameOf(() => NavigationResources.Permission_DesignDeliverables_FinaliseNumbers), string.Empty, parentNavigationId, NavigationResources.Permission_DesignDeliverables_FinaliseNumbers, NavigationResources.Permission_DesignDeliverables_FinaliseNumbers));
+                Modules.Add(new BluePrintsEntitiesModuleDescription(DataUtils.GetNameOf(() => NavigationResources.Permission_DesignDeliverables_ProgressPreviousWeeksDate), string.Empty, parentNavigationId, NavigationResources.Permission_DesignDeliverables_ProgressPreviousWeeksDate, NavigationResources.Permission_DesignDeliverables_ProgressPreviousWeeksDate));
             }
             else if (securityKey == DataUtils.GetNameOf(() => NavigationResources.Menu_Project_DesignProgress))
             {

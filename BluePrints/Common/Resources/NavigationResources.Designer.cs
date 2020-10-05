@@ -880,6 +880,15 @@ namespace BluePrints.Common.Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Always use previous week&apos;s date for progress.
+        /// </summary>
+        internal static string Permission_DesignDeliverables_ProgressPreviousWeeksDate {
+            get {
+                return ResourceManager.GetString("Permission_DesignDeliverables_ProgressPreviousWeeksDate", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Update deliverable&apos;s progress by gate/status.
         /// </summary>
         internal static string Permission_DesignDeliverables_UpdateProgressByStatus {

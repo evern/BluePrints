@@ -132,7 +132,7 @@ namespace BluePrints.Common.ViewModel.Utils
         /// <param name="navigationType">Forward, backward or last week ending</param>
         /// <param name="loadPROGRESS">Progress to change</param>
         /// <returns>Whether should save</returns>
-        public static bool ProgressDateChange(DateNavigationType navigationType, PROGRESS loadPROGRESS, bool isReport = false)
+        public static bool ProgressDateChange(DateNavigationType navigationType, PROGRESS loadPROGRESS)
         {
             var interval = ChronologicalHelpers.ConvertProgressIntervalToPeriod(loadPROGRESS);
             DateTime endOfDayToday = DateTime.Now.Date.AddDays(1).AddSeconds(-1);
@@ -140,7 +140,8 @@ namespace BluePrints.Common.ViewModel.Utils
             if (navigationType == DateNavigationType.Current)
             {
                 //rewind the data one week when progress is updated for the current week but reporting is done on the previous week
-                if (isReport && loadPROGRESS.USE_CURRENT_WEEK)
+                //will be saved when data date is saved
+                if (loadPROGRESS.USE_CURRENT_WEEK)
                 {
                     DateTime oneWeekAgo = endOfDayToday.Date.AddDays(-1 * (interval.Days)).AddDays(1);
                     if (loadPROGRESS.REPORT_DATE == null)
@@ -152,8 +153,6 @@ namespace BluePrints.Common.ViewModel.Utils
                         {
                             loadPROGRESS.REPORT_DATE = ((DateTime)loadPROGRESS.REPORT_DATE).AddDays(1 * interval.Days);
                         } while (loadPROGRESS.REPORT_DATE < oneWeekAgo);
-
-                        return true;
                     }
 
                     if (loadPROGRESS.REPORT_DATE > endOfDayToday)
@@ -162,13 +161,11 @@ namespace BluePrints.Common.ViewModel.Utils
                         {
                             loadPROGRESS.REPORT_DATE = ((DateTime)loadPROGRESS.REPORT_DATE).AddDays(-1 * interval.Days);
                         } while (loadPROGRESS.REPORT_DATE > endOfDayToday);
-                        return true;
                     }
-                    else
-                        return false;
                 }
-                else if (loadPROGRESS.USE_CURRENT_WEEK)
-                {
+
+                if (loadPROGRESS.USE_CURRENT_WEEK)
+                {   
                     DateTime endOfCurrentWeek = DateTime.Today.Date.AddDays(-(int)loadPROGRESS.DATA_DATE.DayOfWeek).AddDays(6).AddSeconds(-1);
                     if (loadPROGRESS.DATA_DATE < endOfCurrentWeek)
                     {
@@ -194,7 +191,7 @@ namespace BluePrints.Common.ViewModel.Utils
                 else
                 {
                     DateTime oneWeekAgo = endOfDayToday.Date.AddDays(-1 * (interval.Days)).AddDays(1);
-                    DateTime dataDate = isReport ? loadPROGRESS.REPORT_DATE == null ? loadPROGRESS.DATA_DATE : (DateTime)loadPROGRESS.REPORT_DATE : loadPROGRESS.DATA_DATE;
+                    DateTime dataDate = loadPROGRESS.DATA_DATE;
 
                     if (loadPROGRESS.DATA_DATE < oneWeekAgo)
                     {

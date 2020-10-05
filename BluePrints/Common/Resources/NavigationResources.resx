@@ -417,4 +417,7 @@
   <data name="Menu_Project_EXO_JobsHistory" xml:space="preserve">
     <value>Show all EXO job changes from BluePrints</value>
   </data>
+  <data name="Permission_DesignDeliverables_ProgressPreviousWeeksDate" xml:space="preserve">
+    <value>Always use previous week's date for progress</value>
+  </data>
 </root>

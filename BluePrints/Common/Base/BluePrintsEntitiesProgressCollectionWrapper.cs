@@ -64,6 +64,7 @@ namespace BluePrints.Common.Base
         protected bool is_single_project_mode = true;
         protected bool is_load_p6_task = false;
         protected bool isCompletelyLoaded = false;
+        protected bool isUseReportDate = false;
         BackgroundWorker progressSaveBackgroundWorker;
         public BluePrintsEntitiesProgressCollectionWrapper()
         {
@@ -463,7 +464,7 @@ namespace BluePrints.Common.Base
 
         public DateTime DataDate
         {
-            get => loadPROGRESS == null ? DateTime.Now : loadPROGRESS.DATA_DATE;
+            get => loadPROGRESS == null ? DateTime.Now : isUseReportDate ? loadPROGRESS.REPORT_DATE == null ? loadPROGRESS.DATA_DATE : (DateTime)loadPROGRESS.REPORT_DATE : loadPROGRESS.DATA_DATE;
             set
             {
                 if (!IsLoading)

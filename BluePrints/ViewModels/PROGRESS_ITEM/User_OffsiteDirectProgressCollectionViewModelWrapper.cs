@@ -36,6 +36,7 @@ namespace BluePrints.ViewModels
             firstLoadProjectStatsSummarizers = new List<FullSummarizer>();
 
             isHideOnStartup = LoginCredentials.GetUserPreferenceBool(DataUtils.GetNameOf(() => UserPreferences.Global_HideUserDeliverablesOnStartup));
+            isUseReportDate = LoginCredentials.getPermissionStatus(DataUtils.GetNameOf(() => NavigationResources.Permission_DesignDeliverables_ProgressPreviousWeeksDate)) != LoginCredentials.PermissionStatus.None;
         }
 
         bool isHideOnStartup;
