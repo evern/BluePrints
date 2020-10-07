@@ -1,6 +1,10 @@
-﻿<UserControl x:Class="BluePrints.Views.VARIATION_CONSTRUCTIONCollectionView" xmlns="http://schemas.microsoft.com/netfx/2009/xaml/presentation" xmlns:ExtraLayout="clr-namespace:BaseModel.View.ExtraLayout;assembly=BaseModel" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" xmlns:common="clr-namespace:BluePrints.Common" xmlns:custom="clr-namespace:BaseModel.Misc;assembly=BaseModel" xmlns:d="http://schemas.microsoft.com/expression/blend/2008" xmlns:dx="http://schemas.devexpress.com/winfx/2008/xaml/core" xmlns:dxb="http://schemas.devexpress.com/winfx/2008/xaml/bars" xmlns:dxe="http://schemas.devexpress.com/winfx/2008/xaml/editors" xmlns:dxg="http://schemas.devexpress.com/winfx/2008/xaml/grid" xmlns:dxlc="http://schemas.devexpress.com/winfx/2008/xaml/layoutcontrol" xmlns:dxmvvm="http://schemas.devexpress.com/winfx/2008/xaml/mvvm" xmlns:dxr="http://schemas.devexpress.com/winfx/2008/xaml/ribbon" xmlns:dxrudex="http://schemas.devexpress.com/winfx/2008/xaml/reports/userdesignerextensions" xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" xmlns:view="clr-namespace:BluePrints.Views" xmlns:viewmodel="clr-namespace:BluePrints.ViewModels" x:Name="userControl" d:DesignHeight="400" d:DesignWidth="600" DataContext="{dxmvvm:ViewModelSource viewmodel:VARIATION_CONSTRUCTIONCollectionViewModelWrapper}" mc:Ignorable="d">
+﻿<UserControl x:Class="BluePrints.Views.VARIATION_CONSTRUCTIONCollectionView" xmlns:dxc="http://schemas.devexpress.com/winfx/2008/xaml/core" xmlns="http://schemas.microsoft.com/netfx/2009/xaml/presentation" xmlns:ExtraLayout="clr-namespace:BaseModel.View.ExtraLayout;assembly=BaseModel" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" xmlns:common="clr-namespace:BluePrints.Common" xmlns:custom="clr-namespace:BaseModel.Misc;assembly=BaseModel" xmlns:d="http://schemas.microsoft.com/expression/blend/2008" xmlns:dx="http://schemas.devexpress.com/winfx/2008/xaml/core" xmlns:dxb="http://schemas.devexpress.com/winfx/2008/xaml/bars" xmlns:dxe="http://schemas.devexpress.com/winfx/2008/xaml/editors" xmlns:dxg="http://schemas.devexpress.com/winfx/2008/xaml/grid" xmlns:dxlc="http://schemas.devexpress.com/winfx/2008/xaml/layoutcontrol" xmlns:dxmvvm="http://schemas.devexpress.com/winfx/2008/xaml/mvvm" xmlns:dxr="http://schemas.devexpress.com/winfx/2008/xaml/ribbon" xmlns:dxrudex="http://schemas.devexpress.com/winfx/2008/xaml/reports/userdesignerextensions" xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" xmlns:view="clr-namespace:BluePrints.Views" xmlns:viewmodel="clr-namespace:BluePrints.ViewModels" x:Name="userControl" d:DesignHeight="400" d:DesignWidth="600" DataContext="{dxmvvm:ViewModelSource viewmodel:VARIATION_CONSTRUCTIONCollectionViewModelWrapper}" mc:Ignorable="d">
     <UserControl.Resources>
         <ResourceDictionary>
+            <Style x:Key="HighlightColumnHeaderStyle" TargetType="Control">
+                <Setter Property="Background" Value="LightCyan" />
+                <Setter Property="Foreground" Value="Black" />
+            </Style>
             <ResourceDictionary.MergedDictionaries>
                 <ResourceDictionary Source="pack://application:,,,/BaseModel;component/View/ResourceDictionaries/DefaultControlResourceDictionary.xaml" />
                 <ResourceDictionary Source="pack://application:,,,/Common/View/ResourceDictionaries/GridColumnResourceDictionary.xaml" />
@@ -66,15 +70,15 @@
                         </dxmvvm:EventToCommand>
                     </dxmvvm:Interaction.Behaviors>
                     <custom:GridControlEx.Columns>
-                        <dxg:GridColumn FieldName="SUBMISSION_DATE" Header="Date" AllowBestFit="False" Width="75">
+                        <dxg:GridColumn FieldName="SUBMISSION_DATE" Header="Date" AllowBestFit="False" Width="75" HeaderStyle="{StaticResource HighlightColumnHeaderStyle}">
                             <dxg:GridColumn.EditSettings>
                                 <dxe:DateEditSettings NullValueButtonPlacement="Popup" />
                             </dxg:GridColumn.EditSettings>
                         </dxg:GridColumn>
-                        <dxg:GridColumn FieldName="CLIENT_NUMBER" AllowBestFit="False" Width="100" Header="Client Variation Number" />
-                        <dxg:GridColumn FieldName="NUMBER" AllowBestFit="False" Width="100" Header="PRIMERO Variation Number" />
-                        <dxg:GridColumn FieldName="DESCRIPTION" AllowBestFit="False" Width="*" Header="Description" />
-                        <dxg:GridColumn FieldName="TYPE" Header="Type" AllowBestFit="False" Width="50" >
+                        <dxg:GridColumn FieldName="CLIENT_NUMBER" AllowBestFit="False" Width="100" Header="Client Variation Number" HeaderStyle="{StaticResource HighlightColumnHeaderStyle}" />
+                        <dxg:GridColumn FieldName="NUMBER" AllowBestFit="False" Width="100" Header="PRIMERO Variation Number" HeaderStyle="{StaticResource HighlightColumnHeaderStyle}" />
+                        <dxg:GridColumn FieldName="DESCRIPTION" AllowBestFit="False" Width="120" Header="Description" HeaderStyle="{StaticResource HighlightColumnHeaderStyle}" />
+                        <dxg:GridColumn FieldName="TYPE" Header="Type" AllowBestFit="False" Width="50" HeaderStyle="{StaticResource HighlightColumnHeaderStyle}">
                             <dxg:GridColumn.EditSettings>
                                 <dxe:ComboBoxEditSettings AutoComplete="True" IsTextEditable="True" ItemsSource="{dxe:EnumItemsSource EnumType={x:Type common:VariationConstructionType}}" />
                             </dxg:GridColumn.EditSettings>
@@ -95,12 +99,57 @@
                                 </dxe:ComboBoxEditSettings>
                             </dxg:GridColumn.EditSettings>
                         </dxg:GridColumn>-->
-                        <dxg:GridColumn FieldName="STATUS" Header="Status" AllowBestFit="False" Width="75">
+                        <dxg:GridColumn FieldName="STATUS" Header="Status" AllowBestFit="False" Width="75" HeaderStyle="{StaticResource HighlightColumnHeaderStyle}">
                             <dxg:GridColumn.EditSettings>
                                 <dxe:ComboBoxEditSettings AutoComplete="True" IsTextEditable="True" ItemsSource="{dxe:EnumItemsSource EnumType={x:Type common:VariationConstructionStatus}}" />
                             </dxg:GridColumn.EditSettings>
                         </dxg:GridColumn>
-                        <dxg:GridColumn FieldName="APPROVED_VALUE" Header="Revenue Amount">
+                        <dxg:GridColumn FieldName="CLIENT_ACKNOWLEDGEMENT" Header="Client Acknowledgement" AllowBestFit="False" Width="125" HeaderStyle="{StaticResource HighlightColumnHeaderStyle}">
+                            <dxg:GridColumn.EditSettings>
+                                <dxe:ComboBoxEditSettings AutoComplete="True" IsTextEditable="True" ItemsSource="{dxe:EnumItemsSource EnumType={x:Type common:VariationClientAcknowledgement}}" />
+                            </dxg:GridColumn.EditSettings>
+                        </dxg:GridColumn>
+                        <dxg:GridColumn FieldName="NATURE" Header="Nature" AllowBestFit="False" Width="125" HeaderStyle="{StaticResource HighlightColumnHeaderStyle}">
+                            <dxg:GridColumn.EditSettings>
+                                <dxe:ComboBoxEditSettings AutoComplete="True" IsTextEditable="True" ItemsSource="{dxe:EnumItemsSource EnumType={x:Type common:VariationNature}}" />
+                            </dxg:GridColumn.EditSettings>
+                        </dxg:GridColumn>
+                        <dxg:GridColumn FieldName="SUBSTANTIATION" Header="Substantiation" AllowBestFit="False" Width="125" HeaderStyle="{StaticResource HighlightColumnHeaderStyle}">
+                            <dxg:GridColumn.EditSettings>
+                                <dxe:ComboBoxEditSettings AutoComplete="True" IsTextEditable="True" ItemsSource="{dxe:EnumItemsSource EnumType={x:Type common:VariationSubstantiation}}" />
+                            </dxg:GridColumn.EditSettings>
+                        </dxg:GridColumn>
+                        <dxg:GridColumn FieldName="TIMELINESS" Header="Timeliness" AllowBestFit="False" Width="125" HeaderStyle="{StaticResource HighlightColumnHeaderStyle}">
+                            <dxg:GridColumn.EditSettings>
+                                <dxe:ComboBoxEditSettings AutoComplete="True" IsTextEditable="True" ItemsSource="{dxe:EnumItemsSource EnumType={x:Type common:VariationTimeliness}}" />
+                            </dxg:GridColumn.EditSettings>
+                        </dxg:GridColumn>
+                        <dxg:GridColumn FieldName="DISCRETIONARY_ADJUSTMENT" Header="Discretionary Adjustment" AllowBestFit="False" Width="125" HeaderStyle="{StaticResource HighlightColumnHeaderStyle}">
+                            <dxg:GridColumn.EditSettings>
+                                <dxe:ComboBoxEditSettings AutoComplete="True" IsTextEditable="True" ItemsSource="{dxe:EnumItemsSource EnumType={x:Type common:VariationDiscretionaryAdjustment}}" />
+                            </dxg:GridColumn.EditSettings>
+                        </dxg:GridColumn>
+                        <dxg:GridColumn FieldName="CalculatedRiskAssessedPercentage" ReadOnly="True" Width="70" AllowBestFit="False" Header="Calculated Approve %">
+                            <dxg:GridColumn.EditSettings>
+                                <dxe:SpinEditSettings Increment="10" Mask="p0" MaskType="Numeric" MaskUseAsDisplayFormat="True" />
+                            </dxg:GridColumn.EditSettings>
+                        </dxg:GridColumn>
+                        <dxg:GridColumn FieldName="APPROVE_PERCENTAGE" Width="70" AllowBestFit="False" Header="Manual Approve %" HeaderStyle="{StaticResource HighlightColumnHeaderStyle}">
+                            <dxg:GridColumn.EditSettings>
+                                <dxe:SpinEditSettings Increment="0.1" Mask="p0" MaskType="Numeric" MinValue="0" MaxValue="1" MaskUseAsDisplayFormat="True" />
+                            </dxg:GridColumn.EditSettings>
+                        </dxg:GridColumn>
+                        <dxg:GridColumn FieldName="APPROVED_VALUE" Header="Revenue Amount" HeaderStyle="{StaticResource HighlightColumnHeaderStyle}">
+                            <dxg:GridColumn.EditSettings>
+                                <dxe:SpinEditSettings Increment="10" Mask="c2" MaskType="Numeric" MaskUseAsDisplayFormat="True" />
+                            </dxg:GridColumn.EditSettings>
+                        </dxg:GridColumn>
+                        <dxg:GridColumn FieldName="CalculatedApprovedEstimatedValue" Width="60" AllowBestFit="False" Header="Calculated Revenue Amount" ReadOnly="True">
+                            <dxg:GridColumn.EditSettings>
+                                <dxe:SpinEditSettings Increment="10" Mask="c2" MaskType="Numeric" MaskUseAsDisplayFormat="True" />
+                            </dxg:GridColumn.EditSettings>
+                        </dxg:GridColumn>
+                        <dxg:GridColumn FieldName="ManualApprovedEstimatedValue" Width="60" AllowBestFit="False" Header="Manual Revenue Amount" HeaderToolTip="Only submitted and approved amount will be shown" ReadOnly="True">
                             <dxg:GridColumn.EditSettings>
                                 <dxe:SpinEditSettings Increment="10" Mask="c2" MaskType="Numeric" MaskUseAsDisplayFormat="True" />
                             </dxg:GridColumn.EditSettings>
@@ -135,13 +184,36 @@
                                 <dxe:SpinEditSettings Increment="10" Mask="c2" MaskType="Numeric" MaskUseAsDisplayFormat="True" />
                             </dxg:GridColumn.EditSettings>
                         </dxg:GridColumn>
+                        <dxg:GridColumn FieldName="FlagManualApprovedPct" Header="Flag Approved %" AllowBestFit="false" Width="90" Visible="False" ReadOnly="True" >
+                            <dxg:GridColumn.EditSettings>
+                                <dxe:CheckEditSettings />
+                            </dxg:GridColumn.EditSettings>
+                        </dxg:GridColumn>
                     </custom:GridControlEx.Columns>
-                <dxg:GridControl.TotalSummary>
-                    <dxg:GridSummaryItem dx:DXSerializer.Enabled="False" Alignment="Right" SummaryType="Count" />
-                </dxg:GridControl.TotalSummary>
-                <dxg:GridControl.GroupSummary>
-                    <dxg:GridSummaryItem dx:DXSerializer.Enabled="False" SummaryType="Count" />
-                </dxg:GridControl.GroupSummary>
+                    <dxg:GridControl.TotalSummary>
+                        <dxg:GridSummaryItem dx:DXSerializer.Enabled="False" Alignment="Right" SummaryType="Count" />
+                        <dxg:GridSummaryItem dxc:DXSerializer.Enabled="False" DisplayFormat="c2" FieldName="ManualApprovedEstimatedValue" SummaryType="Sum" />
+                        <dxg:GridSummaryItem dxc:DXSerializer.Enabled="False" DisplayFormat="c2" FieldName="APPROVED_VALUE" SummaryType="Sum" />
+                        <dxg:GridSummaryItem dxc:DXSerializer.Enabled="False" DisplayFormat="c2" FieldName="CalculatedApprovedEstimatedValue" SummaryType="Sum" />
+                        <dxg:GridSummaryItem dxc:DXSerializer.Enabled="False" DisplayFormat="c2" FieldName="ManagementTotal" SummaryType="Sum" />
+                        <dxg:GridSummaryItem dxc:DXSerializer.Enabled="False" DisplayFormat="c2" FieldName="EngineeringTotal" SummaryType="Sum" />
+                        <dxg:GridSummaryItem dxc:DXSerializer.Enabled="False" DisplayFormat="c2" FieldName="TradesAndLabourTotal" SummaryType="Sum" />
+                        <dxg:GridSummaryItem dxc:DXSerializer.Enabled="False" DisplayFormat="c2" FieldName="EquipmentTotal" SummaryType="Sum" />
+                        <dxg:GridSummaryItem dxc:DXSerializer.Enabled="False" DisplayFormat="c2" FieldName="MaterialTotal" SummaryType="Sum" />
+                        <dxg:GridSummaryItem dxc:DXSerializer.Enabled="False" DisplayFormat="c2" FieldName="TotalEstimatedValue" SummaryType="Sum" />
+                    </dxg:GridControl.TotalSummary>
+                    <dxg:GridControl.GroupSummary>
+                        <dxg:GridSummaryItem dx:DXSerializer.Enabled="False" SummaryType="Count" />
+                        <dxg:GridSummaryItem dxc:DXSerializer.Enabled="False" DisplayFormat="c2" FieldName="ManualApprovedEstimatedValue" SummaryType="Sum" />
+                        <dxg:GridSummaryItem dxc:DXSerializer.Enabled="False" DisplayFormat="c2" FieldName="APPROVED_VALUE" SummaryType="Sum" />
+                        <dxg:GridSummaryItem dxc:DXSerializer.Enabled="False" DisplayFormat="c2" FieldName="CalculatedApprovedEstimatedValue" SummaryType="Sum" />
+                        <dxg:GridSummaryItem dxc:DXSerializer.Enabled="False" DisplayFormat="c2" FieldName="ManagementTotal" SummaryType="Sum" />
+                        <dxg:GridSummaryItem dxc:DXSerializer.Enabled="False" DisplayFormat="c2" FieldName="EngineeringTotal" SummaryType="Sum" />
+                        <dxg:GridSummaryItem dxc:DXSerializer.Enabled="False" DisplayFormat="c2" FieldName="TradesAndLabourTotal" SummaryType="Sum" />
+                        <dxg:GridSummaryItem dxc:DXSerializer.Enabled="False" DisplayFormat="c2" FieldName="EquipmentTotal" SummaryType="Sum" />
+                        <dxg:GridSummaryItem dxc:DXSerializer.Enabled="False" DisplayFormat="c2" FieldName="MaterialTotal" SummaryType="Sum" />
+                        <dxg:GridSummaryItem dxc:DXSerializer.Enabled="False" DisplayFormat="c2" FieldName="TotalEstimatedValue" SummaryType="Sum" />
+                    </dxg:GridControl.GroupSummary>
                 <dxg:GridControl.View>
                     <dxg:TableView x:Name="tableView" Style="{StaticResource DefaultTableViewTemplate}">
                             <dxg:TableView.RowCellMenuCustomizations>
@@ -152,7 +224,12 @@
                                 <dxb:BarButtonItemLink BarItemName="biBulkDelete1" />
                                 <dxb:BarButtonItemLink BarItemName="biFullRefresh1" />
                             </dxg:TableView.RowCellMenuCustomizations>
-                    </dxg:TableView>
+                            <dxg:TableView.FormatConditions>
+                                <dxg:FormatCondition Expression="[FlagManualApprovedPct] = 'True'" FieldName="APPROVE_PERCENTAGE">
+                                    <dxc:Format Background="#FFFF9B98" />
+                                </dxg:FormatCondition>
+                            </dxg:TableView.FormatConditions>
+                        </dxg:TableView>
                 </dxg:GridControl.View>
                 </custom:GridControlEx>
             </DockPanel>

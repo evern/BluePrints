@@ -52,6 +52,18 @@ namespace BluePrints.Data
         [StringLength(100)]
         public string REQUESTED_BY { get; set; }
 
+        public decimal APPROVE_PERCENTAGE { get; set; }
+
+        public VariationClientAcknowledgement CLIENT_ACKNOWLEDGEMENT { get; set; }
+
+        public VariationNature NATURE { get; set; }
+
+        public VariationSubstantiation SUBSTANTIATION { get; set; }
+
+        public VariationTimeliness TIMELINESS { get; set; }
+
+        public VariationDiscretionaryAdjustment DISCRETIONARY_ADJUSTMENT { get; set; }
+
         public DateTime CREATED { get; set; }
 
         public Guid CREATEDBY { get; set; }

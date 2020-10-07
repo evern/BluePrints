@@ -279,7 +279,7 @@ namespace BluePrints.ViewModels
                 if (IsLoadingForecast)
                     return false;
 
-                return ForecastSummary.Approved_Var_Revenue != VARIATION_CONSTRUCTIONCollection.Where(x => x.STATUS == VariationConstructionStatus.Approved).Sum(x => x.APPROVED_VALUE);
+                return ForecastSummary.Approved_Var_Revenue != VARIATION_CONSTRUCTIONCollection.Where(x => x.STATUS == VariationConstructionStatus.Approved).Sum(x => x.ManualApprovedEstimatedValue);
             }
         }
 
@@ -290,7 +290,7 @@ namespace BluePrints.ViewModels
                 if (IsLoadingForecast)
                     return false;
 
-                return ForecastSummary.Total_Unapproved_Var_Revenue != VARIATION_CONSTRUCTIONCollection.Where(x => x.STATUS == VariationConstructionStatus.Submitted).Sum(x => x.APPROVED_VALUE);
+                return ForecastSummary.Total_Unapproved_Var_Revenue != VARIATION_CONSTRUCTIONCollection.Where(x => x.STATUS == VariationConstructionStatus.Submitted).Sum(x => x.ManualApprovedEstimatedValue);
             }
         }
 
@@ -371,9 +371,9 @@ namespace BluePrints.ViewModels
             //dynamic revenueLine = ExoQueries.GetProjectRevenue(primeroEntitiesUnitOfWork, loadPROJECT.NUMBER);
             //if (revenueLine != null)
             ForecastSummary.Original_Revenue = LoadPROJECT.ORI_REVENUE == null ? 0 : (decimal)LoadPROJECT.ORI_REVENUE;
-            ForecastSummary.Approved_Var_Revenue = LoadPROJECT.VAR_REVENUE == null || LoadPROJECT.VAR_REVENUE == 0 ? VARIATION_CONSTRUCTIONCollection.Where(x => x.STATUS == VariationConstructionStatus.Approved).Sum(x => x.APPROVED_VALUE) : (decimal)LoadPROJECT.VAR_REVENUE;
+            ForecastSummary.Approved_Var_Revenue = LoadPROJECT.VAR_REVENUE == null || LoadPROJECT.VAR_REVENUE == 0 ? VARIATION_CONSTRUCTIONCollection.Where(x => x.STATUS == VariationConstructionStatus.Approved).Sum(x => x.ManualApprovedEstimatedValue) : (decimal)LoadPROJECT.VAR_REVENUE;
             ForecastSummary.Unapproved_Var_Revenue = LoadPROJECT.UNAPPROVED_VAR_REVENUE == null ? 0 : (decimal)LoadPROJECT.UNAPPROVED_VAR_REVENUE;
-            ForecastSummary.Total_Unapproved_Var_Revenue = LoadPROJECT.TOTAL_UNAPPROVED_VAR_REVENUE == null || LoadPROJECT.TOTAL_UNAPPROVED_VAR_REVENUE == 0 ? VARIATION_CONSTRUCTIONCollection.Where(x => x.STATUS == VariationConstructionStatus.Submitted).Sum(x => x.APPROVED_VALUE) : (decimal)LoadPROJECT.TOTAL_UNAPPROVED_VAR_REVENUE;
+            ForecastSummary.Total_Unapproved_Var_Revenue = LoadPROJECT.TOTAL_UNAPPROVED_VAR_REVENUE == null || LoadPROJECT.TOTAL_UNAPPROVED_VAR_REVENUE == 0 ? VARIATION_CONSTRUCTIONCollection.Where(x => x.STATUS == VariationConstructionStatus.Submitted).Sum(x => x.ManualApprovedEstimatedValue) : (decimal)LoadPROJECT.TOTAL_UNAPPROVED_VAR_REVENUE;
             //ForecastSummary.EAC_Revenue = LoadPROJECT.EAC_REVENUE == null ? 0 : (decimal)LoadPROJECT.EAC_REVENUE;
 
             ForecastSummary.TotalClaims = ExoQueries.GetProjectClaims(threadSafePrimeroEntitiesUnitOfWork, LoadPROJECT.NUMBER);
@@ -2605,7 +2605,7 @@ namespace BluePrints.ViewModels
             else if (fieldName == BindableBase.GetPropertyName(() => new Data.PROJECT().VAR_REVENUE))
             {
                 if (newValueDecimal == null)
-                    ForecastSummary.Approved_Var_Revenue = VARIATION_CONSTRUCTIONCollection.Where(x => x.STATUS == VariationConstructionStatus.Approved).Sum(x => x.APPROVED_VALUE);
+                    ForecastSummary.Approved_Var_Revenue = VARIATION_CONSTRUCTIONCollection.Where(x => x.STATUS == VariationConstructionStatus.Approved).Sum(x => x.ManualApprovedEstimatedValue);
                 else
                     ForecastSummary.Approved_Var_Revenue = notNullDecimalValue;
 
@@ -2616,7 +2616,7 @@ namespace BluePrints.ViewModels
             else if (fieldName == BindableBase.GetPropertyName(() => new Data.PROJECT().TOTAL_UNAPPROVED_VAR_REVENUE))
             {
                 if (newValueDecimal == null)
-                    ForecastSummary.Total_Unapproved_Var_Revenue = VARIATION_CONSTRUCTIONCollection.Where(x => x.STATUS == VariationConstructionStatus.Submitted).Sum(x => x.APPROVED_VALUE);
+                    ForecastSummary.Total_Unapproved_Var_Revenue = VARIATION_CONSTRUCTIONCollection.Where(x => x.STATUS == VariationConstructionStatus.Submitted).Sum(x => x.ManualApprovedEstimatedValue);
                 else
                     ForecastSummary.Total_Unapproved_Var_Revenue = notNullDecimalValue;
 

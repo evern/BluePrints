@@ -167,6 +167,119 @@ namespace BluePrints.Data
         [NotMapped]
         public string Office => this.PROJECT.NUMBER + " " + this.PROJECT.OfficeName;
 
+        [NotMapped]
+        public bool FlagManualApprovedPct => ManualApprovedEstimatedValue > CalculatedApprovedEstimatedValue;
+
+        [NotMapped]
+        public decimal CalculatedApprovedEstimatedValue => CalculatedRiskAssessedPercentage * APPROVED_VALUE;
+
+        [NotMapped]
+        public decimal ManualApprovedEstimatedValue
+        {
+            get
+            {
+                if (STATUS >= VariationConstructionStatus.Submitted)
+                    return APPROVE_PERCENTAGE * APPROVED_VALUE;
+
+                return 0;
+            }
+        }
+
+        [NotMapped]
+        public decimal CalculatedRiskAssessedPercentage
+        {
+            get
+            {
+                decimal variationClientAcknowledgementPct = GetVariationCategoriesPercentage(CLIENT_ACKNOWLEDGEMENT);
+                decimal variationNaturePct = GetVariationCategoriesPercentage(NATURE);
+                decimal variationSubstantiationPct = GetVariationCategoriesPercentage(SUBSTANTIATION);
+                decimal variationTimelinessPct = GetVariationCategoriesPercentage(TIMELINESS);
+                decimal variationDiscretionaryPct = GetVariationCategoriesPercentage(DISCRETIONARY_ADJUSTMENT);
+
+                decimal variationClientAcknowledgementWeightage = variationClientAcknowledgementPct * 0.35m;
+                decimal variationNatureWeightage = variationNaturePct * 0.20m;
+                decimal variationSubstantiationWeightage = variationSubstantiationPct * 0.20m;
+                decimal variationTimelinessWeightage = variationTimelinessPct * 0.20m;
+                decimal variationDiscretionaryWeightage = variationDiscretionaryPct * 0.05m;
+
+                return variationClientAcknowledgementWeightage + variationNatureWeightage + variationSubstantiationWeightage + variationTimelinessWeightage + variationDiscretionaryWeightage;
+            }
+        }
+
+        public decimal GetVariationCategoriesPercentage(VariationClientAcknowledgement variationClientAcknowledgement)
+        {
+            if (variationClientAcknowledgement == VariationClientAcknowledgement.None)
+                return 0;
+            else if (variationClientAcknowledgement == VariationClientAcknowledgement.Verbal)
+                return 0.05m;
+            else if (variationClientAcknowledgement == VariationClientAcknowledgement.Email)
+                return 0.2m;
+            else //written
+                return 0.9m;
+        }
+
+        public decimal GetVariationCategoriesPercentage(VariationNature variationNature)
+        {
+            if (variationNature == VariationNature.ConstructiveAcceleration)
+                return 0.1m;
+            else if (variationNature == VariationNature.Distruption)
+                return 0.2m;
+            else if (variationNature == VariationNature.CriticalDelay)
+                return 0.4m;
+            else if (variationNature == VariationNature.DirectedAcceleration)
+                return 0.5m;
+            else //variation under contract
+                return 0.9m;
+        }
+
+        public decimal GetVariationCategoriesPercentage(VariationSubstantiation variationSubstantiation)
+        {
+            if (variationSubstantiation == VariationSubstantiation.SpreadsheetsOnly)
+                return 0.05m;
+            else if (variationSubstantiation == VariationSubstantiation.SubmittedContemporaryRecords)
+                return 0.2m;
+            else if (variationSubstantiation == VariationSubstantiation.SignedDayworks)
+                return 0.6m;
+            else //SubmittedContemporaryRecordsDayworks
+                return 0.9m;
+        }
+
+        public decimal GetVariationCategoriesPercentage(VariationTimeliness variationTimeliness)
+        {
+            if (variationTimeliness == VariationTimeliness.NoNoticeClaimProvided)
+                return 0.0m;
+            else if (variationTimeliness == VariationTimeliness.NoticeClaimProvidedLate)
+                return 0.2m;
+            else //NoticeClaimProvidedOnTime
+                return 0.9m;
+        }
+
+        public decimal GetVariationCategoriesPercentage(VariationDiscretionaryAdjustment variationDiscretionaryAdjustment)
+        {
+            if (variationDiscretionaryAdjustment == VariationDiscretionaryAdjustment.LowConfidence)
+                return 0.0m;
+            else if (variationDiscretionaryAdjustment == VariationDiscretionaryAdjustment.MediumConfidence)
+                return 0.1m;
+            else //HighConfidence
+                return 0.9m;
+        }
+
+        public decimal GetVariationCategoriesWeightage(Enum variationCategory)
+        {
+            if (variationCategory.GetType() == typeof(VariationClientAcknowledgement))
+                return 0.35m;
+            if (variationCategory.GetType() == typeof(VariationNature))
+                return 0.20m;
+            if (variationCategory.GetType() == typeof(VariationSubstantiation))
+                return 0.20m;
+            if (variationCategory.GetType() == typeof(VariationTimeliness))
+                return 0.20m;
+            if (variationCategory.GetType() == typeof(VariationDiscretionaryAdjustment))
+                return 0.05m;
+
+            return 0;
+        }
+
         public List<ExoSubJobProjection> GetConstructionItemsForExoCommit(bool includeBudget)
         {
             List<ExoSubJobProjection> tempExoVariations = new List<ExoSubJobProjection>();

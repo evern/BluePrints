@@ -73,6 +73,7 @@ namespace BluePrints.ViewModels
             VariationNumber = valueToFillNumberOnly.ToString("D3");
             DocumentNumber = string.Concat(loadPROJECT.NUMBER, "-VAR-PM-", VariationNumber);
             Client = loadPROJECT.CLIENT;
+            doNotApplyBestFit = true;
         }
         
         protected override void addEntitiesLoader()
