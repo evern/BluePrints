@@ -168,7 +168,7 @@ namespace BluePrints.Data
         public string Office => this.PROJECT.NUMBER + " " + this.PROJECT.OfficeName;
 
         [NotMapped]
-        public bool FlagManualApprovedPct => ManualApprovedEstimatedValue > CalculatedApprovedEstimatedValue;
+        public bool FlagManualApprovedPct => APPROVE_PERCENTAGE > CalculatedRiskAssessedPercentage + 0.1m;
 
         [NotMapped]
         public decimal CalculatedApprovedEstimatedValue => CalculatedRiskAssessedPercentage * APPROVED_VALUE;
@@ -311,6 +311,12 @@ namespace BluePrints.Data
             {
                 if(APPROVED_VALUE == 0 && STATUS == VariationConstructionStatus.Approved)
                     info.ErrorText = "Approved variation must have approved value";
+            }
+
+            if (propertyName == BindableBase.GetPropertyName(() => new VARIATION_CONSTRUCTION().APPROVE_PERCENTAGE))
+            {
+                if (FlagManualApprovedPct)
+                    info.ErrorText = "Approved % is > 10% of Calculated Approve %";
             }
         }
 
