@@ -85,6 +85,10 @@ namespace BluePrints.ViewModels
             delayedDataTableRefreshTimer = new DispatcherTimer();
             delayedDataTableRefreshTimer.Interval = new TimeSpan(0, 0, 0, 1);
             delayedDataTableRefreshTimer.Tick += DelayedDataTableRefreshTimer_Tick;
+
+            delayedEditValueChangeSetTimer = new DispatcherTimer();
+            delayedEditValueChangeSetTimer.Interval = new TimeSpan(0, 0, 0, 1);
+
             projectSavingBackgroundWorker.DoWork += ProjectSavingBackgroundWorker_DoWork;
             projectSavingBackgroundWorker.WorkerSupportsCancellation = true;
 
@@ -222,6 +226,7 @@ namespace BluePrints.ViewModels
         DispatcherTimer delayedUpdateFloatingProjectSummaryTimer;
         DispatcherTimer delayedGridUpdateTimer;
         DispatcherTimer delayedDataTableRefreshTimer;
+        DispatcherTimer delayedEditValueChangeSetTimer;
         DispatcherTimer delayedDateChangeMessageBoxTimer;
         BackgroundWorker projectSavingBackgroundWorker = new BackgroundWorker();
 
@@ -451,6 +456,19 @@ namespace BluePrints.ViewModels
             }
         }
 
+        private void delayedEditValueChangedSetTrue()
+        {
+            delayedEditValueChangeSetTimer.Tick -= DelayedEditValueChangeSetTimer_Tick;
+            delayedEditValueChangeSetTimer.Tick += DelayedEditValueChangeSetTimer_Tick;
+            delayedEditValueChangeSetTimer.Start();
+        }
+
+        private void DelayedEditValueChangeSetTimer_Tick(object sender, EventArgs e)
+        {
+            delayedEditValueChangeSetTimer.Stop();
+            isEditValueChangeInvoked = true;
+        }
+
         private void showDateChangeMessage()
         {
             delayedDateChangeMessageBoxTimer.Tick -= DelayedMessageBoxTimer_Tick;
@@ -593,6 +611,7 @@ namespace BluePrints.ViewModels
 
         public override void FullRefresh()
         {
+            isEditValueChangeInvoked = false;
             IsLoading = true;
             IsLoadingForecast = true;
             this.RaisePropertyChanged(x => x.IsLoading);
@@ -2580,10 +2599,18 @@ namespace BluePrints.ViewModels
             string fieldName = baseEdit.Tag.ToString();
         }
 
+        //prevent value from being saved if layout is loading
+        bool isEditValueChangeInvoked = false;
         public void EditValueChanged(EditValueChangedEventArgs e)
         {
             if (IsLoadingForecast)
                 return;
+
+            if (!isEditValueChangeInvoked)
+            {
+                delayedEditValueChangedSetTrue();
+                return;
+            }
 
             if (MainViewModel == null || LoadPROJECT == null || ForecastSummary == null)
                 return;
@@ -2626,6 +2653,7 @@ namespace BluePrints.ViewModels
             //    ForecastSummary.EAC_Revenue = newValueDecimal;
 
             this.RaisePropertyChanged(x => x.ForecastSummary);
+            isEditValueChangeInvoked = true;
         }
 
         private void savePROJECT()
