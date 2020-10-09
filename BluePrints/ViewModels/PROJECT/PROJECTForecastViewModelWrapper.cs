@@ -364,7 +364,7 @@ namespace BluePrints.ViewModels
             if (revenueLine != null)
             {
                 if(LoadPROJECT.ORI_REVENUE == null)
-                    LoadPROJECT.ORI_REVENUE = Convert.ToDecimal(revenueLine.BUDGTOTAL_UNAPPROVED_VAR_REVENUEETED_REV);
+                    LoadPROJECT.ORI_REVENUE = Convert.ToDecimal(revenueLine.BUDGETED_REV);
 
                 savePROJECT();
             }

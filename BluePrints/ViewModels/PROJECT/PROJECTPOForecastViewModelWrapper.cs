@@ -771,6 +771,9 @@ namespace BluePrints.ViewModels
                     POForecastProjection projection = (POForecastProjection)editing_row[columnEntity];
                     clearPOForecast(projection.PONO, projection.VariationCode);
                     decimal costPerPeriod = projection.PO_RemainingPrice / (decimal)spreadPeriod;
+
+                    //decimal remainingPrice = projection.PO_RemainingPrice < 0 ? 0 : projection.PO_RemainingPrice;
+                    //decimal costPerPeriod = remainingPrice / (decimal)spreadPeriod;
                     DateTime? lastProcessedDate = null;
 
                     for (int columnOffset = 0; columnOffset < columnOffsetSelection; columnOffset += (int)spreadInterval)
