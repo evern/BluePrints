@@ -418,6 +418,9 @@
     <value>Show all EXO job changes from BluePrints</value>
   </data>
   <data name="Permission_DesignDeliverables_ProgressPreviousWeeksDate" xml:space="preserve">
-    <value>Always use previous week's date for progress and can change progress screen date</value>
+    <value>Always use previous week's date for progress</value>
+  </data>
+  <data name="Permission_DesignDeliverables_CanDateBackwardForward" xml:space="preserve">
+    <value>Allow moving data date forward and backward</value>
   </data>
 </root>

@@ -853,6 +853,15 @@ namespace BluePrints.Common.Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Allow moving data date forward and backward.
+        /// </summary>
+        internal static string Permission_DesignDeliverables_CanDateBackwardForward {
+            get {
+                return ResourceManager.GetString("Permission_DesignDeliverables_CanDateBackwardForward", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Finalise deliverable&apos;s internal and client numbers.
         /// </summary>
         internal static string Permission_DesignDeliverables_FinaliseNumbers {
@@ -880,7 +889,7 @@ namespace BluePrints.Common.Resources {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Always use previous week&apos;s date for progress and can change progress screen date.
+        ///   Looks up a localized string similar to Always use previous week&apos;s date for progress.
         /// </summary>
         internal static string Permission_DesignDeliverables_ProgressPreviousWeeksDate {
             get {

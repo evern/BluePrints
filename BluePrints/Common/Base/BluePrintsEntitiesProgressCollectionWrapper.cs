@@ -65,6 +65,7 @@ namespace BluePrints.Common.Base
         protected bool is_load_p6_task = false;
         protected bool isCompletelyLoaded = false;
         protected bool isUseReportDate = false;
+        protected bool canDateBackwardForward = false;
         BackgroundWorker progressSaveBackgroundWorker;
         public BluePrintsEntitiesProgressCollectionWrapper()
         {
@@ -470,13 +471,24 @@ namespace BluePrints.Common.Base
                 if (!IsLoading && isUseReportDate)
                 {
                     DateTime newValue = value.Date.AddDays(1).AddSeconds(-1);
-                    if (loadPROGRESS.REPORT_DATE == newValue)
-                        return;
 
-                    loadPROGRESS.REPORT_DATE = newValue;
+                    if(isUseReportDate)
+                    {
+                        if (loadPROGRESS.REPORT_DATE == newValue)
+                            return;
+
+                        loadPROGRESS.REPORT_DATE = newValue;
+                    }
+                    else
+                    {
+                        if (loadPROGRESS.DATA_DATE == newValue)
+                            return;
+
+                        loadPROGRESS.DATA_DATE = newValue;
+                    }
 
                     //!= null is used because set method can be invoked in quick succession (when full refresh is called and PROGRESSCollectionViewModel is disposed)
-                    if(PROGRESSCollectionViewModel != null)
+                    if (PROGRESSCollectionViewModel != null)
                     {
                         PROGRESSCollectionViewModel.Save(loadPROGRESS);
                         this.RaisePropertyChanged(x => x.DataDate);

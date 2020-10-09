@@ -629,6 +629,7 @@ namespace BluePrints.ViewModels
             {
                 Modules.Add(new BluePrintsEntitiesModuleDescription(DataUtils.GetNameOf(() => NavigationResources.Permission_DesignDeliverables_UpdateProgressByStatus), string.Empty, parentNavigationId, NavigationResources.Permission_DesignDeliverables_UpdateProgressByStatus, NavigationResources.Permission_DesignDeliverables_UpdateProgressByStatus));
                 Modules.Add(new BluePrintsEntitiesModuleDescription(DataUtils.GetNameOf(() => NavigationResources.Permission_DesignDeliverables_ProgressPreviousWeeksDate), string.Empty, parentNavigationId, NavigationResources.Permission_DesignDeliverables_ProgressPreviousWeeksDate, NavigationResources.Permission_DesignDeliverables_ProgressPreviousWeeksDate));
+                Modules.Add(new BluePrintsEntitiesModuleDescription(DataUtils.GetNameOf(() => NavigationResources.Permission_DesignDeliverables_CanDateBackwardForward), string.Empty, parentNavigationId, NavigationResources.Permission_DesignDeliverables_CanDateBackwardForward, NavigationResources.Permission_DesignDeliverables_CanDateBackwardForward));
             }
             else if (securityKey == DataUtils.GetNameOf(() => NavigationResources.Menu_Project_EXO_Transactions))
             {
