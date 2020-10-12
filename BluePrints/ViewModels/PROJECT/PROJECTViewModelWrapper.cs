@@ -40,8 +40,7 @@ namespace BluePrints.ViewModels
     /// <summary>
     /// Represents the PROJECTS collection view model.
     /// </summary>
-    public class PROJECTViewModelWrapper :
-        DashboardViewModelWrapper<PROJECT, PROJECT_Dashboard, Guid, IBluePrintsEntitiesUnitOfWork>
+    public class PROJECTViewModelWrapper : DashboardViewModelWrapper<PROJECT, PROJECT_Dashboard, Guid, IBluePrintsEntitiesUnitOfWork>
     {
         /// <summary>
         /// Creates a new instance of PROJECT_ITEMSViewModelWrapper as a POCO view model.
@@ -228,8 +227,7 @@ namespace BluePrints.ViewModels
 
         public bool ForceRetrieveRemainingDataPoints;
         public bool ShowLoadingScreen = true;
-        protected override Func<IRepositoryQuery<PROJECT>, IQueryable<PROJECT_Dashboard>>
-            specifyMainViewModelProjection()
+        protected override Func<IRepositoryQuery<PROJECT>, IQueryable<PROJECT_Dashboard>> specifyMainViewModelProjection()
         {
             var BASELINE = loaderCollection.GetObject<BASELINE>();
             var ESTIMATE = loaderCollection.GetObject<ESTIMATE>();
@@ -261,10 +259,7 @@ namespace BluePrints.ViewModels
         protected BackgroundWorker summaryBackgroundWorker;
         protected override bool OnMainViewModelLoaded(IEnumerable<PROJECT_Dashboard> entities)
         {
-            MainViewModel =
-                (CollectionViewModel<PROJECT, PROJECT_Dashboard, Guid, IBluePrintsEntitiesUnitOfWork>)
-                mainEntityLoaderDescription.GetViewModel();
-
+            MainViewModel = (CollectionViewModel<PROJECT, PROJECT_Dashboard, Guid, IBluePrintsEntitiesUnitOfWork>)mainEntityLoaderDescription.GetViewModel();
             mainThreadDispatcher.BeginInvoke(new Action(() => this.RaisePropertiesChanged()));
             MainViewModel.SetParentViewModel(this);
             

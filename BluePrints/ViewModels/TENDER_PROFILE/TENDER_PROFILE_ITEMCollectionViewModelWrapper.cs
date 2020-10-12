@@ -13,9 +13,7 @@ using BaseModel.ViewModel.Document;
 
 namespace BluePrints.ViewModels
 {
-    public class TENDER_PROFILE_ITEMCollectionViewModelWrapper :
-        BluePrintsEntitiesCollectionWrapper
-        <TENDER_PROFILE_ITEM, TENDER_PROFILE_ITEM, Guid, IBluePrintsEntitiesUnitOfWork>
+    public class TENDER_PROFILE_ITEMCollectionViewModelWrapper : BluePrintsEntitiesCollectionWrapper<TENDER_PROFILE_ITEM, TENDER_PROFILE_ITEM, Guid, IBluePrintsEntitiesUnitOfWork>
     {
         /// <summary>
         /// Creates a new instance of TENDER_PROFILE_ITEMCollectionViewModelWrapper as a POCO view model.

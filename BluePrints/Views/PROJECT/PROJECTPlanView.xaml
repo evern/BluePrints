@@ -294,7 +294,7 @@
                                             GroupSummaryGeneratorTemplate="{StaticResource SummaryTemplate}"
                                             ColumnGeneratorTemplateSelector="{StaticResource ColumnTemplateSelector}" ColumnsSource="{Binding ParentColumns}" dxc:DXSerializer.SerializationID="GridControlProjectPlan" dxc:DXSerializer.StoreLayoutMode="All" AutoExpandAllGroups="False" ShowAllTableValuesInCheckedFilterPopup="False" AutoGenerateColumns="None" ClipboardCopyMode="ExcludeHeader" ItemsSource="{Binding DataPointsTable}" CurrentItem="{Binding SelectedDataRow, Mode=TwoWay}" SelectedItems="{Binding SelectedDataRows, Mode=TwoWay}" SelectionMode="{Binding SelectMode}" ShowLoadingPanel="{Binding IsLoading}">
                                     <dxg:GridControl.DetailDescriptor>
-                                        <dxg:DataControlDetailDescriptor ItemsSourceBinding="{Binding TenderProfiles}">
+                                        <dxg:DataControlDetailDescriptor ItemsSourceBinding="{Binding TenderProfilesTable}">
                                             <dxg:GridControl x:Name="gridControlChild"                                              
                                                                 TotalSummarySource="{Binding ChildSummaryDescriptors}"
                                                                 TotalSummaryGeneratorTemplate="{StaticResource SummaryTemplate}"

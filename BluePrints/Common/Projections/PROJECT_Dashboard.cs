@@ -45,6 +45,8 @@ namespace BluePrints.Common.Projections
             }
         }
 
+        public List<TENDER_PROFILE_ITEM> TenderProfileItems { get; set; }
+
         FullSummarizer projectSummarizer { get; set; }
         public ProgressStats Stats
         {
