@@ -1824,7 +1824,9 @@ namespace BluePrints.Common.Projections
             foreach (var resource in allResourceShortCodes)
             {
                 string shortCodeString = Regex.Match(resource.SHORTCODE, regexString).Value;
-                string defaultShortCodeString = resource.DEFAULT_STOCKCODE.Contains(formatPartialShortCode) ? Regex.Match(resource.DEFAULT_STOCKCODE, regexString).Value : string.Empty;
+                string defaultShortCodeString = string.Empty;
+                if (resource.DEFAULT_STOCKCODE != null)
+                    defaultShortCodeString = resource.DEFAULT_STOCKCODE.Contains(formatPartialShortCode) ? Regex.Match(resource.DEFAULT_STOCKCODE, regexString).Value : string.Empty;
 
                 string s;
                 if (shortCodeString != defaultShortCodeString)
