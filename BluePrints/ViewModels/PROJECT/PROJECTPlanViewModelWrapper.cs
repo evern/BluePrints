@@ -128,20 +128,29 @@ namespace BluePrints.ViewModels
                 PROGRESS projectDesignLiveProgress = bluePrintsEntitiesUnitOfWork.PROGRESSES.FirstOrDefault(x => x.GUID_PROJECT == tenderPROJECT.GUID && x.TYPE == PhaseType.Design && x.STATUS == ProgressStatus.Live);
                 if(projectLiveBaseline != null && projectDesignLiveProgress != null)
                 {
+                    //retrieve data for dashboard
                     IQueryable<BASELINE_ITEM> projectDeliverables = bluePrintsEntitiesUnitOfWork.BASELINE_ITEMS.Where(x => x.GUID_BASELINE == projectLiveBaseline.GUID);
                     IEnumerable<VARIATION> approvedProjectVariations = bluePrintsEntitiesUnitOfWork.VARIATIONS.Where(x => x.GUID_PROJECT == tenderPROJECT.GUID);
-                    IEnumerable<BASELINE_ITEMProgress> projectDeliverablesProgresses = ProgressQueries.OffsiteDirectProgressItemTransformation(
-                    projectDeliverables, tenderPROJECT, projectDesignLiveProgress, tenderPROJECT.RATE, projectDesignLiveProgress.PROGRESS_ITEM, approvedProjectVariations, false, null, DeliverableInternalNumberMode.Default).ToArray().AsEnumerable();
+                    IEnumerable<BASELINE_ITEMProgress> projectDeliverablesProgresses = ProgressQueries.OffsiteDirectProgressItemTransformation(projectDeliverables, tenderPROJECT, projectDesignLiveProgress, tenderPROJECT.RATE, projectDesignLiveProgress.PROGRESS_ITEM, approvedProjectVariations, false, null, DeliverableInternalNumberMode.Default).ToArray().AsEnumerable();
 
+                    //construct dashboard
                     List<PROGRESS> progresses = new List<PROGRESS>();
                     progresses.Add(projectDesignLiveProgress);
                     PROJECT_Dashboard dashboard = new PROJECT_Dashboard(projectDeliverablesProgresses, progresses, tenderPROJECT.SUBJOB, tenderPROJECT.VARIATION, tenderPROJECT.NUMBER, 1, primeroUnitOfWork);
                     dashboard.Entity = tenderPROJECT;
                     dashboard.GUID = tenderPROJECT.GUID;
 
+                    //time phasing of datapoints
                     List<StatsCalculationType> calcTypes = new List<StatsCalculationType>();
                     calcTypes.Add(StatsCalculationType.Planned);
                     dashboard.BuildStats(false, false, 1, false, false, false, calcTypes, false);
+
+                    //populate tender profile items
+                    TENDER_PROFILE tenderPROFILE = bluePrintsEntitiesUnitOfWork.TENDER_PROFILES.FirstOrDefault(x => x.GUID_PROJECT == tenderPROJECT.GUID);
+                    if (tenderPROFILE != null)
+                    {
+                        dashboard.TenderProfileItems = tenderPROFILE.TENDER_PROFILE_ITEM.ToList();
+                    }
 
                     returnPROJECTS.Add(dashboard);
                 }
@@ -275,7 +284,7 @@ namespace BluePrints.ViewModels
         DataTable dataPointsTable = null;
         protected string columnProject = "Project";
         protected string columnTenderProfile = "TenderProfiles";
-        protected string columnTenderProfileTable = "TenderProfilesTable";
+        protected string columnTenderProfileDataTable = "TenderProfileDataTable";
         protected ObservableCollection<ColumnDescriptor> parentColumns;
         public ObservableCollection<ColumnDescriptor> ParentColumns
         {
@@ -346,11 +355,11 @@ namespace BluePrints.ViewModels
                     {
                         alignedDateCollection = generateDates(Entities);
                         InitializeParentColumnSource(ParentColumns, ParentSummaries, alignedDateCollection);
-                        InitializeChildColumnSource(ChildColumns, ParentSummaries, alignedDateCollection);
+                        InitializeChildColumnSource(ChildColumns, ChildSummaries, alignedDateCollection);
                     }
 
                     dataPointsTable.Columns.Add(columnProject, typeof(PROJECT_Dashboard));
-                    dataPointsTable.Columns.Add(columnTenderProfileTable, typeof(DataTable));
+                    dataPointsTable.Columns.Add(columnTenderProfileDataTable, typeof(DataTable));
                     populateAlignedDataDate(dataPointsTable, alignedDateCollection);
 
                     foreach (PROJECT_Dashboard entity in Entities)
@@ -401,7 +410,7 @@ namespace BluePrints.ViewModels
             for (int i = 0; i < newDataRow.ItemArray.Count(); i++)
             {
                 string columnName = dataPointsTable.Columns[i].ColumnName;
-                if (columnName != columnProject && columnName != columnTenderProfileTable)
+                if (columnName != columnProject && columnName != columnTenderProfileDataTable)
                 {
                     DateTime columnDate = DateTime.Parse(columnName);
                     List<Common.ViewModel.Reporting.DataPoint> currentPeriodDataPoints;
@@ -419,12 +428,12 @@ namespace BluePrints.ViewModels
 
             //populate tender profiles
             DataTable tenderProfilesDataPointsTable = null;
-            if (newDataRow[columnTenderProfileTable] != DBNull.Value)
-                tenderProfilesDataPointsTable = (DataTable)newDataRow[columnTenderProfileTable];
+            if (newDataRow[columnTenderProfileDataTable] != DBNull.Value)
+                tenderProfilesDataPointsTable = (DataTable)newDataRow[columnTenderProfileDataTable];
             else
             {
                 tenderProfilesDataPointsTable = new DataTable();
-                tenderProfilesDataPointsTable.Columns.Add(columnTenderProfile);
+                tenderProfilesDataPointsTable.Columns.Add(columnTenderProfile, typeof(TENDER_PROFILE_ITEM));
                 populateAlignedDataDate(tenderProfilesDataPointsTable, alignedDateCollection);
             }
 
@@ -434,7 +443,10 @@ namespace BluePrints.ViewModels
                 {
                     DataRow tenderProfileDataRow = tenderProfilesDataPointsTable.NewRow();
                     tenderProfileDataRow[columnTenderProfile] = tenderProfileItem;
+                    tenderProfilesDataPointsTable.Rows.Add(tenderProfileDataRow);
                 }
+
+            newDataRow[columnTenderProfileDataTable] = tenderProfilesDataPointsTable;
 
             if (!isUpdate)
                 dataPointsTable.Rows.Add(newDataRow);
@@ -448,12 +460,12 @@ namespace BluePrints.ViewModels
             columns.Add(new ColumnDescriptor() { FieldName = columnProject + ".Entity.NUMBER", ReadOnly = true, Header = "Number", Fixed = FixedStyle.Left, Width = 50, Settings = SettingsType.Default });
             summaries.Add(new SummaryDescriptor() { FieldName = columnProject + ".Entity.NUMBER", DisplayFormat = "{0} Record(s)", Type = SummaryItemType.Count });
             columns.Add(new ColumnDescriptor() { FieldName = columnProject + ".Entity.NAME", ReadOnly = true, Header = "Name", Fixed = FixedStyle.Left, Width = 200, Settings = SettingsType.Default });
-            columns.Add(new ColumnDescriptor() { FieldName = columnProject + ".Entity.STATUS", Header = "Status", Fixed = FixedStyle.Left, Width = 70, ItemsSource = ProjectStatusCollection, Settings = SettingsType.Collection });
-            columns.Add(new ColumnDescriptor() { FieldName = columnProject + ".Entity.PIPELINE_TYPE", Header = "Type", Fixed = FixedStyle.Left, Width = 70, ItemsSource = PipelineTypeCollection, Settings = SettingsType.Collection });
-            columns.Add(new ColumnDescriptor() { FieldName = columnProject + ".Entity.PIPELINE_DIVISION", Header = "Division", Fixed = FixedStyle.Left, Width = 70, ItemsSource = PipelineDivisionCollection, Settings = SettingsType.Collection });
-            columns.Add(new ColumnDescriptor() { FieldName = columnProject + ".Entity.PIPELINE_COMMODITY", Header = "Commodity", Fixed = FixedStyle.Left, Width = 70, ItemsSource = PipelineCommodityCollection, Settings = SettingsType.Collection });
-            columns.Add(new ColumnDescriptor() { FieldName = columnProject + ".Entity.PIPELINE_CONTRACT", Header = "Contract", Fixed = FixedStyle.Left, Width = 70, ItemsSource = PipelineContractCollection, Settings = SettingsType.Collection });
-            columns.Add(new ColumnDescriptor() { FieldName = columnProject + ".Entity.PIPELINE_STATUS", Header = "Status", Fixed = FixedStyle.Left, Width = 70, ItemsSource = PipelineStatusCollection, Settings = SettingsType.Collection });
+            columns.Add(new ColumnDescriptor() { FieldName = columnProject + ".Entity.STATUS", Header = "Status", Fixed = FixedStyle.Left, Width = 70, Settings = SettingsType.Enum1 });
+            columns.Add(new ColumnDescriptor() { FieldName = columnProject + ".Entity.PIPELINE_TYPE", Header = "Type", Fixed = FixedStyle.Left, Width = 70, Settings = SettingsType.Enum2 });
+            columns.Add(new ColumnDescriptor() { FieldName = columnProject + ".Entity.PIPELINE_DIVISION", Header = "Division", Fixed = FixedStyle.Left, Width = 70, Settings = SettingsType.Enum3 });
+            columns.Add(new ColumnDescriptor() { FieldName = columnProject + ".Entity.PIPELINE_COMMODITY", Header = "Commodity", Fixed = FixedStyle.Left, Width = 70, Settings = SettingsType.Enum4 });
+            columns.Add(new ColumnDescriptor() { FieldName = columnProject + ".Entity.PIPELINE_CONTRACT", Header = "Contract", Fixed = FixedStyle.Left, Width = 70, Settings = SettingsType.Enum5 });
+            columns.Add(new ColumnDescriptor() { FieldName = columnProject + ".Entity.PIPELINE_STATUS", Header = "Status", Fixed = FixedStyle.Left, Width = 70, Settings = SettingsType.Enum6 });
             columns.Add(new ColumnDescriptor() { FieldName = columnProject + ".Entity.TENDER_PROJECT_START", Header = "Start Date", ReadOnly = false, Fixed = FixedStyle.Left, Width = 70, Settings = SettingsType.Date });
             columns.Add(new ColumnDescriptor() { FieldName = columnProject + ".Entity.TENDER_PROJECT_DURATION", ReadOnly = false, Visible = true, Header = "Duration", Mask = "###,##0 Weeks", Increment = 1, Fixed = FixedStyle.Left, Width = 75, Settings = SettingsType.Number });
             columns.Add(new ColumnDescriptor() { FieldName = columnProject + ".Entity.PIPELINE_GROSS_PROFIT", ReadOnly = false, Visible = true, Header = "Gross Profit", Mask = "c2", Increment = 1, Fixed = FixedStyle.Left, Width = 75, Settings = SettingsType.Number });
@@ -473,8 +485,8 @@ namespace BluePrints.ViewModels
             columns.Clear();
             summaries.Clear();
 
-            columns.Add(new ColumnDescriptor() { FieldName = columnTenderProfile + ".GUID_DEPARTMENT", Header = "Department", Fixed = FixedStyle.Left, Width = 70, ItemsSource = DEPARTMENTCollection, Settings = SettingsType.Collection });
-            columns.Add(new ColumnDescriptor() { FieldName = columnTenderProfile + ".GUID_DISCIPLINE", Header = "Discipline", Fixed = FixedStyle.Left, Width = 70, ItemsSource = DISCIPLINECollection, Settings = SettingsType.Collection });
+            columns.Add(new ColumnDescriptor() { FieldName = columnTenderProfile + ".GUID_DEPARTMENT", Header = "Department", DisplayMember = "NAME", ValueMember = "GUID", Fixed = FixedStyle.Left, Width = 70, ItemsSource = DEPARTMENTCollection, Settings = SettingsType.Collection });
+            columns.Add(new ColumnDescriptor() { FieldName = columnTenderProfile + ".GUID_DISCIPLINE", Header = "Discipline", DisplayMember = "NAME", ValueMember = "GUID", Fixed = FixedStyle.Left, Width = 70, ItemsSource = DISCIPLINECollection, Settings = SettingsType.Collection });
             columns.Add(new ColumnDescriptor() { FieldName = columnTenderProfile + ".HOURS_PERCENTAGE", Header = "Hours %", Mask = "p2", Increment = 0.1m, Fixed = FixedStyle.Left, Width = 75, Settings = SettingsType.Number });
             columns.Add(new ColumnDescriptor() { FieldName = columnTenderProfile + ".SCHEDULE_START_PERCENTAGE", Header = "Schedule Start %", Mask = "p2", Increment = 0.1m, Fixed = FixedStyle.Left, Width = 75, Settings = SettingsType.Number });
             columns.Add(new ColumnDescriptor() { FieldName = columnTenderProfile + ".SCHEDULE_FINISH_PERCENTAGE", Header = "Schedule Finish %", Mask = "p2", Increment = 0.1m, Fixed = FixedStyle.Left, Width = 75, Settings = SettingsType.Number });
