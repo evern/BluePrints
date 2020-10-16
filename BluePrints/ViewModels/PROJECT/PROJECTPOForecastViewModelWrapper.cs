@@ -3,6 +3,7 @@ using BaseModel.DataModel;
 using BaseModel.Misc;
 using BaseModel.ViewModel.Base;
 using BaseModel.ViewModel.Loader;
+using BaseModel.ViewModel.Services;
 using BaseModel.ViewModel.UndoRedo;
 using BluePrints.BluePrintsEntitiesDataModel;
 using BluePrints.Common;
@@ -17,6 +18,7 @@ using BluePrints.PrimeroData.PrimeroEntitiesDataModel;
 using DevExpress.Data;
 using DevExpress.Data.Filtering;
 using DevExpress.Mvvm;
+using DevExpress.Mvvm.DataAnnotations;
 using DevExpress.Mvvm.POCO;
 using DevExpress.Xpf.Grid;
 using System;
@@ -1233,6 +1235,21 @@ namespace BluePrints.ViewModels
                 return;
 
             EntitiesUndoRedoManager.Redo();
+        }
+
+        [ServiceProperty(Key = "DetailTableViewService")]
+        protected virtual ITableViewService DetailTableViewService { get { return null; } }
+        public void ExportDetailToExcel()
+        {
+            string ResultPath = string.Empty;
+            if (FolderBrowserDialogService.ShowDialog())
+            {
+                ResultPath = FolderBrowserDialogService.ResultPath;
+                bool result = DetailTableViewService.ExportToXls(ResultPath + "\\" + loadPROJECT.NUMBER + "_PO_Detail.xlsx", isExcelExportDataAware);
+
+                if (!result)
+                    MessageBoxService.ShowMessage("Export failed because the file is in use", "Warning", MessageButton.OK, MessageIcon.Warning);
+            }
         }
 
         public void Window_KeyDown(System.Windows.Input.KeyEventArgs e)

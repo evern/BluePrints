@@ -86,6 +86,7 @@
                         <dxg:TableView x:Name="tableView" GroupSummaryDisplayMode="AlignByColumns" NewItemRowPosition="None" Style="{StaticResource DefaultTableViewTemplate}" >
                             <dxg:TableView.RowCellMenuCustomizations>
                                 <dxb:BarButtonItemLink BarItemName="biCopyWithHeader1" />
+                                <dxb:BarButtonItem x:Name="biLocalExportToExcel" Command="{Binding ExportToExcelCommand}" Content="Export All" Glyph="{dx:DXImage Image=ExportToXLSX_16x16.png}" LargeGlyph="{dx:DXImage Image=ExportToXLSX_32x32.png}" RibbonStyle="SmallWithText" ToolTip="Export all datapoints to excel" />
                                 <dxb:BarButtonItemLink BarItemName="biFullRefresh1" />
                             </dxg:TableView.RowCellMenuCustomizations>
                         </dxg:TableView>
