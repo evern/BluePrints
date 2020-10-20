@@ -136,6 +136,7 @@
                             <dxg:GridColumn FieldName="POno" Header="PO Number" AllowBestFit="false" Width="70" ReadOnly="True" />
                             <dxg:GridColumn FieldName="invno" Header="Invoice Number" AllowBestFit="false" Width="150" ReadOnly="True" />
                             <dxg:GridColumn FieldName="transtype" Header="Trans Type" AllowBestFit="false" Width="50" ReadOnly="True" />
+                            <dxg:GridColumn FieldName="SEQNO" AllowBestFit="false" Width="50" Header="Seq No"  ReadOnly="True" />
                         </dxg:GridControlBand>
                     </dxg:GridControl.Bands>
                     <dxg:GridControl.GroupSummary>
