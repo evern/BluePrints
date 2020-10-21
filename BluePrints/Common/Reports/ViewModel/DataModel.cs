@@ -1056,6 +1056,8 @@ namespace BluePrints.Common.ViewModel.Reporting
 
         public string Department_Code => Entity.Department_Code;
 
+        public Guid? Department_Guid => Entity.Department_Guid;
+
         public virtual decimal P6_Assignment_Total_Quantity => Total_Units;
 
         public virtual string P6_Assignment_UOM => "Hrs";

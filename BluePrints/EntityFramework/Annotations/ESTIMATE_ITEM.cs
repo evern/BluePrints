@@ -302,6 +302,8 @@ namespace BluePrints.Data
             }
         }
 
+        public Guid? Department_Guid => (Guid?)null;
+
         [NotMapped]
         public Guid? Phase_Guid { get => GUID_PHASE; set => GUID_PHASE = value; }
 

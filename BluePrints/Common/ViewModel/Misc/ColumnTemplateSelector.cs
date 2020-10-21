@@ -37,7 +37,7 @@ namespace BluePrints.Common.ViewModel.Misc
         public string ValueMember { get; set; }
         public object ItemsSource { get; set; }
         public string NullText { get; set; }
-        public Type Tag { get; set; }
+        public string Tag { get; set; }
         public UnboundColumnType UnboundType { get; set; }
     }
 

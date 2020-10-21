@@ -10,6 +10,8 @@ namespace BluePrints.Data
     using BluePrints.Common.Base;
     using BaseModel.DataModel;
     using BluePrints.Common.Resources;
+    using BluePrints.Common.ViewModel.Reporting;
+    using BluePrints.Common.Projections;
 
     public partial class TENDER_PROFILE_ITEM : EntityBase, IGuidEntityKey, ICanSync, IHaveCreatedDate
     {
@@ -35,5 +37,11 @@ namespace BluePrints.Data
                 return BluePrintsResources.GlobalOffice;
             }
         }
+
+        [NotMapped]
+        public PROJECT_Dashboard PROJECT_Dashboard { get; set; }
+
+        [NotMapped]
+        public List<IReportable> Reportables { get; set; }
     }
 }

@@ -28,6 +28,7 @@ namespace BluePrints.ViewModels
         PROJECT loadPROJECT;
         bool isFullyLoaded;
         public TENDER_PROFILE projectTENDER_PROFILE { get; set; }
+        public Action<PROJECT> OnDataPointsCalculated { get; set; }
         /// <summary>
         /// Creates a new instance of TENDER_PROFILE_ITEMCollectionViewModelWrapper as a POCO view model.
         /// </summary>
@@ -277,6 +278,7 @@ namespace BluePrints.ViewModels
 
             Refresh_From_P6();
             LoadingScreenManager.CloseLoadingScreen();
+            OnDataPointsCalculated?.Invoke(loadPROJECT);
             MessageBoxService.ShowMessage(createdDeliverablesCount.ToString() + " deliverables created");
         }
 

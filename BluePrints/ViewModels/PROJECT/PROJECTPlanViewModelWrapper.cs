@@ -15,6 +15,7 @@ using BluePrints.Common.ViewModel.Utils;
 using BluePrints.Data;
 using BluePrints.PrimeroData.PrimeroEntitiesDataModel;
 using DevExpress.Data;
+using DevExpress.Mvvm;
 using DevExpress.Mvvm.POCO;
 using DevExpress.Xpf.Grid;
 using System;
@@ -62,6 +63,7 @@ namespace BluePrints.ViewModels
             montrealBluePrintsUnitOfWorkFactory = BluePrintsEntitiesUnitOfWorkSource.GetUnitOfWorkFactory(true);
             perthBluePrintsUnitOfWork = perthBluePrintsUnitOfWorkFactory.CreateUnitOfWork();
             montrealBluePrintsUnitOfWork = montrealBluePrintsUnitOfWorkFactory.CreateUnitOfWork();
+            doNotApplyBestFit = true;
         }
 
         protected override void addEntitiesLoader()
@@ -113,50 +115,67 @@ namespace BluePrints.ViewModels
 
         private IQueryable<PROJECT_Dashboard> populatePROJECTPlanProject(IQueryable<PROJECT> query)
         {
-            List<PROJECT> tenderPROJECTS = query.Where(x => x.NUMBER == "09602" && (x.STATUS == ProjectStatus.Lead || x.STATUS == ProjectStatus.Tender || x.STATUS == ProjectStatus.TenderSubmitted)).ToList();
+            List<PROJECT> tenderPROJECTS = query.Where(x => (x.STATUS == ProjectStatus.Lead || x.STATUS == ProjectStatus.Tender || x.STATUS == ProjectStatus.TenderSubmitted)).ToList();
             List<PROJECT_Dashboard> returnPROJECTS = new List<PROJECT_Dashboard>();
 
             foreach (PROJECT tenderPROJECT in tenderPROJECTS)
             {
-                //select database locale
-                IBluePrintsEntitiesUnitOfWork bluePrintsEntitiesUnitOfWork;
-                if (tenderPROJECT.OfficeName == BluePrintsResources.OfficeMontreal)
-                    bluePrintsEntitiesUnitOfWork = montrealBluePrintsUnitOfWork;
-                else
-                    bluePrintsEntitiesUnitOfWork = perthBluePrintsUnitOfWork;
-                BASELINE projectLiveBaseline = bluePrintsEntitiesUnitOfWork.BASELINES.FirstOrDefault(x => x.STATUS == BaselineStatus.Live && x.GUID_PROJECT == tenderPROJECT.GUID);
-                PROGRESS projectDesignLiveProgress = bluePrintsEntitiesUnitOfWork.PROGRESSES.FirstOrDefault(x => x.GUID_PROJECT == tenderPROJECT.GUID && x.TYPE == PhaseType.Design && x.STATUS == ProgressStatus.Live);
-                if(projectLiveBaseline != null && projectDesignLiveProgress != null)
-                {
-                    //retrieve data for dashboard
-                    IQueryable<BASELINE_ITEM> projectDeliverables = bluePrintsEntitiesUnitOfWork.BASELINE_ITEMS.Where(x => x.GUID_BASELINE == projectLiveBaseline.GUID);
-                    IEnumerable<VARIATION> approvedProjectVariations = bluePrintsEntitiesUnitOfWork.VARIATIONS.Where(x => x.GUID_PROJECT == tenderPROJECT.GUID);
-                    IEnumerable<BASELINE_ITEMProgress> projectDeliverablesProgresses = ProgressQueries.OffsiteDirectProgressItemTransformation(projectDeliverables, tenderPROJECT, projectDesignLiveProgress, tenderPROJECT.RATE, projectDesignLiveProgress.PROGRESS_ITEM, approvedProjectVariations, false, null, DeliverableInternalNumberMode.Default).ToArray().AsEnumerable();
-
-                    //construct dashboard
-                    List<PROGRESS> progresses = new List<PROGRESS>();
-                    progresses.Add(projectDesignLiveProgress);
-                    PROJECT_Dashboard dashboard = new PROJECT_Dashboard(projectDeliverablesProgresses, progresses, tenderPROJECT.SUBJOB, tenderPROJECT.VARIATION, tenderPROJECT.NUMBER, 1, primeroUnitOfWork);
-                    dashboard.Entity = tenderPROJECT;
-                    dashboard.GUID = tenderPROJECT.GUID;
-
-                    //time phasing of datapoints
-                    List<StatsCalculationType> calcTypes = new List<StatsCalculationType>();
-                    calcTypes.Add(StatsCalculationType.Planned);
-                    dashboard.BuildStats(false, false, 1, false, false, false, calcTypes, false);
-
-                    //populate tender profile items
-                    TENDER_PROFILE tenderPROFILE = bluePrintsEntitiesUnitOfWork.TENDER_PROFILES.FirstOrDefault(x => x.GUID_PROJECT == tenderPROJECT.GUID);
-                    if (tenderPROFILE != null)
-                    {
-                        dashboard.TenderProfileItems = tenderPROFILE.TENDER_PROFILE_ITEM.ToList();
-                    }
-
-                    returnPROJECTS.Add(dashboard);
-                }
+                PROJECT_Dashboard projectDashboard = populateProjectDashboard(tenderPROJECT);
+                if (projectDashboard != null)
+                    returnPROJECTS.Add(projectDashboard);
             }
 
             return returnPROJECTS.AsQueryable();
+        }
+
+        private PROJECT_Dashboard populateProjectDashboard(PROJECT tenderPROJECT)
+        {
+            //select database locale
+            IBluePrintsEntitiesUnitOfWork bluePrintsEntitiesUnitOfWork;
+            if (tenderPROJECT.OfficeName == BluePrintsResources.OfficeMontreal)
+                bluePrintsEntitiesUnitOfWork = montrealBluePrintsUnitOfWork;
+            else
+                bluePrintsEntitiesUnitOfWork = perthBluePrintsUnitOfWork;
+            BASELINE projectLiveBaseline = bluePrintsEntitiesUnitOfWork.BASELINES.FirstOrDefault(x => x.STATUS == BaselineStatus.Live && x.GUID_PROJECT == tenderPROJECT.GUID);
+            PROGRESS projectDesignLiveProgress = bluePrintsEntitiesUnitOfWork.PROGRESSES.FirstOrDefault(x => x.GUID_PROJECT == tenderPROJECT.GUID && x.TYPE == PhaseType.Design && x.STATUS == ProgressStatus.Live);
+            if (projectLiveBaseline != null && projectDesignLiveProgress != null)
+            {
+                //retrieve data for dashboard
+                IQueryable<BASELINE_ITEM> projectDeliverables = bluePrintsEntitiesUnitOfWork.BASELINE_ITEMS.Where(x => x.GUID_BASELINE == projectLiveBaseline.GUID);
+                IEnumerable<VARIATION> approvedProjectVariations = bluePrintsEntitiesUnitOfWork.VARIATIONS.Where(x => x.GUID_PROJECT == tenderPROJECT.GUID);
+                IEnumerable<BASELINE_ITEMProgress> projectDeliverablesProgresses = ProgressQueries.OffsiteDirectProgressItemTransformation(projectDeliverables, tenderPROJECT, projectDesignLiveProgress, tenderPROJECT.RATE, projectDesignLiveProgress.PROGRESS_ITEM, approvedProjectVariations, false, null, DeliverableInternalNumberMode.Default).ToArray().AsEnumerable();
+
+                //construct dashboard
+                List<PROGRESS> progresses = new List<PROGRESS>();
+                progresses.Add(projectDesignLiveProgress);
+                PROJECT_Dashboard dashboard = new PROJECT_Dashboard(projectDeliverablesProgresses, progresses, tenderPROJECT.SUBJOB, tenderPROJECT.VARIATION, tenderPROJECT.NUMBER, 1, primeroUnitOfWork);
+                dashboard.BluePrintsEntitiesUnitOfWork = bluePrintsEntitiesUnitOfWork;
+                dashboard.Entity = tenderPROJECT;
+                dashboard.GUID = tenderPROJECT.GUID;
+
+                //time phasing of datapoints
+                List<StatsCalculationType> calcTypes = new List<StatsCalculationType>();
+                calcTypes.Add(StatsCalculationType.Planned);
+                dashboard.BuildStats(false, false, 1, false, false, false, calcTypes, false);
+
+                //populate tender profile items
+                TENDER_PROFILE tenderPROFILE = bluePrintsEntitiesUnitOfWork.TENDER_PROFILES.FirstOrDefault(x => x.GUID_PROJECT == tenderPROJECT.GUID);
+
+                if (tenderPROFILE != null)
+                {
+                    List<IReportable> reportables = ((SummaryStats)dashboard.Stats).Reportables.ToList();
+                    foreach (TENDER_PROFILE_ITEM tenderProfileItem in tenderPROFILE.TENDER_PROFILE_ITEM)
+                    {
+                        tenderProfileItem.Reportables = reportables.Where(x => x.Department_Guid == tenderProfileItem.GUID_DEPARTMENT && x.Discipline_Guid == tenderProfileItem.GUID_DISCIPLINE).ToList();
+                    }
+
+                    dashboard.TenderProfileItems = tenderPROFILE.TENDER_PROFILE_ITEM.ToList();
+                }
+
+                return dashboard;
+            }
+
+            return null;
         }
 
         protected override void AssignCallBacksAndRaisePropertyChange(IEnumerable<PROJECT_Dashboard> entities)
@@ -233,10 +252,7 @@ namespace BluePrints.ViewModels
             }
         }
 
-        /// <summary>
-        /// Influence column(s) when changes happens in other column
-        /// </summary>
-        public void CellValueChangedUpdate(CellValueChangedEventArgs e)
+        public void ParentCellValueChangedUpdate(CellValueChangedEventArgs e)
         {
             DataRowView dataRowView = (DataRowView)e.Row;
             if (e.RowHandle == GridControl.AutoFilterRowHandle)
@@ -245,42 +261,120 @@ namespace BluePrints.ViewModels
             //new item handling
             if (e.RowHandle == GridControl.NewItemRowHandle)
             {
+                //PROJECT_Dashboard newPROJECT;
+                //if (dataRowView[columnProject] == DBNull.Value)
+                //{
+                //    newPROJECT = new PROJECT_Dashboard();
+                //    dataRowView[columnProject] = newPROJECT;
+                //}
+                //else
+                //    newPROJECT = (PROJECT_Dashboard)dataRowView[columnProject];
 
-                PROJECT newPROJECT;
-                if (dataRowView[columnProject] == DBNull.Value)
-                {
-                    newPROJECT = new PROJECT();
-                    dataRowView[columnProject] = newPROJECT;
-                }
-                else
-                    newPROJECT = (PROJECT)dataRowView[columnProject];
-
-                return;
+                //return;
             }
 
             //existing item handling
-            MainViewModel.EntitiesUndoRedoManager.PauseActionId();
+            //MainViewModel.EntitiesUndoRedoManager.PauseActionId();
             string fieldName = e.Column.FieldName;
 
-            //commitCellValue(fieldName, dataRowView.Row, e.Value);
+            commitParentCellValue(e.Column.FieldName, dataRowView.Row, e.OldValue, e.Value);
             //MainViewModel.EntitiesUndoRedoManager.AddUndo(updatedForecastJobFromDataRow(dataRowView.Row), fieldName, e.OldValue, e.Value, EntityMessageType.Changed);
-            MainViewModel.EntitiesUndoRedoManager.UnpauseActionId();
+            //MainViewModel.EntitiesUndoRedoManager.UnpauseActionId();
 
             e.Handled = true;
         }
 
+        public void ChildCellValueChangedUpdate(CellValueChangedEventArgs e)
+        {
+            DataRowView dataRowView = (DataRowView)e.Row;
+            if (e.RowHandle == GridControl.AutoFilterRowHandle)
+                return;
+
+            //new item handling
+            if (e.RowHandle == GridControl.NewItemRowHandle)
+            {
+                //PROJECT_Dashboard newPROJECT;
+                //if (dataRowView[columnProject] == DBNull.Value)
+                //{
+                //    newPROJECT = new PROJECT_Dashboard();
+                //    dataRowView[columnProject] = newPROJECT;
+                //}
+                //else
+                //    newPROJECT = (PROJECT_Dashboard)dataRowView[columnProject];
+
+                //return;
+            }
+
+            //existing item handling
+            //MainViewModel.EntitiesUndoRedoManager.PauseActionId();
+            string fieldName = e.Column.FieldName;
+
+            commitChildCellValue(e.Column.FieldName, dataRowView.Row, e.OldValue, e.Value);
+            //MainViewModel.EntitiesUndoRedoManager.AddUndo(updatedForecastJobFromDataRow(dataRowView.Row), fieldName, e.OldValue, e.Value, EntityMessageType.Changed);
+            //MainViewModel.EntitiesUndoRedoManager.UnpauseActionId();
+
+            e.Handled = true;
+        }
+
+        protected virtual void commitParentCellValue(string fieldName, DataRow row, object oldValue, object newValue, bool skipSaveChangesAndRowUpdate = false)
+        {
+            PROJECT_Dashboard project = ((PROJECT_Dashboard)row[columnProject]);
+            IEnumerable<TENDER_PROFILE_ITEM> tenderProfileItems = project.TenderProfileItems;
+
+            fieldName = fieldName.Replace(columnProject + ".Entity.", "");
+        }
+
+        protected virtual void commitChildCellValue(string fieldName, DataRow row, object oldValue, object newValue, bool skipSaveChangesAndRowUpdate = false)
+        {
+            TENDER_PROFILE_ITEM tenderProfileItem = ((TENDER_PROFILE_ITEM)row[columnTenderProfile]);
+            PROJECT_Dashboard dashboard = tenderProfileItem.PROJECT_Dashboard;
+            string formattedFieldName = fieldName.Replace(columnTenderProfile + ".", "");
+            DataUtils.TrySetNestedValue(formattedFieldName, tenderProfileItem, newValue);
+
+            dashboard.BluePrintsEntitiesUnitOfWork.SaveChanges();
+
+            TENDER_PROFILE_ITEMSelectionViewModelWrapper tenderProfileSelectionViewModelWrapper = TENDER_PROFILE_ITEMSelectionViewModelWrapper.Create();
+            EntitiesParameter<PROJECT> entitiesParameter = new EntitiesParameter<PROJECT>(tenderProfileItem.PROJECT_Dashboard.Entity);
+            tenderProfileSelectionViewModelWrapper.SetParentViewModel(this);
+            tenderProfileSelectionViewModelWrapper.IsUsedAsPersistentViewModel = true;
+            tenderProfileSelectionViewModelWrapper.OnDataPointsCalculated = onDataPointsCalculated;
+            tenderProfileSelectionViewModelWrapper.OnParameterChange(entitiesParameter);
+            tenderProfileSelectionViewModelWrapper.OnEntitiesLoadedCallBack = onTenderProfileSelectionViewModelWrapperLoaded;
+            tenderProfileSelectionViewModelWrapper.OnEntitiesLoadedCallBackRelateParam = () => tenderProfileSelectionViewModelWrapper;
+        }
+
+        private void onTenderProfileSelectionViewModelWrapperLoaded(IEnumerable<TENDER_PROFILE_ITEM> tenderProfileItems, object invocationParent)
+        {
+            TENDER_PROFILE_ITEMSelectionViewModelWrapper tenderProfileSelectionViewModelWrapper = (TENDER_PROFILE_ITEMSelectionViewModelWrapper)invocationParent;
+            tenderProfileSelectionViewModelWrapper.PopulateTenderDeliverables();
+        }
+
+        private void onDataPointsCalculated(PROJECT project)
+        {
+            //find project dashboard
+            PROJECT_Dashboard projectDashboard = Entities.FirstOrDefault(x => x.GUID == project.GUID);
+            if (projectDashboard != null)
+            {
+                projectDashboard = populateProjectDashboard(projectDashboard.Entity);
+                BuildRowStats(projectDashboard, true);
+            }
+        }
+
         public override string UnifiedValueValidation(PROJECT_Dashboard projection, string field_name, object new_value, bool isPaste)
         {
-            throw new NotImplementedException();
+            return string.Empty;
+            //throw new NotImplementedException();
         }
 
         public override string UnifiedRowValidation(PROJECT_Dashboard projection)
         {
-            throw new NotImplementedException();
+            return string.Empty;
+            //throw new NotImplementedException();
         }
         #endregion
 
         #region View Properties
+        public bool ShowDayOnDate { get; set; }
         DataTable dataPointsTable = null;
         protected string columnProject = "Project";
         protected string columnTenderProfile = "TenderProfiles";
@@ -390,6 +484,10 @@ namespace BluePrints.ViewModels
             if (dataPointsTable == null)
                 return;
 
+            string s;
+            if (entity.Entity.NUMBER == "09602")
+                s = string.Empty;
+
             DataRow newDataRow;
             if (!isUpdate)
             {
@@ -398,7 +496,7 @@ namespace BluePrints.ViewModels
             else
             {
                 newDataRow = (from DataRow dr in dataPointsTable.Rows
-                              where ((PROJECT)dr[columnProject]).GUID == entity.GUID
+                              where ((PROJECT_Dashboard)dr[columnProject]).GUID == entity.GUID
                               select dr).FirstOrDefault();
             }
 
@@ -413,13 +511,13 @@ namespace BluePrints.ViewModels
                 if (columnName != columnProject && columnName != columnTenderProfileDataTable)
                 {
                     DateTime columnDate = DateTime.Parse(columnName);
-                    List<Common.ViewModel.Reporting.DataPoint> currentPeriodDataPoints;
+                    IEnumerable<Common.ViewModel.Reporting.DataPoint> currentPeriodDataPoints;
                     if (entity.Stats.Budgeted.DataPoints != null)
-                        currentPeriodDataPoints = entity.Stats.Budgeted.DataPoints.Where(x => x.ProgressDate.Year == columnDate.Year && x.ProgressDate.Month == columnDate.Month).ToList();
+                        currentPeriodDataPoints = entity.Stats.Budgeted.DataPoints.Where(x => x.ProgressDate.Year == columnDate.Year && x.ProgressDate.Month == columnDate.Month);
                     else
                         currentPeriodDataPoints = new List<Common.ViewModel.Reporting.DataPoint>();
 
-                    if (currentPeriodDataPoints.Count > 0)
+                    if (currentPeriodDataPoints.Count() > 0)
                         newDataRow[columnName] = currentPeriodDataPoints.Sum(x => x.Units);
                     else
                         newDataRow[columnName] = 0.00m;
@@ -442,8 +540,32 @@ namespace BluePrints.ViewModels
                 foreach (TENDER_PROFILE_ITEM tenderProfileItem in entity.TenderProfileItems)
                 {
                     DataRow tenderProfileDataRow = tenderProfilesDataPointsTable.NewRow();
+
+                    //set project dashboard so that cell edit can easily reference back parent object
+                    tenderProfileItem.PROJECT_Dashboard = entity;
                     tenderProfileDataRow[columnTenderProfile] = tenderProfileItem;
                     tenderProfilesDataPointsTable.Rows.Add(tenderProfileDataRow);
+
+                    List<Common.ViewModel.Reporting.DataPoint> profileItemDataPoints = tenderProfileItem.Reportables.Where(x => x.Stats != null && x.Stats.Budgeted != null && x.Stats.Budgeted.DataPoints != null).SelectMany(x => x.Stats.Budgeted.DataPoints).ToList();
+                    //format dates row to numbers
+                    for (int i = 0; i < tenderProfileDataRow.ItemArray.Count(); i++)
+                    {
+                        string columnName = tenderProfilesDataPointsTable.Columns[i].ColumnName;
+                        if (columnName != columnTenderProfile)
+                        {
+                            DateTime columnDate = DateTime.Parse(columnName);
+                            IEnumerable<Common.ViewModel.Reporting.DataPoint> currentPeriodDataPoints;
+                            if (tenderProfileItem.Reportables != null)
+                                currentPeriodDataPoints = profileItemDataPoints.Where(x => x.ProgressDate.Year == columnDate.Year && x.ProgressDate.Month == columnDate.Month);
+                            else
+                                currentPeriodDataPoints = new List<Common.ViewModel.Reporting.DataPoint>();
+
+                            if (currentPeriodDataPoints.Count() > 0)
+                                tenderProfileDataRow[columnName] = currentPeriodDataPoints.Sum(x => x.Units);
+                            else
+                                tenderProfileDataRow[columnName] = 0.00m;
+                        }
+                    }
                 }
 
             newDataRow[columnTenderProfileDataTable] = tenderProfilesDataPointsTable;
@@ -459,14 +581,14 @@ namespace BluePrints.ViewModels
 
             columns.Add(new ColumnDescriptor() { FieldName = columnProject + ".Entity.NUMBER", ReadOnly = true, Header = "Number", Fixed = FixedStyle.Left, Width = 50, Settings = SettingsType.Default });
             summaries.Add(new SummaryDescriptor() { FieldName = columnProject + ".Entity.NUMBER", DisplayFormat = "{0} Record(s)", Type = SummaryItemType.Count });
-            columns.Add(new ColumnDescriptor() { FieldName = columnProject + ".Entity.NAME", ReadOnly = true, Header = "Name", Fixed = FixedStyle.Left, Width = 200, Settings = SettingsType.Default });
+            columns.Add(new ColumnDescriptor() { FieldName = columnProject + ".Entity.NAME", ReadOnly = true, Header = "Name", Fixed = FixedStyle.Left, Width = 100, Settings = SettingsType.Default });
             columns.Add(new ColumnDescriptor() { FieldName = columnProject + ".Entity.STATUS", Header = "Status", Fixed = FixedStyle.Left, Width = 70, Settings = SettingsType.Enum1 });
             columns.Add(new ColumnDescriptor() { FieldName = columnProject + ".Entity.PIPELINE_TYPE", Header = "Type", Fixed = FixedStyle.Left, Width = 70, Settings = SettingsType.Enum2 });
             columns.Add(new ColumnDescriptor() { FieldName = columnProject + ".Entity.PIPELINE_DIVISION", Header = "Division", Fixed = FixedStyle.Left, Width = 70, Settings = SettingsType.Enum3 });
             columns.Add(new ColumnDescriptor() { FieldName = columnProject + ".Entity.PIPELINE_COMMODITY", Header = "Commodity", Fixed = FixedStyle.Left, Width = 70, Settings = SettingsType.Enum4 });
             columns.Add(new ColumnDescriptor() { FieldName = columnProject + ".Entity.PIPELINE_CONTRACT", Header = "Contract", Fixed = FixedStyle.Left, Width = 70, Settings = SettingsType.Enum5 });
             columns.Add(new ColumnDescriptor() { FieldName = columnProject + ".Entity.PIPELINE_STATUS", Header = "Status", Fixed = FixedStyle.Left, Width = 70, Settings = SettingsType.Enum6 });
-            columns.Add(new ColumnDescriptor() { FieldName = columnProject + ".Entity.TENDER_PROJECT_START", Header = "Start Date", ReadOnly = false, Fixed = FixedStyle.Left, Width = 70, Settings = SettingsType.Date });
+            columns.Add(new ColumnDescriptor() { FieldName = columnProject + ".Entity.TENDER_PROJECT_START", Header = "Start Date", ReadOnly = false, Fixed = FixedStyle.Left, Width = 100, Settings = SettingsType.Date });
             columns.Add(new ColumnDescriptor() { FieldName = columnProject + ".Entity.TENDER_PROJECT_DURATION", ReadOnly = false, Visible = true, Header = "Duration", Mask = "###,##0 Weeks", Increment = 1, Fixed = FixedStyle.Left, Width = 75, Settings = SettingsType.Number });
             columns.Add(new ColumnDescriptor() { FieldName = columnProject + ".Entity.PIPELINE_GROSS_PROFIT", ReadOnly = false, Visible = true, Header = "Gross Profit", Mask = "c2", Increment = 1, Fixed = FixedStyle.Left, Width = 75, Settings = SettingsType.Number });
             columns.Add(new ColumnDescriptor() { FieldName = columnProject + ".Entity.PIPELINE_TOTAL_VALUE", ReadOnly = false, Visible = true, Header = "Total Value", Mask = "c2", Increment = 1, Fixed = FixedStyle.Left, Width = 75, Settings = SettingsType.Number });
@@ -475,7 +597,7 @@ namespace BluePrints.ViewModels
             foreach (DateTime alignedDate in alignedDates.OrderBy(x => x))
             {
                 string columnFieldName = alignedDate.Date.ToString(BluePrintsResources.ColumnDateFormat);
-                columns.Add(new ColumnDescriptor() { FieldName = columnFieldName, Mask = "n0", ReadOnly = true, Header = columnFieldName, Fixed = FixedStyle.Left, Width = 60, Settings = SettingsType.Number });
+                columns.Add(new ColumnDescriptor() { FieldName = columnFieldName, Mask = "n0", ReadOnly = true, Header = columnFieldName, Width = 60, Settings = SettingsType.Number });
                 summaries.Add(new SummaryDescriptor() { FieldName = columnFieldName, DisplayFormat = "n0", Type = SummaryItemType.Sum });
             }
         }
@@ -486,16 +608,16 @@ namespace BluePrints.ViewModels
             summaries.Clear();
 
             columns.Add(new ColumnDescriptor() { FieldName = columnTenderProfile + ".GUID_DEPARTMENT", Header = "Department", DisplayMember = "NAME", ValueMember = "GUID", Fixed = FixedStyle.Left, Width = 70, ItemsSource = DEPARTMENTCollection, Settings = SettingsType.Collection });
-            columns.Add(new ColumnDescriptor() { FieldName = columnTenderProfile + ".GUID_DISCIPLINE", Header = "Discipline", DisplayMember = "NAME", ValueMember = "GUID", Fixed = FixedStyle.Left, Width = 70, ItemsSource = DISCIPLINECollection, Settings = SettingsType.Collection });
-            columns.Add(new ColumnDescriptor() { FieldName = columnTenderProfile + ".HOURS_PERCENTAGE", Header = "Hours %", Mask = "p2", Increment = 0.1m, Fixed = FixedStyle.Left, Width = 75, Settings = SettingsType.Number });
-            columns.Add(new ColumnDescriptor() { FieldName = columnTenderProfile + ".SCHEDULE_START_PERCENTAGE", Header = "Schedule Start %", Mask = "p2", Increment = 0.1m, Fixed = FixedStyle.Left, Width = 75, Settings = SettingsType.Number });
-            columns.Add(new ColumnDescriptor() { FieldName = columnTenderProfile + ".SCHEDULE_FINISH_PERCENTAGE", Header = "Schedule Finish %", Mask = "p2", Increment = 0.1m, Fixed = FixedStyle.Left, Width = 75, Settings = SettingsType.Number });
-            columns.Add(new ColumnDescriptor() { FieldName = columnTenderProfile + ".BELLCURVESHAPE", Header = "Bell Curve", Fixed = FixedStyle.Left, Width = 70, ItemsSource = BellCurveShapeCollection, Settings = SettingsType.Collection });
+            columns.Add(new ColumnDescriptor() { FieldName = columnTenderProfile + ".GUID_DISCIPLINE", Tag = "Start Date", Header = "Discipline", DisplayMember = "NAME", ValueMember = "GUID", Fixed = FixedStyle.Left, Width = 70, ItemsSource = DISCIPLINECollection, Settings = SettingsType.Collection });
+            columns.Add(new ColumnDescriptor() { FieldName = columnTenderProfile + ".HOURS_PERCENTAGE", Tag = "Duration", Header = "Hours %", Mask = "p2", Increment = 0.1m, Fixed = FixedStyle.Left, Width = 75, Settings = SettingsType.Number });
+            columns.Add(new ColumnDescriptor() { FieldName = columnTenderProfile + ".SCHEDULE_START_PERCENTAGE", Tag = "Gross Profit", Header = "Schedule Start %", Mask = "p2", Increment = 0.1m, Fixed = FixedStyle.Left, Width = 75, Settings = SettingsType.Number });
+            columns.Add(new ColumnDescriptor() { FieldName = columnTenderProfile + ".SCHEDULE_FINISH_PERCENTAGE", Tag = "Total Value", Header = "Schedule Finish %", Mask = "p2", Increment = 0.1m, Fixed = FixedStyle.Left, Width = 75, Settings = SettingsType.Number });
+            columns.Add(new ColumnDescriptor() { FieldName = columnTenderProfile + ".BELLCURVESHAPE", Tag = "Scope %", Header = "Bell Curve", Fixed = FixedStyle.Left, Width = 70, ItemsSource = BellCurveShapeCollection, Settings = SettingsType.Collection });
 
             foreach (DateTime alignedDate in alignedDates.OrderBy(x => x))
             {
                 string columnFieldName = alignedDate.Date.ToString(BluePrintsResources.ColumnDateFormat);
-                columns.Add(new ColumnDescriptor() { FieldName = columnFieldName, Mask = "n0", ReadOnly = true, Header = columnFieldName, Fixed = FixedStyle.Left, Width = 60, Settings = SettingsType.Number });
+                columns.Add(new ColumnDescriptor() { FieldName = columnFieldName, Mask = "n0", ReadOnly = true, Header = columnFieldName, Tag = columnFieldName, Width = 60, Settings = SettingsType.Number });
                 summaries.Add(new SummaryDescriptor() { FieldName = columnFieldName, DisplayFormat = "n0", Type = SummaryItemType.Sum });
             }
         }

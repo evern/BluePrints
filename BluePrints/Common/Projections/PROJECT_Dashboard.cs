@@ -92,6 +92,9 @@ namespace BluePrints.Common.Projections
         public List<DashboardFlatStructure> Subjob_Dashboards { get; set; }
         public List<Dashboard_Export_Data_Point> Export_Data { get; set; }
         public bool IHaveSubjob_Dashboards { get { return Subjob_TreeDashboards != null && Subjob_TreeDashboards.Count > 0; } }
+
+        //for project plan tender profile saving
+        public IBluePrintsEntitiesUnitOfWork BluePrintsEntitiesUnitOfWork { get; set; }
     }
 
     public static class DashboardQueries

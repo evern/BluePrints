@@ -52,8 +52,7 @@ namespace BluePrints.ViewModels
 
         #region Database Operations
 
-        private IUnitOfWorkFactory<IBluePrintsEntitiesUnitOfWork> bluePrintsUnitOfWorkFactory =
-            BluePrintsEntitiesUnitOfWorkSource.GetUnitOfWorkFactory();
+        private IUnitOfWorkFactory<IBluePrintsEntitiesUnitOfWork> bluePrintsUnitOfWorkFactory = BluePrintsEntitiesUnitOfWorkSource.GetUnitOfWorkFactory();
         private Action<object> navigateCoreCommand;
         BackgroundWorker backgroundWorker = new BackgroundWorker();
         protected IPrimeroEntitiesUnitOfWork primeroPerthUnitOfWork = PrimeroEntitiesUnitOfWorkSource.GetUnitOfWorkFactory().CreateUnitOfWork();

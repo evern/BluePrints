@@ -295,6 +295,8 @@ namespace BluePrints.Data
 
         public string Department_Code => DEPARTMENT == null ? string.Empty : DEPARTMENT.CODE;
 
+        public Guid? Department_Guid => DEPARTMENT == null ? (Guid?)null : DEPARTMENT.GUID;
+
         public string Discipline_Code
         {
             get

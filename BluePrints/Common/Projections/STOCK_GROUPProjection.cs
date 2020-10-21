@@ -116,6 +116,8 @@ namespace BluePrints.Common.Projections
 
         public string Department_Code => string.Empty;
 
+        public Guid? Department_Guid => (Guid?)null;
+
         public Guid? Phase_Guid { get; set; }
 
         public Guid? Discipline_Guid => throw new NotImplementedException();
