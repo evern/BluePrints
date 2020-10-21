@@ -26,7 +26,7 @@ using System.Linq;
 
 namespace BluePrints.ViewModels
 {
-    public class PROJECTPlanViewModelWrapper : DashboardViewModelWrapper<PROJECT, PROJECT_Dashboard, Guid, IBluePrintsEntitiesUnitOfWork>
+    public class PROJECTPlanViewModelWrapper : BluePrintsEntitiesCollectionWrapper<PROJECT, PROJECTTenderProfile, Guid, IBluePrintsEntitiesUnitOfWork>
     {
         /// <summary>
         /// Creates a new instance of PROJECTPlanCollectionViewModelWrapper as a POCO view model.
@@ -68,59 +68,29 @@ namespace BluePrints.ViewModels
 
         protected override void addEntitiesLoader()
         {
-            loaderCollection.AddLoaderDescription<TENDER_PROFILE_ITEM, TENDER_PROFILE_ITEM, Guid, IBluePrintsEntitiesUnitOfWork>(perthBluePrintsUnitOfWorkFactory, x => x.TENDER_PROFILE_ITEMS);
             loaderCollection.AddLoaderDescription<DEPARTMENT, DEPARTMENT, Guid, IBluePrintsEntitiesUnitOfWork>(perthBluePrintsUnitOfWorkFactory, x => x.DEPARTMENTS);
             loaderCollection.AddLoaderDescription<DISCIPLINE, DISCIPLINE, Guid, IBluePrintsEntitiesUnitOfWork>(perthBluePrintsUnitOfWorkFactory, x => x.DISCIPLINES);
         }
-
-        private Func<IRepositoryQuery<BASELINE>, IQueryable<BASELINE>> BASELINEProjectionFunc()
-        {
-            return query => query.Where(x => x.STATUS == BaselineStatus.Live).OrderBy(x => x.REVISION);
-        }
-
-        private Func<IRepositoryQuery<ESTIMATE>, IQueryable<ESTIMATE>> ESTIMATEProjectionFunc()
-        {
-            return query => query.Where(x => x.STATUS == BaselineStatus.Live).OrderBy(x => x.REVISION);
-        }
-
-        private Func<IRepositoryQuery<PROGRESS>, IQueryable<PROGRESS>> PROGRESSProjectionFunc()
-        {
-            return query => query.Where(x => x.STATUS == ProgressStatus.Live).OrderBy(x => x.STATUS);
-        }
-
-        private Func<IRepositoryQuery<PROGRESS_ITEM>, IQueryable<PROGRESS_ITEM>> PROGRESS_ITEMProjectionFunc()
-        {
-            return query => query.Where(x => x.PROGRESS.STATUS == ProgressStatus.Live);
-        }
-
-        private Func<IRepositoryQuery<RATE>, IQueryable<RATE>> RATEProjectionFunc()
-        {
-            return query => query.OrderBy(x => x.RATE1);
-        }
-
-        private Func<IRepositoryQuery<VARIATION>, IQueryable<VARIATION>> VARIATIONProjectionFunc()
-        {
-            return query => query.OrderBy(x => x.NAME);
-        }
-
+        
         protected override void onAuxiliaryEntitiesCollectionLoaded()
         {
             CreateMainViewModel(perthBluePrintsUnitOfWorkFactory, x => x.PROJECTS);
         }
 
-        protected override Func<IRepositoryQuery<PROJECT>, IQueryable<PROJECT_Dashboard>> specifyMainViewModelProjection()
+        protected override Func<IRepositoryQuery<PROJECT>, IQueryable<PROJECTTenderProfile>> specifyMainViewModelProjection()
         {
             return query => populatePROJECTPlanProject(query);
         }
 
-        private IQueryable<PROJECT_Dashboard> populatePROJECTPlanProject(IQueryable<PROJECT> query)
+        private IQueryable<PROJECTTenderProfile> populatePROJECTPlanProject(IQueryable<PROJECT> query)
         {
-            List<PROJECT> tenderPROJECTS = query.Where(x => (x.STATUS == ProjectStatus.Lead || x.STATUS == ProjectStatus.Tender || x.STATUS == ProjectStatus.TenderSubmitted)).ToList();
-            List<PROJECT_Dashboard> returnPROJECTS = new List<PROJECT_Dashboard>();
+            List<PROJECT> tenderPROJECTS = query.Where(x => x.NUMBER == "09602" && (x.STATUS == ProjectStatus.Lead || x.STATUS == ProjectStatus.Tender || x.STATUS == ProjectStatus.TenderSubmitted)).ToList();
+            List<PROJECTTenderProfile> returnPROJECTS = new List<PROJECTTenderProfile>();
 
+            alignedDateCollection = generateDates(tenderPROJECTS);
             foreach (PROJECT tenderPROJECT in tenderPROJECTS)
             {
-                PROJECT_Dashboard projectDashboard = populateProjectDashboard(tenderPROJECT);
+                PROJECTTenderProfile projectDashboard = populateTenderProfiles(tenderPROJECT);
                 if (projectDashboard != null)
                     returnPROJECTS.Add(projectDashboard);
             }
@@ -128,7 +98,7 @@ namespace BluePrints.ViewModels
             return returnPROJECTS.AsQueryable();
         }
 
-        private PROJECT_Dashboard populateProjectDashboard(PROJECT tenderPROJECT)
+        private PROJECTTenderProfile populateTenderProfiles(PROJECT tenderPROJECT)
         {
             //select database locale
             IBluePrintsEntitiesUnitOfWork bluePrintsEntitiesUnitOfWork;
@@ -140,45 +110,29 @@ namespace BluePrints.ViewModels
             PROGRESS projectDesignLiveProgress = bluePrintsEntitiesUnitOfWork.PROGRESSES.FirstOrDefault(x => x.GUID_PROJECT == tenderPROJECT.GUID && x.TYPE == PhaseType.Design && x.STATUS == ProgressStatus.Live);
             if (projectLiveBaseline != null && projectDesignLiveProgress != null)
             {
-                //retrieve data for dashboard
-                IQueryable<BASELINE_ITEM> projectDeliverables = bluePrintsEntitiesUnitOfWork.BASELINE_ITEMS.Where(x => x.GUID_BASELINE == projectLiveBaseline.GUID);
-                IEnumerable<VARIATION> approvedProjectVariations = bluePrintsEntitiesUnitOfWork.VARIATIONS.Where(x => x.GUID_PROJECT == tenderPROJECT.GUID);
-                IEnumerable<BASELINE_ITEMProgress> projectDeliverablesProgresses = ProgressQueries.OffsiteDirectProgressItemTransformation(projectDeliverables, tenderPROJECT, projectDesignLiveProgress, tenderPROJECT.RATE, projectDesignLiveProgress.PROGRESS_ITEM, approvedProjectVariations, false, null, DeliverableInternalNumberMode.Default).ToArray().AsEnumerable();
-
-                //construct dashboard
-                List<PROGRESS> progresses = new List<PROGRESS>();
-                progresses.Add(projectDesignLiveProgress);
-                PROJECT_Dashboard dashboard = new PROJECT_Dashboard(projectDeliverablesProgresses, progresses, tenderPROJECT.SUBJOB, tenderPROJECT.VARIATION, tenderPROJECT.NUMBER, 1, primeroUnitOfWork);
-                dashboard.BluePrintsEntitiesUnitOfWork = bluePrintsEntitiesUnitOfWork;
-                dashboard.Entity = tenderPROJECT;
-                dashboard.GUID = tenderPROJECT.GUID;
-
-                //time phasing of datapoints
-                List<StatsCalculationType> calcTypes = new List<StatsCalculationType>();
-                calcTypes.Add(StatsCalculationType.Planned);
-                dashboard.BuildStats(false, false, 1, false, false, false, calcTypes, false);
+                PROJECTTenderProfile PROJECTTenderProfile = new PROJECTTenderProfile();
+                PROJECTTenderProfile.BluePrintsEntitiesUnitOfWork = bluePrintsEntitiesUnitOfWork;
+                PROJECTTenderProfile.Entity = tenderPROJECT;
+                PROJECTTenderProfile.GUID = tenderPROJECT.GUID;
 
                 //populate tender profile items
                 TENDER_PROFILE tenderPROFILE = bluePrintsEntitiesUnitOfWork.TENDER_PROFILES.FirstOrDefault(x => x.GUID_PROJECT == tenderPROJECT.GUID);
 
                 if (tenderPROFILE != null)
                 {
-                    List<IReportable> reportables = ((SummaryStats)dashboard.Stats).Reportables.ToList();
-                    foreach (TENDER_PROFILE_ITEM tenderProfileItem in tenderPROFILE.TENDER_PROFILE_ITEM)
-                    {
-                        tenderProfileItem.Reportables = reportables.Where(x => x.Department_Guid == tenderProfileItem.GUID_DEPARTMENT && x.Discipline_Guid == tenderProfileItem.GUID_DISCIPLINE).ToList();
-                    }
-
-                    dashboard.TenderProfileItems = tenderPROFILE.TENDER_PROFILE_ITEM.ToList();
+                    PROJECTTenderProfile.TenderProfile = tenderPROFILE;
+                    PROJECTTenderProfile.TENDER_PROFILE_ITEMS = tenderPROFILE.TENDER_PROFILE_ITEM.ToList();
+                    PROJECTTenderProfile.TENDER_PROFILE_ITEMS.ForEach(x => x.PROJECTTenderProfile = PROJECTTenderProfile);
+                    populateDataPoints(PROJECTTenderProfile);
                 }
 
-                return dashboard;
+                return PROJECTTenderProfile;
             }
 
             return null;
         }
 
-        protected override void AssignCallBacksAndRaisePropertyChange(IEnumerable<PROJECT_Dashboard> entities)
+        protected override void AssignCallBacksAndRaisePropertyChange(IEnumerable<PROJECTTenderProfile> entities)
         {
             MainViewModel.OnAfterProjectionSavedCallBack = onAfterEntitySaved;
             MainViewModel.SetParentViewModel(this);
@@ -187,18 +141,132 @@ namespace BluePrints.ViewModels
         #endregion
 
         #region Helpers
+        private void populateDataPoints(PROJECTTenderProfile PROJECTTenderProfile)
+        {                
+            DateTime startDate = (DateTime)PROJECTTenderProfile.Entity.TENDER_PROJECT_START;
+            decimal tenderDuration = (decimal)PROJECTTenderProfile.Entity.TENDER_PROJECT_DURATION;
+            int totalDurationInDays = Convert.ToInt32(tenderDuration * 7);
+            DateTime endDate = startDate.AddDays(totalDurationInDays);
 
-        private List<DateTime> generateDates(IEnumerable<PROJECT_Dashboard> PROJECTS)
+            //always start from zero since we are generating forecast from the beginning
+            double beginPercentage = 0;
+            foreach (TENDER_PROFILE_ITEM TENDER_PROFILE_ITEM in PROJECTTenderProfile.TENDER_PROFILE_ITEMS)
+            {
+                decimal assignHours = PROJECTTenderProfile.TenderProfile.TENDER_HOURS * TENDER_PROFILE_ITEM.HOURS_PERCENTAGE;
+                //pro-rate the dates of the deliverable based on tender item
+                int startProrateDurationInDays = Convert.ToInt32(totalDurationInDays * TENDER_PROFILE_ITEM.SCHEDULE_START_PERCENTAGE);
+                DateTime proRatedStartDate = startDate.AddDays(startProrateDurationInDays);
+                proRatedStartDate = new DateTime(proRatedStartDate.Year, proRatedStartDate.Month, 1);
+                int endProrateDurationInDays = Convert.ToInt32(totalDurationInDays * (1 - TENDER_PROFILE_ITEM.SCHEDULE_FINISH_PERCENTAGE));
+                DateTime proRatedEndDate = endDate.AddDays(-1 * endProrateDurationInDays);
+                proRatedEndDate = new DateTime(proRatedEndDate.Year, proRatedEndDate.Month, 1);
+                proRatedEndDate = proRatedEndDate.AddMonths(1).AddDays(-1);
+
+                Tuple<double, double> bellCurveProfile = getBellCurveProfile((BellCurveShape)TENDER_PROFILE_ITEM.BELLCURVESHAPE);
+                List<BellCurvePeriodDate> bellCurvePeriodDates = getBellCurvePeriodDates(proRatedStartDate, proRatedEndDate);
+                double totalPeriod = bellCurvePeriodDates.Count;
+                decimal numberOfMonths = getNumberOfMonths(startDate, endDate);
+                decimal hoursPerPeriod = assignHours / numberOfMonths;
+
+                TENDER_PROFILE_ITEM.DataPoints = new List<Common.ViewModel.Reporting.DataPoint>();
+                foreach (BellCurvePeriodDate bellCurvePeriodDate in bellCurvePeriodDates)
+                {
+                    double bellCurveProRate = betaPer(bellCurveProfile.Item1, bellCurveProfile.Item2, bellCurvePeriodDate.PeriodNumber, totalPeriod, beginPercentage);
+                    decimal bellCurveProRateDecimal = Convert.ToDecimal(bellCurveProRate);
+                    Common.ViewModel.Reporting.DataPoint dataPoint = new Common.ViewModel.Reporting.DataPoint();
+                    dataPoint.ProgressDate = bellCurvePeriodDate.PeriodDate;
+                    dataPoint.Units = hoursPerPeriod * bellCurveProRateDecimal;
+                    TENDER_PROFILE_ITEM.DataPoints.Add(dataPoint);
+                }
+            }
+        }
+
+        private List<BellCurvePeriodDate> getBellCurvePeriodDates(DateTime startDate, DateTime endDate)
+        {
+            List<BellCurvePeriodDate> bellCurvePeriodDates = new List<BellCurvePeriodDate>();
+            double period = 1;
+            foreach (DateTime alignedDateTime in alignedDateCollection)
+            {
+                if((alignedDateTime >= startDate) && (alignedDateTime < endDate))
+                {
+                    BellCurvePeriodDate bellCurvePeriodDate = new BellCurvePeriodDate() { PeriodDate = alignedDateTime, PeriodNumber = period };
+                    bellCurvePeriodDates.Add(bellCurvePeriodDate);
+                    period += 1;
+                }
+            }
+
+            return bellCurvePeriodDates;
+        }
+
+        private decimal getNumberOfMonths(DateTime startDate, DateTime endDate)
+        {
+            return ((endDate.Year - startDate.Year) * 12) + endDate.Month - startDate.Month;
+        }
+
+        private Tuple<double, double> getBellCurveProfile(BellCurveShape bellCurveShape)
+        {
+            double A = 0;
+            double B = 0;
+            if (bellCurveShape == BellCurveShape.BackLoaded1)
+                return new Tuple<double, double>(0.75, 0.25);
+            else if (bellCurveShape == BellCurveShape.BackLoaded2)
+                return new Tuple<double, double>(0.5, 0.5);
+            else if (bellCurveShape == BellCurveShape.Balanced)
+                return new Tuple<double, double>(0.5, 0);
+            else if (bellCurveShape == BellCurveShape.FrontLoaded1)
+                return new Tuple<double, double>(0, 0.5);
+            else
+                return new Tuple<double, double>(0, 0.25);
+        }
+
+        private double betaPer(double A, double B, double periodNum, double totalPeriod, double beginPercentage)
+        {
+            double remainingPercentage = 1 - beginPercentage;
+            if (remainingPercentage == 0)
+                return 0;
+
+            double inflatedTotalPeriod = totalPeriod / remainingPercentage;
+            double absoluteStartPeriod = beginPercentage * inflatedTotalPeriod;
+            double currentStartPeriod = absoluteStartPeriod + periodNum;
+
+            if (inflatedTotalPeriod == 0)
+                return 0;
+
+            double betaTotal = betaCum(A, B, 1) - betaCum(A, B, (absoluteStartPeriod / inflatedTotalPeriod));
+            double betaThisPeriod = betaCum(A, B, currentStartPeriod / inflatedTotalPeriod);
+            double betaPreviousPeriod = betaCum(A, B, (currentStartPeriod - 1) / inflatedTotalPeriod);
+            double returnValue = betaThisPeriod - betaPreviousPeriod;
+
+            return returnValue / betaTotal;
+        }
+
+        private double betaCum(double A, double B, double T)
+        {
+            if (T < 0)
+                return 0;
+            else
+            {
+                if (T >= 1)
+                    return 1;
+                else
+                {
+                    double minusT = 1 - T;
+                    return 10 * (Math.Pow(T, 2)) * (Math.Pow(1 - T, 2)) * (A + B * T) + Math.Pow(T, 4) * (5 - (4 * T));
+                }
+            }
+        }
+
+        private List<DateTime> generateDates(IEnumerable<PROJECT> PROJECTS)
         {
             DateTime startDate = new DateTime(DateTime.Now.Year, DateTime.Now.Month, 1);
             DateTime endDate = startDate.AddMonths(1);
 
-            foreach (PROJECT_Dashboard PROJECT in PROJECTS)
+            foreach (PROJECT PROJECT in PROJECTS)
             {
-                if (PROJECT.Entity.TENDER_PROJECT_START != null)
+                if (PROJECT.TENDER_PROJECT_START != null)
                 {
-                    DateTime PROJECTPlanStartDate = ((DateTime)PROJECT.Entity.TENDER_PROJECT_START);
-                    int duration = PROJECT.Entity.TENDER_PROJECT_DURATION == null ? 1 : (int)PROJECT.Entity.TENDER_PROJECT_DURATION;
+                    DateTime PROJECTPlanStartDate = ((DateTime)PROJECT.TENDER_PROJECT_START);
+                    int duration = PROJECT.TENDER_PROJECT_DURATION == null ? 1 : (int)PROJECT.TENDER_PROJECT_DURATION;
                     DateTime PROJECTPlanEndDate = PROJECTPlanStartDate.AddDays(duration * 7);
                     if (startDate > PROJECTPlanStartDate)
                         startDate = new DateTime(PROJECTPlanStartDate.Year, PROJECTPlanStartDate.Month, 1);
@@ -209,10 +277,12 @@ namespace BluePrints.ViewModels
 
             return ChronologicalHelpers.GenerateEndDatesCollection(startDate, endDate);
         }
+
+
         #endregion
 
         #region Saving Behavior
-        private void onAfterEntitySaved(PROJECT_Dashboard projection, PROJECT entity, bool isNewEntity)
+        private void onAfterEntitySaved(PROJECTTenderProfile projection, PROJECT entity, bool isNewEntity)
         {
             onAfterPROJECTPlanSaved(entity);
         }
@@ -242,7 +312,7 @@ namespace BluePrints.ViewModels
         public override void ValidateRow(GridRowValidationEventArgs e)
         {
             DataRow dataRow = ((DataRowView)e.Row).Row;
-            string errorMessage = UnifiedRowValidation((PROJECT_Dashboard)dataRow[columnProject]);
+            string errorMessage = UnifiedRowValidation((PROJECTTenderProfile)dataRow[columnProject]);
 
             if (errorMessage != string.Empty)
             {
@@ -318,8 +388,8 @@ namespace BluePrints.ViewModels
 
         protected virtual void commitParentCellValue(string fieldName, DataRow row, object oldValue, object newValue, bool skipSaveChangesAndRowUpdate = false)
         {
-            PROJECT_Dashboard project = ((PROJECT_Dashboard)row[columnProject]);
-            IEnumerable<TENDER_PROFILE_ITEM> tenderProfileItems = project.TenderProfileItems;
+            PROJECTTenderProfile project = ((PROJECTTenderProfile)row[columnProject]);
+            IEnumerable<TENDER_PROFILE_ITEM> tenderProfileItems = project.TENDER_PROFILE_ITEMS;
 
             fieldName = fieldName.Replace(columnProject + ".Entity.", "");
         }
@@ -327,20 +397,20 @@ namespace BluePrints.ViewModels
         protected virtual void commitChildCellValue(string fieldName, DataRow row, object oldValue, object newValue, bool skipSaveChangesAndRowUpdate = false)
         {
             TENDER_PROFILE_ITEM tenderProfileItem = ((TENDER_PROFILE_ITEM)row[columnTenderProfile]);
-            PROJECT_Dashboard dashboard = tenderProfileItem.PROJECT_Dashboard;
+            PROJECTTenderProfile PROJECTTenderProfile = tenderProfileItem.PROJECTTenderProfile;
             string formattedFieldName = fieldName.Replace(columnTenderProfile + ".", "");
             DataUtils.TrySetNestedValue(formattedFieldName, tenderProfileItem, newValue);
+            PROJECTTenderProfile.BluePrintsEntitiesUnitOfWork.SaveChanges();
 
-            dashboard.BluePrintsEntitiesUnitOfWork.SaveChanges();
-
-            TENDER_PROFILE_ITEMSelectionViewModelWrapper tenderProfileSelectionViewModelWrapper = TENDER_PROFILE_ITEMSelectionViewModelWrapper.Create();
-            EntitiesParameter<PROJECT> entitiesParameter = new EntitiesParameter<PROJECT>(tenderProfileItem.PROJECT_Dashboard.Entity);
-            tenderProfileSelectionViewModelWrapper.SetParentViewModel(this);
-            tenderProfileSelectionViewModelWrapper.IsUsedAsPersistentViewModel = true;
-            tenderProfileSelectionViewModelWrapper.OnDataPointsCalculated = onDataPointsCalculated;
-            tenderProfileSelectionViewModelWrapper.OnParameterChange(entitiesParameter);
-            tenderProfileSelectionViewModelWrapper.OnEntitiesLoadedCallBack = onTenderProfileSelectionViewModelWrapperLoaded;
-            tenderProfileSelectionViewModelWrapper.OnEntitiesLoadedCallBackRelateParam = () => tenderProfileSelectionViewModelWrapper;
+            onDataPointsCalculated(tenderProfileItem.PROJECTTenderProfile);
+            //TENDER_PROFILE_ITEMSelectionViewModelWrapper tenderProfileSelectionViewModelWrapper = TENDER_PROFILE_ITEMSelectionViewModelWrapper.Create();
+            //EntitiesParameter<PROJECT> entitiesParameter = new EntitiesParameter<PROJECT>(tenderProfileItem.PROJECTTenderProfile.Entity);
+            //tenderProfileSelectionViewModelWrapper.SetParentViewModel(this);
+            //tenderProfileSelectionViewModelWrapper.IsUsedAsPersistentViewModel = true;
+            //tenderProfileSelectionViewModelWrapper.OnDataPointsCalculated = onDataPointsCalculated;
+            //tenderProfileSelectionViewModelWrapper.OnParameterChange(entitiesParameter);
+            //tenderProfileSelectionViewModelWrapper.OnEntitiesLoadedCallBack = onTenderProfileSelectionViewModelWrapperLoaded;
+            //tenderProfileSelectionViewModelWrapper.OnEntitiesLoadedCallBackRelateParam = () => tenderProfileSelectionViewModelWrapper;
         }
 
         private void onTenderProfileSelectionViewModelWrapperLoaded(IEnumerable<TENDER_PROFILE_ITEM> tenderProfileItems, object invocationParent)
@@ -349,24 +419,19 @@ namespace BluePrints.ViewModels
             tenderProfileSelectionViewModelWrapper.PopulateTenderDeliverables();
         }
 
-        private void onDataPointsCalculated(PROJECT project)
+        private void onDataPointsCalculated(PROJECTTenderProfile project)
         {
-            //find project dashboard
-            PROJECT_Dashboard projectDashboard = Entities.FirstOrDefault(x => x.GUID == project.GUID);
-            if (projectDashboard != null)
-            {
-                projectDashboard = populateProjectDashboard(projectDashboard.Entity);
-                BuildRowStats(projectDashboard, true);
-            }
+            project = populateTenderProfiles(project.Entity);
+            BuildRowStats(project, true);
         }
 
-        public override string UnifiedValueValidation(PROJECT_Dashboard projection, string field_name, object new_value, bool isPaste)
+        public override string UnifiedValueValidation(PROJECTTenderProfile projection, string field_name, object new_value, bool isPaste)
         {
             return string.Empty;
             //throw new NotImplementedException();
         }
 
-        public override string UnifiedRowValidation(PROJECT_Dashboard projection)
+        public override string UnifiedRowValidation(PROJECTTenderProfile projection)
         {
             return string.Empty;
             //throw new NotImplementedException();
@@ -445,18 +510,17 @@ namespace BluePrints.ViewModels
                     GridControlService.BeginDataUpdate();
                     dataPointsTable = new DataTable();
 
-                    if (alignedDateCollection == null)
-                    {
-                        alignedDateCollection = generateDates(Entities);
+                    if(ParentColumns.Count() == 0)
                         InitializeParentColumnSource(ParentColumns, ParentSummaries, alignedDateCollection);
-                        InitializeChildColumnSource(ChildColumns, ChildSummaries, alignedDateCollection);
-                    }
 
-                    dataPointsTable.Columns.Add(columnProject, typeof(PROJECT_Dashboard));
+                    if(ChildColumns.Count() == 0)
+                        InitializeChildColumnSource(ChildColumns, ChildSummaries, alignedDateCollection);
+
+                    dataPointsTable.Columns.Add(columnProject, typeof(PROJECTTenderProfile));
                     dataPointsTable.Columns.Add(columnTenderProfileDataTable, typeof(DataTable));
                     populateAlignedDataDate(dataPointsTable, alignedDateCollection);
 
-                    foreach (PROJECT_Dashboard entity in Entities)
+                    foreach (PROJECTTenderProfile entity in Entities)
                     {
                         BuildRowStats(entity, false);
                     }
@@ -479,7 +543,7 @@ namespace BluePrints.ViewModels
             }
         }
 
-        private void BuildRowStats(PROJECT_Dashboard entity, bool isUpdate)
+        private void BuildRowStats(PROJECTTenderProfile entity, bool isUpdate)
         {
             if (dataPointsTable == null)
                 return;
@@ -496,7 +560,7 @@ namespace BluePrints.ViewModels
             else
             {
                 newDataRow = (from DataRow dr in dataPointsTable.Rows
-                              where ((PROJECT_Dashboard)dr[columnProject]).GUID == entity.GUID
+                              where ((PROJECTTenderProfile)dr[columnProject]).GUID == entity.GUID
                               select dr).FirstOrDefault();
             }
 
@@ -504,6 +568,7 @@ namespace BluePrints.ViewModels
                 return;
 
             newDataRow[columnProject] = entity;
+            List<Common.ViewModel.Reporting.DataPoint> projectDataPoints = entity.TENDER_PROFILE_ITEMS.Where(x => x.DataPoints != null).SelectMany(x => x.DataPoints).ToList();
             //format dates row to numbers
             for (int i = 0; i < newDataRow.ItemArray.Count(); i++)
             {
@@ -512,10 +577,7 @@ namespace BluePrints.ViewModels
                 {
                     DateTime columnDate = DateTime.Parse(columnName);
                     IEnumerable<Common.ViewModel.Reporting.DataPoint> currentPeriodDataPoints;
-                    if (entity.Stats.Budgeted.DataPoints != null)
-                        currentPeriodDataPoints = entity.Stats.Budgeted.DataPoints.Where(x => x.ProgressDate.Year == columnDate.Year && x.ProgressDate.Month == columnDate.Month);
-                    else
-                        currentPeriodDataPoints = new List<Common.ViewModel.Reporting.DataPoint>();
+                    currentPeriodDataPoints = projectDataPoints.Where(x => x.ProgressDate.Year == columnDate.Year && x.ProgressDate.Month == columnDate.Month);
 
                     if (currentPeriodDataPoints.Count() > 0)
                         newDataRow[columnName] = currentPeriodDataPoints.Sum(x => x.Units);
@@ -536,17 +598,15 @@ namespace BluePrints.ViewModels
             }
 
             tenderProfilesDataPointsTable.Clear();
-            if(entity.TenderProfileItems != null)
-                foreach (TENDER_PROFILE_ITEM tenderProfileItem in entity.TenderProfileItems)
+            if(entity.TENDER_PROFILE_ITEMS != null)
+                foreach (TENDER_PROFILE_ITEM tenderProfileItem in entity.TENDER_PROFILE_ITEMS)
                 {
                     DataRow tenderProfileDataRow = tenderProfilesDataPointsTable.NewRow();
 
-                    //set project dashboard so that cell edit can easily reference back parent object
-                    tenderProfileItem.PROJECT_Dashboard = entity;
                     tenderProfileDataRow[columnTenderProfile] = tenderProfileItem;
                     tenderProfilesDataPointsTable.Rows.Add(tenderProfileDataRow);
 
-                    List<Common.ViewModel.Reporting.DataPoint> profileItemDataPoints = tenderProfileItem.Reportables.Where(x => x.Stats != null && x.Stats.Budgeted != null && x.Stats.Budgeted.DataPoints != null).SelectMany(x => x.Stats.Budgeted.DataPoints).ToList();
+                    List<Common.ViewModel.Reporting.DataPoint> profileItemDataPoints = tenderProfileItem.DataPoints == null ? new List<Common.ViewModel.Reporting.DataPoint>() : tenderProfileItem.DataPoints;
                     //format dates row to numbers
                     for (int i = 0; i < tenderProfileDataRow.ItemArray.Count(); i++)
                     {
@@ -554,11 +614,7 @@ namespace BluePrints.ViewModels
                         if (columnName != columnTenderProfile)
                         {
                             DateTime columnDate = DateTime.Parse(columnName);
-                            IEnumerable<Common.ViewModel.Reporting.DataPoint> currentPeriodDataPoints;
-                            if (tenderProfileItem.Reportables != null)
-                                currentPeriodDataPoints = profileItemDataPoints.Where(x => x.ProgressDate.Year == columnDate.Year && x.ProgressDate.Month == columnDate.Month);
-                            else
-                                currentPeriodDataPoints = new List<Common.ViewModel.Reporting.DataPoint>();
+                            IEnumerable<Common.ViewModel.Reporting.DataPoint> currentPeriodDataPoints = profileItemDataPoints.Where(x => x.ProgressDate.Year == columnDate.Year && x.ProgressDate.Month == columnDate.Month);
 
                             if (currentPeriodDataPoints.Count() > 0)
                                 tenderProfileDataRow[columnName] = currentPeriodDataPoints.Sum(x => x.Units);
@@ -630,28 +686,6 @@ namespace BluePrints.ViewModels
             get { return "PROJECTPlanCollectionViewModelWrapper"; }
         }
 
-        public IEnumerable<PROJECT> PROJECTCollection
-        {
-            get
-            {
-                var collection = GetEntities<PROJECT>();
-                if (collection == null)
-                    return new List<PROJECT>();
-
-                //need to call ToList for tokenComboBoxEditSettings to work
-                return collection.OrderBy(x => x.NUMBER).ToList();
-            }
-        }
-
-        public IEnumerable<TENDER_PROFILE_ITEM> TENDER_PROFILE_ITEMCollection
-        {
-            get
-            {
-                var collection = GetEntities<TENDER_PROFILE_ITEM>();
-                return collection;
-            }
-        }
-
         public IEnumerable<DEPARTMENT> DEPARTMENTCollection
         {
             get
@@ -678,53 +712,24 @@ namespace BluePrints.ViewModels
             }
         }
 
-        public IEnumerable<ProjectStatus> ProjectStatusCollection
+        public CollectionViewModel<TENDER_PROFILE_ITEM, TENDER_PROFILE_ITEM, Guid, IBluePrintsEntitiesUnitOfWork> TENDER_PROFILE_ITEMViewModel
         {
             get
             {
-                return DataUtils.GetValuesOf(() => new ProjectStatus());
-            }
-        }
+                if (loaderCollection == null)
+                    return null;
 
-        public IEnumerable<PipelineType> PipelineTypeCollection
-        {
-            get
-            {
-                return DataUtils.GetValuesOf(() => new PipelineType());
-            }
-        }
-
-        public IEnumerable<PipelineDivision> PipelineDivisionCollection
-        {
-            get
-            {
-                return DataUtils.GetValuesOf(() => new PipelineDivision());
-            }
-        }
-
-        public IEnumerable<PipelineCommodity> PipelineCommodityCollection
-        {
-            get
-            {
-                return DataUtils.GetValuesOf(() => new PipelineCommodity());
-            }
-        }
-
-        public IEnumerable<PipelineContract> PipelineContractCollection
-        {
-            get
-            {
-                return DataUtils.GetValuesOf(() => new PipelineContract());
-            }
-        }
-
-        public IEnumerable<PipelineStatus> PipelineStatusCollection
-        {
-            get
-            {
-                return DataUtils.GetValuesOf(() => new PipelineStatus());
+                return
+                    (CollectionViewModel<TENDER_PROFILE_ITEM, TENDER_PROFILE_ITEM, Guid, IBluePrintsEntitiesUnitOfWork>)
+                    loaderCollection.GetViewModel<TENDER_PROFILE_ITEM>();
             }
         }
         #endregion
+    }
+
+    public class BellCurvePeriodDate
+    {
+        public DateTime PeriodDate { get; set; }
+        public double PeriodNumber { get; set; }
     }
 }

@@ -615,6 +615,7 @@
     <Compile Include="Common\Projections\COMMODITY_CODEProjection.cs" />
     <Compile Include="Common\Projections\POForecastProjection.cs" />
     <Compile Include="Common\Projections\ProjectSummaryProjection.cs" />
+    <Compile Include="Common\Projections\PROJECTTenderProfiles.cs" />
     <Compile Include="Common\Projections\PROJECT_REVENUEProjection.cs" />
     <Compile Include="Common\Projections\RA_STUDYProjection.cs" />
     <Compile Include="Common\Projections\RA_STUDY_TYPEProjection.cs" />

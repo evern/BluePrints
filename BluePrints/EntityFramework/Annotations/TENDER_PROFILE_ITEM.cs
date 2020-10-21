@@ -39,9 +39,9 @@ namespace BluePrints.Data
         }
 
         [NotMapped]
-        public PROJECT_Dashboard PROJECT_Dashboard { get; set; }
+        public PROJECTTenderProfile PROJECTTenderProfile { get; set; }
 
         [NotMapped]
-        public List<IReportable> Reportables { get; set; }
+        public List<Common.ViewModel.Reporting.DataPoint> DataPoints { get; set; }
     }
 }
