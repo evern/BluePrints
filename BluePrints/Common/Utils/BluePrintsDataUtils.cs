@@ -7,6 +7,7 @@ using BaseModel.ViewModel.Dialogs;
 using BaseModel.ViewModel.Services;
 using BluePrints.BluePrintsEntitiesDataModel;
 using BluePrints.Common;
+using BluePrints.Common.Helpers;
 using BluePrints.Common.Misc;
 using BluePrints.Common.Projections;
 using BluePrints.Common.Resources;
@@ -449,6 +450,288 @@ namespace BluePrints.Common.ViewModel.Utils
 
     public static class BluePrintsDataUtils
     {
+        public static void CreateNewProjectDefaults(PROJECT entity, IBluePrintsEntitiesUnitOfWork bluePrintsEntitiesUnitOfWork)
+        {
+            Tuple<DateTime, DateTime> tenderStartEndDate = BluePrintsDataUtils.GetTenderStartEndDate(entity);
+            DateTime? tenderStartDate = tenderStartEndDate.Item1;
+            DateTime? tenderEndDate = tenderStartEndDate.Item2;
+            //only way to determine whether current entity is new to avoid creating multiple 
+
+            BASELINE newBASELINE = new BASELINE();
+            newBASELINE.GUID_PROJECT = entity.GUID;
+            newBASELINE.NAME = entity.NUMBER + "_001";
+            newBASELINE.REVISION = "A";
+            newBASELINE.STATUS = BaselineStatus.Live;
+            bluePrintsEntitiesUnitOfWork.BASELINES.Add(newBASELINE);
+            //BASELINEViewModel.Save(newBASELINE);
+
+            ESTIMATE newESTIMATE_DIRECT = new ESTIMATE();
+            newESTIMATE_DIRECT.GUID_PROJECT = entity.GUID;
+            newESTIMATE_DIRECT.NAME = entity.NUMBER + "_001";
+            newESTIMATE_DIRECT.REVISION = "A";
+            newESTIMATE_DIRECT.STATUS = BaselineStatus.Live;
+            bluePrintsEntitiesUnitOfWork.ESTIMATES.Add(newESTIMATE_DIRECT);
+            //ESTIMATEViewModel.Save(newESTIMATE_DIRECT);
+
+            PROGRESS newDesignPROGRESS = new PROGRESS();
+            newDesignPROGRESS.GUID_PROJECT = entity.GUID;
+            newDesignPROGRESS.NAME = entity.NUMBER + "WEEKLY_001";
+            newDesignPROGRESS.PROGRESS_START = tenderStartDate == null ? DateTime.Now : (DateTime)tenderStartDate;
+            newDesignPROGRESS.DATA_DATE = CommonMethods.StartOfWeek(newDesignPROGRESS.PROGRESS_START, DayOfWeek.Sunday).AddDays(1).AddSeconds(-1);
+            newDesignPROGRESS.INTERVAL_COUNT = 1;
+            newDesignPROGRESS.INTERVAL_TYPE = ProgressIntervalType.Weekly;
+            newDesignPROGRESS.STATUS = ProgressStatus.Live;
+            newDesignPROGRESS.TYPE = PhaseType.Design;
+            bluePrintsEntitiesUnitOfWork.PROGRESSES.Add(newDesignPROGRESS);
+            //PROGRESSViewModel.Save(newDesignPROGRESS);
+
+            PROGRESS newConstructionPROGRESS = new PROGRESS();
+            newConstructionPROGRESS.GUID_PROJECT = entity.GUID;
+            newConstructionPROGRESS.NAME = entity.NUMBER + "DAILY_001";
+            newConstructionPROGRESS.PROGRESS_START = tenderStartDate == null ? DateTime.Now : (DateTime)tenderStartDate;
+            newConstructionPROGRESS.DATA_DATE = CommonMethods.StartOfWeek(newConstructionPROGRESS.PROGRESS_START, DayOfWeek.Sunday).AddDays(1).AddSeconds(-1);
+            newConstructionPROGRESS.INTERVAL_COUNT = 1;
+            newConstructionPROGRESS.INTERVAL_TYPE = ProgressIntervalType.Daily;
+            newConstructionPROGRESS.STATUS = ProgressStatus.Live;
+            newConstructionPROGRESS.TYPE = PhaseType.Construct;
+            bluePrintsEntitiesUnitOfWork.PROGRESSES.Add(newConstructionPROGRESS);
+            //PROGRESSViewModel.Save(newConstructionPROGRESS);
+
+            AREA defaultArea = new AREA();
+            defaultArea.GUID_PROJECT = entity.GUID;
+            defaultArea.INTERNAL_NUM = "000";
+            defaultArea.CLIENT_NUM = "000";
+            defaultArea.TITLE = "General";
+            bluePrintsEntitiesUnitOfWork.AREAS.Add(defaultArea);
+            //AREAViewModel.Save(defaultArea);
+            bluePrintsEntitiesUnitOfWork.SaveChanges();
+
+            PHASE defaultDirectPhase = bluePrintsEntitiesUnitOfWork.PHASES.FirstOrDefault(x => x.INTERNAL_NUM == "D1");
+            PHASE defaultIndirectPhase = bluePrintsEntitiesUnitOfWork.PHASES.FirstOrDefault(x => x.INTERNAL_NUM == "I1");
+
+            DEPARTMENT defaultDepartment = bluePrintsEntitiesUnitOfWork.DEPARTMENTS.FirstOrDefault(x => x.NAME == BluePrintsResources.Default_New_Project_Department);
+            DISCIPLINE defaultDiscipline = bluePrintsEntitiesUnitOfWork.DISCIPLINES.FirstOrDefault(x => x.NAME == BluePrintsResources.Default_New_Project_Discipline);
+            DOCTYPE defaultDocType = bluePrintsEntitiesUnitOfWork.DOCTYPES.FirstOrDefault(x => x.NAME == BluePrintsResources.Default_New_Project_DocType);
+            PROJECT defaultCopyProject = bluePrintsEntitiesUnitOfWork.PROJECTS.FirstOrDefault(x => x.NUMBER == "00000");
+            if (defaultCopyProject != null)
+            {
+                foreach (RATE rate in defaultCopyProject.RATE)
+                {
+                    RATE newRATE = new RATE();
+                    DataUtils.ShallowCopy(newRATE, rate);
+                    newRATE.GUID = Guid.Empty;
+                    newRATE.GUID_PROJECT = entity.GUID;
+                    bluePrintsEntitiesUnitOfWork.RATES.Add(newRATE);
+                    //RATEViewModel.Save(newRATE);
+                }
+
+                foreach (DELIVERABLES_STATUS status in defaultCopyProject.DELIVERABLES_STATUS)
+                {
+                    DELIVERABLES_STATUS newSTATUS = new DELIVERABLES_STATUS();
+                    DataUtils.ShallowCopy(newSTATUS, status);
+                    newSTATUS.GUID = Guid.Empty;
+                    newSTATUS.GUID_PROJECT = entity.GUID;
+                    bluePrintsEntitiesUnitOfWork.DELIVERABLES_STATUSES.Add(newSTATUS);
+
+                    foreach (DSTATUS_DOCTYPE statusDocType in status.DSTATUS_DOCTYPE)
+                    {
+                        DSTATUS_DOCTYPE newSTATUS_DOCTYPE = new DSTATUS_DOCTYPE();
+                        DataUtils.ShallowCopy(newSTATUS_DOCTYPE, statusDocType);
+                        newSTATUS_DOCTYPE.GUID = Guid.Empty;
+                        newSTATUS_DOCTYPE.GUID_STATUS = Guid.Empty;
+                        newSTATUS.DSTATUS_DOCTYPE.Add(newSTATUS_DOCTYPE);
+                    }
+                }
+
+                foreach (HOLIDAY holiday in defaultCopyProject.HOLIDAY)
+                {
+                    HOLIDAY newHOLIDAY = new HOLIDAY();
+                    DataUtils.ShallowCopy(newHOLIDAY, holiday);
+                    newHOLIDAY.GUID = Guid.Empty;
+                    newHOLIDAY.GUID_PROJECT = entity.GUID;
+                    bluePrintsEntitiesUnitOfWork.HOLIDAYS.Add(newHOLIDAY);
+                }
+            }
+
+            SUBJOB newSUBJOB = new SUBJOB();
+            newSUBJOB.GUID_PROJECT = entity.GUID;
+            newSUBJOB.INTERNAL_NAME1 = entity.NUMBER;
+            newSUBJOB.STARTDATE = tenderStartDate == null ? CommonMethods.StartOfWeek(DateTime.Now, DayOfWeek.Sunday) : tenderStartDate;
+            newSUBJOB.ENDDATE = tenderEndDate == null ? ((DateTime)newSUBJOB.STARTDATE).AddDays(7).AddSeconds(-1) : tenderEndDate;
+            newSUBJOB.REVIEWSTARTDATE = (DateTime)newSUBJOB.STARTDATE; //effectively nullifies review date
+            newSUBJOB.REVIEWENDDATE = (DateTime)newSUBJOB.STARTDATE; //effectively nullifies review date
+            newSUBJOB.BELLCURVESHAPE = BellCurveShape.Balanced;
+
+            if (entity.STATUS == ProjectStatus.Tender || entity.STATUS == ProjectStatus.TenderSubmitted)
+            {
+                newSUBJOB.BELLCURVESHAPE = BellCurveShape.Balanced;
+            }
+
+            newSUBJOB.GUID_DAREA = defaultArea.GUID;
+            newSUBJOB.GUID_DPHASE = defaultDirectPhase.GUID;
+            bluePrintsEntitiesUnitOfWork.SUBJOBS.Add(newSUBJOB);
+
+            if (defaultDirectPhase != null)
+            {
+                SUBJOB defaultDesignSUBJOB = new SUBJOB();
+                defaultDesignSUBJOB.GUID_PROJECT = entity.GUID;
+                defaultDesignSUBJOB.INTERNAL_NAME1 = entity.NUMBER + "-000-00-D1";
+                defaultDesignSUBJOB.STARTDATE = tenderStartDate == null ? CommonMethods.StartOfWeek(DateTime.Now, DayOfWeek.Sunday) : tenderStartDate;
+                defaultDesignSUBJOB.ENDDATE = tenderEndDate == null ? ((DateTime)newSUBJOB.STARTDATE).AddDays(7).AddSeconds(-1) : tenderEndDate;
+                defaultDesignSUBJOB.REVIEWSTARTDATE = (DateTime)newSUBJOB.STARTDATE; //effectively nullifies review date
+                defaultDesignSUBJOB.REVIEWENDDATE = (DateTime)newSUBJOB.STARTDATE; //effectively nullifies review date
+                defaultDesignSUBJOB.GUID_DAREA = defaultArea.GUID;
+                defaultDesignSUBJOB.GUID_DPHASE = defaultDirectPhase.GUID;
+                defaultDesignSUBJOB.BELLCURVESHAPE = BellCurveShape.Balanced;
+                if (entity.STATUS == ProjectStatus.Tender || entity.STATUS == ProjectStatus.TenderSubmitted)
+                {
+                    defaultDesignSUBJOB.BELLCURVESHAPE = BellCurveShape.Balanced;
+                }
+                bluePrintsEntitiesUnitOfWork.SUBJOBS.Add(defaultDesignSUBJOB);
+                bluePrintsEntitiesUnitOfWork.SaveChanges();
+                //SUBJOBViewModel.Save(defaultDesignSUBJOB);
+
+                DISCIPLINE PMDiscipline = bluePrintsEntitiesUnitOfWork.DISCIPLINES.FirstOrDefault(x => x.CODE == "PM");
+                if (PMDiscipline != null)
+                {
+                    WORKPACK pmWORKPACK = new WORKPACK();
+                    pmWORKPACK.GUID_SUBJOB = defaultDesignSUBJOB.GUID;
+                    pmWORKPACK.GUID_DISCIPLINE = PMDiscipline.GUID;
+                    pmWORKPACK.NAME = entity.NUMBER + "-000-00-D1-PM01";
+                    bluePrintsEntitiesUnitOfWork.WORKPACKS.Add(pmWORKPACK);
+                    //WORKPACKViewModel.Save(pmWORKPACK);
+                    bluePrintsEntitiesUnitOfWork.SaveChanges();
+
+                    DOCTYPE manDOCTYPE = bluePrintsEntitiesUnitOfWork.DOCTYPES.FirstOrDefault(x => x.CODE == "MAN");
+                    DEPARTMENT emDEPARTMENT = bluePrintsEntitiesUnitOfWork.DEPARTMENTS.FirstOrDefault(x => x.CODE == "EM");
+                    if (manDOCTYPE != null && emDEPARTMENT != null)
+                    {
+                        BASELINE_ITEM dmBASELINE_ITEM = new BASELINE_ITEM();
+                        dmBASELINE_ITEM.GUID_BASELINE = newBASELINE.GUID;
+                        dmBASELINE_ITEM.GUID_SUBJOB = defaultDesignSUBJOB.GUID;
+                        dmBASELINE_ITEM.GUID_DEPARTMENT = emDEPARTMENT.GUID;
+                        dmBASELINE_ITEM.GUID_DISCIPLINE = PMDiscipline.GUID;
+                        dmBASELINE_ITEM.GUID_DOCTYPE = manDOCTYPE.GUID;
+                        dmBASELINE_ITEM.INTERNAL_NUM = entity.NUMBER + "-000-MAN-PM-001";
+                        dmBASELINE_ITEM.PRIMARY_TITLE = "Design Management";
+                        dmBASELINE_ITEM.GUID_WORKPACK = pmWORKPACK.GUID;
+                        dmBASELINE_ITEM.GUID_AREA = defaultArea.GUID;
+                        dmBASELINE_ITEM.GUID_PHASE = defaultDirectPhase.GUID;
+                        bluePrintsEntitiesUnitOfWork.BASELINE_ITEMS.Add(dmBASELINE_ITEM);
+                        //BASELINE_ITEMViewModel.Save(dmBASELINE_ITEM);
+                    }
+                }
+
+                DISCIPLINE GEDiscipline = bluePrintsEntitiesUnitOfWork.DISCIPLINES.FirstOrDefault(x => x.CODE == "GE");
+                if (GEDiscipline != null)
+                {
+                    WORKPACK geWORKPACK = new WORKPACK();
+                    geWORKPACK.GUID_SUBJOB = defaultDesignSUBJOB.GUID;
+                    geWORKPACK.GUID_DISCIPLINE = GEDiscipline.GUID;
+                    geWORKPACK.NAME = entity.NUMBER + "-000-00-D1-GE01";
+                    bluePrintsEntitiesUnitOfWork.WORKPACKS.Add(geWORKPACK);
+                    //WORKPACKViewModel.Save(geWORKPACK);
+                    bluePrintsEntitiesUnitOfWork.SaveChanges();
+
+                    DOCTYPE mtgDOCTYPE = bluePrintsEntitiesUnitOfWork.DOCTYPES.FirstOrDefault(x => x.CODE == "MTG");
+                    DOCTYPE repDOCTYPE = bluePrintsEntitiesUnitOfWork.DOCTYPES.FirstOrDefault(x => x.CODE == "REP");
+                    DEPARTMENT enDEPARTMENT = bluePrintsEntitiesUnitOfWork.DEPARTMENTS.FirstOrDefault(x => x.CODE == "EN");
+                    if (mtgDOCTYPE != null && enDEPARTMENT != null)
+                    {
+                        BASELINE_ITEM meetBASELINE_ITEM = new BASELINE_ITEM();
+                        meetBASELINE_ITEM.GUID_BASELINE = newBASELINE.GUID;
+                        meetBASELINE_ITEM.GUID_SUBJOB = defaultDesignSUBJOB.GUID;
+                        meetBASELINE_ITEM.GUID_DEPARTMENT = enDEPARTMENT.GUID;
+                        meetBASELINE_ITEM.GUID_DISCIPLINE = GEDiscipline.GUID;
+                        meetBASELINE_ITEM.GUID_DOCTYPE = mtgDOCTYPE.GUID;
+                        meetBASELINE_ITEM.INTERNAL_NUM = entity.NUMBER + "-000-MTG-GE-001";
+                        meetBASELINE_ITEM.PRIMARY_TITLE = "Meetings";
+                        meetBASELINE_ITEM.GUID_WORKPACK = geWORKPACK.GUID;
+                        meetBASELINE_ITEM.GUID_AREA = defaultArea.GUID;
+                        meetBASELINE_ITEM.GUID_PHASE = defaultDirectPhase.GUID;
+                        bluePrintsEntitiesUnitOfWork.BASELINE_ITEMS.Add(meetBASELINE_ITEM);
+                        //BASELINE_ITEMViewModel.Save(meetBASELINE_ITEM);
+                    }
+
+                    if (repDOCTYPE != null && enDEPARTMENT != null)
+                    {
+                        BASELINE_ITEM rptBASELINE_ITEM = new BASELINE_ITEM();
+                        rptBASELINE_ITEM.GUID_BASELINE = newBASELINE.GUID;
+                        rptBASELINE_ITEM.GUID_SUBJOB = defaultDesignSUBJOB.GUID;
+                        rptBASELINE_ITEM.GUID_DEPARTMENT = enDEPARTMENT.GUID;
+                        rptBASELINE_ITEM.GUID_DISCIPLINE = GEDiscipline.GUID;
+                        rptBASELINE_ITEM.GUID_DOCTYPE = repDOCTYPE.GUID;
+                        rptBASELINE_ITEM.INTERNAL_NUM = entity.NUMBER + "-000-REP-GE-001";
+                        rptBASELINE_ITEM.GUID_WORKPACK = geWORKPACK.GUID;
+                        rptBASELINE_ITEM.GUID_AREA = defaultArea.GUID;
+                        rptBASELINE_ITEM.GUID_PHASE = defaultDirectPhase.GUID;
+                        rptBASELINE_ITEM.PRIMARY_TITLE = "Report";
+                        bluePrintsEntitiesUnitOfWork.BASELINE_ITEMS.Add(rptBASELINE_ITEM);
+                    }
+                }
+            }
+
+            if (defaultIndirectPhase != null)
+            {
+                SUBJOB indirectDesignSUBJOB = new SUBJOB();
+                indirectDesignSUBJOB.GUID_PROJECT = entity.GUID;
+                indirectDesignSUBJOB.INTERNAL_NAME1 = entity.NUMBER + "-000-00-I1";
+                indirectDesignSUBJOB.STARTDATE = tenderStartDate == null ? CommonMethods.StartOfWeek(DateTime.Now, DayOfWeek.Sunday) : tenderStartDate;
+                indirectDesignSUBJOB.ENDDATE = tenderEndDate == null ? ((DateTime)newSUBJOB.STARTDATE).AddDays(7).AddSeconds(-1) : tenderEndDate;
+                indirectDesignSUBJOB.REVIEWSTARTDATE = (DateTime)newSUBJOB.STARTDATE; //effectively nullifies review date
+                indirectDesignSUBJOB.REVIEWENDDATE = (DateTime)newSUBJOB.STARTDATE; //effectively nullifies review date
+                indirectDesignSUBJOB.GUID_DAREA = defaultArea.GUID;
+                indirectDesignSUBJOB.GUID_DPHASE = defaultIndirectPhase.GUID;
+                indirectDesignSUBJOB.BELLCURVESHAPE = BellCurveShape.Balanced;
+
+                if (entity.STATUS == ProjectStatus.Tender || entity.STATUS == ProjectStatus.TenderSubmitted)
+                {
+                    indirectDesignSUBJOB.BELLCURVESHAPE = BellCurveShape.Balanced;
+                }
+
+                bluePrintsEntitiesUnitOfWork.SUBJOBS.Add(indirectDesignSUBJOB);
+
+                bluePrintsEntitiesUnitOfWork.SaveChanges();
+                DOCTYPE g02DOCTYPE = bluePrintsEntitiesUnitOfWork.DOCTYPES.FirstOrDefault(x => x.CODE == "G02");
+                DEPARTMENT adDEPARTMENT = bluePrintsEntitiesUnitOfWork.DEPARTMENTS.FirstOrDefault(x => x.CODE == "AD");
+                DISCIPLINE PMDiscipline = bluePrintsEntitiesUnitOfWork.DISCIPLINES.FirstOrDefault(x => x.CODE == "PM");
+                if (PMDiscipline != null)
+                {
+                    WORKPACK pmWORKPACK = new WORKPACK();
+                    pmWORKPACK.GUID_SUBJOB = indirectDesignSUBJOB.GUID;
+                    pmWORKPACK.GUID_DISCIPLINE = PMDiscipline.GUID;
+                    pmWORKPACK.NAME = entity.NUMBER + "-000-00-I1-PM01";
+                    bluePrintsEntitiesUnitOfWork.WORKPACKS.Add(pmWORKPACK);
+                    bluePrintsEntitiesUnitOfWork.SaveChanges();
+
+                    if (g02DOCTYPE != null && adDEPARTMENT != null)
+                    {
+                        BASELINE_ITEM dcBASELINE_ITEM = new BASELINE_ITEM();
+                        dcBASELINE_ITEM.GUID_BASELINE = newBASELINE.GUID;
+                        dcBASELINE_ITEM.GUID_SUBJOB = indirectDesignSUBJOB.GUID;
+                        dcBASELINE_ITEM.GUID_DEPARTMENT = adDEPARTMENT.GUID;
+                        dcBASELINE_ITEM.GUID_DISCIPLINE = PMDiscipline.GUID;
+                        dcBASELINE_ITEM.GUID_DOCTYPE = g02DOCTYPE.GUID;
+                        dcBASELINE_ITEM.INTERNAL_NUM = entity.NUMBER + "-000-G02-PM-001";
+                        dcBASELINE_ITEM.PRIMARY_TITLE = "Document Control";
+                        dcBASELINE_ITEM.GUID_WORKPACK = pmWORKPACK.GUID;
+                        dcBASELINE_ITEM.GUID_AREA = defaultArea.GUID;
+                        dcBASELINE_ITEM.GUID_PHASE = defaultIndirectPhase.GUID;
+                        bluePrintsEntitiesUnitOfWork.BASELINE_ITEMS.Add(dcBASELINE_ITEM);
+                    }
+                }
+            }
+        }
+
+        public static Tuple<DateTime, DateTime> GetTenderStartEndDate(PROJECT PROJECT)
+        {
+            DateTime PROJECTPlanStartDate = PROJECT.TENDER_PROJECT_START == null ? DateTime.Now : ((DateTime)PROJECT.TENDER_PROJECT_START);
+            int duration = PROJECT.TENDER_PROJECT_DURATION == null ? 1 : (int)PROJECT.TENDER_PROJECT_DURATION;
+            DateTime PROJECTPlanEndDate = PROJECTPlanStartDate.AddDays(duration * 7);
+
+            return new Tuple<DateTime, DateTime>(PROJECTPlanStartDate, PROJECTPlanEndDate);
+        }
+
         public static List<StatsCalculationType> AllCalcTypes
         {
             get

@@ -13,6 +13,5 @@ namespace BluePrints.Common.Projections
     {
         public TENDER_PROFILE TenderProfile { get; set; }
         public List<TENDER_PROFILE_ITEM> TENDER_PROFILE_ITEMS { get; set; }
-        public IBluePrintsEntitiesUnitOfWork BluePrintsEntitiesUnitOfWork { get; set; }
     }
 }

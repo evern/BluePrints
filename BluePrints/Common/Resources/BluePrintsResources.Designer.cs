@@ -322,6 +322,15 @@ namespace BluePrints.Common.Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Default.
+        /// </summary>
+        internal static string Default_TenderProfile_Name {
+            get {
+                return ResourceManager.GetString("Default_TenderProfile_Name", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to G00.
         /// </summary>
         internal static string Default_TenderStockCode {

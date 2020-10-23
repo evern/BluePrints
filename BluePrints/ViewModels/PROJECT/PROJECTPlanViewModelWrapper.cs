@@ -50,31 +50,28 @@ namespace BluePrints.ViewModels
 
         #region Database Operations
 
-        private IUnitOfWorkFactory<IBluePrintsEntitiesUnitOfWork> perthBluePrintsUnitOfWorkFactory;
-        private IUnitOfWorkFactory<IBluePrintsEntitiesUnitOfWork> montrealBluePrintsUnitOfWorkFactory;
-        private IBluePrintsEntitiesUnitOfWork perthBluePrintsUnitOfWork;
-        private IBluePrintsEntitiesUnitOfWork montrealBluePrintsUnitOfWork;
+        private IUnitOfWorkFactory<IBluePrintsEntitiesUnitOfWork> bluePrintsUnitOfWorkFactory;
+        private IBluePrintsEntitiesUnitOfWork _bluePrintsUnitOfWork;
         private IPrimeroEntitiesUnitOfWork primeroUnitOfWork;
         private List<DateTime> alignedDateCollection;
+        private List<DateTime> dataPointsDateCollection;
         protected override void resolveParameters(object parameter)
         {
             primeroUnitOfWork = PrimeroEntitiesUnitOfWorkSource.GetUnitOfWorkFactory().CreateUnitOfWork();
-            perthBluePrintsUnitOfWorkFactory = BluePrintsEntitiesUnitOfWorkSource.GetUnitOfWorkFactory();
-            montrealBluePrintsUnitOfWorkFactory = BluePrintsEntitiesUnitOfWorkSource.GetUnitOfWorkFactory(true);
-            perthBluePrintsUnitOfWork = perthBluePrintsUnitOfWorkFactory.CreateUnitOfWork();
-            montrealBluePrintsUnitOfWork = montrealBluePrintsUnitOfWorkFactory.CreateUnitOfWork();
+            bluePrintsUnitOfWorkFactory = BluePrintsEntitiesUnitOfWorkSource.GetUnitOfWorkFactory();
+            _bluePrintsUnitOfWork = bluePrintsUnitOfWorkFactory.CreateUnitOfWork();
             doNotApplyBestFit = true;
         }
 
         protected override void addEntitiesLoader()
         {
-            loaderCollection.AddLoaderDescription<DEPARTMENT, DEPARTMENT, Guid, IBluePrintsEntitiesUnitOfWork>(perthBluePrintsUnitOfWorkFactory, x => x.DEPARTMENTS);
-            loaderCollection.AddLoaderDescription<DISCIPLINE, DISCIPLINE, Guid, IBluePrintsEntitiesUnitOfWork>(perthBluePrintsUnitOfWorkFactory, x => x.DISCIPLINES);
+            loaderCollection.AddLoaderDescription<DEPARTMENT, DEPARTMENT, Guid, IBluePrintsEntitiesUnitOfWork>(bluePrintsUnitOfWorkFactory, x => x.DEPARTMENTS);
+            loaderCollection.AddLoaderDescription<DISCIPLINE, DISCIPLINE, Guid, IBluePrintsEntitiesUnitOfWork>(bluePrintsUnitOfWorkFactory, x => x.DISCIPLINES);
         }
         
         protected override void onAuxiliaryEntitiesCollectionLoaded()
         {
-            CreateMainViewModel(perthBluePrintsUnitOfWorkFactory, x => x.PROJECTS);
+            CreateMainViewModel(bluePrintsUnitOfWorkFactory, x => x.PROJECTS);
         }
 
         protected override Func<IRepositoryQuery<PROJECT>, IQueryable<PROJECTTenderProfile>> specifyMainViewModelProjection()
@@ -84,10 +81,11 @@ namespace BluePrints.ViewModels
 
         private IQueryable<PROJECTTenderProfile> populatePROJECTPlanProject(IQueryable<PROJECT> query)
         {
-            List<PROJECT> tenderPROJECTS = query.Where(x => x.NUMBER == "09602" && (x.STATUS == ProjectStatus.Lead || x.STATUS == ProjectStatus.Tender || x.STATUS == ProjectStatus.TenderSubmitted)).ToList();
+            List<PROJECT> PROJECTS = query.ToList();
             List<PROJECTTenderProfile> returnPROJECTS = new List<PROJECTTenderProfile>();
 
-            alignedDateCollection = generateDates(tenderPROJECTS);
+            alignedDateCollection = generateDates(PROJECTS);
+            IEnumerable<PROJECT> tenderPROJECTS = PROJECTS.Where(x => x.STATUS == ProjectStatus.Lead || x.STATUS == ProjectStatus.Tender || x.STATUS == ProjectStatus.TenderSubmitted);
             foreach (PROJECT tenderPROJECT in tenderPROJECTS)
             {
                 PROJECTTenderProfile projectDashboard = populateTenderProfiles(tenderPROJECT);
@@ -100,23 +98,18 @@ namespace BluePrints.ViewModels
 
         private PROJECTTenderProfile populateTenderProfiles(PROJECT tenderPROJECT)
         {
-            //select database locale
-            IBluePrintsEntitiesUnitOfWork bluePrintsEntitiesUnitOfWork;
-            if (tenderPROJECT.OfficeName == BluePrintsResources.OfficeMontreal)
-                bluePrintsEntitiesUnitOfWork = montrealBluePrintsUnitOfWork;
-            else
-                bluePrintsEntitiesUnitOfWork = perthBluePrintsUnitOfWork;
-            BASELINE projectLiveBaseline = bluePrintsEntitiesUnitOfWork.BASELINES.FirstOrDefault(x => x.STATUS == BaselineStatus.Live && x.GUID_PROJECT == tenderPROJECT.GUID);
-            PROGRESS projectDesignLiveProgress = bluePrintsEntitiesUnitOfWork.PROGRESSES.FirstOrDefault(x => x.GUID_PROJECT == tenderPROJECT.GUID && x.TYPE == PhaseType.Design && x.STATUS == ProgressStatus.Live);
-            if (projectLiveBaseline != null && projectDesignLiveProgress != null)
+            //use unit of work entry so it's faster when saving
+            PROJECT PROJECT = _bluePrintsUnitOfWork.PROJECTS.FirstOrDefault(x => x.GUID == tenderPROJECT.GUID);
+            BASELINE projectLiveBaseline = _bluePrintsUnitOfWork.BASELINES.FirstOrDefault(x => x.STATUS == BaselineStatus.Live && x.GUID_PROJECT == tenderPROJECT.GUID);
+            PROGRESS projectDesignLiveProgress = _bluePrintsUnitOfWork.PROGRESSES.FirstOrDefault(x => x.GUID_PROJECT == tenderPROJECT.GUID && x.TYPE == PhaseType.Design && x.STATUS == ProgressStatus.Live);
+            if (PROJECT != null && projectLiveBaseline != null && projectDesignLiveProgress != null)
             {
                 PROJECTTenderProfile PROJECTTenderProfile = new PROJECTTenderProfile();
-                PROJECTTenderProfile.BluePrintsEntitiesUnitOfWork = bluePrintsEntitiesUnitOfWork;
-                PROJECTTenderProfile.Entity = tenderPROJECT;
+                PROJECTTenderProfile.Entity = PROJECT;
                 PROJECTTenderProfile.GUID = tenderPROJECT.GUID;
 
                 //populate tender profile items
-                TENDER_PROFILE tenderPROFILE = bluePrintsEntitiesUnitOfWork.TENDER_PROFILES.FirstOrDefault(x => x.GUID_PROJECT == tenderPROJECT.GUID);
+                TENDER_PROFILE tenderPROFILE = _bluePrintsUnitOfWork.TENDER_PROFILES.FirstOrDefault(x => x.GUID_PROJECT == tenderPROJECT.GUID);
 
                 if (tenderPROFILE != null)
                 {
@@ -144,29 +137,42 @@ namespace BluePrints.ViewModels
         private void populateDataPoints(PROJECTTenderProfile PROJECTTenderProfile)
         {                
             DateTime startDate = (DateTime)PROJECTTenderProfile.Entity.TENDER_PROJECT_START;
+
             decimal tenderDuration = (decimal)PROJECTTenderProfile.Entity.TENDER_PROJECT_DURATION;
             int totalDurationInDays = Convert.ToInt32(tenderDuration * 7);
             DateTime endDate = startDate.AddDays(totalDurationInDays);
 
             //always start from zero since we are generating forecast from the beginning
             double beginPercentage = 0;
+
+            //when it's first used when form loads entities is empty
+            dataPointsDateCollection = Entities.Count == 0 ? alignedDateCollection : generateDates(Entities.Select(x => x.Entity));
             foreach (TENDER_PROFILE_ITEM TENDER_PROFILE_ITEM in PROJECTTenderProfile.TENDER_PROFILE_ITEMS)
             {
                 decimal assignHours = PROJECTTenderProfile.TenderProfile.TENDER_HOURS * TENDER_PROFILE_ITEM.HOURS_PERCENTAGE;
                 //pro-rate the dates of the deliverable based on tender item
                 int startProrateDurationInDays = Convert.ToInt32(totalDurationInDays * TENDER_PROFILE_ITEM.SCHEDULE_START_PERCENTAGE);
                 DateTime proRatedStartDate = startDate.AddDays(startProrateDurationInDays);
-                proRatedStartDate = new DateTime(proRatedStartDate.Year, proRatedStartDate.Month, 1);
                 int endProrateDurationInDays = Convert.ToInt32(totalDurationInDays * (1 - TENDER_PROFILE_ITEM.SCHEDULE_FINISH_PERCENTAGE));
                 DateTime proRatedEndDate = endDate.AddDays(-1 * endProrateDurationInDays);
-                proRatedEndDate = new DateTime(proRatedEndDate.Year, proRatedEndDate.Month, 1);
-                proRatedEndDate = proRatedEndDate.AddMonths(1).AddDays(-1);
 
                 Tuple<double, double> bellCurveProfile = getBellCurveProfile((BellCurveShape)TENDER_PROFILE_ITEM.BELLCURVESHAPE);
-                List<BellCurvePeriodDate> bellCurvePeriodDates = getBellCurvePeriodDates(proRatedStartDate, proRatedEndDate);
+                List<BellCurvePeriodDate> bellCurvePeriodDates = getBellCurvePeriodDates(proRatedStartDate, proRatedEndDate, dataPointsDateCollection);
                 double totalPeriod = bellCurvePeriodDates.Count;
-                decimal numberOfMonths = getNumberOfMonths(startDate, endDate);
-                decimal hoursPerPeriod = assignHours / numberOfMonths;
+
+                //calculate inflation for dates without pro rate
+                List<WorkingDaysDate> workingDaysDates = bellCurvePeriodDates.Select(x => x.PeriodWorkingDate).ToList();
+                decimal totalInflationFactor = 0;
+                decimal inflationAdjustmentCount = 0;
+                foreach(WorkingDaysDate workingDaysDate in workingDaysDates)
+                {
+                    if (workingDaysDate.Prorate < 1)
+                        totalInflationFactor += (1 - workingDaysDate.Prorate);
+                    else
+                        inflationAdjustmentCount += 1;
+                }
+
+                decimal inflationFactor = totalInflationFactor == 0 ? 0 : totalInflationFactor / inflationAdjustmentCount;
 
                 TENDER_PROFILE_ITEM.DataPoints = new List<Common.ViewModel.Reporting.DataPoint>();
                 foreach (BellCurvePeriodDate bellCurvePeriodDate in bellCurvePeriodDates)
@@ -174,22 +180,30 @@ namespace BluePrints.ViewModels
                     double bellCurveProRate = betaPer(bellCurveProfile.Item1, bellCurveProfile.Item2, bellCurvePeriodDate.PeriodNumber, totalPeriod, beginPercentage);
                     decimal bellCurveProRateDecimal = Convert.ToDecimal(bellCurveProRate);
                     Common.ViewModel.Reporting.DataPoint dataPoint = new Common.ViewModel.Reporting.DataPoint();
-                    dataPoint.ProgressDate = bellCurvePeriodDate.PeriodDate;
-                    dataPoint.Units = hoursPerPeriod * bellCurveProRateDecimal;
+                    dataPoint.ProgressDate = bellCurvePeriodDate.PeriodWorkingDate.Date;
+
+                    decimal workingDaysFactor = bellCurvePeriodDate.PeriodWorkingDate.Prorate < 1 ? bellCurvePeriodDate.PeriodWorkingDate.Prorate : 1 + inflationFactor;
+                    dataPoint.Units = (assignHours * bellCurveProRateDecimal) * workingDaysFactor;
                     TENDER_PROFILE_ITEM.DataPoints.Add(dataPoint);
                 }
             }
         }
 
-        private List<BellCurvePeriodDate> getBellCurvePeriodDates(DateTime startDate, DateTime endDate)
+        private List<BellCurvePeriodDate> getBellCurvePeriodDates(DateTime startDate, DateTime endDate, List<DateTime> datesCollection)
         {
             List<BellCurvePeriodDate> bellCurvePeriodDates = new List<BellCurvePeriodDate>();
             double period = 1;
-            foreach (DateTime alignedDateTime in alignedDateCollection)
+            foreach (DateTime date in datesCollection)
             {
-                if((alignedDateTime >= startDate) && (alignedDateTime < endDate))
+                if((date >= startDate) && (date < endDate))
                 {
-                    BellCurvePeriodDate bellCurvePeriodDate = new BellCurvePeriodDate() { PeriodDate = alignedDateTime, PeriodNumber = period };
+                    bool isStartDate = date.Year == startDate.Year && date.Month == startDate.Month;
+                    bool isEndDate = date.Year == endDate.Year && date.Month == endDate.Month;
+
+                    bool isUseStartDateCalculation = isStartDate ? true : isEndDate ? false : false;
+                    DateTime bellCurveDate = isStartDate ? startDate : isEndDate ? endDate : date;
+
+                    BellCurvePeriodDate bellCurvePeriodDate = new BellCurvePeriodDate() { PeriodWorkingDate = new WorkingDaysDate(bellCurveDate, isUseStartDateCalculation), PeriodNumber = period };
                     bellCurvePeriodDates.Add(bellCurvePeriodDate);
                     period += 1;
                 }
@@ -198,22 +212,17 @@ namespace BluePrints.ViewModels
             return bellCurvePeriodDates;
         }
 
-        private decimal getNumberOfMonths(DateTime startDate, DateTime endDate)
-        {
-            return ((endDate.Year - startDate.Year) * 12) + endDate.Month - startDate.Month;
-        }
-
         private Tuple<double, double> getBellCurveProfile(BellCurveShape bellCurveShape)
         {
             double A = 0;
             double B = 0;
-            if (bellCurveShape == BellCurveShape.BackLoaded1)
+            if (bellCurveShape == BellCurveShape.FrontLoaded2)
                 return new Tuple<double, double>(0.75, 0.25);
-            else if (bellCurveShape == BellCurveShape.BackLoaded2)
+            else if (bellCurveShape == BellCurveShape.FrontLoaded1)
                 return new Tuple<double, double>(0.5, 0.5);
             else if (bellCurveShape == BellCurveShape.Balanced)
                 return new Tuple<double, double>(0.5, 0);
-            else if (bellCurveShape == BellCurveShape.FrontLoaded1)
+            else if (bellCurveShape == BellCurveShape.BackLoaded1)
                 return new Tuple<double, double>(0, 0.5);
             else
                 return new Tuple<double, double>(0, 0.25);
@@ -265,51 +274,52 @@ namespace BluePrints.ViewModels
             {
                 if (PROJECT.TENDER_PROJECT_START != null)
                 {
-                    DateTime PROJECTPlanStartDate = ((DateTime)PROJECT.TENDER_PROJECT_START);
-                    int duration = PROJECT.TENDER_PROJECT_DURATION == null ? 1 : (int)PROJECT.TENDER_PROJECT_DURATION;
-                    DateTime PROJECTPlanEndDate = PROJECTPlanStartDate.AddDays(duration * 7);
-                    if (startDate > PROJECTPlanStartDate)
-                        startDate = new DateTime(PROJECTPlanStartDate.Year, PROJECTPlanStartDate.Month, 1);
-                    if (endDate < PROJECTPlanEndDate)
-                        endDate = PROJECTPlanEndDate;
+                    Tuple<DateTime, DateTime> projectStartEndDate = BluePrintsDataUtils.GetTenderStartEndDate(PROJECT);
+                    if (startDate > projectStartEndDate.Item1)
+                        startDate = new DateTime(projectStartEndDate.Item1.Year, projectStartEndDate.Item1.Month, 1);
+                    if (endDate < projectStartEndDate.Item2)
+                        endDate = projectStartEndDate.Item2;
                 }
             }
 
             return ChronologicalHelpers.GenerateEndDatesCollection(startDate, endDate);
         }
-
-
         #endregion
 
         #region Saving Behavior
         private void onAfterEntitySaved(PROJECTTenderProfile projection, PROJECT entity, bool isNewEntity)
         {
-            onAfterPROJECTPlanSaved(entity);
         }
 
-        private void onAfterPROJECTPlanSaved(PROJECT entity)
+        //when new row is initiated a new instance of projection needs to be instantiated for cell update, if not cellvaluechanged won't have any values
+        public void ParentInitNewRow(InitNewRowEventArgs e)
         {
+            var gridView = (TableView)e.OriginalSource;
+            var grid = gridView.Grid;
+            DataRowView dataRowView = (DataRowView)grid.GetRow(e.RowHandle);
 
-        }
-
-        public void NewRowAddUndoAndSave(RowEventArgs e)
-        {
-            if (e.RowHandle == DataControlBase.NewItemRowHandle)
+            if (dataRowView["Project"] == DBNull.Value)
             {
-                MainViewModel.EntitiesUndoRedoManager.PauseActionId();
-
-                DataRowView row = (DataRowView)e.Row;
-
-                //findExistingOrAddNewFORECAST_JOB(row.Row);
-                //MainViewModel.EntitiesUndoRedoManager.AddUndo(updatedForecastJobFromDataRow(row.Row), null, null, null, EntityMessageType.Added);
-                //focusNewlyAddedProjectionTimer.Start();
-                ////added not working well atm because when row is removed from datatable its itemarray is cleared
-                ////EntitiesUndoRedoManager.AddUndo(row.Row, null, null, null, EntityMessageType.Added);
-                //MainViewModel.EntitiesUndoRedoManager.UnpauseActionId();
+                PROJECTTenderProfile newPROJECT = new PROJECTTenderProfile();
+                newPROJECT.Entity.STATUS = ProjectStatus.Tender;
+                dataRowView["Project"] = newPROJECT;
             }
         }
 
-        public override void ValidateRow(GridRowValidationEventArgs e)
+        public void ParentValidateCell(GridCellValidationEventArgs e)
+        {
+            DataRow dataRow = ((DataRowView)e.Row).Row;
+            string errorMessage = UnifiedValueValidation((PROJECTTenderProfile)dataRow[columnProject], e.Column.FieldName, e.Value, false);
+
+            if (errorMessage != string.Empty)
+            {
+                e.IsValid = false;
+                e.ErrorType = DevExpress.XtraEditors.DXErrorProvider.ErrorType.Critical;
+                e.ErrorContent = errorMessage;
+            }
+        }
+
+        public void ParentValidateRow(GridRowValidationEventArgs e)
         {
             DataRow dataRow = ((DataRowView)e.Row).Row;
             string errorMessage = UnifiedRowValidation((PROJECTTenderProfile)dataRow[columnProject]);
@@ -324,34 +334,53 @@ namespace BluePrints.ViewModels
 
         public void ParentCellValueChangedUpdate(CellValueChangedEventArgs e)
         {
-            DataRowView dataRowView = (DataRowView)e.Row;
-            if (e.RowHandle == GridControl.AutoFilterRowHandle)
-                return;
-
-            //new item handling
-            if (e.RowHandle == GridControl.NewItemRowHandle)
+            if (e.RowHandle != DataControlBase.NewItemRowHandle)
             {
-                //PROJECT_Dashboard newPROJECT;
-                //if (dataRowView[columnProject] == DBNull.Value)
-                //{
-                //    newPROJECT = new PROJECT_Dashboard();
-                //    dataRowView[columnProject] = newPROJECT;
-                //}
-                //else
-                //    newPROJECT = (PROJECT_Dashboard)dataRowView[columnProject];
+                DataRowView dataRowView = (DataRowView)e.Row;
+                if (e.RowHandle == GridControl.AutoFilterRowHandle)
+                    return;
 
-                //return;
+                string fieldName = e.Column.FieldName;
+                commitParentCellValue(e.Column.FieldName, dataRowView.Row, e.OldValue, e.Value);
             }
 
-            //existing item handling
-            //MainViewModel.EntitiesUndoRedoManager.PauseActionId();
-            string fieldName = e.Column.FieldName;
-
-            commitParentCellValue(e.Column.FieldName, dataRowView.Row, e.OldValue, e.Value);
-            //MainViewModel.EntitiesUndoRedoManager.AddUndo(updatedForecastJobFromDataRow(dataRowView.Row), fieldName, e.OldValue, e.Value, EntityMessageType.Changed);
-            //MainViewModel.EntitiesUndoRedoManager.UnpauseActionId();
-
             e.Handled = true;
+        }
+
+        public void ParentNewRowAddUndoAndSave(RowEventArgs e)
+        {
+            if (e.RowHandle == DataControlBase.NewItemRowHandle)
+            {
+                MainViewModel.EntitiesUndoRedoManager.PauseActionId();
+
+                DataRowView row = (DataRowView)e.Row;
+                PROJECTTenderProfile newPROJECT = (PROJECTTenderProfile)row[columnProject];
+                _bluePrintsUnitOfWork.PROJECTS.Add(newPROJECT.Entity);
+                _bluePrintsUnitOfWork.SaveChanges();
+                newPROJECT.TenderProfile = findExistingOrAddTenderProfile(newPROJECT.Entity);
+                BluePrintsDataUtils.CreateNewProjectDefaults(newPROJECT.Entity, _bluePrintsUnitOfWork);
+                BuildRowStats(newPROJECT, true);
+            }
+        }
+
+        private TENDER_PROFILE findExistingOrAddTenderProfile(PROJECT project)
+        {
+            TENDER_PROFILE TENDER_PROFILE = _bluePrintsUnitOfWork.TENDER_PROFILES.FirstOrDefault(x => x.GUID_PROJECT == project.GUID);
+            if(TENDER_PROFILE != null)
+            {
+                TENDER_PROFILE = new TENDER_PROFILE();
+                TENDER_PROFILE.NAME = BluePrintsResources.Default_TenderProfile_Name;
+                TENDER_PROFILE.GUID_PROJECT = project.GUID;
+                _bluePrintsUnitOfWork.TENDER_PROFILES.Add(TENDER_PROFILE);
+                _bluePrintsUnitOfWork.SaveChanges();
+            }
+
+            return TENDER_PROFILE;
+        }
+
+        private void addNewProject()
+        {
+
         }
 
         public void ChildCellValueChangedUpdate(CellValueChangedEventArgs e)
@@ -388,10 +417,35 @@ namespace BluePrints.ViewModels
 
         protected virtual void commitParentCellValue(string fieldName, DataRow row, object oldValue, object newValue, bool skipSaveChangesAndRowUpdate = false)
         {
-            PROJECTTenderProfile project = ((PROJECTTenderProfile)row[columnProject]);
-            IEnumerable<TENDER_PROFILE_ITEM> tenderProfileItems = project.TENDER_PROFILE_ITEMS;
+            PROJECTTenderProfile PROJECTTenderProfile = ((PROJECTTenderProfile)row[columnProject]);
+            IEnumerable<TENDER_PROFILE_ITEM> tenderProfileItems = PROJECTTenderProfile.TENDER_PROFILE_ITEMS;
 
-            fieldName = fieldName.Replace(columnProject + ".Entity.", "");
+            fieldName = formatParentFieldName(fieldName);
+            string tenderHoursFieldName = BindableBase.GetPropertyName(() => new PROJECTTenderProfile().TenderProfile.TENDER_HOURS);
+            if (fieldName.Contains(tenderHoursFieldName))
+            {
+                if(DataUtils.TrySetNestedValue(tenderHoursFieldName, PROJECTTenderProfile.TenderProfile, newValue))
+                {
+                    _bluePrintsUnitOfWork.SaveChanges();
+                    onDataPointsCalculated(PROJECTTenderProfile);
+                }
+            }
+            else
+            {
+                if(DataUtils.TrySetNestedValue(fieldName, PROJECTTenderProfile.Entity, newValue))
+                {
+                    _bluePrintsUnitOfWork.SaveChanges();
+                    onDataPointsCalculated(PROJECTTenderProfile);
+                }
+            }
+        }
+
+        /// <summary>
+        /// return the actual field name
+        /// </summary>
+        private string formatParentFieldName(string fieldName)
+        {
+            return fieldName.Replace(columnProject + ".Entity.", "");
         }
 
         protected virtual void commitChildCellValue(string fieldName, DataRow row, object oldValue, object newValue, bool skipSaveChangesAndRowUpdate = false)
@@ -399,18 +453,11 @@ namespace BluePrints.ViewModels
             TENDER_PROFILE_ITEM tenderProfileItem = ((TENDER_PROFILE_ITEM)row[columnTenderProfile]);
             PROJECTTenderProfile PROJECTTenderProfile = tenderProfileItem.PROJECTTenderProfile;
             string formattedFieldName = fieldName.Replace(columnTenderProfile + ".", "");
-            DataUtils.TrySetNestedValue(formattedFieldName, tenderProfileItem, newValue);
-            PROJECTTenderProfile.BluePrintsEntitiesUnitOfWork.SaveChanges();
-
-            onDataPointsCalculated(tenderProfileItem.PROJECTTenderProfile);
-            //TENDER_PROFILE_ITEMSelectionViewModelWrapper tenderProfileSelectionViewModelWrapper = TENDER_PROFILE_ITEMSelectionViewModelWrapper.Create();
-            //EntitiesParameter<PROJECT> entitiesParameter = new EntitiesParameter<PROJECT>(tenderProfileItem.PROJECTTenderProfile.Entity);
-            //tenderProfileSelectionViewModelWrapper.SetParentViewModel(this);
-            //tenderProfileSelectionViewModelWrapper.IsUsedAsPersistentViewModel = true;
-            //tenderProfileSelectionViewModelWrapper.OnDataPointsCalculated = onDataPointsCalculated;
-            //tenderProfileSelectionViewModelWrapper.OnParameterChange(entitiesParameter);
-            //tenderProfileSelectionViewModelWrapper.OnEntitiesLoadedCallBack = onTenderProfileSelectionViewModelWrapperLoaded;
-            //tenderProfileSelectionViewModelWrapper.OnEntitiesLoadedCallBackRelateParam = () => tenderProfileSelectionViewModelWrapper;
+            if(DataUtils.TrySetNestedValue(formattedFieldName, tenderProfileItem, newValue))
+            {
+                _bluePrintsUnitOfWork.SaveChanges();
+                onDataPointsCalculated(tenderProfileItem.PROJECTTenderProfile);
+            }
         }
 
         private void onTenderProfileSelectionViewModelWrapperLoaded(IEnumerable<TENDER_PROFILE_ITEM> tenderProfileItems, object invocationParent)
@@ -422,13 +469,62 @@ namespace BluePrints.ViewModels
         private void onDataPointsCalculated(PROJECTTenderProfile project)
         {
             project = populateTenderProfiles(project.Entity);
-            BuildRowStats(project, true);
+            //detect whether datatable needs to be reinstantiated
+            Tuple<DateTime, DateTime> projectStartEndDate = BluePrintsDataUtils.GetTenderStartEndDate(project.Entity);
+
+            bool shouldRefreshGrid = false;
+            foreach(DateTime dataPointsDate in dataPointsDateCollection)
+            {
+                if (!alignedDateCollection.Any(x => x.Year == dataPointsDate.Year && x.Month == dataPointsDate.Month))
+                {
+                    shouldRefreshGrid = true;
+                    break;
+                }
+            }
+
+            foreach(DateTime alignDate in alignedDateCollection)
+            {
+                if (!dataPointsDateCollection.Any(x => x.Year == alignDate.Year && x.Month == alignDate.Month))
+                {
+                    shouldRefreshGrid = true;
+                    break;
+                }
+            }
+
+            if (shouldRefreshGrid)
+            {
+                //refresh the entire grid
+                refreshDataPointsTable();
+            }
+            else
+                //refresh only the row
+                BuildRowStats(project, true);
+        }
+
+        private void refreshDataPointsTable()
+        {
+            alignedDateCollection = generateDates(Entities.Select(x => x.Entity));
+            ParentColumns.Clear();
+            ChildColumns.Clear();
+            ParentSummaries.Clear();
+            ChildSummaries.Clear();
+            dataPointsTable = null;
+            this.RaisePropertyChanged(x => x.DataPointsTable);
         }
 
         public override string UnifiedValueValidation(PROJECTTenderProfile projection, string field_name, object new_value, bool isPaste)
         {
+            string fieldName = formatParentFieldName(field_name);
+            if (fieldName == BindableBase.GetPropertyName(() => new PROJECT().NUMBER))
+            {
+                if(new_value != null)
+                    if (_bluePrintsUnitOfWork.PROJECTS.Any(x => x.NUMBER == new_value.ToString()))
+                    {
+                        return "Project number already exists";
+                    }
+            }
+
             return string.Empty;
-            //throw new NotImplementedException();
         }
 
         public override string UnifiedRowValidation(PROJECTTenderProfile projection)
@@ -568,7 +664,7 @@ namespace BluePrints.ViewModels
                 return;
 
             newDataRow[columnProject] = entity;
-            List<Common.ViewModel.Reporting.DataPoint> projectDataPoints = entity.TENDER_PROFILE_ITEMS.Where(x => x.DataPoints != null).SelectMany(x => x.DataPoints).ToList();
+            List<Common.ViewModel.Reporting.DataPoint> projectDataPoints = entity.TENDER_PROFILE_ITEMS == null ? new List<Common.ViewModel.Reporting.DataPoint>() : entity.TENDER_PROFILE_ITEMS.Where(x => x.DataPoints != null).SelectMany(x => x.DataPoints).ToList();
             //format dates row to numbers
             for (int i = 0; i < newDataRow.ItemArray.Count(); i++)
             {
@@ -635,15 +731,16 @@ namespace BluePrints.ViewModels
             columns.Clear();
             summaries.Clear();
 
-            columns.Add(new ColumnDescriptor() { FieldName = columnProject + ".Entity.NUMBER", ReadOnly = true, Header = "Number", Fixed = FixedStyle.Left, Width = 50, Settings = SettingsType.Default });
+            columns.Add(new ColumnDescriptor() { FieldName = columnProject + ".Entity.NUMBER", Header = "Number", Fixed = FixedStyle.Left, Width = 50, Settings = SettingsType.Default });
             summaries.Add(new SummaryDescriptor() { FieldName = columnProject + ".Entity.NUMBER", DisplayFormat = "{0} Record(s)", Type = SummaryItemType.Count });
-            columns.Add(new ColumnDescriptor() { FieldName = columnProject + ".Entity.NAME", ReadOnly = true, Header = "Name", Fixed = FixedStyle.Left, Width = 100, Settings = SettingsType.Default });
+            columns.Add(new ColumnDescriptor() { FieldName = columnProject + ".Entity.NAME", Header = "Name", Fixed = FixedStyle.Left, Width = 100, Settings = SettingsType.Default });
             columns.Add(new ColumnDescriptor() { FieldName = columnProject + ".Entity.STATUS", Header = "Status", Fixed = FixedStyle.Left, Width = 70, Settings = SettingsType.Enum1 });
             columns.Add(new ColumnDescriptor() { FieldName = columnProject + ".Entity.PIPELINE_TYPE", Header = "Type", Fixed = FixedStyle.Left, Width = 70, Settings = SettingsType.Enum2 });
             columns.Add(new ColumnDescriptor() { FieldName = columnProject + ".Entity.PIPELINE_DIVISION", Header = "Division", Fixed = FixedStyle.Left, Width = 70, Settings = SettingsType.Enum3 });
             columns.Add(new ColumnDescriptor() { FieldName = columnProject + ".Entity.PIPELINE_COMMODITY", Header = "Commodity", Fixed = FixedStyle.Left, Width = 70, Settings = SettingsType.Enum4 });
             columns.Add(new ColumnDescriptor() { FieldName = columnProject + ".Entity.PIPELINE_CONTRACT", Header = "Contract", Fixed = FixedStyle.Left, Width = 70, Settings = SettingsType.Enum5 });
             columns.Add(new ColumnDescriptor() { FieldName = columnProject + ".Entity.PIPELINE_STATUS", Header = "Status", Fixed = FixedStyle.Left, Width = 70, Settings = SettingsType.Enum6 });
+            columns.Add(new ColumnDescriptor() { FieldName = columnProject + ".TenderProfile.TENDER_HOURS", Header = "Tender Hours", Fixed = FixedStyle.Left, Mask = "n", Increment = 1, Width = 70, Settings = SettingsType.Number });
             columns.Add(new ColumnDescriptor() { FieldName = columnProject + ".Entity.TENDER_PROJECT_START", Header = "Start Date", ReadOnly = false, Fixed = FixedStyle.Left, Width = 100, Settings = SettingsType.Date });
             columns.Add(new ColumnDescriptor() { FieldName = columnProject + ".Entity.TENDER_PROJECT_DURATION", ReadOnly = false, Visible = true, Header = "Duration", Mask = "###,##0 Weeks", Increment = 1, Fixed = FixedStyle.Left, Width = 75, Settings = SettingsType.Number });
             columns.Add(new ColumnDescriptor() { FieldName = columnProject + ".Entity.PIPELINE_GROSS_PROFIT", ReadOnly = false, Visible = true, Header = "Gross Profit", Mask = "c2", Increment = 1, Fixed = FixedStyle.Left, Width = 75, Settings = SettingsType.Number });
@@ -653,8 +750,8 @@ namespace BluePrints.ViewModels
             foreach (DateTime alignedDate in alignedDates.OrderBy(x => x))
             {
                 string columnFieldName = alignedDate.Date.ToString(BluePrintsResources.ColumnDateFormat);
-                columns.Add(new ColumnDescriptor() { FieldName = columnFieldName, Mask = "n0", ReadOnly = true, Header = columnFieldName, Width = 60, Settings = SettingsType.Number });
-                summaries.Add(new SummaryDescriptor() { FieldName = columnFieldName, DisplayFormat = "n0", Type = SummaryItemType.Sum });
+                columns.Add(new ColumnDescriptor() { FieldName = columnFieldName, Mask = "n2", ReadOnly = true, Header = columnFieldName, Width = 60, Settings = SettingsType.Number });
+                summaries.Add(new SummaryDescriptor() { FieldName = columnFieldName, DisplayFormat = "n2", Type = SummaryItemType.Sum });
             }
         }
 
@@ -673,8 +770,8 @@ namespace BluePrints.ViewModels
             foreach (DateTime alignedDate in alignedDates.OrderBy(x => x))
             {
                 string columnFieldName = alignedDate.Date.ToString(BluePrintsResources.ColumnDateFormat);
-                columns.Add(new ColumnDescriptor() { FieldName = columnFieldName, Mask = "n0", ReadOnly = true, Header = columnFieldName, Tag = columnFieldName, Width = 60, Settings = SettingsType.Number });
-                summaries.Add(new SummaryDescriptor() { FieldName = columnFieldName, DisplayFormat = "n0", Type = SummaryItemType.Sum });
+                columns.Add(new ColumnDescriptor() { FieldName = columnFieldName, Mask = "n2", ReadOnly = true, Header = columnFieldName, Tag = columnFieldName, Width = 60, Settings = SettingsType.Number });
+                summaries.Add(new SummaryDescriptor() { FieldName = columnFieldName, DisplayFormat = "n2", Type = SummaryItemType.Sum });
             }
         }
 
@@ -729,7 +826,48 @@ namespace BluePrints.ViewModels
 
     public class BellCurvePeriodDate
     {
-        public DateTime PeriodDate { get; set; }
+        public WorkingDaysDate PeriodWorkingDate { get; set; }
         public double PeriodNumber { get; set; }
+    }
+
+    public class WorkingDaysDateList : List<WorkingDaysDate>
+    {
+        decimal workingDaysDeficit = 0;
+        public void AddWorkingDays(WorkingDaysDate workingDays)
+        {
+            this.Add(workingDays);
+            if (workingDays.Prorate < 1)
+                workingDaysDeficit = 1 - workingDays.Prorate;
+
+            List<WorkingDaysDate> workingDaysWithoutDeficit = this.Where(x => x.Prorate >= 1).ToList();
+            decimal inflationFactor = workingDaysDeficit / workingDaysWithoutDeficit.Count();
+            workingDaysWithoutDeficit.ForEach(x => x.Prorate = 1 + inflationFactor);
+        }
+    }
+
+    //dates are always generated as start of the month, when the actual date is middle of the month prorate will be applied
+    public class WorkingDaysDate
+    {
+        public WorkingDaysDate(DateTime date, bool isStartDate)
+        {
+            DateTime monthBeginningDate = new DateTime(date.Year, date.Month, 1);
+            DateTime monthEndDate = monthBeginningDate.AddMonths(1).AddDays(-1);
+            Date = date;
+
+            int daysInMonth = DateTime.DaysInMonth(date.Year, date.Month);
+            double workingDays = 0;
+            if (isStartDate)
+                workingDays = (monthEndDate - date).TotalDays;
+            else
+                workingDays = (date - monthBeginningDate).TotalDays;
+
+            //include adjustment for subtraction that doesn't include the entire day
+            workingDays += 1;
+            double dblDaysInMonth = Convert.ToDouble(daysInMonth);
+            Prorate = Convert.ToDecimal(workingDays / daysInMonth);
+        }
+
+        public DateTime Date { get; set; }
+        public decimal Prorate { get; set; }
     }
 }
