@@ -1321,10 +1321,6 @@ namespace BluePrints.Common.Base
                         continue;
 
                     TASK P6TASK = PROJECTTASK.FirstOrDefault(P6Task => P6Task.task_code == p6_assignment.P6_ACTIVITYID);
-                    string s;
-                    if (P6TASK.task_code == "DSH-ME-0170")
-                        s = string.Empty;
-
                     if (P6TASK != null && P6TASK.delete_date == null)
                     {
                         //defines how much percentage of units this assignment will take up when it is fully assigned, so that we can estimate the total duration to apply productivity to
