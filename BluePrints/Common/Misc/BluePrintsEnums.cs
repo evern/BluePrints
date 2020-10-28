@@ -110,8 +110,8 @@ namespace BluePrints.Common
 
     public enum BellCurveShape
     {
-        [Display(Name = "FrontLoaded2")] FrontLoaded1 = 0,
-        [Display(Name = "FrontLoaded1")] FrontLoaded2 = 1,
+        [Display(Name = "FrontLoaded2")] FrontLoaded2 = 0,
+        [Display(Name = "FrontLoaded1")] FrontLoaded1 = 1,
         [Display(Name = "Balanced")] Balanced = 2,
         [Display(Name = "BackLoaded1")] BackLoaded1 = 3,
         [Display(Name = "BackLoaded2")] BackLoaded2 = 4

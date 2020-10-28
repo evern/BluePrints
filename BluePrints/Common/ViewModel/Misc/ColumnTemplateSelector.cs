@@ -38,6 +38,9 @@ namespace BluePrints.Common.ViewModel.Misc
         public object ItemsSource { get; set; }
         public string NullText { get; set; }
         public string Tag { get; set; }
+        public int VisibleIndex { get; set; }
+        //only have value when column is a date
+        public DateTime ColumnDate { get; set; }
         public UnboundColumnType UnboundType { get; set; }
     }
 
