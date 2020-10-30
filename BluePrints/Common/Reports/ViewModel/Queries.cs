@@ -240,7 +240,7 @@ namespace BluePrints.Common.ViewModel.Reporting
             List<VariationAdjustment> projectVariationAdjustments = ProjectionHelpers.BuildProjectVariationAdjustments(VARIATIONS.Where(x => x.APPROVED != null).AsQueryable(), projections);
 
             //In progress distribution we want to generate cumulative data point to whatever date user set
-            DateTime? extrapolateDate = PROGRESS.DATA_DATE;
+            DateTime? extrapolateDate = useReportDate ? PROGRESS.REPORT_DATE == null ? PROGRESS.DATA_DATE : (DateTime)PROGRESS.REPORT_DATE : PROGRESS.DATA_DATE;
             if (forceExtrapolateDate != null)
             {
                 TimeSpan interval = ChronologicalHelpers.GetDefaultIntervalTimeSpan();
