@@ -423,4 +423,7 @@
   <data name="Permission_DesignDeliverables_CanDateBackwardForward" xml:space="preserve">
     <value>Allow moving data date forward and backward</value>
   </data>
+  <data name="Menu_Project_DesignVariationQuery" xml:space="preserve">
+    <value>Query design variation breakdown</value>
+  </data>
 </root>

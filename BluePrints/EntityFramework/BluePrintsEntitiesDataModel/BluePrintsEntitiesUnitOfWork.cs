@@ -460,5 +460,10 @@ namespace BluePrints.BluePrintsEntitiesDataModel
         {
             get { return GetRepository(x => x.Set<VARIATION_CONSTRUCTION_IMPACT>(), (VARIATION_CONSTRUCTION_IMPACT x) => x.GUID); }
         }
+
+        IRepository<X_VARIATION_QUERY, Guid> IBluePrintsEntitiesUnitOfWork.X_VARIATION_QUERY
+        {
+            get { return GetRepository(x => x.Set<X_VARIATION_QUERY>(), (X_VARIATION_QUERY x) => x.GUID); }
+        }
     }
 }

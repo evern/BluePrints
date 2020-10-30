@@ -1,0 +1,98 @@
+﻿<UserControl x:Class="BluePrints.Views.VariationQueryCollectionView" xmlns="http://schemas.microsoft.com/netfx/2009/xaml/presentation" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" xmlns:behavior="clr-namespace:BaseModel.View.Behaviors;assembly=BaseModel" xmlns:converter="clr-namespace:BluePrints.Common.ViewModel.Converters" xmlns:custom="clr-namespace:BaseModel.Misc;assembly=BaseModel" xmlns:d="http://schemas.microsoft.com/expression/blend/2008" xmlns:dx="http://schemas.devexpress.com/winfx/2008/xaml/core" xmlns:dxb="http://schemas.devexpress.com/winfx/2008/xaml/bars" xmlns:dxc="http://schemas.devexpress.com/winfx/2008/xaml/core" xmlns:dxdo="http://schemas.devexpress.com/winfx/2008/xaml/docking" xmlns:dxe="http://schemas.devexpress.com/winfx/2008/xaml/editors" xmlns:dxg="http://schemas.devexpress.com/winfx/2008/xaml/grid" xmlns:dxlc="http://schemas.devexpress.com/winfx/2008/xaml/layoutcontrol" xmlns:dxmvvm="http://schemas.devexpress.com/winfx/2008/xaml/mvvm" xmlns:dxr="http://schemas.devexpress.com/winfx/2008/xaml/ribbon" xmlns:dxrudex="http://schemas.devexpress.com/winfx/2008/xaml/reports/userdesignerextensions" xmlns:filter="clr-namespace:BluePrints.Common.Filtering" xmlns:i="http://schemas.microsoft.com/expression/2010/interactivity" xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" xmlns:services="clr-namespace:BaseModel.ViewModel.Services;assembly=BaseModel" xmlns:sys="clr-namespace:System;assembly=mscorlib" xmlns:view="clr-namespace:BluePrints.Views" xmlns:viewmodel="clr-namespace:BluePrints.ViewModels" x:Name="userControl" d:DesignHeight="400" d:DesignWidth="600" DataContext="{dxmvvm:ViewModelSource viewmodel:VariationQueryCollectionViewModelWrapper}" mc:Ignorable="d">
+    <UserControl.Resources>
+        <ResourceDictionary>
+            <converter:DataPointsTableFieldNameConverter x:Key="DataPointsTableFieldNameConverter" />
+            <ResourceDictionary.MergedDictionaries>
+                <ResourceDictionary Source="pack://application:,,,/Common/View/ResourceDictionaries/DefaultBluePrintsResourceDictionary.xaml" />
+                <ResourceDictionary Source="pack://application:,,,/BaseModel;component/View/ResourceDictionaries/DefaultControlResourceDictionary.xaml" />
+                <ResourceDictionary Source="pack://application:,,,/Common/View/ResourceDictionaries/ConverterResourceDictionary.xaml" />
+                <ResourceDictionary Source="pack://application:,,,/Common/View/ResourceDictionaries/CustomControlResourceDictionary.xaml" />
+            </ResourceDictionary.MergedDictionaries>
+        </ResourceDictionary>
+    </UserControl.Resources>
+    <Grid Style="{StaticResource CollectionView.RootContainer}">
+        <dxb:BarManager>
+            <dxb:BarManager.Items>
+                <dxb:BarSubItem ItemLinksSource="{StaticResource RibbonDefaultGridButtons}" />
+            </dxb:BarManager.Items>
+        <DockPanel>
+                <dxr:RibbonControl Style="{StaticResource DefaultRibbonControlStyle}">
+                    <dxr:RibbonDefaultPageCategory MergeType="Replace" Caption="defaultCategory">
+                        <dxr:RibbonPage MergeType="Replace" Caption="Grid">
+                            <dxr:RibbonPageGroup MergeType="Replace" Caption="Grid" >
+                                <dxb:BarButtonItemLink BarItemName="biFullRefresh1" />
+                                <dxb:BarCheckItemLink BarItemName="biCellSelection1" />
+                                <dxb:BarButtonItemLink BarItemName="biSaveLayout1" />
+                                <dxb:BarButtonItemLink BarItemName="biResetLayout1" />
+                                <dxb:BarButtonItemLink BarItemName="biExpandAllGroups1" />
+                                <dxb:BarButtonItemLink BarItemName="biCollapseAllGroups1" />
+                                <dxb:BarButtonItemLink BarItemName="biExportToExcel1" />
+                                <dxb:BarButtonItemLink BarItemName="biExportToPDF1" />
+                                <dxb:BarButtonItemLink BarItemName="biEditReport1" />
+                                <dxb:BarButtonItemLink BarItemName="biViewReport1" />
+                                <dxb:BarButtonItemLink BarItemName="biExportAll" />
+                            </dxr:RibbonPageGroup>
+                        </dxr:RibbonPage>
+                    </dxr:RibbonDefaultPageCategory>
+                </dxr:RibbonControl>
+                <dxg:GridControl x:Name="GridControl" dxc:DXSerializer.SerializationID="GridControlTimesheetQuery" dxc:DXSerializer.StoreLayoutMode="All" Style="{StaticResource DefaultLightGridControlTemplate}">
+                    <dxg:GridControl.Bands>
+                        <dxg:GridControlBand Header="Categorisation">
+                            <dxg:GridColumn ReadOnly="True" FieldName="GUID_SUBJOB" Header="Sub Job" Visible="true">
+                                <dxg:GridColumn.EditSettings>
+                                    <dxe:ComboBoxEditSettings AutoComplete="True" DisplayMember="INTERNAL_NAME1" IsTextEditable="True" ItemsSource="{Binding SUBJOBCollection}" ValueMember="GUID" />
+                                </dxg:GridColumn.EditSettings>
+                            </dxg:GridColumn>
+                            <dxg:GridColumn ReadOnly="True" FieldName="GUID_DISCIPLINE" Header="Discipline" >
+                                <dxg:GridColumn.EditSettings>
+                                    <dxe:ComboBoxEditSettings AutoComplete="True" DisplayMember="NAME" IsTextEditable="True" ItemsSource="{Binding DISCIPLINECollection}" ValueMember="GUID" />
+                                </dxg:GridColumn.EditSettings>
+                            </dxg:GridColumn>
+                            <dxg:GridColumn ReadOnly="True" FieldName="GUID_DOCTYPE" Header="Document Type" >
+                                <dxg:GridColumn.EditSettings>
+                                    <dxe:ComboBoxEditSettings AutoComplete="True" DisplayMember="NAME" IsTextEditable="True" ItemsSource="{Binding DOCTYPECollection}" ValueMember="GUID" />
+                                </dxg:GridColumn.EditSettings>
+                            </dxg:GridColumn>
+                            <dxg:GridColumn ReadOnly="True" Width="*" Header="Deliverable" FieldName="INTERNAL_NUM" >
+                                <dxg:GridColumn.EditSettings>
+                                    <dxe:TextEditSettings  />
+                                </dxg:GridColumn.EditSettings>
+                            </dxg:GridColumn>
+                        </dxg:GridControlBand>
+                        <dxg:GridControlBand Header="Variation">
+                            <dxg:GridColumn FieldName="VARIATION_UNITS" Header="Hours" ReadOnly="True">
+                                <dxg:GridColumn.EditSettings>
+                                    <dxe:SpinEditSettings Increment="1" Mask="###,##0 hrs" MaskType="Numeric" MaskUseAsDisplayFormat="True" MinValue="0" />
+                                </dxg:GridColumn.EditSettings>
+                            </dxg:GridColumn>
+                            <dxg:GridColumn ReadOnly="True" Header="Name" FieldName="NAME" VisibleIndex="10" >
+                                <dxg:GridColumn.EditSettings>
+                                    <dxe:TextEditSettings  />
+                                </dxg:GridColumn.EditSettings>
+                            </dxg:GridColumn>
+                            <dxg:GridColumn ReadOnly="True" Header="Submitted" FieldName="SUBMITTED" AllowBestFit="false" Width="80" />
+                            <dxg:GridColumn ReadOnly="True" Header="Approved" FieldName="APPROVED" AllowBestFit="false" Width="80" />
+                            <dxg:GridColumn ReadOnly="True" Header="Client Approved" FieldName="CLIENT_APPROVED" AllowBestFit="false" Width="80" />
+                            <dxg:GridColumn ReadOnly="True" Header="Budget Adjustment" FieldName="ADJUSTMENT_TO_BUDGET" AllowBestFit="false" Width="70" />
+                        </dxg:GridControlBand>
+                    </dxg:GridControl.Bands>
+                    <dxg:GridControl.GroupSummary>
+                        <dxg:GridSummaryItem dxc:DXSerializer.Enabled="False" Alignment="Right" SummaryType="Count" />
+                        <dxg:GridSummaryItem dxc:DXSerializer.Enabled="False" DisplayFormat="n" FieldName="VARIATION_UNITS" SummaryType="Sum" />
+                    </dxg:GridControl.GroupSummary>
+                    <dxg:GridControl.TotalSummary>
+                        <dxg:GridSummaryItem dxc:DXSerializer.Enabled="False" Alignment="Right" SummaryType="Count" />
+                        <dxg:GridSummaryItem dxc:DXSerializer.Enabled="False" DisplayFormat="n" FieldName="VARIATION_UNITS" SummaryType="Sum" />
+                    </dxg:GridControl.TotalSummary>
+                    <dxg:GridControl.View>
+                        <dxg:TableView x:Name="tableView" NewItemRowPosition="None" Style="{StaticResource DefaultTableViewTemplate}">
+                            <dxg:TableView.RowCellMenuCustomizations>
+                                <dxb:BarButtonItemLink BarItemName="biFullRefresh1" />
+                            </dxg:TableView.RowCellMenuCustomizations>
+                        </dxg:TableView>
+                    </dxg:GridControl.View>
+                </dxg:GridControl>
+            </DockPanel>
+        </dxb:BarManager>
+    </Grid>
+</UserControl>
