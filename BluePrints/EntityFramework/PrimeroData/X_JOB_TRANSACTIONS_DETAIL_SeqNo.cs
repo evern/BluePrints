@@ -18,6 +18,8 @@
         [StringLength(50)]
         public string X_VARIATIONCODE { get; set; }
 
+        public string NARRATIVE { get; set; }
+
         public int? master_jobno { get; set; }
 
         public double? EXCHRATE { get; set; }
