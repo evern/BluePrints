@@ -74,12 +74,19 @@ namespace BluePrints.ViewModels
         private IUnitOfWorkFactory<IPrimeroEntitiesUnitOfWork> primeroUnitOfWorkFactory;
         private IPrimeroEntitiesUnitOfWork primeroUnitOfWork;
         JOBCOST_HDR loadJOBCOST_HDR;
+        bool isYearToDate = false;
         protected override void resolveParameters(object parameter)
         {
             var PROJECTParameter = (EntitiesParameter<Data.PROJECT>)parameter;
             loadPROJECT = PROJECTParameter.GetEntity();
+            if (loadPROJECT == null)
+                isYearToDate = true;
 
-            primeroUnitOfWorkFactory = PrimeroEntitiesUnitOfWorkSource.GetUnitOfWorkFactory(loadPROJECT.OfficeNameForExo == BluePrintsResources.OfficeMontreal);
+            if(loadPROJECT == null)
+                primeroUnitOfWorkFactory = PrimeroEntitiesUnitOfWorkSource.GetUnitOfWorkFactory();
+            else
+                primeroUnitOfWorkFactory = PrimeroEntitiesUnitOfWorkSource.GetUnitOfWorkFactory(loadPROJECT.OfficeNameForExo == BluePrintsResources.OfficeMontreal);
+
             primeroUnitOfWork = primeroUnitOfWorkFactory.CreateUnitOfWork();
         }
 
@@ -94,7 +101,10 @@ namespace BluePrints.ViewModels
 
         private Func<IRepositoryQuery<JOBCOST_HDR>, IQueryable<JOBCOST_HDR>> JOBCOST_HDRProjectionFunc()
         {
-            return query => query.Where(x => x.JOBCODE.Contains(loadPROJECT.NUMBER.ToString()));
+            if (isYearToDate)
+                return query => query;
+            else
+                return query => query.Where(x => x.JOBCODE.Contains(loadPROJECT.NUMBER.ToString()));
         }
 
         public ObservableCollection<JOB_TRANSACTIONS> JOB_TRANSACTIONS = new ObservableCollection<JOB_TRANSACTIONS>();
@@ -105,12 +115,10 @@ namespace BluePrints.ViewModels
 
         protected override Func<IRepositoryQuery<X_JOB_TRANSACTIONS_DETAIL_SeqNo>, IQueryable<X_JOB_TRANSACTIONS_DETAIL_SeqNo>> specifyMainViewModelProjection()
         {
-            return query => query.Where(x => x.master_jobno == loadJOBCOST_HDR.JOBNO);
-        }
-
-        protected Func<IRepositoryQuery<X_JOB_TRANSACTIONS_DETAIL_SeqNo>, IQueryable<X_JOB_TRANSACTIONS_DETAIL_SeqNo>> X_JOB_TRANSACTIONS_DETAIL_SeqNoProjection()
-        {
-            return query => query.Where(x => x.jobcode == loadPROJECT.NUMBER);
+            if (isYearToDate)
+                return query => query.Where(x => x.transdate != null).Where(x => ((DateTime)x.transdate).Year == DateTime.Now.Year);
+            else
+                return query => query.Where(x => x.master_jobno == loadJOBCOST_HDR.JOBNO);
         }
 
         protected override OperationInterceptMode OnBeforeProjectionSaveIsContinue(X_JOB_TRANSACTIONS_DETAIL_SeqNo projection, out bool isNew)
