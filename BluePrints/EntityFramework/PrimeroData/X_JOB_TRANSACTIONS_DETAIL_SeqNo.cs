@@ -26,6 +26,8 @@
 
         public double? EXCHRATE { get; set; }
 
+        public string TITLE { get; set; }
+
         [StringLength(15)]
         public string jobcode { get; set; }
 
