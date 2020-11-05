@@ -4,6 +4,7 @@ using DevExpress.Xpf.Grid;
 using System;
 using System.Windows;
 using System.Windows.Controls;
+using System.Windows.Media;
 
 namespace BluePrints.Common.ViewModel.Misc
 {
@@ -39,12 +40,15 @@ namespace BluePrints.Common.ViewModel.Misc
         public string NullText { get; set; }
         public string Tag { get; set; }
         public int VisibleIndex { get; set; }
+        public int SortIndex { get; set; }
+        public decimal MinValue { get; set; }
+        public decimal MaxValue { get; set; }
         //only have value when column is a date
         public DateTime ColumnDate { get; set; }
         public UnboundColumnType UnboundType { get; set; }
     }
 
-    public enum SettingsType { Default, Unbound, Collection, DisplayMemberCollection, Text, POError, Budget, Number, Date, ForecastPast, ForecastFuture, ForecastChild, FullCode, StockItem, CommodityCode, JobError, Percent, Cost, Units, Gates, Unforecasted, Enum1, Enum2, Enum3, Enum4, Enum5, Enum6 }
+    public enum SettingsType { Default, Unbound, Collection, DisplayMemberCollection, Text, POError, Budget, Number, Date, ForecastPast, ForecastFuture, ForecastChild, FullCode, StockItem, CommodityCode, JobError, Percent, Cost, Units, Gates, Unforecasted, Enum1, Enum2, Enum3, Enum4, Enum5, Enum6, Enum7 }
     public class ColumnTemplateSelector : DataTemplateSelector
     {
         public override DataTemplate SelectTemplate(object item, DependencyObject container)

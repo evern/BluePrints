@@ -18,10 +18,11 @@ namespace BluePrints.Views
         public PROJECTPlanView()
         {
             InitializeComponent();
-            //HwndSource source = (HwndSource)HwndSource.FromVisual(this);
-            //HwndTarget target = source?.CompositionTarget;
-            //if (target != null)
-            //    target.RenderMode = RenderMode.SoftwareOnly;
+        }
+
+        private void GridControlChild_PastingFromClipboard(object sender, PastingFromClipboardEventArgs e)
+        {
+            e.Handled = true;
         }
     }
 }

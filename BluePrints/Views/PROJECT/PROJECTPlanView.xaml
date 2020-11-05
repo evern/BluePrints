@@ -27,6 +27,7 @@
                         ReadOnly="{Binding Path=(dxci:DependencyObjectExtensions.DataContext).ReadOnly, RelativeSource={RelativeSource Self}}"
                         Visible="{Binding Path=(dxci:DependencyObjectExtensions.DataContext).Visible, RelativeSource={RelativeSource Self}, Mode=TwoWay}"
                         VisibleIndex="{Binding Path=(dxci:DependencyObjectExtensions.DataContext).VisibleIndex, RelativeSource={RelativeSource Self}}"
+                        SortIndex="{Binding Path=(dxci:DependencyObjectExtensions.DataContext).SortIndex, RelativeSource={RelativeSource Self}}"
                         Tag="{Binding Path=(dxci:DependencyObjectExtensions.DataContext).Tag, RelativeSource={RelativeSource Self}}"
                         HeaderToolTip="{Binding Path=(dxci:DependencyObjectExtensions.DataContext).HeaderToolTip, RelativeSource={RelativeSource Self}}"/>
                 </ContentControl>
@@ -150,6 +151,23 @@
                     </dxg:GridColumn>
                 </ContentControl>
             </DataTemplate>
+            <DataTemplate x:Key="Enum7ColumnTemplate">
+                <ContentControl>
+                    <dxg:GridColumn AllowBestFit="False" FieldName="{Binding Path=(dxci:DependencyObjectExtensions.DataContext).FieldName, RelativeSource={RelativeSource Self}}" 
+                        Header="{Binding Path=(dxci:DependencyObjectExtensions.DataContext).Header, RelativeSource={RelativeSource Self}}" 
+                        Width="{Binding Path=(dxci:DependencyObjectExtensions.DataContext).Width, RelativeSource={RelativeSource Self}}"
+                        Fixed="{Binding Path=(dxci:DependencyObjectExtensions.DataContext).Fixed, RelativeSource={RelativeSource Self}}"
+                        ReadOnly="{Binding Path=(dxci:DependencyObjectExtensions.DataContext).ReadOnly, RelativeSource={RelativeSource Self}}"
+                        Visible="{Binding Path=(dxci:DependencyObjectExtensions.DataContext).Visible, RelativeSource={RelativeSource Self}, Mode=TwoWay}"
+                        VisibleIndex="{Binding Path=(dxci:DependencyObjectExtensions.DataContext).VisibleIndex, RelativeSource={RelativeSource Self}}"
+                        Tag="{Binding Path=(dxci:DependencyObjectExtensions.DataContext).Tag, RelativeSource={RelativeSource Self}}"
+                        HeaderToolTip="{Binding Path=(dxci:DependencyObjectExtensions.DataContext).HeaderToolTip, RelativeSource={RelativeSource Self}}" >
+                        <dxg:GridColumn.EditSettings>
+                            <dxe:ComboBoxEditSettings AutoComplete="True" IsTextEditable="True" ItemsSource="{dxe:EnumItemsSource EnumType={x:Type common:BellCurveShape}}" />
+                        </dxg:GridColumn.EditSettings>
+                    </dxg:GridColumn>
+                </ContentControl>
+            </DataTemplate>
             <DataTemplate x:Key="CollectionColumnTemplate">
                 <ContentControl>
                     <dxg:GridColumn AllowBestFit="False" FieldName="{Binding Path=(dxci:DependencyObjectExtensions.DataContext).FieldName, RelativeSource={RelativeSource Self}}" 
@@ -205,7 +223,7 @@
                         Tag="{Binding Path=(dxci:DependencyObjectExtensions.DataContext).Tag, RelativeSource={RelativeSource Self}}"
                         HeaderToolTip="{Binding Path=(dxci:DependencyObjectExtensions.DataContext).HeaderToolTip, RelativeSource={RelativeSource Self}}" >
                         <dxg:GridColumn.EditSettings>
-                            <dxe:SpinEditSettings Mask="{Binding Mask}" MaskType="Numeric" Increment="{Binding Increment}" MaskUseAsDisplayFormat="True" />
+                            <dxe:SpinEditSettings Mask="{Binding Mask}" MaskType="Numeric" MinValue="{Binding MinValue}" MaxValue="{Binding MaxValue}" Increment="{Binding Increment}" MaskUseAsDisplayFormat="True" />
                         </dxg:GridColumn.EditSettings>
                     </dxg:GridColumn>
                 </ContentControl>
@@ -244,10 +262,20 @@
         </ResourceDictionary>
     </UserControl.Resources>
     <Grid Style="{StaticResource CollectionView.RootContainer}">
+        <dxmvvm:Interaction.Behaviors>
+            <dxc:DialogService x:Name="DistributionDialogService">
+                <dxc:DialogService.DialogStyle>
+                    <Style TargetType="dx:DXDialogWindow">
+                        <Setter Property="SizeToContent" Value="WidthAndHeight" />
+                    </Style>
+                </dxc:DialogService.DialogStyle>
+            </dxc:DialogService>
+        </dxmvvm:Interaction.Behaviors>
         <dxb:BarManager>
             <dxb:BarManager.Items>
                 <dxb:BarSubItem ItemLinksSource="{StaticResource RibbonDefaultGridButtons}" />
-                <dxb:BarButtonItem x:Name="biDeleteParentRows" Command="{Binding DeleteSelectedProjectsCommand}" Content="Delete Selected Row(s)" Glyph="{dx:DXImage Image=Delete_16x16.png}" LargeGlyph="{dx:DXImage Image=Delete_32x32.png}" RibbonStyle="SmallWithText" ToolTip="Delete selected rows" />
+                <dxb:BarButtonItem x:Name="biDeleteChildRows" Command="{Binding DeleteSelectedTenderProfilesCommand}" Content="Delete Selected Tender Profile(s)" Glyph="{dx:DXImage Image=Delete_16x16.png}" LargeGlyph="{dx:DXImage Image=Delete_32x32.png}" RibbonStyle="SmallWithText" ToolTip="Delete selected rows" />
+                <dxb:BarButtonItem x:Name="biDeleteParentRows" Command="{Binding DeleteSelectedProjectsCommand}" Content="Delete Selected Project(s)" Glyph="{dx:DXImage Image=Delete_16x16.png}" LargeGlyph="{dx:DXImage Image=Delete_32x32.png}" RibbonStyle="SmallWithText" ToolTip="Delete selected rows" />
             </dxb:BarManager.Items>
             <DockPanel>
                 <dxr:RibbonControl Style="{StaticResource DefaultRibbonControlStyle}">
@@ -255,16 +283,9 @@
                         <dxr:RibbonPage MergeType="Replace" Caption="Grid">
                             <dxr:RibbonPageGroup MergeType="Replace" Caption="Grid" >
                                 <dxb:BarButtonItemLink BarItemName="biFullRefresh1" />
-                                <dxb:BarButtonItemLink BarItemName="biBulkDelete1" />
-                                <dxb:BarButtonItemLink BarItemName="biUndo1" />
-                                <dxb:BarButtonItemLink BarItemName="biRedo1" />
-                                <dxb:BarButtonItemLink BarItemName="biKeyboardCopy1"/>
-                                <dxb:BarButtonItemLink BarItemName="biKeyboardPaste1" />
                                 <dxb:BarCheckItemLink BarItemName="biCellSelection1" />
                                 <dxb:BarButtonItemLink BarItemName="biSaveLayout1" />
                                 <dxb:BarButtonItemLink BarItemName="biResetLayout1" />
-                                <dxb:BarButtonItemLink BarItemName="biExpandAllGroups1" />
-                                <dxb:BarButtonItemLink BarItemName="biCollapseAllGroups1" />
                                 <dxb:BarButtonItemLink BarItemName="biExportToExcel1" />
                                 <dxb:BarButtonItemLink BarItemName="biExportToPDF1" />
                             </dxr:RibbonPageGroup>
@@ -283,17 +304,25 @@
                                             ColumnGeneratorTemplateSelector="{StaticResource ColumnTemplateSelector}" ColumnsSource="{Binding ParentColumns}" dxc:DXSerializer.SerializationID="GridControlProjectPlan" dxc:DXSerializer.StoreLayoutMode="All" AutoExpandAllGroups="False" ShowAllTableValuesInCheckedFilterPopup="False" AutoGenerateColumns="None" ClipboardCopyMode="ExcludeHeader" ItemsSource="{Binding DataPointsTable}" CurrentItem="{Binding SelectedParentDataRow, Mode=TwoWay}" SelectedItems="{Binding SelectedParentDataRows, Mode=TwoWay}" SelectionMode="{Binding SelectMode}" ShowLoadingPanel="{Binding IsLoading}">
                                     <dxg:GridControl.DetailDescriptor>
                                         <dxg:DataControlDetailDescriptor ItemsSourceBinding="{Binding TenderProfileDataTable}">
-                                            <dxg:GridControl x:Name="gridControlChild"                                              
+                                            <dxg:GridControl x:Name="gridControlChild"    PastingFromClipboard="GridControlChild_PastingFromClipboard"                                            
                                                                 TotalSummarySource="{Binding ChildSummaries}"
                                                                 TotalSummaryGeneratorTemplate="{StaticResource SummaryTemplate}"
                                                                 GroupSummarySource="{Binding ChildSummaries}"
                                                                 GroupSummaryGeneratorTemplate="{StaticResource SummaryTemplate}"
-                                                                AutoGenerateColumns="None"  ColumnGeneratorTemplateSelector="{StaticResource ColumnTemplateSelector}" ColumnsSource="{Binding ChildColumns}" ClipboardCopyMode="ExcludeHeader" SelectionMode="Cell">
+                                                                AutoGenerateColumns="None" ColumnGeneratorTemplateSelector="{StaticResource ColumnTemplateSelector}" ColumnsSource="{Binding ChildColumns}" ClipboardCopyMode="ExcludeHeader" CurrentItem="{Binding SelectedChildDataRow, Mode=TwoWay}" SelectionMode="{Binding SelectMode}" SelectedItems="{Binding SelectedChildDataRows, Mode=TwoWay}">
                                                 <i:Interaction.Behaviors>
                                                     <behavior:DetailSyncBehavior IsUseTag="True" />
                                                 </i:Interaction.Behaviors>
                                                 <dxg:GridControl.View>
-                                                    <dxg:TableView x:Name="tableViewChild" ColumnHeaderTemplate="{StaticResource DateColumnHeaderTemplate}" TotalSummaryContentStyle="{StaticResource TotalSummaryStyle}" GroupColumnSummaryContentStyle="{StaticResource GroupSummaryStyle}" RowStyle="{StaticResource TableRowStyle}" AllowEditing="True" AllowGrouping="True" NewItemRowPosition="Top" ShowTotalSummary="True" Style="{StaticResource DefaultMinimalTableViewTemplate}" ScrollBarAnnotationMode="None">
+                                                    <dxg:TableView x:Name="tableViewChild" PasteMode="None" ColumnHeaderTemplate="{StaticResource DateColumnHeaderTemplate}" TotalSummaryContentStyle="{StaticResource TotalSummaryStyle}" GroupColumnSummaryContentStyle="{StaticResource GroupSummaryStyle}" RowStyle="{StaticResource TableRowStyle}" AllowEditing="True" AllowGrouping="True" NewItemRowPosition="Top" ShowTotalSummary="True" Style="{StaticResource DefaultMinimalTableViewTemplate}" ScrollBarAnnotationMode="None">
+                                                        <dxg:TableView.ColumnHeaderStyle>
+                                                            <Style TargetType="dxg:BaseGridHeader">
+                                                                <Setter Property="Background" Value="LightSkyBlue" />
+                                                            </Style>
+                                                        </dxg:TableView.ColumnHeaderStyle>
+                                                        <dxg:TableView.RowCellMenuCustomizations>
+                                                            <dxb:BarButtonItemLink BarItemName="biDeleteChildRows" />
+                                                        </dxg:TableView.RowCellMenuCustomizations>
                                                         <dxmvvm:Interaction.Behaviors>
                                                             <dxmvvm:EventToCommand Command="{Binding ChildValidateCellCommand}" EventName="ValidateCell" PassEventArgsToCommand="True" />
                                                             <dxmvvm:EventToCommand Command="{Binding ChildCellValueChangedUpdateCommand}" EventName="CellValueChanged" PassEventArgsToCommand="True" />
@@ -313,6 +342,7 @@
                                                 <dxmvvm:EventToCommand Command="{Binding ParentCellValueChangedUpdateCommand}" EventName="CellValueChanged" PassEventArgsToCommand="True" />
                                                 <dxmvvm:EventToCommand Command="{Binding ParentInitNewRowCommand}" EventName="InitNewRow"  PassEventArgsToCommand="True" />
                                                 <dxmvvm:EventToCommand Command="{Binding ParentNewRowAddUndoAndSaveCommand}" EventName="RowUpdated" PassEventArgsToCommand="True" />
+                                                <dxmvvm:EventToCommand Command="{Binding ParentPastingFromClipboardCommand}" EventName="PastingFromClipboard" PassEventArgsToCommand="True" />
                                             </dxmvvm:Interaction.Behaviors>
                                             <dxg:TableView.RowCellMenuCustomizations>
                                                 <dxb:BarButtonItemLink BarItemName="biDeleteParentRows" />

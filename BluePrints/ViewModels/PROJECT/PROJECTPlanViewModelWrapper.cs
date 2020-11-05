@@ -2,6 +2,7 @@
 using BaseModel.DataModel;
 using BaseModel.Misc;
 using BaseModel.ViewModel.Base;
+using BaseModel.ViewModel.Dialogs;
 using BaseModel.ViewModel.Loader;
 using BluePrints.BluePrintsEntitiesDataModel;
 using BluePrints.Common;
@@ -23,7 +24,11 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Data;
 using System.Linq;
+using System.Windows;
+using System.Windows.Controls;
+using System.Windows.Media;
 using System.Windows.Threading;
+using static BaseModel.Data.Helpers.DataUtils;
 
 namespace BluePrints.ViewModels
 {
@@ -324,11 +329,11 @@ namespace BluePrints.ViewModels
             var grid = gridView.Grid;
             DataRowView dataRowView = (DataRowView)grid.GetRow(e.RowHandle);
 
-            if (dataRowView[columnTenderProfile] == DBNull.Value)
+            if (dataRowView[columnProject] == DBNull.Value)
             {
                 PROJECTTenderProfile newPROJECT = new PROJECTTenderProfile();
                 newPROJECT.Entity.STATUS = ProjectStatus.Tender;
-                dataRowView[columnTenderProfile] = newPROJECT;
+                dataRowView[columnProject] = newPROJECT;
             }
         }
 
@@ -407,6 +412,10 @@ namespace BluePrints.ViewModels
 
         public void ParentCellValueChangedUpdate(CellValueChangedEventArgs e)
         {
+            //prevent save layout from setting null values
+            if (IsLoading)
+                return;
+
             if (e.RowHandle != DataControlBase.NewItemRowHandle)
             {
                 DataRowView dataRowView = (DataRowView)e.Row;
@@ -474,7 +483,11 @@ namespace BluePrints.ViewModels
         }
 
         public void ChildCellValueChangedUpdate(CellValueChangedEventArgs e)
-        {
+        {            
+            //prevent save layout from setting null values
+            if (IsLoading)
+                return;
+
             if (e.RowHandle != DataControlBase.NewItemRowHandle)
             {
                 DataRowView dataRowView = (DataRowView)e.Row;
@@ -602,45 +615,6 @@ namespace BluePrints.ViewModels
             this.RaisePropertyChanged(x => x.DataPointsTable);
         }
 
-        private void realignColumnDescription(List<DateTime> alignedDataDates, ObservableCollection<ColumnDescriptor> columnDescriptors, ObservableCollection<SummaryDescriptor> summaryDescriptors)
-        {
-            //List<ColumnDescriptor> removeColumns = new List<ColumnDescriptor>();
-            //foreach (ColumnDescriptor columnDescriptor in columnDescriptors)
-            //{
-            //    DateTime dateTime;
-            //    if (DateTime.TryParse(columnDescriptor.FieldName, out dateTime))
-            //    {
-            //        if (!alignedDataDates.Any(x => x.Date == dateTime.Date))
-            //        {
-            //            removeColumns.Add(columnDescriptor);
-            //        }
-            //    }
-            //}
-
-            //foreach (ColumnDescriptor removeColumn in removeColumns)
-            //{
-            //    SummaryDescriptor summaryDescriptor = summaryDescriptors.FirstOrDefault(x => x.FieldName == removeColumn.FieldName);
-            //    if (summaryDescriptor != null)
-            //        summaryDescriptors.Remove(summaryDescriptor);
-            //    columnDescriptors.Remove(removeColumn);
-            //}
-
-
-            //foreach (DateTime alignedDate in alignedDataDates.OrderByDescending(x => x))
-            //{
-            //    string columnFieldName = alignedDate.Date.ToString(BluePrintsResources.ColumnDateFormat);
-            //    if(!columnDescriptors.Where(x => x.ColumnDate != null).Any(x => x.FieldName == columnFieldName))
-            //    {
-            //        ColumnDescriptor earliestColumnDescriptor = columnDescriptors.Where(x => x.ColumnDate != null).OrderBy(x => x.ColumnDate).FirstOrDefault(x => x.ColumnDate > alignedDate);
-            //        if(earliestColumnDescriptor != null)
-            //        {
-            //            columnDescriptors.Add(new ColumnDescriptor() { FieldName = columnFieldName, Mask = "n2", ColumnDate = alignedDate, VisibleIndex = earliestColumnDescriptor.VisibleIndex -1, ReadOnly = true, Header = columnFieldName, Width = 60, Settings = SettingsType.Number });
-            //            summaryDescriptors.Add(new SummaryDescriptor() { FieldName = columnFieldName, DisplayFormat = "n2", Type = SummaryItemType.Sum });
-            //        }
-            //    }
-            //}
-        }
-
         private void realignDateCollectionOnDataTable(DataTable dataTable, IEnumerable<DateTime> alignedDataDates)
         {
             List<DataColumn> removeColumns = new List<DataColumn>();
@@ -753,6 +727,40 @@ namespace BluePrints.ViewModels
                     }
                 }
             }
+            else if (fieldName == BindableBase.GetPropertyName(() => new TENDER_PROFILE_ITEM().SCHEDULE_START_PERCENTAGE))
+            {
+                if(new_value != null)
+                {
+                    //when it's new item and user just started entering start percentage, don't flag it as an error
+                    if(TENDER_PROFILE_ITEM.SCHEDULE_FINISH_PERCENTAGE != 0)
+                    {
+                        decimal currentStartPercentage = (decimal)new_value;
+                        if (currentStartPercentage > TENDER_PROFILE_ITEM.SCHEDULE_FINISH_PERCENTAGE)
+                            return "Start percentage cannot be more than finish percentage";
+                    }
+                }
+            }
+            else if (fieldName == BindableBase.GetPropertyName(() => new TENDER_PROFILE_ITEM().SCHEDULE_FINISH_PERCENTAGE))
+            {
+                if (new_value != null)
+                {
+                    decimal currentFinishPercentage = (decimal)new_value;
+                    if (currentFinishPercentage < TENDER_PROFILE_ITEM.SCHEDULE_START_PERCENTAGE)
+                        return "Finish percentage cannot be less than start percentage";
+                }
+            }
+            else if (fieldName == BindableBase.GetPropertyName(() => new TENDER_PROFILE_ITEM().HOURS_PERCENTAGE))
+            {
+                if(new_value != null)
+                {
+                    decimal currentPercentage = (decimal)new_value;
+                    IEnumerable<TENDER_PROFILE_ITEM> otherTENDER_PROFILE_ITEM = TENDER_PROFILE_ITEM.PROJECTTenderProfile.TENDER_PROFILE_ITEMS.Where(x => x.GUID != TENDER_PROFILE_ITEM.GUID);
+
+                    decimal totalPercentage = otherTENDER_PROFILE_ITEM.Sum(x => x.HOURS_PERCENTAGE) + currentPercentage;
+                    if (totalPercentage > 1)
+                        return "Total percentage exceed 100%";
+                }
+            }
 
             return string.Empty;
         }
@@ -809,6 +817,192 @@ namespace BluePrints.ViewModels
             }
         }
 
+        public void ParentPastingFromClipboard(PastingFromClipboardEventArgs e)
+        {
+            if (SelectedParentDataRow != null)
+                return;
+
+            var gridControl = (GridControl)e.Source;
+            TableView tableView = gridControl.View as TableView;
+            DataControlDetailDescriptor gridDetail = (DataControlDetailDescriptor)GridControlService.GridControl.DetailDescriptor;
+            GridControl childGridControl = (GridControl)gridDetail.DataControl;
+            TableView childGridControlTableView = (TableView)childGridControl.View;
+
+            //when cell is in editing mode, user might want to paste clipboard data into cell
+            if (childGridControlTableView.ActiveEditor != null)
+                return;
+
+            if (childGridControlTableView != null && childGridControlTableView.FocusedRowHandle == GridControl.AutoFilterRowHandle)
+                return;
+
+            var PasteString = System.Windows.Clipboard.GetText();
+            string[] RowData;
+            //remove tab at the beginning of paste string
+            if(PasteString.Substring(0, 1) == "\t")
+                PasteString = PasteString.Substring(1, PasteString.Length - 1);
+
+            RowData = DataUtils.ExcelSplit(PasteString).ToArray();
+
+            List<TENDER_PROFILE_ITEM> pasteProjections = new List<TENDER_PROFILE_ITEM>();
+            List<ErrorMessage> errorMessages = new List<ErrorMessage>();
+            if (SelectMode == MultiSelectMode.Cell)
+                pasteProjections = PastingFromClipboardCellLevel(childGridControl, RowData, out errorMessages);
+
+            if (pasteProjections.Count > 0)
+            {
+                _bluePrintsUnitOfWork.SaveChanges();
+                BuildRowStats(pasteProjections.First().PROJECTTenderProfile, true);
+            }
+
+            if (errorMessages.Count > 0)
+            {
+                if (ErrorMessagesDialogService != null)
+                {
+                    DialogCollectionViewModel<ErrorMessage> viewModel = DialogCollectionViewModel<ErrorMessage>.Create(errorMessages, "The following data cannot be pasted");
+                    ErrorMessagesDialogService.ShowDialog(MessageButton.OKCancel, string.Empty, "ListErrorMessages", viewModel);
+                }
+            }
+        }
+
+        private List<TENDER_PROFILE_ITEM> PastingFromClipboardCellLevel(GridControl gridControl, string[] RowData, out List<ErrorMessage> errorMessages)
+        {
+            List<TENDER_PROFILE_ITEM> preValidatedProjections = new List<TENDER_PROFILE_ITEM>();
+            errorMessages = new List<ErrorMessage>();
+
+            TableView gridTableView = (TableView)gridControl.View;
+            if (gridTableView.ActiveEditor == null)
+            {
+                List<List<string>> row_data = new List<List<string>>();
+                foreach (var row in RowData)
+                {
+                    List<string> column_data = row.Split('\t').ToList();
+                    row_data.Add(column_data);
+                }
+
+                var grouped_results = row_data
+                    .SelectMany(inner => inner.Select((item, index) => new { item, index }))
+                    .GroupBy(i => i.index, i => i.item)
+                    .Select(g => g.ToList())
+                    .ToList();
+
+                var selected_cells = gridTableView.GetSelectedCells();
+                if (selected_cells.Count == 0)
+                    return preValidatedProjections;
+
+                var selected_cells_groupby_columns = selected_cells.GroupBy(x => x.Column.FieldName).Select(group => new { FieldName = group.Key, Cells = group.ToList() });
+                if (grouped_results.Count == 0)
+                {
+                    foreach (var selected_cell in selected_cells)
+                    {
+
+                        int row_handle = selected_cell.RowHandle;
+                        TENDER_PROFILE_ITEM editing_row = (TENDER_PROFILE_ITEM)gridControl.GetRow(row_handle);
+                        string errorMessage = string.Empty;
+                        PasteResult result = pasteDataInProjectionColumn(editing_row, selected_cell.Column, string.Empty, out errorMessage);
+                        if (result == PasteResult.FailOnRequired || errorMessage != string.Empty)
+                        {
+                            string errorString = errorMessage == string.Empty ? "Cannot set null in required cell, operation has been terminated" : errorMessage;
+                            errorMessages.Add(new ErrorMessage(selected_cell.Column.Header.ToString(), errorString));
+                            break;
+                        }
+                        if (result != PasteResult.Success)
+                            continue;
+
+                        if (!preValidatedProjections.Any(x => x.GetHashCode() == editing_row.GetHashCode()))
+                            preValidatedProjections.Add(editing_row);
+                    }
+                }
+                else
+                {
+                    GridCell first_selected_cell = selected_cells.First();
+                    GridCell last_selected_cell = selected_cells.Last();
+
+                    int first_row_visible_index = 0;
+                    int last_row_visible_index = SelectedChildDataRows.Count - 1;
+
+                    int numberOfSelectedRows = (last_row_visible_index - first_row_visible_index) + 1;
+                    int numberOfCopiedRows = grouped_results.First().Count;
+
+                    List<GridColumn> visible_columns = gridTableView.VisibleColumns.ToList();
+                    //commented out because not accurate during banded view
+                    //int first_column_visible_index = first_selected_cell.Column.VisibleIndex;
+                    int first_column_visible_index = visible_columns.IndexOf(visible_columns.First(x => x.FieldName == first_selected_cell.Column.FieldName));
+                    int last_column_visible_index = visible_columns.IndexOf(visible_columns.First(x => x.FieldName == last_selected_cell.Column.FieldName));
+
+                    int numberOfSelectedColumns = (last_column_visible_index - first_column_visible_index) + 1;
+                    int numberOfCopiedColumns = grouped_results.Count;
+
+                    //commented out because not accurate during banded view
+                    //int first_column_visible_index = first_selected_cell.Column.VisibleIndex;
+
+                    int rowOffsetSelection = numberOfSelectedRows > numberOfCopiedRows ? numberOfSelectedRows : numberOfCopiedRows;
+                    int columnOffsetSelection = numberOfSelectedColumns > numberOfCopiedColumns ? numberOfSelectedColumns : numberOfCopiedColumns;
+
+                    int pasteValueRowOffset = 0;
+                    TENDER_PROFILE_ITEM validate_row = null;
+                    for (int rowOffset = 0; rowOffset < rowOffsetSelection; rowOffset++)
+                    {
+                        int pasteValueColumnOffset = 0;
+                        for (int columnOffset = 0; columnOffset < columnOffsetSelection; columnOffset++)
+                        {
+                            int findVisibleIndex = first_column_visible_index + columnOffset;
+                            if (findVisibleIndex >= visible_columns.Count)
+                                continue;
+
+                            GridColumn current_column = visible_columns[findVisibleIndex];
+                            string columnValue = grouped_results[pasteValueColumnOffset][pasteValueRowOffset];
+                            if (current_column.FieldName.Contains('%') || current_column.FieldName.ToUpper().Contains("PERCENT"))
+                                columnValue = columnValue.Replace("%", "");
+
+                                pasteValueColumnOffset += 1;
+                            if (pasteValueColumnOffset >= grouped_results.Count)
+                                pasteValueColumnOffset = 0;
+
+                            int current_row_visible_index = first_row_visible_index + rowOffset;
+                            int current_row_handle = gridControl.GetRowHandleByVisibleIndex(current_row_visible_index);
+                            if (current_row_handle < 1)
+                                current_row_handle = current_row_visible_index;
+
+                            DataRowView rowDataRowView = SelectedChildDataRows[current_row_handle];
+                            if (rowDataRowView == null)
+                                continue;
+
+                            TENDER_PROFILE_ITEM editing_row = (TENDER_PROFILE_ITEM)rowDataRowView[columnTenderProfile];
+                            validate_row = editing_row;
+                            if (editing_row == null)
+                            {
+                                errorMessages.Add(new ErrorMessage(current_column.Header.ToString(), "Please remove all line break from paste data or double click into cell to paste your data with line breaks"));
+                                break;
+                            }
+
+                            string errorMessage = string.Empty;
+                            string alternateFieldName = formatChildFieldName(current_column.FieldName);
+                            PasteResult result = pasteDataInProjectionColumn(editing_row, current_column, columnValue, out errorMessage, null, null, alternateFieldName);
+                            if (result == PasteResult.FailOnRequired || errorMessage != string.Empty)
+                            {
+                                string errorString = errorMessage == string.Empty ? "Cannot set null in required cell, operation has been terminated" : errorMessage;
+                                errorMessages.Add(new ErrorMessage(current_column.Header.ToString(), errorString));
+                                break;
+                            }
+                            if (result != PasteResult.Success)
+                                continue;
+
+                        }
+
+                        if (validate_row != null)
+                            preValidatedProjections.Add(validate_row);
+
+                        pasteValueRowOffset += 1;
+                        if (pasteValueRowOffset >= grouped_results[pasteValueColumnOffset].Count)
+                            pasteValueRowOffset = 0;
+                    }
+                }
+
+            }
+
+            return preValidatedProjections;
+        }
+
         protected ObservableCollection<SummaryDescriptor> childSummaries;
         public ObservableCollection<SummaryDescriptor> ChildSummaries
         {
@@ -843,6 +1037,23 @@ namespace BluePrints.ViewModels
             set
             {
                 selectedParentDataRows = value;
+            }
+        }
+
+        public DataRowView SelectedChildDataRow { get; set; }
+        ObservableCollection<DataRowView> selectedChildDataRows { get; set; }
+        public ObservableCollection<DataRowView> SelectedChildDataRows
+        {
+            get
+            {
+                if (selectedChildDataRows == null)
+                    selectedChildDataRows = new ObservableCollection<DataRowView>();
+
+                return selectedChildDataRows;
+            }
+            set
+            {
+                selectedChildDataRows = value;
             }
         }
 
@@ -953,6 +1164,13 @@ namespace BluePrints.ViewModels
             }
         }
 
+        private DataRow findPROJECTDataRowBy(Guid guid)
+        {
+            return (from DataRow dr in dataPointsTable.Rows
+                        where ((PROJECTTenderProfile)dr[columnProject]).GUID == guid
+                    select dr).FirstOrDefault();
+        }
+
         private void BuildRowStats(PROJECTTenderProfile entity, bool isUpdate)
         {
             if (dataPointsTable == null)
@@ -965,9 +1183,7 @@ namespace BluePrints.ViewModels
             }
             else
             {
-                newDataRow = (from DataRow dr in dataPointsTable.Rows
-                              where ((PROJECTTenderProfile)dr[columnProject]).GUID == entity.GUID
-                              select dr).FirstOrDefault();
+                newDataRow = findPROJECTDataRowBy(entity.GUID);
             }
 
             if (newDataRow == null)
@@ -1005,7 +1221,7 @@ namespace BluePrints.ViewModels
 
             tenderProfilesDataPointsTable.Clear();
             if(entity.TENDER_PROFILE_ITEMS != null)
-                foreach (TENDER_PROFILE_ITEM tenderProfileItem in entity.TENDER_PROFILE_ITEMS)
+                foreach (TENDER_PROFILE_ITEM tenderProfileItem in entity.TENDER_PROFILE_ITEMS.OrderBy(x => x.CREATED))
                 {
                     DataRow tenderProfileDataRow = tenderProfilesDataPointsTable.NewRow();
 
@@ -1042,12 +1258,12 @@ namespace BluePrints.ViewModels
             summaries.Clear();
 
             int visibleIndex = 10;
-            columns.Add(new ColumnDescriptor() { FieldName = columnProject + ".Entity.NUMBER", VisibleIndex = visibleIndex, Header = "Number", Fixed = FixedStyle.Left, Width = 50, Settings = SettingsType.Default });
+            columns.Add(new ColumnDescriptor() { FieldName = columnProject + ".Entity.NUMBER", SortIndex = 1, VisibleIndex = visibleIndex, Header = "Number", Fixed = FixedStyle.Left, Width = 50, Settings = SettingsType.Default });
             visibleIndex += 10;
             summaries.Add(new SummaryDescriptor() { FieldName = columnProject + ".Entity.NUMBER", DisplayFormat = "{0} Record(s)", Type = SummaryItemType.Count });
             columns.Add(new ColumnDescriptor() { FieldName = columnProject + ".Entity.NAME", VisibleIndex = visibleIndex, Header = "Name", Fixed = FixedStyle.Left, Width = 100, Settings = SettingsType.Default });
             visibleIndex += 10;
-            columns.Add(new ColumnDescriptor() { FieldName = columnProject + ".Entity.STATUS", VisibleIndex = visibleIndex, Header = "Status", Fixed = FixedStyle.Left, Width = 70, Settings = SettingsType.Enum1 });
+            columns.Add(new ColumnDescriptor() { FieldName = columnProject + ".Entity.STATUS", VisibleIndex = visibleIndex, Header = "Project Status", Fixed = FixedStyle.Left, Width = 70, Settings = SettingsType.Enum1 });
             visibleIndex += 10;
             columns.Add(new ColumnDescriptor() { FieldName = columnProject + ".Entity.PIPELINE_TYPE", VisibleIndex = visibleIndex, Header = "Type", Fixed = FixedStyle.Left, Width = 70, Settings = SettingsType.Enum2 });
             visibleIndex += 10;
@@ -1059,17 +1275,11 @@ namespace BluePrints.ViewModels
             visibleIndex += 10;
             columns.Add(new ColumnDescriptor() { FieldName = columnProject + ".Entity.PIPELINE_STATUS", VisibleIndex = visibleIndex, Header = "Status", Fixed = FixedStyle.Left, Width = 70, Settings = SettingsType.Enum6 });
             visibleIndex += 10;
-            columns.Add(new ColumnDescriptor() { FieldName = columnProject + ".TenderProfile.TENDER_HOURS", VisibleIndex = visibleIndex, Header = "Tender Hours", Fixed = FixedStyle.Left, Mask = "n", Increment = 1, Width = 70, Settings = SettingsType.Number });
+            columns.Add(new ColumnDescriptor() { FieldName = columnProject + ".TenderProfile.TENDER_HOURS", VisibleIndex = visibleIndex, Header = "Tender Hours", MaxValue = 999999999, Fixed = FixedStyle.Left, Mask = "n", Increment = 1, Width = 70, Settings = SettingsType.Number });
             visibleIndex += 10;
             columns.Add(new ColumnDescriptor() { FieldName = columnProject + ".Entity.TENDER_PROJECT_START", VisibleIndex = visibleIndex, Header = "Start Date", ReadOnly = false, Fixed = FixedStyle.Left, Width = 100, Settings = SettingsType.Date });
             visibleIndex += 10;
-            columns.Add(new ColumnDescriptor() { FieldName = columnProject + ".Entity.TENDER_PROJECT_DURATION", VisibleIndex = visibleIndex, ReadOnly = false, Visible = true, Header = "Duration", Mask = "###,##0 Weeks", Increment = 1, Fixed = FixedStyle.Left, Width = 75, Settings = SettingsType.Number });
-            visibleIndex += 10;
-            columns.Add(new ColumnDescriptor() { FieldName = columnProject + ".Entity.PIPELINE_GROSS_PROFIT", VisibleIndex = visibleIndex, ReadOnly = false, Visible = true, Header = "Gross Profit", Mask = "c2", Increment = 1, Fixed = FixedStyle.Left, Width = 75, Settings = SettingsType.Number });
-            visibleIndex += 10;
-            columns.Add(new ColumnDescriptor() { FieldName = columnProject + ".Entity.PIPELINE_TOTAL_VALUE", VisibleIndex = visibleIndex, ReadOnly = false, Visible = true, Header = "Total Value", Mask = "c2", Increment = 1, Fixed = FixedStyle.Left, Width = 75, Settings = SettingsType.Number });
-            visibleIndex += 10;
-            columns.Add(new ColumnDescriptor() { FieldName = columnProject + ".Entity.PIPELINE_SCOPE_PCT", VisibleIndex = visibleIndex, ReadOnly = false, Visible = true, Header = "Scope %", Mask = "p2", Increment = 0.1m, Fixed = FixedStyle.Left, Width = 75, Settings = SettingsType.Number });
+            columns.Add(new ColumnDescriptor() { FieldName = columnProject + ".Entity.TENDER_PROJECT_DURATION", VisibleIndex = visibleIndex, ReadOnly = false, Visible = true, MaxValue = 999999999, Header = "Duration", Mask = "###,##0 Weeks", Increment = 1, Fixed = FixedStyle.Left, Width = 75, Settings = SettingsType.Number });
             visibleIndex += 10;
 
             foreach (DateTime alignedDate in alignedDates.OrderBy(x => x))
@@ -1089,16 +1299,17 @@ namespace BluePrints.ViewModels
             int visibleIndex = 10;
             columns.Add(new ColumnDescriptor() { FieldName = columnTenderProfile + ".GUID_DEPARTMENT", VisibleIndex = visibleIndex, Header = "Department", DisplayMember = "NAME", ValueMember = "GUID", Fixed = FixedStyle.Left, Width = 70, ItemsSource = DEPARTMENTCollection, Settings = SettingsType.Collection });
             visibleIndex += 10;
-            columns.Add(new ColumnDescriptor() { FieldName = columnTenderProfile + ".GUID_DISCIPLINE", VisibleIndex = visibleIndex, Tag = "Start Date", Header = "Discipline", DisplayMember = "NAME", ValueMember = "GUID", Fixed = FixedStyle.Left, Width = 70, ItemsSource = DISCIPLINECollection, Settings = SettingsType.Collection });
+            columns.Add(new ColumnDescriptor() { FieldName = columnTenderProfile + ".GUID_DISCIPLINE", VisibleIndex = visibleIndex, Tag = "Status", Header = "Discipline", DisplayMember = "NAME", ValueMember = "GUID", Fixed = FixedStyle.Left, Width = 70, ItemsSource = DISCIPLINECollection, Settings = SettingsType.Collection });
             visibleIndex += 10;
-            columns.Add(new ColumnDescriptor() { FieldName = columnTenderProfile + ".HOURS_PERCENTAGE", VisibleIndex = visibleIndex, Tag = "Duration", Header = "Hours %", Mask = "p2", Increment = 0.1m, Fixed = FixedStyle.Left, Width = 75, Settings = SettingsType.Number });
+            columns.Add(new ColumnDescriptor() { FieldName = columnTenderProfile + ".HOURS_PERCENTAGE", VisibleIndex = visibleIndex, Tag = "Tender Hours", Header = "Hours %", MaxValue = 1, Mask = "p2", Increment = 0.1m, Fixed = FixedStyle.Left, Width = 75, Settings = SettingsType.Number });
+            summaries.Add(new SummaryDescriptor() { FieldName = columnTenderProfile + ".HOURS_PERCENTAGE", DisplayFormat = "p2", Type = SummaryItemType.Sum });
             visibleIndex += 10;
-            columns.Add(new ColumnDescriptor() { FieldName = columnTenderProfile + ".SCHEDULE_START_PERCENTAGE", VisibleIndex = visibleIndex, Tag = "Gross Profit", Header = "Schedule Start %", Mask = "p2", Increment = 0.1m, Fixed = FixedStyle.Left, Width = 75, Settings = SettingsType.Number });
+            columns.Add(new ColumnDescriptor() { FieldName = columnTenderProfile + ".SCHEDULE_START_PERCENTAGE", VisibleIndex = visibleIndex, MinValue = 0, MaxValue = 1, Tag = "Start Date", Header = "Schedule Start %", Mask = "p2", Increment = 0.1m, Fixed = FixedStyle.Left, Width = 75, Settings = SettingsType.Number });
             visibleIndex += 10;
-            columns.Add(new ColumnDescriptor() { FieldName = columnTenderProfile + ".SCHEDULE_FINISH_PERCENTAGE", VisibleIndex = visibleIndex, Tag = "Total Value", Header = "Schedule Finish %", Mask = "p2", Increment = 0.1m, Fixed = FixedStyle.Left, Width = 75, Settings = SettingsType.Number });
+            columns.Add(new ColumnDescriptor() { FieldName = columnTenderProfile + ".SCHEDULE_FINISH_PERCENTAGE", VisibleIndex = visibleIndex, MinValue = 0, MaxValue = 1, Tag = "Duration", Header = "Schedule Finish %", Mask = "p2", Increment = 0.1m, Fixed = FixedStyle.Left, Width = 75, Settings = SettingsType.Number });
             visibleIndex += 10;
-            columns.Add(new ColumnDescriptor() { FieldName = columnTenderProfile + ".BELLCURVESHAPE", VisibleIndex = visibleIndex, Tag = "Scope %", Header = "Bell Curve", Fixed = FixedStyle.Left, Width = 70, ItemsSource = BellCurveShapeCollection, Settings = SettingsType.Collection });
-            visibleIndex += 10;
+            //columns.Add(new ColumnDescriptor() { FieldName = columnTenderProfile + ".BELLCURVESHAPE", VisibleIndex = visibleIndex, Tag = "Gross Profit", Header = "Bell Curve", Fixed = FixedStyle.Left, Width = 70, Settings = SettingsType.Enum7 });
+            //visibleIndex += 10;
 
             foreach (DateTime alignedDate in alignedDates.OrderBy(x => x))
             {
@@ -1109,15 +1320,62 @@ namespace BluePrints.ViewModels
             }
         }
 
+        public void DeleteSelectedTenderProfiles()
+        {
+            if(SelectedChildDataRows.Count == 0)
+            {
+                MessageBoxService.ShowMessage("Please select tender profile(s) to delete", "Confirmation", MessageButton.OK);
+                return;
+            }
+
+            if (MessageBoxService.ShowMessage("Are you sure you want to delete " + selectedChildDataRows.Count + " selected tender profiles?", "Confirmation", MessageButton.OKCancel) == MessageResult.Cancel)
+                return;
+
+            List<DataRow> removeRows = new List<DataRow>();
+            TENDER_PROFILE_ITEM TENDER_PROFILE_ITEM = (TENDER_PROFILE_ITEM)SelectedChildDataRow[columnTenderProfile];
+            DataRow parentDataRow = findPROJECTDataRowBy(TENDER_PROFILE_ITEM.PROJECTTenderProfile.GUID);
+            DataTable childDataTable = (DataTable)parentDataRow[columnTenderProfileDataTable];
+
+            foreach (DataRowView selectedRow in SelectedChildDataRows)
+            {
+                deleteChildRow(selectedRow, _bluePrintsUnitOfWork);
+                removeRows.Add(selectedRow.Row);
+            }
+
+            foreach (DataRow removeRow in removeRows)
+            {
+                childDataTable.Rows.Remove(removeRow);
+            }
+
+            onDataPointsCalculated(TENDER_PROFILE_ITEM.PROJECTTenderProfile);
+        }
+
+        private void deleteChildRow(DataRowView selectedRow, IBluePrintsEntitiesUnitOfWork bluePrintsEntitiesUnitOfWork)
+        {
+            TENDER_PROFILE_ITEM TENDER_PROFILE_ITEM = (TENDER_PROFILE_ITEM)selectedRow[columnTenderProfile];
+            if (TENDER_PROFILE_ITEM != null)
+            {
+                TENDER_PROFILE_ITEM.DELETED = DateTime.Now;
+                TENDER_PROFILE_ITEM.DELETEDBY = LoginCredentials.CurrentUserGuid;
+                bluePrintsEntitiesUnitOfWork.SaveChanges();
+            }
+        }
+
         public void DeleteSelectedProjects()
         {
-            if (MessageBoxService.ShowMessage("Are you sure you want to delete " + SelectedParentDataRows.Count + " selected entries?", "Confirmation", MessageButton.OKCancel) == MessageResult.Cancel)
+            if (SelectedParentDataRows.Count == 0)
+            {
+                MessageBoxService.ShowMessage("Please select project(s) to delete", "Confirmation", MessageButton.OK);
+                return;
+            }
+
+            if (MessageBoxService.ShowMessage("Are you sure you want to delete " + SelectedParentDataRows.Count + " selected projects?", "Confirmation", MessageButton.OKCancel) == MessageResult.Cancel)
                 return;
 
             List<DataRow> removeRows = new List<DataRow>();
             foreach (DataRowView selectedRow in SelectedParentDataRows)
             {
-                deleteRow(selectedRow, _bluePrintsUnitOfWork);
+                deleteParentRow(selectedRow, _bluePrintsUnitOfWork);
                 removeRows.Add(selectedRow.Row);
             }
 
@@ -1125,7 +1383,7 @@ namespace BluePrints.ViewModels
                 DataPointsTable.Rows.Remove(removeRow);
         }
 
-        private void deleteRow(DataRowView selectedRow, IBluePrintsEntitiesUnitOfWork bluePrintsEntitiesUnitOfWork)
+        private void deleteParentRow(DataRowView selectedRow, IBluePrintsEntitiesUnitOfWork bluePrintsEntitiesUnitOfWork)
         {
             PROJECTTenderProfile findPROJECT = (PROJECTTenderProfile)selectedRow[columnProject];
             if (findPROJECT != null && findPROJECT.Entity != null)
