@@ -426,4 +426,7 @@
   <data name="Menu_Project_DesignVariationQuery" xml:space="preserve">
     <value>Query design variation breakdown</value>
   </data>
+  <data name="Menu_TransactionsYearToDate" xml:space="preserve">
+    <value>Show all EXO transactions year to date</value>
+  </data>
 </root>

@@ -1,6 +1,6 @@
 ﻿<UserControl
     x:Name="userControl"
-    x:Class="BluePrints.Views.ListErrorMessages"
+    x:Class="BluePrints.Views.ListP6ErrorMessages"
     xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
     xmlns:dx="http://schemas.devexpress.com/winfx/2008/xaml/core"
@@ -32,8 +32,15 @@
             <dxlc:LayoutItem Height="400">
                 <dxg:GridControl x:Name="GridControl" dx:DXSerializer.SerializationID="GridControlList" dx:DXSerializer.StoreLayoutMode="All" ItemsSource="{Binding SourceObjects}" SelectionMode="Row">
                     <dxg:GridControl.Columns>
-                        <dxg:GridColumn Header="Name" FixedWidth="True" Width="250" FieldName="NAME" ReadOnly="True" IsSmart="True" />
-                        <dxg:GridColumn Header="Description" FieldName="ERROR" ReadOnly="True" IsSmart="True" />
+                        <dxg:GridColumn Header="Error" FieldName="ERROR" ReadOnly="True" IsSmart="True" />
+                        <dxg:GridColumn Header="Activity ID" FixedWidth="True" Width="150" FieldName="TASK" ReadOnly="True" IsSmart="True" />
+                        <dxg:GridColumn Header="Deliverable Name" FixedWidth="True" Width="150" FieldName="DELIVERABLE_NAME" ReadOnly="True" IsSmart="True" />
+                        <dxg:GridColumn Header="Units" FixedWidth="True" Width="80" FieldName="UNITS" ReadOnly="True" IsSmart="True" />
+                        <dxg:GridColumn Header="Earned Date" FixedWidth="True" Width="80" FieldName="PROGRESS_DATE" ReadOnly="True" IsSmart="True" >
+                            <dxg:GridColumn.EditSettings>
+                                <dxe:DateEditSettings Mask="dd-MMM-yy" MaskUseAsDisplayFormat="True" />
+                            </dxg:GridColumn.EditSettings>
+                        </dxg:GridColumn>
                     </dxg:GridControl.Columns>
                     <dxg:GridControl.TotalSummary>
                         <dxg:GridSummaryItem dx:DXSerializer.Enabled="False" Alignment="Right" SummaryType="Count" />

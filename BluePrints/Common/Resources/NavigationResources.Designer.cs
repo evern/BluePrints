@@ -799,6 +799,15 @@ namespace BluePrints.Common.Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Show all EXO transactions year to date.
+        /// </summary>
+        internal static string Menu_TransactionsYearToDate {
+            get {
+                return ResourceManager.GetString("Menu_TransactionsYearToDate", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to UOMs maintenance menu.
         /// </summary>
         internal static string Menu_UOMs {

@@ -20,9 +20,13 @@
 
         public string NARRATIVE { get; set; }
 
+        public int? PURCH_GL_NO { get; set; }
+
         public int? master_jobno { get; set; }
 
         public double? EXCHRATE { get; set; }
+
+        public string TITLE { get; set; }
 
         [StringLength(15)]
         public string jobcode { get; set; }

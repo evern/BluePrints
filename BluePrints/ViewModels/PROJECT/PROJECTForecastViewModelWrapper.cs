@@ -2434,15 +2434,19 @@ namespace BluePrints.ViewModels
                 decimal differences = Math.Round(job.Outstanding) - Math.Round(job.PORemainingCosts);
                 differences = Math.Abs(differences);
 
-                if (differences <= 10)
+                decimal differencePercentage = 0;
+                if(job.Outstanding > 0)
+                    differencePercentage = differences / job.Outstanding;
+                if (differencePercentage <= 0.01m)
                 {
                     job.IsPOError = false;
                     job.JobErrorMessage = string.Empty;
                 }
                 else
                 {
+                    string strDifferencePercentage = Math.Round(differencePercentage * 100, 0).ToString();
                     job.IsPOError = true;
-                    job.JobErrorMessage = "PO forecasted amount doesn't equal to outstanding PO, please fix it in PO forecast";
+                    job.JobErrorMessage = "PO forecasted amount differs with outstanding amount by " + strDifferencePercentage + "%, please fix it in PO forecast";
                 }
             }
 

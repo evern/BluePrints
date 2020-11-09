@@ -181,7 +181,7 @@
                                 <dxg:GridControl.View>
                                     <dxg:TableView x:Name="tableView" Style="{StaticResource DefaultMinimalTableViewTemplate}" ShowTotalSummary="True" ScrollBarAnnotationMode="None">
                                         <dxmvvm:Interaction.Behaviors>
-                                            <dxmvvm:EventToCommand Command="{Binding DatesCellValueChangingCommand}" EventName="CellValueChanging" PassEventArgsToCommand="True" />
+                                            <dxmvvm:EventToCommand Command="{Binding DatesCellValueChangedCommand}" EventName="CellValueChanged" PassEventArgsToCommand="True" />
                                             <dxmvvm:EventToCommand Command="{Binding MouseDownCommand}" EventName="MouseDown" PassEventArgsToCommand="True" />
                                         </dxmvvm:Interaction.Behaviors>
                                         <dxg:TableView.RowCellMenuCustomizations>
