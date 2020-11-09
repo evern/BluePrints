@@ -822,11 +822,16 @@ namespace BluePrints.ViewModels
             if (SelectedParentDataRow != null)
                 return;
 
+            if (lastSelectedParentDataRow == null)
+                return;
+
             var gridControl = (GridControl)e.Source;
             TableView tableView = gridControl.View as TableView;
             DataControlDetailDescriptor gridDetail = (DataControlDetailDescriptor)GridControlService.GridControl.DetailDescriptor;
             GridControl childGridControl = (GridControl)gridDetail.DataControl;
             TableView childGridControlTableView = (TableView)childGridControl.View;
+
+            PROJECTTenderProfile PROJECTTenderProfile = (PROJECTTenderProfile)lastSelectedParentDataRow[columnProject];
 
             //when cell is in editing mode, user might want to paste clipboard data into cell
             if (childGridControlTableView.ActiveEditor != null)
@@ -846,22 +851,99 @@ namespace BluePrints.ViewModels
             List<TENDER_PROFILE_ITEM> pasteProjections = new List<TENDER_PROFILE_ITEM>();
             List<ErrorMessage> errorMessages = new List<ErrorMessage>();
             if (SelectMode == MultiSelectMode.Cell)
-                pasteProjections = PastingFromClipboardCellLevel(childGridControl, RowData, out errorMessages);
-
-            if (pasteProjections.Count > 0)
             {
-                _bluePrintsUnitOfWork.SaveChanges();
-                BuildRowStats(pasteProjections.First().PROJECTTenderProfile, true);
+                pasteProjections = PastingFromClipboardCellLevel(childGridControl, RowData, out errorMessages);
+                if (pasteProjections.Count > 0)
+                {
+                    _bluePrintsUnitOfWork.SaveChanges();
+                    BuildRowStats(PROJECTTenderProfile, true);
+                }
+            }
+            else
+            {
+                pasteProjections = PastingFromClipboard(childGridControl, RowData, PROJECTTenderProfile, out errorMessages);
+                if (pasteProjections.Count > 0)
+                {
+                    foreach (TENDER_PROFILE_ITEM pasteProjection in pasteProjections)
+                    {
+                        pasteProjection.GUID_TENDER_PROFILE = PROJECTTenderProfile.TenderProfile.GUID;
+                        PROJECTTenderProfile.TENDER_PROFILE_ITEMS.Add(pasteProjection);
+                        _bluePrintsUnitOfWork.TENDER_PROFILE_ITEMS.Add(pasteProjection);
+                    }
+
+                    _bluePrintsUnitOfWork.SaveChanges();
+                    BuildRowStats(PROJECTTenderProfile, true);
+                }
             }
 
             if (errorMessages.Count > 0)
             {
                 if (ErrorMessagesDialogService != null)
                 {
-                    DialogCollectionViewModel<ErrorMessage> viewModel = DialogCollectionViewModel<ErrorMessage>.Create(errorMessages, "The following data cannot be pasted");
+                    DialogCollectionViewModel<ErrorMessage> viewModel = DialogCollectionViewModel<ErrorMessage>.Create(errorMessages, "Paste error");
                     ErrorMessagesDialogService.ShowDialog(MessageButton.OKCancel, string.Empty, "ListErrorMessages", viewModel);
                 }
             }
+        }
+
+        public List<TENDER_PROFILE_ITEM> PastingFromClipboard(GridControl gridControl, string[] RowData, PROJECTTenderProfile project, out List<ErrorMessage> errorMessages)
+        {
+            var gridView = gridControl.View;
+            errorMessages = new List<ErrorMessage>();
+            List<TENDER_PROFILE_ITEM> pasteProjections = new List<TENDER_PROFILE_ITEM>();
+            if (gridView.ActiveEditor == null)
+            {
+                TableView gridTableView = gridView as TableView;
+                PasteResult result = PasteResult.Success;
+                foreach (var Row in RowData)
+                {
+                    TENDER_PROFILE_ITEM projection = new TENDER_PROFILE_ITEM();
+                    List<KeyValuePair<ColumnBase, string>> columnData = new List<KeyValuePair<ColumnBase, string>>();
+                    var ColumnStrings = Row.Split('\t');
+                    for (var i = 0; i < ColumnStrings.Count(); i++)
+                    {
+                        if (i > gridTableView.VisibleColumns.Count - 1)
+                            continue;
+
+                        ColumnBase copyColumn = gridTableView.VisibleColumns[i];
+                        if (copyColumn.FieldName.Contains('%') || copyColumn.FieldName.ToUpper().Contains("PERCENT"))
+                            ColumnStrings[i] = ColumnStrings[i].Replace("%", "");
+
+                        string errorMessage = string.Empty;
+                        string alternateFieldName = formatChildFieldName(copyColumn.FieldName);
+                        result = pasteDataInProjectionColumn(projection, copyColumn, ColumnStrings[i], out errorMessage, null, null, alternateFieldName);
+
+                        if (errorMessage != string.Empty)
+                            errorMessages.Add(new ErrorMessage(gridTableView.VisibleColumns[i].Header.ToString(), errorMessage));
+
+                        //When column has gone through unifiedCellValidation and have error
+                        if (result == PasteResult.Failed)
+                            break;
+
+                        columnData.Add(new KeyValuePair<ColumnBase, string>(copyColumn, ColumnStrings[i]));
+                    }
+
+                    if (result != PasteResult.Failed)
+                    {
+                        pasteProjections.Add(projection);
+                    }
+                }
+            }
+
+            List<TENDER_PROFILE_ITEM> validatedProjections = new List<TENDER_PROFILE_ITEM>();
+            foreach (TENDER_PROFILE_ITEM pasteProjection in pasteProjections)
+            {
+                pasteProjection.GUID_TENDER_PROFILE = project.TenderProfile.GUID;
+                pasteProjection.PROJECTTenderProfile = project;
+
+                List<ErrorMessage> currentErrorMessages = validateTENDER_PROFILE_ITEM(pasteProjection);
+                if (currentErrorMessages.Count == 0)
+                    validatedProjections.Add(pasteProjection);
+
+                errorMessages.AddRange(currentErrorMessages);
+            }
+
+            return validatedProjections;
         }
 
         private List<TENDER_PROFILE_ITEM> PastingFromClipboardCellLevel(GridControl gridControl, string[] RowData, out List<ErrorMessage> errorMessages)
@@ -1000,7 +1082,51 @@ namespace BluePrints.ViewModels
 
             }
 
-            return preValidatedProjections;
+            List<TENDER_PROFILE_ITEM> validatedProjections = new List<TENDER_PROFILE_ITEM>();
+            foreach (TENDER_PROFILE_ITEM preValidatedProjection in preValidatedProjections)
+            {
+                List<ErrorMessage> currentErrorMessages = validateTENDER_PROFILE_ITEM(preValidatedProjection);
+                if (currentErrorMessages.Count == 0)
+                    validatedProjections.Add(preValidatedProjection);
+
+                errorMessages.AddRange(currentErrorMessages);
+            }
+
+            return validatedProjections;
+        }
+
+        private List<ErrorMessage> validateTENDER_PROFILE_ITEM(TENDER_PROFILE_ITEM projection)
+        {
+            List<ErrorMessage> errorMessages = new List<ErrorMessage>();
+            PROJECTTenderProfile project = projection.PROJECTTenderProfile;
+            IEnumerable<TENDER_PROFILE_ITEM> otherTENDER_PROFILE_ITEMS = project.TENDER_PROFILE_ITEMS.Where(x => x.GUID != projection.GUID);
+
+
+            DEPARTMENT findDEPARTMENT = DEPARTMENTCollection.FirstOrDefault(x => x.GUID == projection.GUID_DEPARTMENT);
+            DISCIPLINE findDISCIPLINE = DISCIPLINECollection.FirstOrDefault(x => x.GUID == projection.GUID_DISCIPLINE);
+            string projectionName = string.Empty;
+            if (findDEPARTMENT != null && findDISCIPLINE != null)
+                projectionName = "Department: " + findDEPARTMENT.NAME + " and Discipline: " + findDISCIPLINE.NAME;
+            else if (findDEPARTMENT != null)
+                projectionName = "Department: " + findDEPARTMENT.NAME;
+            else if (findDISCIPLINE != null)
+                projectionName = "Discipline: " + findDISCIPLINE.NAME;
+
+            if (otherTENDER_PROFILE_ITEMS.Any(x => x.GUID_DEPARTMENT == projection.GUID_DEPARTMENT && x.GUID_DISCIPLINE == projection.GUID_DISCIPLINE))
+            {
+
+                if (findDEPARTMENT != null && findDISCIPLINE != null)
+                    errorMessages.Add(new ErrorMessage(projectionName, "Already exists for this project"));
+                else if (findDEPARTMENT != null)
+                    errorMessages.Add(new ErrorMessage(projectionName, "Already exists for this project"));
+                else if(findDISCIPLINE != null)
+                    errorMessages.Add(new ErrorMessage(projectionName, "Already exists for this project"));
+            }
+
+            if (projection.SCHEDULE_FINISH_PERCENTAGE < projection.SCHEDULE_START_PERCENTAGE)
+                errorMessages.Add(new ErrorMessage(projectionName, "Finish percentage: " + projection.SCHEDULE_FINISH_PERCENTAGE + " is less than start percentage: " + projection.SCHEDULE_START_PERCENTAGE));
+
+            return errorMessages;
         }
 
         protected ObservableCollection<SummaryDescriptor> childSummaries;
@@ -1023,7 +1149,21 @@ namespace BluePrints.ViewModels
             base.AssignCallBacksAndRaisePropertyChange(entities);
         }
 
-        public DataRowView SelectedParentDataRow { get; set; }
+        private DataRowView lastSelectedParentDataRow { get; set; }
+        DataRowView selectedParentDataRow;
+        public DataRowView SelectedParentDataRow
+        {
+            get => selectedParentDataRow;
+            set
+            {
+                //when child grid is chosen
+                if (value != null)
+                    lastSelectedParentDataRow = value;
+
+                selectedParentDataRow = value;
+            }
+        }
+
         ObservableCollection<DataRowView> selectedParentDataRows { get; set; }
         public ObservableCollection<DataRowView> SelectedParentDataRows
         {
