@@ -53,7 +53,7 @@ namespace BluePrints.Common.Reports
             }
 
             currentREPORT = reportSelector();
-            if(currentReportType != ReportType.Timesheet_Report && currentREPORT.PaperKind != System.Drawing.Printing.PaperKind.A4)
+            if(currentReportType != ReportType.Timesheet_Report && currentREPORT.PaperKind != System.Drawing.Printing.PaperKind.A4 && currentREPORT.PaperKind != System.Drawing.Printing.PaperKind.Letter)
             {
                 //set paperkind depending on project location
                 if (currentPROJECT.OFFICE.NAME.ToUpper().Contains("PERTH"))
