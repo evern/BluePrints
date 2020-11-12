@@ -46,8 +46,13 @@
                     </dxmvvm:Interaction.Behaviors>
                     <custom:GridControlEx x:Name="GridControl" dxc:DXSerializer.SerializationID="GridControlDELIVERABLE_STATUS" dxc:DXSerializer.StoreLayoutMode="All" Style="{StaticResource DefaultGridControlTemplate}">
                         <dxg:GridControl.Columns>
-                            <dxg:GridColumn Header="Name" FieldName="NAME" HeaderToolTip="Name of the status" />
-                            <dxg:GridColumn Header="Document Types" Width="*" SortMode="DisplayText" FieldName="MultipleAssignedDocTypeObject" HeaderToolTip="Document types which status can be chosen from" SortIndex="1">
+                            <dxg:GridColumn Header="Name" FieldName="NAME" Width="200" AllowBestFit="False" HeaderToolTip="Name of the status" />
+                            <dxg:GridColumn FieldName="GUID_PHASE" Header="Phase" Width="170" AllowBestFit="False" HeaderToolTip="Leave empty to apply to all phases">
+                                <dxg:GridColumn.EditSettings>
+                                    <dxe:ComboBoxEditSettings AutoComplete="True" NullValueButtonPlacement="EditBox" NullText="Leave empty to apply to all" DisplayMember="INTERNAL_NUM" IsTextEditable="True" ItemsSource="{Binding PHASECollection}" ValueMember="GUID" />
+                                </dxg:GridColumn.EditSettings>
+                            </dxg:GridColumn>
+                            <dxg:GridColumn Header="Document Types" Width="*" AllowBestFit="False" SortMode="DisplayText" FieldName="MultipleAssignedDocTypeObject" HeaderToolTip="Document types which status can be chosen from" SortIndex="1">
                                 <dxg:GridColumn.EditSettings>
                                     <dxe:ComboBoxEditSettings
                                                 ItemsSource="{Binding DOCTYPECollection}"

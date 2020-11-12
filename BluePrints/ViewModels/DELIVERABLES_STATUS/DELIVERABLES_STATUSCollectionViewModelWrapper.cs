@@ -63,6 +63,7 @@ namespace BluePrints.ViewModels
         {
             loaderCollection.AddLoaderDescription<PROJECT, PROJECT, Guid, IBluePrintsEntitiesUnitOfWork>(bluePrintsUnitOfWorkFactory, x => x.PROJECTS);
             loaderCollection.AddLoaderDescription<DOCTYPE, DOCTYPE, Guid, IBluePrintsEntitiesUnitOfWork>(bluePrintsUnitOfWorkFactory, x => x.DOCTYPES);
+            loaderCollection.AddLoaderDescription(bluePrintsUnitOfWorkFactory, x => x.PHASES, PHASEProjectionFunc);
             loaderCollection.AddLoaderDescription(bluePrintsUnitOfWorkFactory, x => x.DSTATUS_DOCTYPES, DSTATUS_DOCTYPEProjectionFunc);
         }
 
@@ -72,6 +73,11 @@ namespace BluePrints.ViewModels
                 return query => query.Where(x => x.DELIVERABLES_STATUS.GUID_PROJECT == loadPROJECT.GUID);
             else
                 return query => query.Where(x => x.DELIVERABLES_STATUS.GUID_PROJECT == null);
+        }
+
+        protected virtual Func<IRepositoryQuery<PHASE>, IQueryable<PHASE>> PHASEProjectionFunc()
+        {
+            return query => query.Where(x => x.PHASE_TYPE != PhaseType.Construct && x.PHASE_TYPE != PhaseType.Procurement);
         }
 
         protected override void onAuxiliaryEntitiesCollectionLoaded()
@@ -343,6 +349,17 @@ namespace BluePrints.ViewModels
             get
             {
                 return GetEntities<DSTATUS_DOCTYPE>();
+            }
+        }
+
+        public IEnumerable<PHASE> PHASECollection
+        {
+            get
+            {
+                var collection = GetEntities<PHASE>();
+                if (collection != null)
+                    collection = collection.OrderBy(x => x.INTERNAL_NUM);
+                return collection;
             }
         }
 

@@ -13,6 +13,8 @@ namespace BluePrints.Data
 
         public Guid? GUID_PROJECT { get; set; }
 
+        public Guid? GUID_PHASE { get; set; }
+
         [Required]
         [StringLength(500)]
         public string NAME { get; set; }
@@ -48,5 +50,7 @@ namespace BluePrints.Data
 
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
         public virtual ICollection<DSTATUS_DOCTYPE> DSTATUS_DOCTYPE { get; set; }
+
+        public virtual PHASE PHASE { get; set; }
     }
 }

@@ -280,20 +280,21 @@ namespace BluePrints.Common.ViewModel.Reporting
 
                     if (deliverables_statuses != null)
                     {
+                        IEnumerable<DELIVERABLES_STATUS> deliverables_statuses_by_phase = deliverables_statuses.Where(x => x.GUID_PHASE == null || x.GUID_PHASE == baseline_item_progress.Phase_Guid);
                         IEnumerable<DELIVERABLES_STATUS> deliverables_status_by_deliverable_type;
                         switch (baseline_item_progress.Entity.Entity.DELIVERABLE_TYPE)
                         {
                             case DeliverableType.Deliverable:
-                                deliverables_status_by_deliverable_type = deliverables_statuses.Where(x => x.FOR_NCR);
+                                deliverables_status_by_deliverable_type = deliverables_statuses_by_phase.Where(x => x.FOR_NCR);
                                 break;
                             case DeliverableType.DeliverableICR:
-                                deliverables_status_by_deliverable_type = deliverables_statuses.Where(x => x.FOR_DELIVERABLE);
+                                deliverables_status_by_deliverable_type = deliverables_statuses_by_phase.Where(x => x.FOR_DELIVERABLE);
                                 break;
                             case DeliverableType.NonDeliverable:
-                                deliverables_status_by_deliverable_type = deliverables_statuses.Where(x => x.FOR_NONDELIVERABLE);
+                                deliverables_status_by_deliverable_type = deliverables_statuses_by_phase.Where(x => x.FOR_NONDELIVERABLE);
                                 break;
                             case DeliverableType.Task:
-                                deliverables_status_by_deliverable_type = deliverables_statuses.Where(x => x.FOR_TASK);
+                                deliverables_status_by_deliverable_type = deliverables_statuses_by_phase.Where(x => x.FOR_TASK);
                                 break;
                             default:
                                 deliverables_status_by_deliverable_type = new List<DELIVERABLES_STATUS>();

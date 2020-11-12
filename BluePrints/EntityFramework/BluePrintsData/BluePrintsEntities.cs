@@ -444,6 +444,11 @@ namespace BluePrints.Data
                 .HasForeignKey(e => e.GUID_PHASE)
                 .WillCascadeOnDelete(false);
 
+            modelBuilder.Entity<PHASE>()
+                .HasMany(e => e.DELIVERABLES_STATUS)
+                .WithOptional(e => e.PHASE)
+                .HasForeignKey(e => e.GUID_PHASE);
+
             modelBuilder.Entity<PIPELINE>()
                 .HasMany(e => e.PIPELINE_PROFILE_ITEM)
                 .WithRequired(e => e.PIPELINE)
