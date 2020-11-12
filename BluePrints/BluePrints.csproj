@@ -787,9 +787,11 @@
     <Compile Include="Common\ViewModel\GanttChart\GanttCanvas.cs" />
     <Compile Include="Common\ViewModel\GanttChart\P6_Activity.cs" />
     <Compile Include="Common\ViewModel\Misc\CodesValidationModel.cs" />
+    <Compile Include="Common\ViewModel\Misc\DeliverableEditConfirmationViewModel.cs" />
     <Compile Include="Common\ViewModel\Misc\EarnedDataDateRealignmentViewModel.cs" />
     <Compile Include="Common\ViewModel\Misc\ColumnTemplateSelector.cs" />
     <Compile Include="Common\ViewModel\Misc\DistributionSelectViewModel.cs" />
+    <Compile Include="Common\ViewModel\Misc\DeliverableEditModel.cs" />
     <Compile Include="Common\ViewModel\Misc\EarnedDataDateRealignModel.cs" />
     <Compile Include="Common\ViewModel\Misc\ForecastHelper.cs" />
     <Compile Include="Common\ViewModel\Misc\YearSelectViewModel.cs" />
@@ -810,6 +812,9 @@
     <Compile Include="Common\View\DXSplashScreen\SyncScreen.cs" />
     <Compile Include="Common\View\DXSplashScreen\SyncScreen.xaml.cs">
       <DependentUpon>SyncScreen.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Common\View\DeliverableEditConfirmation.xaml.cs">
+      <DependentUpon>DeliverableEditConfirmation.xaml</DependentUpon>
     </Compile>
     <Compile Include="Common\View\EmailSentReport.xaml.cs">
       <DependentUpon>EmailSentReport.xaml</DependentUpon>
@@ -1964,6 +1969,10 @@
       <SubType>Designer</SubType>
     </Page>
     <Page Include="Common\View\DXSplashScreen\SyncScreen.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Common\View\DeliverableEditConfirmation.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>

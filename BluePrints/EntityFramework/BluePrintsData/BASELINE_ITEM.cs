@@ -94,6 +94,10 @@ namespace BluePrints.Data
 
         public DateTime? END_DATE { get; set; }
 
+        public DateTime? TENDER_START_DATE { get; set; }
+
+        public DateTime? TENDER_END_DATE { get; set; }
+
         public DateTime? FORECAST_START_DATE { get; set; }
 
         public DateTime? TARGET_DATE { get; set; }
