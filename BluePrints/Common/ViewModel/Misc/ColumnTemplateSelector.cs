@@ -48,7 +48,7 @@ namespace BluePrints.Common.ViewModel.Misc
         public UnboundColumnType UnboundType { get; set; }
     }
 
-    public enum SettingsType { Default, Unbound, Collection, DisplayMemberCollection, Text, POError, Budget, Number, Date, ForecastPast, ForecastFuture, ForecastChild, FullCode, StockItem, CommodityCode, JobError, Percent, Cost, Units, Gates, Unforecasted, Enum1, Enum2, Enum3, Enum4, Enum5, Enum6, Enum7 }
+    public enum SettingsType { Default, Unbound, Collection, DisplayMemberCollection, Text, POError, Budget, Number, Date, ForecastPast, ForecastFuture, ForecastChild, FullCode, StockItem, CommodityCode, JobError, Percent, Cost, Units, Gates, Unforecasted, Enum1, Enum2, Enum3, Enum4, Enum5, Enum6, Enum7, Custom1 }
     public class ColumnTemplateSelector : DataTemplateSelector
     {
         public override DataTemplate SelectTemplate(object item, DependencyObject container)

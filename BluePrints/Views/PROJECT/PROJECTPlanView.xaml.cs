@@ -19,10 +19,5 @@ namespace BluePrints.Views
         {
             InitializeComponent();
         }
-
-        private void GridControlChild_PastingFromClipboard(object sender, PastingFromClipboardEventArgs e)
-        {
-            e.Handled = true;
-        }
     }
 }

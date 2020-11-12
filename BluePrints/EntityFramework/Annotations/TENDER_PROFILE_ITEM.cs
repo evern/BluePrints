@@ -12,6 +12,7 @@ namespace BluePrints.Data
     using BluePrints.Common.Resources;
     using BluePrints.Common.ViewModel.Reporting;
     using BluePrints.Common.Projections;
+    using DevExpress.XtraEditors.DXErrorProvider;
 
     public partial class TENDER_PROFILE_ITEM : EntityBase, IGuidEntityKey, ICanSync, IHaveCreatedDate
     {
@@ -43,5 +44,9 @@ namespace BluePrints.Data
 
         [NotMapped]
         public List<Common.ViewModel.Reporting.DataPoint> DataPoints { get; set; }
+
+        [NotMapped]
+        public bool IsPercentageError { get; set; }
+        public decimal IsPercentageErrorImageWidth => IsPercentageError ? 15 : 0;
     }
 }

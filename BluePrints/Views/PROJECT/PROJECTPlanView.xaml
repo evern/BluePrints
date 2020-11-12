@@ -185,32 +185,6 @@
                     </dxg:GridColumn>
                 </ContentControl>
             </DataTemplate>
-            <DataTemplate x:Key="CommodityCodeColumnTemplate">
-                <ContentControl>
-                    <dxg:GridColumn AllowBestFit="False" ColumnFilterMode="DisplayText" FieldName="{Binding Path=(dxci:DependencyObjectExtensions.DataContext).FieldName, RelativeSource={RelativeSource Self}}" 
-                        Header="{Binding Path=(dxci:DependencyObjectExtensions.DataContext).Header, RelativeSource={RelativeSource Self}}" 
-                        Width="{Binding Path=(dxci:DependencyObjectExtensions.DataContext).Width, RelativeSource={RelativeSource Self}}"
-                        Fixed="{Binding Path=(dxci:DependencyObjectExtensions.DataContext).Fixed, RelativeSource={RelativeSource Self}}"
-                        ReadOnly="{Binding Path=(dxci:DependencyObjectExtensions.DataContext).ReadOnly, RelativeSource={RelativeSource Self}}"
-                        Visible="{Binding Path=(dxci:DependencyObjectExtensions.DataContext).Visible, RelativeSource={RelativeSource Self}, Mode=TwoWay}"
-                        VisibleIndex="{Binding Path=(dxci:DependencyObjectExtensions.DataContext).VisibleIndex, RelativeSource={RelativeSource Self}}"
-                        Tag="{Binding Path=(dxci:DependencyObjectExtensions.DataContext).Tag, RelativeSource={RelativeSource Self}}"
-                        HeaderToolTip="{Binding Path=(dxci:DependencyObjectExtensions.DataContext).HeaderToolTip, RelativeSource={RelativeSource Self}}" >
-                        <dxg:GridColumn.CellTemplate>
-                            <DataTemplate>
-                                <Grid>
-                                    <Grid.ColumnDefinitions>
-                                        <ColumnDefinition Width="{Binding RowData.Row.Entity.IsCommodityCodeErrorImageWidth}" />
-                                        <ColumnDefinition Width="*" />
-                                    </Grid.ColumnDefinitions>
-                                    <Image Grid.Column="0" Visibility="Visible" Source="{dx:DXImage Image=Cancel_16x16.png}" ToolTip="Commodity code is not valid, please refer to commodity codes table"/>
-                                    <dxe:TextEdit Grid.Column="1" Name="PART_Editor" />
-                                </Grid>
-                            </DataTemplate>
-                        </dxg:GridColumn.CellTemplate>
-                    </dxg:GridColumn>
-                </ContentControl>
-            </DataTemplate>
             <DataTemplate x:Key="NumberColumnTemplate">
                 <ContentControl>
                     <dxg:GridColumn AllowBestFit="False" ColumnFilterMode="Value" FieldName="{Binding Path=(dxci:DependencyObjectExtensions.DataContext).FieldName, RelativeSource={RelativeSource Self}}" 
@@ -225,6 +199,32 @@
                         <dxg:GridColumn.EditSettings>
                             <dxe:SpinEditSettings Mask="{Binding Mask}" MaskType="Numeric" MinValue="{Binding MinValue}" MaxValue="{Binding MaxValue}" Increment="{Binding Increment}" MaskUseAsDisplayFormat="True" />
                         </dxg:GridColumn.EditSettings>
+                    </dxg:GridColumn>
+                </ContentControl>
+            </DataTemplate>
+            <DataTemplate x:Key="Custom1ColumnTemplate">
+                <ContentControl>
+                    <dxg:GridColumn AllowBestFit="False" FieldName="{Binding Path=(dxci:DependencyObjectExtensions.DataContext).FieldName, RelativeSource={RelativeSource Self}}" 
+                        Header="{Binding Path=(dxci:DependencyObjectExtensions.DataContext).Header, RelativeSource={RelativeSource Self}}" 
+                        Width="{Binding Path=(dxci:DependencyObjectExtensions.DataContext).Width, RelativeSource={RelativeSource Self}}"
+                        Fixed="{Binding Path=(dxci:DependencyObjectExtensions.DataContext).Fixed, RelativeSource={RelativeSource Self}}"
+                        ReadOnly="{Binding Path=(dxci:DependencyObjectExtensions.DataContext).ReadOnly, RelativeSource={RelativeSource Self}}"
+                        VisibleIndex="{Binding Path=(dxci:DependencyObjectExtensions.DataContext).VisibleIndex, RelativeSource={RelativeSource Self}}"
+                        Visible="{Binding Path=(dxci:DependencyObjectExtensions.DataContext).Visible, RelativeSource={RelativeSource Self}, Mode=TwoWay}"
+                        Tag="{Binding Path=(dxci:DependencyObjectExtensions.DataContext).Tag, RelativeSource={RelativeSource Self}}"
+                        HeaderToolTip="{Binding Path=(dxci:DependencyObjectExtensions.DataContext).HeaderToolTip, RelativeSource={RelativeSource Self}}" >
+                        <dxg:GridColumn.CellTemplate>
+                            <DataTemplate>
+                                <Grid>
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="{Binding RowData.Row.TenderProfile.IsPercentageErrorImageWidth, FallbackValue=0}" />
+                                        <ColumnDefinition Width="*" />
+                                    </Grid.ColumnDefinitions>
+                                    <Image Grid.Column="0" Visibility="Visible" Source="{dx:DXImage Image=Cancel_16x16.png}" ToolTip="Total % exceeding 100%"/>
+                                    <dxe:SpinEdit Grid.Column="1" MaskType="Numeric" MinValue="0" MaxValue="1" Increment="0.1" MaskUseAsDisplayFormat="True" Mask="p2" Name="PART_Editor" />
+                                </Grid>
+                            </DataTemplate>
+                        </dxg:GridColumn.CellTemplate>
                     </dxg:GridColumn>
                 </ContentControl>
             </DataTemplate>
@@ -263,10 +263,12 @@
     </UserControl.Resources>
     <Grid Style="{StaticResource CollectionView.RootContainer}">
         <dxmvvm:Interaction.Behaviors>
-            <dxc:DialogService x:Name="DistributionDialogService">
+            <dxc:DialogService x:Name="DefaultTenderProfileSelectionDialog">
                 <dxc:DialogService.DialogStyle>
                     <Style TargetType="dx:DXDialogWindow">
                         <Setter Property="SizeToContent" Value="WidthAndHeight" />
+                        <Setter Property="MinWidth" Value="20" />
+                        <Setter Property="MinHeight" Value="20" />
                     </Style>
                 </dxc:DialogService.DialogStyle>
             </dxc:DialogService>
@@ -276,6 +278,7 @@
                 <dxb:BarSubItem ItemLinksSource="{StaticResource RibbonDefaultGridButtons}" />
                 <dxb:BarButtonItem x:Name="biDeleteChildRows" Command="{Binding DeleteSelectedTenderProfilesCommand}" Content="Delete Selected Tender Profile(s)" Glyph="{dx:DXImage Image=Delete_16x16.png}" LargeGlyph="{dx:DXImage Image=Delete_32x32.png}" RibbonStyle="SmallWithText" ToolTip="Delete selected rows" />
                 <dxb:BarButtonItem x:Name="biDeleteParentRows" Command="{Binding DeleteSelectedProjectsCommand}" Content="Delete Selected Project(s)" Glyph="{dx:DXImage Image=Delete_16x16.png}" LargeGlyph="{dx:DXImage Image=Delete_32x32.png}" RibbonStyle="SmallWithText" ToolTip="Delete selected rows" />
+                <dxb:BarButtonItem x:Name="biShowTenderProfileSelection" Command="{Binding ShowDefaultTenderProfileSelectionCommand}" Content="Copy Profile" Glyph="{dx:DXImage Image=Copy_16x16.png}" LargeGlyph="{dx:DXImage Image=Copy_32x32.png}" />
             </dxb:BarManager.Items>
             <DockPanel>
                 <dxr:RibbonControl Style="{StaticResource DefaultRibbonControlStyle}">
@@ -288,6 +291,7 @@
                                 <dxb:BarButtonItemLink BarItemName="biResetLayout1" />
                                 <dxb:BarButtonItemLink BarItemName="biExportToExcel1" />
                                 <dxb:BarButtonItemLink BarItemName="biExportToPDF1" />
+                                <dxb:BarButtonItemLink BarItemName="biShowTenderProfileSelection" />
                             </dxr:RibbonPageGroup>
                         </dxr:RibbonPage>
                     </dxr:RibbonDefaultPageCategory>
@@ -304,7 +308,7 @@
                                             ColumnGeneratorTemplateSelector="{StaticResource ColumnTemplateSelector}" ColumnsSource="{Binding ParentColumns}" dxc:DXSerializer.SerializationID="GridControlProjectPlan" dxc:DXSerializer.StoreLayoutMode="All" AutoExpandAllGroups="False" ShowAllTableValuesInCheckedFilterPopup="False" AutoGenerateColumns="None" ClipboardCopyMode="ExcludeHeader" ItemsSource="{Binding DataPointsTable}" CurrentItem="{Binding SelectedParentDataRow, Mode=TwoWay}" SelectedItems="{Binding SelectedParentDataRows, Mode=TwoWay}" SelectionMode="{Binding SelectMode}" ShowLoadingPanel="{Binding IsLoading}">
                                     <dxg:GridControl.DetailDescriptor>
                                         <dxg:DataControlDetailDescriptor ItemsSourceBinding="{Binding TenderProfileDataTable}">
-                                            <dxg:GridControl x:Name="gridControlChild"    PastingFromClipboard="GridControlChild_PastingFromClipboard"                                            
+                                            <dxg:GridControl x:Name="gridControlChild"                                        
                                                                 TotalSummarySource="{Binding ChildSummaries}"
                                                                 TotalSummaryGeneratorTemplate="{StaticResource SummaryTemplate}"
                                                                 GroupSummarySource="{Binding ChildSummaries}"
