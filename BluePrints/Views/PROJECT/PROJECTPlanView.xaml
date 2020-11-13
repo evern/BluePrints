@@ -281,6 +281,13 @@
                     </Style>
                 </dx:DialogService.DialogStyle>
             </dx:DialogService>
+            <dxc:DialogService x:Name="BasicMessageBoxDialogService">
+                <dxc:DialogService.DialogStyle>
+                    <Style TargetType="dx:DXDialogWindow">
+                        <Setter Property="SizeToContent" Value="WidthAndHeight" />
+                    </Style>
+                </dxc:DialogService.DialogStyle>
+            </dxc:DialogService>
         </dxmvvm:Interaction.Behaviors>
         <dxb:BarManager>
             <dxb:BarManager.Items>
@@ -288,7 +295,7 @@
                 <dxb:BarButtonItem x:Name="biDeleteChildRows" Command="{Binding DeleteSelectedTenderProfilesCommand}" Content="Delete Selected Tender Profile(s)" Glyph="{dx:DXImage Image=Delete_16x16.png}" LargeGlyph="{dx:DXImage Image=Delete_32x32.png}" RibbonStyle="SmallWithText" ToolTip="Delete selected rows" />
                 <dxb:BarButtonItem x:Name="biDeleteParentRows" Command="{Binding DeleteSelectedProjectsCommand}" Content="Delete Selected Project(s)" Glyph="{dx:DXImage Image=Delete_16x16.png}" LargeGlyph="{dx:DXImage Image=Delete_32x32.png}" RibbonStyle="SmallWithText" ToolTip="Delete selected rows" />
                 <dxb:BarButtonItem x:Name="biShowTenderProfileSelection" Command="{Binding ShowDefaultTenderProfileSelectionCommand}" Content="Copy Profile" Glyph="{dx:DXImage Image=Copy_16x16.png}" LargeGlyph="{dx:DXImage Image=Copy_32x32.png}" />
-                <dxb:BarButtonItem x:Name="biPushTimePhaseToDeliverables" Command="{Binding PushTimePhaseToDeliverablesCommand}" Content="Push time phase to deliverables" Glyph="{dx:DXImage Image=Reset2_16x16.png}" LargeGlyph="{dx:DXImage Image=Reset2_32x32.png}" ToolTip="Syncs deliverable's time phase for project S-Curve to reflect the same profile as planned here" />
+                <dxb:BarButtonItem x:Name="biSyncDeliverables" Command="{Binding SyncDeliverablesCommand}" Content="Sync Deliverables" Glyph="{dx:DXImage Image=Reset2_16x16.png}" LargeGlyph="{dx:DXImage Image=Reset2_32x32.png}" ToolTip="Syncs deliverable(s) so project S-Curve is same as planned" />
             </dxb:BarManager.Items>
             <DockPanel>
                 <dxr:RibbonControl Style="{StaticResource DefaultRibbonControlStyle}">
@@ -302,7 +309,7 @@
                                 <dxb:BarButtonItemLink BarItemName="biExportToExcel1" />
                                 <dxb:BarButtonItemLink BarItemName="biExportToPDF1" />
                                 <dxb:BarButtonItemLink BarItemName="biShowTenderProfileSelection" />
-                                <dxb:BarButtonItemLink BarItemName="biPushTimePhaseToDeliverables" />
+                                <dxb:BarButtonItemLink BarItemName="biSyncDeliverables" />
                             </dxr:RibbonPageGroup>
                         </dxr:RibbonPage>
                     </dxr:RibbonDefaultPageCategory>
@@ -361,7 +368,7 @@
                                             </dxmvvm:Interaction.Behaviors>
                                             <dxg:TableView.RowCellMenuCustomizations>
                                                 <dxb:BarItemMenuHeader Content="Sync" />
-                                                <dxb:BarButtonItemLink BarItemName="biPushTimePhaseToDeliverables" />
+                                                <dxb:BarButtonItemLink BarItemName="biSyncDeliverables" />
                                                 <dxb:BarItemMenuHeader Content="Row Operation" />
                                                 <dxb:BarButtonItemLink BarItemName="biDeleteParentRows" />
                                             </dxg:TableView.RowCellMenuCustomizations>

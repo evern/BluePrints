@@ -31,8 +31,8 @@ namespace BluePrints.Common
         Add,
         [Display(Name = "Edit")]
         Edit,
-        [Display(Name = "Delete")]
-        Delete
+        [Display(Name = "Budget Set to Zero")]
+        ZeroBudget
     }
 
     public enum ForecastDataType
@@ -423,6 +423,12 @@ namespace BluePrints.Common
     {
         Estimate = 0,
         Budget = 1
+    }
+
+    public enum ProjectPlanSyncAction
+    {
+        UnitsFromPlanning,
+        UnitsFromDeliverables
     }
 
     public enum DialogAction

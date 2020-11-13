@@ -8,6 +8,7 @@
     xmlns:dxe="http://schemas.devexpress.com/winfx/2008/xaml/editors"
     xmlns:dxg="http://schemas.devexpress.com/winfx/2008/xaml/grid"
     xmlns:common="clr-namespace:BluePrints.Common" 
+    xmlns:dxmvvm="http://schemas.devexpress.com/winfx/2008/xaml/mvvm" 
     xmlns:custom="clr-namespace:BaseModel.Misc;assembly=BaseModel">
     <dxlc:LayoutControl Orientation="Vertical">
         <dxlc:LayoutGroup View="Group" VerticalAlignment="Top" HorizontalAlignment="Center" Orientation="Vertical">
@@ -65,11 +66,18 @@
                                 </dxg:GridColumn.EditSettings>
                             </dxg:GridColumn>
                         </dxg:GridControl.Columns>
+                        <dxg:GridControl.GroupSummary>
+                            <dxg:GridSummaryItem Alignment="Right" SummaryType="Count" />
+                            <dxg:GridSummaryItem DisplayFormat="n" FieldName="UnitsFrom" SummaryType="Sum" />
+                            <dxg:GridSummaryItem DisplayFormat="n" FieldName="UnitsTo" SummaryType="Sum" />
+                        </dxg:GridControl.GroupSummary>
                         <dxg:GridControl.TotalSummary>
-                            <dxg:GridSummaryItem dx:DXSerializer.Enabled="False" SummaryType="Count" Alignment="Right" />
+                            <dxg:GridSummaryItem Alignment="Right" SummaryType="Count" />
+                            <dxg:GridSummaryItem DisplayFormat="n" FieldName="UnitsFrom" SummaryType="Sum" />
+                            <dxg:GridSummaryItem DisplayFormat="n" FieldName="UnitsTo" SummaryType="Sum" />
                         </dxg:GridControl.TotalSummary>
                         <dxg:GridControl.View>
-                            <dxg:TableView x:Name="tableView" ShowGroupedColumns="False" ShowGroupPanel="False"/>
+                            <dxg:TableView x:Name="tableView" GroupSummaryDisplayMode="AlignByColumns" ShowTotalSummary="True" ShowGroupedColumns="True" ShowGroupPanel="True"/>
                         </dxg:GridControl.View>
                     </custom:GridControlEx>
                 </dxlc:LayoutItem>

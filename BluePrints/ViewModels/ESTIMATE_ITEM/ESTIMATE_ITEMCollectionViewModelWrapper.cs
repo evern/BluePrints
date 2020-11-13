@@ -881,7 +881,7 @@ namespace BluePrints.ViewModels
                         string message = String.Format("Supply rate, install hours or UOM changed\nDo you wish to edit stock or add as a new stock?", projectStockCode.RATE_SUPPLY, projectStockCode.HOURS_INSTALL, projectStockCode.UOM, editingSTOCK_CODE.RATE_SUPPLY, editingSTOCK_CODE.HOURS_INSTALL, editingSTOCK_CODE.UOM);
 
                         BasicMessageBoxViewModel viewModel = BasicMessageBoxViewModel.Create(message);
-                        viewModel.CheckboxVisibility = Visibility.Visible;
+                        viewModel.CheckboxVisibility = Visibility.Hidden;
                         UICommand result = StockCodeDialogService.ShowDialog(new List<UICommand>() { addCommand, editCommand, cancelCommand }, "Stock Code", "BasicMessageBox", viewModel);
                         if (result == addCommand)
                         {
