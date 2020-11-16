@@ -1324,6 +1324,9 @@ namespace BluePrints.Common.Base
                     //current activity full assignment units to calculate remaining units
                     decimal full_assignment_units = full_assignment_percentage * deliverable.Total_Units;
 
+                    if (full_assignment_units <= 0)
+                        continue;
+
                     periodAssignedUnitsOnMapping += current_assignment_units;
                     if (isDeliverableCancelled && MessageBoxService.ShowMessage("Deliverable " + deliverable.ToString() + " has earned " + current_assignment_units.ToString("n2") + " units but there are no budget units in P6 task " + p6_assignment.P6_ACTIVITYID + "\nThis can happen when variation is not client approved\nDo you still want to earn the units on P6 task " + p6_assignment.P6_ACTIVITYID + "?", "Warning", MessageButton.OKCancel) == MessageResult.Cancel)
                         continue;
