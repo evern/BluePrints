@@ -17,7 +17,7 @@ namespace BluePrints.Common.ViewModel.Misc
         public DateTime? StartDateTo { get; set; }
         public DateTime? EndDateFrom { get; set; }
         public DateTime? EndDateTo { get; set; }
-
+        public BellCurveShape? BellCurveShape { get; set; }
         public Guid? DepartmentGuid { get; set; }
         public Guid? DisciplineGuid { get; set; }
     }

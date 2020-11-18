@@ -901,6 +901,18 @@ namespace BluePrints.Data
                 .HasForeignKey(e => e.GUID_TENDER_PROFILE)
                 .WillCascadeOnDelete(false);
 
+            modelBuilder.Entity<TENDER_PROFILE_ITEM>()
+                .Property(e => e.HOURS_PERCENTAGE)
+                .HasPrecision(10, 5);
+
+            modelBuilder.Entity<TENDER_PROFILE_ITEM>()
+                .Property(e => e.SCHEDULE_START_PERCENTAGE)
+                .HasPrecision(10, 2);
+
+            modelBuilder.Entity<TENDER_PROFILE_ITEM>()
+                .Property(e => e.SCHEDULE_FINISH_PERCENTAGE)
+                .HasPrecision(10, 2);
+
             modelBuilder.Entity<USER>()
                 .HasMany(e => e.BASELINE_ITEM)
                 .WithOptional(e => e.USER)

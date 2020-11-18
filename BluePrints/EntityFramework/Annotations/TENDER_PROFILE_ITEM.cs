@@ -48,5 +48,16 @@ namespace BluePrints.Data
         [NotMapped]
         public bool IsPercentageError { get; set; }
         public decimal IsPercentageErrorImageWidth => IsPercentageError ? 15 : 0;
+
+        public Tuple<DateTime, DateTime> GetProRatedStartEndDate(int durationInDays, DateTime startDate, DateTime endDate)
+        {
+            //pro-rate the dates of the deliverable based on tender item
+            int startProrateDurationInDays = Convert.ToInt32(durationInDays * this.SCHEDULE_START_PERCENTAGE);
+            DateTime proRatedStartDate = startDate.AddDays(startProrateDurationInDays);
+            int endProrateDurationInDays = Convert.ToInt32(durationInDays * (1 - this.SCHEDULE_FINISH_PERCENTAGE));
+            DateTime proRatedEndDate = endDate.AddDays(-1 * endProrateDurationInDays);
+
+            return new Tuple<DateTime, DateTime>(proRatedStartDate, proRatedEndDate);
+        }
     }
 }

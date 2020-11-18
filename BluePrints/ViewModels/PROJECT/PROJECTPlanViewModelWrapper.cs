@@ -145,7 +145,8 @@ namespace BluePrints.ViewModels
 
                 PROJECTTenderProfile.TENDER_PROFILE_ITEMS.ForEach(x => x.PROJECTTenderProfile = PROJECTTenderProfile);
                 populateDataPoints(PROJECTTenderProfile);
-
+                PROJECTTenderProfile.Deliverables = _bluePrintsUnitOfWork.BASELINE_ITEMS.Where(x => x.GUID_BASELINE == projectLiveBaseline.GUID);
+                PROJECTTenderProfile.ResetDeliverableList();
                 return PROJECTTenderProfile;
             }
 
@@ -154,16 +155,17 @@ namespace BluePrints.ViewModels
         #endregion
 
         #region Helpers
+        //populate the view model
         private void populateDataPoints(PROJECTTenderProfile PROJECTTenderProfile)
         {
             if (PROJECTTenderProfile.Entity.TENDER_PROJECT_START == null || PROJECTTenderProfile.Entity.TENDER_PROJECT_DURATION == null || PROJECTTenderProfile.Entity.TENDER_PROJECT_DURATION == 0)
                 return;
 
-            DateTime startDate = PROJECTTenderProfile.Entity.TENDER_PROJECT_START == null ? DateTime.Now : (DateTime)PROJECTTenderProfile.Entity.TENDER_PROJECT_START;
+            int totalDurationInDays = BluePrintsDataUtils.GetTenderDuration(PROJECTTenderProfile.Entity);
 
-            decimal tenderDuration = PROJECTTenderProfile.Entity.TENDER_PROJECT_DURATION == null ? 0 : (decimal)PROJECTTenderProfile.Entity.TENDER_PROJECT_DURATION;
-            int totalDurationInDays = Convert.ToInt32(tenderDuration * 7);
-            DateTime endDate = startDate.AddDays(totalDurationInDays);
+            Tuple<DateTime, DateTime> startEndDates = BluePrintsDataUtils.GetTenderStartEndDate(PROJECTTenderProfile.Entity);
+            DateTime startDate = startEndDates.Item1;
+            DateTime endDate = startEndDates.Item2;
 
             //always start from zero since we are generating forecast from the beginning
             double beginPercentage = 0;
@@ -172,12 +174,11 @@ namespace BluePrints.ViewModels
             dataPointsDateCollection = Entities.Count == 0 ? alignedDateCollection : generateDates(Entities.Select(x => x.Entity));
             foreach (TENDER_PROFILE_ITEM TENDER_PROFILE_ITEM in PROJECTTenderProfile.TENDER_PROFILE_ITEMS)
             {
+                Tuple<DateTime, DateTime> profileStartEndDate = TENDER_PROFILE_ITEM.GetProRatedStartEndDate(totalDurationInDays, startDate, endDate);
                 decimal assignHours = PROJECTTenderProfile.TenderProfile.TENDER_HOURS * TENDER_PROFILE_ITEM.HOURS_PERCENTAGE;
                 //pro-rate the dates of the deliverable based on tender item
-                int startProrateDurationInDays = Convert.ToInt32(totalDurationInDays * TENDER_PROFILE_ITEM.SCHEDULE_START_PERCENTAGE);
-                DateTime proRatedStartDate = startDate.AddDays(startProrateDurationInDays);
-                int endProrateDurationInDays = Convert.ToInt32(totalDurationInDays * (1 - TENDER_PROFILE_ITEM.SCHEDULE_FINISH_PERCENTAGE));
-                DateTime proRatedEndDate = endDate.AddDays(-1 * endProrateDurationInDays);
+                DateTime proRatedStartDate = profileStartEndDate.Item1;
+                DateTime proRatedEndDate = profileStartEndDate.Item2;
 
                 Tuple<double, double> bellCurveProfile = getBellCurveProfile((BellCurveShape)TENDER_PROFILE_ITEM.BELLCURVESHAPE);
                 List<BellCurvePeriodDate> bellCurvePeriodDates = getBellCurvePeriodDates(proRatedStartDate, proRatedEndDate, dataPointsDateCollection);
@@ -216,6 +217,8 @@ namespace BluePrints.ViewModels
                     TENDER_PROFILE_ITEM.DataPoints.Add(dataPoint);
                 }
             }
+
+            PROJECTTenderProfile.ResetDeliverableList();
         }
 
         private List<BellCurvePeriodDate> getBellCurvePeriodDates(DateTime startDate, DateTime endDate, List<DateTime> datesCollection)
@@ -291,62 +294,101 @@ namespace BluePrints.ViewModels
                 return;
             }
 
-            PROGRESS projectLivePROGRESS = _bluePrintsUnitOfWork.PROGRESSES.FirstOrDefault(x => x.GUID_PROJECT == project.GUID && x.STATUS == ProgressStatus.Live);
-            if(projectLivePROGRESS == null)
+            IEnumerable<PROGRESS> projectLivePROGRESSES = _bluePrintsUnitOfWork.PROGRESSES.Where(x => x.GUID_PROJECT == project.GUID && x.STATUS == ProgressStatus.Live);
+            if(projectLivePROGRESSES.Count() == 0)
             {
                 MessageBoxService.ShowMessage("Project doesn't have any live progress", "Error", MessageButton.OK);
                 return;
             }
 
-            if (projectTenderProfile.TenderProfile == null || projectTenderProfile.TenderProfile.TENDER_HOURS <= 0)
-            {
-                MessageBoxService.ShowMessage("Please set total design hours", "Error", MessageButton.OK);
-                return;
-            }
+            if (projectTenderProfile.Entity.TENDER_PROJECT_START == null)
+                MessageBoxService.ShowMessage("Please set project start date", "Error", MessageButton.OK);
+            else if (projectTenderProfile.Entity.TENDER_PROJECT_DURATION == null)
+                MessageBoxService.ShowMessage("Please set project duration", "Error", MessageButton.OK);
 
             IEnumerable<BASELINE_ITEM> projectDeliverables = _bluePrintsUnitOfWork.BASELINE_ITEMS.Where(x => x.GUID_BASELINE == projectLiveBASELINE.GUID);
-
-            //when deliverables doesn't have any hours then sync with planned hours
-            if (projectDeliverables.Sum(x => x.Budget_Units) == 0)
-                syncDeliverables(false, projectTenderProfile, projectDeliverables, projectAREACollection, projectSUBJOBCollection, projectLiveBASELINE, projectLivePROGRESS);
-            else
+            UICommand fromPlannedCommand = new UICommand()
             {
-                UICommand fromPlannedCommand = new UICommand()
-                {
-                    Id = ProjectPlanSyncAction.UnitsFromPlanning,
-                    Caption = "Units from Plan",
-                    IsCancel = true,
-                    IsDefault = false,
-                };
+                Id = ProjectPlanSyncAction.UnitsFromPlanning,
+                Caption = "Units from Plan",
+                IsCancel = true,
+                IsDefault = false,
+            };
 
-                UICommand fromDeliverablesCommand = new UICommand()
-                {
-                    Id = ProjectPlanSyncAction.UnitsFromDeliverables,
-                    Caption = "Units from Deliverables",
-                    IsCancel = true,
-                    IsDefault = false,
-                };
+            UICommand fromDeliverablesCommand = new UICommand()
+            {
+                Id = ProjectPlanSyncAction.UnitsFromDeliverables,
+                Caption = "Units from Deliverables",
+                IsCancel = true,
+                IsDefault = false,
+            };
 
-                string message = String.Format("Do you wish to use budgeted units from plan\nor from deliverable(s)");
+            string message = String.Format("Do you wish to use budgeted units from plan\nor from deliverable(s)");
 
-                BasicMessageBoxViewModel viewModel = BasicMessageBoxViewModel.Create(message);
-                viewModel.CheckboxVisibility = Visibility.Hidden;
-                UICommand result = BasicMessageBoxDialogService.ShowDialog(new List<UICommand>() { fromPlannedCommand, fromDeliverablesCommand }, "Please choose which budgeted units to use", "BasicMessageBox", viewModel);
-                if (result == fromPlannedCommand)
-                {
-                    syncDeliverables(false, projectTenderProfile, projectDeliverables, projectAREACollection, projectSUBJOBCollection, projectLiveBASELINE, projectLivePROGRESS);
-                }
-                else if (result == fromDeliverablesCommand)
-                {
-                    syncDeliverables(true, projectTenderProfile, projectDeliverables, projectAREACollection, projectSUBJOBCollection, projectLiveBASELINE, projectLivePROGRESS);
-                }
+            BasicMessageBoxViewModel viewModel = BasicMessageBoxViewModel.Create(message);
+            viewModel.CheckboxVisibility = Visibility.Hidden;
+            UICommand result = BasicMessageBoxDialogService.ShowDialog(new List<UICommand>() { fromPlannedCommand, fromDeliverablesCommand }, "Please choose which budgeted units to use", "BasicMessageBox", viewModel);
+            if (result == fromPlannedCommand)
+            {
+                syncDeliverables(false, projectTenderProfile, projectDeliverables, projectAREACollection, projectSUBJOBCollection, projectLiveBASELINE, projectLivePROGRESSES);
+            }
+            else if (result == fromDeliverablesCommand)
+            {
+                syncDeliverables(true, projectTenderProfile, projectDeliverables, projectAREACollection, projectSUBJOBCollection, projectLiveBASELINE, projectLivePROGRESSES);
             }
         }
 
-        private void syncDeliverables(bool useDeliverablesHours, PROJECTTenderProfile projectTenderProfile, IEnumerable<BASELINE_ITEM> projectDeliverables, IEnumerable<AREA> projectAREACollection, IEnumerable<SUBJOB> projectSUBJOBCollection, BASELINE projectLiveBASELINE, PROGRESS projectLivePROGRESS)
+        private void syncDeliverables(bool useDeliverablesHours, PROJECTTenderProfile projectTenderProfile, IEnumerable<BASELINE_ITEM> projectDeliverables, IEnumerable<AREA> projectAREACollection, IEnumerable<SUBJOB> projectSUBJOBCollection, BASELINE projectLiveBASELINE, IEnumerable<PROGRESS> projectLivePROGRESSES)
         {
-            
             List<DeliverableEditModel> deliverableEditModels = new List<DeliverableEditModel>();
+            if (useDeliverablesHours)
+            {
+                decimal totalDeliverablesHours = projectDeliverables.Sum(x => x.BUDGET_HOURS);
+                projectTenderProfile.TenderProfile.TENDER_HOURS = totalDeliverablesHours;
+                var deliverableGroup = projectDeliverables.GroupBy(x => new { x.GUID_DEPARTMENT, x.GUID_DISCIPLINE }).Select(group => new { group.Key.GUID_DEPARTMENT, group.Key.GUID_DISCIPLINE, BUDGET_HOURS = group.Sum(x => x.BUDGET_HOURS) });
+
+                foreach (var deliverables in deliverableGroup)
+                {
+                    if (deliverables.GUID_DEPARTMENT == null || deliverables.GUID_DISCIPLINE == null)
+                        continue;
+
+                    IEnumerable<TENDER_PROFILE_ITEM> findTENDER_PROFILE_ITEMS = projectTenderProfile.TENDER_PROFILE_ITEMS.Where(x => x.GUID_DEPARTMENT == deliverables.GUID_DEPARTMENT && x.GUID_DISCIPLINE == deliverables.GUID_DISCIPLINE);
+                    TENDER_PROFILE_ITEM findTENDER_PROFILE_ITEM;
+                    if (findTENDER_PROFILE_ITEMS.Count() == 0)
+                    {
+                        findTENDER_PROFILE_ITEM = new TENDER_PROFILE_ITEM();
+                        findTENDER_PROFILE_ITEM.GUID = Guid.Empty;
+                        findTENDER_PROFILE_ITEM.GUID_TENDER_PROFILE = projectTenderProfile.TenderProfile.GUID;
+                        findTENDER_PROFILE_ITEM.PROJECTTenderProfile = projectTenderProfile;
+                        findTENDER_PROFILE_ITEM.GUID_DEPARTMENT = (Guid)deliverables.GUID_DEPARTMENT;
+                        findTENDER_PROFILE_ITEM.GUID_DISCIPLINE = (Guid)deliverables.GUID_DISCIPLINE;
+                        findTENDER_PROFILE_ITEM.SCHEDULE_START_PERCENTAGE = 0;
+                        findTENDER_PROFILE_ITEM.SCHEDULE_FINISH_PERCENTAGE = 1;
+
+                        decimal hourPercentage = totalDeliverablesHours == 0 ? 0 : deliverables.BUDGET_HOURS / totalDeliverablesHours;
+                        findTENDER_PROFILE_ITEM.HOURS_PERCENTAGE = hourPercentage;
+                        projectTenderProfile.TENDER_PROFILE_ITEMS.Add(findTENDER_PROFILE_ITEM);
+                        _bluePrintsUnitOfWork.TENDER_PROFILE_ITEMS.Add(findTENDER_PROFILE_ITEM);
+                    }
+                    else if (findTENDER_PROFILE_ITEMS.Count() > 0)
+                    {
+                        findTENDER_PROFILE_ITEM = findTENDER_PROFILE_ITEMS.First();
+                        decimal hourPercentage = totalDeliverablesHours == 0 ? 0 : deliverables.BUDGET_HOURS / totalDeliverablesHours;
+                        findTENDER_PROFILE_ITEM.HOURS_PERCENTAGE = hourPercentage;
+
+                        _bluePrintsUnitOfWork.SaveChanges();
+                        foreach (TENDER_PROFILE_ITEM tenderProfileItem in findTENDER_PROFILE_ITEMS.Where(x => x.GUID != findTENDER_PROFILE_ITEM.GUID))
+                        {
+                            if (tenderProfileItem.GUID != Guid.Empty)
+                            {
+                                projectTenderProfile.TENDER_PROFILE_ITEMS.Remove(tenderProfileItem);
+                                _bluePrintsUnitOfWork.TENDER_PROFILE_ITEMS.Remove(tenderProfileItem);
+                            }
+                        }
+                    }
+                }
+            }
+
             foreach (TENDER_PROFILE_ITEM tenderItem in projectTenderProfile.TENDER_PROFILE_ITEMS)
             {
                 decimal assignHours = projectTenderProfile.TenderProfile.TENDER_HOURS * tenderItem.HOURS_PERCENTAGE;
@@ -382,7 +424,7 @@ namespace BluePrints.ViewModels
 
                     deliverableEditModel.StartDateTo = proRatedStartDate;
                     deliverableEditModel.EndDateTo = proRatedEndDate;
-
+                    deliverableEditModel.BellCurveShape = tenderItem.BELLCURVESHAPE;
                     deliverableEditModels.Add(deliverableEditModel);
                 }
                 else
@@ -392,131 +434,173 @@ namespace BluePrints.ViewModels
                     decimal hoursPerDeliverable = assignHours / sameDepartmentDisciplineDeliverables.Count();
                     foreach (BASELINE_ITEM sameDepartmentDisciplineDeliverable in sameDepartmentDisciplineDeliverables)
                     {
-                        DeliverableEditModel deliverableEditModel = new DeliverableEditModel();
-
-                        deliverableEditModel.DeliverableGuid = sameDepartmentDisciplineDeliverable.GUID;
-                        deliverableEditModel.Action = RowEditAction.Edit;
-
-                        deliverableEditModel.UnitsFrom = sameDepartmentDisciplineDeliverable.Budget_Units;
+                        decimal editDeliverableHours = 0;
                         if (!useDeliverablesHours)
-                            deliverableEditModel.UnitsTo = hoursPerDeliverable;
+                            editDeliverableHours = hoursPerDeliverable;
                         else
-                            deliverableEditModel.UnitsTo = sameDepartmentDisciplineDeliverable.Budget_Units;
+                            editDeliverableHours = sameDepartmentDisciplineDeliverable.BUDGET_HOURS;
 
-                        deliverableEditModel.Name = sameDepartmentDisciplineDeliverable.INTERNAL_NUM;
-                        deliverableEditModel.StartDateFrom = sameDepartmentDisciplineDeliverable.TENDER_START_DATE;
-                        deliverableEditModel.EndDateFrom = sameDepartmentDisciplineDeliverable.TENDER_END_DATE;
+                        if (sameDepartmentDisciplineDeliverable.BUDGET_HOURS != editDeliverableHours || sameDepartmentDisciplineDeliverable.TENDER_START_DATE != proRatedStartDate || sameDepartmentDisciplineDeliverable.TENDER_END_DATE != proRatedEndDate || sameDepartmentDisciplineDeliverable.BELLCURVESHAPE != tenderItem.BELLCURVESHAPE)
+                        {
+                            DeliverableEditModel deliverableEditModel = new DeliverableEditModel();
 
-                        deliverableEditModel.DepartmentGuid = tenderItemDepartmentGuid;
-                        deliverableEditModel.DisciplineGuid = tenderItemDisciplineGuid;
+                            deliverableEditModel.DeliverableGuid = sameDepartmentDisciplineDeliverable.GUID;
+                            deliverableEditModel.Name = sameDepartmentDisciplineDeliverable.INTERNAL_NUM;
+                            deliverableEditModel.StartDateFrom = sameDepartmentDisciplineDeliverable.TENDER_START_DATE;
+                            deliverableEditModel.EndDateFrom = sameDepartmentDisciplineDeliverable.TENDER_END_DATE;
+                            deliverableEditModel.UnitsFrom = sameDepartmentDisciplineDeliverable.Budget_Units;
+                            deliverableEditModel.DepartmentGuid = tenderItemDepartmentGuid;
+                            deliverableEditModel.DisciplineGuid = tenderItemDisciplineGuid;
 
-                        deliverableEditModel.StartDateTo = proRatedStartDate;
-                        deliverableEditModel.EndDateTo = proRatedEndDate;
+                            deliverableEditModel.BellCurveShape = tenderItem.BELLCURVESHAPE;
+                            deliverableEditModel.UnitsTo = editDeliverableHours;
+                            deliverableEditModel.StartDateTo = proRatedStartDate;
+                            deliverableEditModel.EndDateTo = proRatedEndDate;
 
-                        deliverableEditModels.Add(deliverableEditModel);
+                            deliverableEditModel.Action = RowEditAction.Edit;
+                            deliverableEditModels.Add(deliverableEditModel);
+                        }
                     }
                 }
 
                 LoadingScreenManager.Progress();
             }
 
-            foreach(BASELINE_ITEM deliverable in projectDeliverables)
-            {
-                if(!deliverableEditModels.Any(x => x.DepartmentGuid == deliverable.GUID_DEPARTMENT && x.DisciplineGuid == deliverable.GUID_DISCIPLINE))
+            PHASE findPHASE = _bluePrintsUnitOfWork.PHASES.FirstOrDefault(x => x.INTERNAL_NUM == BluePrintsResources.Default_Design_Phase);
+
+            //set deliverable hours to zero
+            if(!useDeliverablesHours)
+                foreach (BASELINE_ITEM deliverable in projectDeliverables)
                 {
-                    DeliverableEditModel deliverableEditModel = new DeliverableEditModel();
-                    deliverableEditModel.DeliverableGuid = deliverable.GUID;
-                    deliverableEditModel.Action = RowEditAction.ZeroBudget;
-                    deliverableEditModel.Name = deliverable.Deliverable_Name;
-                    deliverableEditModel.UnitsFrom = deliverable.BUDGET_HOURS;
+                    if(!projectTenderProfile.TENDER_PROFILE_ITEMS.Any(x => x.GUID_DEPARTMENT == deliverable.GUID_DEPARTMENT && x.GUID_DISCIPLINE == deliverable.GUID_DISCIPLINE))
+                    {
+                        if(deliverable.BUDGET_HOURS > 0)
+                        {
+                            DeliverableEditModel deliverableEditModel = new DeliverableEditModel();
+                            deliverableEditModel.DeliverableGuid = deliverable.GUID;
+                            deliverableEditModel.Action = RowEditAction.ZeroBudget;
+                            deliverableEditModel.Name = deliverable.Deliverable_Name;
+                            deliverableEditModel.UnitsFrom = deliverable.BUDGET_HOURS;
 
-                    if (!useDeliverablesHours)
-                        deliverableEditModel.UnitsTo = 0;
+                            if (!useDeliverablesHours)
+                                deliverableEditModel.UnitsTo = 0;
 
-                    deliverableEditModel.StartDateFrom = deliverable.TENDER_START_DATE;
-                    deliverableEditModel.EndDateFrom = deliverable.TENDER_END_DATE;
-                    deliverableEditModel.StartDateTo = deliverable.TENDER_START_DATE;
-                    deliverableEditModel.EndDateTo = deliverable.TENDER_END_DATE;
-                    deliverableEditModel.DepartmentGuid = deliverable.Department_Guid;
-                    deliverableEditModel.DisciplineGuid = deliverable.Discipline_Guid;
-                    deliverableEditModels.Add(deliverableEditModel);
+                            deliverableEditModel.StartDateFrom = deliverable.TENDER_START_DATE;
+                            deliverableEditModel.EndDateFrom = deliverable.TENDER_END_DATE;
+                            deliverableEditModel.StartDateTo = deliverable.TENDER_START_DATE;
+                            deliverableEditModel.EndDateTo = deliverable.TENDER_END_DATE;
+                            deliverableEditModel.DepartmentGuid = deliverable.Department_Guid;
+                            deliverableEditModel.DisciplineGuid = deliverable.Discipline_Guid;
+                            deliverableEditModel.BellCurveShape = deliverable.BELLCURVESHAPE;
+                            deliverableEditModels.Add(deliverableEditModel);
+                        }
+                    }
+
+                    populateDeliverableDefaults(deliverable, findPHASE, projectSUBJOBCollection);
                 }
-            }
 
             bool isDialogConfirmed = false;
-            DeliverableEditConfirmationViewModel deliverableEditConfirmationViewModel = DeliverableEditConfirmationViewModel.Create(deliverableEditModels, "Please review changes and confirm", DEPARTMENTCollection, DISCIPLINECollection);
-            if (DeliverableEditDialogService.ShowDialog(MessageButton.OKCancel, "", "DeliverableEditConfirmation", deliverableEditConfirmationViewModel) == MessageResult.OK)
+            if (deliverableEditModels.Count > 0)
             {
+                DeliverableEditConfirmationViewModel deliverableEditConfirmationViewModel = DeliverableEditConfirmationViewModel.Create(deliverableEditModels, "Please review changes and confirm", DEPARTMENTCollection, DISCIPLINECollection);
+                if (DeliverableEditDialogService.ShowDialog(MessageButton.OKCancel, "", "DeliverableEditConfirmation", deliverableEditConfirmationViewModel) == MessageResult.OK)
+                {
+                    isDialogConfirmed = true;
+                    LoadingScreenManager.SetMessage("Writing time phase data to deliverables...");
+                    LoadingScreenManager.ShowLoadingScreen(projectTenderProfile.TENDER_PROFILE_ITEMS.Count);
+                    foreach (DeliverableEditModel deliverableEditModel in deliverableEditModels)
+                    {
+                        BASELINE_ITEM baseline_item;
+                        if (deliverableEditModel.Action == RowEditAction.Add)
+                        {
+                            baseline_item = new BASELINE_ITEM();
+                            //Default area has been validated before so it's safe to use First()
+                            baseline_item.GUID_AREA = projectAREACollection.First().GUID;
+                            baseline_item.GUID_DEPARTMENT = deliverableEditModel.DepartmentGuid;
+                            baseline_item.GUID_DISCIPLINE = deliverableEditModel.DisciplineGuid;
+                            baseline_item.GUID_BASELINE = projectLiveBASELINE.GUID;
+                            baseline_item.INTERNAL_NUM = deliverableEditModel.Name;
+                            //Doc type has been validated before and it doesn't matter which is used
+                            baseline_item.GUID_DOCTYPE = _bluePrintsUnitOfWork.DOCTYPES.First().GUID;
+                            _bluePrintsUnitOfWork.BASELINE_ITEMS.Add(baseline_item);
+                        }
+                        else
+                        {
+                            baseline_item = _bluePrintsUnitOfWork.BASELINE_ITEMS.First(x => x.GUID == deliverableEditModel.DeliverableGuid);
+                        }
+
+                        if (deliverableEditModel.Action == RowEditAction.ZeroBudget)
+                            baseline_item.BUDGET_HOURS = 0;
+                        else
+                            baseline_item.BUDGET_HOURS = deliverableEditModel.UnitsTo;
+
+                        populateDeliverableDefaults(baseline_item, findPHASE, projectSUBJOBCollection);
+                        baseline_item.BELLCURVESHAPE = deliverableEditModel.BellCurveShape;
+                        baseline_item.TENDER_START_DATE = deliverableEditModel.StartDateTo;
+                        baseline_item.TENDER_END_DATE = deliverableEditModel.EndDateTo;
+
+                        LoadingScreenManager.Progress();
+                    }
+                }
+            }
+            else
                 isDialogConfirmed = true;
-                LoadingScreenManager.SetMessage("Writing time phase data to deliverables...");
-                LoadingScreenManager.ShowLoadingScreen(projectTenderProfile.TENDER_PROFILE_ITEMS.Count);
-                foreach (DeliverableEditModel deliverableEditModel in deliverableEditModels)
-                {
-                    BASELINE_ITEM baseline_item;
-                    if (deliverableEditModel.Action == RowEditAction.Add)
-                    {
-                        baseline_item = new BASELINE_ITEM();
-                        //Default area has been validated before so it's safe to use First()
-                        baseline_item.GUID_AREA = projectAREACollection.First().GUID;
-                        baseline_item.GUID_DEPARTMENT = deliverableEditModel.DepartmentGuid;
-                        baseline_item.GUID_DISCIPLINE = deliverableEditModel.DisciplineGuid;
-                        baseline_item.GUID_BASELINE = projectLiveBASELINE.GUID;
-                        baseline_item.INTERNAL_NUM = deliverableEditModel.Name;
-                        //Doc type has been validated before and it doesn't matter which is used
-                        baseline_item.GUID_DOCTYPE = _bluePrintsUnitOfWork.DOCTYPES.First().GUID;
 
-                        _bluePrintsUnitOfWork.BASELINE_ITEMS.Add(baseline_item);
-                    }
-                    else
-                    {
-                        baseline_item = _bluePrintsUnitOfWork.BASELINE_ITEMS.First(x => x.GUID == deliverableEditModel.DeliverableGuid);
-                    }
-
-                    if (deliverableEditModel.Action == RowEditAction.ZeroBudget)
-                        baseline_item.BUDGET_HOURS = 0;
-                    else
-                        baseline_item.BUDGET_HOURS = deliverableEditModel.UnitsTo;
-
-                    if(baseline_item.GUID_SUBJOB == null)
-                    {
-                        SUBJOB findSUBJOB = projectSUBJOBCollection.FirstOrDefault(x => x.GUID_DAREA == baseline_item.GUID_AREA && x.GUID_DSUBAREA == baseline_item.GUID_SUBAREA);
-                        if(findSUBJOB != null)
-                            baseline_item.GUID_SUBJOB = findSUBJOB.GUID;
-                    }
-
-                    baseline_item.TENDER_START_DATE = deliverableEditModel.StartDateTo;
-                    baseline_item.TENDER_END_DATE = deliverableEditModel.EndDateTo;
-
-                    LoadingScreenManager.Progress();
-                }
-            }
-
-            //final touches to ensure S-Curve plots from start date
-            IEnumerable<BASELINE_ITEM> deliverableWithTenderStartDate = projectDeliverables.Where(x => x.TENDER_START_DATE != null);
-            if(deliverableWithTenderStartDate.Count() > 0)
+            if (isDialogConfirmed)
             {
-                DateTime progressStartDate = projectLivePROGRESS.PROGRESS_START;
-                DateTime earliestDeliverableStartDate = deliverableWithTenderStartDate.Min(x => (DateTime)x.TENDER_START_DATE);
-
-                if (earliestDeliverableStartDate < progressStartDate)
+                
+                //final touches to ensure S-Curve plots from start date
+                IEnumerable<BASELINE_ITEM> deliverableWithTenderStartDate = projectDeliverables.Where(x => x.TENDER_START_DATE != null);
+                if (deliverableWithTenderStartDate.Count() > 0)
                 {
-                    DateTime earliestAlignedStartDate = ChronologicalHelpers.RewindDataDate(earliestDeliverableStartDate, projectLivePROGRESS.DATA_DATE, new TimeSpan(7, 0, 0, 0));
-                    projectLivePROGRESS.PROGRESS_START = earliestAlignedStartDate;
-                }
-            }
+                    foreach(PROGRESS progress in projectLivePROGRESSES)
+                    {
+                        DateTime progressStartDate = progress.PROGRESS_START;
+                        DateTime earliestDeliverableStartDate = deliverableWithTenderStartDate.Min(x => (DateTime)x.TENDER_START_DATE);
 
-            _bluePrintsUnitOfWork.SaveChanges();
+                        progress.PROGRESS_START = earliestDeliverableStartDate;
+
+                        //follow the same convention as progress view
+                        progress.DATA_DATE = earliestDeliverableStartDate.AddDays(-6).AddSeconds(-1);
+                    }
+                }
+
+                _bluePrintsUnitOfWork.SaveChanges();
 #pragma warning disable CS4014 // Because this call is not awaited, execution of the current method continues before the call is completed
-            BluePrintsContextHelper.AsyncRefreshDeliverablesDataPointsByProject(projectTenderProfile.Entity.NUMBER);
+                BluePrintsContextHelper.AsyncRefreshDeliverablesDataPointsByProject(projectTenderProfile.Entity.NUMBER);
 #pragma warning restore CS4014 // Because this call is not awaited, execution of the current method continues before the call is completed
-            reload(projectTenderProfile);
+                reload(projectTenderProfile);
 
-            if(isDialogConfirmed)
-            {
-                if(useDeliverablesHours)
+                if (useDeliverablesHours)
                     MessageBoxService.ShowMessage("Deliverables sync with time phase from planned, and planned design hours sync with deliverables");
                 else
                     MessageBoxService.ShowMessage("Deliverables sync with time phase and hours from planned");
+            }
+        }
+
+        private void populateDeliverableDefaults(BASELINE_ITEM deliverable, PHASE defaultDesignPhase, IEnumerable<SUBJOB> projectSUBJOBS)
+        {
+            if (deliverable.GUID_PHASE == null)
+            {
+                if (defaultDesignPhase != null)
+                    deliverable.GUID_PHASE = defaultDesignPhase.GUID;
+            }
+
+            bool shouldPopulateSubJob = false;
+            if (deliverable.GUID_SUBJOB == null)
+                shouldPopulateSubJob = true;
+            else
+            {
+                SUBJOB findSUBJOBByGuid = projectSUBJOBS.FirstOrDefault(x => x.GUID == deliverable.GUID_SUBJOB);
+                if (findSUBJOBByGuid == null)
+                    shouldPopulateSubJob = true;
+            }
+
+            if (shouldPopulateSubJob)
+            {
+                SUBJOB findSUBJOB = projectSUBJOBS.FirstOrDefault(x => x.GUID_DPHASE == deliverable.GUID_PHASE && x.GUID_DAREA == deliverable.GUID_AREA && x.GUID_DSUBAREA == deliverable.GUID_SUBAREA);
+                if (findSUBJOB != null)
+                    deliverable.GUID_SUBJOB = findSUBJOB.GUID;
             }
         }
 
@@ -608,6 +692,7 @@ namespace BluePrints.ViewModels
             if (dataRowView[columnProject] == DBNull.Value)
             {
                 PROJECTTenderProfile newPROJECT = new PROJECTTenderProfile();
+                newPROJECT.TENDER_PROFILE_ITEMS = new List<TENDER_PROFILE_ITEM>();
                 newPROJECT.Entity.STATUS = ProjectStatus.Tender;
                 dataRowView[columnProject] = newPROJECT;
             }
@@ -718,6 +803,8 @@ namespace BluePrints.ViewModels
                 newPROJECT.TenderProfile = findExistingOrAddTenderProfile(newPROJECT.Entity, _bluePrintsUnitOfWork);
                 BluePrintsDataUtils.CreateNewProjectDefaults(newPROJECT.Entity, _bluePrintsUnitOfWork);
                 BuildRowStats(newPROJECT, true);
+
+                Messenger.Default.Send(new EntityMessage<PROJECT, Guid>(newPROJECT.GUID, Guid.NewGuid(), EntityMessageType.Added));
             }
         }
 
@@ -882,15 +969,20 @@ namespace BluePrints.ViewModels
             BuildRowStats(project, true);
         }
 
-        private void refreshDataPointsTable()
+        public override void FullRefresh()
         {
-            alignedDateCollection = generateDates(Entities.Select(x => x.Entity));
+            resetDataPointsTable();
+            base.FullRefresh();
+        }
+
+        private void resetDataPointsTable()
+        {
+            _bluePrintsUnitOfWork = bluePrintsUnitOfWorkFactory.CreateUnitOfWork();
             ParentColumns.Clear();
             ChildColumns.Clear();
             ParentSummaries.Clear();
             ChildSummaries.Clear();
             dataPointsTable = null;
-            this.RaisePropertyChanged(x => x.DataPointsTable);
         }
 
         private void realignDateCollectionOnDataTable(DataTable dataTable, IEnumerable<DateTime> alignedDataDates)
@@ -925,7 +1017,8 @@ namespace BluePrints.ViewModels
                         foreach (DataRow dataRow in dataTable.Rows)
                         {
                             DataTable tenderProfilesDataPointsTable = (DataTable)dataRow[columnTenderProfileDataTable];
-                            tenderProfilesDataPointsTable.Columns.Add(columnFieldName, typeof(decimal));
+                            if(!tenderProfilesDataPointsTable.Columns.Contains(columnFieldName))
+                                tenderProfilesDataPointsTable.Columns.Add(columnFieldName, typeof(decimal));
                         }
                     }
                 }
@@ -1506,7 +1599,7 @@ namespace BluePrints.ViewModels
             else
             {
                 int rowHandle = ((TableView)GridControlService.GridControl.View.MasterRootRowsContainer.FocusedView).Grid.GetMasterRowHandle();
-                if (rowHandle > 0)
+                if (rowHandle >= 0)
                     return (PROJECTTenderProfile)((DataRowView)GridControlService.GetRow(rowHandle))[columnProject];
                 else
                     return null;
@@ -1746,7 +1839,7 @@ namespace BluePrints.ViewModels
             tenderProfilesDataPointsTable.Clear();
 
             IEnumerable<TENDER_PROFILE_ITEM> tenderProfileItems = entity.TENDER_PROFILE_ITEMS.OrderBy(x => x.CREATED);
-            bool isTotalPercentageError = tenderProfileItems.Sum(x => x.HOURS_PERCENTAGE) > 1;
+            bool isTotalPercentageError = tenderProfileItems.Sum(x => x.HOURS_PERCENTAGE) > 1.01m;
 
 
             if (entity.TENDER_PROFILE_ITEMS != null)
@@ -1793,7 +1886,7 @@ namespace BluePrints.ViewModels
             columns.Add(new ColumnDescriptor() { FieldName = columnProject + ".Entity.NUMBER", SortIndex = 1, VisibleIndex = visibleIndex, Header = "Number", Fixed = FixedStyle.Left, Width = 50, Settings = SettingsType.Default });
             visibleIndex += 10;
             summaries.Add(new SummaryDescriptor() { FieldName = columnProject + ".Entity.NUMBER", DisplayFormat = "{0} Record(s)", Type = SummaryItemType.Count });
-            columns.Add(new ColumnDescriptor() { FieldName = columnProject + ".Entity.NAME", VisibleIndex = visibleIndex, Header = "Name", Fixed = FixedStyle.Left, Width = 100, Settings = SettingsType.Default });
+            columns.Add(new ColumnDescriptor() { FieldName = columnProject + ".Entity.NAME", VisibleIndex = visibleIndex, SortIndex = -1, Header = "Name", Fixed = FixedStyle.Left, Width = 100, Settings = SettingsType.Default });
             visibleIndex += 10;
             columns.Add(new ColumnDescriptor() { FieldName = columnProject + ".Entity.STATUS", VisibleIndex = visibleIndex, Header = "Project Status", Fixed = FixedStyle.Left, Width = 120, Settings = SettingsType.Enum1 });
             visibleIndex += 10;
@@ -1813,6 +1906,8 @@ namespace BluePrints.ViewModels
             visibleIndex += 10;
             columns.Add(new ColumnDescriptor() { FieldName = columnProject + ".Entity.TENDER_PROJECT_DURATION", VisibleIndex = visibleIndex, ReadOnly = false, Visible = true, MaxValue = 999999999, Header = "Duration", Mask = "###,##0 Weeks", Increment = 1, Fixed = FixedStyle.Left, Width = 75, Settings = SettingsType.Number });
             visibleIndex += 10;
+            columns.Add(new ColumnDescriptor() { FieldName = columnProject + ".IsSynced", VisibleIndex = visibleIndex, SortIndex = -1, ReadOnly = false, Visible = true, Header = "Synced", Fixed = FixedStyle.Left, Width = 75, Settings = SettingsType.Default });
+            visibleIndex += 10;
 
             foreach (DateTime alignedDate in alignedDates.OrderBy(x => x))
             {
@@ -1831,16 +1926,16 @@ namespace BluePrints.ViewModels
             int visibleIndex = 10;
             columns.Add(new ColumnDescriptor() { FieldName = columnTenderProfile + ".GUID_DEPARTMENT", VisibleIndex = visibleIndex, Header = "Commodity", DisplayMember = "NAME", ValueMember = "GUID", Fixed = FixedStyle.Left, Width = 70, ItemsSource = DEPARTMENTCollection, Settings = SettingsType.Collection });
             visibleIndex += 10;
-            columns.Add(new ColumnDescriptor() { FieldName = columnTenderProfile + ".GUID_DISCIPLINE", VisibleIndex = visibleIndex, Tag = "Contract", Header = "Discipline", DisplayMember = "NAME", ValueMember = "GUID", Fixed = FixedStyle.Left, Width = 70, ItemsSource = DISCIPLINECollection, Settings = SettingsType.Collection });
+            columns.Add(new ColumnDescriptor() { FieldName = columnTenderProfile + ".GUID_DISCIPLINE", VisibleIndex = visibleIndex, Tag = "Status", Header = "Discipline", DisplayMember = "NAME", ValueMember = "GUID", Fixed = FixedStyle.Left, Width = 70, ItemsSource = DISCIPLINECollection, Settings = SettingsType.Collection });
             visibleIndex += 10;
-            columns.Add(new ColumnDescriptor() { FieldName = columnTenderProfile + ".HOURS_PERCENTAGE", VisibleIndex = visibleIndex, Tag = "Status", Header = "Hours %", MaxValue = 1, Mask = "p2", Increment = 0.1m, Fixed = FixedStyle.Left, Width = 75, Settings = SettingsType.Custom1 });
+            columns.Add(new ColumnDescriptor() { FieldName = columnTenderProfile + ".HOURS_PERCENTAGE", VisibleIndex = visibleIndex, Tag = "Design Hours", Header = "Hours %", MaxValue = 1, Mask = "p2", Increment = 0.1m, Fixed = FixedStyle.Left, Width = 75, Settings = SettingsType.Custom1 });
             summaries.Add(new SummaryDescriptor() { FieldName = columnTenderProfile + ".HOURS_PERCENTAGE", DisplayFormat = "p2", Type = SummaryItemType.Sum });
             visibleIndex += 10;
-            columns.Add(new ColumnDescriptor() { FieldName = columnTenderProfile + ".SCHEDULE_START_PERCENTAGE", VisibleIndex = visibleIndex, MinValue = 0, MaxValue = 1, Tag = "Design Hours", Header = "Schedule Start %", Mask = "p2", Increment = 0.1m, Fixed = FixedStyle.Left, Width = 75, Settings = SettingsType.Number });
+            columns.Add(new ColumnDescriptor() { FieldName = columnTenderProfile + ".SCHEDULE_START_PERCENTAGE", VisibleIndex = visibleIndex, MinValue = 0, MaxValue = 1, Tag = "Start Date", Header = "Schedule Start %", Mask = "p2", Increment = 0.1m, Fixed = FixedStyle.Left, Width = 75, Settings = SettingsType.Number });
             visibleIndex += 10;
-            columns.Add(new ColumnDescriptor() { FieldName = columnTenderProfile + ".SCHEDULE_FINISH_PERCENTAGE", VisibleIndex = visibleIndex, MinValue = 0, MaxValue = 1, Tag = "Start Date", Header = "Schedule Finish %", Mask = "p2", Increment = 0.1m, Fixed = FixedStyle.Left, Width = 75, Settings = SettingsType.Number });
+            columns.Add(new ColumnDescriptor() { FieldName = columnTenderProfile + ".SCHEDULE_FINISH_PERCENTAGE", VisibleIndex = visibleIndex, MinValue = 0, MaxValue = 1, Tag = "Duration", Header = "Schedule Finish %", Mask = "p2", Increment = 0.1m, Fixed = FixedStyle.Left, Width = 75, Settings = SettingsType.Number });
             visibleIndex += 10;
-            columns.Add(new ColumnDescriptor() { FieldName = columnTenderProfile + ".BELLCURVESHAPE", VisibleIndex = visibleIndex, Header = "Bell Curve", Tag = "Duration", Fixed = FixedStyle.Left, Width = 70, Settings = SettingsType.Enum7 });
+            columns.Add(new ColumnDescriptor() { FieldName = columnTenderProfile + ".BELLCURVESHAPE", VisibleIndex = visibleIndex, Header = "Bell Curve", Tag = "Synced", Fixed = FixedStyle.Left, Width = 70, Settings = SettingsType.Enum7 });
             visibleIndex += 10;
 
             foreach (DateTime alignedDate in alignedDates.OrderBy(x => x))

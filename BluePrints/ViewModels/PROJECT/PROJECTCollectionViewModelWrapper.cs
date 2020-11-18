@@ -285,7 +285,6 @@ namespace BluePrints.ViewModels
                 {
                     if (MessageBoxService.ShowMessage("Since project is in tender phase do you wish to change the start and finish dates of all SUBJOBS and PROGRESS in this project?\n\nStart date will be tender project start date\n\nEnd date will be tender project start date plus duration", "Change Subjob Dates", MessageButton.YesNo) == MessageResult.Yes)
                     {
-                        decimal duration = (decimal)entity.TENDER_PROJECT_DURATION;
                         IEnumerable<SUBJOB> allSubJobs = unitOfWork.SUBJOBS.Where(x => x.GUID_PROJECT == entity.GUID);
                         List<SUBJOB> saveSUBJOB = new List<SUBJOB>();
                         foreach (SUBJOB subjob in allSubJobs)

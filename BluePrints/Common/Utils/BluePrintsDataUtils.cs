@@ -1549,6 +1549,14 @@ namespace BluePrints.Common.ViewModel.Utils
                 return string.Empty;
         }
 
+        public static int GetTenderDuration(PROJECT project)
+        {
+            decimal tenderDuration = project.TENDER_PROJECT_DURATION == null ? 0 : (decimal)project.TENDER_PROJECT_DURATION;
+            int totalDurationInDays = Convert.ToInt32(tenderDuration * 7);
+
+            return totalDurationInDays;
+        }
+
         public static string GetPhaseCode(string subjobCode)
         {
             if (subjobCode == string.Empty)

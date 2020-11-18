@@ -294,8 +294,11 @@ namespace BluePrints.ViewModels
             if (_projectCollectionViewModel == null)
                 return;
 
+            LoadingScreenManager.ShowLoadingScreen(1);
+            LoadingScreenManager.SetMessage("Refreshing projects in navigation panel...");
             clearAllProjectModules();
             CreateModules(_projectCollectionViewModel.Entities, false);
+            LoadingScreenManager.CloseLoadingScreen();
         }
 
         public void LogOut()

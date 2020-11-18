@@ -45,6 +45,11 @@
                                     <dxe:SpinEditSettings Mask="n2" MaskType="Numeric" MaskUseAsDisplayFormat="True" />
                                 </dxg:GridColumn.EditSettings>
                             </dxg:GridColumn>
+                            <dxg:GridColumn FieldName="BellCurveShape" Header="Bell Curve" ReadOnly="True" AllowBestFit="false" Width="70">
+                                <dxg:GridColumn.EditSettings>
+                                    <dxe:ComboBoxEditSettings AutoComplete="True" IsTextEditable="True" ItemsSource="{dxe:EnumItemsSource EnumType={x:Type common:BellCurveShape}}" />
+                                </dxg:GridColumn.EditSettings>
+                            </dxg:GridColumn>
                             <dxg:GridColumn Header="Start Date From" ReadOnly="True" FieldName="StartDateFrom" >
                                 <dxg:GridColumn.EditSettings>
                                     <dxe:DateEditSettings DisplayFormat="dd-MMM-yyyy" />
