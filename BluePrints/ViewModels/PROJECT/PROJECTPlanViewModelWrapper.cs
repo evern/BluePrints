@@ -349,7 +349,9 @@ namespace BluePrints.ViewModels
         {
             List<DeliverableEditModel> deliverableEditModels = new List<DeliverableEditModel>();
             decimal totalDeliverablesHours = projectDeliverables.Sum(x => x.BUDGET_HOURS);
-            projectTenderProfile.TenderProfile.TENDER_HOURS = totalDeliverablesHours;
+            if (useDeliverablesHours)
+                projectTenderProfile.TenderProfile.TENDER_HOURS = totalDeliverablesHours;
+
             var deliverableGroup = projectDeliverables.GroupBy(x => new { x.GUID_DEPARTMENT, x.GUID_DISCIPLINE }).Select(group => new { group.Key.GUID_DEPARTMENT, group.Key.GUID_DISCIPLINE, BUDGET_HOURS = group.Sum(x => x.BUDGET_HOURS) });
 
             foreach (var deliverables in deliverableGroup)
@@ -810,6 +812,10 @@ namespace BluePrints.ViewModels
                 LoadingScreenManager.ShowLoadingScreen(1);
                 LoadingScreenManager.SetMessage("Creating project, please wait...");
 
+                _bluePrintsUnitOfWork.PROJECTS.Add(newPROJECT.Entity);
+                _bluePrintsUnitOfWork.SaveChanges();
+                newPROJECT.TenderProfile = findExistingOrAddTenderProfile(newPROJECT.Entity, _bluePrintsUnitOfWork);
+                _bluePrintsUnitOfWork.SaveChanges();
                 createProjectBackgroundWorker.RunWorkerAsync(newPROJECT);
             }
         }
@@ -817,9 +823,6 @@ namespace BluePrints.ViewModels
         private void CreateProjectBackgroundWorker_DoWork(object sender, DoWorkEventArgs e)
         {
             PROJECTTenderProfile newPROJECT = (PROJECTTenderProfile)e.Argument;
-            _bluePrintsUnitOfWork.PROJECTS.Add(newPROJECT.Entity);
-            _bluePrintsUnitOfWork.SaveChanges();
-            newPROJECT.TenderProfile = findExistingOrAddTenderProfile(newPROJECT.Entity, _bluePrintsUnitOfWork);
             BluePrintsDataUtils.CreateNewProjectDefaults(newPROJECT.Entity, _bluePrintsUnitOfWork);
             e.Result = newPROJECT;
 
