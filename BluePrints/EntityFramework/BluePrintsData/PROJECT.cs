@@ -98,12 +98,6 @@
 
         public PipelineStatus PIPELINE_STATUS { get; set; }
 
-        public decimal? PIPELINE_GROSS_PROFIT { get; set; }
-
-        public decimal? PIPELINE_TOTAL_VALUE { get; set; }
-
-        public decimal? PIPELINE_SCOPE_PCT { get; set; }
-
         public DateTime CREATED { get; set; }
 
         public Guid CREATEDBY { get; set; }
