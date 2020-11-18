@@ -755,30 +755,6 @@ namespace BluePrints.Common
 
     public enum IncidentClassification
     {
-        //[Display(Name = "LTI: Lost Time Injury")]
-        //LTI = 0,
-        //[Display(Name = "RWI: Restricted Work Injury")]
-        //RWI = 1,
-        //[Display(Name = "MTI: Medical Treatment Injury")]
-        //MTI = 2,
-        //[Display(Name = "FAI: First Aid (or no-treatment required) Injury")]
-        //FAI = 3,
-        //[Display(Name = "NWR: Non-Work Related Injury or Illness")]
-        //NWR = 4,
-        //[Display(Name = "MVA: Motor Vehicle Accident")]
-        //MVA = 5,
-        //[Display(Name = "DAM: Property, Plant, Equipment Damage")]
-        //DAM = 6,
-        //[Display(Name = "SEC: Security, Theft, Public Disturbance")]
-        //SEC = 7,
-        //[Display(Name = "ENV: Environmental Spill, Damage")]
-        //ENV = 8,
-        //[Display(Name = "FIRE: Fire")]
-        //FIRE = 9,
-        //[Display(Name = "NM: Near Miss")]
-        //NM = 10,
-        //[Display(Name = "OTH: Other")]
-        //OTH = 11
         [Display(Name = "LTI")]
         LTI = 0,
         [Display(Name = "RWI")]
@@ -803,6 +779,63 @@ namespace BluePrints.Common
         NM = 10,
         [Display(Name = "OTH")]
         OTH = 11
+    }
+    public enum VariationClientAcknowledgement
+    {
+        [Display(Name = "None")]
+        None = 0,
+        [Display(Name = "Verbal")]
+        Verbal = 1,
+        [Display(Name = "Email")]
+        Email = 2,
+        [Display(Name = "Written Instruction")]
+        Written = 3
+    }
+
+    public enum VariationNature
+    {
+        [Display(Name = "Constructive Acceleration")]
+        ConstructiveAcceleration = 0,
+        [Display(Name = "Disruption")]
+        Distruption = 1,
+        [Display(Name = "Critical Delay")]
+        CriticalDelay = 2,
+        [Display(Name = "Directed Acceleration")]
+        DirectedAcceleration = 3,
+        [Display(Name = "Variation under the contract")]
+        VariationUnderContract = 4
+    }
+
+    public enum VariationSubstantiation
+    {
+        [Display(Name = "Spreadsheets Only")]
+        SpreadsheetsOnly = 0,
+        [Display(Name = "Submitted Contemporary Records")]
+        SubmittedContemporaryRecords = 1,
+        [Display(Name = "Signed Dayworks")]
+        SignedDayworks = 2,
+        [Display(Name = "Submitted Contemporary Records & Dayworks")]
+        SubmittedContemporaryRecordsDayworks = 3
+    }
+
+    public enum VariationTimeliness
+    {
+        [Display(Name = "No Notice / Claim Provided")]
+        NoNoticeClaimProvided = 0,
+        [Display(Name = "Notice / Claim Provided Late")]
+        NoticeClaimProvidedLate = 1,
+        [Display(Name = "Notice & Claim Provided On Time")]
+        NoticeClaimProvidedOnTime = 2
+    }
+
+    public enum VariationDiscretionaryAdjustment
+    {
+        [Display(Name = "Low Confidence")]
+        LowConfidence = 0,
+        [Display(Name = "Medium Confidence")]
+        MediumConfidence = 1,
+        [Display(Name = "High Confidence")]
+        HighConfidence = 2
     }
 
     public enum PipelineType
