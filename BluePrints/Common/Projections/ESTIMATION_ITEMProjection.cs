@@ -287,6 +287,8 @@ namespace BluePrints.Common.Projections
 
         public string Department_Code => Entity.Department_Code;
 
+        public Guid? Department_Guid => Entity.Department_Guid;
+
         public Guid? Phase_Guid { get => Entity.Phase_Guid; set => Entity.Phase_Guid = value; }
 
         Guid? IDeliverable.Subjob_Guid { get => Entity.Subjob_Guid; set => Entity.Subjob_Guid = value; }

@@ -375,4 +375,7 @@
   <data name="VariationStockCode" xml:space="preserve">
     <value>VA-001</value>
   </data>
+  <data name="Default_TenderProfile_Name" xml:space="preserve">
+    <value>Default</value>
+  </data>
 </root>

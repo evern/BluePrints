@@ -38,7 +38,11 @@ namespace BluePrints.Common.Projections
 
         public string Department_Code => string.Empty;
 
+        public Guid? Department_Guid => (Guid?)null;
+
         public string Discipline_Code => string.Empty;
+
+        public Guid? Discipline_Guid => (Guid?)null;
 
         public string Deliverable_Name => string.Empty;
 
@@ -49,8 +53,6 @@ namespace BluePrints.Common.Projections
         public Guid? Area_Guid => Entity.GUID_DAREA;
 
         public Guid? SubArea_Guid => Entity.GUID_DSUBAREA;
-
-        public Guid? Discipline_Guid => Guid.Empty;
 
         public decimal Discipline_Number => 0;
 

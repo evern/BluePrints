@@ -99,6 +99,7 @@ namespace BluePrints.Common.ViewModel.Reporting
         ChargeType? Charge { get; }
         string Phase_Code { get; }
         string Department_Code { get; }
+        Guid? Department_Guid { get; }
         string Discipline_Code { get; }
         string Deliverable_Name { get; }
         Guid? Phase_Guid { get; set; }

@@ -70,6 +70,8 @@ namespace BluePrints.Data
         [StringLength(50)]
         public string REVISION_NUMBER { get; set; }
 
+        public BellCurveShape? BELLCURVESHAPE { get; set; }
+
         public DocumentNumberStatus INTERNALNUM_STATUS { get; set; }
 
         public DocumentNumberStatus CLIENTNUM_STATUS { get; set; }
@@ -93,6 +95,10 @@ namespace BluePrints.Data
         public DateTime? START_DATE { get; set; }
 
         public DateTime? END_DATE { get; set; }
+
+        public DateTime? TENDER_START_DATE { get; set; }
+
+        public DateTime? TENDER_END_DATE { get; set; }
 
         public DateTime? FORECAST_START_DATE { get; set; }
 

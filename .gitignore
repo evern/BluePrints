@@ -164,3 +164,4 @@ $RECYCLE.BIN/
 /.vs
 /.vs/slnx.sqlite
 /RegexMaskTest
+/BluePrints/Common/ViewModel/Converters/ColumnDescriptorHeaderColorConverter.cs

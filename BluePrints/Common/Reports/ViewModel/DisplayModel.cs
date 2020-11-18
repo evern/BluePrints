@@ -200,6 +200,8 @@ namespace BluePrints.Common.ViewModel.Reporting
 
         public string Department_Code => ((IReportable)ProgressItem).Department_Code;
 
+        public Guid? Department_Guid => ((IReportable)ProgressItem).Department_Guid;
+
         public decimal ScheduleCurrentPeriodPercentage => ((IReportable)ProgressItem).ScheduleCurrentPeriodPercentage;
 
         public Guid? Phase_Guid { get => ((IReportable)ProgressItem).Phase_Guid; set => ((IReportable)ProgressItem).Phase_Guid = value; }
@@ -569,6 +571,8 @@ namespace BluePrints.Common.ViewModel.Reporting
         public string Subjob_Name => Reportable.Subjob_Name;
 
         public string Department_Code => Reportable.Department_Code;
+
+        public Guid? Department_Guid => Reportable.Department_Guid;
 
         public decimal Schedule_Estimated_Quantity => Reportable.Schedule_Estimated_Quantity;
 

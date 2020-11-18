@@ -79,6 +79,8 @@ namespace BluePrints.Common.Projections
 
         public string Department_Code => Entity.Department_Code;
 
+        public Guid? Department_Guid => Entity.Department_Guid;
+
         public string Discipline_Code => Entity.Discipline_Code;
 
         public string Deliverable_Name => Entity.Deliverable_Name;

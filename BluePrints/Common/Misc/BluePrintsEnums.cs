@@ -25,6 +25,16 @@ namespace BluePrints.Common
         public static DateTime DefaultLastDay = new DateTime(2099, 1, 1);
     }
 
+    public enum RowEditAction
+    {
+        [Display(Name = "Add")]
+        Add,
+        [Display(Name = "Edit")]
+        Edit,
+        [Display(Name = "Budget Set to Zero")]
+        ZeroBudget
+    }
+
     public enum ForecastDataType
     {
         [Display(Name = "Cost")]
@@ -110,8 +120,8 @@ namespace BluePrints.Common
 
     public enum BellCurveShape
     {
-        [Display(Name = "FrontLoaded2")] FrontLoaded1 = 0,
-        [Display(Name = "FrontLoaded1")] FrontLoaded2 = 1,
+        [Display(Name = "FrontLoaded2")] FrontLoaded2 = 0,
+        [Display(Name = "FrontLoaded1")] FrontLoaded1 = 1,
         [Display(Name = "Balanced")] Balanced = 2,
         [Display(Name = "BackLoaded1")] BackLoaded1 = 3,
         [Display(Name = "BackLoaded2")] BackLoaded2 = 4
@@ -413,6 +423,12 @@ namespace BluePrints.Common
     {
         Estimate = 0,
         Budget = 1
+    }
+
+    public enum ProjectPlanSyncAction
+    {
+        UnitsFromPlanning,
+        UnitsFromDeliverables
     }
 
     public enum DialogAction
@@ -763,6 +779,189 @@ namespace BluePrints.Common
         NM = 10,
         [Display(Name = "OTH")]
         OTH = 11
+    }
+    public enum VariationClientAcknowledgement
+    {
+        [Display(Name = "None")]
+        None = 0,
+        [Display(Name = "Verbal")]
+        Verbal = 1,
+        [Display(Name = "Email")]
+        Email = 2,
+        [Display(Name = "Written Instruction")]
+        Written = 3
+    }
+
+    public enum VariationNature
+    {
+        [Display(Name = "Constructive Acceleration")]
+        ConstructiveAcceleration = 0,
+        [Display(Name = "Disruption")]
+        Distruption = 1,
+        [Display(Name = "Critical Delay")]
+        CriticalDelay = 2,
+        [Display(Name = "Directed Acceleration")]
+        DirectedAcceleration = 3,
+        [Display(Name = "Variation under the contract")]
+        VariationUnderContract = 4
+    }
+
+    public enum VariationSubstantiation
+    {
+        [Display(Name = "Spreadsheets Only")]
+        SpreadsheetsOnly = 0,
+        [Display(Name = "Submitted Contemporary Records")]
+        SubmittedContemporaryRecords = 1,
+        [Display(Name = "Signed Dayworks")]
+        SignedDayworks = 2,
+        [Display(Name = "Submitted Contemporary Records & Dayworks")]
+        SubmittedContemporaryRecordsDayworks = 3
+    }
+
+    public enum VariationTimeliness
+    {
+        [Display(Name = "No Notice / Claim Provided")]
+        NoNoticeClaimProvided = 0,
+        [Display(Name = "Notice / Claim Provided Late")]
+        NoticeClaimProvidedLate = 1,
+        [Display(Name = "Notice & Claim Provided On Time")]
+        NoticeClaimProvidedOnTime = 2
+    }
+
+    public enum VariationDiscretionaryAdjustment
+    {
+        [Display(Name = "Low Confidence")]
+        LowConfidence = 0,
+        [Display(Name = "Medium Confidence")]
+        MediumConfidence = 1,
+        [Display(Name = "High Confidence")]
+        HighConfidence = 2
+    }
+
+    public enum PipelineType
+    {
+        [Display(Name = "S")]
+        S = 0,
+        [Display(Name = "D")]
+        D = 1,
+        [Display(Name = "D&C")]
+        DC = 2,
+        [Display(Name = "EPCM")]
+        EPCM = 3,
+        [Display(Name = "C")]
+        C = 4,
+        [Display(Name = "O&M")]
+        OM = 5
+    }
+
+    public enum PipelineContract
+    {
+        [Display(Name = "Rates")]
+        R = 0,
+        [Display(Name = "Lump Sum")]
+        LS = 1,
+        [Display(Name = "Target Cost Estimate")]
+        TCE = 2
+    }
+
+    public enum PipelineStatus
+    {
+        [Display(Name = "L0 - Hold")]
+        L0 = 0,
+        [Display(Name = "L0.5 - O&M Lead")]
+        L05 = 1,
+        [Display(Name = "L1 - Lead")]
+        L1 = 2,
+        [Display(Name = "L2 - Consideration")]
+        L2 = 3,
+        [Display(Name = "L3 - Tendering")]
+        L3 = 4,
+        [Display(Name = "L4 - Clarifications")]
+        L4 = 5,
+        [Display(Name = "L5 - Preferred/Sole Sourced")]
+        L5 = 6,
+        [Display(Name = "L5.5 - O&M Preferred/Sole Sourced")]
+        L55 = 7,
+        [Display(Name = "L6 - Award")]
+        L6 = 8,
+        [Display(Name = "L7 - Won and Closed out")]
+        L7 = 9
+    }
+
+    public enum PipelineDivision
+    {
+        [Display(Name = "Americas")]
+        Americas = 0,
+        [Display(Name = "Energy")]
+        Energy = 1,
+        [Display(Name = "Minerals")]
+        Minerals = 2,
+        [Display(Name = "Minor Capital Projects")]
+        MinorCapitalProjects = 3,
+        [Display(Name = "NPI")]
+        NPI = 4,
+        [Display(Name = "Operations & Maintenance")]
+        OperationsMaintenance = 5
+    }
+
+    public enum PipelineCommodity
+    {
+        [Display(Name = "Acid Regen")]
+        AcidRegen = 0,
+        [Display(Name = "Battery Recycling")]
+        BatteryRecycling = 1,
+        [Display(Name = "Coal")]
+        Coal = 2,
+        [Display(Name = "Cobalt")]
+        Cobalt = 3,
+        [Display(Name = "Copper")]
+        Copper = 4,
+        [Display(Name = "Diamond")]
+        Diamond = 5,
+        [Display(Name = "Garnet")]
+        Garnet = 6,
+        [Display(Name = "Gold")]
+        Gold = 7,
+        [Display(Name = "Graphite")]
+        Graphite = 8,
+        [Display(Name = "High Purity Alumina")]
+        HighPurityAlumina = 9,
+        [Display(Name = "Iron Ore")]
+        IronOre = 10,
+        [Display(Name = "Lead/Zinc")]
+        LeadZinc = 11,
+        [Display(Name = "Lithium")]
+        Lithium = 12,
+        [Display(Name = "Magnetite")]
+        Magnetite = 13,
+        [Display(Name = "Maganese")]
+        Maganese = 14,
+        [Display(Name = "Mineral Sands")]
+        MineralSands = 15,
+        [Display(Name = "Nickel")]
+        Nickel = 16,
+        [Display(Name = "Oil & Gas")]
+        OilGas = 17,
+        [Display(Name = "Potash")]
+        Potash = 18,
+        [Display(Name = "Power")]
+        Power = 19,
+        [Display(Name = "Rare Earth")]
+        RareEarth = 201,
+        [Display(Name = "Salt")]
+        Salt = 21,
+        [Display(Name = "Silver")]
+        Silver = 22,
+        [Display(Name = "Tin")]
+        Tin = 23,
+        [Display(Name = "Tungsten")]
+        Tungsten = 24,
+        [Display(Name = "Vanadium")]
+        Vanadium = 25,
+        [Display(Name = "Water")]
+        Water = 26,
+        [Display(Name = "ZincCopperLead")]
+        ZincCopperLead = 27
     }
 
     public enum VariationClientAcknowledgement

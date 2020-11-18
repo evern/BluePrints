@@ -283,6 +283,15 @@
     </UserControl.Resources>
     <Grid Style="{StaticResource CollectionView.RootContainer}">
         <dxmvvm:Interaction.Behaviors>
+            <dxc:DialogService x:Name="DefaultTenderProfileSelectionDialog">
+                <dxc:DialogService.DialogStyle>
+                    <Style TargetType="dx:DXDialogWindow">
+                        <Setter Property="SizeToContent" Value="WidthAndHeight" />
+                        <Setter Property="MinWidth" Value="20" />
+                        <Setter Property="MinHeight" Value="20" />
+                    </Style>
+                </dxc:DialogService.DialogStyle>
+            </dxc:DialogService>
             <services:GridControlService x:Name="DetailGridControlService" GridControl="{Binding ElementName=gridControlDetail}" />
             <services:TableViewService x:Name="DetailTableViewService" TableView="{Binding ElementName=tableViewDetail}" />
             <dxc:FilteringBehavior x:Name="filteringBehavior" SourceType="{x:Type viewmodel:CostFilteringViewModel}" />

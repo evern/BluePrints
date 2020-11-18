@@ -615,6 +615,7 @@
     <Compile Include="Common\Projections\COMMODITY_CODEProjection.cs" />
     <Compile Include="Common\Projections\POForecastProjection.cs" />
     <Compile Include="Common\Projections\ProjectSummaryProjection.cs" />
+    <Compile Include="Common\Projections\PROJECTTenderProfiles.cs" />
     <Compile Include="Common\Projections\PROJECT_REVENUEProjection.cs" />
     <Compile Include="Common\Projections\RA_STUDYProjection.cs" />
     <Compile Include="Common\Projections\RA_STUDY_TYPEProjection.cs" />
@@ -786,9 +787,11 @@
     <Compile Include="Common\ViewModel\GanttChart\GanttCanvas.cs" />
     <Compile Include="Common\ViewModel\GanttChart\P6_Activity.cs" />
     <Compile Include="Common\ViewModel\Misc\CodesValidationModel.cs" />
+    <Compile Include="Common\ViewModel\Misc\DeliverableEditConfirmationViewModel.cs" />
     <Compile Include="Common\ViewModel\Misc\EarnedDataDateRealignmentViewModel.cs" />
     <Compile Include="Common\ViewModel\Misc\ColumnTemplateSelector.cs" />
     <Compile Include="Common\ViewModel\Misc\DistributionSelectViewModel.cs" />
+    <Compile Include="Common\ViewModel\Misc\DeliverableEditModel.cs" />
     <Compile Include="Common\ViewModel\Misc\EarnedDataDateRealignModel.cs" />
     <Compile Include="Common\ViewModel\Misc\ForecastHelper.cs" />
     <Compile Include="Common\ViewModel\Misc\YearSelectViewModel.cs" />
@@ -809,6 +812,9 @@
     <Compile Include="Common\View\DXSplashScreen\SyncScreen.cs" />
     <Compile Include="Common\View\DXSplashScreen\SyncScreen.xaml.cs">
       <DependentUpon>SyncScreen.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Common\View\DeliverableEditConfirmation.xaml.cs">
+      <DependentUpon>DeliverableEditConfirmation.xaml</DependentUpon>
     </Compile>
     <Compile Include="Common\View\EmailSentReport.xaml.cs">
       <DependentUpon>EmailSentReport.xaml</DependentUpon>
@@ -1079,6 +1085,7 @@
     <Compile Include="ViewModels\PROGRESS_ITEM\OffsiteDirectProgressCollectionViewModelWrapper.cs" />
     <Compile Include="ViewModels\EXOSUBJOB\EXO_POCollectionViewModelWrapper.cs" />
     <Compile Include="ViewModels\PROJECT\PROJECTForecastEACReportViewModelWrapper.cs" />
+    <Compile Include="ViewModels\PROJECT\PROJECTPlanViewModelWrapper.cs" />
     <Compile Include="ViewModels\PROJECT\PROJECT_REVENUECollectionViewModelWrapper.cs" />
     <Compile Include="ViewModels\PROJECT\PROJECTIndirectForecastViewModelWrapper.cs" />
     <Compile Include="ViewModels\PROJECT\POSpreadViewModel.cs" />
@@ -1194,6 +1201,9 @@
     </Compile>
     <Compile Include="Views\PROJECT\PROJECTPOCollectionView.xaml.cs">
       <DependentUpon>PROJECTPOCollectionView.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Views\PROJECT\PROJECTPlanView.xaml.cs">
+      <DependentUpon>PROJECTPlanView.xaml</DependentUpon>
     </Compile>
     <Compile Include="Views\PROJECT\PROJECT_REVENUECollectionView.xaml.cs">
       <DependentUpon>PROJECT_REVENUECollectionView.xaml</DependentUpon>
@@ -1977,6 +1987,10 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>
+    <Page Include="Common\View\DeliverableEditConfirmation.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
     <Page Include="Common\View\EmailSentReport.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
@@ -2154,6 +2168,10 @@
       <SubType>Designer</SubType>
     </Page>
     <Page Include="Views\PROJECT\PROJECTPOCollectionView.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Views\PROJECT\PROJECTPlanView.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>

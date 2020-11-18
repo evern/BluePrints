@@ -1,0 +1,92 @@
+﻿<UserControl
+    x:Name="userControl"
+    x:Class="BluePrints.Views.DeliverableEditConfirmation"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:dx="http://schemas.devexpress.com/winfx/2008/xaml/core"
+    xmlns:dxlc="http://schemas.devexpress.com/winfx/2008/xaml/layoutcontrol"
+    xmlns:dxe="http://schemas.devexpress.com/winfx/2008/xaml/editors"
+    xmlns:dxg="http://schemas.devexpress.com/winfx/2008/xaml/grid"
+    xmlns:common="clr-namespace:BluePrints.Common" 
+    xmlns:dxmvvm="http://schemas.devexpress.com/winfx/2008/xaml/mvvm" 
+    xmlns:custom="clr-namespace:BaseModel.Misc;assembly=BaseModel">
+    <dxlc:LayoutControl Orientation="Vertical">
+        <dxlc:LayoutGroup View="Group" VerticalAlignment="Top" HorizontalAlignment="Center" Orientation="Vertical">
+            <dxlc:LayoutItem LabelHorizontalAlignment="Center" Label="{Binding Label}" FontSize="15" VerticalAlignment="Center"  />
+        </dxlc:LayoutGroup>
+        <dxlc:LayoutGroup Name="LayoutGroupMain" View="Group" Header="Edit Value" Orientation="Vertical">
+            <dxlc:LayoutGroup Name="LayoutGroupContent" View="Group" Orientation="Vertical">
+                <dxlc:LayoutItem Height="500" >
+                    <custom:GridControlEx x:Name="GridControl" dx:DXSerializer.SerializationID="GridControlEarnedReassignment" dx:DXSerializer.StoreLayoutMode="All" ItemsSource="{Binding SourceObjects}" SelectionMode="Row">
+                        <dxg:GridControl.Columns>
+                            <dxg:GridColumn Header="Action" ReadOnly="True" FieldName="Action" >
+                                <dxg:GridColumn.EditSettings>
+                                    <dxe:ComboBoxEditSettings ItemsSource="{dxe:EnumItemsSource EnumType={x:Type common:RowEditAction}}" />
+                                </dxg:GridColumn.EditSettings>
+                            </dxg:GridColumn>
+                            <dxg:GridColumn FieldName="DepartmentGuid" ReadOnly="True" Header="Department">
+                                <dxg:GridColumn.EditSettings>
+                                    <dxe:ComboBoxEditSettings AutoComplete="True" DisplayMember="NAME" IsTextEditable="True" ItemsSource="{Binding DEPARTMENTCollection}" ValueMember="GUID" />
+                                </dxg:GridColumn.EditSettings>
+                            </dxg:GridColumn>
+                            <dxg:GridColumn FieldName="DisciplineGuid" ReadOnly="True" Header="Discipline">
+                                <dxg:GridColumn.EditSettings>
+                                    <dxe:ComboBoxEditSettings AutoComplete="True" DisplayMember="NAME" IsTextEditable="True" ItemsSource="{Binding DISCIPLINECollection}" ValueMember="GUID" />
+                                </dxg:GridColumn.EditSettings>
+                            </dxg:GridColumn>
+                            <dxg:GridColumn Header="Name" ReadOnly="True" FieldName="Name" SortIndex="1" />
+                            <dxg:GridColumn Header="Units From" ReadOnly="True" FieldName="UnitsFrom" >
+                                <dxg:GridColumn.EditSettings>
+                                    <dxe:SpinEditSettings Mask="n2" MaskType="Numeric" MaskUseAsDisplayFormat="True" />
+                                </dxg:GridColumn.EditSettings>
+                            </dxg:GridColumn>
+                            <dxg:GridColumn Header="Units To" ReadOnly="True" FieldName="UnitsTo" >
+                                <dxg:GridColumn.EditSettings>
+                                    <dxe:SpinEditSettings Mask="n2" MaskType="Numeric" MaskUseAsDisplayFormat="True" />
+                                </dxg:GridColumn.EditSettings>
+                            </dxg:GridColumn>
+                            <dxg:GridColumn FieldName="BellCurveShape" Header="Bell Curve" ReadOnly="True" AllowBestFit="false" Width="70">
+                                <dxg:GridColumn.EditSettings>
+                                    <dxe:ComboBoxEditSettings AutoComplete="True" IsTextEditable="True" ItemsSource="{dxe:EnumItemsSource EnumType={x:Type common:BellCurveShape}}" />
+                                </dxg:GridColumn.EditSettings>
+                            </dxg:GridColumn>
+                            <dxg:GridColumn Header="Start Date From" ReadOnly="True" FieldName="StartDateFrom" >
+                                <dxg:GridColumn.EditSettings>
+                                    <dxe:DateEditSettings DisplayFormat="dd-MMM-yyyy" />
+                                </dxg:GridColumn.EditSettings>
+                            </dxg:GridColumn>
+                            <dxg:GridColumn Header="Start Date To" ReadOnly="True" FieldName="StartDateTo" >
+                                <dxg:GridColumn.EditSettings>
+                                    <dxe:DateEditSettings DisplayFormat="dd-MMM-yyyy" />
+                                </dxg:GridColumn.EditSettings>
+                            </dxg:GridColumn>
+                            <dxg:GridColumn Header="End Date From" ReadOnly="True" FieldName="EndDateFrom" >
+                                <dxg:GridColumn.EditSettings>
+                                    <dxe:DateEditSettings DisplayFormat="dd-MMM-yyyy" />
+                                </dxg:GridColumn.EditSettings>
+                            </dxg:GridColumn>
+                            <dxg:GridColumn Header="End Date To" ReadOnly="True" FieldName="EndDateTo" >
+                                <dxg:GridColumn.EditSettings>
+                                    <dxe:DateEditSettings DisplayFormat="dd-MMM-yyyy" />
+                                </dxg:GridColumn.EditSettings>
+                            </dxg:GridColumn>
+                        </dxg:GridControl.Columns>
+                        <dxg:GridControl.GroupSummary>
+                            <dxg:GridSummaryItem Alignment="Right" SummaryType="Count" />
+                            <dxg:GridSummaryItem DisplayFormat="n" FieldName="UnitsFrom" SummaryType="Sum" />
+                            <dxg:GridSummaryItem DisplayFormat="n" FieldName="UnitsTo" SummaryType="Sum" />
+                        </dxg:GridControl.GroupSummary>
+                        <dxg:GridControl.TotalSummary>
+                            <dxg:GridSummaryItem Alignment="Right" SummaryType="Count" />
+                            <dxg:GridSummaryItem DisplayFormat="n" FieldName="UnitsFrom" SummaryType="Sum" />
+                            <dxg:GridSummaryItem DisplayFormat="n" FieldName="UnitsTo" SummaryType="Sum" />
+                        </dxg:GridControl.TotalSummary>
+                        <dxg:GridControl.View>
+                            <dxg:TableView x:Name="tableView" GroupSummaryDisplayMode="AlignByColumns" ShowTotalSummary="True" ShowGroupedColumns="True" ShowGroupPanel="True"/>
+                        </dxg:GridControl.View>
+                    </custom:GridControlEx>
+                </dxlc:LayoutItem>
+            </dxlc:LayoutGroup>
+        </dxlc:LayoutGroup>
+    </dxlc:LayoutControl>
+</UserControl>
