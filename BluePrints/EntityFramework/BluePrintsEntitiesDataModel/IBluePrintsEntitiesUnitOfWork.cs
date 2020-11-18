@@ -456,5 +456,10 @@ namespace BluePrints.BluePrintsEntitiesDataModel
         /// The WORKPACK entities repository.
         /// </summary>
         IRepository<WORKPACK, Guid> WORKPACKS { get; }
+
+        /// <summary>
+        /// The X_VARIATION_QUERY entities repository.
+        /// </summary>
+        IRepository<X_VARIATION_QUERY, Guid> X_VARIATION_QUERY { get; }
     }
 }

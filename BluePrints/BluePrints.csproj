@@ -23,8 +23,8 @@
     <UpdatePeriodically>false</UpdatePeriodically>
     <UpdateRequired>true</UpdateRequired>
     <MapFileExtensions>true</MapFileExtensions>
-    <MinimumRequiredVersion>1.0.6.165</MinimumRequiredVersion>
-    <ApplicationRevision>165</ApplicationRevision>
+    <MinimumRequiredVersion>1.0.6.192</MinimumRequiredVersion>
+    <ApplicationRevision>192</ApplicationRevision>
     <ApplicationVersion>1.0.6.%2a</ApplicationVersion>
     <UseApplicationTrust>false</UseApplicationTrust>
     <PublishWizardCompleted>true</PublishWizardCompleted>
@@ -33,7 +33,7 @@
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <AssemblyName>BluePrints</AssemblyName>
     <ApplicationIcon>Common\Images\LogoBeta.ico</ApplicationIcon>
-    <PublishUrl>\\canadafile\Data\general\BLUEPRINTS_CANADA\BETA_LIVE\</PublishUrl>
+    <PublishUrl>\\Fileserver\Data3\General\BLUEPRINTS\</PublishUrl>
     <PlatformTarget>AnyCPU</PlatformTarget>
     <DebugSymbols>true</DebugSymbols>
     <DebugType>full</DebugType>
@@ -822,6 +822,9 @@
     <Compile Include="Common\View\EarnedDataDateRealignment.xaml.cs">
       <DependentUpon>EarnedDataDateRealignment.xaml</DependentUpon>
     </Compile>
+    <Compile Include="Common\View\ListP6ErrorMessages.xaml.cs">
+      <DependentUpon>ListP6ErrorMessages.xaml</DependentUpon>
+    </Compile>
     <Compile Include="Common\View\YearSelect.xaml.cs">
       <DependentUpon>YearSelect.xaml</DependentUpon>
     </Compile>
@@ -850,6 +853,7 @@
     <Compile Include="Common\View\PrimaveraAffinityReport.xaml.cs">
       <DependentUpon>PrimaveraAffinityReport.xaml</DependentUpon>
     </Compile>
+    <Compile Include="EntityFramework\Annotations\X_VARIATION_QUERY.cs" />
     <Compile Include="EntityFramework\Annotations\JOBCOST_LINES_AUDIT.cs" />
     <Compile Include="EntityFramework\Annotations\JOB_TIMESHEETS.cs" />
     <Compile Include="EntityFramework\Annotations\JOB_TRANSACTIONS.cs" />
@@ -926,6 +930,7 @@
     <Compile Include="EntityFramework\Annotations\WORKPACK.cs" />
     <Compile Include="EntityFramework\Annotations\X_JOB_TIMESHEETS.cs" />
     <Compile Include="EntityFramework\Annotations\X_JOB_TRANSACTIONS_DETAIL_SeqNo.cs" />
+    <Compile Include="EntityFramework\BluePrintsData\X_VARIATION_QUERY.cs" />
     <Compile Include="EntityFramework\BluePrintsData\JOBCOST_LINES_AUDIT.cs" />
     <Compile Include="EntityFramework\BluePrintsData\FORECAST_EAC.cs" />
     <Compile Include="EntityFramework\BluePrintsData\PIPELINE.cs" />
@@ -1104,6 +1109,7 @@
     <Compile Include="ViewModels\TIMESHEET\TransactionCollectionViewModelWrapper.cs" />
     <Compile Include="ViewModels\TIMESHEET\TimesheetEntryCollectionViewModelWrapper.cs" />
     <Compile Include="ViewModels\USER\PROJECT_USERDashboardViewModelWrapper.cs" />
+    <Compile Include="ViewModels\VARIATION\VariationQueryCollectionViewModelWrapper.cs" />
     <Compile Include="ViewModels\VARIATION\VARIATION_CONSTRUCTIONCollectionViewModelWrapper.cs" />
     <Compile Include="ViewModels\VARIATION_ITEM\VARIATION_CONSTRUCTION_ITEMCollectionViewModelWrapper.cs" />
     <Compile Include="ViewModels\VARIATION_ITEM\OffsiteDirectVariationCollectionViewModelWrapper.cs" />
@@ -1913,6 +1919,9 @@
     <Compile Include="Views\PROGRESS\PROGRESSCollectionView.xaml.cs">
       <DependentUpon>PROGRESSCollectionView.xaml</DependentUpon>
     </Compile>
+    <Compile Include="Views\VARIATION\VariationQueryCollectionView.xaml.cs">
+      <DependentUpon>VariationQueryCollectionView.xaml</DependentUpon>
+    </Compile>
     <Compile Include="Views\VARIATION\VARIATION_CONSTRUCTIONCollectionView.xaml.cs">
       <DependentUpon>VARIATION_CONSTRUCTIONCollectionView.xaml</DependentUpon>
     </Compile>
@@ -1981,6 +1990,10 @@
       <SubType>Designer</SubType>
     </Page>
     <Page Include="Common\View\EarnedDataDateRealignment.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Common\View\ListP6ErrorMessages.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>
@@ -2365,6 +2378,10 @@
       <SubType>Designer</SubType>
     </Page>
     <Page Include="Views\PROGRESS\PROGRESSCollectionView.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Views\VARIATION\VariationQueryCollectionView.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>

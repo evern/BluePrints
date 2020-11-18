@@ -69,7 +69,7 @@
                 <custom:GridControlEx x:Name="GridControl" dx:DXSerializer.SerializationID="GridControlREGISTER" dx:DXSerializer.StoreLayoutMode="All" Style="{StaticResource DefaultGridControlTemplate}">
                     <dxg:GridControl.Columns>
                         <dxg:GridColumn Header="Change Number" AllowBestFit="false" Width="50" FieldName="NUMBER" HeaderToolTip="Unique number" AllowMoving="false" />
-                        <dxg:GridColumn Header="Client Number" AllowBestFit="false" Width="50" FieldName="CLIENT_NUMBER" AllowMoving="false" />
+                        <dxg:GridColumn Header="Client Number" AllowBestFit="false" Width="50" FieldName="CLIENT_NUMBER" Visible="False" AllowMoving="false" />
                         <dxg:GridColumn Header="Area" AllowBestFit="false" Width="50" FieldName="GUID_AREA" AllowMoving="false">
                             <dxg:GridColumn.EditSettings>
                                 <dxe:ComboBoxEditSettings AutoComplete="True" DisplayMember="INTERNAL_NUM" IsTextEditable="True" ItemsSource="{Binding AREACollection}" ValueMember="GUID" />

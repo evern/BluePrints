@@ -493,6 +493,15 @@ namespace BluePrints.Common.Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Query design variation breakdown.
+        /// </summary>
+        internal static string Menu_Project_DesignVariationQuery {
+            get {
+                return ResourceManager.GetString("Menu_Project_DesignVariationQuery", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Project POs maintenance menu read/write.
         /// </summary>
         internal static string Menu_Project_EXO_AllPO {
@@ -799,6 +808,15 @@ namespace BluePrints.Common.Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Show all EXO transactions year to date.
+        /// </summary>
+        internal static string Menu_TransactionsYearToDate {
+            get {
+                return ResourceManager.GetString("Menu_TransactionsYearToDate", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to UOMs maintenance menu.
         /// </summary>
         internal static string Menu_UOMs {
@@ -862,6 +880,15 @@ namespace BluePrints.Common.Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Allow moving data date forward and backward.
+        /// </summary>
+        internal static string Permission_DesignDeliverables_CanDateBackwardForward {
+            get {
+                return ResourceManager.GetString("Permission_DesignDeliverables_CanDateBackwardForward", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Finalise deliverable&apos;s internal and client numbers.
         /// </summary>
         internal static string Permission_DesignDeliverables_FinaliseNumbers {
@@ -889,7 +916,7 @@ namespace BluePrints.Common.Resources {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Always use previous week&apos;s date for progress and can change progress screen date.
+        ///   Looks up a localized string similar to Always use previous week&apos;s date for progress.
         /// </summary>
         internal static string Permission_DesignDeliverables_ProgressPreviousWeeksDate {
             get {

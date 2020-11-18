@@ -795,6 +795,7 @@
             xyDiagram1.SecondaryAxesY.AddRange(new DevExpress.XtraCharts.SecondaryAxisY[] {
             secondaryAxisY1});
             this.xrChart1.Diagram = xyDiagram1;
+            this.xrChart1.ImageType = DevExpress.XtraReports.UI.ChartImageType.Bitmap;
             this.xrChart1.Legend.Font = new System.Drawing.Font("Calibri", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.xrChart1.Legend.Name = "Default Legend";
             this.xrChart1.LocationFloat = new DevExpress.Utils.PointFloat(48.61126F, 0F);
@@ -979,12 +980,12 @@
             // reportBy
             // 
             this.reportBy.Description = "Report By";
+            this.reportBy.Name = "reportBy";
+            this.reportBy.ValueInfo = "Units";
             staticListLookUpSettings1.LookUpValues.Add(new DevExpress.XtraReports.Parameters.LookUpValue("Units", "Report by Units"));
             staticListLookUpSettings1.LookUpValues.Add(new DevExpress.XtraReports.Parameters.LookUpValue("Costs", "Report by Costs"));
             staticListLookUpSettings1.LookUpValues.Add(new DevExpress.XtraReports.Parameters.LookUpValue("Quantity", "Report by Quantity"));
-            this.reportBy.LookUpSettings = staticListLookUpSettings1;
-            this.reportBy.Name = "reportBy";
-            this.reportBy.ValueInfo = "Units";
+            this.reportBy.ValueSourceSettings = staticListLookUpSettings1;
             // 
             // showBurn
             // 
@@ -1048,7 +1049,7 @@
             this.FieldCaption,
             this.PageInfo,
             this.DataField});
-            this.Version = "19.1";
+            this.Version = "19.2";
             this.BeforePrint += new System.Drawing.Printing.PrintEventHandler(this.rptProgressItem_BeforePrint);
             ((System.ComponentModel.ISupportInitialize)(secondaryAxisY1)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(xyDiagram1)).EndInit();

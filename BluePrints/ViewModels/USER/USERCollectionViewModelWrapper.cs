@@ -102,7 +102,10 @@ namespace BluePrints.ViewModels
         private void populateUserProperties(USER user, IEnumerable<OFFICE> OFFICECollection)
         {
             if (user.OFFICE == null && user.GUID_OFFICE != null)
-                user.OFFICE = OFFICECollection.FirstOrDefault(x => x.GUID == user.GUID_OFFICE);
+            {
+                OFFICE office = OFFICECollection.FirstOrDefault(x => x.GUID == user.GUID_OFFICE);
+                user.GUID_OFFICE = office.GUID;
+            }
 
             user.Update();
         }

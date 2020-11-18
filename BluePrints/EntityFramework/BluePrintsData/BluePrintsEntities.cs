@@ -96,6 +96,7 @@ namespace BluePrints.Data
         public virtual DbSet<VARIATION_CONSTRUCTION> VARIATION_CONSTRUCTION { get; set; }
         public virtual DbSet<VARIATION_CONSTRUCTION_ITEM> VARIATION_CONSTRUCTION_ITEM { get; set; }
         public virtual DbSet<VARIATION_CONSTRUCTION_IMPACT> VARIATION_CONSTRUCTION_IMPACT { get; set; }
+        public virtual DbSet<X_VARIATION_QUERY> X_VARIATION_QUERY { get; set; }
 
         protected override void OnModelCreating(DbModelBuilder modelBuilder)
         {
@@ -442,6 +443,11 @@ namespace BluePrints.Data
                 .WithOptional(e => e.PHASE)
                 .HasForeignKey(e => e.GUID_PHASE)
                 .WillCascadeOnDelete(false);
+
+            modelBuilder.Entity<PHASE>()
+                .HasMany(e => e.DELIVERABLES_STATUS)
+                .WithOptional(e => e.PHASE)
+                .HasForeignKey(e => e.GUID_PHASE);
 
             modelBuilder.Entity<PIPELINE>()
                 .HasMany(e => e.PIPELINE_PROFILE_ITEM)

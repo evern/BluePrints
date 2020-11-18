@@ -112,14 +112,15 @@
                             </dxg:GridColumn>
                             <dxg:GridColumn FieldName="stockcode" AllowBestFit="false" Width="50" Header="Stock Code" ReadOnly="{Binding IsReadOnly}" />
                             <dxg:GridColumn FieldName="X_VARIATIONCODE" AllowBestFit="false" Width="150" Header="Variation Code" ReadOnly="{Binding IsReadOnly}" />
+                            <dxg:GridColumn FieldName="description" Width="300" AllowBestFit="false" Header="Description" ReadOnly="{Binding IsReadOnly}" />
                         </dxg:GridControlBand>
                         <dxg:GridControlBand Header="Read Only" >
-                            <dxg:GridColumn FieldName="description" Width="300" Header="Description" ReadOnly="{Binding IsReadOnly}" />
                             <dxg:GridColumn FieldName="accno" Header="Resource" AllowBestFit="false" Width="150" ReadOnly="true" >
                                 <dxg:GridColumn.EditSettings>
                                     <dxe:ComboBoxEditSettings AutoComplete="True" DisplayMember="RESOURCENAME" IsTextEditable="True" ItemsSource="{Binding JOBCOST_RESOURCECollection}" ValueMember="SEQNO" />
                                 </dxg:GridColumn.EditSettings>
                             </dxg:GridColumn>
+                            <dxg:GridColumn FieldName="TITLE" Width="150" AllowBestFit="false" Header="Title" ReadOnly="True" />
                             <dxg:GridColumn FieldName="transdate" AllowBestFit="false" Width="80" Header="Transdate" ReadOnly="True" FilterPopupMode="DateAlt"/>
                             <dxg:GridColumn FieldName="quantity" AllowBestFit="false" Width="100" Header="Quantity" ReadOnly="{Binding CanEditQuantity, Converter={StaticResource BooleanNegationConverter}}" >
                                 <dxg:GridColumn.EditSettings>
@@ -135,6 +136,21 @@
                             <dxg:GridColumn FieldName="name" AllowBestFit="false" Width="200" Header="Supplier" ReadOnly="True" />
                             <dxg:GridColumn FieldName="POno" Header="PO Number" AllowBestFit="false" Width="70" ReadOnly="True" />
                             <dxg:GridColumn FieldName="invno" Header="Invoice Number" AllowBestFit="false" Width="150" ReadOnly="True" />
+                            <dxg:GridColumn FieldName="transtype" Header="Trans Type" AllowBestFit="false" Width="50" ReadOnly="True" />
+                            <dxg:GridColumn FieldName="NARRATIVE" Width="200" AllowBestFit="false" Header="Narrative" ReadOnly="True" >
+                                <dxg:GridColumn.CellTemplate>
+                                    <DataTemplate>
+                                        <dxe:TextEdit x:Name="PART_Editor" Text="{Binding Path=Value}" IsReadOnly="True" VerticalScrollBarVisibility="Auto" Focusable="True" MaxHeight="200" />
+                                    </DataTemplate>
+                                </dxg:GridColumn.CellTemplate>
+                            </dxg:GridColumn>
+                            <dxg:GridColumn FieldName="SEQNO" AllowBestFit="false" Width="50" Header="Seq No"  ReadOnly="True" />
+                            <dxg:GridColumn FieldName="PURCH_GL_NO" Header="Purchase GL Code" AllowBestFit="false" Width="50" ReadOnly="true" />
+                            <dxg:GridColumn FieldName="PURCH_GL_NO" Header="Purchase GL Name" ReadOnly="true" >
+                                <dxg:GridColumn.EditSettings>
+                                    <dxe:ComboBoxEditSettings AutoComplete="True" DisplayMember="NAME" IsTextEditable="True" ItemsSource="{Binding GLACCSCollection}" ValueMember="ACCNO" />
+                                </dxg:GridColumn.EditSettings>
+                            </dxg:GridColumn>
                         </dxg:GridControlBand>
                     </dxg:GridControl.Bands>
                     <dxg:GridControl.GroupSummary>

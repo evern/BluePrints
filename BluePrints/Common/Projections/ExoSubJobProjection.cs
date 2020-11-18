@@ -1824,7 +1824,9 @@ namespace BluePrints.Common.Projections
             foreach (var resource in allResourceShortCodes)
             {
                 string shortCodeString = Regex.Match(resource.SHORTCODE, regexString).Value;
-                string defaultShortCodeString = resource.DEFAULT_STOCKCODE.Contains(formatPartialShortCode) ? Regex.Match(resource.DEFAULT_STOCKCODE, regexString).Value : string.Empty;
+                string defaultShortCodeString = string.Empty;
+                if (resource.DEFAULT_STOCKCODE != null)
+                    defaultShortCodeString = resource.DEFAULT_STOCKCODE.Contains(formatPartialShortCode) ? Regex.Match(resource.DEFAULT_STOCKCODE, regexString).Value : string.Empty;
 
                 string s;
                 if (shortCodeString != defaultShortCodeString)
@@ -2193,20 +2195,24 @@ namespace BluePrints.Common.Projections
             var availableLines = from JOBCOST_LINES in primeroUnitOfWork.JOBCOST_LINES
                                  join JOB_COSTGROUPS in primeroUnitOfWork.JOB_COSTGROUPS
                                  on JOBCOST_LINES.COST_CENTRE2 equals JOB_COSTGROUPS.SEQNO
+                                 into JobCostCentre2
+                                 from JobCostCentre2DefaultIfEmpty in JobCostCentre2.DefaultIfEmpty()
                                  join JOB_COSTTYPES in primeroUnitOfWork.JOB_COSTTYPES
                                  on JOBCOST_LINES.COST_CENTRE equals JOB_COSTTYPES.SEQNO
+                                 into JobCostCentre
+                                 from JobCostCentreDefaultIfEmpty in JobCostCentre.DefaultIfEmpty()
                                  join SUBJOB in primeroUnitOfWork.JOBCOST_HDR
                                  on JOBCOST_LINES.JOBNO equals SUBJOB.JOBNO
                                  join MAINJOB in primeroUnitOfWork.JOBCOST_HDR
                                  on SUBJOB.MASTER_JOBNO equals MAINJOB.JOBNO
+                                 join STOCK_ITEMS in primeroUnitOfWork.STOCK_ITEMS
+                                 on JOBCOST_LINES.STOCKCODE equals STOCK_ITEMS.STOCKCODE
                                  join JOB_RESOURCE_ALLOCATION in primeroUnitOfWork.JOB_RESOURCE_ALLOCATION
                                  on JOBCOST_LINES.JOBNO equals JOB_RESOURCE_ALLOCATION.JOBNO
                                  join JOBCOST_RESOURCE in primeroUnitOfWork.JOBCOST_RESOURCE
                                  on JOB_RESOURCE_ALLOCATION.RESOURCE_SEQNO equals JOBCOST_RESOURCE.SEQNO
-                                 join STOCK_ITEMS in primeroUnitOfWork.STOCK_ITEMS
-                                 on JOBCOST_RESOURCE.DEFAULT_STOCKCODE equals STOCK_ITEMS.STOCKCODE
-                                 where JOB_RESOURCE_ALLOCATION.START_DATE <= DateTime.Now && JOB_RESOURCE_ALLOCATION.END_DATE > DateTime.Now
-                                 select new { MAINJOB.JOBCODE, MASTERJOBCODE = MAINJOB.JOBCODE, SUBJOB, MAINJOB, JOBCOST_RESOURCE.STAFFNO, LINEID = JOBCOST_LINES.SEQNO, MASTERJOBNO = MAINJOB.JOBNO, SUBJOBNO = SUBJOB.JOBNO, SUBJOBTITLE = SUBJOB.TITLE, SUBJOBNAME = SUBJOB.JOBCODE, DISCIPLINE_ID = JOBCOST_LINES.COST_CENTRE2, DISCIPLINE_CODE = JOB_COSTGROUPS.SHORTCODE, DISCIPLINE_NAME = JOB_COSTGROUPS.COSTDESC, COMMODITY_ID = JOBCOST_LINES.COST_CENTRE, COMMODITY_CODE = JOB_COSTTYPES.SHORTCODE, COMMODITY_NAME = JOB_COSTTYPES.COSTDESC, RESOURCE_SEQNO = JOBCOST_RESOURCE.SEQNO, RESOURCE_STAFF_ID = JOBCOST_RESOURCE.STAFFNO, JOBCOST_RESOURCE.RESOURCENAME, JOBCOST_RESOURCE.DEFAULT_STOCKCODE, STOCK_CODE_DESC = STOCK_ITEMS.DESCRIPTION, END_DATE = JOB_RESOURCE_ALLOCATION.END_DATE, VARIATIONCODE = JOBCOST_LINES.X_VARIATION_CODE, JOBSTATUS = SUBJOB.STATUS };
+                                 where MAINJOB.JOBCODE == projectNumber && JOB_RESOURCE_ALLOCATION.START_DATE <= DateTime.Now && JOB_RESOURCE_ALLOCATION.END_DATE > DateTime.Now
+                                 select new { MAINJOB.JOBCODE, MASTERJOBCODE = MAINJOB.JOBCODE, SUBJOB, MAINJOB, JOBCOST_RESOURCE.STAFFNO, LINEID = JOBCOST_LINES.SEQNO, MASTERJOBNO = MAINJOB.JOBNO, SUBJOBNO = SUBJOB.JOBNO, SUBJOBTITLE = SUBJOB.TITLE, SUBJOBNAME = SUBJOB.JOBCODE, DISCIPLINE_ID = JOBCOST_LINES.COST_CENTRE2, DISCIPLINE_CODE = JobCostCentre2DefaultIfEmpty.SHORTCODE, DISCIPLINE_NAME = JobCostCentre2DefaultIfEmpty.COSTDESC, COMMODITY_ID = JOBCOST_LINES.COST_CENTRE, COMMODITY_CODE = JobCostCentreDefaultIfEmpty.SHORTCODE, COMMODITY_NAME = JobCostCentreDefaultIfEmpty.COSTDESC, RESOURCE_SEQNO = JOBCOST_RESOURCE.SEQNO, RESOURCE_STAFF_ID = JOBCOST_RESOURCE.STAFFNO, JOBCOST_RESOURCE.RESOURCENAME, JOBCOST_RESOURCE.DEFAULT_STOCKCODE, STOCK_CODE_DESC = STOCK_ITEMS.DESCRIPTION, END_DATE = JOB_RESOURCE_ALLOCATION.END_DATE, VARIATIONCODE = JOBCOST_LINES.X_VARIATION_CODE, JOBSTATUS = SUBJOB.STATUS };
 
             var availableLinesByProject = projectNumber == null ? availableLines : availableLines.Where(x => x.JOBCODE == projectNumber);
             var availableLinesByStaffNo = staffNo == null ? availableLinesByProject : availableLinesByProject.Where(x => x.STAFFNO == staffNo);

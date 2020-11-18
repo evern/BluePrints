@@ -3,6 +3,7 @@ using BaseModel.DataModel;
 using BaseModel.Misc;
 using BaseModel.ViewModel.Base;
 using BaseModel.ViewModel.Loader;
+using BaseModel.ViewModel.Services;
 using BaseModel.ViewModel.UndoRedo;
 using BluePrints.BluePrintsEntitiesDataModel;
 using BluePrints.Common;
@@ -17,6 +18,7 @@ using BluePrints.PrimeroData.PrimeroEntitiesDataModel;
 using DevExpress.Data;
 using DevExpress.Data.Filtering;
 using DevExpress.Mvvm;
+using DevExpress.Mvvm.DataAnnotations;
 using DevExpress.Mvvm.POCO;
 using DevExpress.Xpf.Grid;
 using System;
@@ -528,7 +530,7 @@ namespace BluePrints.ViewModels
             foreach (DateTime alignedDate in alignedDates.OrderBy(x => x))
             {
                 string columnFieldName = alignedDate.Date.ToString(BluePrintsResources.ColumnDateFormat);
-                columns.Add(new ColumnDescriptor() { FieldName = columnFieldName, ReadOnly = false, Header = columnFieldName, Mask = "c", Increment = 1, Fixed = FixedStyle.None, Width = 60, Settings = SettingsType.ForecastFuture });
+                columns.Add(new ColumnDescriptor() { FieldName = columnFieldName, ReadOnly = false, Header = columnFieldName, Mask = "c0", Increment = 1, Fixed = FixedStyle.None, Width = 60, Settings = SettingsType.ForecastFuture });
             }
         }
 
@@ -608,7 +610,7 @@ namespace BluePrints.ViewModels
             }
         }
 
-        public void DatesCellValueChanging(CellValueChangedEventArgs e)
+        public void DatesCellValueChanged(CellValueChangedEventArgs e)
         {
             DateTime parseDateTime;
             if(DateTime.TryParse(e.Column.FieldName, out parseDateTime) && e.Value != null)
@@ -643,9 +645,12 @@ namespace BluePrints.ViewModels
             if (entity.PO_RemainingPrice > 0)
                 proRateOnPOItem = (decimal)viewCosts / entity.PO_RemainingPrice;
 
-            var groupByCodesPOItems = entity.ExoPOs.GroupBy(g => new { PONumber = g.PONumber, JobCode = g.Subjob_Name, DisciplineCode = g.Discipline_Code, CommodityCode = g.Commodity_Code, g.StockCode, VariationCode = g.Variation_Code }).Select(g => new { g.Key.PONumber, g.Key.JobCode, g.Key.DisciplineCode, g.Key.CommodityCode, g.Key.StockCode, g.Key.VariationCode, RemainingCosts = g.Sum(x => x.Costs) });
-            foreach (var groupByCodesPOItem in groupByCodesPOItems)
+            var groupByCodesPOItems = entity.ExoPOs.GroupBy(g => new { PONumber = g.PONumber, JobCode = g.Subjob_Name, DisciplineCode = g.Discipline_Code, CommodityCode = g.Commodity_Code, g.StockCode, VariationCode = g.Variation_Code }).Select(g => new { g.Key.PONumber, g.Key.JobCode, g.Key.DisciplineCode, g.Key.CommodityCode, g.Key.StockCode, g.Key.VariationCode, RemainingCosts = g.Sum(x => x.Costs) }).ToList();
+            decimal cumulativeTrueProRateValue = 0;
+
+            for(int i = 0;i < groupByCodesPOItems.Count;i++)
             {
+                var groupByCodesPOItem = groupByCodesPOItems[i];
                 FORECAST_PO findFORECAST_PO = Entities.FirstOrDefault(x => x.FORECAST_DATE == forecastDate.Date && x.PONO == groupByCodesPOItem.PONumber && x.COMMODITY_CODE == groupByCodesPOItem.CommodityCode && x.DISCIPLINE_CODE == groupByCodesPOItem.DisciplineCode && x.STOCK_CODE == groupByCodesPOItem.StockCode && x.VARIATION_CODE == groupByCodesPOItem.VariationCode && x.JOB_CODE == groupByCodesPOItem.JobCode);
 
                 if (findFORECAST_PO == null)
@@ -666,7 +671,17 @@ namespace BluePrints.ViewModels
                     findFORECAST_PO.FORECAST_VALUE = null;
                 else
                 {
-                    findFORECAST_PO.FORECAST_VALUE = groupByCodesPOItem.RemainingCosts * proRateOnPOItem;
+                    decimal trueProRateValue = groupByCodesPOItem.RemainingCosts * proRateOnPOItem;
+                    decimal viewCostDecimal = (decimal)viewCosts;
+                    cumulativeTrueProRateValue += trueProRateValue;
+                    //when it's the last item but the figures doesn't match what user's has keyed in
+                    if (i == groupByCodesPOItems.Count - 1)
+                    {
+                        if (cumulativeTrueProRateValue < viewCostDecimal)
+                            trueProRateValue += (viewCostDecimal - cumulativeTrueProRateValue);
+                    }
+
+                    findFORECAST_PO.FORECAST_VALUE = trueProRateValue;
                 }
 
                 MainViewModel.Save(findFORECAST_PO);
@@ -771,6 +786,9 @@ namespace BluePrints.ViewModels
                     POForecastProjection projection = (POForecastProjection)editing_row[columnEntity];
                     clearPOForecast(projection.PONO, projection.VariationCode);
                     decimal costPerPeriod = projection.PO_RemainingPrice / (decimal)spreadPeriod;
+
+                    //decimal remainingPrice = projection.PO_RemainingPrice < 0 ? 0 : projection.PO_RemainingPrice;
+                    //decimal costPerPeriod = remainingPrice / (decimal)spreadPeriod;
                     DateTime? lastProcessedDate = null;
 
                     for (int columnOffset = 0; columnOffset < columnOffsetSelection; columnOffset += (int)spreadInterval)
@@ -1230,6 +1248,21 @@ namespace BluePrints.ViewModels
                 return;
 
             EntitiesUndoRedoManager.Redo();
+        }
+
+        [ServiceProperty(Key = "DetailTableViewService")]
+        protected virtual ITableViewService DetailTableViewService { get { return null; } }
+        public void ExportDetailToExcel()
+        {
+            string ResultPath = string.Empty;
+            if (FolderBrowserDialogService.ShowDialog())
+            {
+                ResultPath = FolderBrowserDialogService.ResultPath;
+                bool result = DetailTableViewService.ExportToXls(ResultPath + "\\" + loadPROJECT.NUMBER + "_PO_Detail.xlsx", isExcelExportDataAware);
+
+                if (!result)
+                    MessageBoxService.ShowMessage("Export failed because the file is in use", "Warning", MessageButton.OK, MessageIcon.Warning);
+            }
         }
 
         public void Window_KeyDown(System.Windows.Input.KeyEventArgs e)

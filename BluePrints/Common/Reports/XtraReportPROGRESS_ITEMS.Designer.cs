@@ -106,10 +106,6 @@
             this.xrLblCumulativeEarnedUOM = new DevExpress.XtraReports.UI.XRLabel();
             this.xrLabel28 = new DevExpress.XtraReports.UI.XRLabel();
             this.reportHeaderBand1 = new DevExpress.XtraReports.UI.ReportHeaderBand();
-            this.SummaryPeriodBurnedEfficiency_Bad = new DevExpress.XtraReports.UI.FormattingRule();
-            this.SummaryPeriodBurnedEfficiency_Good = new DevExpress.XtraReports.UI.FormattingRule();
-            this.SummaryCumulativeBurnedEfficiency_Bad = new DevExpress.XtraReports.UI.FormattingRule();
-            this.SummaryCumulativeBurnedEfficiency_Good = new DevExpress.XtraReports.UI.FormattingRule();
             this.xrLabel34 = new DevExpress.XtraReports.UI.XRLabel();
             this.xrDataSummaryCumulativePlannedPercent = new DevExpress.XtraReports.UI.XRLabel();
             this.xrLabel32 = new DevExpress.XtraReports.UI.XRLabel();
@@ -126,6 +122,10 @@
             this.xrLabel41 = new DevExpress.XtraReports.UI.XRLabel();
             this.SubBand1 = new DevExpress.XtraReports.UI.SubBand();
             this.xrChart1 = new DevExpress.XtraReports.UI.XRChart();
+            this.SummaryPeriodBurnedEfficiency_Bad = new DevExpress.XtraReports.UI.FormattingRule();
+            this.SummaryPeriodBurnedEfficiency_Good = new DevExpress.XtraReports.UI.FormattingRule();
+            this.SummaryCumulativeBurnedEfficiency_Bad = new DevExpress.XtraReports.UI.FormattingRule();
+            this.SummaryCumulativeBurnedEfficiency_Good = new DevExpress.XtraReports.UI.FormattingRule();
             this.reportBy = new DevExpress.XtraReports.Parameters.Parameter();
             ((System.ComponentModel.ISupportInitialize)(this.objectDataSource1)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.xrChart1)).BeginInit();
@@ -932,34 +932,6 @@
             this.reportHeaderBand1.SubBands.AddRange(new DevExpress.XtraReports.UI.SubBand[] {
             this.SubBand1});
             // 
-            // SummaryPeriodBurnedEfficiency_Bad
-            // 
-            this.SummaryPeriodBurnedEfficiency_Bad.Condition = "([Burned.CurrentPeriodDataPoint.UnitsPercentage] > [Earned.CurrentPeriodDataPoint" +
-    ".UnitsPercentage])";
-            this.SummaryPeriodBurnedEfficiency_Bad.Formatting.BackColor = System.Drawing.Color.MistyRose;
-            this.SummaryPeriodBurnedEfficiency_Bad.Name = "SummaryPeriodBurnedEfficiency_Bad";
-            // 
-            // SummaryPeriodBurnedEfficiency_Good
-            // 
-            this.SummaryPeriodBurnedEfficiency_Good.Condition = "([Burned.CurrentPeriodDataPoint.UnitsPercentage] <= [Earned.CurrentPeriodDataPoin" +
-    "t.UnitsPercentage])";
-            this.SummaryPeriodBurnedEfficiency_Good.Formatting.BackColor = System.Drawing.Color.LightGreen;
-            this.SummaryPeriodBurnedEfficiency_Good.Name = "SummaryPeriodBurnedEfficiency_Good";
-            // 
-            // SummaryCumulativeBurnedEfficiency_Bad
-            // 
-            this.SummaryCumulativeBurnedEfficiency_Bad.Condition = "([Summary_CumulativeBurned.UnitsPercentage] > [Summary_CumulativeEarned.UnitsPerc" +
-    "entage])";
-            this.SummaryCumulativeBurnedEfficiency_Bad.Formatting.BackColor = System.Drawing.Color.MistyRose;
-            this.SummaryCumulativeBurnedEfficiency_Bad.Name = "SummaryCumulativeBurnedEfficiency_Bad";
-            // 
-            // SummaryCumulativeBurnedEfficiency_Good
-            // 
-            this.SummaryCumulativeBurnedEfficiency_Good.Condition = "([Burned.CumulativeDataPoints.UnitsPercentage] <= [Earned.CumulativeDataPoints.Un" +
-    "itsPercentage])";
-            this.SummaryCumulativeBurnedEfficiency_Good.Formatting.BackColor = System.Drawing.Color.LightGreen;
-            this.SummaryCumulativeBurnedEfficiency_Good.Name = "SummaryCumulativeBurnedEfficiency_Good";
-            // 
             // xrLabel34
             // 
             this.xrLabel34.Borders = ((DevExpress.XtraPrinting.BorderSide)(((DevExpress.XtraPrinting.BorderSide.Left | DevExpress.XtraPrinting.BorderSide.Right) 
@@ -1202,6 +1174,7 @@
             xyDiagram1.SecondaryAxesY.AddRange(new DevExpress.XtraCharts.SecondaryAxisY[] {
             secondaryAxisY1});
             this.xrChart1.Diagram = xyDiagram1;
+            this.xrChart1.ImageType = DevExpress.XtraReports.UI.ChartImageType.Bitmap;
             this.xrChart1.Legend.Font = new System.Drawing.Font("Calibri", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.xrChart1.Legend.Name = "Default Legend";
             this.xrChart1.LocationFloat = new DevExpress.Utils.PointFloat(10.00001F, 0F);
@@ -1297,14 +1270,42 @@
         series8};
             this.xrChart1.SizeF = new System.Drawing.SizeF(1038F, 298.9584F);
             // 
+            // SummaryPeriodBurnedEfficiency_Bad
+            // 
+            this.SummaryPeriodBurnedEfficiency_Bad.Condition = "([Burned.CurrentPeriodDataPoint.UnitsPercentage] > [Earned.CurrentPeriodDataPoint" +
+    ".UnitsPercentage])";
+            this.SummaryPeriodBurnedEfficiency_Bad.Formatting.BackColor = System.Drawing.Color.MistyRose;
+            this.SummaryPeriodBurnedEfficiency_Bad.Name = "SummaryPeriodBurnedEfficiency_Bad";
+            // 
+            // SummaryPeriodBurnedEfficiency_Good
+            // 
+            this.SummaryPeriodBurnedEfficiency_Good.Condition = "([Burned.CurrentPeriodDataPoint.UnitsPercentage] <= [Earned.CurrentPeriodDataPoin" +
+    "t.UnitsPercentage])";
+            this.SummaryPeriodBurnedEfficiency_Good.Formatting.BackColor = System.Drawing.Color.LightGreen;
+            this.SummaryPeriodBurnedEfficiency_Good.Name = "SummaryPeriodBurnedEfficiency_Good";
+            // 
+            // SummaryCumulativeBurnedEfficiency_Bad
+            // 
+            this.SummaryCumulativeBurnedEfficiency_Bad.Condition = "([Summary_CumulativeBurned.UnitsPercentage] > [Summary_CumulativeEarned.UnitsPerc" +
+    "entage])";
+            this.SummaryCumulativeBurnedEfficiency_Bad.Formatting.BackColor = System.Drawing.Color.MistyRose;
+            this.SummaryCumulativeBurnedEfficiency_Bad.Name = "SummaryCumulativeBurnedEfficiency_Bad";
+            // 
+            // SummaryCumulativeBurnedEfficiency_Good
+            // 
+            this.SummaryCumulativeBurnedEfficiency_Good.Condition = "([Burned.CumulativeDataPoints.UnitsPercentage] <= [Earned.CumulativeDataPoints.Un" +
+    "itsPercentage])";
+            this.SummaryCumulativeBurnedEfficiency_Good.Formatting.BackColor = System.Drawing.Color.LightGreen;
+            this.SummaryCumulativeBurnedEfficiency_Good.Name = "SummaryCumulativeBurnedEfficiency_Good";
+            // 
             // reportBy
             // 
             this.reportBy.Description = "Report By";
-            staticListLookUpSettings1.LookUpValues.Add(new DevExpress.XtraReports.Parameters.LookUpValue("Units", "Report by Units"));
-            staticListLookUpSettings1.LookUpValues.Add(new DevExpress.XtraReports.Parameters.LookUpValue("Costs", "Report by Costs"));
-            this.reportBy.LookUpSettings = staticListLookUpSettings1;
             this.reportBy.Name = "reportBy";
             this.reportBy.ValueInfo = "Units";
+            staticListLookUpSettings1.LookUpValues.Add(new DevExpress.XtraReports.Parameters.LookUpValue("Units", "Report by Units"));
+            staticListLookUpSettings1.LookUpValues.Add(new DevExpress.XtraReports.Parameters.LookUpValue("Costs", "Report by Costs"));
+            this.reportBy.ValueSourceSettings = staticListLookUpSettings1;
             // 
             // XtraReportPROGRESS_ITEMS
             // 
@@ -1345,7 +1346,7 @@
             this.FieldCaption,
             this.PageInfo,
             this.DataField});
-            this.Version = "18.2";
+            this.Version = "19.2";
             this.BeforePrint += new System.Drawing.Printing.PrintEventHandler(this.rptProgressItem_BeforePrint);
             ((System.ComponentModel.ISupportInitialize)(this.objectDataSource1)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(secondaryAxisY1)).EndInit();

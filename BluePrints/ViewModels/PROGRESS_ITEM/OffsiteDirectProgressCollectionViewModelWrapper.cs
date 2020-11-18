@@ -56,6 +56,7 @@ namespace BluePrints.ViewModels
         {
             is_load_p6_task = true;
             isUseReportDate = LoginCredentials.getPermissionStatus(DataUtils.GetNameOf(() => NavigationResources.Permission_DesignDeliverables_ProgressPreviousWeeksDate)) != LoginCredentials.PermissionStatus.None;
+            canDateBackwardForward = LoginCredentials.getPermissionStatus(DataUtils.GetNameOf(() => NavigationResources.Permission_DesignDeliverables_CanDateBackwardForward)) != LoginCredentials.PermissionStatus.None;
             base.resolveParameters(parameter);
         }
 
@@ -191,7 +192,7 @@ namespace BluePrints.ViewModels
             get { return "OffsiteDirectProgressViewModelWrapper_v5"; }
         }
 
-        public bool IsDataDateChangeVisible => isUseReportDate;
+        public bool IsDataDateChangeVisible => canDateBackwardForward;
 
         private string view_project_specific_affix
         {

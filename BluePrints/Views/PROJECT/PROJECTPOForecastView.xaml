@@ -1,4 +1,4 @@
-﻿<UserControl x:Class="BluePrints.Views.PROJECTPOForecastView" xmlns:common="clr-namespace:BluePrints.Common" xmlns:view1="clr-namespace:BluePrints.Common.ViewModel.Misc" xmlns:dxdo="http://schemas.devexpress.com/winfx/2008/xaml/docking" xmlns="http://schemas.microsoft.com/netfx/2009/xaml/presentation" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" xmlns:custom="clr-namespace:BaseModel.Misc;assembly=BaseModel" xmlns:d="http://schemas.microsoft.com/expression/blend/2008" xmlns:dx="http://schemas.devexpress.com/winfx/2008/xaml/core" xmlns:dxb="http://schemas.devexpress.com/winfx/2008/xaml/bars" xmlns:dxe="http://schemas.devexpress.com/winfx/2008/xaml/editors" xmlns:dxg="http://schemas.devexpress.com/winfx/2008/xaml/grid" xmlns:dxlc="http://schemas.devexpress.com/winfx/2008/xaml/layoutcontrol" xmlns:dxmvvm="http://schemas.devexpress.com/winfx/2008/xaml/mvvm" xmlns:dxr="http://schemas.devexpress.com/winfx/2008/xaml/ribbon" xmlns:dxrudex="http://schemas.devexpress.com/winfx/2008/xaml/reports/userdesignerextensions" xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" xmlns:view="clr-namespace:BluePrints.Views" xmlns:viewmodel="clr-namespace:BluePrints.ViewModels"
+﻿<UserControl x:Class="BluePrints.Views.PROJECTPOForecastView" xmlns:common="clr-namespace:BluePrints.Common" xmlns:services="clr-namespace:BaseModel.ViewModel.Services;assembly=BaseModel" xmlns:view1="clr-namespace:BluePrints.Common.ViewModel.Misc" xmlns:dxdo="http://schemas.devexpress.com/winfx/2008/xaml/docking" xmlns="http://schemas.microsoft.com/netfx/2009/xaml/presentation" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" xmlns:custom="clr-namespace:BaseModel.Misc;assembly=BaseModel" xmlns:d="http://schemas.microsoft.com/expression/blend/2008" xmlns:dx="http://schemas.devexpress.com/winfx/2008/xaml/core" xmlns:dxb="http://schemas.devexpress.com/winfx/2008/xaml/bars" xmlns:dxe="http://schemas.devexpress.com/winfx/2008/xaml/editors" xmlns:dxg="http://schemas.devexpress.com/winfx/2008/xaml/grid" xmlns:dxlc="http://schemas.devexpress.com/winfx/2008/xaml/layoutcontrol" xmlns:dxmvvm="http://schemas.devexpress.com/winfx/2008/xaml/mvvm" xmlns:dxr="http://schemas.devexpress.com/winfx/2008/xaml/ribbon" xmlns:dxrudex="http://schemas.devexpress.com/winfx/2008/xaml/reports/userdesignerextensions" xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" xmlns:view="clr-namespace:BluePrints.Views" xmlns:viewmodel="clr-namespace:BluePrints.ViewModels"
              xmlns:dxci="http://schemas.devexpress.com/winfx/2008/xaml/core/internal" x:Name="userControl" d:DesignHeight="400" d:DesignWidth="600" DataContext="{dxmvvm:ViewModelSource viewmodel:PROJECTPOForecastViewModelWrapper}" mc:Ignorable="d">
     <dxmvvm:Interaction.Behaviors>
         <dxmvvm:EventToCommand EventName="KeyDown" Command="{Binding Window_KeyDownCommand}" PassEventArgsToCommand="True" />
@@ -102,6 +102,7 @@
     </UserControl.Resources>
     <Grid Style="{StaticResource CollectionView.RootContainer}">
         <dxmvvm:Interaction.Behaviors>
+            <services:TableViewService x:Name="DetailTableViewService" TableView="{Binding ElementName=tableViewDetail}" />
             <dx:DialogService x:Name="CustomPODialogService">
                 <dx:DialogService.DialogStyle>
                     <Style TargetType="dx:DXDialogWindow">
@@ -180,7 +181,7 @@
                                 <dxg:GridControl.View>
                                     <dxg:TableView x:Name="tableView" Style="{StaticResource DefaultMinimalTableViewTemplate}" ShowTotalSummary="True" ScrollBarAnnotationMode="None">
                                         <dxmvvm:Interaction.Behaviors>
-                                            <dxmvvm:EventToCommand Command="{Binding DatesCellValueChangingCommand}" EventName="CellValueChanging" PassEventArgsToCommand="True" />
+                                            <dxmvvm:EventToCommand Command="{Binding DatesCellValueChangedCommand}" EventName="CellValueChanged" PassEventArgsToCommand="True" />
                                             <dxmvvm:EventToCommand Command="{Binding MouseDownCommand}" EventName="MouseDown" PassEventArgsToCommand="True" />
                                         </dxmvvm:Interaction.Behaviors>
                                         <dxg:TableView.RowCellMenuCustomizations>
@@ -263,7 +264,13 @@
                                     <dxg:GridSummaryItem DisplayFormat="c0" dx:DXSerializer.Enabled="False" FieldName="TotalCosts" SummaryType="Sum" />
                                 </dxg:GridControl.TotalSummary>
                                 <dxg:GridControl.View>
-                                    <dxg:TableView GroupSummaryDisplayMode="AlignByColumns" NewItemRowPosition="None" ShowTotalSummary="True" Style="{StaticResource DefaultMinimalTableViewTemplate}" />
+                                    <dxg:TableView x:Name="tableViewDetail" GroupSummaryDisplayMode="AlignByColumns" NewItemRowPosition="None" ShowTotalSummary="True" Style="{StaticResource DefaultMinimalTableViewTemplate}" >
+                                        <dxg:TableView.RowCellMenuCustomizations>
+                                            <dxb:BarButtonItemLink BarItemName="biCopyWithHeader1" />
+                                            <dxb:BarButtonItem x:Name="biLocalExportToExcel" Command="{Binding DataContext.ExportDetailToExcelCommand, ElementName=userControl}" Content="Export All" Glyph="{dx:DXImage Image=ExportToXLSX_16x16.png}" LargeGlyph="{dx:DXImage Image=ExportToXLSX_32x32.png}" RibbonStyle="SmallWithText" ToolTip="Export PO details to excel" />
+                                            <dxb:BarButtonItemLink BarItemName="biFullRefresh1" />
+                                        </dxg:TableView.RowCellMenuCustomizations>
+                                    </dxg:TableView>
                                 </dxg:GridControl.View>
                             </dxg:GridControl>
                         </dxdo:LayoutPanel>

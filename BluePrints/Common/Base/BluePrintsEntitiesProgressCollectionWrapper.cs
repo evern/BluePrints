@@ -2,6 +2,7 @@
 using BaseModel.DataModel;
 using BaseModel.Misc;
 using BaseModel.ViewModel.Base;
+using BaseModel.ViewModel.Dialogs;
 using BaseModel.ViewModel.Loader;
 using BluePrints.BluePrintsEntitiesDataModel;
 using BluePrints.Common.Misc;
@@ -65,6 +66,7 @@ namespace BluePrints.Common.Base
         protected bool is_load_p6_task = false;
         protected bool isCompletelyLoaded = false;
         protected bool isUseReportDate = false;
+        protected bool canDateBackwardForward = false;
         BackgroundWorker progressSaveBackgroundWorker;
         public BluePrintsEntitiesProgressCollectionWrapper()
         {
@@ -393,8 +395,8 @@ namespace BluePrints.Common.Base
             TimeSpan reportInterval = ChronologicalHelpers.ConvertProgressIntervalToPeriod(loadPROGRESS);
             DateTime firstAlignedDataDate = ChronologicalHelpers.GenerateFirstAlignedDataDate(loadPROGRESS);
             List<VariationAdjustment> projectVariationAdjustment = ProjectionHelpers.BuildProjectVariationAdjustments(VARIATIONCollection.AsQueryable(), ReportableCollection);
-            projectSummary = new ProjectSummaryStats(MainViewModel.Entities, loadPROGRESS.DATA_DATE, reportInterval, firstAlignedDataDate, projectVariationAdjustment, extrapolateDataDate ? DateTime.Now : (DateTime?)null);
-            DateTime reporting_data_date = loadPROGRESS.DATA_DATE;
+            projectSummary = new ProjectSummaryStats(MainViewModel.Entities, DataDate, reportInterval, firstAlignedDataDate, projectVariationAdjustment, extrapolateDataDate ? DateTime.Now : (DateTime?)null);
+            DateTime reporting_data_date = DataDate;
             FullStatsBuilder fullStatsBuilder = new FullStatsBuilder(loadPROJECT.NUMBER, loadPROJECT.CURRENCYCONVERSION, reportInterval, firstAlignedDataDate, SUBJOBCollection, reporting_data_date, primeroUnitOfWork);
             fullSummarizer = new FullSummarizer(projectSummary, fullStatsBuilder, loadPROJECT.NUMBER);
         }
@@ -470,13 +472,24 @@ namespace BluePrints.Common.Base
                 if (!IsLoading && isUseReportDate)
                 {
                     DateTime newValue = value.Date.AddDays(1).AddSeconds(-1);
-                    if (loadPROGRESS.REPORT_DATE == newValue)
-                        return;
 
-                    loadPROGRESS.REPORT_DATE = newValue;
+                    if(isUseReportDate)
+                    {
+                        if (loadPROGRESS.REPORT_DATE == newValue)
+                            return;
+
+                        loadPROGRESS.REPORT_DATE = newValue;
+                    }
+                    else
+                    {
+                        if (loadPROGRESS.DATA_DATE == newValue)
+                            return;
+
+                        loadPROGRESS.DATA_DATE = newValue;
+                    }
 
                     //!= null is used because set method can be invoked in quick succession (when full refresh is called and PROGRESSCollectionViewModel is disposed)
-                    if(PROGRESSCollectionViewModel != null)
+                    if (PROGRESSCollectionViewModel != null)
                     {
                         PROGRESSCollectionViewModel.Save(loadPROGRESS);
                         this.RaisePropertyChanged(x => x.DataDate);
@@ -1016,8 +1029,8 @@ namespace BluePrints.Common.Base
             IEnumerable<TASK> PROJECTTASK = scheduling_view_model.TASK_Source;
 
 
-            string errorMessage = string.Empty;
-            List<P6Simulation> simulations = push_units_to_p6(entities, true, errorMessage);
+            List<P6ErrorMessage> errorMessages = new List<P6ErrorMessage>();
+            List<P6Simulation> simulations = push_units_to_p6(entities, true, errorMessages);
 
             List<string> processedTasks = new List<string>();
             LoadingScreenManager.ShowLoadingScreen(PROJECTTASK.Count() * 2);
@@ -1030,7 +1043,8 @@ namespace BluePrints.Common.Base
             LoadingScreenManager.CloseLoadingScreen();
 
             destroy_scheduling_view_model();
-            MessageBoxService.ShowMessage("Progress from P6 is synced");
+
+            mainThreadDispatcher.BeginInvoke(new Action(() => showP6ErrorMessage("Progress is synced from P6 with the following error", "Progress is synced from P6", errorMessages)));
         }
 
         private void taskParityAdjustment(IEnumerable<P6Simulation> simulations, bool isPositiveAdjustment)
@@ -1235,7 +1249,7 @@ namespace BluePrints.Common.Base
             ParameterObj.Parameter = new object[] { loadPROGRESS, mappingSelectionType, loadPROJECT, false };
         }
 
-        private List<P6Simulation> push_units_to_p6(IEnumerable<ICanAssignP6> deliverables, bool isSimulation, string errorMessage)
+        private List<P6Simulation> push_units_to_p6(IEnumerable<ICanAssignP6> deliverables, bool isSimulation, List<P6ErrorMessage> errorMessages)
         {
             List<TASK> processedP6Task = new List<TASK>();
             TimeSpan intervalTimeSpan = ChronologicalHelpers.ConvertProgressIntervalToPeriod(loadPROGRESS);
@@ -1247,7 +1261,9 @@ namespace BluePrints.Common.Base
 
             IEnumerable<TASK> PROJECTTASK = scheduling_view_model.TASK_Source;
             List<P6Simulation> simulationResults = new List<P6Simulation>();
-
+            decimal periodAssignedUnitsForTaskFound = 0;
+            decimal periodAssignedUnitsOnMapping = 0;
+            decimal periodAssignedUnits = 0;
             foreach (ICanAssignP6 deliverable in deliverables)
             {
                 LoadingScreenManager.Progress();
@@ -1258,8 +1274,8 @@ namespace BluePrints.Common.Base
                 if (current_progress_deliverable == null)
                     continue;
 
+                string s;
                 bool isNullProgress = false;
-
                 //comment this off because duration needs to be calculated even if deliverable is not progressed
                 if (current_progress_deliverable.PROGRESS_ITEM_UpToCurrentDataDate == null || current_progress_deliverable.PROGRESS_ITEM_UpToCurrentDataDate.Where(x => x.EARNED_UNITS > 0).Count() == 0)
                     isNullProgress = true;
@@ -1268,9 +1284,12 @@ namespace BluePrints.Common.Base
                 decimal total_percentage_to_date;
 
                 total_percentage_to_date = current_progress_deliverable.Total_Percentage_ToDate;
-
+                periodAssignedUnits += current_progress_deliverable.Earned_Units_ToDate;
                 if (deliverable.P6_Assignments.Count == 0)
+                {
+                    errorMessages.Add(new P6ErrorMessage("Mapping not found", "", current_progress_deliverable.Deliverable_Name, current_progress_deliverable.Earned_Units_ToDate, null));
                     continue;
+                }
 
                 //only process applicable assignments
                 //List<P6_ASSIGNMENT> p6_assignments = deliverable.P6_Assignments.Where(assignment => assignment.LOW_VALUE <= (total_percentage_to_date + 0.01m)).OrderBy(assignment => assignment.LOW_VALUE).ToList();
@@ -1305,12 +1324,19 @@ namespace BluePrints.Common.Base
                     //current activity full assignment units to calculate remaining units
                     decimal full_assignment_units = full_assignment_percentage * deliverable.Total_Units;
 
+                    if (full_assignment_units <= 0)
+                        continue;
+
+                    periodAssignedUnitsOnMapping += current_assignment_units;
                     if (isDeliverableCancelled && MessageBoxService.ShowMessage("Deliverable " + deliverable.ToString() + " has earned " + current_assignment_units.ToString("n2") + " units but there are no budget units in P6 task " + p6_assignment.P6_ACTIVITYID + "\nThis can happen when variation is not client approved\nDo you still want to earn the units on P6 task " + p6_assignment.P6_ACTIVITYID + "?", "Warning", MessageButton.OKCancel) == MessageResult.Cancel)
                         continue;
 
                     TASK P6TASK = PROJECTTASK.FirstOrDefault(P6Task => P6Task.task_code == p6_assignment.P6_ACTIVITYID);
                     if (P6TASK != null && P6TASK.delete_date == null)
                     {
+                        if (P6TASK.task_code == "A34300")
+                            s = string.Empty;
+
                         //defines how much percentage of units this assignment will take up when it is fully assigned, so that we can estimate the total duration to apply productivity to
                         decimal current_task_to_activity_percentage = (P6TASK.target_work_qty == null || P6TASK.target_work_qty == 0) ? 0 : full_assignment_units / (decimal)P6TASK.target_work_qty;
 
@@ -1345,6 +1371,7 @@ namespace BluePrints.Common.Base
                         else
                             P6TASK.act_work_qty += current_assignment_units;
 
+                        periodAssignedUnitsForTaskFound += current_assignment_units;
                         if (P6TASK.act_work_qty == 0)
                         {
                             P6TASK.act_start_date = null;
@@ -1357,7 +1384,7 @@ namespace BluePrints.Common.Base
                         {
                             if(!isDeliverableCancelled)
                             {
-                                errorMessage = P6TASK.task_code + " doesn't have budgeted units, please re-populate budgeted units on baseline";
+                                errorMessages.Add(new P6ErrorMessage("No budgeted units", P6TASK.task_code, "", 0, null));
                                 break;
                             }
                         }
@@ -1487,15 +1514,31 @@ namespace BluePrints.Common.Base
                     }
                     else
                     {
-                        errorMessage = "P6 activity named " + p6_assignment.P6_ACTIVITYID + " not found, please check deliverable's assignment";
+                        decimal assignedUnits = 0;
+                        if(deliverable.Total_Units > 0)
+                        {
+                            foreach (PROGRESS_ITEM progressItem in current_progress_deliverable.PROGRESS_ITEM_UpToCurrentDataDate)
+                            {
+                                assignedUnits += progressItem.EARNED_UNITS;
+                                decimal currentPercentage = assignedUnits / deliverable.Total_Units;
+
+                                if (currentPercentage > p6_assignment.LOW_VALUE && currentPercentage <= p6_assignment.HIGH_VALUE)
+                                    errorMessages.Add(new P6ErrorMessage("Task not found", p6_assignment.P6_ACTIVITYID, current_progress_deliverable.Deliverable_Name, progressItem.EARNED_UNITS, progressItem.EARNED_DATE));
+                            }
+                        }
+
                         break;
                     }
                 }
             }
 
+            //for troubleshooting
+            //string test = periodAssignedUnitsForTaskFound.ToString();
+            //string test2 = periodAssignedUnitsOnMapping.ToString();
+            //string test3 = periodAssignedUnits.ToString();
 
             //second pass to make sure at completion work quantity is same for resource and activity
-            foreach(TASK P6TASK in processedP6Task)
+            foreach (TASK P6TASK in processedP6Task)
             {
                 if (P6TASK.remain_work_qty >= 0)
                     P6TASK.remain_work_qty = P6TASK.target_work_qty - P6TASK.act_work_qty;
@@ -1590,15 +1633,23 @@ namespace BluePrints.Common.Base
 
             List<string> processedP6Task = new List<string>();
             TimeSpan intervalTimeSpan = ChronologicalHelpers.ConvertProgressIntervalToPeriod(loadPROGRESS);
-            string errorMessage = string.Empty;
+            List<P6ErrorMessage> errorMessages = new List<P6ErrorMessage>();
 
-            push_units_to_p6(deliverables, false, errorMessage);
+            push_units_to_p6(deliverables, false, errorMessages);
             destroy_scheduling_view_model();
 
-            if (errorMessage == string.Empty)
-                MessageBoxService.ShowMessage(BluePrintsResources.P6_Assignment_Progress_Write_Success);
+            mainThreadDispatcher.BeginInvoke(new Action(() => showP6ErrorMessage(BluePrintsResources.P6_Assignment_Progress_Write_Success, "Progress in P6 is synced with the following error", errorMessages)));
+        }
+
+        private void showP6ErrorMessage(string dialogMessage, string successMessage, List<P6ErrorMessage> errorMessages)
+        {
+            if (errorMessages.Count > 0)
+            {
+                DialogCollectionViewModel<P6ErrorMessage> viewModel = DialogCollectionViewModel<P6ErrorMessage>.Create(errorMessages, dialogMessage);
+                ErrorMessagesDialogService.ShowDialog(MessageButton.OK, string.Empty, "ListP6ErrorMessages", viewModel);
+            }
             else
-                MessageBoxService.ShowMessage(errorMessage);
+                MessageBoxService.ShowMessage(successMessage);
         }
 
         /// <summary>
@@ -1655,7 +1706,7 @@ namespace BluePrints.Common.Base
             isPushingToP6 = false;
             isInteractingWithP6 = false;
             //Need to perform full refresh because MainViewModel repository entity state is messed from scheduling view model, i.e. productivity doesn't update anymore after pushing to P6
-            FullRefresh();
+            //FullRefresh();
         }
 
         protected abstract void dispose_scheduling_view_model();
