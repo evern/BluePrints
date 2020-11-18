@@ -22,6 +22,7 @@ using DevExpress.Xpf.Grid;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.ComponentModel;
 using System.Data;
 using System.Linq;
 using System.Windows;
@@ -61,6 +62,7 @@ namespace BluePrints.ViewModels
         private List<DateTime> alignedDateCollection;
         private List<DateTime> dataPointsDateCollection;
         DispatcherTimer focusNewlyAddedProjectionTimer = new DispatcherTimer();
+        BackgroundWorker createProjectBackgroundWorker;
         protected override void resolveParameters(object parameter)
         {
             primeroUnitOfWork = PrimeroEntitiesUnitOfWorkSource.GetUnitOfWorkFactory().CreateUnitOfWork();
@@ -69,6 +71,11 @@ namespace BluePrints.ViewModels
             doNotApplyBestFit = true;
             focusNewlyAddedProjectionTimer = new DispatcherTimer();
             focusNewlyAddedProjectionTimer.Interval = new TimeSpan(0, 0, 0, 0, 100);
+
+            createProjectBackgroundWorker = new BackgroundWorker();
+            createProjectBackgroundWorker.DoWork += CreateProjectBackgroundWorker_DoWork;
+            createProjectBackgroundWorker.RunWorkerCompleted += CreateProjectBackgroundWorker_RunWorkerCompleted;
+            createProjectBackgroundWorker.WorkerSupportsCancellation = true;
         }
 
         protected override void addEntitiesLoader()
@@ -341,49 +348,51 @@ namespace BluePrints.ViewModels
         private void syncDeliverables(bool useDeliverablesHours, PROJECTTenderProfile projectTenderProfile, IEnumerable<BASELINE_ITEM> projectDeliverables, IEnumerable<AREA> projectAREACollection, IEnumerable<SUBJOB> projectSUBJOBCollection, BASELINE projectLiveBASELINE, IEnumerable<PROGRESS> projectLivePROGRESSES)
         {
             List<DeliverableEditModel> deliverableEditModels = new List<DeliverableEditModel>();
-            if (useDeliverablesHours)
+            decimal totalDeliverablesHours = projectDeliverables.Sum(x => x.BUDGET_HOURS);
+            projectTenderProfile.TenderProfile.TENDER_HOURS = totalDeliverablesHours;
+            var deliverableGroup = projectDeliverables.GroupBy(x => new { x.GUID_DEPARTMENT, x.GUID_DISCIPLINE }).Select(group => new { group.Key.GUID_DEPARTMENT, group.Key.GUID_DISCIPLINE, BUDGET_HOURS = group.Sum(x => x.BUDGET_HOURS) });
+
+            foreach (var deliverables in deliverableGroup)
             {
-                decimal totalDeliverablesHours = projectDeliverables.Sum(x => x.BUDGET_HOURS);
-                projectTenderProfile.TenderProfile.TENDER_HOURS = totalDeliverablesHours;
-                var deliverableGroup = projectDeliverables.GroupBy(x => new { x.GUID_DEPARTMENT, x.GUID_DISCIPLINE }).Select(group => new { group.Key.GUID_DEPARTMENT, group.Key.GUID_DISCIPLINE, BUDGET_HOURS = group.Sum(x => x.BUDGET_HOURS) });
+                if (deliverables.GUID_DEPARTMENT == null || deliverables.GUID_DISCIPLINE == null)
+                    continue;
 
-                foreach (var deliverables in deliverableGroup)
+                //add tender profile item when department and discipline doesn't exist
+                IEnumerable<TENDER_PROFILE_ITEM> findTENDER_PROFILE_ITEMS = projectTenderProfile.TENDER_PROFILE_ITEMS.Where(x => x.GUID_DEPARTMENT == deliverables.GUID_DEPARTMENT && x.GUID_DISCIPLINE == deliverables.GUID_DISCIPLINE);
+                TENDER_PROFILE_ITEM findTENDER_PROFILE_ITEM;
+                if (findTENDER_PROFILE_ITEMS.Count() == 0)
                 {
-                    if (deliverables.GUID_DEPARTMENT == null || deliverables.GUID_DISCIPLINE == null)
-                        continue;
+                    findTENDER_PROFILE_ITEM = new TENDER_PROFILE_ITEM();
+                    findTENDER_PROFILE_ITEM.GUID = Guid.Empty;
+                    findTENDER_PROFILE_ITEM.GUID_TENDER_PROFILE = projectTenderProfile.TenderProfile.GUID;
+                    findTENDER_PROFILE_ITEM.PROJECTTenderProfile = projectTenderProfile;
+                    findTENDER_PROFILE_ITEM.GUID_DEPARTMENT = (Guid)deliverables.GUID_DEPARTMENT;
+                    findTENDER_PROFILE_ITEM.GUID_DISCIPLINE = (Guid)deliverables.GUID_DISCIPLINE;
+                    findTENDER_PROFILE_ITEM.SCHEDULE_START_PERCENTAGE = 0;
+                    findTENDER_PROFILE_ITEM.SCHEDULE_FINISH_PERCENTAGE = 1;
 
-                    IEnumerable<TENDER_PROFILE_ITEM> findTENDER_PROFILE_ITEMS = projectTenderProfile.TENDER_PROFILE_ITEMS.Where(x => x.GUID_DEPARTMENT == deliverables.GUID_DEPARTMENT && x.GUID_DISCIPLINE == deliverables.GUID_DISCIPLINE);
-                    TENDER_PROFILE_ITEM findTENDER_PROFILE_ITEM;
-                    if (findTENDER_PROFILE_ITEMS.Count() == 0)
+                    if (useDeliverablesHours)
                     {
-                        findTENDER_PROFILE_ITEM = new TENDER_PROFILE_ITEM();
-                        findTENDER_PROFILE_ITEM.GUID = Guid.Empty;
-                        findTENDER_PROFILE_ITEM.GUID_TENDER_PROFILE = projectTenderProfile.TenderProfile.GUID;
-                        findTENDER_PROFILE_ITEM.PROJECTTenderProfile = projectTenderProfile;
-                        findTENDER_PROFILE_ITEM.GUID_DEPARTMENT = (Guid)deliverables.GUID_DEPARTMENT;
-                        findTENDER_PROFILE_ITEM.GUID_DISCIPLINE = (Guid)deliverables.GUID_DISCIPLINE;
-                        findTENDER_PROFILE_ITEM.SCHEDULE_START_PERCENTAGE = 0;
-                        findTENDER_PROFILE_ITEM.SCHEDULE_FINISH_PERCENTAGE = 1;
-
                         decimal hourPercentage = totalDeliverablesHours == 0 ? 0 : deliverables.BUDGET_HOURS / totalDeliverablesHours;
                         findTENDER_PROFILE_ITEM.HOURS_PERCENTAGE = hourPercentage;
-                        projectTenderProfile.TENDER_PROFILE_ITEMS.Add(findTENDER_PROFILE_ITEM);
-                        _bluePrintsUnitOfWork.TENDER_PROFILE_ITEMS.Add(findTENDER_PROFILE_ITEM);
                     }
-                    else if (findTENDER_PROFILE_ITEMS.Count() > 0)
-                    {
-                        findTENDER_PROFILE_ITEM = findTENDER_PROFILE_ITEMS.First();
-                        decimal hourPercentage = totalDeliverablesHours == 0 ? 0 : deliverables.BUDGET_HOURS / totalDeliverablesHours;
-                        findTENDER_PROFILE_ITEM.HOURS_PERCENTAGE = hourPercentage;
+                    else
+                        findTENDER_PROFILE_ITEM.HOURS_PERCENTAGE = 0;
 
-                        _bluePrintsUnitOfWork.SaveChanges();
-                        foreach (TENDER_PROFILE_ITEM tenderProfileItem in findTENDER_PROFILE_ITEMS.Where(x => x.GUID != findTENDER_PROFILE_ITEM.GUID))
+                    projectTenderProfile.TENDER_PROFILE_ITEMS.Add(findTENDER_PROFILE_ITEM);
+                    _bluePrintsUnitOfWork.TENDER_PROFILE_ITEMS.Add(findTENDER_PROFILE_ITEM);
+                }
+                else if (useDeliverablesHours && findTENDER_PROFILE_ITEMS.Count() > 0)
+                {
+                    findTENDER_PROFILE_ITEM = findTENDER_PROFILE_ITEMS.First();
+                    decimal hourPercentage = totalDeliverablesHours == 0 ? 0 : deliverables.BUDGET_HOURS / totalDeliverablesHours;
+                    findTENDER_PROFILE_ITEM.HOURS_PERCENTAGE = hourPercentage;
+                    foreach (TENDER_PROFILE_ITEM tenderProfileItem in findTENDER_PROFILE_ITEMS.Where(x => x.GUID != findTENDER_PROFILE_ITEM.GUID))
+                    {
+                        if (tenderProfileItem.GUID != Guid.Empty)
                         {
-                            if (tenderProfileItem.GUID != Guid.Empty)
-                            {
-                                projectTenderProfile.TENDER_PROFILE_ITEMS.Remove(tenderProfileItem);
-                                _bluePrintsUnitOfWork.TENDER_PROFILE_ITEMS.Remove(tenderProfileItem);
-                            }
+                            projectTenderProfile.TENDER_PROFILE_ITEMS.Remove(tenderProfileItem);
+                            _bluePrintsUnitOfWork.TENDER_PROFILE_ITEMS.Remove(tenderProfileItem);
                         }
                     }
                 }
@@ -798,14 +807,30 @@ namespace BluePrints.ViewModels
 
                 DataRowView row = (DataRowView)e.Row;
                 PROJECTTenderProfile newPROJECT = (PROJECTTenderProfile)row[columnProject];
-                _bluePrintsUnitOfWork.PROJECTS.Add(newPROJECT.Entity);
-                _bluePrintsUnitOfWork.SaveChanges();
-                newPROJECT.TenderProfile = findExistingOrAddTenderProfile(newPROJECT.Entity, _bluePrintsUnitOfWork);
-                BluePrintsDataUtils.CreateNewProjectDefaults(newPROJECT.Entity, _bluePrintsUnitOfWork);
-                BuildRowStats(newPROJECT, true);
+                LoadingScreenManager.ShowLoadingScreen(1);
+                LoadingScreenManager.SetMessage("Creating project, please wait...");
 
-                Messenger.Default.Send(new EntityMessage<PROJECT, Guid>(newPROJECT.GUID, Guid.NewGuid(), EntityMessageType.Added));
+                createProjectBackgroundWorker.RunWorkerAsync(newPROJECT);
             }
+        }
+
+        private void CreateProjectBackgroundWorker_DoWork(object sender, DoWorkEventArgs e)
+        {
+            PROJECTTenderProfile newPROJECT = (PROJECTTenderProfile)e.Argument;
+            _bluePrintsUnitOfWork.PROJECTS.Add(newPROJECT.Entity);
+            _bluePrintsUnitOfWork.SaveChanges();
+            newPROJECT.TenderProfile = findExistingOrAddTenderProfile(newPROJECT.Entity, _bluePrintsUnitOfWork);
+            BluePrintsDataUtils.CreateNewProjectDefaults(newPROJECT.Entity, _bluePrintsUnitOfWork);
+            e.Result = newPROJECT;
+
+            mainThreadDispatcher.BeginInvoke(new Action(() => Messenger.Default.Send(new EntityMessage<PROJECT, Guid>(newPROJECT.GUID, Guid.NewGuid(), EntityMessageType.Added))));
+        }
+
+        private void CreateProjectBackgroundWorker_RunWorkerCompleted(object sender, RunWorkerCompletedEventArgs e)
+        {
+            PROJECTTenderProfile newPROJECT = (PROJECTTenderProfile)e.Result;
+            BuildRowStats(newPROJECT, true);
+            LoadingScreenManager.CloseLoadingScreen();
         }
 
         public void ChildNewRowAddUndoAndSave(RowEventArgs e)
