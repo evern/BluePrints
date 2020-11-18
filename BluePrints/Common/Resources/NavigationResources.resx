@@ -420,4 +420,7 @@
   <data name="Permission_DesignDeliverables_ProgressPreviousWeeksDate" xml:space="preserve">
     <value>Always use previous week's date for progress and can change progress screen date</value>
   </data>
+  <data name="Menu_Project_Pipelines" xml:space="preserve">
+    <value>Project pipelines maintenance menu</value>
+  </data>
 </root>
