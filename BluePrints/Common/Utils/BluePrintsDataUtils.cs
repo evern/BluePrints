@@ -566,7 +566,15 @@ namespace BluePrints.Common.ViewModel.Utils
             DEPARTMENT defaultDepartment = bluePrintsEntitiesUnitOfWork.DEPARTMENTS.FirstOrDefault(x => x.NAME == BluePrintsResources.Default_New_Project_Department);
             DISCIPLINE defaultDiscipline = bluePrintsEntitiesUnitOfWork.DISCIPLINES.FirstOrDefault(x => x.NAME == BluePrintsResources.Default_New_Project_Discipline);
             DOCTYPE defaultDocType = bluePrintsEntitiesUnitOfWork.DOCTYPES.FirstOrDefault(x => x.NAME == BluePrintsResources.Default_New_Project_DocType);
-            PROJECT defaultCopyProject = bluePrintsEntitiesUnitOfWork.PROJECTS.FirstOrDefault(x => x.NUMBER == "00000");
+
+            string defaultPROJECTNumber;
+#if PERTH
+            defaultPROJECTNumber = "00000";
+#else
+            defaultPROJECTNumber = "00015";
+#endif
+
+            PROJECT defaultCopyProject = bluePrintsEntitiesUnitOfWork.PROJECTS.FirstOrDefault(x => x.NUMBER == defaultPROJECTNumber);
             if (defaultCopyProject != null)
             {
                 foreach (RATE rate in defaultCopyProject.RATE)
@@ -966,7 +974,7 @@ namespace BluePrints.Common.ViewModel.Utils
                                    on STOCK_ITEMS.PURCH_GL_CODE equals GLP.ACCNO
                                    join GLCOS in primeroUOW.GLACCS
                                    on STOCK_ITEMS.COS_GL_CODE equals GLCOS.ACCNO
-                                   where X_JOB_TRANSACTIONS_DETAIL.linecharge == 0 && X_JOB_TRANSACTIONS_DETAIL.transtype == "C" && JOBCOST_HDR2.JOBCODE == projectNumber && X_JOB_TRANSACTIONS_DETAIL.SOURCE_SEQNO != -1 && X_JOB_TRANSACTIONS_DETAIL.transdate <= invoiceCutOffDate
+                                   where X_JOB_TRANSACTIONS_DETAIL.linecharge == 0 && X_JOB_TRANSACTIONS_DETAIL.transtype == "C" && JOBCOST_HDR2.JOBCODE == projectNumber && X_JOB_TRANSACTIONS_DETAIL.transdate <= invoiceCutOffDate
                                    select new { X_JOB_TRANSACTIONS_DETAIL.jobno, X_JOB_TRANSACTIONS_DETAIL.EXCHRATE, X_JOB_TRANSACTIONS_DETAIL.master_jobno, X_JOB_TRANSACTIONS_DETAIL.jobcode, X_JOB_TRANSACTIONS_DETAIL.transdate, X_JOB_TRANSACTIONS_DETAIL.transtype, X_JOB_TRANSACTIONS_DETAIL.stockcode, X_JOB_TRANSACTIONS_DETAIL.description, X_JOB_TRANSACTIONS_DETAIL.quantity, X_JOB_TRANSACTIONS_DETAIL.unitcost, X_JOB_TRANSACTIONS_DETAIL.UNITPRICE, X_JOB_TRANSACTIONS_DETAIL.LINECOST, X_JOB_TRANSACTIONS_DETAIL.linecharge, X_JOB_TRANSACTIONS_DETAIL.LINETOTAL, X_JOB_TRANSACTIONS_DETAIL.LINETOTAL_INCTAX, X_JOB_TRANSACTIONS_DETAIL.LINETOTAL_TAX, X_JOB_TRANSACTIONS_DETAIL.LINE_STATUS, X_JOB_TRANSACTIONS_DETAIL.CostType, X_JOB_TRANSACTIONS_DETAIL.CostTypeDesc, X_JOB_TRANSACTIONS_DETAIL.Typeshortcode, X_JOB_TRANSACTIONS_DETAIL.COST_GROUP, X_JOB_TRANSACTIONS_DETAIL.CostGroupDesc, X_JOB_TRANSACTIONS_DETAIL.GroupShortcode, X_JOB_TRANSACTIONS_DETAIL.branchno, X_JOB_TRANSACTIONS_DETAIL.LINE_SOURCE, X_JOB_TRANSACTIONS_DETAIL.SOURCE_SEQNO, X_JOB_TRANSACTIONS_DETAIL.PO_LINESEQNO, X_JOB_TRANSACTIONS_DETAIL.POno, X_JOB_TRANSACTIONS_DETAIL.invseqno, X_JOB_TRANSACTIONS_DETAIL.refno, X_JOB_TRANSACTIONS_DETAIL.name, X_JOB_TRANSACTIONS_DETAIL.invno, X_JOB_TRANSACTIONS_DETAIL.INVOICED, X_JOB_TRANSACTIONS_DETAIL.INVOICEDATE, X_JOB_TRANSACTIONS_DETAIL.CostActual, X_JOB_TRANSACTIONS_DETAIL.glcode, X_JOB_TRANSACTIONS_DETAIL.accno, JOBCOST_HDR.QUOTEDATE, JOBCOST_HDR.STARTDATE, JOBCOST_HDR.DUEDATE, JOBCOST_HDR.CUSTORDNO, JOBCOST_HDR.TITLE, NAME_2 = DR_ACCS.NAME, MasterJobcode = JOBCOST_HDR2.JOBCODE, STOCK_ITEMS.PURCH_GL_CODE, PurchGLName = GLP.NAME, STOCK_ITEMS.COS_GL_CODE, COSGlName = GLCOS.NAME, VariationCode = X_JOB_TRANSACTIONS_DETAIL.X_VARIATIONCODE };
 
                 if (showLoadingScreen)

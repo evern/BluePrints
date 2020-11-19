@@ -83,7 +83,11 @@ namespace BluePrints.ViewModels
                 isYearToDate = true;
 
             if(loadPROJECT == null)
+#if PERTH
                 primeroUnitOfWorkFactory = PrimeroEntitiesUnitOfWorkSource.GetUnitOfWorkFactory();
+#else
+                primeroUnitOfWorkFactory = PrimeroEntitiesUnitOfWorkSource.GetUnitOfWorkFactory(true);
+#endif
             else
                 primeroUnitOfWorkFactory = PrimeroEntitiesUnitOfWorkSource.GetUnitOfWorkFactory(loadPROJECT.OfficeNameForExo == BluePrintsResources.OfficeMontreal);
 
@@ -178,9 +182,9 @@ namespace BluePrints.ViewModels
             MainViewModel.SetParentViewModel(this);
             base.AssignCallBacksAndRaisePropertyChange(entities);
         }
-        #endregion
+#endregion
 
-        #region View Properties
+#region View Properties
         public override void OnAfterAuxiliaryEntitiesChanged(object key, Type changedType, EntityMessageType messageType, object sender, bool isBulkRefresh)
         {
             base.OnAfterAuxiliaryEntitiesChanged(key, changedType, messageType, sender, isBulkRefresh);
@@ -209,7 +213,7 @@ namespace BluePrints.ViewModels
                 return loadPROJECT.GUID.ToString();
             }
         }
-        #endregion
+#endregion
 
         public override void UnifiedCellValueChanged(string field_name, object old_value, object new_value, X_JOB_TRANSACTIONS_DETAIL_SeqNo projection, bool isNew)
         {

@@ -116,6 +116,7 @@
                         <dxr:RibbonGalleryItemThemeSelectorBehavior />
                     </dxmvvm:Interaction.Behaviors>
                 </dxr:RibbonGalleryBarItem>
+                <dxb:BarStaticItem x:Name="biOffice" Glyph="{dx:DXImage Image=BOLocalization_16x16.png}" LargeGlyph="{dx:DXImage Image=BOLocalization_32x32.png}" Content="{Binding DataContext.OfficeName, ElementName=userControl, Mode=OneWay}" ToolTip="Database location" />
                 <dxb:BarButtonItem x:Name="biMinimize" Command="{Binding DataContext.ApplicationMinimizedWindowSizeCommand, ElementName=userControl}" Glyph="{dx:DXImage Image=NavigateNext_16x16.png}" LargeGlyph="{dx:DXImage Image=NavigateNext_32x32.png}" ToolTip="Minimize window to taskbar" />
                 <!--<dxb:BarButtonItem x:Name="biMaximize" Command="{Binding DataContext.ApplicationToggleWindowSizeCommand, ElementName=userControl}" Glyph="{dx:DXImage Image=Zoom2_16x16.png}" LargeGlyph="{dx:DXImage Image=Zoom2_32x32.png}" >
                                 <dxb:BarButtonItem.GlyphTemplate>
@@ -150,6 +151,7 @@
                         </Style>
                     </dxr:RibbonControl.ApplicationButtonOfficeSlimStyle>
                     <dxr:RibbonControl.PageHeaderItemLinks>
+                        <dxb:BarStaticItemLink BarItemName="biOffice" />
                         <dxb:BarButtonItemLink BarItemName="biLogOut" />
                         <dxr:RibbonGalleryBarItemLink BarItemName="biGalleryItems" />
                         <dxb:BarButtonItemLink BarItemName="biMinimize" />

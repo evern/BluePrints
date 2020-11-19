@@ -79,6 +79,15 @@ namespace BluePrints.Common.Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Lead projects category.
+        /// </summary>
+        internal static string Category_LeadProjects {
+            get {
+                return ResourceManager.GetString("Category_LeadProjects", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Project construct category.
         /// </summary>
         internal static string Category_Project_Construct {

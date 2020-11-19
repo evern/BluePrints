@@ -705,7 +705,7 @@ namespace BluePrints.ViewModels
             {
                 PROJECTTenderProfile newPROJECT = new PROJECTTenderProfile();
                 newPROJECT.TENDER_PROFILE_ITEMS = new List<TENDER_PROFILE_ITEM>();
-                newPROJECT.Entity.STATUS = ProjectStatus.Tender;
+                newPROJECT.Entity.STATUS = ProjectStatus.Lead;
                 dataRowView[columnProject] = newPROJECT;
             }
         }
@@ -1923,7 +1923,7 @@ namespace BluePrints.ViewModels
             visibleIndex += 10;
             columns.Add(new ColumnDescriptor() { FieldName = columnProject + ".Entity.PIPELINE_DIVISION", VisibleIndex = visibleIndex, Header = "Division", Fixed = FixedStyle.Left, Width = 70, Settings = SettingsType.Enum3 });
             visibleIndex += 10;
-            columns.Add(new ColumnDescriptor() { FieldName = columnProject + ".Entity.PIPELINE_COMMODITY", VisibleIndex = visibleIndex, Header = "Commodity", Fixed = FixedStyle.Left, Width = 70, Settings = SettingsType.Enum4 });
+            columns.Add(new ColumnDescriptor() { FieldName = columnProject + ".Entity.PIPELINE_COMMODITY", VisibleIndex = visibleIndex, Header = "Department", Fixed = FixedStyle.Left, Width = 70, Settings = SettingsType.Enum4 });
             visibleIndex += 10;
             columns.Add(new ColumnDescriptor() { FieldName = columnProject + ".Entity.PIPELINE_CONTRACT", VisibleIndex = visibleIndex, Header = "Contract", Fixed = FixedStyle.Left, Width = 70, Settings = SettingsType.Enum5 });
             visibleIndex += 10;

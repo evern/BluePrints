@@ -51,6 +51,18 @@ namespace BluePrints.ViewModels
             initialize();
         }
 
+        public string OfficeName
+        {
+            get
+            {
+#if PERTH
+                return "Perth";
+#else
+                return "Montreal";
+#endif
+            }
+        }
+
         /// <summary>
         ///     Initializes a new instance of the BluePrintsEntitiesViewModel class.
         ///     This constructor is declared protected to avoid undesired instantiation of the BluePrintsEntitiesViewModel type
@@ -351,6 +363,7 @@ namespace BluePrints.ViewModels
         BluePrintsEntitiesModuleDescription projectActiveCategoryDescription;
         BluePrintsEntitiesModuleDescription projectSubmittedTenderCategoryDescription;
         BluePrintsEntitiesModuleDescription projectWIPTenderCategoryDescription;
+        BluePrintsEntitiesModuleDescription projectLeadCategoryDescription;
         BluePrintsEntitiesModuleDescription companyHSECategoryDescription;
         BluePrintsEntitiesModuleDescription dataCategoryDescription;
         BluePrintsEntitiesModuleDescription myDeliverablesDescription;
@@ -374,6 +387,8 @@ namespace BluePrints.ViewModels
             projectActiveCategoryDescription = new BluePrintsEntitiesModuleDescription(DataUtils.GetNameOf(() => NavigationResources.Category_ActiveProjects), string.Empty, DataUtils.GetNameOf(() => NavigationResources.Menu_AllProjects), "Active", null, null, null, null, true, false, @"Function Library\Financial_16x16.png");
             projectSubmittedTenderCategoryDescription = new BluePrintsEntitiesModuleDescription(DataUtils.GetNameOf(() => NavigationResources.Category_UserTenders), string.Empty, DataUtils.GetNameOf(() => NavigationResources.Menu_AllProjects), "Submitted Tender", null, null, null, null, false, false, @"Function Library\Statistical_16x16.png");
             projectWIPTenderCategoryDescription = new BluePrintsEntitiesModuleDescription(DataUtils.GetNameOf(() => NavigationResources.Category_WIPProjects), string.Empty, DataUtils.GetNameOf(() => NavigationResources.Menu_AllProjects), "WIP Tender", null, null, null, null, false, false, @"Function Library\Compatibility_16x16.png");
+            projectLeadCategoryDescription = new BluePrintsEntitiesModuleDescription(DataUtils.GetNameOf(() => NavigationResources.Category_LeadProjects), string.Empty, DataUtils.GetNameOf(() => NavigationResources.Menu_AllProjects), "Lead", null, null, null, null, false, false, @"Business Objects\BOOrderItem_16x16.png");
+
             companyHSECategoryDescription = new BluePrintsEntitiesModuleDescription(DataUtils.GetNameOf(() => NavigationResources.Menu_HSE), string.Empty, DataUtils.GetNameOf(() => NavigationResources.Menu_AllProjects), "Company HSE Report", "HSECollectionView", null, null, "HSE Report", false, false, @"Gauges\GaugeStyleLinearHorizontal_16x16.png");
             dataCategoryDescription = new BluePrintsEntitiesModuleDescription(DataUtils.GetNameOf(() => NavigationResources.Category_Data), string.Empty, null, "Data", null, null, null, null, false, true, @"Navigation\DocumentMap_16x16.png");
         }
@@ -406,7 +421,7 @@ namespace BluePrints.ViewModels
             moduleAdder(dataCategoryDescription, new BluePrintsEntitiesModuleDescription(DataUtils.GetNameOf(() => NavigationResources.Menu_EXO_Users), string.Empty, dataCategoryDescription.NavigationId, "Exo Resources", "EXO_ResourcesCollectionView", null, null, null, false, false, @"Business Objects\BOPosition2_16x16.png"), isSample);
             moduleAdder(dataCategoryDescription, new BluePrintsEntitiesModuleDescription(DataUtils.GetNameOf(() => NavigationResources.Menu_Offices), string.Empty, dataCategoryDescription.NavigationId, "Offices", "OFFICECollectionView", null, null, null, false, false, @"Maps\GeoPointMap_16x16.png"), isSample);
             moduleAdder(dataCategoryDescription, new BluePrintsEntitiesModuleDescription(DataUtils.GetNameOf(() => NavigationResources.Menu_Phases), string.Empty, dataCategoryDescription.NavigationId, "Phases", "PHASECollectionView", null, null, null, false, false, @"Filter Elements\TreeView_16x16.png"), isSample);
-            moduleAdder(dataCategoryDescription, new BluePrintsEntitiesModuleDescription(DataUtils.GetNameOf(() => NavigationResources.Menu_Project_Pipelines), string.Empty, dataCategoryDescription.NavigationId, "Pipeline", "PROJECTPlanView", null, null, null, false, false, @"Business Objects\BOSaleItem_16x16.png"), isSample);
+            moduleAdder(dataCategoryDescription, new BluePrintsEntitiesModuleDescription(DataUtils.GetNameOf(() => NavigationResources.Menu_Project_Pipelines), string.Empty, dataCategoryDescription.NavigationId, "Design Resource Planning", "PROJECTPlanView", null, null, null, false, false, @"Business Objects\BOSaleItem_16x16.png"), isSample);
             moduleAdder(dataCategoryDescription, new BluePrintsEntitiesModuleDescription(DataUtils.GetNameOf(() => NavigationResources.Menu_Roles), string.Empty, dataCategoryDescription.NavigationId, "Roles", "ROLECollectionView", null, null, null, false, false, @"Business Objects\BORole_16x16.png"), isSample);
             moduleAdder(dataCategoryDescription, new BluePrintsEntitiesModuleDescription(DataUtils.GetNameOf(() => NavigationResources.Menu_TenderProfiles), string.Empty, dataCategoryDescription.NavigationId, "Tender Profiles", "TENDER_PROFILECollectionView", null, null, null, false, false, @"Dashboards\PieLabelsDataLabels2_16x16.png"), isSample);
             moduleAdder(dataCategoryDescription, new BluePrintsEntitiesModuleDescription(DataUtils.GetNameOf(() => NavigationResources.Menu_TransactionsYearToDate), string.Empty, dataCategoryDescription.NavigationId, "Transactions Year to Date", "TransactionCollectionView", new EntitiesParameter<PROJECT>(null), null, "Transactions Year to Date", false, false, @"Function Library\Compatibility_16x16.png"), isSample);
@@ -484,10 +499,15 @@ namespace BluePrints.ViewModels
                 projectStatusDescription = projectSubmittedTenderCategoryDescription;
                 parentId = DataUtils.GetNameOf(() => NavigationResources.Category_SubmittedProjects);
             }
-            else
+            else if (entity.STATUS == ProjectStatus.Tender)
             {
                 projectStatusDescription = projectWIPTenderCategoryDescription;
                 parentId = DataUtils.GetNameOf(() => NavigationResources.Category_WIPProjects);
+            }
+            else
+            {
+                projectStatusDescription = projectLeadCategoryDescription;
+                parentId = DataUtils.GetNameOf(() => NavigationResources.Category_LeadProjects);
             }
 
             List<BluePrintsEntitiesModuleDescription> projectModuleContextMenuItems = new List<BluePrintsEntitiesModuleDescription>();
