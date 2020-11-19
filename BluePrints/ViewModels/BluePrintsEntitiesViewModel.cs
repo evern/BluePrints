@@ -240,8 +240,11 @@ namespace BluePrints.ViewModels
             if (entities.Any(x => x.STATUS == ProjectStatus.Tender))
                 projectCategoryHeader.ChildModules.Add(projectWIPTenderCategoryDescription);
 
+            if (entities.Any(x => x.STATUS == ProjectStatus.Lead))
+                projectCategoryHeader.ChildModules.Add(projectLeadCategoryDescription);
+
             var projects =
-            entities.Where(x => x.STATUS == ProjectStatus.Active || x.STATUS == ProjectStatus.TenderSubmitted || x.STATUS == ProjectStatus.Tender)
+            entities.Where(x => x.STATUS == ProjectStatus.Active || x.STATUS == ProjectStatus.TenderSubmitted || x.STATUS == ProjectStatus.Tender || x.STATUS == ProjectStatus.Lead)
                 .OrderBy(x => x.NUMBER)
                 .ToArray()
                 .AsEnumerable();
