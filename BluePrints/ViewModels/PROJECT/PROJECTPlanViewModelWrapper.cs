@@ -1248,17 +1248,21 @@ namespace BluePrints.ViewModels
 
             var PasteString = System.Windows.Clipboard.GetText();
             string[] RowData;
-            //remove tab at the beginning of paste string
-            if(PasteString.Substring(0, 1) == "\t")
-                PasteString = PasteString.Substring(1, PasteString.Length - 1);
 
             RowData = DataUtils.ExcelSplit(PasteString).ToArray();
-            if(RowData.Count() > 0)
-                if(RowData[0].Contains("\t"))
+            for(int i=0;i < RowData.Count();i++)
+            {
+                //remove tab at the beginning of paste string
+                if (RowData[i].Substring(0, 1) == "\t")
+                    RowData[i] = RowData[i].Substring(1, RowData[i].Length - 1);
+
+                if (RowData[i].Contains("\t"))
                 {
-                    MessageBoxService.ShowMessage("Please copy values from only a single column", "Multiple columns data not supported", MessageButton.OKCancel);
+                    MessageBoxService.ShowMessage("Please copy values from only a single column", "Multiple columns data not supported", MessageButton.OK);
                     return;
                 }
+            }
+
 
             List<TENDER_PROFILE_ITEM> pasteProjections = new List<TENDER_PROFILE_ITEM>();
             List<ErrorMessage> errorMessages = new List<ErrorMessage>();
@@ -1458,6 +1462,9 @@ namespace BluePrints.ViewModels
                             int current_row_handle = gridControl.GetRowHandleByVisibleIndex(current_row_visible_index);
                             if (current_row_handle < 1)
                                 current_row_handle = current_row_visible_index;
+
+                            if (SelectedChildDataRows.Count < current_row_handle + 1)
+                                continue;
 
                             DataRowView rowDataRowView = SelectedChildDataRows[current_row_handle];
                             if (rowDataRowView == null)
