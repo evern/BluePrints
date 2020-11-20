@@ -1253,6 +1253,12 @@ namespace BluePrints.ViewModels
                 PasteString = PasteString.Substring(1, PasteString.Length - 1);
 
             RowData = DataUtils.ExcelSplit(PasteString).ToArray();
+            if(RowData.Count() > 0)
+                if(RowData[0].Contains("\t"))
+                {
+                    MessageBoxService.ShowMessage("Please copy values from only a single column", "Multiple columns data not supported", MessageButton.OKCancel);
+                    return;
+                }
 
             List<TENDER_PROFILE_ITEM> pasteProjections = new List<TENDER_PROFILE_ITEM>();
             List<ErrorMessage> errorMessages = new List<ErrorMessage>();
