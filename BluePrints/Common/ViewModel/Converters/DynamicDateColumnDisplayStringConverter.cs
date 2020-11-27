@@ -26,7 +26,7 @@ namespace BluePrints.Common.ViewModel.Converters
                     isWeeks = true;
 
                 DateTime dateValue;
-                if (DateTime.TryParse(values[0].ToString(), out dateValue))
+                if (DateTime.TryParseExact(values[0].ToString(), "dd-MMM-yy", CultureInfo.InvariantCulture, DateTimeStyles.None, out dateValue))
                 {
                     if (isWeeks)
                         return dateValue.ToString("dd-MMM-yy");
