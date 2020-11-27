@@ -2013,8 +2013,11 @@ namespace BluePrints.ViewModels
                 }
 
                 JOBCOST_LINES findExistingOrAddLine = ExoQueries.GetProjectLine(primeroUnitOfWork, LoadPROJECT.NUMBER, projection);
-                findExistingOrAddLine.QUOTE_QTY = 1;
-                findExistingOrAddLine.ACTUAL_UNITCOST = Convert.ToDouble(newDecimalValue);
+                if(findExistingOrAddLine != null)
+                {
+                    findExistingOrAddLine.QUOTE_QTY = 1;
+                    findExistingOrAddLine.ACTUAL_UNITCOST = Convert.ToDouble(newDecimalValue);
+                }
 
                 primeroUnitOfWork.SaveChanges();
 
