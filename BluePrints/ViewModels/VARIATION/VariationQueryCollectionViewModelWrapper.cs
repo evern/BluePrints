@@ -64,7 +64,6 @@ namespace BluePrints.ViewModels
 
         #region Database Operation
         private Data.PROJECT loadPROJECT;
-        private JOBCOST_HDR loadJOBCOST_HDR;
         private readonly IUnitOfWorkFactory<IBluePrintsEntitiesUnitOfWork> bluePrintsUnitOfWorkFactory = BluePrintsEntitiesUnitOfWorkSource.GetUnitOfWorkFactory();
         protected override void resolveParameters(object parameter)
         {

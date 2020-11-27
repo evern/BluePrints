@@ -618,8 +618,6 @@ namespace BluePrints.ViewModels
 
         private Tuple<double, double> getBellCurveProfile(BellCurveShape bellCurveShape)
         {
-            double A = 0;
-            double B = 0;
             if (bellCurveShape == BellCurveShape.FrontLoaded2)
                 return new Tuple<double, double>(0.75, 0.25);
             else if (bellCurveShape == BellCurveShape.FrontLoaded1)

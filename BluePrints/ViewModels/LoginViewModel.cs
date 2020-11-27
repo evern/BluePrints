@@ -304,7 +304,6 @@ namespace BluePrints.ViewModels
         }
 
         BluePrintsEntitiesWindow mainWindow;
-        BluePrintsEntitiesWindow oldMainWindow;
         public void ShowMainWindow()
         {
             mainWindow = new BluePrintsEntitiesWindow();

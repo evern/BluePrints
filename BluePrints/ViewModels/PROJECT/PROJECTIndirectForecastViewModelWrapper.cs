@@ -437,22 +437,17 @@ namespace BluePrints.ViewModels
                 //}
 
                 string[] RowData = DataUtils.ExcelSplit(newValueString).ToArray();
+                List<ErrorMessage> errorMessages;
 
                 if (MainViewModel.SelectMode == MultiSelectMode.Row)
-                {
-                    List<ErrorMessage> invalidRows = pasteRowData(gridTableView, RowData);
-
-                    if (invalidRows.Count > 0)
-                    {
-                        DialogCollectionViewModel<ErrorMessage> viewModel = DialogCollectionViewModel<ErrorMessage>.Create(invalidRows, "Paste status");
-                        ErrorMessagesDialogService.ShowDialog(MessageButton.OK, string.Empty, "ListErrorMessages", viewModel);
-                    }
-                }
+                    errorMessages = pasteRowData(gridTableView, RowData);
                 else
-                    pasteCellData(gridControl, gridTableView, RowData);
+                    pasteCellData(gridControl, gridTableView, RowData, out errorMessages);
 
                 GridControlService.GridControl.RefreshData();
+
                 e.Handled = true;
+                ShowErrorMessage("Errors", errorMessages);
             }
         }
 
@@ -464,7 +459,7 @@ namespace BluePrints.ViewModels
         private List<ErrorMessage> pasteRowData(TableView gridTableView, string[] RowData)
         {
             EntitiesUndoRedoManager.PauseActionId();
-            List<ErrorMessage> invalidRows = new List<ErrorMessage>();
+            List<ErrorMessage> errorMessages = new List<ErrorMessage>();
 
             LoadingScreenManager.ShowLoadingScreen(RowData.Count());
             LoadingScreenManager.SetMessage("Pasting Rows...");
@@ -475,7 +470,7 @@ namespace BluePrints.ViewModels
                 ExoSubJobProjection queryJob = QueryJobs.FirstOrDefault(x => x.FullCode == fullCode);
                 if (queryJob != null)
                 {
-                    addNewPasteRow(queryJob, gridTableView, ColumnStrings);
+                    addNewPasteRow(queryJob, gridTableView, ColumnStrings, out errorMessages);
                 }
                 else
                 {
@@ -491,17 +486,17 @@ namespace BluePrints.ViewModels
                             queryJob = QueryJobs.FirstOrDefault(x => x.FullCode == fullCode);
                             if(queryJob != null)
                             {
-                                addNewPasteRow(queryJob, gridTableView, ColumnStrings);
-                                invalidRows.Add(new ErrorMessage(oldCode, "Row is pasted, but " + oldCode + " has been remapped to " + fullCode + ", because " + stockCode + " is a stock code"));
+                                addNewPasteRow(queryJob, gridTableView, ColumnStrings, out errorMessages);
+                                errorMessages.Add(new ErrorMessage(oldCode, "Row is pasted, but " + oldCode + " has been remapped to " + fullCode + ", because " + stockCode + " is a stock code"));
                             }
                             else
-                                invalidRows.Add(new ErrorMessage(fullCode, "Row is not pasted, because exo job doesn't exists"));
+                                errorMessages.Add(new ErrorMessage(fullCode, "Row is not pasted, because exo job doesn't exists"));
                         }
                         else
-                            invalidRows.Add(new ErrorMessage(fullCode, "Row is not pasted, because commodity code doesn't exists"));
+                            errorMessages.Add(new ErrorMessage(fullCode, "Row is not pasted, because commodity code doesn't exists"));
                     }
                     else
-                        invalidRows.Add(new ErrorMessage(fullCode, "Row is not pasted, because of invalid WBS code doesn't exists"));
+                        errorMessages.Add(new ErrorMessage(fullCode, "Row is not pasted, because of invalid WBS code doesn't exists"));
                 }
 
                 LoadingScreenManager.Progress();
@@ -510,7 +505,7 @@ namespace BluePrints.ViewModels
             focusNewlyAddedProjectionTimer.Start();
             EntitiesUndoRedoManager.UnpauseActionId();
             LoadingScreenManager.CloseLoadingScreen();
-            return invalidRows;
+            return errorMessages;
         }
 
         public override bool CanFullRefresh()
@@ -555,8 +550,9 @@ namespace BluePrints.ViewModels
             MessageBoxService.ShowMessage(floatingRateUpdateCount.ToString() + " record(s) updated", "Update", MessageButton.OK);
         }
 
-        private DataRow addNewPasteRow(ExoSubJobProjection queryJob, TableView gridTableView, string[] ColumnStrings)
+        private DataRow addNewPasteRow(ExoSubJobProjection queryJob, TableView gridTableView, string[] ColumnStrings, out List<ErrorMessage> errorMessages)
         {
+            errorMessages = new List<ErrorMessage>();
             DataRow newRow = DataPointsTable.NewRow();
             newRow[columnFullCode] = queryJob.FullCode;
             newRow[columnProjection] = queryJob;
@@ -568,7 +564,7 @@ namespace BluePrints.ViewModels
 
                 string pasteData = ColumnStrings[i];
                 ColumnBase copyColumn = gridTableView.VisibleColumns[i];
-                basePasteData(newRow, copyColumn, pasteData, true);
+                basePasteData(newRow, copyColumn, pasteData, true, out errorMessages);
             }
 
             DataPointsTable.Rows.Add(newRow);
@@ -635,15 +631,16 @@ namespace BluePrints.ViewModels
             }
         }
 
-        private void pasteCellData(GridControl gridControl, TableView gridTableView, string[] RowData)
+        private void pasteCellData(GridControl gridControl, TableView gridTableView, string[] RowData, out List<ErrorMessage> errorMessages)
         {
             EntitiesUndoRedoManager.PauseActionId();
-            GridControlHelpers.PasteCellData(gridControl, gridTableView, RowData, basePasteData);
+            GridControlHelpers.PasteCellData(gridControl, gridTableView, RowData, basePasteData, out errorMessages);
             EntitiesUndoRedoManager.UnpauseActionId();
         }
 
-        private bool basePasteData(DataRow newRow, ColumnBase copyColumn, string pasteData, bool isLastRow)
+        private bool basePasteData(DataRow newRow, ColumnBase copyColumn, string pasteData, bool isLastRow, out List<ErrorMessage> errorMessages)
         {
+            errorMessages = new List<ErrorMessage>();
             DateTime columnDateTime;
             if(copyColumn.FieldName == columnFullCode)
             {

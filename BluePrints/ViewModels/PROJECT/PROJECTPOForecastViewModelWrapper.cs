@@ -278,21 +278,25 @@ namespace BluePrints.ViewModels
             }
 
             string[] RowData = DataUtils.ExcelSplit(newValueString).ToArray();
-            pasteCellData(gridControl, gridTableView, RowData);
+            List<ErrorMessage> errorMessages;
+            pasteCellData(gridControl, gridTableView, RowData, out errorMessages);
 
             GridControlService.RefreshData();
             e.Handled = true;
+
+            ShowErrorMessage("Error", errorMessages);
         }
 
-        private void pasteCellData(GridControl gridControl, TableView gridTableView, string[] RowData)
+        private void pasteCellData(GridControl gridControl, TableView gridTableView, string[] RowData, out List<ErrorMessage> errorMessages)
         {
             EntitiesUndoRedoManager.PauseActionId();
-            GridControlHelpers.PasteCellData(gridControl, gridTableView, RowData, basePasteData);
+            GridControlHelpers.PasteCellData(gridControl, gridTableView, RowData, basePasteData, out errorMessages);
             EntitiesUndoRedoManager.UnpauseActionId();
         }
 
-        private bool basePasteData(DataRow newRow, ColumnBase copyColumn, string pasteData, bool isLastRow)
+        private bool basePasteData(DataRow newRow, ColumnBase copyColumn, string pasteData, bool isLastRow, out List<ErrorMessage> errorMessages)
         {
+            errorMessages = new List<ErrorMessage>();
             if (copyColumn.FieldType == typeof(decimal))
             {
                 var rgx = new Regex(BluePrintsResources.Regex_NumbersOnly);

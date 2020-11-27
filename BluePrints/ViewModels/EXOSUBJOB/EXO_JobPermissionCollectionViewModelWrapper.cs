@@ -68,7 +68,6 @@ namespace BluePrints.ViewModels
         #region Code Properties
         private readonly IUnitOfWorkFactory<IBluePrintsEntitiesUnitOfWork> bluePrintsUnitOfWorkFactory = BluePrintsEntitiesUnitOfWorkSource.GetUnitOfWorkFactory();
         protected DispatcherTimer delayedPermissionRefreshDispatcher;
-        private IBluePrintsEntitiesUnitOfWork bluePrintsEntitiesUnitOfWork;
         #endregion
 
         #region Loading Operations

@@ -1564,6 +1564,7 @@ namespace BluePrints.ViewModels
             TableView gridTableView = (TableView)gridControl.View;
             string newValueString = Clipboard.GetText().ToString();
 
+            List<ErrorMessage> errorMessages = new List<ErrorMessage>();
             //remove tab in front
             if(newValueString != string.Empty)
             {
@@ -1573,18 +1574,19 @@ namespace BluePrints.ViewModels
                 }
 
                 string[] RowData = DataUtils.ExcelSplit(newValueString).ToArray();
-                pasteCellData(gridControl, gridTableView, RowData);
+                pasteCellData(gridControl, gridTableView, RowData, out errorMessages);
 
                 refreshGridData();
                 e.Handled = true;
             }
 
+            ShowErrorMessage("Errors", errorMessages);
         }
 
-        private void pasteCellData(GridControl gridControl, TableView gridTableView, string[] RowData)
+        private void pasteCellData(GridControl gridControl, TableView gridTableView, string[] RowData, out List<ErrorMessage> errorMessages)
         {
             EntitiesUndoRedoManager.PauseActionId();
-            List<DataRow> editedRows = GridControlHelpers.PasteCellData(gridControl, gridTableView, RowData, basePasteData, true);
+            List<DataRow> editedRows = GridControlHelpers.PasteCellData(gridControl, gridTableView, RowData, basePasteData, out errorMessages, true);
 
             LoadingScreenManager.ShowLoadingScreen(editedRows.Count);
             LoadingScreenManager.SetMessage("Summarizing Data...");
@@ -1601,8 +1603,9 @@ namespace BluePrints.ViewModels
             EntitiesUndoRedoManager.UnpauseActionId();
         }
 
-        private bool basePasteData(DataRow newRow, ColumnBase copyColumn, string pasteData, bool isLastRow)
+        private bool basePasteData(DataRow newRow, ColumnBase copyColumn, string pasteData, bool isLastRow, out List<ErrorMessage> errorMessages)
         {
+            errorMessages = new List<ErrorMessage>();
             if (copyColumn.FieldType == typeof(decimal))
             {
                 var rgx = new Regex(BluePrintsResources.Regex_NumbersOnly);
@@ -1610,28 +1613,32 @@ namespace BluePrints.ViewModels
                 decimal decimal_value;
                 if (decimal.TryParse(cleanColumnString, out decimal_value))
                 {
+                    List<ErrorMessage> commitCellErrorMessage;
                     if (copyColumn.FieldName.ToUpper() == "ENTITY.BUDGET")
                     {
                         ForecastJobData job = ((ForecastJobData)newRow[columnEntity]);
                         decimal oldValue = job.Budget;
 
-                        commitCellValue(copyColumn.FieldName, newRow, oldValue, decimal_value, true);
+                        commitCellValue(copyColumn.FieldName, newRow, oldValue, decimal_value, out commitCellErrorMessage, true);
+                        errorMessages.AddRange(commitCellErrorMessage);
                     }
                     else if (copyColumn.FieldName == "Entity." + BindableBase.GetPropertyName(() => new ForecastJobData().Productivity))
                     {
                         ForecastJobData job = ((ForecastJobData)newRow[columnEntity]);
                         decimal oldValue = job.Productivity;
 
-                        commitCellValue(copyColumn.FieldName, newRow, oldValue, decimal_value, true);
+                        commitCellValue(copyColumn.FieldName, newRow, oldValue, decimal_value, out commitCellErrorMessage, true);
                         findExistingOrAddNewForecastJobSetting(newRow, false);
+                        errorMessages.AddRange(commitCellErrorMessage);
                     }
                     else if (copyColumn.FieldName == "Entity." + BindableBase.GetPropertyName(() => new ForecastJobData().PreviousEAC))
                     {
                         ForecastJobData job = ((ForecastJobData)newRow[columnEntity]);
                         decimal oldValue = job.PreviousEAC;
                         
-                        commitCellValue(copyColumn.FieldName, newRow, oldValue, decimal_value, true);
+                        commitCellValue(copyColumn.FieldName, newRow, oldValue, decimal_value, out commitCellErrorMessage, true);
                         EntitiesUndoRedoManager.AddUndo(newRow, copyColumn.FieldName, oldValue, decimal_value, EntityMessageType.Changed);
+                        errorMessages.AddRange(commitCellErrorMessage);
                     }
                     else
                     {
@@ -1727,6 +1734,7 @@ namespace BluePrints.ViewModels
             TableView tableView = gridControl.View as TableView;
             var selectedRows = tableView.GetSelectedRows();
 
+            List<ErrorMessage> errorMessages = new List<ErrorMessage>();
             foreach (var selectedRow in selectedRows)
             {
                 int row_handle = selectedRow.RowHandle;
@@ -1737,13 +1745,17 @@ namespace BluePrints.ViewModels
 
                 if(job.CurrentProductivity > 0)
                 {
-                    commitCellValue(BindableBase.GetPropertyName(() => new ForecastJobData().Productivity), editing_row, job.Productivity, job.CurrentProductivity);
+                    List<ErrorMessage> currentJobErrorMessage;
+                    commitCellValue(BindableBase.GetPropertyName(() => new ForecastJobData().Productivity), editing_row, job.Productivity, job.CurrentProductivity, out currentJobErrorMessage);
                     findExistingOrAddNewForecastJobSetting(editing_row, true);
+                    errorMessages.AddRange(currentJobErrorMessage);
                 }
             }
 
             EntitiesUndoRedoManager.UnpauseActionId();
             refreshGridData();
+
+            ShowErrorMessage("Errors", errorMessages);
         }
 
         public bool CanUpdateCurrentPF()
@@ -1756,17 +1768,21 @@ namespace BluePrints.ViewModels
             if (MessageBoxService.ShowMessage("Are you use you want to apply current PF to all jobs that had current PF applied?", "Confirmation", MessageButton.OKCancel, MessageIcon.Question) == MessageResult.Cancel)
                 return;
 
+            List<ErrorMessage> errorMessages = new List<ErrorMessage>();
             IEnumerable<DataRow> enumerableRows = from DataRow dr in dataPointsTable.Rows select dr;
             foreach (var row in enumerableRows)
             {
                 ForecastJobData job = (ForecastJobData)row[columnEntity];
-                if(job.IsProductivityFloating && job.CurrentProductivity > 0)
+                List<ErrorMessage> currentJobErrorMessage;
+                if (job.IsProductivityFloating && job.CurrentProductivity > 0)
                 {
-                    commitCellValue(BindableBase.GetPropertyName(() => new ForecastJobData().Productivity), row, job.Productivity, job.CurrentProductivity);
+                    commitCellValue(BindableBase.GetPropertyName(() => new ForecastJobData().Productivity), row, job.Productivity, job.CurrentProductivity, out currentJobErrorMessage);
+                    errorMessages.AddRange(currentJobErrorMessage);
                 }
             }
 
             refreshGridData();
+            ShowErrorMessage("Errors", errorMessages);
         }
 
         private IEnumerable<GridCell> getSelectedCells()
@@ -1820,7 +1836,8 @@ namespace BluePrints.ViewModels
                 }
             }
 
-            commitCellValue(e.Column.FieldName, dataRowView.Row, e.OldValue, e.Value);
+            List<ErrorMessage> errorMessages;
+            commitCellValue(e.Column.FieldName, dataRowView.Row, e.OldValue, e.Value, out errorMessages);
             EntitiesUndoRedoManager.UnpauseActionId();
 
             if(e.Column.FieldName == columnEntity + "." + BindableBase.GetPropertyName(() => new ForecastJobData().Productivity))
@@ -1832,17 +1849,18 @@ namespace BluePrints.ViewModels
             this.RaisePropertyChanged(x => x.ForecastSummary);
             refreshGridData();
             e.Handled = true;
+            ShowErrorMessage("Errors", errorMessages);
         }
 
-        protected virtual void commitCellValue(string fieldName, DataRow row, object oldValue, object newValue, bool skipSaveChangesAndRowUpdate = false)
+        protected virtual void commitCellValue(string fieldName, DataRow row, object oldValue, object newValue, out List<ErrorMessage> errorMessages, bool skipSaveChangesAndRowUpdate = false)
         {
             ForecastJobData forecastJobData = ((ForecastJobData)row[columnEntity]);
             ExoSubJobProjection entity = forecastJobData.Projection;
-
+            errorMessages = new List<ErrorMessage>();
             fieldName = fieldName.Replace("Entity.", "");
             if (fieldName == BindableBase.GetPropertyName(() => new ForecastJobData().Budget) || fieldName == BindableBase.GetPropertyName(() => new ForecastJobData().Rate))
             {
-                commitBudget(primeroEntitiesUnitOfWork, row, newValue);
+                commitBudget(primeroEntitiesUnitOfWork, row, newValue, out errorMessages);
                 forecastJobData.JobErrorMessage = string.Empty;
                 entity.ForecastErrorString = string.Empty;
 
@@ -1991,8 +2009,9 @@ namespace BluePrints.ViewModels
             }
         }
 
-        private bool commitBudget(IPrimeroEntitiesUnitOfWork primeroUnitOfWork, DataRow dataRow, object newValue)
+        private bool commitBudget(IPrimeroEntitiesUnitOfWork primeroUnitOfWork, DataRow dataRow, object newValue, out List<ErrorMessage> errorMessages)
         {
+            errorMessages = new List<ErrorMessage>();
             if (IsLoading)
                 return false;
 
@@ -2004,21 +2023,15 @@ namespace BluePrints.ViewModels
                 List<ExoSubJobProjection> projections = new List<ExoSubJobProjection>();
                 projections.Add(projection);
 
-                List<ErrorMessage> errorMessages;
-                IEnumerable<ExoSubJobProjection> addedProjections = ExoMethods.CommitToExo(projections, MessageBoxService, masterJob, copyLine, LoadPROJECT, USERCollection, primeroUnitOfWork, bluePrintsUnitOfWork, BulkColumnEditDialogService, out errorMessages);
-                if (errorMessages.Count > 0)
-                {
-                    DialogCollectionViewModel<ErrorMessage> viewModel = DialogCollectionViewModel<ErrorMessage>.Create(errorMessages, "Errors");
-                    ErrorMessagesDialogService.ShowDialog(MessageButton.OKCancel, string.Empty, "ListErrorMessages", viewModel);
-                }
-
                 JOBCOST_LINES findExistingOrAddLine = ExoQueries.GetProjectLine(primeroUnitOfWork, LoadPROJECT.NUMBER, projection);
-                if(findExistingOrAddLine != null)
+                if(findExistingOrAddLine == null)
                 {
-                    findExistingOrAddLine.QUOTE_QTY = 1;
-                    findExistingOrAddLine.ACTUAL_UNITCOST = Convert.ToDouble(newDecimalValue);
+                    IEnumerable<ExoSubJobProjection> addedProjections = ExoMethods.CommitToExo(projections, MessageBoxService, masterJob, copyLine, LoadPROJECT, USERCollection, primeroUnitOfWork, bluePrintsUnitOfWork, BulkColumnEditDialogService, out errorMessages);
+                    findExistingOrAddLine = ExoQueries.GetProjectLine(primeroUnitOfWork, LoadPROJECT.NUMBER, projection);
                 }
 
+                findExistingOrAddLine.QUOTE_QTY = 1;
+                findExistingOrAddLine.ACTUAL_UNITCOST = Convert.ToDouble(newDecimalValue);
                 primeroUnitOfWork.SaveChanges();
 
                 job.Budget = newDecimalValue;
@@ -2863,15 +2876,18 @@ namespace BluePrints.ViewModels
                 }
             }
 
+            List<ErrorMessage> errorMessages = new List<ErrorMessage>();
             var distributionSelectViewModel = DistributionSelectViewModel.Create(gridControl, selected_cells);
             if (DistributionDialogService.ShowDialog(MessageButton.OKCancel, "Select distribution method", "DistributionSelect", distributionSelectViewModel) == MessageResult.OK)
             {
                 string newValueString = distributionSelectViewModel.ConvertToPasteData();
                 string[] RowData = DataUtils.ExcelSplit(newValueString).ToArray();
-                pasteCellData(gridControl, tableView, RowData);
+                pasteCellData(gridControl, tableView, RowData, out errorMessages);
             }
+
+            ShowErrorMessage("Errors", errorMessages);
         }
-        
+
         public bool CanCreateExportSheet()
         {
             return ExportTable != null && FixedDataDate != null;
