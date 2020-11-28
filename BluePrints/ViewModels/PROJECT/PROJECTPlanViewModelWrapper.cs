@@ -4,6 +4,7 @@ using BaseModel.Misc;
 using BaseModel.ViewModel.Base;
 using BaseModel.ViewModel.Dialogs;
 using BaseModel.ViewModel.Loader;
+using BaseModel.ViewModel.Services;
 using BluePrints.BluePrintsEntitiesDataModel;
 using BluePrints.Common;
 using BluePrints.Common.Base;
@@ -17,6 +18,7 @@ using BluePrints.Data;
 using BluePrints.PrimeroData.PrimeroEntitiesDataModel;
 using DevExpress.Data;
 using DevExpress.Mvvm;
+using DevExpress.Mvvm.DataAnnotations;
 using DevExpress.Mvvm.POCO;
 using DevExpress.Xpf.Grid;
 using System;
@@ -27,6 +29,7 @@ using System.Data;
 using System.Linq;
 using System.Windows;
 using System.Windows.Controls;
+using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Threading;
 using static BaseModel.Data.Helpers.DataUtils;
@@ -83,6 +86,7 @@ namespace BluePrints.ViewModels
             loaderCollection.AddLoaderDescription<DEPARTMENT, DEPARTMENT, Guid, IBluePrintsEntitiesUnitOfWork>(bluePrintsUnitOfWorkFactory, x => x.DEPARTMENTS);
             loaderCollection.AddLoaderDescription<DISCIPLINE, DISCIPLINE, Guid, IBluePrintsEntitiesUnitOfWork>(bluePrintsUnitOfWorkFactory, x => x.DISCIPLINES);
             loaderCollection.AddLoaderDescription<TENDER_PROFILE, TENDER_PROFILE, Guid, IBluePrintsEntitiesUnitOfWork>(bluePrintsUnitOfWorkFactory, x => x.TENDER_PROFILES);
+            loaderCollection.AddLoaderDescription<OFFICE, OFFICE, Guid, IBluePrintsEntitiesUnitOfWork>(bluePrintsUnitOfWorkFactory, x => x.OFFICES);
         }
         
         protected override void onAuxiliaryEntitiesCollectionLoaded()
@@ -1928,6 +1932,8 @@ namespace BluePrints.ViewModels
             summaries.Add(new SummaryDescriptor() { FieldName = columnProject + ".Entity.NUMBER", DisplayFormat = "{0} Record(s)", Type = SummaryItemType.Count });
             columns.Add(new ColumnDescriptor() { FieldName = columnProject + ".Entity.NAME", VisibleIndex = visibleIndex, SortIndex = -1, Header = "Name", Fixed = FixedStyle.Left, Width = 100, Settings = SettingsType.Default });
             visibleIndex += 10;
+            columns.Add(new ColumnDescriptor() { FieldName = columnProject + ".Entity.GUID_OFFICE", VisibleIndex = visibleIndex, Header = "Office", Fixed = FixedStyle.Left, Width = 80, DisplayMember = "NAME", ValueMember = "GUID", ItemsSource = OFFICECollection, Settings = SettingsType.Collection });
+            visibleIndex += 10;
             columns.Add(new ColumnDescriptor() { FieldName = columnProject + ".Entity.STATUS", VisibleIndex = visibleIndex, Header = "Project Status", Fixed = FixedStyle.Left, Width = 120, Settings = SettingsType.Enum1 });
             visibleIndex += 10;
             columns.Add(new ColumnDescriptor() { FieldName = columnProject + ".Entity.PIPELINE_TYPE", VisibleIndex = visibleIndex, Header = "Type", Fixed = FixedStyle.Left, Width = 70, Settings = SettingsType.Enum2 });
@@ -2098,6 +2104,20 @@ namespace BluePrints.ViewModels
             }
         }
 
+        public IEnumerable<OFFICE> OFFICECollection
+        {
+            get
+            {
+                var collection = GetEntities<OFFICE>();
+                if (collection != null)
+                {
+                    collection = collection.OrderBy(x => x.NAME);
+                }
+
+                return collection;
+            }
+        }
+
         public IEnumerable<BellCurveShape> BellCurveShapeCollection
         {
             get
@@ -2118,6 +2138,9 @@ namespace BluePrints.ViewModels
                     loaderCollection.GetViewModel<TENDER_PROFILE_ITEM>();
             }
         }
+
+        [ServiceProperty(Key = "ChildTableViewService")]
+        protected virtual ITableViewService ChildTableViewService { get { return null; } }
 
         private DevExpress.Mvvm.IDialogService BasicMessageBoxDialogService
         {
