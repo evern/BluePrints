@@ -1281,6 +1281,8 @@ namespace BluePrints.Common.Base
                     isNullProgress = true;
 
                 DateTime? first_progress_date = isNullProgress ? (DateTime?)null :  current_progress_deliverable.PROGRESS_ITEM_UpToCurrentDataDate.Where(x => x.EARNED_UNITS > 0).Min(x => x.EARNED_DATE);
+                DateTime? last_progress_date = isNullProgress ? (DateTime?)null : current_progress_deliverable.PROGRESS_ITEM_UpToCurrentDataDate.Where(x => x.EARNED_UNITS > 0).Max(x => x.EARNED_DATE);
+
                 decimal total_percentage_to_date;
 
                 total_percentage_to_date = current_progress_deliverable.Total_Percentage_ToDate;
@@ -1334,9 +1336,6 @@ namespace BluePrints.Common.Base
                     TASK P6TASK = PROJECTTASK.FirstOrDefault(P6Task => P6Task.task_code == p6_assignment.P6_ACTIVITYID);
                     if (P6TASK != null && P6TASK.delete_date == null)
                     {
-                        if (P6TASK.task_code == "A34300")
-                            s = string.Empty;
-
                         //defines how much percentage of units this assignment will take up when it is fully assigned, so that we can estimate the total duration to apply productivity to
                         decimal current_task_to_activity_percentage = (P6TASK.target_work_qty == null || P6TASK.target_work_qty == 0) ? 0 : full_assignment_units / (decimal)P6TASK.target_work_qty;
 
@@ -1353,6 +1352,8 @@ namespace BluePrints.Common.Base
                         if (isSimulation)
                             continue;
 
+                        errorMessages.Add(new P6ErrorMessage("Pushed", P6TASK.task_code, current_progress_deliverable.Deliverable_Name, current_assignment_units, last_progress_date));
+                        
                         //set activity start date
                         DateTime? first_earned_week_start_date = isNullProgress ? (DateTime?)null : ((DateTime)first_progress_date).AddDays(-1 * intervalTimeSpan.Days).AddSeconds(1);
                         bool any_write_exclusions = P6TASK.TASKACTV.Any(x => x.ACTVCODE.short_name == P6_BluePrints_Override.NONE.ToString()) || P6TASK.TASKACTV.Any(x => x.ACTVCODE.short_name == P6_BluePrints_Override.FINISH.ToString());
