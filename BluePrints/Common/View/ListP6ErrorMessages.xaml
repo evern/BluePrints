@@ -32,7 +32,7 @@
             <dxlc:LayoutItem Height="400">
                 <dxg:GridControl x:Name="GridControl" dx:DXSerializer.SerializationID="GridControlList" dx:DXSerializer.StoreLayoutMode="All" ItemsSource="{Binding SourceObjects}" SelectionMode="Row">
                     <dxg:GridControl.Columns>
-                        <dxg:GridColumn Header="Error" FieldName="ERROR" ReadOnly="True" IsSmart="True" />
+                        <dxg:GridColumn Header="Notice" FieldName="ERROR" ReadOnly="True" IsSmart="True" />
                         <dxg:GridColumn Header="Activity ID" FixedWidth="True" Width="150" FieldName="TASK" ReadOnly="True" IsSmart="True" />
                         <dxg:GridColumn Header="Deliverable Name" FixedWidth="True" Width="150" FieldName="DELIVERABLE_NAME" ReadOnly="True" IsSmart="True" />
                         <dxg:GridColumn Header="Units" FixedWidth="True" Width="80" FieldName="UNITS" ReadOnly="True" IsSmart="True" />
@@ -44,9 +44,10 @@
                     </dxg:GridControl.Columns>
                     <dxg:GridControl.TotalSummary>
                         <dxg:GridSummaryItem dx:DXSerializer.Enabled="False" Alignment="Right" SummaryType="Count" />
+                        <dxg:GridSummaryItem dx:DXSerializer.Enabled="False" DisplayFormat="n" FieldName="UNITS" SummaryType="Sum" />
                     </dxg:GridControl.TotalSummary>
                     <dxg:GridControl.View>
-                        <dxg:TableView x:Name="tableView" ShowFixedTotalSummary="True" AutoWidth="True" ShowGroupPanel="False" ShowGroupedColumns="False" />
+                        <dxg:TableView x:Name="tableView" ShowFixedTotalSummary="True" ShowTotalSummary="True" AutoWidth="True" ShowGroupPanel="True" ShowGroupedColumns="True" />
                     </dxg:GridControl.View>
                 </dxg:GridControl>
             </dxlc:LayoutItem>
