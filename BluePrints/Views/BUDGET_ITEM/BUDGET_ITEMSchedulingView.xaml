@@ -87,7 +87,7 @@
                     <dxlc:LayoutGroup Name="LayoutGroupGrid" Height="500" dxlc:LayoutControl.AllowVerticalSizing="True" Header="Edit Value" Orientation="Vertical" View="Group">
                         <dxlc:LayoutGroup HorizontalAlignment="Stretch" Orientation="Horizontal">
                             <dxlc:LayoutGroup HorizontalAlignment="Stretch" dxlc:LayoutControl.AllowHorizontalSizing="True">
-                                <dxg:GridControl dxc:DXSerializer.SerializationID="GridControlActivities" SelectionMode="Row" DesignTimeDataObjectType="{x:Type commonviewmodel:P6_Activity}" ItemsSource="{Binding Activities_Source}" SelectedItem="{Binding Selected_Activity, Mode=TwoWay}">
+                                <dxg:GridControl dxc:DXSerializer.SerializationID="GridControlActivities" SelectionMode="Row" DesignTimeDataObjectType="{x:Type commonviewmodel:P6_Activity}" ItemsSource="{Binding Activities_Source}" CurrentItem="{Binding Selected_Activity, Mode=TwoWay}">
                                     <dxg:GridControl.Columns>
                                         <dxg:GridColumn Width="50" FieldName="P6_ActivityId" Header="Activity Id" IsSmart="True" />
                                         <dxg:GridColumn FieldName="Description" Header="Task" IsSmart="True" />
