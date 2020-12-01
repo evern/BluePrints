@@ -196,6 +196,15 @@ namespace BluePrints.Common.Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to ENGINEERING.
+        /// </summary>
+        internal static string Default_Department {
+            get {
+                return ResourceManager.GetString("Default_Department", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to D1.
         /// </summary>
         internal static string Default_Design_Phase {

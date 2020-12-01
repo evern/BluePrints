@@ -378,4 +378,7 @@
   <data name="Default_TenderProfile_Name" xml:space="preserve">
     <value>Default</value>
   </data>
+  <data name="Default_Department" xml:space="preserve">
+    <value>ENGINEERING</value>
+  </data>
 </root>

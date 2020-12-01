@@ -24,11 +24,6 @@
                                     <dxe:ComboBoxEditSettings ItemsSource="{dxe:EnumItemsSource EnumType={x:Type common:RowEditAction}}" />
                                 </dxg:GridColumn.EditSettings>
                             </dxg:GridColumn>
-                            <dxg:GridColumn FieldName="DepartmentGuid" ReadOnly="True" Header="Department">
-                                <dxg:GridColumn.EditSettings>
-                                    <dxe:ComboBoxEditSettings AutoComplete="True" DisplayMember="NAME" IsTextEditable="True" ItemsSource="{Binding DEPARTMENTCollection}" ValueMember="GUID" />
-                                </dxg:GridColumn.EditSettings>
-                            </dxg:GridColumn>
                             <dxg:GridColumn FieldName="DisciplineGuid" ReadOnly="True" Header="Discipline">
                                 <dxg:GridColumn.EditSettings>
                                     <dxe:ComboBoxEditSettings AutoComplete="True" DisplayMember="NAME" IsTextEditable="True" ItemsSource="{Binding DISCIPLINECollection}" ValueMember="GUID" />
