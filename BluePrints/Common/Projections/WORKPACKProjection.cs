@@ -69,7 +69,7 @@ namespace BluePrints.Common.Projections
         {
             get
             {
-                return P6_Assignments.Sum(x => (x.HIGH_VALUE - (x.LOW_VALUE - 0.01m)));
+                return P6_Assignments.Sum(x => (x.HIGH_VALUE - (x.LOW_VALUE - 0.0001m)));
             }
         }
 

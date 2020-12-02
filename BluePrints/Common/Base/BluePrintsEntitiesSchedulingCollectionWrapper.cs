@@ -664,7 +664,7 @@ namespace BluePrints.Common.Base
                     GUID = Guid.Empty,
                     GUID_PROJECT = loadPROJECT.GUID,
                     HIGH_VALUE = Assignment_Value,
-                    LOW_VALUE = deliverable.Assigned_Percentage + 0.01m,
+                    LOW_VALUE = deliverable.Assigned_Percentage + 0.0001m,
                     P6_ACTIVITYID = Selected_Activity.P6_ActivityId,
                     GUID_ORIGINAL = deliverable.OriginalEntityKey,
                     TYPE = phase_type,
