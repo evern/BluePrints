@@ -118,7 +118,7 @@ namespace BluePrints.ViewModels
         }
 
         //required to refresh row after background undo/redo operation
-        protected override bool IsSingleMainEntityRefreshIdentified(object key, Type changedType, EntityMessageType messageType, object sender, bool isBulkRefresh)
+        protected override bool IsSingleMainEntityRefreshIdentified(object key, Type changedType, EntityMessageType messageType, object sender, Guid senderKey, bool isBulkRefresh)
         {
             if(changedType == typeof(VARIATION_ITEM))
             {
@@ -131,7 +131,7 @@ namespace BluePrints.ViewModels
                 }
             }
 
-            return base.IsSingleMainEntityRefreshIdentified(key, changedType, messageType, sender, isBulkRefresh);
+            return base.IsSingleMainEntityRefreshIdentified(key, changedType, messageType, sender, senderKey, isBulkRefresh);
         }
 
         protected override bool OnBeforeApplyingProjectionPropertiesToEntityIsContinue(BASELINE_ITEMProgress projectionEntity, BASELINE_ITEM entity)

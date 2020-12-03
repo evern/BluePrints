@@ -169,7 +169,7 @@ namespace BluePrints.ViewModels
         }
 
         #region Collection Call Backs
-        public override void OnAfterAuxiliaryEntitiesChanged(object key, Type changedType, EntityMessageType messageType, object sender, bool isBulkRefresh)
+        public override void OnAfterAuxiliaryEntitiesChanged(object key, Type changedType, EntityMessageType messageType, object sender, Guid senderKey, bool isBulkRefresh)
         {
             if (changedType == typeof(PROGRESS_ITEM))
             {
@@ -177,7 +177,7 @@ namespace BluePrints.ViewModels
                 return;
             }
 
-            base.OnAfterAuxiliaryEntitiesChanged(key, changedType, messageType, sender, isBulkRefresh);
+            base.OnAfterAuxiliaryEntitiesChanged(key, changedType, messageType, sender, senderKey, isBulkRefresh);
         }
 
         private void PasteListener(PasteStatus pasteStatus)

@@ -239,7 +239,7 @@ namespace BluePrints.ViewModels
         }
 
         #region Collection Call Backs
-        public override void OnAfterAuxiliaryEntitiesChanged(object key, Type changedType, EntityMessageType messageType, object sender, bool isBulkRefresh)
+        public override void OnAfterAuxiliaryEntitiesChanged(object key, Type changedType, EntityMessageType messageType, object sender, Guid senderKey, bool isBulkRefresh)
         {
             if(messageType == EntityMessageType.Added)
             {
@@ -250,7 +250,7 @@ namespace BluePrints.ViewModels
 #pragma warning restore CS4014 // Because this call is not awaited, execution of the current method continues before the call is completed
             }
 
-            base.OnAfterAuxiliaryEntitiesChanged(key, changedType, messageType, sender, isBulkRefresh);
+            base.OnAfterAuxiliaryEntitiesChanged(key, changedType, messageType, sender, senderKey, isBulkRefresh);
         }
 
         protected override OperationInterceptMode OnBeforeProjectionDeleteIsContinue(PROJECT projection, out List<ErrorMessage> errorMessages)

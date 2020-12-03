@@ -597,7 +597,7 @@ namespace BluePrints.Common.Base
         #endregion
 
         #region Refresh
-        protected override bool IsSingleMainEntityRefreshIdentified(object key, Type changedType, EntityMessageType messageType, object sender, bool isBulkRefresh)
+        protected override bool IsSingleMainEntityRefreshIdentified(object key, Type changedType, EntityMessageType messageType, object sender, Guid senderKey, bool isBulkRefresh)
         {
             if (changedType == typeof(PROGRESS_ITEM))
             {
@@ -1273,8 +1273,7 @@ namespace BluePrints.Common.Base
                 IReportable current_progress_deliverable = deliverable as IReportable;
                 if (current_progress_deliverable == null)
                     continue;
-
-                string s;
+                
                 bool isNullProgress = false;
                 //comment this off because duration needs to be calculated even if deliverable is not progressed
                 if (current_progress_deliverable.PROGRESS_ITEM_UpToCurrentDataDate == null || current_progress_deliverable.PROGRESS_ITEM_UpToCurrentDataDate.Where(x => x.EARNED_UNITS > 0).Count() == 0)

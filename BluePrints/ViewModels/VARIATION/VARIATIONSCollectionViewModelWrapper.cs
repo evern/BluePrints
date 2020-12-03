@@ -191,7 +191,7 @@ namespace BluePrints.ViewModels
                 mainThreadDispatcher.BeginInvoke(new Action(() => GridControlService.RefreshSummary()));
         }
 
-        public override bool OnBeforeEntitiesChanged(object key, Type changedType, EntityMessageType messageType, object sender, bool isBulkRefresh)
+        public override bool OnBeforeEntitiesChanged(object key, Type changedType, EntityMessageType messageType, object sender, Guid senderKey, bool isBulkRefresh)
         {
             if (sender != MainViewModel && changedType == typeof(VARIATION))
             {
@@ -203,7 +203,7 @@ namespace BluePrints.ViewModels
                     variationSummaryBackgroundWorker.RunWorkerAsync(refreshEntities);
             }
 
-            return base.OnBeforeEntitiesChanged(key, changedType, messageType, sender, isBulkRefresh);
+            return base.OnBeforeEntitiesChanged(key, changedType, messageType, sender, senderKey, isBulkRefresh);
         }
 
         #region CallBacks

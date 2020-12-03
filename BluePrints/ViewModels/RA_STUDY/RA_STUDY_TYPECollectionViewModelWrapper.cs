@@ -85,7 +85,7 @@ namespace BluePrints.ViewModels
             base.AssignCallBacksAndRaisePropertyChange(entities);
         }
 
-        protected override bool IsSingleMainEntityRefreshIdentified(object key, Type changedType, EntityMessageType messageType, object sender, bool isBulkRefresh)
+        protected override bool IsSingleMainEntityRefreshIdentified(object key, Type changedType, EntityMessageType messageType, object sender, Guid senderKey, bool isBulkRefresh)
         {
             if (changedType == typeof(RA_GUIDE_PROMPT))
                 refreshGuidePrompts();
@@ -93,7 +93,7 @@ namespace BluePrints.ViewModels
             if (changedType == typeof(RA_GUIDE_SUBPROMPT))
                 refreshGuideSubPrompts();
 
-            return base.IsSingleMainEntityRefreshIdentified(key, changedType, messageType, sender, isBulkRefresh);
+            return base.IsSingleMainEntityRefreshIdentified(key, changedType, messageType, sender, senderKey, isBulkRefresh);
         }
         #endregion
 

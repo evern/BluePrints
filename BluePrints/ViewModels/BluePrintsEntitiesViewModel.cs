@@ -294,9 +294,15 @@ namespace BluePrints.ViewModels
         }
 
         const string projectViewIdPrefix = "View_Project";
-        private void OnAfterEntitiesChanged(object key, Type changedType, EntityMessageType messageType, object sender, bool isBulkRefresh)
+        private void OnAfterEntitiesChanged(object key, Type changedType, EntityMessageType messageType, object sender, Guid senderKey, bool isBulkRefresh)
         {
-            RefreshProjectNavigations();
+            if(messageType == EntityMessageType.Added)
+                RefreshProjectNavigations();
+            else if(messageType == EntityMessageType.Changed)
+            {
+                if (senderKey == Guid.Empty)
+                    RefreshProjectNavigations();
+            }
         }
 
         public bool CanRefreshProjectNavigations()

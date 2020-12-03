@@ -3,12 +3,14 @@ using BaseModel.DataModel;
 using BaseModel.Misc;
 using BaseModel.ViewModel.Base;
 using BaseModel.ViewModel.Dialogs;
+using BaseModel.ViewModel.Loader;
 using BaseModel.ViewModel.Services;
 using BluePrints.BluePrintsEntitiesDataModel;
 using BluePrints.Common;
 using BluePrints.Common.Base;
 using BluePrints.Common.Projections;
 using BluePrints.Common.Resources;
+using BluePrints.Common.ViewModel;
 using BluePrints.Common.ViewModel.Misc;
 using BluePrints.Common.ViewModel.Reporting;
 using BluePrints.Common.ViewModel.Utils;
@@ -26,6 +28,9 @@ using System.ComponentModel;
 using System.Data;
 using System.Linq;
 using System.Windows;
+using System.Windows.Controls;
+using System.Windows.Input;
+using System.Windows.Media;
 using System.Windows.Threading;
 using static BaseModel.Data.Helpers.DataUtils;
 
@@ -61,7 +66,6 @@ namespace BluePrints.ViewModels
         private List<DateTime> dataPointsDateCollection;
         DispatcherTimer focusNewlyAddedProjectionTimer = new DispatcherTimer();
         BackgroundWorker createProjectBackgroundWorker;
-        DEPARTMENT defaultDEPARTMENT;
         protected override void resolveParameters(object parameter)
         {
             primeroUnitOfWork = PrimeroEntitiesUnitOfWorkSource.GetUnitOfWorkFactory().CreateUnitOfWork();
@@ -79,12 +83,12 @@ namespace BluePrints.ViewModels
 
         protected override void addEntitiesLoader()
         {
-            loaderCollection.AddLoaderDescription(bluePrintsUnitOfWorkFactory, x => x.DEPARTMENTS, DEPARTMENTProjectionFunc, x => defaultDEPARTMENT = x);
+            loaderCollection.AddLoaderDescription<DEPARTMENT, DEPARTMENT, Guid, IBluePrintsEntitiesUnitOfWork>(bluePrintsUnitOfWorkFactory, x => x.DEPARTMENTS);
             loaderCollection.AddLoaderDescription<DISCIPLINE, DISCIPLINE, Guid, IBluePrintsEntitiesUnitOfWork>(bluePrintsUnitOfWorkFactory, x => x.DISCIPLINES);
             loaderCollection.AddLoaderDescription<TENDER_PROFILE, TENDER_PROFILE, Guid, IBluePrintsEntitiesUnitOfWork>(bluePrintsUnitOfWorkFactory, x => x.TENDER_PROFILES);
             loaderCollection.AddLoaderDescription<OFFICE, OFFICE, Guid, IBluePrintsEntitiesUnitOfWork>(bluePrintsUnitOfWorkFactory, x => x.OFFICES);
         }
-        
+
         protected override void onAuxiliaryEntitiesCollectionLoaded()
         {
             CreateMainViewModel(bluePrintsUnitOfWorkFactory, x => x.PROJECTS);
@@ -93,11 +97,6 @@ namespace BluePrints.ViewModels
         protected override Func<IRepositoryQuery<PROJECT>, IQueryable<PROJECTTenderProfile>> specifyMainViewModelProjection()
         {
             return query => populatePROJECTPlanProject(query);
-        }
-
-        private Func<IRepositoryQuery<DEPARTMENT>, IQueryable<DEPARTMENT>> DEPARTMENTProjectionFunc()
-        {
-            return query => query.Where(x => x.NAME.ToUpper() == BluePrintsResources.Default_Department);
         }
 
         private IQueryable<PROJECTTenderProfile> populatePROJECTPlanProject(IQueryable<PROJECT> query)
@@ -249,7 +248,7 @@ namespace BluePrints.ViewModels
             //in between dates
             foreach (DateTime date in datesCollection)
             {
-                if((date > endOfStartDateMonth) && (date <= previousEndOfEndDateMonth))
+                if ((date > endOfStartDateMonth) && (date <= previousEndOfEndDateMonth))
                 {
                     BellCurvePeriodDate bellCurvePeriodDate = new BellCurvePeriodDate() { PeriodWorkingDate = new WorkingDaysDate(date, false), PeriodNumber = period };
                     bellCurvePeriodDates.Add(bellCurvePeriodDate);
@@ -293,7 +292,7 @@ namespace BluePrints.ViewModels
             }
 
             IEnumerable<SUBJOB> projectSUBJOBCollection = _bluePrintsUnitOfWork.SUBJOBS.Where(x => x.GUID_PROJECT == project.GUID);
-            if(projectSUBJOBCollection.Count() == 0)
+            if (projectSUBJOBCollection.Count() == 0)
             {
                 MessageBoxService.ShowMessage("Project doesn't have any subjob", "Error", MessageButton.OK);
                 return;
@@ -307,7 +306,7 @@ namespace BluePrints.ViewModels
             }
 
             IEnumerable<PROGRESS> projectLivePROGRESSES = _bluePrintsUnitOfWork.PROGRESSES.Where(x => x.GUID_PROJECT == project.GUID && x.STATUS == ProgressStatus.Live);
-            if(projectLivePROGRESSES.Count() == 0)
+            if (projectLivePROGRESSES.Count() == 0)
             {
                 MessageBoxService.ShowMessage("Project doesn't have any live progress", "Error", MessageButton.OK);
                 return;
@@ -357,15 +356,15 @@ namespace BluePrints.ViewModels
             if (useDeliverablesHours)
                 projectTenderProfile.TenderProfile.TENDER_HOURS = totalDeliverablesHours;
 
-            var deliverableGroup = projectDeliverables.GroupBy(x => new { x.GUID_DISCIPLINE }).Select(group => new { group.Key.GUID_DISCIPLINE, BUDGET_HOURS = group.Sum(x => x.BUDGET_HOURS) });
+            var deliverableGroup = projectDeliverables.GroupBy(x => new { x.GUID_DEPARTMENT, x.GUID_DISCIPLINE }).Select(group => new { group.Key.GUID_DEPARTMENT, group.Key.GUID_DISCIPLINE, BUDGET_HOURS = group.Sum(x => x.BUDGET_HOURS) });
 
             foreach (var deliverables in deliverableGroup)
             {
-                if (deliverables.GUID_DISCIPLINE == null)
+                if (deliverables.GUID_DEPARTMENT == null || deliverables.GUID_DISCIPLINE == null)
                     continue;
 
                 //add tender profile item when department and discipline doesn't exist
-                IEnumerable<TENDER_PROFILE_ITEM> findTENDER_PROFILE_ITEMS = projectTenderProfile.TENDER_PROFILE_ITEMS.Where(x => x.GUID_DISCIPLINE == deliverables.GUID_DISCIPLINE);
+                IEnumerable<TENDER_PROFILE_ITEM> findTENDER_PROFILE_ITEMS = projectTenderProfile.TENDER_PROFILE_ITEMS.Where(x => x.GUID_DEPARTMENT == deliverables.GUID_DEPARTMENT && x.GUID_DISCIPLINE == deliverables.GUID_DISCIPLINE);
                 TENDER_PROFILE_ITEM findTENDER_PROFILE_ITEM;
                 if (findTENDER_PROFILE_ITEMS.Count() == 0)
                 {
@@ -373,7 +372,7 @@ namespace BluePrints.ViewModels
                     findTENDER_PROFILE_ITEM.GUID = Guid.Empty;
                     findTENDER_PROFILE_ITEM.GUID_TENDER_PROFILE = projectTenderProfile.TenderProfile.GUID;
                     findTENDER_PROFILE_ITEM.PROJECTTenderProfile = projectTenderProfile;
-                    findTENDER_PROFILE_ITEM.GUID_DEPARTMENT = defaultDEPARTMENT.GUID;
+                    findTENDER_PROFILE_ITEM.GUID_DEPARTMENT = (Guid)deliverables.GUID_DEPARTMENT;
                     findTENDER_PROFILE_ITEM.GUID_DISCIPLINE = (Guid)deliverables.GUID_DISCIPLINE;
                     findTENDER_PROFILE_ITEM.SCHEDULE_START_PERCENTAGE = 0;
                     findTENDER_PROFILE_ITEM.SCHEDULE_FINISH_PERCENTAGE = 1;
@@ -408,6 +407,7 @@ namespace BluePrints.ViewModels
             foreach (TENDER_PROFILE_ITEM tenderItem in projectTenderProfile.TENDER_PROFILE_ITEMS)
             {
                 decimal assignHours = projectTenderProfile.TenderProfile.TENDER_HOURS * tenderItem.HOURS_PERCENTAGE;
+                Guid tenderItemDepartmentGuid = tenderItem.GUID_DEPARTMENT;
                 Guid tenderItemDisciplineGuid = tenderItem.GUID_DISCIPLINE;
 
                 //User couldn't proceed to this stage without having the following property validated as not null from PROJECTCollectionView
@@ -422,7 +422,7 @@ namespace BluePrints.ViewModels
                 int endProrateDurationInDays = Convert.ToInt32(totalDurationInDays * (1 - tenderItem.SCHEDULE_FINISH_PERCENTAGE));
                 DateTime proRatedEndDate = endDate.AddDays(-1 * endProrateDurationInDays);
 
-                BASELINE_ITEM baseline_item = projectDeliverables.FirstOrDefault(x => x.GUID_DISCIPLINE == tenderItemDisciplineGuid);
+                BASELINE_ITEM baseline_item = projectDeliverables.FirstOrDefault(x => x.GUID_DEPARTMENT == tenderItemDepartmentGuid && x.GUID_DISCIPLINE == tenderItemDisciplineGuid);
                 if (baseline_item == null)
                 {
                     DeliverableEditModel deliverableEditModel = new DeliverableEditModel();
@@ -433,6 +433,7 @@ namespace BluePrints.ViewModels
                     deliverableEditModel.Name = "System Generated";
 
 
+                    deliverableEditModel.DepartmentGuid = tenderItemDepartmentGuid;
                     deliverableEditModel.DisciplineGuid = tenderItemDisciplineGuid;
 
 
@@ -443,26 +444,27 @@ namespace BluePrints.ViewModels
                 }
                 else
                 {
-                    IEnumerable<BASELINE_ITEM> sameDisciplineDeliverables = projectDeliverables.Where(x => x.GUID_DISCIPLINE == tenderItemDisciplineGuid);
+                    IEnumerable<BASELINE_ITEM> sameDepartmentDisciplineDeliverables = projectDeliverables.Where(x => x.GUID_DEPARTMENT == tenderItemDepartmentGuid && x.GUID_DISCIPLINE == tenderItemDisciplineGuid);
 
-                    decimal hoursPerDeliverable = assignHours / sameDisciplineDeliverables.Count();
-                    foreach (BASELINE_ITEM sameDisciplineDeliverable in sameDisciplineDeliverables)
+                    decimal hoursPerDeliverable = assignHours / sameDepartmentDisciplineDeliverables.Count();
+                    foreach (BASELINE_ITEM sameDepartmentDisciplineDeliverable in sameDepartmentDisciplineDeliverables)
                     {
                         decimal editDeliverableHours = 0;
                         if (!useDeliverablesHours)
                             editDeliverableHours = hoursPerDeliverable;
                         else
-                            editDeliverableHours = sameDisciplineDeliverable.BUDGET_HOURS;
+                            editDeliverableHours = sameDepartmentDisciplineDeliverable.BUDGET_HOURS;
 
-                        if (sameDisciplineDeliverable.BUDGET_HOURS != editDeliverableHours || sameDisciplineDeliverable.TENDER_START_DATE != proRatedStartDate || sameDisciplineDeliverable.TENDER_END_DATE != proRatedEndDate || sameDisciplineDeliverable.BELLCURVESHAPE != tenderItem.BELLCURVESHAPE)
+                        if (sameDepartmentDisciplineDeliverable.BUDGET_HOURS != editDeliverableHours || sameDepartmentDisciplineDeliverable.TENDER_START_DATE != proRatedStartDate || sameDepartmentDisciplineDeliverable.TENDER_END_DATE != proRatedEndDate || sameDepartmentDisciplineDeliverable.BELLCURVESHAPE != tenderItem.BELLCURVESHAPE)
                         {
                             DeliverableEditModel deliverableEditModel = new DeliverableEditModel();
 
-                            deliverableEditModel.DeliverableGuid = sameDisciplineDeliverable.GUID;
-                            deliverableEditModel.Name = sameDisciplineDeliverable.INTERNAL_NUM;
-                            deliverableEditModel.StartDateFrom = sameDisciplineDeliverable.TENDER_START_DATE;
-                            deliverableEditModel.EndDateFrom = sameDisciplineDeliverable.TENDER_END_DATE;
-                            deliverableEditModel.UnitsFrom = sameDisciplineDeliverable.Budget_Units;
+                            deliverableEditModel.DeliverableGuid = sameDepartmentDisciplineDeliverable.GUID;
+                            deliverableEditModel.Name = sameDepartmentDisciplineDeliverable.INTERNAL_NUM;
+                            deliverableEditModel.StartDateFrom = sameDepartmentDisciplineDeliverable.TENDER_START_DATE;
+                            deliverableEditModel.EndDateFrom = sameDepartmentDisciplineDeliverable.TENDER_END_DATE;
+                            deliverableEditModel.UnitsFrom = sameDepartmentDisciplineDeliverable.Budget_Units;
+                            deliverableEditModel.DepartmentGuid = tenderItemDepartmentGuid;
                             deliverableEditModel.DisciplineGuid = tenderItemDisciplineGuid;
 
                             deliverableEditModel.BellCurveShape = tenderItem.BELLCURVESHAPE;
@@ -482,12 +484,12 @@ namespace BluePrints.ViewModels
             PHASE findPHASE = _bluePrintsUnitOfWork.PHASES.FirstOrDefault(x => x.INTERNAL_NUM == BluePrintsResources.Default_Design_Phase);
 
             //set deliverable hours to zero
-            if(!useDeliverablesHours)
+            if (!useDeliverablesHours)
                 foreach (BASELINE_ITEM deliverable in projectDeliverables)
                 {
-                    if(!projectTenderProfile.TENDER_PROFILE_ITEMS.Any(x => x.GUID_DISCIPLINE == deliverable.GUID_DISCIPLINE))
+                    if (!projectTenderProfile.TENDER_PROFILE_ITEMS.Any(x => x.GUID_DEPARTMENT == deliverable.GUID_DEPARTMENT && x.GUID_DISCIPLINE == deliverable.GUID_DISCIPLINE))
                     {
-                        if(deliverable.BUDGET_HOURS > 0)
+                        if (deliverable.BUDGET_HOURS > 0)
                         {
                             DeliverableEditModel deliverableEditModel = new DeliverableEditModel();
                             deliverableEditModel.DeliverableGuid = deliverable.GUID;
@@ -502,6 +504,7 @@ namespace BluePrints.ViewModels
                             deliverableEditModel.EndDateFrom = deliverable.TENDER_END_DATE;
                             deliverableEditModel.StartDateTo = deliverable.TENDER_START_DATE;
                             deliverableEditModel.EndDateTo = deliverable.TENDER_END_DATE;
+                            deliverableEditModel.DepartmentGuid = deliverable.Department_Guid;
                             deliverableEditModel.DisciplineGuid = deliverable.Discipline_Guid;
                             deliverableEditModel.BellCurveShape = deliverable.BELLCURVESHAPE;
                             deliverableEditModels.Add(deliverableEditModel);
@@ -514,7 +517,7 @@ namespace BluePrints.ViewModels
             bool isDialogConfirmed = false;
             if (deliverableEditModels.Count > 0)
             {
-                DeliverableEditConfirmationViewModel deliverableEditConfirmationViewModel = DeliverableEditConfirmationViewModel.Create(deliverableEditModels, "Please review changes and confirm", DISCIPLINECollection);
+                DeliverableEditConfirmationViewModel deliverableEditConfirmationViewModel = DeliverableEditConfirmationViewModel.Create(deliverableEditModels, "Please review changes and confirm", DEPARTMENTCollection, DISCIPLINECollection);
                 if (DeliverableEditDialogService.ShowDialog(MessageButton.OKCancel, "", "DeliverableEditConfirmation", deliverableEditConfirmationViewModel) == MessageResult.OK)
                 {
                     isDialogConfirmed = true;
@@ -528,7 +531,7 @@ namespace BluePrints.ViewModels
                             baseline_item = new BASELINE_ITEM();
                             //Default area has been validated before so it's safe to use First()
                             baseline_item.GUID_AREA = projectAREACollection.First().GUID;
-                            baseline_item.GUID_DEPARTMENT = defaultDEPARTMENT.GUID;
+                            baseline_item.GUID_DEPARTMENT = deliverableEditModel.DepartmentGuid;
                             baseline_item.GUID_DISCIPLINE = deliverableEditModel.DisciplineGuid;
                             baseline_item.GUID_BASELINE = projectLiveBASELINE.GUID;
                             baseline_item.INTERNAL_NUM = deliverableEditModel.Name;
@@ -560,12 +563,12 @@ namespace BluePrints.ViewModels
 
             if (isDialogConfirmed)
             {
-                
+
                 //final touches to ensure S-Curve plots from start date
                 IEnumerable<BASELINE_ITEM> deliverableWithTenderStartDate = projectDeliverables.Where(x => x.TENDER_START_DATE != null);
                 if (deliverableWithTenderStartDate.Count() > 0)
                 {
-                    foreach(PROGRESS progress in projectLivePROGRESSES)
+                    foreach (PROGRESS progress in projectLivePROGRESSES)
                     {
                         DateTime progressStartDate = progress.PROGRESS_START;
                         DateTime earliestDeliverableStartDate = deliverableWithTenderStartDate.Min(x => (DateTime)x.TENDER_START_DATE);
@@ -720,7 +723,7 @@ namespace BluePrints.ViewModels
             {
                 TENDER_PROFILE_ITEM newTENDER_PROFILE_ITEM = new TENDER_PROFILE_ITEM();
 
-                if(PROJECTTenderProfile.TenderProfile == null)
+                if (PROJECTTenderProfile.TenderProfile == null)
                     PROJECTTenderProfile.TenderProfile = findExistingOrAddTenderProfile(PROJECTTenderProfile.Entity, _bluePrintsUnitOfWork);
 
                 newTENDER_PROFILE_ITEM.GUID_TENDER_PROFILE = PROJECTTenderProfile.TenderProfile.GUID;
@@ -809,8 +812,8 @@ namespace BluePrints.ViewModels
 
                 DataRowView row = (DataRowView)e.Row;
                 PROJECTTenderProfile newPROJECT = (PROJECTTenderProfile)row[columnProject];
-                LoadingScreenManager.ShowLoadingScreen(1);
-                LoadingScreenManager.SetMessage("Creating project, please wait...");
+                LoadingScreenManager.ShowLoadingScreen(1, true);
+                LoadingScreenManager.SetMessage("Creating project defaults, please wait...");
 
                 _bluePrintsUnitOfWork.PROJECTS.Add(newPROJECT.Entity);
                 _bluePrintsUnitOfWork.SaveChanges();
@@ -861,7 +864,7 @@ namespace BluePrints.ViewModels
         private TENDER_PROFILE findExistingOrAddTenderProfile(PROJECT project, IBluePrintsEntitiesUnitOfWork bluePrintsEntitiesUnitOfWork)
         {
             TENDER_PROFILE TENDER_PROFILE = _bluePrintsUnitOfWork.TENDER_PROFILES.FirstOrDefault(x => x.GUID_PROJECT == project.GUID);
-            if(TENDER_PROFILE == null)
+            if (TENDER_PROFILE == null)
             {
                 TENDER_PROFILE = new TENDER_PROFILE();
                 TENDER_PROFILE.NAME = BluePrintsResources.Default_TenderProfile_Name;
@@ -874,7 +877,7 @@ namespace BluePrints.ViewModels
         }
 
         public void ChildCellValueChangedUpdate(CellValueChangedEventArgs e)
-        {            
+        {
             //prevent save layout from setting null values
             if (IsLoading)
                 return;
@@ -910,11 +913,20 @@ namespace BluePrints.ViewModels
             }
             else
             {
-                if(DataUtils.TrySetNestedValue(fieldName, PROJECTTenderProfile.Entity, newValue))
+                if (DataUtils.TrySetNestedValue(fieldName, PROJECTTenderProfile.Entity, newValue))
                 {
                     _bluePrintsUnitOfWork.SaveChanges();
                     onDataPointsCalculated(PROJECTTenderProfile);
                 }
+            }
+
+            if (fieldName == BindableBase.GetPropertyName(() => new PROJECT().STATUS))
+            {
+                mainThreadDispatcher.BeginInvoke(new Action(() => Messenger.Default.Send(new EntityMessage<PROJECT, Guid>(PROJECTTenderProfile.GUID, Guid.Empty, EntityMessageType.Changed))));
+            }
+            else
+            {
+                mainThreadDispatcher.BeginInvoke(new Action(() => Messenger.Default.Send(new EntityMessage<PROJECT, Guid>(PROJECTTenderProfile.GUID, Guid.NewGuid(), EntityMessageType.Changed))));
             }
         }
 
@@ -940,7 +952,7 @@ namespace BluePrints.ViewModels
             PROJECTTenderProfile PROJECTTenderProfile = tenderProfileItem.PROJECTTenderProfile;
 
             string formattedFieldName = fieldName.Replace(columnTenderProfile + ".", "");
-            if(DataUtils.TrySetNestedValue(formattedFieldName, tenderProfileItem, newValue))
+            if (DataUtils.TrySetNestedValue(formattedFieldName, tenderProfileItem, newValue))
             {
                 _bluePrintsUnitOfWork.SaveChanges();
                 onDataPointsCalculated(tenderProfileItem.PROJECTTenderProfile);
@@ -960,7 +972,7 @@ namespace BluePrints.ViewModels
             Tuple<DateTime, DateTime> projectStartEndDate = BluePrintsDataUtils.GetTenderStartEndDate(project.Entity);
 
             bool shouldRefreshGrid = false;
-            foreach(DateTime dataPointsDate in dataPointsDateCollection)
+            foreach (DateTime dataPointsDate in dataPointsDateCollection)
             {
                 if (!alignedDateCollection.Any(x => x.Year == dataPointsDate.Year && x.Month == dataPointsDate.Month))
                 {
@@ -969,7 +981,7 @@ namespace BluePrints.ViewModels
                 }
             }
 
-            foreach(DateTime alignDate in alignedDateCollection)
+            foreach (DateTime alignDate in alignedDateCollection)
             {
                 if (!dataPointsDateCollection.Any(x => x.Year == alignDate.Year && x.Month == alignDate.Month))
                 {
@@ -978,7 +990,7 @@ namespace BluePrints.ViewModels
                 }
             }
 
-            if(shouldRefreshGrid)
+            if (shouldRefreshGrid)
             {
                 //refresh the entire grid
                 realignDateCollectionOnDataTable(dataPointsTable, dataPointsDateCollection);
@@ -1016,36 +1028,36 @@ namespace BluePrints.ViewModels
         private void realignDateCollectionOnDataTable(DataTable dataTable, IEnumerable<DateTime> alignedDataDates)
         {
             List<DataColumn> removeColumns = new List<DataColumn>();
-            foreach(DataColumn dataColumn in dataTable.Columns)
+            foreach (DataColumn dataColumn in dataTable.Columns)
             {
-                DateTime dateTime; 
-                if(DateTime.TryParse(dataColumn.ColumnName, out dateTime))
+                DateTime dateTime;
+                if (DateTime.TryParse(dataColumn.ColumnName, out dateTime))
                 {
-                    if(!alignedDataDates.Any(x => x.Date == dateTime.Date))
+                    if (!alignedDataDates.Any(x => x.Date == dateTime.Date))
                     {
                         removeColumns.Add(dataColumn);
                     }
                 }
             }
 
-            foreach(DataColumn removeColumn in removeColumns)
+            foreach (DataColumn removeColumn in removeColumns)
             {
                 dataTable.Columns.Remove(removeColumn);
             }
 
-            foreach(DateTime alignedDataDate in alignedDataDates)
+            foreach (DateTime alignedDataDate in alignedDataDates)
             {
                 string columnFieldName = alignedDataDate.Date.ToString(BluePrintsResources.ColumnDateFormat);
                 DataColumn dataColumn = findDataColumn(dataTable, columnFieldName);
-                if(dataColumn == null)
+                if (dataColumn == null)
                 {
-                    if(!dataTable.Columns.Contains(columnFieldName))
+                    if (!dataTable.Columns.Contains(columnFieldName))
                     {
                         dataTable.Columns.Add(columnFieldName, typeof(decimal));
                         foreach (DataRow dataRow in dataTable.Rows)
                         {
                             DataTable tenderProfilesDataPointsTable = (DataTable)dataRow[columnTenderProfileDataTable];
-                            if(!tenderProfilesDataPointsTable.Columns.Contains(columnFieldName))
+                            if (!tenderProfilesDataPointsTable.Columns.Contains(columnFieldName))
                                 tenderProfilesDataPointsTable.Columns.Add(columnFieldName, typeof(decimal));
                         }
                     }
@@ -1055,7 +1067,7 @@ namespace BluePrints.ViewModels
 
         private DataColumn findDataColumn(DataTable dataTable, string fieldName)
         {
-            foreach(DataColumn dataColumn in dataTable.Columns)
+            foreach (DataColumn dataColumn in dataTable.Columns)
             {
                 if (dataColumn.ColumnName == fieldName)
                     return dataColumn;
@@ -1064,12 +1076,27 @@ namespace BluePrints.ViewModels
             return null;
         }
 
+        public override void UnifiedCellValueChanged(string field_name, object old_value, object new_value, PROJECTTenderProfile projection, bool isNew)
+        {
+            string fieldName = formatParentFieldName(field_name);
+            if (fieldName == BindableBase.GetPropertyName(() => new PROJECT().STATUS))
+            {
+                mainThreadDispatcher.BeginInvoke(new Action(() => Messenger.Default.Send(new EntityMessage<PROJECT, Guid>(projection.GUID, Guid.Empty, EntityMessageType.Changed))));
+            }
+            else
+            {
+                mainThreadDispatcher.BeginInvoke(new Action(() => Messenger.Default.Send(new EntityMessage<PROJECT, Guid>(projection.GUID, Guid.NewGuid(), EntityMessageType.Changed))));
+            }
+
+            base.UnifiedCellValueChanged(field_name, old_value, new_value, projection, isNew);
+        }
+
         public override string UnifiedValueValidation(PROJECTTenderProfile projection, string field_name, object new_value, bool isPaste)
         {
             string fieldName = formatParentFieldName(field_name);
             if (fieldName == BindableBase.GetPropertyName(() => new PROJECT().NUMBER))
             {
-                if(new_value != null)
+                if (new_value != null)
                     if (_bluePrintsUnitOfWork.PROJECTS.Any(x => x.NUMBER == new_value.ToString()))
                     {
                         return "Project number already exists";
@@ -1082,18 +1109,43 @@ namespace BluePrints.ViewModels
         public string UnifiedChildValueValidation(TENDER_PROFILE_ITEM TENDER_PROFILE_ITEM, string field_name, object new_value, bool isPaste)
         {
             string fieldName = formatChildFieldName(field_name);
-            if (fieldName == BindableBase.GetPropertyName(() => new TENDER_PROFILE_ITEM().GUID_DISCIPLINE))
+            if (fieldName == BindableBase.GetPropertyName(() => new TENDER_PROFILE_ITEM().GUID_DEPARTMENT) || fieldName == BindableBase.GetPropertyName(() => new TENDER_PROFILE_ITEM().GUID_DISCIPLINE))
             {
                 if (new_value != null)
                 {
-                    if (fieldName == BindableBase.GetPropertyName(() => new TENDER_PROFILE_ITEM().GUID_DISCIPLINE))
+                    if (fieldName == BindableBase.GetPropertyName(() => new TENDER_PROFILE_ITEM().GUID_DEPARTMENT))
+                    {
+                        Guid Guid_Department = (Guid)new_value;
+                        DEPARTMENT DEPARTMENT = DEPARTMENTCollection.FirstOrDefault(x => x.GUID == Guid_Department);
+                        if (DEPARTMENT != null)
+                        {
+                            if (_bluePrintsUnitOfWork.TENDER_PROFILE_ITEMS.Any(x => x.GUID_TENDER_PROFILE == TENDER_PROFILE_ITEM.GUID_TENDER_PROFILE && x.GUID_DEPARTMENT == DEPARTMENT.GUID && x.GUID_DISCIPLINE == TENDER_PROFILE_ITEM.GUID_DISCIPLINE))
+                            {
+                                if (TENDER_PROFILE_ITEM.GUID_DISCIPLINE != null)
+                                {
+                                    DISCIPLINE DISCIPLINE = DISCIPLINECollection.FirstOrDefault(x => x.GUID == TENDER_PROFILE_ITEM.GUID_DISCIPLINE);
+                                    if (DISCIPLINE != null)
+                                        return "Department: " + DEPARTMENT.NAME + " and Discipline: " + DISCIPLINE.NAME + " already exists for this project";
+                                }
+
+                                return "Department: " + DEPARTMENT.NAME + " already exists for this project";
+                            }
+                        }
+                    }
+                    else if (fieldName == BindableBase.GetPropertyName(() => new TENDER_PROFILE_ITEM().GUID_DISCIPLINE))
                     {
                         Guid Guid_DISCIPLINE = (Guid)new_value;
                         DISCIPLINE DISCIPLINE = DISCIPLINECollection.FirstOrDefault(x => x.GUID == Guid_DISCIPLINE);
                         if (DISCIPLINE != null)
                         {
-                            if (_bluePrintsUnitOfWork.TENDER_PROFILE_ITEMS.Any(x => x.GUID_TENDER_PROFILE == TENDER_PROFILE_ITEM.GUID_TENDER_PROFILE && x.GUID_DISCIPLINE == DISCIPLINE.GUID))
+                            if (_bluePrintsUnitOfWork.TENDER_PROFILE_ITEMS.Any(x => x.GUID_TENDER_PROFILE == TENDER_PROFILE_ITEM.GUID_TENDER_PROFILE && x.GUID_DISCIPLINE == DISCIPLINE.GUID && x.GUID_DEPARTMENT == TENDER_PROFILE_ITEM.GUID_DEPARTMENT))
                             {
+                                if (TENDER_PROFILE_ITEM.GUID_DEPARTMENT != null)
+                                {
+                                    DEPARTMENT DEPARTMENT = DEPARTMENTCollection.FirstOrDefault(x => x.GUID == TENDER_PROFILE_ITEM.GUID_DEPARTMENT);
+                                    if (DISCIPLINE != null)
+                                        return "Department: " + DEPARTMENT.NAME + " and Discipline: " + DISCIPLINE.NAME + " already exists for this project";
+                                }
 
                                 return "Discipline: " + DISCIPLINE.NAME + " already exists for this project";
                             }
@@ -1103,10 +1155,10 @@ namespace BluePrints.ViewModels
             }
             else if (fieldName == BindableBase.GetPropertyName(() => new TENDER_PROFILE_ITEM().SCHEDULE_START_PERCENTAGE))
             {
-                if(new_value != null)
+                if (new_value != null)
                 {
                     //when it's new item and user just started entering start percentage, don't flag it as an error
-                    if(TENDER_PROFILE_ITEM.SCHEDULE_FINISH_PERCENTAGE != 0)
+                    if (TENDER_PROFILE_ITEM.SCHEDULE_FINISH_PERCENTAGE != 0)
                     {
                         decimal currentStartPercentage = (decimal)new_value;
                         if (currentStartPercentage > TENDER_PROFILE_ITEM.SCHEDULE_FINISH_PERCENTAGE)
@@ -1123,6 +1175,20 @@ namespace BluePrints.ViewModels
                         return "Finish percentage cannot be less than start percentage";
                 }
             }
+
+            //custom error message is used
+            //else if (fieldName == BindableBase.GetPropertyName(() => new TENDER_PROFILE_ITEM().HOURS_PERCENTAGE))
+            //{
+            //    if(new_value != null)
+            //    {
+            //        decimal currentPercentage = (decimal)new_value;
+            //        IEnumerable<TENDER_PROFILE_ITEM> otherTENDER_PROFILE_ITEM = TENDER_PROFILE_ITEM.PROJECTTenderProfile.TENDER_PROFILE_ITEMS.Where(x => x.GUID != TENDER_PROFILE_ITEM.GUID);
+
+            //        decimal totalPercentage = otherTENDER_PROFILE_ITEM.Sum(x => x.HOURS_PERCENTAGE) + currentPercentage;
+            //        if (totalPercentage > 1)
+            //            return "Total percentage exceed 100%";
+            //    }
+            //}
 
             return string.Empty;
         }
@@ -1210,7 +1276,7 @@ namespace BluePrints.ViewModels
             string[] RowData;
 
             RowData = DataUtils.ExcelSplit(PasteString).ToArray();
-            for(int i=0;i < RowData.Count();i++)
+            for (int i = 0; i < RowData.Count(); i++)
             {
                 //remove tab at the beginning of paste string
                 if (RowData[i].Substring(0, 1) == "\t")
@@ -1414,7 +1480,7 @@ namespace BluePrints.ViewModels
                             if (current_column.FieldName.Contains('%') || current_column.FieldName.ToUpper().Contains("PERCENT"))
                                 columnValue = columnValue.Replace("%", "");
 
-                                pasteValueColumnOffset += 1;
+                            pasteValueColumnOffset += 1;
                             if (pasteValueColumnOffset >= grouped_results.Count)
                                 pasteValueColumnOffset = 0;
 
@@ -1482,14 +1548,25 @@ namespace BluePrints.ViewModels
             PROJECTTenderProfile project = projection.PROJECTTenderProfile;
             IEnumerable<TENDER_PROFILE_ITEM> otherTENDER_PROFILE_ITEMS = project.TENDER_PROFILE_ITEMS.Where(x => x.GUID != projection.GUID);
 
+
+            DEPARTMENT findDEPARTMENT = DEPARTMENTCollection.FirstOrDefault(x => x.GUID == projection.GUID_DEPARTMENT);
             DISCIPLINE findDISCIPLINE = DISCIPLINECollection.FirstOrDefault(x => x.GUID == projection.GUID_DISCIPLINE);
             string projectionName = string.Empty;
-            if (findDISCIPLINE != null)
+            if (findDEPARTMENT != null && findDISCIPLINE != null)
+                projectionName = "Department: " + findDEPARTMENT.NAME + " and Discipline: " + findDISCIPLINE.NAME;
+            else if (findDEPARTMENT != null)
+                projectionName = "Department: " + findDEPARTMENT.NAME;
+            else if (findDISCIPLINE != null)
                 projectionName = "Discipline: " + findDISCIPLINE.NAME;
 
             if (otherTENDER_PROFILE_ITEMS.Any(x => x.GUID_DEPARTMENT == projection.GUID_DEPARTMENT && x.GUID_DISCIPLINE == projection.GUID_DISCIPLINE))
             {
-                if(findDISCIPLINE != null)
+
+                if (findDEPARTMENT != null && findDISCIPLINE != null)
+                    errorMessages.Add(new ErrorMessage(projectionName, "Already exists for this project"));
+                else if (findDEPARTMENT != null)
+                    errorMessages.Add(new ErrorMessage(projectionName, "Already exists for this project"));
+                else if (findDISCIPLINE != null)
                     errorMessages.Add(new ErrorMessage(projectionName, "Already exists for this project"));
             }
 
@@ -1512,7 +1589,7 @@ namespace BluePrints.ViewModels
         public void ShowDefaultTenderProfileSelection()
         {
             PROJECTTenderProfile projectTENDER_PROFILE = forceRetrieveSelectedProject();
-            if(projectTENDER_PROFILE == null)
+            if (projectTENDER_PROFILE == null)
             {
                 MessageBoxService.ShowMessage("Please select a project where you wish to replace tender profile", "Please select project", MessageButton.OK);
                 return;
@@ -1683,7 +1760,7 @@ namespace BluePrints.ViewModels
                     if (ParentColumns.Count() == 0)
                         InitializeParentColumnSource(ParentColumns, ParentSummaries, alignedDateCollection);
 
-                    if(ChildColumns.Count() == 0)
+                    if (ChildColumns.Count() == 0)
                         InitializeChildColumnSource(ChildColumns, ChildSummaries, alignedDateCollection);
 
                     dataPointsTable.Columns.Add(columnProject, typeof(PROJECTTenderProfile));
@@ -1775,7 +1852,7 @@ namespace BluePrints.ViewModels
         private DataRow findPROJECTDataRowBy(Guid guid)
         {
             return (from DataRow dr in dataPointsTable.Rows
-                        where ((PROJECTTenderProfile)dr[columnProject]).GUID == guid
+                    where ((PROJECTTenderProfile)dr[columnProject]).GUID == guid
                     select dr).FirstOrDefault();
         }
 
@@ -1889,7 +1966,7 @@ namespace BluePrints.ViewModels
             visibleIndex += 10;
             columns.Add(new ColumnDescriptor() { FieldName = columnProject + ".Entity.PIPELINE_DIVISION", VisibleIndex = visibleIndex, Header = "Division", Fixed = FixedStyle.Left, Width = 70, Settings = SettingsType.Enum3 });
             visibleIndex += 10;
-            columns.Add(new ColumnDescriptor() { FieldName = columnProject + ".Entity.PIPELINE_CONTRACT", VisibleIndex = visibleIndex, Header = "Contract", Fixed = FixedStyle.Left, Width = 70, Settings = SettingsType.Enum5 });
+            columns.Add(new ColumnDescriptor() { FieldName = columnProject + ".Entity.PIPELINE_CONTRACT", VisibleIndex = visibleIndex, Header = "Contract", Fixed = FixedStyle.Left, Width = 120, Settings = SettingsType.Enum5 });
             visibleIndex += 10;
             columns.Add(new ColumnDescriptor() { FieldName = columnProject + ".TenderProfile.TENDER_HOURS", VisibleIndex = visibleIndex, Header = "Design Hours", MaxValue = 999999999, Fixed = FixedStyle.Left, Mask = "n", Increment = 1, Width = 70, Settings = SettingsType.Number });
             visibleIndex += 10;
@@ -1897,7 +1974,7 @@ namespace BluePrints.ViewModels
             visibleIndex += 10;
             columns.Add(new ColumnDescriptor() { FieldName = columnProject + ".Entity.TENDER_PROJECT_DURATION", VisibleIndex = visibleIndex, ReadOnly = false, Visible = true, MaxValue = 999999999, Header = "Duration", Mask = "###,##0 Weeks", Increment = 1, Fixed = FixedStyle.Left, Width = 75, Settings = SettingsType.Number });
             visibleIndex += 10;
-            columns.Add(new ColumnDescriptor() { FieldName = columnProject + ".IsSynced", VisibleIndex = visibleIndex, SortIndex = -1, ReadOnly = false, Visible = true, Header = "Synced", Fixed = FixedStyle.Left, Width = 75, Settings = SettingsType.Default });
+            columns.Add(new ColumnDescriptor() { FieldName = columnProject + ".IsSynced", VisibleIndex = visibleIndex, SortIndex = -1, ReadOnly = false, Visible = true, Header = "Synced", Fixed = FixedStyle.Left, Width = 90, Settings = SettingsType.Default });
             visibleIndex += 10;
 
             foreach (DateTime alignedDate in alignedDates.OrderBy(x => x))
@@ -1915,9 +1992,11 @@ namespace BluePrints.ViewModels
             summaries.Clear();
 
             int visibleIndex = 10;
-            columns.Add(new ColumnDescriptor() { FieldName = columnTenderProfile + ".GUID_DISCIPLINE", VisibleIndex = visibleIndex, Header = "Discipline", DisplayMember = "NAME", ValueMember = "GUID", Fixed = FixedStyle.Left, Width = 70, ItemsSource = DISCIPLINECollection, Settings = SettingsType.Collection });
+            columns.Add(new ColumnDescriptor() { FieldName = columnTenderProfile + ".GUID_DEPARTMENT", VisibleIndex = visibleIndex, Header = "Department", DisplayMember = "NAME", ValueMember = "GUID", Fixed = FixedStyle.Left, Width = 70, ItemsSource = DEPARTMENTCollection, Settings = SettingsType.Collection });
             visibleIndex += 10;
-            columns.Add(new ColumnDescriptor() { FieldName = columnTenderProfile + ".HOURS_PERCENTAGE", VisibleIndex = visibleIndex, Tag = "Design Hours", Header = "Hours %", MaxValue = 1, Mask = "p2", Increment = 0.01m, Fixed = FixedStyle.Left, Width = 75, Settings = SettingsType.Custom1 });
+            columns.Add(new ColumnDescriptor() { FieldName = columnTenderProfile + ".GUID_DISCIPLINE", VisibleIndex = visibleIndex, Tag = "Contract", Header = "Discipline", DisplayMember = "NAME", ValueMember = "GUID", Fixed = FixedStyle.Left, Width = 70, ItemsSource = DISCIPLINECollection, Settings = SettingsType.Collection });
+            visibleIndex += 10;
+            columns.Add(new ColumnDescriptor() { FieldName = columnTenderProfile + ".HOURS_PERCENTAGE", VisibleIndex = visibleIndex, Tag = "Design Hours", Header = "Hours %", MaxValue = 1, Mask = "p2", Increment = 0.1m, Fixed = FixedStyle.Left, Width = 75, Settings = SettingsType.Custom1 });
             summaries.Add(new SummaryDescriptor() { FieldName = columnTenderProfile + ".HOURS_PERCENTAGE", DisplayFormat = "p2", Type = SummaryItemType.Sum });
             visibleIndex += 10;
             columns.Add(new ColumnDescriptor() { FieldName = columnTenderProfile + ".SCHEDULE_START_PERCENTAGE", VisibleIndex = visibleIndex, MinValue = 0, MaxValue = 1, Tag = "Start Date", Header = "Schedule Start %", Mask = "p2", Increment = 0.1m, Fixed = FixedStyle.Left, Width = 75, Settings = SettingsType.Number });
@@ -1938,7 +2017,7 @@ namespace BluePrints.ViewModels
 
         public void DeleteSelectedTenderProfiles()
         {
-            if(SelectedChildDataRows.Count == 0)
+            if (SelectedChildDataRows.Count == 0)
             {
                 MessageBoxService.ShowMessage("Please select tender profile(s) to delete", "Confirmation", MessageButton.OK);
                 return;
@@ -2016,6 +2095,15 @@ namespace BluePrints.ViewModels
         public override string ViewName
         {
             get { return "PROJECTPlanCollectionViewModelWrapper"; }
+        }
+
+        public IEnumerable<DEPARTMENT> DEPARTMENTCollection
+        {
+            get
+            {
+                var collection = GetEntities<DEPARTMENT>();
+                return collection;
+            }
         }
 
         public IEnumerable<DISCIPLINE> DISCIPLINECollection

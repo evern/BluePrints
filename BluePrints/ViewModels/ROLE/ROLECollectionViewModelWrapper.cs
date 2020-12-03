@@ -282,12 +282,12 @@ namespace BluePrints.ViewModels
             }
         }
 
-        protected override void OnPersistentAfterAuxiliaryEntitiesChanges(object key, Type changedType, EntityMessageType messageType, object sender, bool isBulkRefresh)
+        protected override void OnPersistentAfterAuxiliaryEntitiesChanges(object key, Type changedType, EntityMessageType messageType, object sender, Guid senderKey, bool isBulkRefresh)
         {
             if (changedType == typeof(ROLE_PERMISSION))
                 return;
 
-            base.OnPersistentAfterAuxiliaryEntitiesChanges(key, changedType, messageType, sender, isBulkRefresh);
+            base.OnPersistentAfterAuxiliaryEntitiesChanges(key, changedType, messageType, sender, senderKey, isBulkRefresh);
         }
 
         public void DocTypePermissionCellValueChanging(CellValueChangedEventArgs e)

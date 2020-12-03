@@ -180,7 +180,7 @@ namespace BluePrints.ViewModels
             return base.OnBeforeProjectionSaveIsContinue(projection, out isNew);
         }
 
-        public override void OnAfterAuxiliaryEntitiesChanged(object key, Type changedType, EntityMessageType messageType, object sender, bool isBulkRefresh)
+        public override void OnAfterAuxiliaryEntitiesChanged(object key, Type changedType, EntityMessageType messageType, object sender, Guid senderKey, bool isBulkRefresh)
         {
             if (changedType == typeof(PROGRESS_ITEM))
             {
@@ -188,7 +188,7 @@ namespace BluePrints.ViewModels
                 return;
             }
 
-            base.OnAfterAuxiliaryEntitiesChanged(key, changedType, messageType, sender, isBulkRefresh);
+            base.OnAfterAuxiliaryEntitiesChanged(key, changedType, messageType, sender, senderKey, isBulkRefresh);
         }
         
         protected override bool OnBeforeApplyingProjectionPropertiesToEntityIsContinue(BASELINE_ITEMProgress projectionEntity, BASELINE_ITEM entity)

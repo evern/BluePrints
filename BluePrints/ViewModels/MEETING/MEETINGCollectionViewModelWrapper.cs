@@ -212,12 +212,12 @@ namespace BluePrints.ViewModels
         #endregion
 
         #region Meeting Type 
-        public override void OnAfterAuxiliaryEntitiesChanged(object key, Type changedType, EntityMessageType messageType, object sender, bool isBulkRefresh)
+        public override void OnAfterAuxiliaryEntitiesChanged(object key, Type changedType, EntityMessageType messageType, object sender, Guid senderKey, bool isBulkRefresh)
         {
             if (changedType == typeof(MEETING_TYPE))
                 this.RaisePropertyChanged(x => x.MEETING_TYPECollection);
 
-            base.OnAfterAuxiliaryEntitiesChanged(key, changedType, messageType, sender, isBulkRefresh);
+            base.OnAfterAuxiliaryEntitiesChanged(key, changedType, messageType, sender, senderKey, isBulkRefresh);
         }
 
         public void ProcessNewValue(ProcessNewValueEventArgs e)

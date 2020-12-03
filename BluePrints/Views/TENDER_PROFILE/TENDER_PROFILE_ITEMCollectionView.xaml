@@ -37,11 +37,11 @@
                 </dxr:RibbonControl>
                 <custom:GridControlEx x:Name="GridControl" dx:DXSerializer.SerializationID="GridControlTENDER_PROFILE" Style="{StaticResource DefaultGridControlTemplate}">
                     <custom:GridControlEx.Columns>
-                        <!--<dxg:GridColumn FieldName="GUID_DEPARTMENT" Header="Department" HeaderToolTip="Department of the profile">
+                        <dxg:GridColumn FieldName="GUID_DEPARTMENT" Header="Department" HeaderToolTip="Department of the profile">
                             <dxg:GridColumn.EditSettings>
                                 <dxe:ComboBoxEditSettings AutoComplete="True" DisplayMember="NAME" IsTextEditable="True" ItemsSource="{Binding DEPARTMENTCollection}" ValueMember="GUID" />
                             </dxg:GridColumn.EditSettings>
-                        </dxg:GridColumn>-->
+                        </dxg:GridColumn>
                         <dxg:GridColumn FieldName="GUID_DISCIPLINE" Header="Discipline" HeaderToolTip="Discipline of the profile">
                             <dxg:GridColumn.EditSettings>
                                 <dxe:ComboBoxEditSettings AutoComplete="True" DisplayMember="NAME" IsTextEditable="True" ItemsSource="{Binding DISCIPLINECollection}" ValueMember="GUID" />
