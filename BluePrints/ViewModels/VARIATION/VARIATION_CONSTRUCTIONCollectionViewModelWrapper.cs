@@ -142,7 +142,7 @@ namespace BluePrints.ViewModels
         #endregion
 
         #region Collection Call Backs
-        public override void OnAfterAuxiliaryEntitiesChanged(object key, Type changedType, EntityMessageType messageType, object sender, bool isBulkRefresh)
+        public override void OnAfterAuxiliaryEntitiesChanged(object key, Type changedType, EntityMessageType messageType, object sender, Guid senderKey, bool isBulkRefresh)
         {
             if (changedType == typeof(VARIATION_CONSTRUCTION_ITEM))
             {
@@ -160,7 +160,7 @@ namespace BluePrints.ViewModels
                 }
             }
 
-            base.OnAfterAuxiliaryEntitiesChanged(key, changedType, messageType, sender, isBulkRefresh);
+            base.OnAfterAuxiliaryEntitiesChanged(key, changedType, messageType, sender, senderKey, isBulkRefresh);
         }
 
         protected override OperationInterceptMode OnBeforeProjectionSaveIsContinue(VARIATION_CONSTRUCTION projection, out bool isNew)

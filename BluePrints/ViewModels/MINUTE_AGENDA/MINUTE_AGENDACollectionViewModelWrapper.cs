@@ -321,14 +321,14 @@ namespace BluePrints.ViewModels
             GridControlService.MasterDetail_CollapseAll();
         }
 
-        public override void OnAfterAuxiliaryEntitiesChanged(object key, Type changedType, EntityMessageType messageType, object sender, bool isBulkRefresh)
+        public override void OnAfterAuxiliaryEntitiesChanged(object key, Type changedType, EntityMessageType messageType, object sender, Guid senderKey, bool isBulkRefresh)
         {
             if (changedType == typeof(MEETING_ACTION))
                 this.RaisePropertyChanged(x => x.MEETING_ACTIONCollection);
             if (changedType == typeof(MINUTE_AGENDA))
                 mainThreadDispatcher.BeginInvoke(new Action(() => calculateTitleSummary()));
 
-            base.OnAfterAuxiliaryEntitiesChanged(key, changedType, messageType, sender, isBulkRefresh);
+            base.OnAfterAuxiliaryEntitiesChanged(key, changedType, messageType, sender, senderKey, isBulkRefresh);
         }
 
         public void ProcessNewValue(ProcessNewValueEventArgs e)

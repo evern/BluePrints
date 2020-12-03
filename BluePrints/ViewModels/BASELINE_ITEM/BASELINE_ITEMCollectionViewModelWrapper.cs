@@ -551,9 +551,9 @@ namespace BluePrints.ViewModels
 
         //allows raise property change to propagate to parent
         public Action<object> RaisePropertyChangeCallBack { get; set; }
-        protected override bool IsSingleMainEntityRefreshIdentified(object key, Type changedType, EntityMessageType messageType, object sender, bool isBulkRefresh)
+        protected override bool IsSingleMainEntityRefreshIdentified(object key, Type changedType, EntityMessageType messageType, object sender, Guid senderKey, bool isBulkRefresh)
         {
-            return base.IsSingleMainEntityRefreshIdentified(key, changedType, messageType, sender, isBulkRefresh);
+            return base.IsSingleMainEntityRefreshIdentified(key, changedType, messageType, sender, senderKey, isBulkRefresh);
         }
 
         protected override OperationInterceptMode OnBeforeProjectionDeleteIsContinue(BASELINE_ITEMProgress projection, out List<ErrorMessage> errorMessages)
@@ -661,7 +661,7 @@ namespace BluePrints.ViewModels
         }
 
         #region Collection Call Backs
-        public override void OnAfterAuxiliaryEntitiesChanged(object key, Type changedType, EntityMessageType messageType, object sender, bool isBulkRefresh)
+        public override void OnAfterAuxiliaryEntitiesChanged(object key, Type changedType, EntityMessageType messageType, object sender, Guid senderKey, bool isBulkRefresh)
         {
             if (changedType == typeof(PROGRESS_ITEM))
             {
@@ -692,7 +692,7 @@ namespace BluePrints.ViewModels
                 }
             }
 
-            base.OnAfterAuxiliaryEntitiesChanged(key, changedType, messageType, sender, isBulkRefresh);
+            base.OnAfterAuxiliaryEntitiesChanged(key, changedType, messageType, sender, senderKey, isBulkRefresh);
         }
 
         protected override OperationInterceptMode OnBeforeProjectionSaveIsContinue(BASELINE_ITEMProgress projection, out bool isNew)

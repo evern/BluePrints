@@ -330,7 +330,7 @@ namespace BluePrints.ViewModels
             SetViewSpecificProperties();
         }
 
-        public override void OnAfterAuxiliaryEntitiesChanged(object key, Type changedType, EntityMessageType messageType, object sender, bool isBulkRefresh)
+        public override void OnAfterAuxiliaryEntitiesChanged(object key, Type changedType, EntityMessageType messageType, object sender, Guid senderKey, bool isBulkRefresh)
         {
             if (changedType == typeof(SUBJOB))
             {
@@ -339,7 +339,7 @@ namespace BluePrints.ViewModels
                 this.RaisePropertyChanged(x => x.ProcurementSUBJOBCollection);
             }
 
-            base.OnAfterAuxiliaryEntitiesChanged(key, changedType, messageType, sender, isBulkRefresh);
+            base.OnAfterAuxiliaryEntitiesChanged(key, changedType, messageType, sender, senderKey, isBulkRefresh);
         }
 
         /// <summary>
@@ -950,7 +950,7 @@ namespace BluePrints.ViewModels
 
         //allows raise property change to propagate to parent
         public Action<object> RaisePropertyChangeCallBack { get; set; }
-        protected override bool IsSingleMainEntityRefreshIdentified(object key, Type changedType, EntityMessageType messageType, object sender, bool isBulkRefresh)
+        protected override bool IsSingleMainEntityRefreshIdentified(object key, Type changedType, EntityMessageType messageType, object sender, Guid senderKey, bool isBulkRefresh)
         {
             if (changedType == typeof(STOCK_CODE))
             {

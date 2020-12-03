@@ -212,7 +212,7 @@ namespace BluePrints.Common.ViewModel
                 this.SwitchBinding(viewType, usePercentage, GridControlService, switchChartOnly);
         }
 
-        public override void OnAfterAuxiliaryEntitiesChanged(object key, Type changedType, EntityMessageType messageType, object sender, bool isBulkRefresh)
+        public override void OnAfterAuxiliaryEntitiesChanged(object key, Type changedType, EntityMessageType messageType, object sender, Guid senderKey, bool isBulkRefresh)
         {
             
         }

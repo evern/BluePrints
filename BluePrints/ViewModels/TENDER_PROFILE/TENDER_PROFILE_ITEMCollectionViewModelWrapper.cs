@@ -27,7 +27,6 @@ namespace BluePrints.ViewModels
         }
 
         TENDER_PROFILE loadTENDER_PROFILE;
-        DEPARTMENT defaultDEPARTMENT;
         /// <summary>
         /// Initializes a new instance of the TENDER_PROFILE_ITEMCollectionViewModelWrapper class.
         /// This constructor is declared protected to avoid undesired instantiation of the TENDER_PROFILE_ITEMCollectionViewModelWrapper type without the POCO proxy factory.
@@ -52,7 +51,7 @@ namespace BluePrints.ViewModels
         protected override void addEntitiesLoader()
         {
             loaderCollection.AddLoaderDescription<DISCIPLINE, DISCIPLINE, Guid, IBluePrintsEntitiesUnitOfWork>(bluePrintsUnitOfWorkFactory, x => x.DISCIPLINES);
-            loaderCollection.AddLoaderDescription(bluePrintsUnitOfWorkFactory, x => x.DEPARTMENTS, DEPARTMENTProjectionFunc, x => defaultDEPARTMENT = x);
+            loaderCollection.AddLoaderDescription<DEPARTMENT, DEPARTMENT, Guid, IBluePrintsEntitiesUnitOfWork>(bluePrintsUnitOfWorkFactory, x => x.DEPARTMENTS);
         }
         
         protected override void onAuxiliaryEntitiesCollectionLoaded()
@@ -63,11 +62,6 @@ namespace BluePrints.ViewModels
         protected override Func<IRepositoryQuery<TENDER_PROFILE_ITEM>, IQueryable<TENDER_PROFILE_ITEM>> specifyMainViewModelProjection()
         {
             return query => query.Where(x => x.GUID_TENDER_PROFILE == loadTENDER_PROFILE.GUID);
-        }
-
-        private Func<IRepositoryQuery<DEPARTMENT>, IQueryable<DEPARTMENT>> DEPARTMENTProjectionFunc()
-        {
-            return query => query.Where(x => x.NAME.ToUpper() == BluePrintsResources.Default_Department);
         }
 
         protected override void AssignCallBacksAndRaisePropertyChange(IEnumerable<TENDER_PROFILE_ITEM> entities)
@@ -82,7 +76,6 @@ namespace BluePrints.ViewModels
             if(loadTENDER_PROFILE != null)
             {
                 projection.GUID_TENDER_PROFILE = loadTENDER_PROFILE.GUID;
-                projection.GUID_DEPARTMENT = defaultDEPARTMENT.GUID;
             }
 
             return base.OnBeforeProjectionSaveIsContinue(projection, out isNew);
@@ -128,6 +121,17 @@ namespace BluePrints.ViewModels
             get
             {
                 var collection = GetEntities<DISCIPLINE>();
+                if (collection != null)
+                    collection = collection.OrderBy(x => x.NAME);
+                return collection;
+            }
+        }
+
+        public IEnumerable<DEPARTMENT> DEPARTMENTCollection
+        {
+            get
+            {
+                var collection = GetEntities<DEPARTMENT>();
                 if (collection != null)
                     collection = collection.OrderBy(x => x.NAME);
                 return collection;
