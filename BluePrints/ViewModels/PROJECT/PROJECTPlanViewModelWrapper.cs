@@ -26,6 +26,7 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Data;
+using System.Globalization;
 using System.Linq;
 using System.Windows;
 using System.Windows.Controls;
@@ -972,14 +973,16 @@ namespace BluePrints.ViewModels
             Tuple<DateTime, DateTime> projectStartEndDate = BluePrintsDataUtils.GetTenderStartEndDate(project.Entity);
 
             bool shouldRefreshGrid = false;
-            foreach (DateTime dataPointsDate in dataPointsDateCollection)
-            {
-                if (!alignedDateCollection.Any(x => x.Year == dataPointsDate.Year && x.Month == dataPointsDate.Month))
-                {
-                    shouldRefreshGrid = true;
-                    break;
-                }
-            }
+
+            //because aligned date collection is generated for a particular project each time it refreshes, only do detection on dataPointsDateCollection
+            //foreach (DateTime dataPointsDate in dataPointsDateCollection)
+            //{
+            //    if (!alignedDateCollection.Any(x => x.Year == dataPointsDate.Year && x.Month == dataPointsDate.Month))
+            //    {
+            //        shouldRefreshGrid = true;
+            //        break;
+            //    }
+            //}
 
             foreach (DateTime alignDate in alignedDateCollection)
             {
@@ -1031,7 +1034,7 @@ namespace BluePrints.ViewModels
             foreach (DataColumn dataColumn in dataTable.Columns)
             {
                 DateTime dateTime;
-                if (DateTime.TryParse(dataColumn.ColumnName, out dateTime))
+                if (DateTime.TryParseExact(dataColumn.ColumnName, "dd-MMM-yy", CultureInfo.InvariantCulture, DateTimeStyles.None, out dateTime))
                 {
                     if (!alignedDataDates.Any(x => x.Date == dateTime.Date))
                     {
@@ -1882,7 +1885,7 @@ namespace BluePrints.ViewModels
                 string columnName = dataPointsTable.Columns[i].ColumnName;
                 if (columnName != columnProject && columnName != columnTenderProfileDataTable)
                 {
-                    DateTime columnDate = DateTime.Parse(columnName);
+                    DateTime columnDate = DateTime.ParseExact(columnName, "dd-MMM-yy", CultureInfo.InvariantCulture, DateTimeStyles.None);
                     IEnumerable<Common.ViewModel.Reporting.DataPoint> currentPeriodDataPoints;
                     currentPeriodDataPoints = projectDataPoints.Where(x => x.ProgressDate.Year == columnDate.Year && x.ProgressDate.Month == columnDate.Month);
 
@@ -1901,7 +1904,7 @@ namespace BluePrints.ViewModels
             {
                 tenderProfilesDataPointsTable = new DataTable();
                 tenderProfilesDataPointsTable.Columns.Add(columnTenderProfile, typeof(TENDER_PROFILE_ITEM));
-                populateAlignedDataDate(tenderProfilesDataPointsTable, alignedDateCollection);
+                populateAlignedDataDate(tenderProfilesDataPointsTable, dataPointsDateCollection);
             }
 
             tenderProfilesDataPointsTable.Clear();
@@ -1928,7 +1931,7 @@ namespace BluePrints.ViewModels
                         string columnName = tenderProfilesDataPointsTable.Columns[i].ColumnName;
                         if (columnName != columnTenderProfile)
                         {
-                            DateTime columnDate = DateTime.Parse(columnName);
+                            DateTime columnDate = DateTime.ParseExact(columnName, "dd-MMM-yy", CultureInfo.InvariantCulture, DateTimeStyles.None);
                             IEnumerable<Common.ViewModel.Reporting.DataPoint> currentPeriodDataPoints = profileItemDataPoints.Where(x => x.ProgressDate.Year == columnDate.Year && x.ProgressDate.Month == columnDate.Month);
 
                             if (currentPeriodDataPoints.Count() > 0)
