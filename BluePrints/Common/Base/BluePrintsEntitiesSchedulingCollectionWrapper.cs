@@ -276,7 +276,7 @@ namespace BluePrints.Common.Base
             foreach (var activity in activities.Where(x => x.ActivityType == AppointmentActivityType.Activity))
             {
                 decimal total_activity_assigned_units = deliverables.Sum(x => x.P6_Assignments.Where(assignment => assignment.P6_ACTIVITYID == activity.P6_ActivityId)
-                                                        .Sum(assignment => ((assignment.HIGH_VALUE - assignment.LOW_VALUE) + 0.01m) * getUnits(x)));
+                                                        .Sum(assignment => ((assignment.HIGH_VALUE - assignment.LOW_VALUE) + 0.0001m) * getUnits(x)));
 
                 activity.Budgeted_Units = activity.Task == null ? (decimal?)null : activity.Task.target_work_qty;
                 activity.Assigned_Units = total_activity_assigned_units;
@@ -306,7 +306,7 @@ namespace BluePrints.Common.Base
             calculateSource = Deliverables_Source;
 
             decimal total_activity_assigned_units = calculateSource.Sum(x => x.P6_Assignments.Where(assignment => assignment.P6_ACTIVITYID == activity.P6_ActivityId)
-                                                    .Sum(assignment => ((assignment.HIGH_VALUE - assignment.LOW_VALUE) + 0.01m) * getUnits(x)));
+                                                    .Sum(assignment => ((assignment.HIGH_VALUE - assignment.LOW_VALUE) + 0.0001m) * getUnits(x)));
 
             activity.Assigned_Units = total_activity_assigned_units;
             activity.RaisePropertiesChanged();

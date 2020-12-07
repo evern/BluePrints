@@ -32,6 +32,7 @@ namespace BluePrints.Common.ViewModel.Converters
 
                 FORECAST_JOB forecastJob = (FORECAST_JOB)dataRow[BluePrintsResources.Forecast_ForecastJobColumn];
                 string uom = forecastJob.UOM;
+                //return "###,##0";
                 return "###,##0 " + uom;
             }
             catch (Exception ex)

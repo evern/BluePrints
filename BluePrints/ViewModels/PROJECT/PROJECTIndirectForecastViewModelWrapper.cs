@@ -1041,7 +1041,7 @@ namespace BluePrints.ViewModels
                 if (alignedDate > FixedDataDateMonthEnd)
                 {
                     columns.Add(new ColumnDescriptor() { FieldName = columnFieldName, Header = columnFieldName, Fixed = FixedStyle.None, Width = 60, Settings = SettingsType.ForecastFuture });
-                    summaries.Add(new SummaryDescriptor() { FieldName = columnFieldName, DisplayFormat = "0", Type = SummaryItemType.Sum });
+                    summaries.Add(new SummaryDescriptor() { FieldName = columnFieldName, DisplayFormat = "n0", Type = SummaryItemType.Sum });
                 }
             }
         }

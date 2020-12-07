@@ -824,8 +824,8 @@ namespace BluePrints.Common.Base
                             if (repositoryTASK.act_work_qty > 0)
                             {
                                 //assuming previous assignment is completed what the units on this deliverable should at least be
-                                decimal supposedUnitsForPreviousAssignment = deliverable.Total_Units * (assignment.LOW_VALUE - 0.01m);
-                                decimal supposedUnitsForCurrentAssignment = deliverable.Total_Units * ((assignment.HIGH_VALUE - assignment.LOW_VALUE) + 0.01m);
+                                decimal supposedUnitsForPreviousAssignment = deliverable.Total_Units * (assignment.LOW_VALUE - 0.0001m);
+                                decimal supposedUnitsForCurrentAssignment = deliverable.Total_Units * ((assignment.HIGH_VALUE - assignment.LOW_VALUE) + 0.0001m);
 
                                 //because current task can be assigned to multiple deliverable, actual earned units needs to be pro-rated
                                 decimal proRateValue = supposedUnitsForCurrentAssignment / (decimal)repositoryTASK.target_work_qty;
@@ -844,7 +844,7 @@ namespace BluePrints.Common.Base
                                 if (totalUnitsEarned != 0)
                                     individualPeriodFactor = (totalSupposedUnits - totalUnitsEarned) / totalSupposedUnits;
 
-                                if (unitsParity > 0.001m)
+                                if (unitsParity > 0.0001m)
                                 {
                                     addOrIncreaseDataPointsForTasks(completedAssignments, deliverable, firstAlignedDataDate, progressLowerLimitDate, individualPeriodFactor);
                                     allCompletedAssignments.AddRange(completedAssignments);
@@ -854,7 +854,7 @@ namespace BluePrints.Common.Base
                                     currentAssignment.Add(assignment);
                                     addOrIncreaseDataPointsForTasks(currentAssignment, deliverable, firstAlignedDataDate, progressLowerLimitDate, individualPeriodFactor, proRateUnitsForCurrentAssignment);
                                 }
-                                else if (unitsParity < -0.001m)
+                                else if (unitsParity < -0.0001m)
                                 {
                                     removeOrReduceDataPointsForTasks(deliverable, unitsParity);
                                     bluePrintsUOW.SaveChanges();
@@ -989,7 +989,7 @@ namespace BluePrints.Common.Base
                         if (earnedUnits >= supposedUnitsForAssignments)
                             continue;
 
-                        totalUnitsToAddToDeliverable = deliverable.Total_Units * ((completedAssignment.HIGH_VALUE - completedAssignment.LOW_VALUE) + 0.01m);
+                        totalUnitsToAddToDeliverable = deliverable.Total_Units * ((completedAssignment.HIGH_VALUE - completedAssignment.LOW_VALUE) + 0.0001m);
                     }
                     else
                         totalUnitsToAddToDeliverable = (decimal)manualParity;
@@ -1310,10 +1310,10 @@ namespace BluePrints.Common.Base
                         high_percentage_to_use = p6_assignment.HIGH_VALUE > total_percentage_to_date ? total_percentage_to_date : p6_assignment.HIGH_VALUE;
 
                     //current percentage pro-rate
-                    decimal current_percentage = p6_assignment.LOW_VALUE <= (total_percentage_to_date + 0.01m) ? ((high_percentage_to_use - p6_assignment.LOW_VALUE) + 0.01m) : 0;
+                    decimal current_percentage = p6_assignment.LOW_VALUE <= (total_percentage_to_date + 0.0001m) ? ((high_percentage_to_use - p6_assignment.LOW_VALUE) + 0.0001m) : 0;
 
                     //full assignment percentage used to calculate remaining units
-                    decimal full_assignment_percentage = ((p6_assignment.HIGH_VALUE - p6_assignment.LOW_VALUE) + 0.01m);
+                    decimal full_assignment_percentage = ((p6_assignment.HIGH_VALUE - p6_assignment.LOW_VALUE) + 0.0001m);
 
                     //current activity assignment unit
                     decimal current_assignment_units;
