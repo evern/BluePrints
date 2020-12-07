@@ -844,7 +844,7 @@ namespace BluePrints.Common.Base
                                 if (totalUnitsEarned != 0)
                                     individualPeriodFactor = (totalSupposedUnits - totalUnitsEarned) / totalSupposedUnits;
 
-                                if (unitsParity > 0.001m)
+                                if (unitsParity > 0.0001m)
                                 {
                                     addOrIncreaseDataPointsForTasks(completedAssignments, deliverable, firstAlignedDataDate, progressLowerLimitDate, individualPeriodFactor);
                                     allCompletedAssignments.AddRange(completedAssignments);
@@ -854,7 +854,7 @@ namespace BluePrints.Common.Base
                                     currentAssignment.Add(assignment);
                                     addOrIncreaseDataPointsForTasks(currentAssignment, deliverable, firstAlignedDataDate, progressLowerLimitDate, individualPeriodFactor, proRateUnitsForCurrentAssignment);
                                 }
-                                else if (unitsParity < -0.001m)
+                                else if (unitsParity < -0.0001m)
                                 {
                                     removeOrReduceDataPointsForTasks(deliverable, unitsParity);
                                     bluePrintsUOW.SaveChanges();
@@ -1335,10 +1335,6 @@ namespace BluePrints.Common.Base
                     TASK P6TASK = PROJECTTASK.FirstOrDefault(P6Task => P6Task.task_code == p6_assignment.P6_ACTIVITYID);
                     if (P6TASK != null && P6TASK.delete_date == null)
                     {
-                        string s;
-                        if(P6TASK.task_code == "A40220")
-                            s = string.Empty;
-
                         //defines how much percentage of units this assignment will take up when it is fully assigned, so that we can estimate the total duration to apply productivity to
                         decimal current_task_to_activity_percentage = (P6TASK.target_work_qty == null || P6TASK.target_work_qty == 0) ? 0 : full_assignment_units / (decimal)P6TASK.target_work_qty;
 

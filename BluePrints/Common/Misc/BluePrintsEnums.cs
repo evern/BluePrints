@@ -1071,7 +1071,7 @@ namespace BluePrints.Common
                     return 0;
 
                 decimal assignmentUnits = isBudget ? deliverableProjection.Budget_Units : deliverableProjection.Total_Units;
-                return ((deliverable_assignment.HIGH_VALUE - deliverable_assignment.LOW_VALUE) + 0.01m) * assignmentUnits;
+                return ((deliverable_assignment.HIGH_VALUE - deliverable_assignment.LOW_VALUE) + 0.0001m) * assignmentUnits;
             }
         }
 
