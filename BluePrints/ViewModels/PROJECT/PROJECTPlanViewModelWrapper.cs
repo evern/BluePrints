@@ -1584,20 +1584,69 @@ namespace BluePrints.ViewModels
             get { return this.GetRequiredService<DevExpress.Mvvm.IDialogService>("DefaultTenderProfileSelectionDialog"); }
         }
 
-        public bool CanShowDefaultTenderProfileSelection()
+        public bool CanShowTenderProfileSelection()
         {
             return !IsLoading;
         }
 
-        public void ShowDefaultTenderProfileSelection()
+        public void ShowTenderProfileSelection()
         {
             PROJECTTenderProfile projectTENDER_PROFILE = forceRetrieveSelectedProject();
+
             if (projectTENDER_PROFILE == null)
             {
                 MessageBoxService.ShowMessage("Please select a project where you wish to replace tender profile", "Please select project", MessageButton.OK);
                 return;
             }
 
+            if (projectTENDER_PROFILE.TENDER_PROFILE_ITEMS.Count == 0)
+                ShowDefaultTenderProfileSelection(projectTENDER_PROFILE);
+            else
+                ShowOptionalTenderProfileSelection(projectTENDER_PROFILE);
+        }
+
+        public void ShowOptionalTenderProfileSelection(PROJECTTenderProfile projectTENDER_PROFILE)
+        {
+            UICommand allCommand = new UICommand()
+            {
+                Id = CopyProfileAction.All,
+                Caption = "Copy All",
+                IsCancel = true,
+                IsDefault = false,
+            };
+
+            UICommand exceptBudgetCommand = new UICommand()
+            {
+                Id = CopyProfileAction.ExceptBudget,
+                Caption = "Copy All Except Budget",
+                IsCancel = true,
+                IsDefault = false,
+            };
+
+            UICommand cancelCommand = new UICommand()
+            {
+                Id = CopyProfileAction.Cancel,
+                Caption = "Cancel",
+                IsCancel = true,
+                IsDefault = false,
+            };
+
+            string message = String.Format("Do you wish to use budgeted units from plan\nor from deliverable(s)");
+
+            var bulkEditEnumsViewModel = BulkEditEnumsViewModel.Create(DefaultTENDER_PROFILECollection, "NAME");
+            UICommand result = DefaultTenderProfileSelectionDialogService.ShowDialog(new List<UICommand>() { allCommand, exceptBudgetCommand, cancelCommand }, "Select Tender Profile and Copy Mode", "BulkEditEnums", bulkEditEnumsViewModel);
+            if (result == allCommand)
+            {
+                confirmReplaceCurrentProfile(projectTENDER_PROFILE, bulkEditEnumsViewModel.SelectedItem, true);
+            }
+            else if (result == exceptBudgetCommand)
+            {
+                confirmReplaceCurrentProfile(projectTENDER_PROFILE, bulkEditEnumsViewModel.SelectedItem, false);
+            }
+        }
+
+        public void ShowDefaultTenderProfileSelection(PROJECTTenderProfile projectTENDER_PROFILE)
+        {
             var bulkEditEnumsViewModel = BulkEditEnumsViewModel.Create(DefaultTENDER_PROFILECollection, "NAME");
             if (DefaultTenderProfileSelectionDialogService.ShowDialog(MessageButton.OKCancel, "Select Default Tender Profile", "BulkEditEnums", bulkEditEnumsViewModel) == MessageResult.OK)
             {
@@ -1606,9 +1655,23 @@ namespace BluePrints.ViewModels
                     TENDER_PROFILE selectedEntity = bulkEditEnumsViewModel.SelectedItem as TENDER_PROFILE;
                     if (projectTENDER_PROFILE == null || MessageBoxService.ShowMessage("Are you sure you want to replace current profile with " + selectedEntity.NAME + "?", "Confirmation", MessageButton.OKCancel) == MessageResult.OK)
                     {
-                        replaceExistingProfile(selectedEntity, projectTENDER_PROFILE);
+                        replaceExistingProfile(selectedEntity, projectTENDER_PROFILE, true);
                         reload(projectTENDER_PROFILE);
                     }
+                }
+            }
+        }
+
+        private void confirmReplaceCurrentProfile(PROJECTTenderProfile projectTENDER_PROFILE, object selectedEntity, bool replaceAll)
+        {
+            if (selectedEntity != null)
+            {
+                string copyModeStr = replaceAll ? "all" : "all except budget";
+                TENDER_PROFILE selectedTENDER_PROFILE = selectedEntity as TENDER_PROFILE;
+                if (projectTENDER_PROFILE == null || MessageBoxService.ShowMessage("Are you sure you want to replace all current profile with " + copyModeStr + " details from " + selectedTENDER_PROFILE.NAME + "?", "Confirmation", MessageButton.OKCancel) == MessageResult.OK)
+                {
+                    replaceExistingProfile(selectedTENDER_PROFILE, projectTENDER_PROFILE, replaceAll);
+                    reload(projectTENDER_PROFILE);
                 }
             }
         }
@@ -1624,14 +1687,16 @@ namespace BluePrints.ViewModels
         /// </summary>
         /// <param name="profileName">Profile name to use</param>
         /// <returns>Return existing or new TENDER_PROFILE</returns>
-        private void replaceExistingProfile(TENDER_PROFILE selectedTenderProfile, PROJECTTenderProfile projectTenderProfile)
+        private void replaceExistingProfile(TENDER_PROFILE selectedTenderProfile, PROJECTTenderProfile projectTenderProfile, bool replaceAll)
         {
             TENDER_PROFILE newTENDER_PROFILE = new TENDER_PROFILE();
-            TENDER_PROFILE findProject_TENDER_PROFILE = _bluePrintsUnitOfWork.TENDER_PROFILES.FirstOrDefault(x => x.GUID_PROJECT == projectTenderProfile.Entity.GUID);
-            if (findProject_TENDER_PROFILE != null)
+            TENDER_PROFILE findCurrentTENDER_PROFILE = _bluePrintsUnitOfWork.TENDER_PROFILES.FirstOrDefault(x => x.GUID == projectTenderProfile.TenderProfile.GUID);
+
+            //set new tender profile hours with existing tender profile hours and remove old tender profile
+            if (findCurrentTENDER_PROFILE != null)
             {
-                _bluePrintsUnitOfWork.TENDER_PROFILES.Remove(findProject_TENDER_PROFILE);
-                newTENDER_PROFILE.TENDER_HOURS = findProject_TENDER_PROFILE.TENDER_HOURS;
+                newTENDER_PROFILE.TENDER_HOURS = findCurrentTENDER_PROFILE.TENDER_HOURS;
+                _bluePrintsUnitOfWork.TENDER_PROFILES.Remove(findCurrentTENDER_PROFILE);
             }
 
             newTENDER_PROFILE.NAME = selectedTenderProfile.NAME;
@@ -1639,22 +1704,37 @@ namespace BluePrints.ViewModels
             _bluePrintsUnitOfWork.TENDER_PROFILES.Add(newTENDER_PROFILE);
 
             projectTenderProfile.TenderProfile = newTENDER_PROFILE;
-            projectTenderProfile.TENDER_PROFILE_ITEMS.Clear();
 
             //save tender profile
             _bluePrintsUnitOfWork.SaveChanges();
 
+            List<TENDER_PROFILE_ITEM> addTENDER_PROFILE_ITEMS = new List<TENDER_PROFILE_ITEM>();
             foreach (TENDER_PROFILE_ITEM defaultTENDER_PROFILE_ITEM in selectedTenderProfile.TENDER_PROFILE_ITEM)
             {
                 TENDER_PROFILE_ITEM copyTENDER_PROFILE_ITEM = new TENDER_PROFILE_ITEM();
                 DataUtils.ShallowCopy(copyTENDER_PROFILE_ITEM, defaultTENDER_PROFILE_ITEM);
+
+                //if not replacing all just replace the budget
+                if(!replaceAll)
+                {
+                    TENDER_PROFILE_ITEM findExistingTENDER_PROFILE_ITEM = projectTenderProfile.TENDER_PROFILE_ITEMS.FirstOrDefault(x => x.GUID_DEPARTMENT == defaultTENDER_PROFILE_ITEM.GUID_DEPARTMENT && x.GUID_DISCIPLINE == defaultTENDER_PROFILE_ITEM.GUID_DISCIPLINE);
+                    if (findExistingTENDER_PROFILE_ITEM != null)
+                        copyTENDER_PROFILE_ITEM.HOURS_PERCENTAGE = findExistingTENDER_PROFILE_ITEM.HOURS_PERCENTAGE;
+                }
+
                 copyTENDER_PROFILE_ITEM.GUID = Guid.Empty;
                 copyTENDER_PROFILE_ITEM.GUID_TENDER_PROFILE = newTENDER_PROFILE.GUID;
                 copyTENDER_PROFILE_ITEM.PROJECTTenderProfile = projectTenderProfile;
 
                 _bluePrintsUnitOfWork.TENDER_PROFILE_ITEMS.Add(copyTENDER_PROFILE_ITEM);
-                projectTenderProfile.TENDER_PROFILE_ITEMS.Add(copyTENDER_PROFILE_ITEM);
+                addTENDER_PROFILE_ITEMS.Add(copyTENDER_PROFILE_ITEM);
             }
+
+            //refresh project tender profile items with newly added items
+            projectTenderProfile.TENDER_PROFILE_ITEMS.Clear();
+            projectTenderProfile.TENDER_PROFILE_ITEMS.AddRange(addTENDER_PROFILE_ITEMS);
+
+            if (findCurrentTENDER_PROFILE != null)
 
             //save tender profile items
             _bluePrintsUnitOfWork.SaveChanges();

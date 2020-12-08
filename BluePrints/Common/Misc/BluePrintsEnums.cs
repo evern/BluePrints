@@ -431,6 +431,13 @@ namespace BluePrints.Common
         UnitsFromDeliverables
     }
 
+    public enum CopyProfileAction
+    {
+        All,
+        ExceptBudget,
+        Cancel
+    }
+
     public enum DialogAction
     {
         Add,

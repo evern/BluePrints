@@ -295,7 +295,7 @@
                 <dxb:BarSubItem ItemLinksSource="{StaticResource RibbonDefaultGridButtons}" />
                 <dxb:BarButtonItem x:Name="biDeleteChildRows" Command="{Binding DeleteSelectedTenderProfilesCommand}" Content="Delete Selected Tender Profile(s)" Glyph="{dx:DXImage Image=Delete_16x16.png}" LargeGlyph="{dx:DXImage Image=Delete_32x32.png}" RibbonStyle="SmallWithText" ToolTip="Delete selected rows" />
                 <dxb:BarButtonItem x:Name="biDeleteParentRows" Command="{Binding DeleteSelectedProjectsCommand}" Content="Delete Selected Project(s)" Glyph="{dx:DXImage Image=Delete_16x16.png}" LargeGlyph="{dx:DXImage Image=Delete_32x32.png}" RibbonStyle="SmallWithText" ToolTip="Delete selected rows" />
-                <dxb:BarButtonItem x:Name="biShowTenderProfileSelection" Command="{Binding ShowDefaultTenderProfileSelectionCommand}" Content="Copy Profile" Glyph="{dx:DXImage Image=Copy_16x16.png}" LargeGlyph="{dx:DXImage Image=Copy_32x32.png}" />
+                <dxb:BarButtonItem x:Name="biShowTenderProfileSelection" Command="{Binding ShowTenderProfileSelectionCommand}" Content="Copy Profile" Glyph="{dx:DXImage Image=Copy_16x16.png}" LargeGlyph="{dx:DXImage Image=Copy_32x32.png}" />
                 <dxb:BarButtonItem x:Name="biSyncDeliverables" Command="{Binding SyncDeliverablesCommand}" Content="Sync Deliverables" Glyph="{dx:DXImage Image=Reset2_16x16.png}" LargeGlyph="{dx:DXImage Image=Reset2_32x32.png}" ToolTip="Syncs deliverable(s) so project S-Curve is same as planned" />
             </dxb:BarManager.Items>
             <DockPanel>
