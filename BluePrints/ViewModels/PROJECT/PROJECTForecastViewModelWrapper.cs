@@ -1181,7 +1181,7 @@ namespace BluePrints.ViewModels
             if (job.EarnedUnits != null && job.ActualUnits != 0)
             {
                 if (job.EarnedUnits > 0)
-                    job.CurrentProductivity = job.ActualUnits / (decimal)job.EarnedUnits;
+                    job.CurrentProductivity = (decimal)job.EarnedUnits / job.ActualUnits;
                 else
                     job.CurrentProductivity = 0.00m;
             }
