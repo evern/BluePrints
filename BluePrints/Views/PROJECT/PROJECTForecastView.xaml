@@ -134,7 +134,7 @@
                         HeaderToolTip="{Binding Path=(dxci:DependencyObjectExtensions.DataContext).HeaderToolTip, RelativeSource={RelativeSource Self}}" >
                         <dxg:GridColumn.CellTemplate>
                             <DataTemplate>
-                                <dxe:SpinEdit Name="PART_Editor" Increment="10" IsReadOnly="True" Mask="c0" MaskType="Numeric" MaskUseAsDisplayFormat="True" MinValue="0" Foreground="Black">
+                                <dxe:SpinEdit Name="PART_Editor" Increment="10" IsReadOnly="True" Mask="{Binding RowData.Row.Row, Converter={StaticResource ForecastChildCellMaskConverter}}" MaskType="Numeric" MaskUseAsDisplayFormat="True" MinValue="0" Foreground="Black">
                                     <dxe:SpinEdit.Background>
                                         <MultiBinding Converter="{StaticResource ForecastPreviousCellColorConverter}">
                                             <Binding Path="RowData.Row.Row" />

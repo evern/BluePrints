@@ -25,6 +25,7 @@
                 <!--<dxb:BarCheckItem Content="Auto Refresh" IsChecked="{Binding DoNotAutoRefresh, Converter={dxmvvm:BooleanNegationConverter}}" Glyph="{dx:DXImageOffice2013 Image=Refresh_16x16.png}" />-->
                 <dxb:BarButtonItem x:Name="biEdit" Content="Edit" Command="{Binding EditCommand}" LargeGlyph="{dx:DXImage Image=Edit_32x32.png}" Glyph="{dx:DXImage Image=Edit_16x16.png}" />
                 <dxb:BarButtonItem x:Name="biCalculate" Command="{Binding CalculateVariationSummaryCommand}" Content="Summarize Variations" Glyph="{dxc:DXImage Images/Function Library/Financial_16x16.png}" LargeGlyph="{dx:DXImage Images/Function Library/Financial_32x32.png}" ToolTip="Get actuals summary by job from EXO and show it in the grid" />
+                <dxb:BarButtonItem x:Name="biUpdateBudget" Command="{Binding UpdateVariationBudgetCommand}" Content="Update EXO budget" Glyph="{dxc:DXImage Images/Actions/Up2_16x16.png}" LargeGlyph="{dx:DXImage  Images/Actions/Up2_32x32.png}" ToolTip="Update EXO budget on approved variation" />
                 <dxb:BarCheckItem x:Name="biSubmit" Content="Submit" IsChecked="{Binding IsSubmitted}" IsEnabled="{Binding IsLoading, Converter={dxmvvm:BooleanNegationConverter}}" Glyph="{dx:DXImage Image=BOOrderItem_16x16.png}" LargeGlyph="{dx:DXImage Image=BOOrderItem_32x32.png}" />
                 <dxb:BarCheckItem x:Name="biApprove" Content="Approve" IsChecked="{Binding IsApproved}" IsEnabled="{Binding IsLoading, Converter={dxmvvm:BooleanNegationConverter}}" Glyph="{dx:DXImage Image=BOProduct_16x16.png}" LargeGlyph="{dx:DXImage Image=BOProduct_32x32.png}" />
                 <dxb:BarCheckItem x:Name="biClientApprove" Content="Client Approve" IsChecked="{Binding IsClientApproved}" IsEnabled="{Binding IsLoading, Converter={dxmvvm:BooleanNegationConverter}}" Glyph="{dx:DXImage Image=BOSaleItem_16x16.png}" LargeGlyph="{dx:DXImage Image=BOSaleItem_32x32.png}" />
@@ -54,6 +55,7 @@
                                 <dxb:BarCheckItemLink BarItemName="biSubmit" />
                                 <dxb:BarCheckItemLink BarItemName="biApprove" />
                                 <dxb:BarCheckItemLink BarItemName="biClientApprove" />
+                                <dxb:BarButtonItemLink BarItemName="biUpdateBudget" />
                             </dxr:RibbonPageGroup>
                         </dxr:RibbonPage>
                     </dxr:RibbonDefaultPageCategory>
@@ -142,6 +144,7 @@
                                 <dxb:BarCheckItemLink BarItemName="biSubmit" />
                                 <dxb:BarCheckItemLink BarItemName="biApprove" />
                                 <dxb:BarCheckItemLink BarItemName="biClientApprove" />
+                                <dxb:BarButtonItemLink BarItemName="biUpdateBudget" />
                                 <dxb:BarItemLinkSeparator />
                                 <dxb:BarButtonItemLink BarItemName="biBulkDelete1" />
                                 <dxb:BarButtonItemLink BarItemName="biFullRefresh1" />

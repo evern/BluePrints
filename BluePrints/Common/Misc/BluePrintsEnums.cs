@@ -274,7 +274,8 @@ namespace BluePrints.Common
         [Display(Name = "No Action")] NoAction = 0,
         [Display(Name = "Append")] Append = 1,
         [Display(Name = "Add")] Add = 2,
-        [Display(Name = "Cancel")] Cancel = 3
+        [Display(Name = "Cancel")] Cancel = 3,
+        [Display(Name = "Update")] Update = 4
     }
 
     public enum BaselineMappingType

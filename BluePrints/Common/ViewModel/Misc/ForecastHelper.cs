@@ -47,7 +47,7 @@ namespace BluePrints.Common.ViewModel.Misc
                 {
                     ForecastJobData commodityJobForecastSummary = createJobForecastSummary(commodityJob.SubJobCode, commodityJob.SubJobTitle, commodityJob.DisciplineCode, commodityJob.DisciplineName, commodityJob.CommodityCode, commodityJob.CommodityName, commodityJob.CommodityDescription, commodityJob.CommodityUOM, commodityJob.VariationCode, queryJobLines, COMMODITY_CODECollection);
                     commodityJobForecastSummary.JobErrorMessage = commodityJob.ForecastErrorString;
-                    
+                    commodityJobForecastSummary.CompareMask = "c0";
                     IEnumerable<DashboardFlatStructure> commodityDashboards = disciplineDashboards.Where(x => x.CommodityCode == commodityJob.CommodityCode);
                     PopulateProjection(commodityJobForecastSummary, commodityDashboards, FORECAST_POCollection, FORECAST_EACCollection, FORECAST_JOBCollection, FORECAST_JOB_SETTINGCollection, dates, isWeeks, true, dataDate);
                     //moved out of this routine so that EAC will be refreshed when refreshing the view, instead of it being populated only on load

@@ -305,7 +305,7 @@ namespace BluePrints.Common.Projections
         //only show po forecast after actuals date without it summing up from beginning of time on first date
         private DateTime? POAndIndirectForecastFloorDate => FloorDate > firstViewDate ? FloorDate : (DateTime?)null;
         //only show p6 remaining after actuals date and have it summing up from beginning of time on first date
-        private DateTime? P6RemainingFloorDate => FloorDate > firstViewDate ? CeilingDate == firstForecastDate ? FloorDate : FloorDate : (DateTime?)null;
+        private DateTime? P6RemainingFloorDate => FloorDate > firstViewDate ? CeilingDate == firstForecastDate ? new DateTime(2010, 1, 1) : FloorDate : (DateTime?)null;
 
         public DateTime Date { get; set; }
 

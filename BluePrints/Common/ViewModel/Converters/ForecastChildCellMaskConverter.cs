@@ -12,7 +12,7 @@ namespace BluePrints.Common.ViewModel.Converters
     {
         public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
         {
-            string defaultFormat = "n0";
+            string defaultFormat = "c0";
             try
             {
                 if (value == null)

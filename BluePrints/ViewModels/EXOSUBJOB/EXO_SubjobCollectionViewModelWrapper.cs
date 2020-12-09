@@ -449,10 +449,10 @@ namespace BluePrints.ViewModels
             return null;
         }
 
-        public IEnumerable<ExoSubJobProjection> CommitToExo(IEnumerable<ExoSubJobProjection> projections)
+        public IEnumerable<ExoSubJobProjection> CommitToExo(IEnumerable<ExoSubJobProjection> projections, bool updateBudgetIfExist = false)
         {
             List<ErrorMessage> errorMessages;
-            IEnumerable<ExoSubJobProjection> addedProjections = ExoMethods.CommitToExo(projections, MessageBoxService, masterJob, copyLine, loadPROJECT, USERCollection, localPrimeroUnitOfWork, bluePrintsEntitiesUnitOfWork, BulkColumnEditDialogService, out errorMessages, Entities, false, IgnoreCostGroupCostType);
+            IEnumerable<ExoSubJobProjection> addedProjections = ExoMethods.CommitToExo(projections, MessageBoxService, masterJob, copyLine, loadPROJECT, USERCollection, localPrimeroUnitOfWork, bluePrintsEntitiesUnitOfWork, BulkColumnEditDialogService, out errorMessages, Entities, updateBudgetIfExist, IgnoreCostGroupCostType);
 
             ShowErrorMessage("Errors", errorMessages);
             if (addedProjections.Count() > 0)

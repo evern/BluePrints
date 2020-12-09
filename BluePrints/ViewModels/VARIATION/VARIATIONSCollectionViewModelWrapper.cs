@@ -573,6 +573,29 @@ namespace BluePrints.ViewModels
                 }
             }
         }
+
+        public bool CanUpdateVariationBudget()
+        {
+            return !isSubmitting && !isApproving && !IsBusy;
+        }
+
+        public void UpdateVariationBudget()
+        {
+            if (SelectedEntity == null)
+            {
+                MessageBoxService.ShowMessage("Please select a variation to update", "Error", MessageButton.OK, MessageIcon.Exclamation);
+                return;
+            }
+
+            if(SelectedEntity.Entity.APPROVED == null)
+            {
+                MessageBoxService.ShowMessage("Only approved variation budget can be updated", "Error", MessageButton.OK, MessageIcon.Exclamation);
+                return;
+            }
+
+            CreateVARIATION_ITEMSViewModelWrapper<BASELINE_ITEMProgress>(SelectedEntity.Entity, OnVariationUpdate, null, false);
+        }
+
         #region Variation_Item revision
         public ICollectionViewModelsWrapper<TMainProjectionEntity> CreateVARIATION_ITEMSViewModelWrapper<TMainProjectionEntity>(VARIATION loadVARIATION, Action<IEnumerable<TMainProjectionEntity>, object> onLoadedAction, Func<object> getParentIdFunc, bool supressCompulsoryEntityNotFoundMessage)
             where TMainProjectionEntity : class, IGuidEntityKey, new()
@@ -616,11 +639,16 @@ namespace BluePrints.ViewModels
             mainThreadDispatcher.BeginInvoke(new Action(() => ReviseBASELINE(deliverables, LiveBASELINE, BASELINEViewModel, bluePrintsUOW, bluePrintsUOW.BASELINE_ITEMS, VariationStages.Submit)));
         }
 
-
         private void OnVariationUnsubmit(IEnumerable<BASELINE_ITEMProgress> deliverables, object parameter)
         {
             IBluePrintsEntitiesUnitOfWork bluePrintsUOW = bluePrintsUnitOfWorkFactory.CreateUnitOfWork();
             mainThreadDispatcher.BeginInvoke(new Action(() => ReviseBASELINE(deliverables, LiveBASELINE, BASELINEViewModel, bluePrintsUOW, bluePrintsUOW.BASELINE_ITEMS, VariationStages.Unsubmit)));
+        }
+
+        private void OnVariationUpdate(IEnumerable<BASELINE_ITEMProgress> deliverables, object parameter)
+        {
+            IBluePrintsEntitiesUnitOfWork bluePrintsUOW = bluePrintsUnitOfWorkFactory.CreateUnitOfWork();
+            mainThreadDispatcher.BeginInvoke(new Action(() => ReviseBASELINE(deliverables, LiveBASELINE, BASELINEViewModel, bluePrintsUOW, bluePrintsUOW.BASELINE_ITEMS, VariationStages.Update)));
         }
 
         public bool CanCalculateVariationSummary()
@@ -883,21 +911,25 @@ namespace BluePrints.ViewModels
                         VARIATION_ITEMSViewModel.Save(updateVARIATION_ITEM);
                     }
                 }
+
                 //if its purely a scan to determine variation
-                else if (variationStage != VariationStages.Approve && SelectedEntity.Entity.TYPE == VariationType.External && (deliverable.DisplayVariationAction == VariationAction.Add || (deliverable.DisplayVariationAction == VariationAction.Append && deliverable.DisplayVariationUnits > 0)) && variationCode != string.Empty)
+                if (SelectedEntity.Entity.TYPE == VariationType.External && (deliverable.DisplayVariationAction == VariationAction.Add || (deliverable.DisplayVariationAction == VariationAction.Append && deliverable.DisplayVariationUnits > 0)) && variationCode != string.Empty)
                 {
                     string subJobCode = deliverable.Subjob_Name;
                     string disciplineCode = deliverable.Discipline_Code;
                     string commodityCode = deliverable.Commodity_Code;
 
+                    decimal exoBudget = variationStage == VariationStages.Approve || variationStage == VariationStages.Update ? deliverable.Forecast_InternalCosts : 0;
                     ExoSubJobProjection exoVariation = exoVariations.FirstOrDefault((x => x.SubJobCode == subJobCode && x.VariationCode == variationCode));
                     if (exoVariation == null)
                     {
-                        ExoSubJobProjection newVariationSubJob = new ExoSubJobProjection() { SubJobCode = subJobCode, VariationCode = variationCode, StockCode = BluePrintsResources.VariationStockCode };
+                        ExoSubJobProjection newVariationSubJob = new ExoSubJobProjection() { SubJobCode = subJobCode, VariationCode = variationCode, StockCode = BluePrintsResources.VariationStockCode, ExoBudget = exoBudget };
                         //set commodity code convention so that error can be raised natively within model with GetPropertyError
                         newVariationSubJob.PopulateCommodityCodes(COMMODITY_CODECollection);
                         exoVariations.Add(newVariationSubJob);
                     }
+                    else
+                        exoVariation.ExoBudget += exoBudget;
                 }
 
                 LoadingScreenManager.Progress();
@@ -912,12 +944,13 @@ namespace BluePrints.ViewModels
                 else
                     UnsubmitSelectedEntity();
             }
+            //approve and unapprove
             else
             {
                 unitOfWork.SaveChanges();
-                if(variationStage == VariationStages.Unapprove)
+                if (variationStage == VariationStages.Unapprove)
                 {
-                    if(errorMessages.Count > 0)
+                    if (errorMessages.Count > 0)
                     {
                         DialogCollectionViewModel<ErrorMessage> viewModel = DialogCollectionViewModel<ErrorMessage>.Create(errorMessages, "Unapprove cannot continue because of the following error");
                         ErrorMessagesDialogService.ShowDialog(MessageButton.OK, string.Empty, "ListErrorMessages", viewModel);
@@ -935,8 +968,12 @@ namespace BluePrints.ViewModels
                         IsSubmitted = false;
                     }
                 }
+                else
+                    addVariationJobToExo(exoVariations, variationStage);
 
-                backwardCompatibilityDC_HOURS(liveBASELINE.GUID);
+                if(variationStage != VariationStages.Update)
+                    backwardCompatibilityDC_HOURS(liveBASELINE.GUID);
+
                 //because live baseline has been changed, full refresh is required
                 if (variationStage == VariationStages.Approve)
                     FullRefresh();
@@ -1025,8 +1062,10 @@ namespace BluePrints.ViewModels
             }
 
             string message = string.Empty;
-            if (exoInteraction == VariationStages.Submit)
+            if (exoInteraction == VariationStages.Submit || exoInteraction == VariationStages.Approve)
                 message = "Push OK to commit the following variation jobs to EXO, or push cancel and revise added deliverables if the codes are incorrect";
+            else if(exoInteraction == VariationStages.Update)
+                message = "Push OK to update the following variation jobs to EXO with budget";
             else
                 message = "Push OK to remove the following variation jobs from EXO";
 
@@ -1042,9 +1081,15 @@ namespace BluePrints.ViewModels
                         MessageBoxService.ShowMessage("Variation code(s) pushed to exo");
                     }
                     else
-                    {
                         MessageBoxService.ShowMessage("Pushed to exo failed, variation is not submitted");
-                    }
+                }
+                else if(exoInteraction == VariationStages.Approve || exoInteraction == VariationStages.Update)
+                {
+                    IEnumerable<ExoSubJobProjection> newlyAddedProjections = exoJobCollectionViewModel.CommitToExo(exoVariationJobs, true);
+                    if (newlyAddedProjections.Count() > 0)
+                        MessageBoxService.ShowMessage("Variation code(s) pushed to exo with budget");
+                    else
+                        MessageBoxService.ShowMessage("Pushed to exo failed, variation(s) are not submitted");
                 }
                 else
                 {
@@ -1117,7 +1162,8 @@ namespace BluePrints.ViewModels
             Approve,
             Unapprove,
             Submit,
-            Unsubmit
+            Unsubmit,
+            Update
         }
 
         public class BASELINE_ITEM_VARIATIONContainer
