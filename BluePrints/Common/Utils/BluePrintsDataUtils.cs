@@ -144,32 +144,29 @@ namespace BluePrints.Common.ViewModel.Utils
                 {
                     //rewind the data one week when progress is updated for the current week but reporting is done on the previous week
                     //will be saved when data date is saved
-                    if (loadPROGRESS.USE_CURRENT_WEEK)
+                    DateTime oneWeekAgo = endOfDayToday.Date.AddDays(-1 * (interval.Days)).AddDays(1);
+                    if (loadPROGRESS.REPORT_DATE == null)
+                        loadPROGRESS.REPORT_DATE = loadPROGRESS.DATA_DATE;
+
+                    if (loadPROGRESS.REPORT_DATE < oneWeekAgo)
                     {
-                        DateTime oneWeekAgo = endOfDayToday.Date.AddDays(-1 * (interval.Days)).AddDays(1);
-                        if (loadPROGRESS.REPORT_DATE == null)
-                            loadPROGRESS.REPORT_DATE = loadPROGRESS.DATA_DATE;
-
-                        if (loadPROGRESS.REPORT_DATE < oneWeekAgo)
+                        do
                         {
-                            do
-                            {
-                                loadPROGRESS.REPORT_DATE = ((DateTime)loadPROGRESS.REPORT_DATE).AddDays(1 * interval.Days);
-                            } while (loadPROGRESS.REPORT_DATE < oneWeekAgo);
-                            return true;
-                        }
-
-                        if (loadPROGRESS.REPORT_DATE > endOfDayToday)
-                        {
-                            do
-                            {
-                                loadPROGRESS.REPORT_DATE = ((DateTime)loadPROGRESS.REPORT_DATE).AddDays(-1 * interval.Days);
-                            } while (loadPROGRESS.REPORT_DATE > endOfDayToday);
-                            return true;
-                        }
-                        else
-                            return false;
+                            loadPROGRESS.REPORT_DATE = ((DateTime)loadPROGRESS.REPORT_DATE).AddDays(1 * interval.Days);
+                        } while (loadPROGRESS.REPORT_DATE < oneWeekAgo);
+                        return true;
                     }
+
+                    if (loadPROGRESS.REPORT_DATE > endOfDayToday)
+                    {
+                        do
+                        {
+                            loadPROGRESS.REPORT_DATE = ((DateTime)loadPROGRESS.REPORT_DATE).AddDays(-1 * interval.Days);
+                        } while (loadPROGRESS.REPORT_DATE > endOfDayToday);
+                        return true;
+                    }
+                    else
+                        return false;
                 }
                 else
                 {
