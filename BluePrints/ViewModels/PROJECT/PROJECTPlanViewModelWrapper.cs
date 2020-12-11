@@ -407,8 +407,7 @@ namespace BluePrints.ViewModels
             }
 
             //edit the deliverables based on tender profile items
-            if (!useDeliverablesHours)
-                foreach (TENDER_PROFILE_ITEM tenderItem in projectTenderProfile.TENDER_PROFILE_ITEMS)
+            foreach (TENDER_PROFILE_ITEM tenderItem in projectTenderProfile.TENDER_PROFILE_ITEMS)
             {
                 decimal assignHours = projectTenderProfile.TenderProfile.TENDER_HOURS * tenderItem.HOURS_PERCENTAGE;
                 Guid tenderItemDepartmentGuid = tenderItem.GUID_DEPARTMENT;
@@ -469,7 +468,7 @@ namespace BluePrints.ViewModels
                             deliverableEditModel.DisciplineGuid = tenderItemDisciplineGuid;
 
                             deliverableEditModel.BellCurveShape = tenderItem.BELLCURVESHAPE;
-                            deliverableEditModel.UnitsTo = editDeliverableHours;
+                            deliverableEditModel.UnitsTo = useDeliverablesHours ? deliverableEditModel.UnitsFrom : editDeliverableHours;
                             deliverableEditModel.StartDateTo = proRatedStartDate;
                             deliverableEditModel.EndDateTo = proRatedEndDate;
 
@@ -1610,7 +1609,7 @@ namespace BluePrints.ViewModels
             UICommand allCommand = new UICommand()
             {
                 Id = CopyProfileAction.All,
-                Caption = "Copy All",
+                Caption = "Replace All",
                 IsCancel = true,
                 IsDefault = false,
             };
@@ -1618,7 +1617,7 @@ namespace BluePrints.ViewModels
             UICommand exceptBudgetCommand = new UICommand()
             {
                 Id = CopyProfileAction.ExceptBudget,
-                Caption = "Copy All Except Budget",
+                Caption = "Merge (Exclude Budget)",
                 IsCancel = true,
                 IsDefault = false,
             };
@@ -1689,52 +1688,58 @@ namespace BluePrints.ViewModels
         /// <returns>Return existing or new TENDER_PROFILE</returns>
         private void replaceExistingProfile(TENDER_PROFILE selectedTenderProfile, PROJECTTenderProfile projectTenderProfile, bool replaceAll)
         {
-            TENDER_PROFILE newTENDER_PROFILE = new TENDER_PROFILE();
+            TENDER_PROFILE existingOrNewTENDER_PROFILE;
             TENDER_PROFILE findCurrentTENDER_PROFILE = _bluePrintsUnitOfWork.TENDER_PROFILES.FirstOrDefault(x => x.GUID == projectTenderProfile.TenderProfile.GUID);
 
-            //set new tender profile hours with existing tender profile hours and remove old tender profile
-            if (findCurrentTENDER_PROFILE != null)
+            if (replaceAll)
             {
-                newTENDER_PROFILE.TENDER_HOURS = findCurrentTENDER_PROFILE.TENDER_HOURS;
-                _bluePrintsUnitOfWork.TENDER_PROFILES.Remove(findCurrentTENDER_PROFILE);
+                existingOrNewTENDER_PROFILE = new TENDER_PROFILE();
+                //set new tender profile hours with existing tender profile hours and remove old tender profile
+                if (findCurrentTENDER_PROFILE != null)
+                {
+                    existingOrNewTENDER_PROFILE.TENDER_HOURS = findCurrentTENDER_PROFILE.TENDER_HOURS;
+                    _bluePrintsUnitOfWork.TENDER_PROFILES.Remove(findCurrentTENDER_PROFILE);
+                }
+
+                existingOrNewTENDER_PROFILE.NAME = selectedTenderProfile.NAME;
+                existingOrNewTENDER_PROFILE.GUID_PROJECT = projectTenderProfile.Entity.GUID;
+                _bluePrintsUnitOfWork.TENDER_PROFILES.Add(existingOrNewTENDER_PROFILE);
+
+                projectTenderProfile.TenderProfile = existingOrNewTENDER_PROFILE;
+
+                //save tender profile
+                _bluePrintsUnitOfWork.SaveChanges();
             }
-
-            newTENDER_PROFILE.NAME = selectedTenderProfile.NAME;
-            newTENDER_PROFILE.GUID_PROJECT = projectTenderProfile.Entity.GUID;
-            _bluePrintsUnitOfWork.TENDER_PROFILES.Add(newTENDER_PROFILE);
-
-            projectTenderProfile.TenderProfile = newTENDER_PROFILE;
-
-            //save tender profile
-            _bluePrintsUnitOfWork.SaveChanges();
+            else
+                existingOrNewTENDER_PROFILE = projectTenderProfile.TenderProfile;
 
             List<TENDER_PROFILE_ITEM> addTENDER_PROFILE_ITEMS = new List<TENDER_PROFILE_ITEM>();
             foreach (TENDER_PROFILE_ITEM defaultTENDER_PROFILE_ITEM in selectedTenderProfile.TENDER_PROFILE_ITEM)
             {
-                TENDER_PROFILE_ITEM copyTENDER_PROFILE_ITEM = new TENDER_PROFILE_ITEM();
-                DataUtils.ShallowCopy(copyTENDER_PROFILE_ITEM, defaultTENDER_PROFILE_ITEM);
-
-                //if not replacing all just replace the budget
-                if(!replaceAll)
+                TENDER_PROFILE_ITEM findExistingTENDER_PROFILE_ITEM = projectTenderProfile.TENDER_PROFILE_ITEMS.FirstOrDefault(x => x.GUID_DEPARTMENT == defaultTENDER_PROFILE_ITEM.GUID_DEPARTMENT && x.GUID_DISCIPLINE == defaultTENDER_PROFILE_ITEM.GUID_DISCIPLINE);
+                if (replaceAll || findExistingTENDER_PROFILE_ITEM == null)
                 {
-                    TENDER_PROFILE_ITEM findExistingTENDER_PROFILE_ITEM = projectTenderProfile.TENDER_PROFILE_ITEMS.FirstOrDefault(x => x.GUID_DEPARTMENT == defaultTENDER_PROFILE_ITEM.GUID_DEPARTMENT && x.GUID_DISCIPLINE == defaultTENDER_PROFILE_ITEM.GUID_DISCIPLINE);
-                    if (findExistingTENDER_PROFILE_ITEM != null)
-                        copyTENDER_PROFILE_ITEM.HOURS_PERCENTAGE = findExistingTENDER_PROFILE_ITEM.HOURS_PERCENTAGE;
+                    TENDER_PROFILE_ITEM copyTENDER_PROFILE_ITEM = new TENDER_PROFILE_ITEM();
+                    DataUtils.ShallowCopy(copyTENDER_PROFILE_ITEM, defaultTENDER_PROFILE_ITEM);
+
+                    copyTENDER_PROFILE_ITEM.GUID = Guid.Empty;
+                    copyTENDER_PROFILE_ITEM.GUID_TENDER_PROFILE = existingOrNewTENDER_PROFILE.GUID;
+                    copyTENDER_PROFILE_ITEM.PROJECTTenderProfile = projectTenderProfile;
+                    _bluePrintsUnitOfWork.TENDER_PROFILE_ITEMS.Add(copyTENDER_PROFILE_ITEM);
+                    addTENDER_PROFILE_ITEMS.Add(copyTENDER_PROFILE_ITEM);
                 }
-
-                copyTENDER_PROFILE_ITEM.GUID = Guid.Empty;
-                copyTENDER_PROFILE_ITEM.GUID_TENDER_PROFILE = newTENDER_PROFILE.GUID;
-                copyTENDER_PROFILE_ITEM.PROJECTTenderProfile = projectTenderProfile;
-
-                _bluePrintsUnitOfWork.TENDER_PROFILE_ITEMS.Add(copyTENDER_PROFILE_ITEM);
-                addTENDER_PROFILE_ITEMS.Add(copyTENDER_PROFILE_ITEM);
+                else
+                {
+                    findExistingTENDER_PROFILE_ITEM.SCHEDULE_START_PERCENTAGE = defaultTENDER_PROFILE_ITEM.SCHEDULE_START_PERCENTAGE;
+                    findExistingTENDER_PROFILE_ITEM.SCHEDULE_FINISH_PERCENTAGE = defaultTENDER_PROFILE_ITEM.SCHEDULE_FINISH_PERCENTAGE;
+                }
             }
 
             //refresh project tender profile items with newly added items
-            projectTenderProfile.TENDER_PROFILE_ITEMS.Clear();
-            projectTenderProfile.TENDER_PROFILE_ITEMS.AddRange(addTENDER_PROFILE_ITEMS);
+            if(replaceAll)
+                projectTenderProfile.TENDER_PROFILE_ITEMS.Clear();
 
-            if (findCurrentTENDER_PROFILE != null)
+            projectTenderProfile.TENDER_PROFILE_ITEMS.AddRange(addTENDER_PROFILE_ITEMS);
 
             //save tender profile items
             _bluePrintsUnitOfWork.SaveChanges();
