@@ -416,14 +416,8 @@ namespace BluePrints.Common.Misc
         {
             IEnumerable<string> reportable_codes = dashboard.Summary.Reportables.Select(reportable_selector);
             IEnumerable<ExoDataPoint> burnedDataPoints = dashboard.Summary.Burned.GetData().Select(x => (ExoDataPoint)x);
-            IEnumerable<string> exo_codes = burnedDataPoints.Select(exo_selector);
-            IEnumerable<ExoDataPoint> materialDataPoints = dashboard.Summary.Material.GetData().Select(x => (ExoDataPoint)x);
-            IEnumerable<string> material_codes = materialDataPoints.Select(exo_selector);
-            IEnumerable<ExoDataPoint> poDataPoints = dashboard.Summary.PO.GetData().Select(x => (ExoDataPoint)x);
-            IEnumerable<string> po_codes = poDataPoints.Select(exo_selector);
 
-            ConcurrentBag<string> loop_codes = new ConcurrentBag<string>(reportable_codes);
-            if(setBurnedDepartment)
+            if (setBurnedDepartment)
             {
                 foreach (ExoDataPoint exoDataPoint in burnedDataPoints)
                 {
@@ -435,6 +429,14 @@ namespace BluePrints.Common.Misc
                         exoDataPoint.Department_Code = findReportable.Department_Code;
                 }
             }
+
+            IEnumerable<string> exo_codes = burnedDataPoints.Select(exo_selector);
+            IEnumerable<ExoDataPoint> materialDataPoints = dashboard.Summary.Material.GetData().Select(x => (ExoDataPoint)x);
+            IEnumerable<string> material_codes = materialDataPoints.Select(exo_selector);
+            IEnumerable<ExoDataPoint> poDataPoints = dashboard.Summary.PO.GetData().Select(x => (ExoDataPoint)x);
+            IEnumerable<string> po_codes = poDataPoints.Select(exo_selector);
+
+            ConcurrentBag<string> loop_codes = new ConcurrentBag<string>(reportable_codes);
 
             foreach(string reportableCode in reportable_codes)
             {
@@ -465,10 +467,10 @@ namespace BluePrints.Common.Misc
                     child_dashboard.Add(new_dashboard);
             });
 
-            //foreach (string unique_code in unique_codes.OrderBy(x => x))
-            //{
+            foreach (string unique_code in unique_codes.OrderBy(x => x))
+            {
 
-            //}
+            }
 
             dashboard.Child_Dashboards = child_dashboard.Where(x => x.Stats != null).ToList();
         }
@@ -556,7 +558,6 @@ namespace BluePrints.Common.Misc
 
 
                 ConcurrentBag<DashboardTreeStructure> disciplineDashboards = new ConcurrentBag<DashboardTreeStructure>();
-
                 Parallel.ForEach(
                 departmentDashboards,
                 departmentDashboard =>
@@ -572,6 +573,11 @@ namespace BluePrints.Common.Misc
                         disciplineDashboards.Add(childDashboard);
                 });
 
+                foreach (var departmentDashboard in departmentDashboards)
+                {
+
+                }
+
                 Parallel.ForEach(
                 disciplineDashboards,
                 disciplineDashboard =>
@@ -580,13 +586,23 @@ namespace BluePrints.Common.Misc
 
                     if (showLoadingScreen)
                         LoadingScreenManager.SetMessage(loadingScreenMessage);
-                        //child dashboards are now subdivided into commodity dashboard
-                        disciplineDashboard.SubDivideDashboardStats(x => x.Commodity_Code, x => x.Commodity_Code, forceRetrieveRemainingDataPoints);
+                    //child dashboards are now subdivided into commodity dashboard
+                    disciplineDashboard.SubDivideDashboardStats(x => x.Commodity_Code, x => x.Commodity_Code, forceRetrieveRemainingDataPoints);
                 });
+
+                foreach (var disciplineDashboard in disciplineDashboards)
+                {
+
+                }
 
                 if (showLoadingScreen)
                     LoadingScreenManager.Progress();
             });
+
+            foreach (var subjob_dashboard in project_dashboard.Child_Dashboards)
+            {
+                
+            }
 
             if (showLoadingScreen)
                 LoadingScreenManager.CloseLoadingScreen();
@@ -645,10 +661,10 @@ namespace BluePrints.Common.Misc
                         foreach (DashboardTreeStructure departmentDashboard in subJobDashboard.Child_Dashboards.OrderBy(x => x.Code))
                         {
                             if (departmentDashboard.Child_Dashboards == null || departmentDashboard.Child_Dashboards.Count == 0)
-                                populateFlatDashboards(flatDashboards, subJobDashboard, subJobDashboard.Code, departmentDashboard.Code, string.Empty, string.Empty, departmentDashboard.Stats, designSubjobs, constructionSubjobs);
+                                populateFlatDashboards(flatDashboards, subJobDashboard, string.Empty, departmentDashboard.Code, string.Empty, string.Empty, departmentDashboard.Stats, designSubjobs, constructionSubjobs);
                             else
                             {
-                                foreach (DashboardTreeStructure disciplineDashboard in subJobDashboard.Child_Dashboards.OrderBy(x => x.Code))
+                                foreach (DashboardTreeStructure disciplineDashboard in departmentDashboard.Child_Dashboards.OrderBy(x => x.Code))
                                 {
                                     if (disciplineDashboard.Child_Dashboards == null || disciplineDashboard.Child_Dashboards.Count == 0)
                                         populateFlatDashboards(flatDashboards, subJobDashboard, string.Empty, departmentDashboard.Code, disciplineDashboard.Code, string.Empty, disciplineDashboard.Stats, designSubjobs, constructionSubjobs);
