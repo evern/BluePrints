@@ -188,7 +188,7 @@
                                         <dxg:GridColumn Width="75" FieldName="AreaCode" Header="Area" VisibleIndex="30" />
                                         <dxg:GridColumn Width="75" FieldName="SubAreaCode" Header="Sub Area" VisibleIndex="40" />
                                         <!--<dxg:GridColumn FieldName="AreaCode" Header="Area" VisibleIndex="20" />-->
-                                        <!--<dxg:GridColumn Header="Department" FieldName="DepartmentCode" />-->
+                                        <dxg:GridColumn Header="Department" FieldName="DepartmentCode"  VisibleIndex="45" />
                                         <dxg:GridColumn FieldName="DisciplineCode" Header="Discipline" VisibleIndex="50" />
                                         <dxg:GridColumn FieldName="CommodityCode" Header="Commodity" VisibleIndex="60" />
                                         <!--<dxg:GridColumn FieldName="Variation_Code" Header="Variation" VisibleIndex="45" />-->
