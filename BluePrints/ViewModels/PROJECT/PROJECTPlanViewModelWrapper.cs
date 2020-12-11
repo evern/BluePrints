@@ -314,9 +314,15 @@ namespace BluePrints.ViewModels
             }
 
             if (projectTenderProfile.Entity.TENDER_PROJECT_START == null)
+            {
                 MessageBoxService.ShowMessage("Please set project start date", "Error", MessageButton.OK);
+                return;
+            }
             else if (projectTenderProfile.Entity.TENDER_PROJECT_DURATION == null)
+            {
                 MessageBoxService.ShowMessage("Please set project duration", "Error", MessageButton.OK);
+                return;
+            }
 
             IEnumerable<BASELINE_ITEM> projectDeliverables = _bluePrintsUnitOfWork.BASELINE_ITEMS.Where(x => x.GUID_BASELINE == projectLiveBASELINE.GUID);
             UICommand fromPlannedCommand = new UICommand()
