@@ -483,18 +483,7 @@ namespace BluePrints.Common.ViewModel.Reporting
         public decimal DisplayRemainingQty => IsPO ? Quantity : 0;
 
         public string PhaseCode => BluePrintsDataUtils.GetPhaseCode(Subjob_Name);
-        public string Department_Code
-        {
-            get
-            {
-                if (Role == null || Role == string.Empty || Role.Length < 2)
-                    return string.Empty;
-                else if (Role.Length < 2)
-                    return string.Empty;
-
-                return Role.Substring(0, 2);
-            }
-        }
+        public string Department_Code { get; set; }
 
         public string Discipline_Code
         {

@@ -412,7 +412,7 @@ namespace BluePrints.Common.Misc
             return unique_codes.Count;
         }
 
-        public static void SubDivideDashboardStats(this IDashboard dashboard, Func<IReportable, string> reportable_selector, Func<ExoDataPoint, string> exo_selector, bool forceRetrieveRemainingDataPoints = false)
+        public static void SubDivideDashboardStats(this IDashboard dashboard, Func<IReportable, string> reportable_selector, Func<ExoDataPoint, string> exo_selector, bool forceRetrieveRemainingDataPoints = false, bool setBurnedDepartment = false)
         {
             IEnumerable<string> reportable_codes = dashboard.Summary.Reportables.Select(reportable_selector);
             IEnumerable<ExoDataPoint> burnedDataPoints = dashboard.Summary.Burned.GetData().Select(x => (ExoDataPoint)x);
@@ -423,6 +423,19 @@ namespace BluePrints.Common.Misc
             IEnumerable<string> po_codes = poDataPoints.Select(exo_selector);
 
             ConcurrentBag<string> loop_codes = new ConcurrentBag<string>(reportable_codes);
+            if(setBurnedDepartment)
+            {
+                foreach (ExoDataPoint exoDataPoint in burnedDataPoints)
+                {
+                    if (exoDataPoint.Narrative == null || exoDataPoint.Narrative == string.Empty)
+                        continue;
+
+                    IReportable findReportable = dashboard.Summary.Reportables.FirstOrDefault(x => x.Deliverable_Name.ToUpper() == exoDataPoint.Narrative.ToUpper());
+                    if (findReportable != null)
+                        exoDataPoint.Department_Code = findReportable.Department_Code;
+                }
+            }
+
             foreach(string reportableCode in reportable_codes)
             {
                 loop_codes.Add(reportableCode);
@@ -491,7 +504,7 @@ namespace BluePrints.Common.Misc
             project_dashboard.Summary = project_summary_stats;
 
             //int maxProgress = project_dashboard.getSubDivideMaxProgress(burned_data_points, material_data_points, po_data_points, x => x.Subjob_Name, x => x.Subjob_Name);
-            project_dashboard.SubDivideDashboardStats(x => x.Subjob_Name, x => x.Subjob_Name, forceRetrieveRemainingDataPoints);
+            project_dashboard.SubDivideDashboardStats(x => x.Subjob_Name, x => x.Subjob_Name, forceRetrieveRemainingDataPoints, true);
             int maxProgress = project_dashboard.Child_Dashboards == null ? 0 : project_dashboard.Child_Dashboards.Count;
 
             if(showLoadingScreen)
