@@ -619,7 +619,7 @@ namespace BluePrints.Common.Resources {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to su.bing-wen@primero.com.au.
+        ///   Looks up a localized string similar to service.desk@primero.com.au.
         /// </summary>
         internal static string ITEmail {
             get {

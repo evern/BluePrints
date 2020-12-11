@@ -343,7 +343,7 @@
     <value>PO Forecast</value>
   </data>
   <data name="ITEmail" xml:space="preserve">
-    <value>su.bing-wen@primero.com.au</value>
+    <value>service.desk@primero.com.au</value>
   </data>
   <data name="Regex_NumbersOnly" xml:space="preserve">
     <value>[^0-9.]</value>

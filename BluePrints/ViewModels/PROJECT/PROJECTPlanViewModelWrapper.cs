@@ -170,7 +170,7 @@ namespace BluePrints.ViewModels
         //populate the view model
         private void populateDataPoints(PROJECTTenderProfile PROJECTTenderProfile)
         {
-            if (PROJECTTenderProfile.Entity.TENDER_PROJECT_START == null || PROJECTTenderProfile.Entity.TENDER_PROJECT_DURATION == null || PROJECTTenderProfile.Entity.TENDER_PROJECT_DURATION == 0)
+            if (PROJECTTenderProfile.Entity.TENDER_PROJECT_START == null || PROJECTTenderProfile.Entity.TENDER_PROJECT_DURATION == null)
                 return;
 
             int totalDurationInDays = BluePrintsDataUtils.GetTenderDuration(PROJECTTenderProfile.Entity);
@@ -359,6 +359,7 @@ namespace BluePrints.ViewModels
 
             var deliverableGroup = projectDeliverables.GroupBy(x => new { x.GUID_DEPARTMENT, x.GUID_DISCIPLINE }).Select(group => new { group.Key.GUID_DEPARTMENT, group.Key.GUID_DISCIPLINE, BUDGET_HOURS = group.Sum(x => x.BUDGET_HOURS) });
 
+            //edit tender profile items based on deliverables
             foreach (var deliverables in deliverableGroup)
             {
                 if (deliverables.GUID_DEPARTMENT == null || deliverables.GUID_DISCIPLINE == null)
@@ -405,7 +406,9 @@ namespace BluePrints.ViewModels
                 }
             }
 
-            foreach (TENDER_PROFILE_ITEM tenderItem in projectTenderProfile.TENDER_PROFILE_ITEMS)
+            //edit the deliverables based on tender profile items
+            if (!useDeliverablesHours)
+                foreach (TENDER_PROFILE_ITEM tenderItem in projectTenderProfile.TENDER_PROFILE_ITEMS)
             {
                 decimal assignHours = projectTenderProfile.TenderProfile.TENDER_HOURS * tenderItem.HOURS_PERCENTAGE;
                 Guid tenderItemDepartmentGuid = tenderItem.GUID_DEPARTMENT;
@@ -430,7 +433,7 @@ namespace BluePrints.ViewModels
 
                     deliverableEditModel.Action = RowEditAction.Add;
                     deliverableEditModel.UnitsFrom = 0;
-                    deliverableEditModel.UnitsTo = assignHours;
+                    deliverableEditModel.UnitsTo = useDeliverablesHours ? 0 : assignHours;
                     deliverableEditModel.Name = "System Generated";
 
 
@@ -451,10 +454,7 @@ namespace BluePrints.ViewModels
                     foreach (BASELINE_ITEM sameDepartmentDisciplineDeliverable in sameDepartmentDisciplineDeliverables)
                     {
                         decimal editDeliverableHours = 0;
-                        if (!useDeliverablesHours)
-                            editDeliverableHours = hoursPerDeliverable;
-                        else
-                            editDeliverableHours = sameDepartmentDisciplineDeliverable.BUDGET_HOURS;
+                        editDeliverableHours = hoursPerDeliverable;
 
                         if (sameDepartmentDisciplineDeliverable.BUDGET_HOURS != editDeliverableHours || sameDepartmentDisciplineDeliverable.TENDER_START_DATE != proRatedStartDate || sameDepartmentDisciplineDeliverable.TENDER_END_DATE != proRatedEndDate || sameDepartmentDisciplineDeliverable.BELLCURVESHAPE != tenderItem.BELLCURVESHAPE)
                         {
@@ -484,7 +484,7 @@ namespace BluePrints.ViewModels
 
             PHASE findPHASE = _bluePrintsUnitOfWork.PHASES.FirstOrDefault(x => x.INTERNAL_NUM == BluePrintsResources.Default_Design_Phase);
 
-            //set deliverable hours to zero
+            //set deliverable hours to zero when there's no tender profile item for it
             if (!useDeliverablesHours)
                 foreach (BASELINE_ITEM deliverable in projectDeliverables)
                 {
@@ -589,9 +589,9 @@ namespace BluePrints.ViewModels
 
                 LoadingScreenManager.CloseLoadingScreen();
                 if (useDeliverablesHours)
-                    MessageBoxService.ShowMessage("Deliverables sync with time phase from planned, and planned design hours sync with deliverables");
+                    MessageBoxService.ShowMessage("Deliverables sync with time phase from planned, and planned design hours sync with deliverables\n\nPlease note that S-Curve takes about a minute to refresh");
                 else
-                    MessageBoxService.ShowMessage("Deliverables sync with time phase and hours from planned");
+                    MessageBoxService.ShowMessage("Deliverables sync with time phase and hours from planned\n\nPlease note that S-Curve takes about a minute to refresh");
             }
         }
 
@@ -2041,7 +2041,7 @@ namespace BluePrints.ViewModels
             visibleIndex += 10;
             columns.Add(new ColumnDescriptor() { FieldName = columnProject + ".Entity.GUID_OFFICE", VisibleIndex = visibleIndex, Header = "Office", Fixed = FixedStyle.Left, Width = 80, DisplayMember = "NAME", ValueMember = "GUID", ItemsSource = OFFICECollection, Settings = SettingsType.Collection });
             visibleIndex += 10;
-            columns.Add(new ColumnDescriptor() { FieldName = columnProject + ".Entity.CLIENT", VisibleIndex = visibleIndex, Header = "Client", Fixed = FixedStyle.Left, Width = 80, Settings = SettingsType.Default });
+            columns.Add(new ColumnDescriptor() { FieldName = columnProject + ".Entity.CLIENT", SortIndex = -1, VisibleIndex = visibleIndex, Header = "Client", Fixed = FixedStyle.Left, Width = 80, Settings = SettingsType.Default });
             visibleIndex += 10;
             columns.Add(new ColumnDescriptor() { FieldName = columnProject + ".Entity.STATUS", VisibleIndex = visibleIndex, Header = "Project Status", Fixed = FixedStyle.Left, Width = 120, Settings = SettingsType.Enum1 });
             visibleIndex += 10;
