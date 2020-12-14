@@ -390,7 +390,7 @@ namespace BluePrints.ViewModels
             DateTime firstAlignedDataDate = ChronologicalHelpers.GenerateFirstAlignedDataDate(loadPROGRESS);
             List<VariationAdjustment> projectVariationAdjustment = ProjectionHelpers.BuildProjectVariationAdjustments(VARIATIONCollection.AsQueryable(), ReportableCollection);
 
-            DateTime reporting_data_date = loadPROGRESS.DATA_DATE;
+            DateTime reporting_data_date = DataDate;
             TimeSpan reporting_interval = ChronologicalHelpers.ConvertProgressIntervalToPeriod(loadPROGRESS);
             DateTime first_aligned_data_date = ChronologicalHelpers.GenerateFirstAlignedDataDate(loadPROGRESS);
             DeliverableSummaryStats projectSummary = new DeliverableSummaryStats(MainViewModel.Entities, reporting_data_date, reporting_interval, first_aligned_data_date, projectVariationAdjustment);
@@ -399,7 +399,7 @@ namespace BluePrints.ViewModels
             fullSummarizer.BuildBurnedDataPoints(false, false, false);
             fullSummarizer.Build();
 
-            progressReport.AssignProperties(projectSummary, loadPROGRESS.DATA_DATE, loadPROGRESS.PROJECT.NAME);
+            progressReport.AssignProperties(projectSummary, DataDate, loadPROGRESS.PROJECT.NAME);
             var previewWindow = new DocumentPreviewWindow();
             previewWindow.PreviewControl.DocumentSource = progressReport;
             previewWindow.WindowStartupLocation = WindowStartupLocation.CenterScreen;
