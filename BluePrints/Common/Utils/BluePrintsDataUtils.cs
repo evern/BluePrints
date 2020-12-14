@@ -139,7 +139,7 @@ namespace BluePrints.Common.ViewModel.Utils
             DateTime endOfDayToday = DateTime.Now.Date.AddDays(1).AddSeconds(-1);
             int multiplier;
 
-            DateTime endOfCurrentWeek = DateTime.Today.Date.AddDays(-(int)loadPROGRESS.DATA_DATE.DayOfWeek).AddDays(6).AddSeconds(-1);
+            DateTime endOfCurrentWeek = DateTime.Today.Date.AddDays(((int)loadPROGRESS.DATA_DATE.DayOfWeek - (int)DateTime.Today.DayOfWeek)).AddDays(1).AddSeconds(-1);
             DateTime endOfPreviousWeek = endOfCurrentWeek.AddDays(-7);
 
             if (navigationType == DateNavigationType.Current)
