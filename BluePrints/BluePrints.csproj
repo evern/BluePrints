@@ -23,7 +23,7 @@
     <UpdatePeriodically>false</UpdatePeriodically>
     <UpdateRequired>true</UpdateRequired>
     <MapFileExtensions>true</MapFileExtensions>
-    <MinimumRequiredVersion>1.0.6.223</MinimumRequiredVersion>
+    <MinimumRequiredVersion>1.0.6.224</MinimumRequiredVersion>
     <ApplicationRevision>224</ApplicationRevision>
     <ApplicationVersion>1.0.6.%2a</ApplicationVersion>
     <UseApplicationTrust>false</UseApplicationTrust>
@@ -787,6 +787,8 @@
     <Compile Include="Common\ViewModel\GanttChart\GanttCanvas.cs" />
     <Compile Include="Common\ViewModel\GanttChart\P6_Activity.cs" />
     <Compile Include="Common\ViewModel\Misc\CodesValidationModel.cs" />
+    <Compile Include="Common\ViewModel\Misc\TenderProfileItemEditModel.cs" />
+    <Compile Include="Common\ViewModel\Misc\TenderProfileItemEditConfirmationViewModel.cs" />
     <Compile Include="Common\ViewModel\Misc\DeliverableEditConfirmationViewModel.cs" />
     <Compile Include="Common\ViewModel\Misc\EarnedDataDateRealignmentViewModel.cs" />
     <Compile Include="Common\ViewModel\Misc\ColumnTemplateSelector.cs" />
@@ -805,6 +807,9 @@
     </Compile>
     <Compile Include="Common\View\BookTimeDialog.xaml.cs">
       <DependentUpon>BookTimeDialog.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Common\View\TenderProfileItemEditConfirmation.xaml.cs">
+      <DependentUpon>TenderProfileItemEditConfirmation.xaml</DependentUpon>
     </Compile>
     <Compile Include="Common\View\DistributionSelect.xaml.cs">
       <DependentUpon>DistributionSelect.xaml</DependentUpon>
@@ -1976,6 +1981,10 @@
       <SubType>Designer</SubType>
     </Page>
     <Page Include="Common\View\BookTimeDialog.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Common\View\TenderProfileItemEditConfirmation.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>

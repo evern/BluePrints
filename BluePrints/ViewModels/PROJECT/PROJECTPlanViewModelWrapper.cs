@@ -1744,6 +1744,37 @@ namespace BluePrints.ViewModels
             //refresh project tender profile items with newly added items
             if(replaceAll)
                 projectTenderProfile.TENDER_PROFILE_ITEMS.Clear();
+            else
+            {
+                List<TenderProfileItemEditModel> tenderProfileItemEditModels = new List<TenderProfileItemEditModel>();
+                foreach (TENDER_PROFILE_ITEM currentTENDER_PROFILE_ITEM in projectTenderProfile.TENDER_PROFILE_ITEMS)
+                {
+                    TENDER_PROFILE_ITEM findDefaultTENDER_PROFILE_ITEM = selectedTenderProfile.TENDER_PROFILE_ITEM.FirstOrDefault(x => x.GUID_DEPARTMENT == currentTENDER_PROFILE_ITEM.GUID_DEPARTMENT && x.GUID_DISCIPLINE == currentTENDER_PROFILE_ITEM.GUID_DISCIPLINE);
+                    if(findDefaultTENDER_PROFILE_ITEM == null)
+                    {
+                        TenderProfileItemEditModel tenderProfileItemEditModel = new TenderProfileItemEditModel();
+                        tenderProfileItemEditModel.TenderProfileItemGuid = currentTENDER_PROFILE_ITEM.GUID;
+                        tenderProfileItemEditModel.DepartmentGuid = currentTENDER_PROFILE_ITEM.GUID_DEPARTMENT;
+                        tenderProfileItemEditModel.DisciplineGuid = currentTENDER_PROFILE_ITEM.GUID_DISCIPLINE;
+                        tenderProfileItemEditModel.HoursPercentageFrom = currentTENDER_PROFILE_ITEM.HOURS_PERCENTAGE;
+                        tenderProfileItemEditModel.HoursPercentageTo = 0;
+                        tenderProfileItemEditModels.Add(tenderProfileItemEditModel);
+                    }
+                }
+
+                TenderProfileItemEditConfirmationViewModel tenderProfileItemEditConfirmationViewModel = TenderProfileItemEditConfirmationViewModel.Create(tenderProfileItemEditModels, "Do you wish to set hours % to zero for items that doesn't exists in the copied profile?", DEPARTMENTCollection, DISCIPLINECollection);
+                if (DeliverableEditDialogService.ShowDialog(MessageButton.OKCancel, "", "TenderProfileItemEditConfirmation", tenderProfileItemEditConfirmationViewModel) == MessageResult.OK)
+                {
+                    foreach(TenderProfileItemEditModel tenderProfileItemEditModel in tenderProfileItemEditModels)
+                    {
+                        TENDER_PROFILE_ITEM findCurrentTENDER_PROFILE_ITEM = projectTenderProfile.TENDER_PROFILE_ITEMS.FirstOrDefault(x => x.GUID == tenderProfileItemEditModel.TenderProfileItemGuid);
+                        if(findCurrentTENDER_PROFILE_ITEM != null)
+                        {
+                            findCurrentTENDER_PROFILE_ITEM.HOURS_PERCENTAGE = tenderProfileItemEditModel.HoursPercentageTo;
+                        }
+                    }
+                }
+            }
 
             projectTenderProfile.TENDER_PROFILE_ITEMS.AddRange(addTENDER_PROFILE_ITEMS);
 
