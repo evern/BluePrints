@@ -1752,13 +1752,16 @@ namespace BluePrints.ViewModels
                     TENDER_PROFILE_ITEM findDefaultTENDER_PROFILE_ITEM = selectedTenderProfile.TENDER_PROFILE_ITEM.FirstOrDefault(x => x.GUID_DEPARTMENT == currentTENDER_PROFILE_ITEM.GUID_DEPARTMENT && x.GUID_DISCIPLINE == currentTENDER_PROFILE_ITEM.GUID_DISCIPLINE);
                     if(findDefaultTENDER_PROFILE_ITEM == null)
                     {
-                        TenderProfileItemEditModel tenderProfileItemEditModel = new TenderProfileItemEditModel();
-                        tenderProfileItemEditModel.TenderProfileItemGuid = currentTENDER_PROFILE_ITEM.GUID;
-                        tenderProfileItemEditModel.DepartmentGuid = currentTENDER_PROFILE_ITEM.GUID_DEPARTMENT;
-                        tenderProfileItemEditModel.DisciplineGuid = currentTENDER_PROFILE_ITEM.GUID_DISCIPLINE;
-                        tenderProfileItemEditModel.HoursPercentageFrom = currentTENDER_PROFILE_ITEM.HOURS_PERCENTAGE;
-                        tenderProfileItemEditModel.HoursPercentageTo = 0;
-                        tenderProfileItemEditModels.Add(tenderProfileItemEditModel);
+                        if(currentTENDER_PROFILE_ITEM.HOURS_PERCENTAGE > 0)
+                        {
+                            TenderProfileItemEditModel tenderProfileItemEditModel = new TenderProfileItemEditModel();
+                            tenderProfileItemEditModel.TenderProfileItemGuid = currentTENDER_PROFILE_ITEM.GUID;
+                            tenderProfileItemEditModel.DepartmentGuid = currentTENDER_PROFILE_ITEM.GUID_DEPARTMENT;
+                            tenderProfileItemEditModel.DisciplineGuid = currentTENDER_PROFILE_ITEM.GUID_DISCIPLINE;
+                            tenderProfileItemEditModel.HoursPercentageFrom = currentTENDER_PROFILE_ITEM.HOURS_PERCENTAGE;
+                            tenderProfileItemEditModel.HoursPercentageTo = 0;
+                            tenderProfileItemEditModels.Add(tenderProfileItemEditModel);
+                        }
                     }
                 }
 
