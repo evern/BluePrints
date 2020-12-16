@@ -466,18 +466,30 @@ namespace BluePrints.ViewModels
                 else
                 {
                     //remove duplicates
-                    IEnumerable<ESTIMATE_ITEMProgress> duplicateEntities = Entities.Where(x => x.GUID != displayEntity.GUID && x.UniqueJobcode == displayEntity.UniqueJobcode);
-                    if (duplicateEntities.Count() > 0)
+                    IEnumerable<ESTIMATE_ITEMProgress> duplicateEntities = Entities.Where(x => x.UniqueJobcode == displayEntity.UniqueJobcode);
+                    if (duplicateEntities.Count() > 1)
                     {
+                        List<ESTIMATE_ITEMProgress> removeEntities = new List<ESTIMATE_ITEMProgress>();
                         foreach (ESTIMATE_ITEMProgress duplicateEntity in duplicateEntities)
                         {
-                            if (!removeESTIMATE_ITEMS.Any(x => x.GUID == duplicateEntity.GUID))
+                            //remove all but one
+                            if(removeEntities.Count < duplicateEntities.Count() - 1)
                             {
-                                messages.Add(new ErrorMessage(displayEntity.UniqueJobcode, "Remove"));
-                                removeESTIMATE_ITEMS.Add(displayEntity);
-                                //must be removed or else displayEntity will be scanned later and all duplication will be removed
-                                entities.Remove(displayEntity);
+                                //only try to remove when P6 assignment isn't found
+                                string errorMessage = getP6AssignmentErrorMessage(duplicateEntity);
+                                if (errorMessage == string.Empty)
+                                {
+                                    removeEntities.Add(duplicateEntity);
+                                }
                             }
+                        }
+
+                        foreach(ESTIMATE_ITEMProgress removeEntity in removeEntities)
+                        {
+                            messages.Add(new ErrorMessage(removeEntity.UniqueJobcode, "Remove"));
+                            removeESTIMATE_ITEMS.Add(removeEntity);
+                            //must be removed or else displayEntity will be scanned later and all duplication will be removed
+                            entities.Remove(removeEntity);
                         }
                     }
                 }
@@ -503,38 +515,35 @@ namespace BluePrints.ViewModels
                         if (exoLine.VariationCode == null || exoLine.VariationCode == string.Empty)
                             findESTIMATE_ITEM = Entities.FirstOrDefault(x => x.Deliverable_Name.ToUpper() == fullWBSCode.ToUpper());
                         else
-                            findESTIMATE_ITEM = Entities.Where(x => x.Variation_Code != null).FirstOrDefault(x => x.Deliverable_Name.ToUpper() == fullWBSCode.ToUpper() && x.Variation_Code.ToUpper() == fullWBSCode.ToUpper());
+                            findESTIMATE_ITEM = Entities.Where(x => x.Variation_Code != null).FirstOrDefault(x => x.Deliverable_Name.ToUpper() == fullWBSCode.ToUpper() && x.Variation_Code.ToUpper() == exoLine.VariationCode.ToUpper());
                         
                         if (findESTIMATE_ITEM == null)
                         {
-                            if(findESTIMATE_ITEM == null)
+                            ESTIMATE_ITEM newESTIMATE_ITEM = new ESTIMATE_ITEM();
+                            Data.PHASE findPHASE = PHASECollection.FirstOrDefault(x => x.INTERNAL_NUM.ToUpper() == phaseCode);
+                            DISCIPLINE findDISCIPLINE = DISCIPLINECollection.FirstOrDefault(x => x.CODE == disciplineCode);
+                            int disciplineInt = 1;
+                            if (findPHASE != null && Int32.TryParse(disciplineNum, out disciplineInt))
                             {
-                                ESTIMATE_ITEM newESTIMATE_ITEM = new ESTIMATE_ITEM();
-                                Data.PHASE findPHASE = PHASECollection.FirstOrDefault(x => x.INTERNAL_NUM.ToUpper() == phaseCode);
-                                DISCIPLINE findDISCIPLINE = DISCIPLINECollection.FirstOrDefault(x => x.CODE == disciplineCode);
-                                int disciplineInt = 1;
-                                if (findPHASE != null && Int32.TryParse(disciplineNum, out disciplineInt))
+                                newESTIMATE_ITEM.GUID = Guid.Empty;
+                                newESTIMATE_ITEM.GUID_PHASE = findPHASE.GUID;
+                                newESTIMATE_ITEM.GUID_AREA = FindExistingOrAddNewArea(areaName);
+                                newESTIMATE_ITEM.GUID_SUBAREA = FindExistingOrAddNewSubArea((Guid)newESTIMATE_ITEM.GUID_AREA, subAreaName);
+                                newESTIMATE_ITEM.GUID_DISCIPLINE = FindExistingOrAddNewDiscipline(disciplineCode);
+                                newESTIMATE_ITEM.DISCIPLINE_NUM = disciplineInt;
+                                newESTIMATE_ITEM.COMMODITY_CODE = exoLine.CommodityCode;
+                                newESTIMATE_ITEM.VARIATION_CODE = exoLine.VariationCode;
+
+                                ESTIMATE_ITEMProgress projection = new ESTIMATE_ITEMProgress();
+                                projection.Entity = new ESTIMATE_ITEMProjection();
+                                projection.Entity.Entity = newESTIMATE_ITEM;
+
+                                //look into the register that's yet to be added because some exo jobs have same commodity code but different stock code
+                                findESTIMATE_ITEM = newESTIMATE_ITEMS.FirstOrDefault(x => x.Entity.Entity.GUID_PHASE == findPHASE.GUID && x.Entity.Entity.GUID_AREA == newESTIMATE_ITEM.GUID_AREA && x.Entity.Entity.GUID_SUBAREA == newESTIMATE_ITEM.GUID_SUBAREA && x.Entity.Entity.GUID_DISCIPLINE == newESTIMATE_ITEM.GUID_DISCIPLINE && x.Entity.Entity.COMMODITY_CODE == newESTIMATE_ITEM.COMMODITY_CODE && x.Entity.Entity.VARIATION_CODE == newESTIMATE_ITEM.VARIATION_CODE);
+                                if(findESTIMATE_ITEM == null)
                                 {
-                                    newESTIMATE_ITEM.GUID = Guid.Empty;
-                                    newESTIMATE_ITEM.GUID_PHASE = findPHASE.GUID;
-                                    newESTIMATE_ITEM.GUID_AREA = FindExistingOrAddNewArea(areaName);
-                                    newESTIMATE_ITEM.GUID_SUBAREA = FindExistingOrAddNewSubArea((Guid)newESTIMATE_ITEM.GUID_AREA, subAreaName);
-                                    newESTIMATE_ITEM.GUID_DISCIPLINE = FindExistingOrAddNewDiscipline(disciplineCode);
-                                    newESTIMATE_ITEM.DISCIPLINE_NUM = disciplineInt;
-                                    newESTIMATE_ITEM.COMMODITY_CODE = exoLine.CommodityCode;
-                                    newESTIMATE_ITEM.VARIATION_CODE = exoLine.VariationCode;
-
-                                    ESTIMATE_ITEMProgress projection = new ESTIMATE_ITEMProgress();
-                                    projection.Entity = new ESTIMATE_ITEMProjection();
-                                    projection.Entity.Entity = newESTIMATE_ITEM;
-
-                                    //look into the register that's yet to be added because some exo jobs have same commodity code but different stock code
-                                    findESTIMATE_ITEM = newESTIMATE_ITEMS.FirstOrDefault(x => x.Entity.Entity.GUID_PHASE == findPHASE.GUID && x.Entity.Entity.GUID_AREA == newESTIMATE_ITEM.GUID_AREA && x.Entity.Entity.GUID_SUBAREA == newESTIMATE_ITEM.GUID_SUBAREA && x.Entity.Entity.GUID_DISCIPLINE == newESTIMATE_ITEM.GUID_DISCIPLINE && x.Entity.Entity.COMMODITY_CODE == newESTIMATE_ITEM.COMMODITY_CODE && x.Entity.Entity.VARIATION_CODE == newESTIMATE_ITEM.VARIATION_CODE);
-                                    if(findESTIMATE_ITEM == null)
-                                    {
-                                        newESTIMATE_ITEMS.Add(projection);
-                                        messages.Add(new ErrorMessage(exoLine.SubJobCode + "-" + exoLine.DisciplineCode + "-" + exoLine.CommodityCode + " " + exoLine.VariationCode, "Add"));
-                                    }
+                                    newESTIMATE_ITEMS.Add(projection);
+                                    messages.Add(new ErrorMessage(exoLine.SubJobCode + "-" + exoLine.DisciplineCode + "-" + exoLine.CommodityCode + " " + exoLine.VariationCode, "Add"));
                                 }
                             }
                         }
@@ -717,6 +726,17 @@ namespace BluePrints.ViewModels
         protected override OperationInterceptMode OnBeforeProjectionDeleteIsContinue(ESTIMATE_ITEMProgress projection, out List<ErrorMessage> errorMessages)
         {
             errorMessages = new List<ErrorMessage>();
+
+            string p6AssignmentErroMessage = getP6AssignmentErrorMessage(projection);
+
+            if(p6AssignmentErroMessage != string.Empty)
+                errorMessages.Add(new ErrorMessage(projection.Deliverable_Name, p6AssignmentErroMessage));
+
+            return OperationInterceptMode.Continue;
+        }
+
+        private string getP6AssignmentErrorMessage(ESTIMATE_ITEMProgress projection)
+        {
             IEnumerable<P6_ASSIGNMENT> attachedP6Assignments = P6_ASSIGNMENTCollection.Where(x => x.GUID_ORIGINAL == projection.OriginalEntityKey);
 
             //when there are variations that relates to this deliverable
@@ -731,10 +751,10 @@ namespace BluePrints.ViewModels
                 if (p6AssignmentName.Length > 2)
                     p6AssignmentName = p6AssignmentName.Substring(0, p6AssignmentName.Length - 2);
 
-                errorMessages.Add(new ErrorMessage(projection.Deliverable_Name, "P6 assignment exists: " + p6AssignmentName));
+                return "P6 assignment exists: " + p6AssignmentName;
             }
 
-            return OperationInterceptMode.Continue;
+            return string.Empty;
         }
 
         #region Collection Call Backs
