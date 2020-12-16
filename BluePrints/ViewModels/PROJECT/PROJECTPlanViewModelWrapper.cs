@@ -1728,6 +1728,10 @@ namespace BluePrints.ViewModels
                     TENDER_PROFILE_ITEM copyTENDER_PROFILE_ITEM = new TENDER_PROFILE_ITEM();
                     DataUtils.ShallowCopy(copyTENDER_PROFILE_ITEM, defaultTENDER_PROFILE_ITEM);
 
+                    //when it's not replace all but tender profile isn't found in current list, copy it as zero hours %
+                    if (!replaceAll)
+                        copyTENDER_PROFILE_ITEM.HOURS_PERCENTAGE = 0;
+
                     copyTENDER_PROFILE_ITEM.GUID = Guid.Empty;
                     copyTENDER_PROFILE_ITEM.GUID_TENDER_PROFILE = existingOrNewTENDER_PROFILE.GUID;
                     copyTENDER_PROFILE_ITEM.PROJECTTenderProfile = projectTenderProfile;
@@ -1746,37 +1750,38 @@ namespace BluePrints.ViewModels
                 projectTenderProfile.TENDER_PROFILE_ITEMS.Clear();
             else
             {
-                List<TenderProfileItemEditModel> tenderProfileItemEditModels = new List<TenderProfileItemEditModel>();
-                foreach (TENDER_PROFILE_ITEM currentTENDER_PROFILE_ITEM in projectTenderProfile.TENDER_PROFILE_ITEMS)
-                {
-                    TENDER_PROFILE_ITEM findDefaultTENDER_PROFILE_ITEM = selectedTenderProfile.TENDER_PROFILE_ITEM.FirstOrDefault(x => x.GUID_DEPARTMENT == currentTENDER_PROFILE_ITEM.GUID_DEPARTMENT && x.GUID_DISCIPLINE == currentTENDER_PROFILE_ITEM.GUID_DISCIPLINE);
-                    if(findDefaultTENDER_PROFILE_ITEM == null)
-                    {
-                        if(currentTENDER_PROFILE_ITEM.HOURS_PERCENTAGE > 0)
-                        {
-                            TenderProfileItemEditModel tenderProfileItemEditModel = new TenderProfileItemEditModel();
-                            tenderProfileItemEditModel.TenderProfileItemGuid = currentTENDER_PROFILE_ITEM.GUID;
-                            tenderProfileItemEditModel.DepartmentGuid = currentTENDER_PROFILE_ITEM.GUID_DEPARTMENT;
-                            tenderProfileItemEditModel.DisciplineGuid = currentTENDER_PROFILE_ITEM.GUID_DISCIPLINE;
-                            tenderProfileItemEditModel.HoursPercentageFrom = currentTENDER_PROFILE_ITEM.HOURS_PERCENTAGE;
-                            tenderProfileItemEditModel.HoursPercentageTo = 0;
-                            tenderProfileItemEditModels.Add(tenderProfileItemEditModel);
-                        }
-                    }
-                }
+                //logic to set tender profile hours % to zero for deliverable generate profile that isn't standard
+                //List<TenderProfileItemEditModel> tenderProfileItemEditModels = new List<TenderProfileItemEditModel>();
+                //foreach (TENDER_PROFILE_ITEM currentTENDER_PROFILE_ITEM in projectTenderProfile.TENDER_PROFILE_ITEMS)
+                //{
+                //    TENDER_PROFILE_ITEM findDefaultTENDER_PROFILE_ITEM = selectedTenderProfile.TENDER_PROFILE_ITEM.FirstOrDefault(x => x.GUID_DEPARTMENT == currentTENDER_PROFILE_ITEM.GUID_DEPARTMENT && x.GUID_DISCIPLINE == currentTENDER_PROFILE_ITEM.GUID_DISCIPLINE);
+                //    if(findDefaultTENDER_PROFILE_ITEM != null)
+                //    {
+                //        if(currentTENDER_PROFILE_ITEM.HOURS_PERCENTAGE > 0)
+                //        {
+                //            TenderProfileItemEditModel tenderProfileItemEditModel = new TenderProfileItemEditModel();
+                //            tenderProfileItemEditModel.TenderProfileItemGuid = currentTENDER_PROFILE_ITEM.GUID;
+                //            tenderProfileItemEditModel.DepartmentGuid = currentTENDER_PROFILE_ITEM.GUID_DEPARTMENT;
+                //            tenderProfileItemEditModel.DisciplineGuid = currentTENDER_PROFILE_ITEM.GUID_DISCIPLINE;
+                //            tenderProfileItemEditModel.HoursPercentageFrom = currentTENDER_PROFILE_ITEM.HOURS_PERCENTAGE;
+                //            tenderProfileItemEditModel.HoursPercentageTo = 0;
+                //            tenderProfileItemEditModels.Add(tenderProfileItemEditModel);
+                //        }
+                //    }
+                //}
 
-                TenderProfileItemEditConfirmationViewModel tenderProfileItemEditConfirmationViewModel = TenderProfileItemEditConfirmationViewModel.Create(tenderProfileItemEditModels, "Do you wish to set hours % to zero for items that doesn't exists in the copied profile?", DEPARTMENTCollection, DISCIPLINECollection);
-                if (DeliverableEditDialogService.ShowDialog(MessageButton.OKCancel, "", "TenderProfileItemEditConfirmation", tenderProfileItemEditConfirmationViewModel) == MessageResult.OK)
-                {
-                    foreach(TenderProfileItemEditModel tenderProfileItemEditModel in tenderProfileItemEditModels)
-                    {
-                        TENDER_PROFILE_ITEM findCurrentTENDER_PROFILE_ITEM = projectTenderProfile.TENDER_PROFILE_ITEMS.FirstOrDefault(x => x.GUID == tenderProfileItemEditModel.TenderProfileItemGuid);
-                        if(findCurrentTENDER_PROFILE_ITEM != null)
-                        {
-                            findCurrentTENDER_PROFILE_ITEM.HOURS_PERCENTAGE = tenderProfileItemEditModel.HoursPercentageTo;
-                        }
-                    }
-                }
+                //TenderProfileItemEditConfirmationViewModel tenderProfileItemEditConfirmationViewModel = TenderProfileItemEditConfirmationViewModel.Create(tenderProfileItemEditModels, "Do you wish to set hours % to zero for items that doesn't exists in the copied profile?", DEPARTMENTCollection, DISCIPLINECollection);
+                //if (DeliverableEditDialogService.ShowDialog(MessageButton.OKCancel, "", "TenderProfileItemEditConfirmation", tenderProfileItemEditConfirmationViewModel) == MessageResult.OK)
+                //{
+                //    foreach(TenderProfileItemEditModel tenderProfileItemEditModel in tenderProfileItemEditModels)
+                //    {
+                //        TENDER_PROFILE_ITEM findCurrentTENDER_PROFILE_ITEM = projectTenderProfile.TENDER_PROFILE_ITEMS.FirstOrDefault(x => x.GUID == tenderProfileItemEditModel.TenderProfileItemGuid);
+                //        if(findCurrentTENDER_PROFILE_ITEM != null)
+                //        {
+                //            findCurrentTENDER_PROFILE_ITEM.HOURS_PERCENTAGE = tenderProfileItemEditModel.HoursPercentageTo;
+                //        }
+                //    }
+                //}
             }
 
             projectTenderProfile.TENDER_PROFILE_ITEMS.AddRange(addTENDER_PROFILE_ITEMS);
