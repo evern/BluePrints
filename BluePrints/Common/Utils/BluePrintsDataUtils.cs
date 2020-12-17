@@ -844,7 +844,7 @@ namespace BluePrints.Common.ViewModel.Utils
                                       on JOBTRANS.NARRATIVE_SEQNO equals NARRATIVES.SEQNO into PONarratives
                                       from PONarrate in PONarratives.DefaultIfEmpty()
                                       where JOBCOST_HDR2.JOBCODE == projectNumber && JOBTRANS.TRANSTYPE == "T" && JOBTRANS.LINE_STATUS != "X" && JOBTRANS.TRANSDATE <= dataDate
-                                      select new { JOBCOST_HDR1.JOBCODE, JOBTRANS.EXCHRATE, JOBTRANS.QUANTITY, JOBTRANS.STOCKCODE, JOBTRANS.LINETOTAL, JOBTRANS.LINECOST, JOBTRANS.TRANSDATE, JOBCOST_RESOURCE.RESOURCENAME, JOBCOST_RESOURCE.TITLE, JOB_COSTGROUPS.COSTDESC, COSTDESC3 = JOB_COSTTYPES.COSTDESC, VARIATIONCODE = JOBTRANS.X_VARIATIONCODE, JOBTRANS.INVOICED, JOBTRANS.INVOICEDATE, JOBTRANS.INVSEQNO, PONarrate.NARRATIVE };
+                                      select new { JOBCOST_HDR1.JOBCODE, JOBTRANS.EXCHRATE, JOBTRANS.QUANTITY, JOBTRANS.STOCKCODE, JOBTRANS.LINETOTAL, JOBTRANS.LINECOST, JOBTRANS.TRANSDATE, JOBCOST_RESOURCE.RESOURCENAME, JOBCOST_RESOURCE.TITLE, JOB_COSTGROUPS.COSTDESC, GROUP_SHORTCODE = JOB_COSTGROUPS.SHORTCODE, COSTDESC3 = JOB_COSTTYPES.COSTDESC, JOB_COSTTYPES.SHORTCODE, VARIATIONCODE = JOBTRANS.X_VARIATIONCODE, JOBTRANS.INVOICED, JOBTRANS.INVOICEDATE, JOBTRANS.INVSEQNO, PONarrate.NARRATIVE };
 
                 var jobTransactionsList = jobTransactions.ToList();
                 if (showLoadingScreen)
@@ -857,7 +857,7 @@ namespace BluePrints.Common.ViewModel.Utils
                 {
                     if (qualifiedSubjobs == null || qualifiedSubjobs.Contains(jobTransaction.JOBCODE))
                     {
-                        if (qualifiedSubjobs == null || (jobTransaction.COSTDESC3 != null && (jobTransaction.COSTDESC3.Length >= 3 && (!jobTransaction.COSTDESC3.Substring(0, 3).Contains("G99") && !jobTransaction.COSTDESC3.Substring(0, 3).Contains("010")))))
+                        if (qualifiedSubjobs == null || (jobTransaction.SHORTCODE != null && (!jobTransaction.SHORTCODE.Contains("G99") && !jobTransaction.SHORTCODE.Contains("010"))))
                         {
                             ExoDataPoint burnedDataPoint = new ExoDataPoint();
                             burnedDataPoint.BudgetedUnits = 0;
@@ -875,7 +875,9 @@ namespace BluePrints.Common.ViewModel.Utils
                             burnedDataPoint.Quantity = jobTransaction.QUANTITY == null ? 0 : (decimal)jobTransaction.QUANTITY;
                             burnedDataPoint.Role = jobTransaction.TITLE;
                             burnedDataPoint.CostGroup = jobTransaction.COSTDESC;
+                            burnedDataPoint.Discipline_Code = jobTransaction.GROUP_SHORTCODE;
                             burnedDataPoint.CostType = jobTransaction.COSTDESC3;
+                            burnedDataPoint.Commodity_Code = jobTransaction.SHORTCODE;
                             burnedDataPoint.StockCode = jobTransaction.STOCKCODE;
                             burnedDataPoint.Narrative = jobTransaction.NARRATIVE;
                             burnedDataPoint.Variation_Code = BluePrintsDataUtils.normalizeVariationCode(jobTransaction.VARIATIONCODE);
@@ -944,7 +946,7 @@ namespace BluePrints.Common.ViewModel.Utils
                 var jobMaterialsList = jobMaterials.ToList();
                 foreach (var jobMaterial in jobMaterialsList)
                 {
-                    if (jobMaterial.CostGroupDesc != null && (jobMaterial.CostGroupDesc.Length >= 3 && (!jobMaterial.CostGroupDesc.Substring(0, 3).Contains("G99") && !jobMaterial.CostGroupDesc.Substring(0, 3).Contains("010"))))
+                    if (jobMaterial.CostGroupDesc != null && ((!jobMaterial.GroupShortcode.Contains("G99") && !jobMaterial.GroupShortcode.Contains("010"))))
                     {
                         ExoDataPoint materialDataPoint = new ExoDataPoint();
                         materialDataPoint.BudgetedUnits = 0;
@@ -967,7 +969,9 @@ namespace BluePrints.Common.ViewModel.Utils
                         materialDataPoint.Supplier = jobMaterial.name;
                         materialDataPoint.InvoiceNo = jobMaterial.invno;
                         materialDataPoint.CostGroup = jobMaterial.CostGroupDesc;
+                        materialDataPoint.Discipline_Code = jobMaterial.GroupShortcode;
                         materialDataPoint.CostType = jobMaterial.CostTypeDesc;
+                        materialDataPoint.Commodity_Code = jobMaterial.Typeshortcode;
                         materialDataPoint.StockCode = jobMaterial.stockcode;
                         materialDataPoint.Cost_GLName = jobMaterial.COSGlName;
                         materialDataPoint.Purchase_GLName = jobMaterial.PurchGLName;
@@ -1041,7 +1045,7 @@ namespace BluePrints.Common.ViewModel.Utils
                       on PURCHORD_LINES.NARRATIVE_SEQNO equals NARRATIVES.SEQNO into PONarratives
                       from PONarrate in PONarratives.DefaultIfEmpty()
                       where JOBCOST_HDR2.JOBCODE == projectNumber && PURCHORD_HDR.ORDERDATE < poCutOffDate
-                      select new { PURCHORD_HDR.EXCHRATE, PURCHORD_LINES.POLINEID, PURCHORD_LINES.STOCKCODE, PURCHORD_LINES.DESCRIPTION, PONarrate.NARRATIVE, PURCHORD_HDR.SEQNO, PURCHORD_LINES.LINETOTAL, CR_ACCS.NAME, JOBCOST_HDR.JOBCODE, JOBCOST_HDR.TITLE, COSTTYPEDESC = JOB_COSTTYPES.COSTDESC, COSTGROUPDESC = JOB_COSTGROUPS.COSTDESC, PURCHORD_LINES.ORD_QUANT, PURCHORD_LINES.SUP_QUANT, PURCHORD_LINES.UNITPRICE, PURCHORD_HDR.STATUS, PURCHORD_HDR.DUEDATE, PURCHORD_HDR.ORDERDATE, PURCHORD_LINES.X_VARIATIONCODE };
+                      select new { PURCHORD_HDR.EXCHRATE, PURCHORD_LINES.POLINEID, PURCHORD_LINES.STOCKCODE, PURCHORD_LINES.DESCRIPTION, PONarrate.NARRATIVE, PURCHORD_HDR.SEQNO, PURCHORD_LINES.LINETOTAL, CR_ACCS.NAME, JOBCOST_HDR.JOBCODE, JOBCOST_HDR.TITLE, COSTTYPEDESC = JOB_COSTTYPES.COSTDESC, COSTGROUPDESC = JOB_COSTGROUPS.COSTDESC, GROUPSHORTCODE = JOB_COSTGROUPS.SHORTCODE, PURCHORD_LINES.ORD_QUANT, PURCHORD_LINES.SUP_QUANT, PURCHORD_LINES.UNITPRICE, PURCHORD_HDR.STATUS, PURCHORD_HDR.DUEDATE, PURCHORD_HDR.ORDERDATE, PURCHORD_LINES.X_VARIATIONCODE, JOB_COSTTYPES.SHORTCODE };
 
             var poList = pos.ToList();
 
@@ -1105,7 +1109,9 @@ namespace BluePrints.Common.ViewModel.Utils
                     poDataPoint.Supplier = po.NAME;
                     poDataPoint.InvoiceNo = string.Empty;
                     poDataPoint.CostGroup = po.COSTGROUPDESC;
+                    poDataPoint.Discipline_Code = po.GROUPSHORTCODE;
                     poDataPoint.CostType = po.COSTTYPEDESC;
+                    poDataPoint.Commodity_Code = po.SHORTCODE;
                     poDataPoint.StockCode = po.STOCKCODE;
                     poDataPoint.Cost_GLName = string.Empty;
                     poDataPoint.Purchase_GLName = string.Empty;

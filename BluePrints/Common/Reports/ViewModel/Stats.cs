@@ -496,18 +496,7 @@ namespace BluePrints.Common.ViewModel.Reporting
             }
         }
 
-        public string Discipline_Code
-        {
-            get
-            {
-                if (CostGroup == null || CostGroup == string.Empty || CostGroup.Length < 4)
-                    return string.Empty;
-                else if (CostGroup.Length < 4)
-                    return string.Empty;
-
-                return CostGroup.Substring(0, 4);
-            }
-        }
+        public string Discipline_Code { get; set; }
 
         public string AreaCode
         {
@@ -535,18 +524,7 @@ namespace BluePrints.Common.ViewModel.Reporting
             }
         }
 
-        public string Commodity_Code
-        {
-            get
-            {
-                if (CostType == null || CostType == string.Empty || CostType.Length < 3)
-                    return string.Empty;
-                else if (CostType.Length < 3)
-                    return string.Empty;
-
-                return CostType.Substring(0, 3);
-            }
-        }
+        public string Commodity_Code { get; set; }
 
         public bool NewEntityFromView { get => throw new NotImplementedException(); set => throw new NotImplementedException(); }
 
