@@ -410,6 +410,11 @@ namespace BluePrints.Common.Projections
                     errorMessages.Add(new ErrorMessage(projection.ErrorMessageIdentificationCode, projection.CommodityCode + " can only be assigned to indirect subjobs, please change the subjob or assign a different commodity in the deliverable's list"));
                     continue;
                 }
+                else if(projection.VariationCode != null && projection.VariationCode.Length > 50)
+                {
+                    errorMessages.Add(new ErrorMessage(projection.VariationCode, "Variation code cannot be more than 50 characters"));
+                    continue;
+                }
 
                 if (!ignoreCostGroupCostType)
                 {
