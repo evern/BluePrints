@@ -280,7 +280,7 @@ namespace BluePrints.ViewModels
                         continue;
                     }
 
-                    newDeliverableStatus.AUTO_PERCENTAGE = newDeliverableStatus.MAX_PERCENTAGE + 0.01m;
+                    newDeliverableStatus.AUTO_PERCENTAGE = newDeliverableStatus.MAX_PERCENTAGE + 0.0001m;
                     newDeliverableStatus.MAX_PERCENTAGE = 1m;
                 }
 

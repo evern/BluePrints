@@ -417,11 +417,11 @@ namespace BluePrints.Data
 
             modelBuilder.Entity<P6_ASSIGNMENT>()
                 .Property(e => e.LOW_VALUE)
-                .HasPrecision(10, 2);
+                .HasPrecision(10, 4);
 
             modelBuilder.Entity<P6_ASSIGNMENT>()
                 .Property(e => e.HIGH_VALUE)
-                .HasPrecision(10, 2);
+                .HasPrecision(10, 4);
 
             modelBuilder.Entity<PHASE>()
                 .HasMany(e => e.BASELINE_ITEM)

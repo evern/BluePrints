@@ -1293,7 +1293,7 @@ namespace BluePrints.Common.Base
                 }
 
                 //only process applicable assignments
-                //List<P6_ASSIGNMENT> p6_assignments = deliverable.P6_Assignments.Where(assignment => assignment.LOW_VALUE <= (total_percentage_to_date + 0.01m)).OrderBy(assignment => assignment.LOW_VALUE).ToList();
+                //List<P6_ASSIGNMENT> p6_assignments = deliverable.P6_Assignments.Where(assignment => assignment.LOW_VALUE <= (total_percentage_to_date + 0.0001m)).OrderBy(assignment => assignment.LOW_VALUE).ToList();
                 List<P6_ASSIGNMENT> all_assignments = deliverable.P6_Assignments.OrderBy(assignment => assignment.LOW_VALUE).ToList();
                 for (int i = 0; i < all_assignments.Count; i++)
                 {

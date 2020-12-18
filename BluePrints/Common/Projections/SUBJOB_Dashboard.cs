@@ -44,7 +44,7 @@ namespace BluePrints.Common.Projections
         {
             get
             {
-                return Stats.totalUnits * ObservableSUBJOB_ASSIGNMENTS.Sum(x => (x.HIGH_VALUE - x.LOW_VALUE) + 0.01m);
+                return Stats.totalUnits * ObservableSUBJOB_ASSIGNMENTS.Sum(x => (x.HIGH_VALUE - x.LOW_VALUE) + 0.0001m);
             }
         }
 
@@ -52,7 +52,7 @@ namespace BluePrints.Common.Projections
         {
             get
             {
-                return ObservableSUBJOB_ASSIGNMENTS.Sum(x => (x.HIGH_VALUE - x.LOW_VALUE) + 0.01m);
+                return ObservableSUBJOB_ASSIGNMENTS.Sum(x => (x.HIGH_VALUE - x.LOW_VALUE) + 0.0001m);
             }
         }
         #endregion

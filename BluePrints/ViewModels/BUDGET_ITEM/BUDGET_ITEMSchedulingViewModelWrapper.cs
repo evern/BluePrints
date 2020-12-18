@@ -160,14 +160,14 @@ namespace BluePrints.ViewModels
             {
                 string activity_id = task.task_code;
                 IEnumerable<ESTIMATE_ITEMProgress> estimateItemsBySubArea = Entities.Where(x => x.Entity != null && x.Entity.Entity != null && x.Entity.Entity.P6ACTIVITYMAP == activity_id);
-                decimal lowValue = 0.01m;
+                decimal lowValue = 0.0001m;
                 foreach (var estimateItem in estimateItemsBySubArea)
                 {
                     if (estimateItem.Assigned_Percentage == 1)
                         continue;
 
                     //decimal assignmentValue = (1m / estimateItemsBySubArea.Count());
-                    //decimal highValue = (lowValue - 0.01m) + assignmentValue;
+                    //decimal highValue = (lowValue - 0.0001m) + assignmentValue;
                     decimal highValue = 1;
                     P6_ASSIGNMENT newP6_ASSIGNMENT = new P6_ASSIGNMENT();
                     newP6_ASSIGNMENT.GUID = Guid.Empty;

@@ -659,12 +659,16 @@ namespace BluePrints.Common.Base
                     }
                 }
 
+                decimal assignmentLowValue = deliverable.Assigned_Percentage + 0.0001m;
+                if (assignmentLowValue < 0.0001m)
+                    assignmentLowValue = 0.0001m;
+
                 deliverable.P6_Assignments.Add(new P6_ASSIGNMENT()
                 {
                     GUID = Guid.Empty,
                     GUID_PROJECT = loadPROJECT.GUID,
                     HIGH_VALUE = Assignment_Value,
-                    LOW_VALUE = deliverable.Assigned_Percentage + 0.0001m,
+                    LOW_VALUE = assignmentLowValue,
                     P6_ACTIVITYID = Selected_Activity.P6_ActivityId,
                     GUID_ORIGINAL = deliverable.OriginalEntityKey,
                     TYPE = phase_type,
@@ -769,7 +773,7 @@ namespace BluePrints.Common.Base
                     var current_assignment_amount = p6_assignments_in_order[i].HIGH_VALUE - p6_assignments_in_order[i].LOW_VALUE;
                     p6_assignments_in_order[i].LOW_VALUE = low_value;
                     p6_assignments_in_order[i].HIGH_VALUE = low_value + current_assignment_amount;
-                    low_value = p6_assignments_in_order[i].HIGH_VALUE + 0.01m;
+                    low_value = p6_assignments_in_order[i].HIGH_VALUE + 0.0001m;
                 }
 
                 foreach (P6_Activity activity in Activities_Source.Where(x => affected_activity_ids.Any(str => str == x.P6_ActivityId)))
@@ -806,10 +810,10 @@ namespace BluePrints.Common.Base
             //look for next assignment in sequence
             if (!isUp)
                 swap_p6_assignment = targetDeliverables.Where(x => x.GUID == context_deliverable.GUID)
-                    .SelectMany(x => x.P6_Assignments).FirstOrDefault(x => x.LOW_VALUE == (context_p6_assignment.HIGH_VALUE + 0.01m));
+                    .SelectMany(x => x.P6_Assignments).FirstOrDefault(x => x.LOW_VALUE == (context_p6_assignment.HIGH_VALUE + 0.0001m));
             else
                 swap_p6_assignment = targetDeliverables.Where(x => x.GUID == context_deliverable.GUID)
-                    .SelectMany(x => x.P6_Assignments).FirstOrDefault(x => x.HIGH_VALUE == (context_p6_assignment.LOW_VALUE - 0.01m));
+                    .SelectMany(x => x.P6_Assignments).FirstOrDefault(x => x.HIGH_VALUE == (context_p6_assignment.LOW_VALUE - 0.0001m));
 
             if (swap_p6_assignment != null)
             {
@@ -848,6 +852,8 @@ namespace BluePrints.Common.Base
             if (edited_assignments != null)
                 save_assignments.AddRange(edited_assignments);
 
+            Selected_Activity = null;
+            refresh_p6_assignments();
             save_assignments_and_restore_selection(save_assignments, swap_assignment_selection);
         }
 
@@ -859,6 +865,8 @@ namespace BluePrints.Common.Base
             if (editedAssignments != null)
                 save_assignments.AddRange(editedAssignments);
 
+            Selected_Activity = null;
+            refresh_p6_assignments();
             save_assignments_and_restore_selection(save_assignments, swap_assignment_selection);
         }
 
@@ -872,10 +880,16 @@ namespace BluePrints.Common.Base
 
             P6_ASSIGNMENTSCollectionViewModel.BaseBulkSave(new ObservableCollection<P6_ASSIGNMENT>(edited_assignments));
             Selected_P6_Assignments.Clear();
-            Selected_P6_Assignments.Add(swap_assignment_selection);
-            Selected_P6_Assignment = swap_assignment_selection;
-            this.RaisePropertyChanged(x => x.Selected_P6_Assignment);
-            this.RaisePropertyChanged(x => x.Selected_P6_Assignments);
+
+            //because refresh creates new instance, need to find it
+            P6_ASSIGNMENTProjection refreshedP6Assignment = P6_Assignments.FirstOrDefault(x => x.GUID == swap_assignment_selection.GUID);
+            if(refreshedP6Assignment != null)
+            {
+                Selected_P6_Assignments.Add(refreshedP6Assignment);
+                Selected_P6_Assignment = refreshedP6Assignment;
+                this.RaisePropertyChanged(x => x.Selected_P6_Assignment);
+                this.RaisePropertyChanged(x => x.Selected_P6_Assignments);
+            }
         }
 
         /// <summary>
