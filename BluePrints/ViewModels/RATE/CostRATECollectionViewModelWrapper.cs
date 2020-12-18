@@ -87,7 +87,7 @@ namespace BluePrints.ViewModels
 
                 actualDataPoints.AddRange(burnedDataPoints);
                 actualDataPoints.AddRange(materialDataPoints);
-                transactionRates = actualDataPoints.GroupBy(x => new { SubjobCode = x.Subjob_Name, DisciplineCode = x.CostGroup, CommodityCode = x.CostType }).Select(group => new TransactionRate() { RawSubjobCode = group.Key.SubjobCode, RawDisciplineCode = group.Key.DisciplineCode, RawCommodityCode = group.Key.CommodityCode, Transactions = group.ToList() }).ToList();
+                transactionRates = actualDataPoints.GroupBy(x => new { SubjobCode = x.Subjob_Name, DisciplineCode = x.Discipline_Code, CommodityCode = x.Commodity_Code }).Select(group => new TransactionRate() { RawSubjobCode = group.Key.SubjobCode, RawDisciplineCode = group.Key.DisciplineCode, RawCommodityCode = group.Key.CommodityCode, Transactions = group.ToList() }).ToList();
             }
 
             foreach (RATE committedRATE in committedRATES)

@@ -966,14 +966,16 @@ namespace BluePrints.Common.ViewModel.Reporting
         {
             get
             {
-                if (Milestones == null || Milestones.Count() == 0)
-                    return false;
+                //if (Milestones == null || Milestones.Count() == 0)
+                //    return false;
 
-                Deliverable_Milestone nextCriticalMilestone = deliverable_milestones.FirstOrDefault(x => x.DueDate <= ReportingDataDate);
-                if (nextCriticalMilestone != null)
-                    return true;
-
-                return false;
+                //Deliverable_Milestone nextCriticalMilestone = deliverable_milestones.FirstOrDefault(x => x.DueDate <= ReportingDataDate);
+                //if (nextCriticalMilestone != null)
+                //    return true;
+                
+                //return false;
+                //use the following measure as easier benchmark of overdue deliverable
+                return Total_Earned_Percentage < SchedulePercentage;
             }
         }
 

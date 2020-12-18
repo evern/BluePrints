@@ -434,8 +434,8 @@
                                     <dxe:SpinEditSettings Increment="0.1" Mask="n" MaskType="Numeric" MaskUseAsDisplayFormat="True" NullValueButtonPlacement="EditBox" />
                                 </dxg:GridColumn.EditSettings>
                             </dxg:GridColumn>
-                            <dxg:GridColumn FieldName="IAmCritical" Header="Critical" AllowBestFit="false" Width="60" HeaderToolTip="Deliverable is required to hit a milestone in the next interval. Expand this row to view required milestone" ReadOnly="True" />
-                            <dxg:GridColumn FieldName="IAmOverdue" Header="Overdue" AllowBestFit="false" Width="60" HeaderToolTip="Deliverable is overdue. Expand this row to view required milestone" ReadOnly="True" />
+                            <!--<dxg:GridColumn FieldName="IAmCritical" Header="Critical" AllowBestFit="false" Width="60" HeaderToolTip="Deliverable is required to hit a milestone in the next interval. Expand this row to view required milestone" ReadOnly="True" />-->
+                            <dxg:GridColumn FieldName="IAmOverdue" Header="Overdue" AllowBestFit="false" Width="60" HeaderToolTip="Schedule % more than current %" ReadOnly="True" />
                         </dxg:GridControlBand>
                         <dxg:GridControlBand Header="Investigation (Read Only)">
                             <dxg:GridColumn AllowSearchPanel="False" FieldName="Last_Created" AllowBestFit="false" Width="100" Header="Progress Created" HeaderToolTip="Progress first created date" ReadOnly="True">
