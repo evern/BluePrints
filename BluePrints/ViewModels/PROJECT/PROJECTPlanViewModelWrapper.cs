@@ -86,7 +86,6 @@ namespace BluePrints.ViewModels
         {
             loaderCollection.AddLoaderDescription<DEPARTMENT, DEPARTMENT, Guid, IBluePrintsEntitiesUnitOfWork>(bluePrintsUnitOfWorkFactory, x => x.DEPARTMENTS);
             loaderCollection.AddLoaderDescription<DISCIPLINE, DISCIPLINE, Guid, IBluePrintsEntitiesUnitOfWork>(bluePrintsUnitOfWorkFactory, x => x.DISCIPLINES);
-            loaderCollection.AddLoaderDescription<TENDER_PROFILE, TENDER_PROFILE, Guid, IBluePrintsEntitiesUnitOfWork>(bluePrintsUnitOfWorkFactory, x => x.TENDER_PROFILES);
             loaderCollection.AddLoaderDescription<OFFICE, OFFICE, Guid, IBluePrintsEntitiesUnitOfWork>(bluePrintsUnitOfWorkFactory, x => x.OFFICES);
         }
 
@@ -1604,13 +1603,14 @@ namespace BluePrints.ViewModels
                 return;
             }
 
+            List<TENDER_PROFILE> TENDER_PROFILECollection = bluePrintsUnitOfWorkFactory.CreateUnitOfWork().TENDER_PROFILES.Where(x => x.GUID_PROJECT == null).ToList();
             if (projectTENDER_PROFILE.TENDER_PROFILE_ITEMS.Count == 0)
-                ShowDefaultTenderProfileSelection(projectTENDER_PROFILE);
+                ShowDefaultTenderProfileSelection(projectTENDER_PROFILE, TENDER_PROFILECollection);
             else
-                ShowOptionalTenderProfileSelection(projectTENDER_PROFILE);
+                ShowOptionalTenderProfileSelection(projectTENDER_PROFILE, TENDER_PROFILECollection);
         }
 
-        public void ShowOptionalTenderProfileSelection(PROJECTTenderProfile projectTENDER_PROFILE)
+        public void ShowOptionalTenderProfileSelection(PROJECTTenderProfile projectTENDER_PROFILE, List<TENDER_PROFILE> TENDER_PROFILECollection)
         {
             UICommand allCommand = new UICommand()
             {
@@ -1638,7 +1638,7 @@ namespace BluePrints.ViewModels
 
             string message = String.Format("Do you wish to use budgeted units from plan\nor from deliverable(s)");
 
-            var bulkEditEnumsViewModel = BulkEditEnumsViewModel.Create(DefaultTENDER_PROFILECollection, "NAME");
+            var bulkEditEnumsViewModel = BulkEditEnumsViewModel.Create(TENDER_PROFILECollection, "NAME");
             UICommand result = DefaultTenderProfileSelectionDialogService.ShowDialog(new List<UICommand>() { allCommand, exceptBudgetCommand, cancelCommand }, "Select Tender Profile and Copy Mode", "BulkEditEnums", bulkEditEnumsViewModel);
             if (result == allCommand)
             {
@@ -1650,9 +1650,9 @@ namespace BluePrints.ViewModels
             }
         }
 
-        public void ShowDefaultTenderProfileSelection(PROJECTTenderProfile projectTENDER_PROFILE)
+        public void ShowDefaultTenderProfileSelection(PROJECTTenderProfile projectTENDER_PROFILE, List<TENDER_PROFILE> TENDER_PROFILECollection)
         {
-            var bulkEditEnumsViewModel = BulkEditEnumsViewModel.Create(DefaultTENDER_PROFILECollection, "NAME");
+            var bulkEditEnumsViewModel = BulkEditEnumsViewModel.Create(TENDER_PROFILECollection, "NAME");
             if (DefaultTenderProfileSelectionDialogService.ShowDialog(MessageButton.OKCancel, "Select Default Tender Profile", "BulkEditEnums", bulkEditEnumsViewModel) == MessageResult.OK)
             {
                 if (bulkEditEnumsViewModel.SelectedItem != null)
@@ -1742,6 +1742,7 @@ namespace BluePrints.ViewModels
                 {
                     findExistingTENDER_PROFILE_ITEM.SCHEDULE_START_PERCENTAGE = defaultTENDER_PROFILE_ITEM.SCHEDULE_START_PERCENTAGE;
                     findExistingTENDER_PROFILE_ITEM.SCHEDULE_FINISH_PERCENTAGE = defaultTENDER_PROFILE_ITEM.SCHEDULE_FINISH_PERCENTAGE;
+                    findExistingTENDER_PROFILE_ITEM.BELLCURVESHAPE = defaultTENDER_PROFILE_ITEM.BELLCURVESHAPE;
                 }
             }
 
@@ -2244,17 +2245,6 @@ namespace BluePrints.ViewModels
             get
             {
                 var collection = GetEntities<DISCIPLINE>();
-                return collection;
-            }
-        }
-
-        public IEnumerable<TENDER_PROFILE> DefaultTENDER_PROFILECollection
-        {
-            get
-            {
-                var collection = GetEntities<TENDER_PROFILE>();
-                if (collection != null)
-                    collection = collection.Where(x => x.GUID_PROJECT == null).OrderBy(x => x.NAME);
                 return collection;
             }
         }
