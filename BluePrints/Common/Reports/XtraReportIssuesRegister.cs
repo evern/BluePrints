@@ -6,6 +6,7 @@ using DevExpress.XtraReports.UI;
 using BluePrints.Data;
 using System.Collections.Generic;
 using System.Linq;
+using BluePrints.Common.Resources;
 
 namespace BluePrints.Common.Reports
 {
@@ -24,6 +25,7 @@ namespace BluePrints.Common.Reports
             objectDataSource1.DataSource = issues;
             this.Name = xrLabel1.Text;
             projectName.Value = project.NAME;
+            documentName.Value = string.Concat(project.NUMBER, BluePrintsResources.Register_Issues_Suffix);
         }
 
         private void XtraReportIssuesRegister_ParametersRequestSubmit(object sender, DevExpress.XtraReports.Parameters.ParametersRequestEventArgs e)

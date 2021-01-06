@@ -381,4 +381,10 @@
   <data name="Default_Department" xml:space="preserve">
     <value>ENGINEERING</value>
   </data>
+  <data name="Register_Change_Suffix" xml:space="preserve">
+    <value>-CN-001</value>
+  </data>
+  <data name="Register_Issues_Suffix" xml:space="preserve">
+    <value>-IS-001</value>
+  </data>
 </root>

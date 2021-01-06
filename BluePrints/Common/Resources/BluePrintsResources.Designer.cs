@@ -808,6 +808,24 @@ namespace BluePrints.Common.Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to -CN-001.
+        /// </summary>
+        internal static string Register_Change_Suffix {
+            get {
+                return ResourceManager.GetString("Register_Change_Suffix", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to -IS-001.
+        /// </summary>
+        internal static string Register_Issues_Suffix {
+            get {
+                return ResourceManager.GetString("Register_Issues_Suffix", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to p4y57zcvp.
         /// </summary>
         internal static string SecurityKey {
