@@ -127,6 +127,11 @@ namespace BluePrints.Common.Reports
                 returnReport.PaperKind = System.Drawing.Printing.PaperKind.A4;
                 reportDesigner1.OpenReport(returnReport);
             }
+            else if (currentReportType == ReportType.Change_Register)
+            {
+                returnReport = new XtraReportChangeRegister();
+                reportDesigner1.OpenReport(returnReport);
+            }
 
             return returnReport;
         }

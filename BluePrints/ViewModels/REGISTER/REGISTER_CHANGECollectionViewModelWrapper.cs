@@ -2,11 +2,13 @@
 using BaseModel.DataModel;
 using BaseModel.Helpers;
 using BaseModel.Misc;
+using BaseModel.ViewModel.Base;
 using BaseModel.ViewModel.Loader;
 using BluePrints.BluePrintsEntitiesDataModel;
 using BluePrints.Common;
 using BluePrints.Common.Base;
 using BluePrints.Common.Misc;
+using BluePrints.Common.Reports;
 using BluePrints.Common.Resources;
 using BluePrints.Common.ViewModel.Utils;
 using BluePrints.Data;
@@ -14,9 +16,12 @@ using DevExpress.Mvvm;
 using DevExpress.Mvvm.POCO;
 using DevExpress.Xpf.Bars;
 using DevExpress.Xpf.Grid;
+using DevExpress.Xpf.Printing;
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
+using System.Windows;
 
 namespace BluePrints.ViewModels
 {
@@ -61,6 +66,7 @@ namespace BluePrints.ViewModels
         protected override void addEntitiesLoader()
         {
             loaderCollection.AddLoaderDescription(bluePrintsUnitOfWorkFactory, x => x.PROJECTS, PROJECTProjectionFunc, x => loadPROJECT = x);
+            loaderCollection.AddLoaderDescription(bluePrintsUnitOfWorkFactory, x => x.PROJECT_REPORTS, PROJECT_REPORTProjectionFunc, null, true);
             loaderCollection.AddLoaderDescription(bluePrintsUnitOfWorkFactory, x => x.AREAS, AREAProjectionFunc);
         }
 
@@ -72,6 +78,11 @@ namespace BluePrints.ViewModels
         private Func<IRepositoryQuery<AREA>, IQueryable<AREA>> AREAProjectionFunc()
         {
             return query => query.Where(x => x.GUID_PROJECT == loadPROJECT.GUID);
+        }
+
+        protected virtual Func<IRepositoryQuery<PROJECT_REPORT>, IQueryable<PROJECT_REPORT>> PROJECT_REPORTProjectionFunc()
+        {
+            return query => query.Where(x => x.GUID_PROJECT == loadPROJECT.GUID && x.REPORT_TYPE == ReportType.Change_Register.ToString());
         }
 
         protected override void onAuxiliaryEntitiesCollectionLoaded()
@@ -86,6 +97,13 @@ namespace BluePrints.ViewModels
 
         protected override void AssignCallBacksAndRaisePropertyChange(IEnumerable<REGISTER_CHANGE> entities)
         {
+            MainViewModel.SetParentViewModel(this);
+            if (showReport)
+            {
+                mainThreadDispatcher.BeginInvoke(new Action(() => previewReport(entities)));
+                showReport = false;
+            }
+
             base.AssignCallBacksAndRaisePropertyChange(entities);
         }
 
@@ -161,6 +179,60 @@ namespace BluePrints.ViewModels
         protected override string ExportFilename()
         {
             return loadPROJECT.NUMBER + "_Register_Change";
+        }
+
+        public void EditReport()
+        {
+            var reportDesigner = new UserReportDesigner(loadPROJECT,
+                (CollectionViewModel<PROJECT_REPORT, PROJECT_REPORT, Guid, IBluePrintsEntitiesUnitOfWork>)
+                loaderCollection.GetViewModel<PROJECT_REPORT>(), ReportType.Change_Register);
+            if (reportDesigner.ShowDialog() == System.Windows.Forms.DialogResult.OK)
+                reportDesigner.Dispose();
+            else
+                reportDesigner.Dispose();
+        }
+
+        bool showReport = false;
+        XtraReportChangeRegister changeRegisterReport;
+        public void ViewReport()
+        {
+            showReport = true;
+            //to make sure all navigational properties are loaded
+            FullRefresh();
+        }
+
+        private void previewReport(IEnumerable<REGISTER_CHANGE> registerChanges)
+        {
+            LoadingScreenManager.ShowLoadingScreen(1);
+            showReport = false;
+            changeRegisterReport = new XtraReportChangeRegister();
+            PROJECT_REPORT dbProjectReport = loaderCollection.GetObject<PROJECT_REPORT>();
+            if (dbProjectReport != null)
+            {
+                var reportString = dbProjectReport.REPORT.ToString();
+                using (var sw = new StreamWriter(new MemoryStream()))
+                {
+                    sw.Write(reportString);
+                    sw.Flush();
+                    changeRegisterReport.LoadLayout(sw.BaseStream);
+                }
+            }
+
+            //set paperkind depending on project location
+            if (loadPROJECT.OFFICE.NAME.ToUpper().Contains("PERTH"))
+                changeRegisterReport.PaperKind = System.Drawing.Printing.PaperKind.A3;
+            else
+                changeRegisterReport.PaperKind = System.Drawing.Printing.PaperKind.Tabloid;
+
+            changeRegisterReport.AssignProperties(loadPROJECT, registerChanges);
+            DocumentPreviewWindow previewWindow = new DocumentPreviewWindow();
+            previewWindow.PreviewControl.DocumentSource = changeRegisterReport;
+            previewWindow.WindowStartupLocation = WindowStartupLocation.CenterScreen;
+            previewWindow.WindowState = WindowState.Maximized;
+            changeRegisterReport.RequestParameters = false;
+            changeRegisterReport.CreateDocument(true);
+            LoadingScreenManager.CloseLoadingScreen();
+            previewWindow.Show();
         }
 
         public IEnumerable<AREA> AREACollection

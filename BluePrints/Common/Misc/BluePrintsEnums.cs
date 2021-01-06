@@ -365,6 +365,7 @@ namespace BluePrints.Common
         RateDisciplineRole_Report,
         Project_Summary,
         Issues_Register,
+        Change_Register,
         Timesheet_Report,
         Construction_Variation_Report
     }

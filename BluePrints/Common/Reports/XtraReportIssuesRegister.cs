@@ -18,11 +18,12 @@ namespace BluePrints.Common.Reports
         }
 
         IEnumerable<REGISTER_ISSUE> issues;
-        public void AssignProperties(IEnumerable<REGISTER_ISSUE> issues)
+        public void AssignProperties(PROJECT project, IEnumerable<REGISTER_ISSUE> issues)
         {
             this.issues = issues;
             objectDataSource1.DataSource = issues;
             this.Name = xrLabel1.Text;
+            projectName.Value = project.NAME;
         }
 
         private void XtraReportIssuesRegister_ParametersRequestSubmit(object sender, DevExpress.XtraReports.Parameters.ParametersRequestEventArgs e)

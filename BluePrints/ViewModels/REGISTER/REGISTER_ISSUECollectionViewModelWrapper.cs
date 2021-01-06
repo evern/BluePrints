@@ -339,8 +339,6 @@ namespace BluePrints.ViewModels
             this.RaisePropertyChanged(x => x.IsActionedOnDrawingVisibility);
         }
 
-
-
         public void EditReport()
         {
             var reportDesigner = new UserReportDesigner(loadPROJECT,
@@ -384,7 +382,7 @@ namespace BluePrints.ViewModels
             else
                 issuesRegisterReport.PaperKind = System.Drawing.Printing.PaperKind.Tabloid;
 
-            issuesRegisterReport.AssignProperties(issues);
+            issuesRegisterReport.AssignProperties(loadPROJECT, issues);
             DocumentPreviewWindow previewWindow = new DocumentPreviewWindow();
             previewWindow.PreviewControl.DocumentSource = issuesRegisterReport;
             previewWindow.WindowStartupLocation = WindowStartupLocation.CenterScreen;
