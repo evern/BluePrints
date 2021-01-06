@@ -115,6 +115,12 @@
                             <dxg:GridColumn FieldName="description" Width="300" AllowBestFit="false" Header="Description" ReadOnly="{Binding IsReadOnly}" />
                         </dxg:GridControlBand>
                         <dxg:GridControlBand Header="Read Only" >
+                            <dxg:GridColumn FieldName="master_jobno" AllowBestFit="false" Width="110" Header="Master Job" ReadOnly="True">
+                                <dxg:GridColumn.EditSettings>
+                                    <dxe:ComboBoxEditSettings AutoComplete="True" DisplayMember="JOBCODE" IsTextEditable="True" ItemsSource="{Binding JOBCOST_HDRCollection}" ValueMember="JOBNO" />
+                                </dxg:GridColumn.EditSettings>
+                            </dxg:GridColumn>
+                            <dxg:GridColumn FieldName="CostTypeDesc" AllowBestFit="false" Width="100" Header="Cost Type Desc" ReadOnly="True" />
                             <dxg:GridColumn FieldName="accno" Header="Resource" AllowBestFit="false" Width="150" ReadOnly="true" >
                                 <dxg:GridColumn.EditSettings>
                                     <dxe:ComboBoxEditSettings AutoComplete="True" DisplayMember="RESOURCENAME" IsTextEditable="True" ItemsSource="{Binding JOBCOST_RESOURCECollection}" ValueMember="SEQNO" />
@@ -125,6 +131,11 @@
                             <dxg:GridColumn FieldName="quantity" AllowBestFit="false" Width="100" Header="Quantity" ReadOnly="{Binding CanEditQuantity, Converter={StaticResource BooleanNegationConverter}}" >
                                 <dxg:GridColumn.EditSettings>
                                     <dxe:SpinEditSettings Mask="n" MaskType="Numeric" MaskUseAsDisplayFormat="True" />
+                                </dxg:GridColumn.EditSettings>
+                            </dxg:GridColumn>
+                            <dxg:GridColumn FieldName="unitcost" Visible="{Binding IsCostsVisible}" ShowInColumnChooser="False" Header="Unit Rate" ReadOnly="True" >
+                                <dxg:GridColumn.EditSettings>
+                                    <dxe:SpinEditSettings Mask="c0" MaskType="Numeric" MaskUseAsDisplayFormat="True" />
                                 </dxg:GridColumn.EditSettings>
                             </dxg:GridColumn>
                             <dxg:GridColumn FieldName="CostActual" Visible="{Binding IsCostsVisible}" ShowInColumnChooser="False" Header="Cost" ReadOnly="True" >
