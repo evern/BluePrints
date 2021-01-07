@@ -534,7 +534,9 @@ namespace BluePrints.Common.ViewModel.Reporting
         public virtual IEnumerable<PROGRESS_ITEM> PROGRESS_ITEM_BeforeDataDate => PROGRESS_ITEMS.Where(y => y.EARNED_DATE.Date < ReportingDataDate.Date);
 
         public virtual PROGRESS_ITEM PROGRESS_ITEM_Current => PROGRESS_ITEMS.FirstOrDefault(y => y.EARNED_DATE.Date == ReportingDataDate.Date);
-    
+
+        public virtual PROGRESS_ETC PROGRESS_ETC_Current => PROGRESS_ETCS.FirstOrDefault(y => y.ETC_DATE.Date == ReportingDataDate.Date);
+
         public virtual IEnumerable<PROGRESS_ITEM> PROGRESS_ITEM_UpToCurrentDataDate => PROGRESS_ITEMS.Where(y => y.EARNED_DATE.Date <= ReportingDataDate.Date);
 
         public virtual IEnumerable<PROGRESS_ITEM> PROGRESS_ITEM_AfterDataDate => PROGRESS_ITEMS.Where(y => y.EARNED_DATE.Date > ReportingDataDate.Date);
@@ -641,6 +643,22 @@ namespace BluePrints.Common.ViewModel.Reporting
             }
         }
 
+        private decimal? set_progress_etc;
+        public decimal ProgressETC
+        {
+            get
+            {
+                if (set_progress_etc == null)
+                    set_progress_etc = getCurrentPeriodETC();
+
+                return (decimal)set_progress_etc;
+            }
+            set
+            {
+                set_progress_etc = value;
+            }
+        }
+
         public override void Update()
         {
             set_total_earned_percentage = null;
@@ -652,6 +670,8 @@ namespace BluePrints.Common.ViewModel.Reporting
 
         //because entity goes through repository.reload() process this will be null since it's not meddled in the query
         public virtual bool ShouldSaveProgress => get_actual_total_earned_percentage(true) != set_total_earned_percentage;
+
+        public virtual bool ShouldSaveProgressETC => getCurrentPeriodETC() != set_progress_etc;
 
         public virtual decimal? get_actual_total_earned_percentage(bool can_return_null = false)
         {
@@ -667,6 +687,14 @@ namespace BluePrints.Common.ViewModel.Reporting
                 return Earned_Units_ToDate / Total_Units;
             else
                 return 1;
+        }
+
+        public virtual decimal getCurrentPeriodETC()
+        {
+            if (PROGRESS_ETC_Current == null)
+                return 0;
+
+            return PROGRESS_ETC_Current.ETC_UNITS;
         }
 
         public decimal SchedulePercentage
@@ -791,6 +819,18 @@ namespace BluePrints.Common.ViewModel.Reporting
             }
         }
 
+        List<PROGRESS_ETC> progress_etcs { get; set; }
+        public virtual List<PROGRESS_ETC> PROGRESS_ETCS
+        {
+            get
+            {
+                if (progress_etcs == null)
+                    progress_etcs = new List<PROGRESS_ETC>();
+
+                return progress_etcs;
+            }
+        }
+
         public decimal Current_Productivity => CurrentUnits == 0 ? 1 : Earned_Units_ToDate / CurrentUnits;
 
         decimal? remaining_productivity { get; set; }
@@ -866,6 +906,11 @@ namespace BluePrints.Common.ViewModel.Reporting
         public void SetProgressItems(List<PROGRESS_ITEM> progresses)
         {
             progress_items = progresses;
+        }
+
+        public void SetProgressETCs(List<PROGRESS_ETC> progressETCs)
+        {
+            progress_etcs = progressETCs;
         }
 
         public void AppendProgressItem(PROGRESS_ITEM currentProgress)
@@ -975,7 +1020,7 @@ namespace BluePrints.Common.ViewModel.Reporting
                 
                 //return false;
                 //use the following measure as easier benchmark of overdue deliverable
-                return Total_Earned_Percentage < SchedulePercentage;
+                return Total_Earned_Percentage <= SchedulePercentage;
             }
         }
 

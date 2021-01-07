@@ -53,6 +53,7 @@ namespace BluePrints.Data
         public virtual DbSet<PHASE> PHASE { get; set; }
         public virtual DbSet<PIPELINE> PIPELINE { get; set; }
         public virtual DbSet<PROGRESS> PROGRESS { get; set; }
+        public virtual DbSet<PROGRESS_ETC> PROGRESS_ETC { get; set; }
         public virtual DbSet<PROGRESS_ITEM> PROGRESS_ITEM { get; set; }
         public virtual DbSet<PROJECT> PROJECT { get; set; }
         public virtual DbSet<PROJECT_REVENUE> PROJECT_REVENUE { get; set; }
@@ -461,8 +462,18 @@ namespace BluePrints.Data
                 .HasForeignKey(e => e.GUID_PROGRESS)
                 .WillCascadeOnDelete(false);
 
+            modelBuilder.Entity<PROGRESS>()
+                .HasMany(e => e.PROGRESS_ETC)
+                .WithRequired(e => e.PROGRESS)
+                .HasForeignKey(e => e.GUID_PROGRESS)
+                .WillCascadeOnDelete(false);
+
             modelBuilder.Entity<PROGRESS_ITEM>()
                 .Property(e => e.EARNED_UNITS)
+                .HasPrecision(18, 7);
+
+            modelBuilder.Entity<PROGRESS_ETC>()
+                .Property(e => e.ETC_UNITS)
                 .HasPrecision(18, 7);
 
             modelBuilder.Entity<PROJECT>()

@@ -119,6 +119,7 @@ namespace BluePrints.Common.Base
             loaderCollection.AddLoaderDescription(bluePrintsUnitOfWorkFactory, x => x.SUBJOBS, SUBJOBProjectionFunc);
             loaderCollection.AddLoaderDescription(bluePrintsUnitOfWorkFactory, x => x.WORKPACKS, WORKPACKProjectionFunc);
             loaderCollection.AddLoaderDescription(bluePrintsUnitOfWorkFactory, x => x.PROGRESS_ITEMS, PROGRESS_ITEMProjectionFunc);
+            loaderCollection.AddLoaderDescription(bluePrintsUnitOfWorkFactory, x => x.PROGRESS_ETCS, PROGRESS_ETCProjectionFunc);
             loaderCollection.AddLoaderDescription(bluePrintsUnitOfWorkFactory, x => x.AREAS, AREAProjectionFunc);
             loaderCollection.AddLoaderDescription<DEPARTMENT, DEPARTMENT, Guid, IBluePrintsEntitiesUnitOfWork>(bluePrintsUnitOfWorkFactory, x => x.DEPARTMENTS);
             loaderCollection.AddLoaderDescription<DISCIPLINE, DISCIPLINE, Guid, IBluePrintsEntitiesUnitOfWork>(bluePrintsUnitOfWorkFactory, x => x.DISCIPLINES);
@@ -194,6 +195,14 @@ namespace BluePrints.Common.Base
         }
 
         protected Func<IRepositoryQuery<PROGRESS_ITEM>, IQueryable<PROGRESS_ITEM>> PROGRESS_ITEMProjectionFunc()
+        {
+            if (is_single_project_mode)
+                return query => query.Where(x => x.GUID_PROGRESS == loadPROGRESS.GUID);
+            else
+                return query => query.Where(x => x.PROGRESS.STATUS == ProgressStatus.Live && x.PROGRESS.PROJECT.STATUS == ProjectStatus.Active);
+        }
+
+        protected Func<IRepositoryQuery<PROGRESS_ETC>, IQueryable<PROGRESS_ETC>> PROGRESS_ETCProjectionFunc()
         {
             if (is_single_project_mode)
                 return query => query.Where(x => x.GUID_PROGRESS == loadPROGRESS.GUID);
@@ -313,10 +322,6 @@ namespace BluePrints.Common.Base
             if (!manuallySaveProgressOnAfterBaselineItemSaved && projectionEntity.ShouldSaveProgress)
             {
                 saveProgressItem(projectionEntity);
-
-                //main thread implementation
-                //IEnumerable<PROGRESS_ITEM> newPRORESS_ITEMS = projectionEntity.GetExistingOrNewEditedProgresses(PROGRESS_ITEMSCollectionViewModel.FindActualProjectionByExpression);
-                //PROGRESS_ITEMSCollectionViewModel.Save(newPRORESS_ITEMS.First());
             }
         }
         
@@ -1858,6 +1863,14 @@ namespace BluePrints.Common.Base
             get
             {
                 return GetEntities<PROGRESS_ITEM>();
+            }
+        }
+
+        public IEnumerable<PROGRESS_ETC> PROGRESS_ETCCollection
+        {
+            get
+            {
+                return GetEntities<PROGRESS_ETC>();
             }
         }
 

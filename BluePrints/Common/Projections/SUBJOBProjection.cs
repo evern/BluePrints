@@ -121,6 +121,8 @@ namespace BluePrints.Common.Projections
 
         public bool ShouldSaveProgress => false;
 
+        public bool ShouldSaveProgressETC => false;
+
         public decimal MinEstimateUnits => 0;
 
         public string Variation_Code => string.Empty;
@@ -165,6 +167,11 @@ namespace BluePrints.Common.Projections
         }
 
         public void SetProgressItems(List<PROGRESS_ITEM> progresses)
+        {
+            throw new NotImplementedException();
+        }
+
+        public void SetProgressETCs(List<PROGRESS_ETC> progresETCs)
         {
             throw new NotImplementedException();
         }

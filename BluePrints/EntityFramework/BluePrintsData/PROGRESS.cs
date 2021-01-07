@@ -58,6 +58,9 @@ namespace BluePrints.Data
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
         public virtual ICollection<PROGRESS_ITEM> PROGRESS_ITEM { get; set; }
 
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
+        public virtual ICollection<PROGRESS_ETC> PROGRESS_ETC { get; set; }
+
         public virtual PROJECT PROJECT { get; set; }
     }
 }

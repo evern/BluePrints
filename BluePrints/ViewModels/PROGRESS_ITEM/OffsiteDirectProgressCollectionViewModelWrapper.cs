@@ -37,9 +37,7 @@ namespace BluePrints.ViewModels
     /// <summary>
     /// Represents the single PROGRESS object view model.
     /// </summary>
-    public partial class OffsiteDirectProgressCollectionViewModelWrapper :
-        BluePrintsEntitiesProgressCollectionWrapper
-        <BASELINE_ITEM, BASELINE_ITEMProgress, Guid, IBluePrintsEntitiesUnitOfWork>, ISupportFiltering<BASELINE_ITEMProgress>
+    public partial class OffsiteDirectProgressCollectionViewModelWrapper : BluePrintsEntitiesProgressCollectionWrapper<BASELINE_ITEM, BASELINE_ITEMProgress, Guid, IBluePrintsEntitiesUnitOfWork>, ISupportFiltering<BASELINE_ITEMProgress>
     {
 
         /// <summary>
@@ -145,7 +143,7 @@ namespace BluePrints.ViewModels
         protected override Func<IRepositoryQuery<BASELINE_ITEM>, IQueryable<BASELINE_ITEMProgress>>
             specifyMainViewModelProjection()
         {
-            return query => ProgressQueries.OffsiteDirectProgressItemTransformation(query.Where(x => x.GUID_BASELINE == loadBASELINE.GUID), loadPROJECT, loadPROGRESS, RATECollection, PROGRESS_ITEMCollection, VARIATIONCollection, false, P6_ASSIGNMENTCollection, DeliverableInternalNumberMode.Default, isUseReportDate, P6TASKCollection, null, null, null, null, DELIVERABLES_STATUSCollection, DSTATUS_DOCTYPECollection);
+            return query => ProgressQueries.OffsiteDirectProgressItemTransformation(query.Where(x => x.GUID_BASELINE == loadBASELINE.GUID), loadPROJECT, loadPROGRESS, RATECollection, PROGRESS_ITEMCollection, VARIATIONCollection, false, P6_ASSIGNMENTCollection, DeliverableInternalNumberMode.Default, isUseReportDate, P6TASKCollection, null, null, null, null, DELIVERABLES_STATUSCollection, DSTATUS_DOCTYPECollection, null, null, null, PROGRESS_ETCCollection);
         }
 
         protected override void AssignCallBacksAndRaisePropertyChange(IEnumerable<BASELINE_ITEMProgress> entities)
@@ -154,6 +152,15 @@ namespace BluePrints.ViewModels
             MainViewModel.ValidateFillDownCallBack = ValidateFillDownCallBack;
             MainViewModel.FuncManualCellPastingIsContinue = BluePrintsDataUtils.FuncManualCellPastingIsContinue;
             base.AssignCallBacksAndRaisePropertyChange(entities);
+        }
+
+        public override void UnifiedCellValueChanged(string field_name, object old_value, object new_value, BASELINE_ITEMProgress projection, bool isNew)
+        {
+            //if (field_name == BindableBase.GetPropertyName(() => new BASELINE_ITEMProgress().Entity.Entity.))
+            //{
+            //}
+
+            base.UnifiedCellValueChanged(field_name, old_value, new_value, projection, isNew);
         }
         #region Collection Call Backs
 
@@ -342,7 +349,6 @@ namespace BluePrints.ViewModels
                 return;
 
             List<BASELINE_ITEMProgress> saveProgresses = new List<BASELINE_ITEMProgress>();
-
             IBluePrintsEntitiesUnitOfWork bluePrintsUnitOfWork = bluePrintsUnitOfWorkFactory.CreateUnitOfWork();
             foreach (BASELINE_ITEMProgress progress in MainViewModel.Entities)
             {

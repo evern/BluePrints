@@ -188,6 +188,8 @@ namespace BluePrints.Common.ViewModel.Reporting
 
         public bool ShouldSaveProgress => ((IReportable)ProgressItem).ShouldSaveProgress;
 
+        public bool ShouldSaveProgressETC => ((IReportable)ProgressItem).ShouldSaveProgressETC;
+
         public decimal Current_Productivity => ((IReportable)ProgressItem).Current_Productivity;
 
         public decimal? Override_Productivity { get => ((IReportable)ProgressItem).Override_Productivity; set => ((IReportable)ProgressItem).Override_Productivity = value; }
@@ -333,6 +335,11 @@ namespace BluePrints.Common.ViewModel.Reporting
         public void SetProgressItems(List<PROGRESS_ITEM> progresses)
         {
             ((IReportable)ProgressItem).SetProgressItems(progresses);
+        }
+
+        public void SetProgressETCs(List<PROGRESS_ETC> progresETCs)
+        {
+            ((IReportable)ProgressItem).SetProgressETCs(progresETCs);
         }
 
         public void AppendProgressItem(PROGRESS_ITEM currentProgress)
@@ -526,6 +533,8 @@ namespace BluePrints.Common.ViewModel.Reporting
 
         public bool ShouldSaveProgress => Reportable.ShouldSaveProgress;
 
+        public bool ShouldSaveProgressETC => Reportable.ShouldSaveProgressETC;
+
         public decimal Remaining_Hours_To_Completion => Reportable.Remaining_Hours_To_Completion;
 
         public decimal Current_Productivity => Reportable.Current_Productivity;
@@ -656,6 +665,11 @@ namespace BluePrints.Common.ViewModel.Reporting
         public void SetProgressItems(List<PROGRESS_ITEM> progresses)
         {
             Reportable.SetProgressItems(progresses);
+        }
+
+        public void SetProgressETCs(List<PROGRESS_ETC> progresETCs)
+        {
+            Reportable.SetProgressETCs(progresETCs);
         }
 
         public void AppendProgressItem(PROGRESS_ITEM currentProgress)

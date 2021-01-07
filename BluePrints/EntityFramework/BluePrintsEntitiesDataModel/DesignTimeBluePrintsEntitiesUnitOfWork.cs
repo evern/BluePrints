@@ -194,6 +194,11 @@ namespace BluePrints.BluePrintsEntitiesDataModel
             get { return GetRepository((PROGRESS_ITEM x) => x.GUID); }
         }
 
+        IRepository<PROGRESS_ETC, Guid> IBluePrintsEntitiesUnitOfWork.PROGRESS_ETCS
+        {
+            get { return GetRepository((PROGRESS_ETC x) => x.GUID); }
+        }
+
         IRepository<PROGRESS, Guid> IBluePrintsEntitiesUnitOfWork.PROGRESSES
         {
             get { return GetRepository((PROGRESS x) => x.GUID); }

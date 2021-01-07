@@ -181,7 +181,8 @@ namespace BluePrints.Common.ViewModel.Reporting
             PROGRESS PROGRESS,
             IEnumerable<RATE> RATES,
             IEnumerable<PROGRESS_ITEM> PROGRESS_ITEMS,
-            IEnumerable<VARIATION> VARIATIONS, bool buildStats = false, IEnumerable<P6_ASSIGNMENT> P6_ASSIGNMENTS = null, DeliverableInternalNumberMode internalNumberMode = DeliverableInternalNumberMode.Default, bool useReportDate = false, IEnumerable<P6Data.TASK> P6_TASKS = null, IEnumerable<USER> USERCollection = null, IEnumerable<BASELINE_ITEM_WORK> BASELINE_ITEM_WORKCollection = null, DateTime? forceExtrapolateDate = null, IEnumerable<REGISTER_HOLD_REF> REGISTER_HOLD_REFCollection = null, IEnumerable<DELIVERABLES_STATUS> DELIVERABLES_STATUSCollection = null, IEnumerable<DSTATUS_DOCTYPE> DSTATUS_DOCTYPECollection = null, Guid? ProjectGuidForDeliverablesStatus = null, IEnumerable<DOCTYPE> DOCTYPECollection = null, IEnumerable<COMMODITY_CODE> COMMODITY_CODECollection = null, bool showLoadingScreen = false)
+            IEnumerable<VARIATION> VARIATIONS, bool buildStats = false, IEnumerable<P6_ASSIGNMENT> P6_ASSIGNMENTS = null, DeliverableInternalNumberMode internalNumberMode = DeliverableInternalNumberMode.Default, bool useReportDate = false, IEnumerable<P6Data.TASK> P6_TASKS = null, IEnumerable<USER> USERCollection = null, IEnumerable<BASELINE_ITEM_WORK> BASELINE_ITEM_WORKCollection = null, DateTime? forceExtrapolateDate = null, IEnumerable<REGISTER_HOLD_REF> REGISTER_HOLD_REFCollection = null, IEnumerable<DELIVERABLES_STATUS> DELIVERABLES_STATUSCollection = null, IEnumerable<DSTATUS_DOCTYPE> DSTATUS_DOCTYPECollection = null, Guid? ProjectGuidForDeliverablesStatus = null, IEnumerable<DOCTYPE> DOCTYPECollection = null, IEnumerable<COMMODITY_CODE> COMMODITY_CODECollection = null,
+            IEnumerable<PROGRESS_ETC> PROGRESS_ETCS = null, bool showLoadingScreen = false)
         {
             IQueryable<BASELINE_ITEMProjection> baseline_item_queryable;
 
@@ -271,6 +272,9 @@ namespace BluePrints.Common.ViewModel.Reporting
             Parallel.ForEach(progresses,
                 baseline_item_progress =>
                 {
+                    if(PROGRESS_ETCS != null)
+                        baseline_item_progress.SetProgressETCs(PROGRESS_ETCS.Where(x => x.GUID_ORIBASEITEM == baseline_item_progress.GUID_ORIGINAL).ToList());
+
                     SetReportablePROGRESS_ITEM(baseline_item_progress, progress_item_by_originalguid);
                     if (buildStats && !baseline_item_progress.Stats.Budgeted.StatsBuilt)
                         baseline_item_progress.BuildStats();
@@ -366,14 +370,10 @@ namespace BluePrints.Common.ViewModel.Reporting
             if (setProgressesProjection == null)
                 return;
 
-            List<dynamic> progressByOriginalGuid = PROGRESS_ITEMSByOriginalGuid.ToList();
-            foreach (dynamic item in progressByOriginalGuid)
+            dynamic progressByOriginalGuidGroup = PROGRESS_ITEMSByOriginalGuid.FirstOrDefault(x => x.OriginalGuid == reportable.OriginalEntityKey);
+            if(progressByOriginalGuidGroup != null)
             {
-                if (item.OriginalGuid == reportable.OriginalEntityKey)
-                {
-                    setProgressesProjection.SetProgressItems(item.Progresses);
-                    return;
-                }
+                setProgressesProjection.SetProgressItems(progressByOriginalGuidGroup.Progresses);
             }
 
             setProgressesProjection.SetProgressItems(new List<PROGRESS_ITEM>());

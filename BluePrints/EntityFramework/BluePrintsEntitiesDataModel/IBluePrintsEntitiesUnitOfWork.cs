@@ -183,6 +183,11 @@ namespace BluePrints.BluePrintsEntitiesDataModel
         IRepository<PROGRESS_ITEM, Guid> PROGRESS_ITEMS { get; }
 
         /// <summary>
+        /// The PROGRESS_ETCS entities repository.
+        /// </summary>
+        IRepository<PROGRESS_ETC, Guid> PROGRESS_ETCS { get; }
+
+        /// <summary>
         /// The PROGRESS entities repository.
         /// </summary>
         IRepository<PROGRESS, Guid> PROGRESSES { get; }
