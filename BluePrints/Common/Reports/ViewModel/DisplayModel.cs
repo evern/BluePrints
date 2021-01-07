@@ -174,6 +174,8 @@ namespace BluePrints.Common.ViewModel.Reporting
 
         public decimal Total_Earned_Percentage { get => ((IReportable)ProgressItem).Total_Earned_Percentage; set => ((IReportable)ProgressItem).Total_Earned_Percentage = value; }
 
+        public decimal ProgressETC { get => ((IReportable)ProgressItem).ProgressETC; set => ((IReportable)ProgressItem).ProgressETC = value; }
+
         public decimal Total_Percentage => ((IReportable)ProgressItem).Total_Percentage;
 
         public decimal Total_Percentage_ToDate => ((IReportable)ProgressItem).Total_Percentage_ToDate;
@@ -325,6 +327,11 @@ namespace BluePrints.Common.ViewModel.Reporting
         public IEnumerable<PROGRESS_ITEM> GetExistingOrNewEditedProgresses(Func<Expression<Func<PROGRESS_ITEM, bool>>, PROGRESS_ITEM> repository_find_actual_func)
         {
             return ((IReportable)ProgressItem).GetExistingOrNewEditedProgresses(repository_find_actual_func);
+        }
+
+        public IEnumerable<PROGRESS_ETC> GetExistingOrNewEditedProgressETCs(Func<Expression<Func<PROGRESS_ETC, bool>>, PROGRESS_ETC> repository_find_actual_func)
+        {
+            return ((IReportable)ProgressItem).GetExistingOrNewEditedProgressETCs(repository_find_actual_func);
         }
 
         public void SetReportingDataDate(DateTime dataDate)
@@ -511,6 +518,8 @@ namespace BluePrints.Common.ViewModel.Reporting
 
         public decimal Total_Earned_Percentage { get => Reportable.Total_Earned_Percentage; set => Reportable.Total_Earned_Percentage = value; }
 
+        public decimal ProgressETC { get => Reportable.ProgressETC; set => Reportable.ProgressETC = value; }
+
         public decimal Total_Percentage_ToDate => Reportable.Total_Percentage_ToDate;
 
         public decimal TotalInstalledQuantity => Reportable.TotalInstalledQuantity;
@@ -690,6 +699,11 @@ namespace BluePrints.Common.ViewModel.Reporting
         public IEnumerable<PROGRESS_ITEM> GetExistingOrNewEditedProgresses(Func<Expression<Func<PROGRESS_ITEM, bool>>, PROGRESS_ITEM> repository_find_actual_func)
         {
             return Reportable.GetExistingOrNewEditedProgresses(repository_find_actual_func);
+        }
+
+        public IEnumerable<PROGRESS_ETC> GetExistingOrNewEditedProgressETCs(Func<Expression<Func<PROGRESS_ETC, bool>>, PROGRESS_ETC> repository_find_actual_func)
+        {
+            return Reportable.GetExistingOrNewEditedProgressETCs(repository_find_actual_func);
         }
     }
 }

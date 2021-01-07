@@ -162,6 +162,7 @@ namespace BluePrints.Common.ViewModel.Reporting
         decimal Earned_Costs_OnDataDate { get; }
         decimal Earned_Units_AfterDataDate { get; }
         decimal Total_Earned_Percentage { get; set; }
+        decimal ProgressETC { get; set; }
         decimal Total_Percentage { get; }
         decimal Total_Percentage_ToDate { get; }
         decimal Baseline_Percentage { get; }
@@ -174,6 +175,8 @@ namespace BluePrints.Common.ViewModel.Reporting
         decimal MinEstimateUnits { get; }
 
         IEnumerable<PROGRESS_ITEM> GetExistingOrNewEditedProgresses(Func<Expression<Func<PROGRESS_ITEM, bool>>, PROGRESS_ITEM> repository_find_actual_func);
+        IEnumerable<PROGRESS_ETC> GetExistingOrNewEditedProgressETCs(Func<Expression<Func<PROGRESS_ETC, bool>>, PROGRESS_ETC> repository_find_actual_func);
+
         void SetReportingDataDate(DateTime dataDate);
         void SetProgressItems(List<PROGRESS_ITEM> progresses);
         void SetProgressETCs(List<PROGRESS_ETC> progressETCs);

@@ -323,12 +323,23 @@ namespace BluePrints.Common.Base
             {
                 saveProgressItem(projectionEntity);
             }
+
+            if(projectionEntity.ShouldSaveProgressETC)
+            {
+                saveProgressETC(projectionEntity);
+            }
         }
         
         private void saveProgressItem(TMainProjectionEntity projection)
         {
             IEnumerable<PROGRESS_ITEM> newPRORESS_ITEMS = projection.GetExistingOrNewEditedProgresses(PROGRESS_ITEMSCollectionViewModel.FindActualProjectionByExpression);
             PROGRESS_ITEMSCollectionViewModel.Save(newPRORESS_ITEMS.First());
+        }
+
+        private void saveProgressETC(TMainProjectionEntity projection)
+        {
+            IEnumerable<PROGRESS_ETC> newPROGRESS_ETCs = projection.GetExistingOrNewEditedProgressETCs(PROGRESS_ETCSCollectionViewModel.FindActualProjectionByExpression);
+            PROGRESS_ETCSCollectionViewModel.Save(newPROGRESS_ETCs.First());
         }
 
         private void ProgressSaveBackgroundWorker_DoWork(object sender, DoWorkEventArgs e)
@@ -1846,6 +1857,19 @@ namespace BluePrints.Common.Base
                 return
                     (CollectionViewModel<PROGRESS_ITEM, PROGRESS_ITEM, Guid, IBluePrintsEntitiesUnitOfWork>)
                     loaderCollection.GetViewModel<PROGRESS_ITEM>();
+            }
+        }
+
+        public CollectionViewModel<PROGRESS_ETC, PROGRESS_ETC, Guid, IBluePrintsEntitiesUnitOfWork> PROGRESS_ETCSCollectionViewModel
+        {
+            get
+            {
+                if (MainViewModel == null)
+                    return null;
+
+                return
+                    (CollectionViewModel<PROGRESS_ETC, PROGRESS_ETC, Guid, IBluePrintsEntitiesUnitOfWork>)
+                    loaderCollection.GetViewModel<PROGRESS_ETC>();
             }
         }
 

@@ -153,15 +153,6 @@ namespace BluePrints.ViewModels
             MainViewModel.FuncManualCellPastingIsContinue = BluePrintsDataUtils.FuncManualCellPastingIsContinue;
             base.AssignCallBacksAndRaisePropertyChange(entities);
         }
-
-        public override void UnifiedCellValueChanged(string field_name, object old_value, object new_value, BASELINE_ITEMProgress projection, bool isNew)
-        {
-            //if (field_name == BindableBase.GetPropertyName(() => new BASELINE_ITEMProgress().Entity.Entity.))
-            //{
-            //}
-
-            base.UnifiedCellValueChanged(field_name, old_value, new_value, projection, isNew);
-        }
         #region Collection Call Backs
 
         public bool ValidateFillDownCallBack(BASELINE_ITEMProgress fillDownEntity, string fieldName, object fillValue)

@@ -105,6 +105,8 @@ namespace BluePrints.Common.Projections
 
         public decimal Total_Earned_Percentage { get; set; }
 
+        public decimal ProgressETC { get; set; }
+
         public decimal Total_Percentage => 0;
 
         public decimal Total_Percentage_ToDate => 0;
@@ -157,6 +159,11 @@ namespace BluePrints.Common.Projections
         }
 
         public IEnumerable<PROGRESS_ITEM> GetExistingOrNewEditedProgresses(Func<Expression<Func<PROGRESS_ITEM, bool>>, PROGRESS_ITEM> repository_find_actual_func)
+        {
+            throw new NotImplementedException();
+        }
+
+        public IEnumerable<PROGRESS_ETC> GetExistingOrNewEditedProgressETCs(Func<Expression<Func<PROGRESS_ETC, bool>>, PROGRESS_ETC> repository_find_actual_func)
         {
             throw new NotImplementedException();
         }

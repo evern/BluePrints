@@ -649,7 +649,7 @@ namespace BluePrints.Common.ViewModel.Reporting
             get
             {
                 if (set_progress_etc == null)
-                    set_progress_etc = getCurrentPeriodETC();
+                    set_progress_etc = getPeriodETC();
 
                 return (decimal)set_progress_etc;
             }
@@ -671,7 +671,7 @@ namespace BluePrints.Common.ViewModel.Reporting
         //because entity goes through repository.reload() process this will be null since it's not meddled in the query
         public virtual bool ShouldSaveProgress => get_actual_total_earned_percentage(true) != set_total_earned_percentage;
 
-        public virtual bool ShouldSaveProgressETC => getCurrentPeriodETC() != set_progress_etc;
+        public virtual bool ShouldSaveProgressETC => getPeriodETC() != set_progress_etc;
 
         public virtual decimal? get_actual_total_earned_percentage(bool can_return_null = false)
         {
@@ -689,10 +689,17 @@ namespace BluePrints.Common.ViewModel.Reporting
                 return 1;
         }
 
-        public virtual decimal getCurrentPeriodETC()
+        public virtual decimal getPeriodETC()
         {
+            //return previous periods ETC when current ETC is null
             if (PROGRESS_ETC_Current == null)
-                return 0;
+            {
+                PROGRESS_ETC lastPeriodPROGRESS_ETC = PROGRESS_ETCS.OrderByDescending(x => x.ETC_DATE).FirstOrDefault(x => x.ETC_DATE < reportingDataDate);
+                if (lastPeriodPROGRESS_ETC == null)
+                    return 0;
+                else
+                    return lastPeriodPROGRESS_ETC.ETC_UNITS;
+            }
 
             return PROGRESS_ETC_Current.ETC_UNITS;
         }
@@ -941,6 +948,24 @@ namespace BluePrints.Common.ViewModel.Reporting
             return editPROGRESS_ITEMS;
         }
 
+        public virtual IEnumerable<PROGRESS_ETC> GetExistingOrNewEditedProgressETCs(Func<Expression<Func<PROGRESS_ETC, bool>>, PROGRESS_ETC> repository_find_actual_func)
+        {
+            PROGRESS_ETC edit_PROGRESS_ETC;
+            if (PROGRESS_ETC_Current != null)
+                edit_PROGRESS_ETC = PROGRESS_ETC_Current;
+            else
+                edit_PROGRESS_ETC = createNewProgressETC(repository_find_actual_func);
+
+
+            edit_PROGRESS_ETC.ETC_UNITS = set_progress_etc == null ? 0 : (decimal)set_progress_etc;
+
+            //use list because overriding member will be a group
+            List<PROGRESS_ETC> editPROGRESS_ETCS = new List<PROGRESS_ETC>();
+            editPROGRESS_ETCS.Add(edit_PROGRESS_ETC);
+
+            return editPROGRESS_ETCS;
+        }
+
         protected virtual decimal getNewPercentage()
         {
             return set_total_earned_percentage == null ? 0 : (decimal)set_total_earned_percentage;
@@ -966,6 +991,21 @@ namespace BluePrints.Common.ViewModel.Reporting
             savePROGRESS_ITEM.CREATED = DateTime.Now;
 
             return savePROGRESS_ITEM;
+        }
+
+        public PROGRESS_ETC createNewProgressETC(Func<Expression<Func<PROGRESS_ETC, bool>>, PROGRESS_ETC> repository_find_actual_func)
+        {
+            PROGRESS_ETC actual_PROGRESS_ETC = repository_find_actual_func(x => x.ETC_DATE == ReportingDataDate && x.GUID_ORIBASEITEM == OriginalEntityKey && x.GUID_PROGRESS == Live_PROGRESS.GUID);
+            if (actual_PROGRESS_ETC != null)
+                return actual_PROGRESS_ETC;
+
+            PROGRESS_ETC savePROGRESS_ETC = new PROGRESS_ETC();
+            savePROGRESS_ETC.GUID_ORIBASEITEM = Entity.OriginalEntityKey;
+            savePROGRESS_ETC.GUID_PROGRESS = Live_PROGRESS.GUID;
+            savePROGRESS_ETC.ETC_DATE = ReportingDataDate;// Live_PROGRESS.DATA_DATE.Date;
+            savePROGRESS_ETC.CREATED = DateTime.Now;
+
+            return savePROGRESS_ETC;
         }
 
         public bool IHaveMilestones
