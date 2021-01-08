@@ -807,7 +807,11 @@ namespace BluePrints.Common.ViewModel.Reporting
         public virtual decimal Earned_Costs_Total => Earned_Units_Total * Entity.Budget_ItemRate;
 
         public decimal Earned_Costs_ToDate => Earned_Units_ToDate * Entity.Budget_ItemRate;
+
+        public decimal Remaining_Units_Total => Total_Units - Earned_Units_Total;
         
+        public decimal Remaining_Units_ToDate => Total_Units - Earned_Units_ToDate;
+
         DateTime reportingDataDate { get; set; }
         public DateTime ReportingDataDate { get { return reportingDataDate; } }
         public void SetReportingDataDate(DateTime dataDate)

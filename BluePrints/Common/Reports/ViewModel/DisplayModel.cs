@@ -172,6 +172,10 @@ namespace BluePrints.Common.ViewModel.Reporting
 
         public decimal Earned_Units_AfterDataDate => ((IReportable)ProgressItem).Earned_Units_AfterDataDate;
 
+        public decimal Remaining_Units_Total => ((IReportable)ProgressItem).Total_Units - ((IReportable)ProgressItem).Earned_Units_Total;
+
+        public decimal Remaining_Units_ToDate => ((IReportable)ProgressItem).Total_Units - ((IReportable)ProgressItem).Earned_Units_ToDate;
+
         public decimal Total_Earned_Percentage { get => ((IReportable)ProgressItem).Total_Earned_Percentage; set => ((IReportable)ProgressItem).Total_Earned_Percentage = value; }
 
         public decimal ProgressETC { get => ((IReportable)ProgressItem).ProgressETC; set => ((IReportable)ProgressItem).ProgressETC = value; }
@@ -520,6 +524,10 @@ namespace BluePrints.Common.ViewModel.Reporting
         public decimal Earned_Total_Costs_OnDataDate => Reportable.Earned_Total_Costs_OnDataDate;
 
         public decimal Earned_Units_AfterDataDate => Reportable.Earned_Units_AfterDataDate;
+
+        public decimal Remaining_Units_Total => Reportable.Total_Units - Reportable.Earned_Units_Total;
+
+        public decimal Remaining_Units_ToDate => Reportable.Total_Units - Reportable.Earned_Units_ToDate;
 
         public decimal Total_Earned_Percentage { get => Reportable.Total_Earned_Percentage; set => Reportable.Total_Earned_Percentage = value; }
 

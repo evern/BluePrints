@@ -374,6 +374,7 @@ namespace BluePrints.Common.ViewModel.Reporting
             if(progressByOriginalGuidGroup != null)
             {
                 setProgressesProjection.SetProgressItems(progressByOriginalGuidGroup.Progresses);
+                return;
             }
 
             setProgressesProjection.SetProgressItems(new List<PROGRESS_ITEM>());

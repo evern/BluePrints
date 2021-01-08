@@ -161,6 +161,8 @@ namespace BluePrints.Common.ViewModel.Reporting
         decimal Earned_Costs_ToDate { get; }
         decimal Earned_Costs_OnDataDate { get; }
         decimal Earned_Units_AfterDataDate { get; }
+        decimal Remaining_Units_Total { get; }
+        decimal Remaining_Units_ToDate { get; }
         decimal Total_Earned_Percentage { get; set; }
         decimal ProgressETC { get; set; }
         decimal Total_Percentage { get; }

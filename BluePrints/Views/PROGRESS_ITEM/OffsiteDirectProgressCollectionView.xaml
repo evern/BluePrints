@@ -282,7 +282,12 @@
                                     </DataTemplate>
                                 </dxg:GridColumn.CellTemplate>
                             </dxg:GridColumn>
-                            <dxg:GridColumn FieldName="Total_Units" AllowBestFit="false" Width="70" Header="Total Hours" HeaderToolTip="Budget Hours + Variation Hours" IsEnabled="False" ReadOnly="True">
+                            <dxg:GridColumn FieldName="Total_Units" AllowBestFit="false" Width="70" Header="Total Hrs" HeaderToolTip="Budget Hours + Variation Hours" IsEnabled="False" ReadOnly="True">
+                                <dxg:GridColumn.EditSettings>
+                                    <dxe:SpinEditSettings Increment="1" Mask="n" MaskType="Numeric" MaskUseAsDisplayFormat="True" MinValue="0" />
+                                </dxg:GridColumn.EditSettings>
+                            </dxg:GridColumn>
+                            <dxg:GridColumn FieldName="Remaining_Units_ToDate" AllowBestFit="false" Width="70" Header="Remaining Hrs" HeaderToolTip="Total Hours - Earned Hours to Data Date" IsEnabled="False" ReadOnly="True">
                                 <dxg:GridColumn.EditSettings>
                                     <dxe:SpinEditSettings Increment="1" Mask="n" MaskType="Numeric" MaskUseAsDisplayFormat="True" MinValue="0" />
                                 </dxg:GridColumn.EditSettings>
