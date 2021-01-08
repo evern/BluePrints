@@ -287,7 +287,7 @@
                                     <dxe:SpinEditSettings Increment="1" Mask="n" MaskType="Numeric" MaskUseAsDisplayFormat="True" MinValue="0" />
                                 </dxg:GridColumn.EditSettings>
                             </dxg:GridColumn>
-                            <dxg:GridColumn FieldName="ProgressETC" AllowBestFit="false" Width="80" Header="Discretionary Remaining Hrs" IsEnabled="False" >
+                            <dxg:GridColumn FieldName="ProgressETC" AllowBestFit="false" Width="70" Header="User Remaining Hrs" IsEnabled="False" >
                                 <dxg:GridColumn.EditSettings>
                                     <dxe:SpinEditSettings Increment="1" Mask="n" MaskType="Numeric" MaskUseAsDisplayFormat="True" MinValue="0" />
                                 </dxg:GridColumn.EditSettings>

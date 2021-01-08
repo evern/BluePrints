@@ -181,6 +181,8 @@ namespace BluePrints.Common.ViewModel.Reporting
         void SetProgressItems(List<PROGRESS_ITEM> progresses);
         void SetProgressETCs(List<PROGRESS_ETC> progressETCs);
         void AppendProgressItem(PROGRESS_ITEM currentProgress);
+
+        decimal GetPeriodETC(DateTime? latestReportingDate = null);
     }
     #endregion
 

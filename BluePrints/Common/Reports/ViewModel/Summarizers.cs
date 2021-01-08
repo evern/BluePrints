@@ -375,18 +375,7 @@ namespace BluePrints.Common.ViewModel.Reporting
             using (BluePrintsEntities bluePrintDataContext = new BluePrintsEntities())
             {
                 List<StoredProcedure_RemainingDataPoint> remainingDataPoints = bluePrintDataContext.QueryDeliverableRemainingDataPointsByProject(this.projectNumber, isForecast);
-                //List<StoredProcedure_RemainingDataPoint> remainingLateDataPoints = bluePrintDataContext.QueryDeliverableRemainingLateDataPointsByProject(this.projectNumber);
-                //double sumRemaining = remainingDataPoints.Sum(x => x.PeriodRemainingUnits);
-                //string s = sumRemaining.ToString();
-
-                //foreach (var remainingDataPoint in remainingDataPoints)
-                //{
-                //    IEnumerable<IReportable> reportableObjects = ((SummaryStats)this.SummaryStats).Reportables;
-                //    if (reportableObjects.Any(x => x.OriginalEntityKey == remainingDataPoint.Original_Guid))
-                //    {
-                //        Debug.Print(remainingDataPoint.PeriodRemainingUnits.ToString());
-                //    }
-                //}
+                List<PROGRESS_ETC> projectProgressETCs = bluePrintDataContext.QueryProjectProgressETC(this.projectNumber);
 
                 foreach (IReportable reportableObject in ((SummaryStats)this.SummaryStats).Reportables)
                 {
@@ -397,20 +386,29 @@ namespace BluePrints.Common.ViewModel.Reporting
                         if (reportable_Group != null)
                         {
                             List<StoredProcedure_RemainingDataPoint> currentGroupDeliverableDataPoints = new List<StoredProcedure_RemainingDataPoint>();
-                            List<StoredProcedure_RemainingDataPoint> currentGroupDeliverableLateDataPoints = new List<StoredProcedure_RemainingDataPoint>();
+                            //List<StoredProcedure_RemainingDataPoint> currentGroupDeliverableLateDataPoints = new List<StoredProcedure_RemainingDataPoint>();
+                            List<PROGRESS_ETC> currentGroupProgressETCs = null;
+                            if (isForecast)
+                                currentGroupProgressETCs = new List<PROGRESS_ETC>();
+
                             foreach (IReportable reportable in reportable_Group.Reportables)
                             {
                                 reportable.Stats.Remaining.SetRemainingData(remainingDataPoints.Where(x => x.Original_Guid == reportable.OriginalEntityKey), reportable.Stats.Earned.GetData());
-                                //SummaryStats summaryStats = reportable.Stats as SummaryStats;
-                                //if(summaryStats != null)
-                                //    reportable.Stats.RemainingActual.SetRemainingData(remainingDataPoints.Where(x => x.Original_Guid == reportable.OriginalEntityKey), summaryStats.Burned.DataPoints);
+
+                                if(currentGroupProgressETCs != null)
+                                {
+                                    List<PROGRESS_ETC> currentReportableProgressETCs = projectProgressETCs.Where(x => x.GUID_ORIBASEITEM == reportable.OriginalEntityKey).ToList();
+                                    reportable.SetProgressETCs(currentReportableProgressETCs);
+                                    currentGroupProgressETCs.AddRange(currentReportableProgressETCs);
+                                }
 
                                 reportable.Update();
                                 currentGroupDeliverableDataPoints.AddRange(remainingDataPoints.Where(x => x.Original_Guid == reportable.OriginalEntityKey));
-                                currentGroupDeliverableLateDataPoints.AddRange(remainingDataPoints.Where(x => x.Original_Guid == reportable.OriginalEntityKey));
+                                //currentGroupDeliverableLateDataPoints.AddRange(remainingDataPoints.Where(x => x.Original_Guid == reportable.OriginalEntityKey));
                             }
 
                             reportable_Group.Stats.Remaining.SetRemainingData(currentGroupDeliverableDataPoints, reportable_Group.Stats.Earned.GetData());
+                            reportable_Group.SetProgressETCs(currentGroupProgressETCs);
                             //SummaryStats groupSummaryStats = reportable_Group.Stats as SummaryStats;
                             //if (groupSummaryStats != null)
                             //    reportable_Group.Stats.RemainingActual.SetRemainingData(currentGroupDeliverableLateDataPoints, groupSummaryStats.Burned.DataPoints);
@@ -420,6 +418,9 @@ namespace BluePrints.Common.ViewModel.Reporting
                         }
                         else
                         {
+                            if(isForecast)
+                                reportablesDisplay.SetProgressETCs(projectProgressETCs.Where(x => x.GUID_ORIBASEITEM == reportableObject.OriginalEntityKey).ToList());
+
                             reportablesDisplay.Stats.Remaining.SetRemainingData(remainingDataPoints.Where(x => x.Original_Guid == reportableObject.OriginalEntityKey), reportableObject.Stats.Earned.GetData());
                             //SummaryStats summaryStats = reportablesDisplay.Stats as SummaryStats;
                             //if (summaryStats != null)
@@ -440,6 +441,9 @@ namespace BluePrints.Common.ViewModel.Reporting
                         }
 
                         reportableObject.Stats.Remaining.SetRemainingData(storedProcedure_RemainingDataPoints, reportableObject.Stats.Earned.GetData());
+                        if (isForecast)
+                            reportableObject.SetProgressETCs(projectProgressETCs.Where(x => x.GUID_ORIBASEITEM == reportableObject.OriginalEntityKey).ToList());
+
                         reportableObject.Update();
                     }
 

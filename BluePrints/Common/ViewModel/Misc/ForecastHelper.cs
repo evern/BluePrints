@@ -175,6 +175,11 @@ namespace BluePrints.Common.ViewModel.Misc
                 jobForecastSummary.P6RemainingCosts = p6RemainingCosts;
                 jobForecastSummary.P6RemainingUnits = p6RemainingUnits;
                 jobForecastSummary.EarnedUnits = earnedUnits;
+
+                //user remaining units, placed in here so that when remaining stats are empty it'll not populate user remaining units too
+                IEnumerable<IReportable> remainingReportables = remainingStats.SelectMany(x => x.Reportables);
+                if (remainingReportables.Count() > 0)
+                    jobForecastSummary.ProgressETC = remainingReportables.Sum(x => x.GetPeriodETC());
             }
 
             //the first remaining date will be the second month in the view because data date will end on the first month

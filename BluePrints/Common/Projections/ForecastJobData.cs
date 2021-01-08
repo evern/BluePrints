@@ -94,7 +94,7 @@ namespace BluePrints.Common.Projections
         public decimal P6BudgetedUnits { get; set; }
         public decimal P6RemainingUnits { get; set; }
         public decimal? EarnedUnits { get; set; }
-
+        public decimal ProgressETC { get; set; }
         public decimal? P6RemainingUnitsOverride { get; set; }
 
         public bool IsProductivityFloating { get; set; }

@@ -187,6 +187,11 @@ namespace BluePrints.Common.Projections
         {
             throw new NotImplementedException();
         }
+
+        public decimal GetPeriodETC(DateTime? latestReportingDate = null)
+        {
+            throw new NotImplementedException();
+        }
     }
 
     public static class SUBJOBProjectionQueries

@@ -349,6 +349,11 @@ namespace BluePrints.Common.ViewModel.Reporting
             ((IReportable)ProgressItem).SetProgressETCs(progresETCs);
         }
 
+        public decimal GetPeriodETC(DateTime? latestReportingDate = null)
+        {
+            return ((IReportable)ProgressItem).GetPeriodETC(latestReportingDate);
+        }
+
         public void AppendProgressItem(PROGRESS_ITEM currentProgress)
         {
             ((IReportable)ProgressItem).AppendProgressItem(currentProgress);
@@ -679,6 +684,11 @@ namespace BluePrints.Common.ViewModel.Reporting
         public void SetProgressETCs(List<PROGRESS_ETC> progresETCs)
         {
             Reportable.SetProgressETCs(progresETCs);
+        }
+
+        public decimal GetPeriodETC(DateTime? latestReportingDate = null)
+        {
+            return Reportable.GetPeriodETC(latestReportingDate);
         }
 
         public void AppendProgressItem(PROGRESS_ITEM currentProgress)

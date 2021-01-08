@@ -174,6 +174,11 @@ namespace BluePrints.Data
                 }).ToList();
         }
 
+        public List<PROGRESS_ETC> QueryProjectProgressETC(string projectNumber)
+        {
+            return this.PROGRESS_ETC.Where(x => x.PROGRESS.PROJECT.NUMBER == projectNumber).Where(x => x.PROGRESS.STATUS == ProgressStatus.Live).ToList();
+        }
+
         public List<StoredProcedure_RemainingDataPoint> QueryDeliverableRemainingLateDataPointsByProject(string projectNumber)
         {
             return this.DataPoint.Where(x => x.ProjectNumber == projectNumber && x.IsPlanned == false && x.IsLate == true && x.IsCurrent == false & !x.IsForecast).ToList()

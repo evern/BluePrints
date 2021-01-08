@@ -649,7 +649,7 @@ namespace BluePrints.Common.ViewModel.Reporting
             get
             {
                 if (set_progress_etc == null)
-                    set_progress_etc = getPeriodETC();
+                    set_progress_etc = GetPeriodETC();
 
                 return (decimal)set_progress_etc;
             }
@@ -671,7 +671,7 @@ namespace BluePrints.Common.ViewModel.Reporting
         //because entity goes through repository.reload() process this will be null since it's not meddled in the query
         public virtual bool ShouldSaveProgress => get_actual_total_earned_percentage(true) != set_total_earned_percentage;
 
-        public virtual bool ShouldSaveProgressETC => getPeriodETC() != set_progress_etc;
+        public virtual bool ShouldSaveProgressETC => GetPeriodETC() != set_progress_etc;
 
         public virtual decimal? get_actual_total_earned_percentage(bool can_return_null = false)
         {
@@ -689,12 +689,13 @@ namespace BluePrints.Common.ViewModel.Reporting
                 return 1;
         }
 
-        public virtual decimal getPeriodETC()
+        public virtual decimal GetPeriodETC(DateTime? latestReportingDate = null)
         {
+            DateTime queryDate = latestReportingDate == null ? reportingDataDate : (DateTime)latestReportingDate;
             //return previous periods ETC when current ETC is null
             if (PROGRESS_ETC_Current == null)
             {
-                PROGRESS_ETC lastPeriodPROGRESS_ETC = PROGRESS_ETCS.OrderByDescending(x => x.ETC_DATE).FirstOrDefault(x => x.ETC_DATE < reportingDataDate);
+                PROGRESS_ETC lastPeriodPROGRESS_ETC = PROGRESS_ETCS.OrderByDescending(x => x.ETC_DATE).FirstOrDefault(x => x.ETC_DATE < queryDate);
                 if (lastPeriodPROGRESS_ETC == null)
                     return 0;
                 else
