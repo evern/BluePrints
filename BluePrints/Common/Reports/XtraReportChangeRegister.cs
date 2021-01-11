@@ -24,7 +24,7 @@ namespace BluePrints.Common.Reports
             this.registerChanges = registerChanges;
             objectDataSource1.DataSource = registerChanges;
             this.Name = xrLabel1.Text;
-            projectName.Value = project.NAME;
+            projectName.Value = string.Concat(project.NUMBER, " - ", project.NAME);
             documentName.Value = string.Concat(project.NUMBER, BluePrintsResources.Register_Change_Suffix);
         }
     }

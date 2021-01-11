@@ -979,6 +979,11 @@ namespace BluePrints.Data
                 .HasForeignKey(e => e.GUID_RESPONSIBLE_PERSON);
 
             modelBuilder.Entity<USER>()
+                .HasMany(e => e.REGISTER_CHANGE)
+                .WithOptional(e => e.USER)
+                .HasForeignKey(e => e.GUID_RAISEDBY);
+
+            modelBuilder.Entity<USER>()
                 .HasMany(e => e.PROJECT_PERMISSION)
                 .WithRequired(e => e.USER)
                 .HasForeignKey(e => e.GUID_USER)

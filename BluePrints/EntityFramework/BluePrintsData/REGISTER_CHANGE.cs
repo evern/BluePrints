@@ -22,6 +22,23 @@ namespace BluePrints.Data
         [StringLength(150)]
         public string CLIENT_NUMBER { get; set; }
 
+        [StringLength(150)]
+        public string TQ_NUMBER { get; set; }
+
+        [StringLength(150)]
+        public string COMMENTS { get; set; }
+
+        [StringLength(150)]
+        public string VAR_REF { get; set; }
+
+        public Guid? GUID_RAISEDBY { get; set; }
+
+        public decimal? EPCM_HOURS_IMPACT { get; set; }
+
+        public decimal? CAPEX_IMPACT { get; set; }
+
+        public decimal? AVG_HR_RATE { get; set; }
+
         [StringLength(300)]
         public string TITLE { get; set; }
 
@@ -57,5 +74,7 @@ namespace BluePrints.Data
         public virtual AREA AREA { get; set; }
 
         public virtual PROJECT PROJECT { get; set; }
+
+        public virtual USER USER { get; set; }
     }
 }

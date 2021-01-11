@@ -68,6 +68,12 @@ namespace BluePrints.ViewModels
             loaderCollection.AddLoaderDescription(bluePrintsUnitOfWorkFactory, x => x.PROJECTS, PROJECTProjectionFunc, x => loadPROJECT = x);
             loaderCollection.AddLoaderDescription(bluePrintsUnitOfWorkFactory, x => x.PROJECT_REPORTS, PROJECT_REPORTProjectionFunc, null, true);
             loaderCollection.AddLoaderDescription(bluePrintsUnitOfWorkFactory, x => x.AREAS, AREAProjectionFunc);
+            loaderCollection.AddLoaderDescription(bluePrintsUnitOfWorkFactory, x => x.USERS, USERProjectionFunc);
+        }
+
+        protected virtual Func<IRepositoryQuery<USER>, IQueryable<USER>> USERProjectionFunc()
+        {
+            return query => query.Where(x => x.LEAVE_DATE == null || x.LEAVE_DATE > DateTime.Now);
         }
 
         private Func<IRepositoryQuery<PROJECT>, IQueryable<PROJECT>> PROJECTProjectionFunc()
@@ -108,6 +114,12 @@ namespace BluePrints.ViewModels
         }
 
         #region Collection Call Backs
+        public override void UnifiedNewRowInitializationFromView(REGISTER_CHANGE projection)
+        {
+            projection.GUID_RAISEDBY = LoginCredentials.CurrentUser.GUID;
+            base.UnifiedNewRowInitializationFromView(projection);
+        }
+
         protected override OperationInterceptMode OnBeforeProjectionSaveIsContinue(REGISTER_CHANGE projection, out bool isNew)
         {
             projection.GUID_PROJECT = loadPROJECT.GUID;
@@ -242,6 +254,17 @@ namespace BluePrints.ViewModels
                 var collection = GetEntities<AREA>();
                 if (collection != null)
                     collection = collection.OrderBy(x => x.INTERNAL_NUM);
+                return collection;
+            }
+        }
+
+        public IEnumerable<USER> USERCollection
+        {
+            get
+            {
+                var collection = GetEntities<USER>();
+                if (collection != null)
+                    collection = collection.OrderBy(x => x.NAME);
                 return collection;
             }
         }

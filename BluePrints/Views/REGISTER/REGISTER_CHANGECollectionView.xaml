@@ -75,7 +75,6 @@
                             <custom:GridControlEx x:Name="GridControl" dx:DXSerializer.SerializationID="GridControlREGISTER" dx:DXSerializer.StoreLayoutMode="All" Style="{StaticResource DefaultGridControlTemplate}">
                                 <dxg:GridControl.Columns>
                                     <dxg:GridColumn Header="Change Number" AllowBestFit="false" Width="50" FieldName="NUMBER" HeaderToolTip="Unique number" AllowMoving="false" />
-                                    <dxg:GridColumn Header="Client Number" AllowBestFit="false" Width="50" FieldName="CLIENT_NUMBER" Visible="False" AllowMoving="false" />
                                     <dxg:GridColumn Header="Area" AllowBestFit="false" Width="50" FieldName="GUID_AREA" AllowMoving="false">
                                         <dxg:GridColumn.EditSettings>
                                             <dxe:ComboBoxEditSettings AutoComplete="True" DisplayMember="INTERNAL_NUM" IsTextEditable="True" ItemsSource="{Binding AREACollection}" ValueMember="GUID" />
@@ -86,7 +85,12 @@
                                             <dxe:TextEditSettings TextWrapping="Wrap" AcceptsReturn="True"/>
                                         </dxg:GridColumn.EditSettings>
                                     </dxg:GridColumn>
-                                    <dxg:GridColumn Header="Issue Description" AllowBestFit="false" Width="*" FieldName="DESCRIPTION" AllowMoving="false">
+                                    <dxg:GridColumn Header="Issue Description" AllowBestFit="false" Width="250" FieldName="DESCRIPTION" AllowMoving="false">
+                                        <dxg:GridColumn.EditSettings>
+                                            <dxe:TextEditSettings TextWrapping="Wrap" AcceptsReturn="True"/>
+                                        </dxg:GridColumn.EditSettings>
+                                    </dxg:GridColumn>
+                                    <dxg:GridColumn Header="TQ Number" FieldName="TQ_NUMBER" AllowBestFit="false" Width="75" AllowMoving="false">
                                         <dxg:GridColumn.EditSettings>
                                             <dxe:TextEditSettings TextWrapping="Wrap" AcceptsReturn="True"/>
                                         </dxg:GridColumn.EditSettings>
@@ -109,6 +113,41 @@
                                             </dxe:ComboBoxEditSettings>
                                         </dxg:GridColumn.EditSettings>
                                     </dxg:GridColumn>
+                                    <dxg:GridColumn FieldName="EPCM_HOURS_IMPACT" Header="EPCM Hrs Impact" AllowBestFit="false" Width="60" >
+                                        <dxg:GridColumn.EditSettings>
+                                            <dxe:SpinEditSettings Increment="1" IsFloatValue="False" IsTextEditable="True" Mask="n0" MaskType="Numeric" MaskUseAsDisplayFormat="True" />
+                                        </dxg:GridColumn.EditSettings>
+                                    </dxg:GridColumn>
+                                    <dxg:GridColumn FieldName="AVG_HR_RATE" Header="Avg Hr Rate ($/h)" AllowBestFit="false" Width="60" >
+                                        <dxg:GridColumn.EditSettings>
+                                            <dxe:SpinEditSettings Increment="1" IsFloatValue="False" IsTextEditable="True" Mask="c0" MaskType="Numeric" MaskUseAsDisplayFormat="True" />
+                                        </dxg:GridColumn.EditSettings>
+                                    </dxg:GridColumn>
+                                    <dxg:GridColumn FieldName="EPCM_CostImpact" Header="EPCM Cost Impact ($)" AllowBestFit="false" Width="60" ReadOnly="True">
+                                        <dxg:GridColumn.EditSettings>
+                                            <dxe:SpinEditSettings Increment="1" IsFloatValue="False" IsTextEditable="True" Mask="c0" MaskType="Numeric" MaskUseAsDisplayFormat="True" />
+                                        </dxg:GridColumn.EditSettings>
+                                    </dxg:GridColumn>
+                                    <dxg:GridColumn FieldName="CAPEX_IMPACT" Header="CAPEX Impact ($)" AllowBestFit="false" Width="60">
+                                        <dxg:GridColumn.EditSettings>
+                                            <dxe:SpinEditSettings Increment="1" IsFloatValue="False" IsTextEditable="True" Mask="c0" MaskType="Numeric" MaskUseAsDisplayFormat="True" />
+                                        </dxg:GridColumn.EditSettings>
+                                    </dxg:GridColumn>
+                                    <dxg:GridColumn FieldName="TotalCostImpact" Header="Total Cost Impact ($)" AllowBestFit="false" Width="60" ReadOnly="True">
+                                        <dxg:GridColumn.EditSettings>
+                                            <dxe:SpinEditSettings Increment="1" IsFloatValue="False" IsTextEditable="True" Mask="c0" MaskType="Numeric" MaskUseAsDisplayFormat="True" />
+                                        </dxg:GridColumn.EditSettings>
+                                    </dxg:GridColumn>
+                                    <dxg:GridColumn Header="Comments" FieldName="COMMENTS" AllowBestFit="false" Width="150" AllowMoving="false">
+                                        <dxg:GridColumn.EditSettings>
+                                            <dxe:TextEditSettings TextWrapping="Wrap" AcceptsReturn="True"/>
+                                        </dxg:GridColumn.EditSettings>
+                                    </dxg:GridColumn>
+                                    <dxg:GridColumn AllowSearchPanel="False" FieldName="GUID_RAISEDBY" Header="Raised By">
+                                        <dxg:GridColumn.EditSettings>
+                                            <dxe:ComboBoxEditSettings AutoComplete="True" DisplayMember="Full_Name" IsTextEditable="True" ItemsSource="{Binding USERCollection}" ValueMember="GUID" />
+                                        </dxg:GridColumn.EditSettings>
+                                    </dxg:GridColumn>
                                     <dxg:GridColumn Header="Date Raised" FieldName="DATE_RAISED" AllowMoving="false" />
                                     <dxg:GridColumn Header="Impact" FieldName="IMPACT_TYPE" AllowMoving="false">
                                         <dxg:GridColumn.EditSettings>
@@ -119,9 +158,14 @@
                                             </dxe:ComboBoxEditSettings>
                                         </dxg:GridColumn.EditSettings>
                                     </dxg:GridColumn>
-                                    <dxg:GridColumn Header="Approved" FieldName="APPROVED" AllowMoving="false" />
                                     <dxg:GridColumn Header="Interdisc Check Complete" AllowBestFit="false" Width="70" FieldName="INTERDISC_CHECK_COMPLETE" AllowMoving="false" />
+                                    <dxg:GridColumn Header="Approved" FieldName="APPROVED" AllowMoving="false" />
                                     <dxg:GridColumn Header="Date Closed" FieldName="DATE_CLOSED" AllowMoving="false" />
+                                    <dxg:GridColumn Header="Variation Number Reference" FieldName="VAR_REF" AllowBestFit="false" Width="75" AllowMoving="false">
+                                        <dxg:GridColumn.EditSettings>
+                                            <dxe:TextEditSettings TextWrapping="Wrap" AcceptsReturn="True"/>
+                                        </dxg:GridColumn.EditSettings>
+                                    </dxg:GridColumn>
                                 </dxg:GridControl.Columns>
                                 <dxg:GridControl.TotalSummary>
                                     <dxg:GridSummaryItem dx:DXSerializer.Enabled="False" Alignment="Right" SummaryType="Count" />
@@ -130,7 +174,7 @@
                                     <dxg:GridSummaryItem dx:DXSerializer.Enabled="False" SummaryType="Count" />
                                 </dxg:GridControl.GroupSummary>
                                 <dxg:GridControl.View>
-                                    <dxg:TableView x:Name="tableView" Style="{StaticResource DefaultTableViewTemplate}">
+                                    <dxg:TableView x:Name="tableView" Style="{StaticResource DefaultTableViewTemplate}" AutoWidth="False">
                                         <dxg:TableView.RowCellMenuCustomizations>
                                             <dxb:BarLinkContainerItem ItemLinksSource="{StaticResource ContextMenuDefaultHeaderButtons}" />
                                             <dxb:BarItemLinkSeparator />

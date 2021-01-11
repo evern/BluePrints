@@ -466,6 +466,15 @@ namespace BluePrints.Common.Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to No.
+        /// </summary>
+        internal static string FalseConversionString {
+            get {
+                return ResourceManager.GetString("FalseConversionString", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to ForecastJob.
         /// </summary>
         internal static string Forecast_ForecastJobColumn {
@@ -831,6 +840,15 @@ namespace BluePrints.Common.Resources {
         internal static string SecurityKey {
             get {
                 return ResourceManager.GetString("SecurityKey", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Yes.
+        /// </summary>
+        internal static string TrueConversionString {
+            get {
+                return ResourceManager.GetString("TrueConversionString", resourceCulture);
             }
         }
         
