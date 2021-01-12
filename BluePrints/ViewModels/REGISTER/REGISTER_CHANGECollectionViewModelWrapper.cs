@@ -88,7 +88,7 @@ namespace BluePrints.ViewModels
 
         protected virtual Func<IRepositoryQuery<PROJECT_REPORT>, IQueryable<PROJECT_REPORT>> PROJECT_REPORTProjectionFunc()
         {
-            return query => query.Where(x => x.GUID_PROJECT == loadPROJECT.GUID && x.REPORT_TYPE == ReportType.Change_Register.ToString());
+            return query => query.Where(x => x.GUID_PROJECT == loadPROJECT.GUID && (x.REPORT_TYPE == ReportType.Change_Register.ToString() || x.REPORT_TYPE == ReportType.Change_Notice.ToString()));
         }
 
         protected override void onAuxiliaryEntitiesCollectionLoaded()
@@ -105,10 +105,9 @@ namespace BluePrints.ViewModels
         {
             MainViewModel.SetParentViewModel(this);
             if (showReport)
-            {
                 mainThreadDispatcher.BeginInvoke(new Action(() => previewReport(entities)));
-                showReport = false;
-            }
+            else if(showDesignChangeNotice)
+                mainThreadDispatcher.BeginInvoke(new Action(() => exportDesignChangeNotices(entities)));
 
             base.AssignCallBacksAndRaisePropertyChange(entities);
         }
@@ -116,7 +115,9 @@ namespace BluePrints.ViewModels
         #region Collection Call Backs
         public override void UnifiedNewRowInitializationFromView(REGISTER_CHANGE projection)
         {
-            projection.GUID_RAISEDBY = LoginCredentials.CurrentUser.GUID;
+            if(LoginCredentials.CurrentUser.GUID != Guid.Empty)
+                projection.GUID_RAISEDBY = LoginCredentials.CurrentUser.GUID;
+
             base.UnifiedNewRowInitializationFromView(projection);
         }
 
@@ -204,8 +205,20 @@ namespace BluePrints.ViewModels
                 reportDesigner.Dispose();
         }
 
+        public void EditNotice()
+        {
+            var reportDesigner = new UserReportDesigner(loadPROJECT,
+                (CollectionViewModel<PROJECT_REPORT, PROJECT_REPORT, Guid, IBluePrintsEntitiesUnitOfWork>)
+                loaderCollection.GetViewModel<PROJECT_REPORT>(), ReportType.Change_Notice);
+            if (reportDesigner.ShowDialog() == System.Windows.Forms.DialogResult.OK)
+                reportDesigner.Dispose();
+            else
+                reportDesigner.Dispose();
+        }
+
         bool showReport = false;
-        XtraReportChangeRegister changeRegisterReport;
+        XtraReportChangeRegister rptChangeRegister;
+        XtraReportChangeRegisterStandalone rptChangeNotice;
         public void ViewReport()
         {
             showReport = true;
@@ -217,8 +230,8 @@ namespace BluePrints.ViewModels
         {
             LoadingScreenManager.ShowLoadingScreen(1);
             showReport = false;
-            changeRegisterReport = new XtraReportChangeRegister();
-            PROJECT_REPORT dbProjectReport = loaderCollection.GetObject<PROJECT_REPORT>();
+            rptChangeRegister = new XtraReportChangeRegister();
+            PROJECT_REPORT dbProjectReport = PROJECT_REPORTCollection.FirstOrDefault(x => x.REPORT_TYPE == ReportType.Change_Register.ToString());
             if (dbProjectReport != null)
             {
                 var reportString = dbProjectReport.REPORT.ToString();
@@ -226,25 +239,94 @@ namespace BluePrints.ViewModels
                 {
                     sw.Write(reportString);
                     sw.Flush();
-                    changeRegisterReport.LoadLayout(sw.BaseStream);
+                    rptChangeRegister.LoadLayout(sw.BaseStream);
                 }
             }
 
             //set paperkind depending on project location
             if (loadPROJECT.OFFICE.NAME.ToUpper().Contains("PERTH"))
-                changeRegisterReport.PaperKind = System.Drawing.Printing.PaperKind.A3;
+                rptChangeRegister.PaperKind = System.Drawing.Printing.PaperKind.A3;
             else
-                changeRegisterReport.PaperKind = System.Drawing.Printing.PaperKind.Tabloid;
+                rptChangeRegister.PaperKind = System.Drawing.Printing.PaperKind.Tabloid;
 
-            changeRegisterReport.AssignProperties(loadPROJECT, registerChanges);
+            rptChangeRegister.AssignProperties(loadPROJECT, registerChanges);
             DocumentPreviewWindow previewWindow = new DocumentPreviewWindow();
-            previewWindow.PreviewControl.DocumentSource = changeRegisterReport;
+            previewWindow.PreviewControl.DocumentSource = rptChangeRegister;
             previewWindow.WindowStartupLocation = WindowStartupLocation.CenterScreen;
             previewWindow.WindowState = WindowState.Maximized;
-            changeRegisterReport.RequestParameters = false;
-            changeRegisterReport.CreateDocument(true);
+            rptChangeRegister.RequestParameters = false;
+            rptChangeRegister.CreateDocument(true);
             LoadingScreenManager.CloseLoadingScreen();
             previewWindow.Show();
+        }
+
+        bool showDesignChangeNotice = false;
+        List<Guid> selectedDesignChangeNoticeGuids = new List<Guid>();
+        public void ExportDesignChangeNotice()
+        {
+            showDesignChangeNotice = true;
+            selectedDesignChangeNoticeGuids.AddRange(SelectedEntities.Select(x => x.GUID).ToList());
+            //to make sure all navigational properties are loaded
+            FullRefresh();
+        }
+
+        private void exportDesignChangeNotices(IEnumerable<REGISTER_CHANGE> registerChanges)
+        {
+            showDesignChangeNotice = false;
+            rptChangeNotice = new XtraReportChangeRegisterStandalone();
+            PROJECT_REPORT dbProjectReport = PROJECT_REPORTCollection.FirstOrDefault(x => x.REPORT_TYPE == ReportType.Change_Notice.ToString());
+            if (dbProjectReport != null)
+            {
+                var reportString = dbProjectReport.REPORT.ToString();
+                using (var sw = new StreamWriter(new MemoryStream()))
+                {
+                    sw.Write(reportString);
+                    sw.Flush();
+                    rptChangeNotice.LoadLayout(sw.BaseStream);
+                }
+            }
+
+            //string ResultPath = string.Empty;
+            //int exportCount = 0;
+            //if (FolderBrowserDialogService.ShowDialog())
+            //{
+                foreach(REGISTER_CHANGE registerChange in registerChanges)
+                {
+                    if (selectedDesignChangeNoticeGuids.Any(x => x == registerChange.GUID))
+                    {
+                        //argument is passed into the report as collection that contains a single element, because each report is only showing a single record
+                        List<REGISTER_CHANGE> exportRegisterChange = new List<REGISTER_CHANGE>();
+                        exportRegisterChange.Add(registerChange);
+                        rptChangeNotice.AssignProperties(loadPROJECT, exportRegisterChange);
+                        DocumentPreviewWindow previewWindow = new DocumentPreviewWindow();
+                        previewWindow.PreviewControl.DocumentSource = rptChangeNotice;
+                        previewWindow.WindowStartupLocation = WindowStartupLocation.CenterScreen;
+                        previewWindow.WindowState = WindowState.Maximized;
+                        rptChangeNotice.RequestParameters = false;
+                        rptChangeNotice.CreateDocument(true);
+                        previewWindow.Show();
+
+                        //export to desktop routine
+
+                        //ResultPath = FolderBrowserDialogService.ResultPath;
+                        //rptChangeNotice.AssignProperties(loadPROJECT, exportRegisterChange);
+                        //rptChangeNotice.CreateDocument();
+                        //string fileName = loadPROJECT.NUMBER + "_ChangeNotice_" + registerChange.NUMBER + ".pdf";
+                        //try
+                        //{
+                        //    rptChangeNotice.ExportToPdf(ResultPath + "\\" + fileName);
+                        //    exportCount += 1;
+                        //}
+                        //catch
+                        //{
+                        //    MessageBoxService.ShowMessage("Cannot export " + fileName + " because it is in use");
+                        //}
+                    }
+                //}
+
+                selectedDesignChangeNoticeGuids.Clear();
+                //MessageBoxService.ShowMessage("Exported " + exportCount + " reports to " + ResultPath);
+            }
         }
 
         public IEnumerable<AREA> AREACollection
@@ -266,6 +348,14 @@ namespace BluePrints.ViewModels
                 if (collection != null)
                     collection = collection.OrderBy(x => x.NAME);
                 return collection;
+            }
+        }
+
+        public IEnumerable<PROJECT_REPORT> PROJECT_REPORTCollection
+        {
+            get
+            {
+                return GetEntities<PROJECT_REPORT>();
             }
         }
         #endregion

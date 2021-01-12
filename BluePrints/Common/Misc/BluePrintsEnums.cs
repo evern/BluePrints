@@ -366,6 +366,7 @@ namespace BluePrints.Common
         Project_Summary,
         Issues_Register,
         Change_Register,
+        Change_Notice,
         Timesheet_Report,
         Construction_Variation_Report
     }

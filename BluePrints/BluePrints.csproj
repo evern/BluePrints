@@ -649,6 +649,12 @@
     <Compile Include="Common\Reports\XtraReportBASELINE_ITEMS.Designer.cs">
       <DependentUpon>XtraReportBASELINE_ITEMS.cs</DependentUpon>
     </Compile>
+    <Compile Include="Common\Reports\XtraReportChangeRegisterStandalone.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="Common\Reports\XtraReportChangeRegisterStandalone.Designer.cs">
+      <DependentUpon>XtraReportChangeRegisterStandalone.cs</DependentUpon>
+    </Compile>
     <Compile Include="Common\Reports\XtraReportConstructionVariation.cs">
       <SubType>Component</SubType>
     </Compile>
@@ -2478,6 +2484,9 @@
     <EmbeddedResource Include="Common\Reports\XtraReportBASELINE_ITEMS.resx">
       <DependentUpon>XtraReportBASELINE_ITEMS.cs</DependentUpon>
       <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Common\Reports\XtraReportChangeRegisterStandalone.resx">
+      <DependentUpon>XtraReportChangeRegisterStandalone.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Common\Reports\XtraReportConstructionVariation.resx">
       <DependentUpon>XtraReportConstructionVariation.cs</DependentUpon>
