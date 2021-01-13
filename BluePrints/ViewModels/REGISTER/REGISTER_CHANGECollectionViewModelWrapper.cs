@@ -324,9 +324,10 @@ namespace BluePrints.ViewModels
                     }
                 //}
 
-                selectedDesignChangeNoticeGuids.Clear();
                 //MessageBoxService.ShowMessage("Exported " + exportCount + " reports to " + ResultPath);
             }
+
+            selectedDesignChangeNoticeGuids.Clear();
         }
 
         public IEnumerable<AREA> AREACollection

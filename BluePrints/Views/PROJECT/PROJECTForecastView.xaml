@@ -578,7 +578,7 @@
                                             <dxlc:LayoutItem Label="Unapproved Variation" LabelPosition="Left">
                                                 <dxe:SpinEdit Style="{StaticResource SingleObjectView.SpinEditControlContainer}" Tag="UNAPPROVED_VAR_REVENUE" Mask="c0" MaskType="Numeric" MaskUseAsDisplayFormat="True" EditValue="{Binding ForecastSummary.Unapproved_Var_Revenue, Mode=OneWay}" />
                                             </dxlc:LayoutItem>
-                                            <dxlc:LayoutItem Label="EAC Revenue" LabelPosition="Left">
+                                            <dxlc:LayoutItem Label="EAC Revenue" LabelPosition="Left" ToolTip="Original revenue + Approved Variation Revenue + Unapproved Variation Revenue">
                                                 <dxe:TextEdit IsReadOnly="True" Mask="c0" MaskType="Numeric" MaskUseAsDisplayFormat="True" Text="{Binding ForecastSummary.EAC_Revenue, Mode=OneWay}" />
                                             </dxlc:LayoutItem>
                                             <dxlc:LayoutItem Label="Actuals" LabelPosition="Left">
@@ -590,7 +590,7 @@
                                             <dxlc:LayoutItem Label="Uncommitted Forecast" LabelPosition="Left">
                                                 <dxe:TextEdit IsReadOnly="True" Mask="c0" MaskType="Numeric" MaskUseAsDisplayFormat="True" Text="{Binding ForecastSummary.Uncommitted_Forecast, Mode=OneWay}" />
                                             </dxlc:LayoutItem>
-                                            <dxlc:LayoutItem Label="EAC Cost" LabelPosition="Left">
+                                            <dxlc:LayoutItem Label="EAC Cost" LabelPosition="Left" ToolTip="Actuals + Commitments + Uncommitted Forecasts">
                                                 <dxe:TextEdit IsReadOnly="True" Mask="c0" MaskType="Numeric" MaskUseAsDisplayFormat="True" Text="{Binding ForecastSummary.EstimateAtCompletion, Mode=OneWay}" />
                                             </dxlc:LayoutItem>
                                             <dxlc:LayoutItem Label="EAC Margin" LabelPosition="Left">
@@ -603,7 +603,7 @@
                                                 <dxe:TextEdit IsReadOnly="True" Mask="c0" MaskType="Numeric" MaskUseAsDisplayFormat="True" Text="{Binding ForecastSummary.Contingency, Mode=OneWay}" />
                                             </dxlc:LayoutItem>
                                             <dxlc:LayoutGroup Header="Non-PF Influenced" View="GroupBox" Orientation="Vertical">
-                                                <dxlc:LayoutItem Label="EAC Cost" LabelPosition="Left">
+                                                <dxlc:LayoutItem Label="EAC Cost" LabelPosition="Left" ToolTip="Actuals + Commitments + Uncommitted Forecasts">
                                                     <dxe:TextEdit IsReadOnly="True" Mask="c0" MaskType="Numeric" MaskUseAsDisplayFormat="True" Text="{Binding ForecastSummary.OriginalEstimateAtCompletion, Mode=OneWay}" />
                                                 </dxlc:LayoutItem>
                                                 <dxlc:LayoutItem Label="EAC Margin" LabelPosition="Left">
@@ -614,7 +614,7 @@
                                                 </dxlc:LayoutItem>
                                             </dxlc:LayoutGroup>
                                             <dxlc:LayoutGroup Header="PF Influenced" View="GroupBox" Orientation="Vertical">
-                                                <dxlc:LayoutItem Label="EAC Cost" LabelPosition="Left">
+                                                <dxlc:LayoutItem Label="EAC Cost" LabelPosition="Left" ToolTip="Actuals + Commitments + Uncommitted Forecasts">
                                                     <dxe:TextEdit IsReadOnly="True" Mask="c0" MaskType="Numeric" MaskUseAsDisplayFormat="True" Text="{Binding ForecastSummary.CurrentEstimateAtCompletion, Mode=OneWay}" />
                                                 </dxlc:LayoutItem>
                                                 <dxlc:LayoutItem Label="EAC Margin" LabelPosition="Left">
@@ -624,6 +624,20 @@
                                                     <dxe:TextEdit IsReadOnly="True" Mask="p2" MaskType="Numeric" MaskUseAsDisplayFormat="True" Foreground="Black" Background="{Binding ForecastSummary.CurrentEAC_Margin_Percent_Background}" Text="{Binding ForecastSummary.CurrentEAC_Margin_Percent, Mode=OneWay}" />
                                                 </dxlc:LayoutItem>
                                             </dxlc:LayoutGroup>
+                                        </dxlc:LayoutGroup>
+                                        <dxlc:LayoutGroup Orientation="Vertical" Header="Previous" View="GroupBox" >
+                                            <dxlc:LayoutItem Label="EAC Revenue" LabelPosition="Left" ToolTip="Original revenue + Approved Variation Revenue + Unapproved Variation Revenue">
+                                                <dxe:TextEdit IsReadOnly="True" Mask="c0" MaskType="Numeric" MaskUseAsDisplayFormat="True" Text="{Binding ForecastSummary.Prev_EAC_Revenue, Mode=OneWay}" />
+                                            </dxlc:LayoutItem>
+                                            <dxlc:LayoutItem Label="EAC Cost" LabelPosition="Left" ToolTip="Actuals + Commitments + Uncommitted Forecasts">
+                                                <dxe:TextEdit IsReadOnly="True" Mask="c0" MaskType="Numeric" MaskUseAsDisplayFormat="True" Text="{Binding ForecastSummary.Prev_Total_EAC, Mode=OneWay}" />
+                                            </dxlc:LayoutItem>
+                                            <dxlc:LayoutItem Label="EAC Margin" LabelPosition="Left">
+                                                <dxe:TextEdit IsReadOnly="True" Mask="c0" MaskType="Numeric" MaskUseAsDisplayFormat="True" Text="{Binding ForecastSummary.Prev_EAC_Margin, Mode=OneWay}" />
+                                            </dxlc:LayoutItem>
+                                            <dxlc:LayoutItem Label="EAC %" LabelPosition="Left">
+                                                <dxe:TextEdit IsReadOnly="True" Mask="p2" MaskType="Numeric" MaskUseAsDisplayFormat="True" Foreground="Black" Text="{Binding ForecastSummary.Prev_EAC_Margin_Percent, Mode=OneWay}" />
+                                            </dxlc:LayoutItem>
                                         </dxlc:LayoutGroup>
                                         <dxlc:LayoutGroup Orientation="Vertical" Header="Claims" View="GroupBox">
                                             <dxlc:LayoutItem Label="Claimed to Date" LabelPosition="Left">

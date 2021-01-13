@@ -373,14 +373,23 @@ namespace BluePrints.ViewModels
 
                 savePROJECT();
             }
+
+            FORECAST_HISTORY forecastHistory = FORECAST_HISTORYCollection.OrderByDescending(x => x.EAC_DATE).FirstOrDefault(x => x.EAC_DATE < FixedDataDateMonthEnd);
+            if(forecastHistory != null)
+            {
+                ForecastSummary.Prev_Original_Revenue = forecastHistory.ORIGINAL_REVENUE;
+                ForecastSummary.Prev_Approved_Variation = forecastHistory.APPROVED_VARIATION;
+                ForecastSummary.Prev_Unapproved_Variation = forecastHistory.UNAPPROVED_VARIATION;
+                ForecastSummary.Prev_Total_Unapproved_Variation = forecastHistory.TOTAL_UNAPPROVED_VARIATION;
+                ForecastSummary.Prev_Total_EAC = forecastHistory.TOTAL_EAC;
+            }
+
             //dynamic revenueLine = ExoQueries.GetProjectRevenue(primeroEntitiesUnitOfWork, loadPROJECT.NUMBER);
             //if (revenueLine != null)
             ForecastSummary.Original_Revenue = LoadPROJECT.ORI_REVENUE == null ? 0 : (decimal)LoadPROJECT.ORI_REVENUE;
             ForecastSummary.Approved_Var_Revenue = LoadPROJECT.VAR_REVENUE == null || LoadPROJECT.VAR_REVENUE == 0 ? VARIATION_CONSTRUCTIONCollection.Where(x => x.STATUS == VariationConstructionStatus.Approved).Sum(x => x.ManualApprovedEstimatedValue) : (decimal)LoadPROJECT.VAR_REVENUE;
             ForecastSummary.Unapproved_Var_Revenue = LoadPROJECT.UNAPPROVED_VAR_REVENUE == null ? 0 : (decimal)LoadPROJECT.UNAPPROVED_VAR_REVENUE;
             ForecastSummary.Total_Unapproved_Var_Revenue = LoadPROJECT.TOTAL_UNAPPROVED_VAR_REVENUE == null || LoadPROJECT.TOTAL_UNAPPROVED_VAR_REVENUE == 0 ? VARIATION_CONSTRUCTIONCollection.Where(x => x.STATUS == VariationConstructionStatus.Submitted).Sum(x => x.ManualApprovedEstimatedValue) : (decimal)LoadPROJECT.TOTAL_UNAPPROVED_VAR_REVENUE;
-            //ForecastSummary.EAC_Revenue = LoadPROJECT.EAC_REVENUE == null ? 0 : (decimal)LoadPROJECT.EAC_REVENUE;
-
             ForecastSummary.TotalClaims = ExoQueries.GetProjectClaims(threadSafePrimeroEntitiesUnitOfWork, LoadPROJECT.NUMBER);
         }
 
@@ -2528,6 +2537,8 @@ namespace BluePrints.ViewModels
                 LoadingScreenManager.Progress();
             }
 
+            findExistingOrAddNewEACHistory(FixedDataDateMonthEnd, ForecastSummary, bluePrintsEntitiesUnitOfWork);
+
             LoadingScreenManager.CloseLoadingScreen();
             LoadingScreenManager.ShowLoadingScreen(1);
             LoadingScreenManager.SetMessage("Saving changes...");
@@ -2550,6 +2561,8 @@ namespace BluePrints.ViewModels
             newFORECAST_EAC.VARIATION_CODE = DataUtils.NormalizeString(projection.VariationCode);
             newFORECAST_EAC.FORECAST_DATE = forecastDate.Date;
             newFORECAST_EAC.FORECAST_COSTS = newPreviousEAC;
+            newFORECAST_EAC.CREATED = DateTime.Now;
+            newFORECAST_EAC.CREATEDBY = LoginCredentials.CurrentUserGuid;
 
             return newFORECAST_EAC;
         }
@@ -2578,6 +2591,29 @@ namespace BluePrints.ViewModels
                 if (save)
                     bluePrintsEntitiesUnitOfWork.SaveChanges();
             }
+        }
+
+        private void findExistingOrAddNewEACHistory(DateTime forecastDate, ForecastSummary entity, IBluePrintsEntitiesUnitOfWork bluePrintsEntitiesUnitOfWork)
+        {
+            FORECAST_HISTORY forecast_history = FORECAST_HISTORYCollection.FirstOrDefault(x => x.EAC_DATE == forecastDate);
+
+            if (forecast_history == null)
+            {
+                forecast_history = new FORECAST_HISTORY();
+                bluePrintsEntitiesUnitOfWork.FORECAST_HISTORIES.Add(forecast_history);
+            }
+
+            forecast_history.ORIGINAL_REVENUE = entity.Original_Revenue;
+            forecast_history.APPROVED_VARIATION = entity.Approved_Var_Revenue;
+            forecast_history.UNAPPROVED_VARIATION = entity.Unapproved_Var_Revenue;
+            forecast_history.TOTAL_UNAPPROVED_VARIATION = entity.Total_Unapproved_Var_Revenue;
+            forecast_history.TOTAL_EAC = entity.EstimateAtCompletion;
+            forecast_history.EAC_DATE = forecastDate;
+            forecast_history.GUID_PROJECT = LoadPROJECT.GUID;
+            forecast_history.CREATED = DateTime.Now;
+            forecast_history.CREATEDBY = LoginCredentials.CurrentUserGuid;
+
+            bluePrintsEntitiesUnitOfWork.SaveChanges();
         }
 
         public override bool CanUndo()
@@ -2963,6 +2999,14 @@ namespace BluePrints.ViewModels
             }
         }
 
+        public IQueryable<FORECAST_HISTORY> FORECAST_HISTORYCollection
+        {
+            get
+            {
+                return bluePrintsUnitOfWork.FORECAST_HISTORIES.Where(x => x.GUID_PROJECT == LoadPROJECT.GUID);
+            }
+        }
+
         public IEnumerable<VARIATION_CONSTRUCTION> VARIATION_CONSTRUCTIONCollection
         {
             get
@@ -3170,6 +3214,36 @@ namespace BluePrints.ViewModels
 
         public decimal TotalClaims { get; set; }
         public decimal UnderOverClaim => TotalClaims - Current_Cost;
+
+        //previous forecast
+        public decimal? Prev_Original_Revenue { get; set; }
+        public decimal? Prev_Approved_Variation { get; set; }
+        public decimal? Prev_Unapproved_Variation { get; set; }
+        public decimal? Prev_Total_Unapproved_Variation { get; set; }
+        public decimal? Prev_Total_EAC { get; set; }
+
+        public decimal Prev_EAC_Revenue
+        {
+            get
+            {
+                decimal prevOriginalRevenue = Prev_Original_Revenue == null ? 0 : (decimal)Prev_Original_Revenue;
+                decimal prevApprovedVariation = Prev_Approved_Variation == null ? 0 : (decimal)Prev_Approved_Variation;
+                decimal prevUnapprovedVariation = Prev_Unapproved_Variation == null ? 0 : (decimal)Prev_Unapproved_Variation;
+
+                return prevOriginalRevenue + prevApprovedVariation + prevUnapprovedVariation;
+            }
+        }
+
+        public decimal Prev_EAC_Margin
+        {
+            get
+            {
+                decimal prevTotalEAC = Prev_Total_EAC == null ? 0 : (decimal)Prev_Total_EAC;
+                return Prev_EAC_Revenue - prevTotalEAC;
+            }
+        }
+
+        public decimal Prev_EAC_Margin_Percent => Prev_EAC_Revenue == 0 ? 0 : Prev_EAC_Margin / Prev_EAC_Revenue;
 
         public SolidColorBrush Budget_Margin_Background => Budget_Margin > 0 ? new SolidColorBrush(Colors.Chartreuse) : new SolidColorBrush(Colors.LightSalmon);
         public SolidColorBrush Budget_Margin_Percent_Background => Budget_Margin_Percent > 0 ? new SolidColorBrush(Colors.Chartreuse) : new SolidColorBrush(Colors.LightSalmon);
