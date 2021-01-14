@@ -1062,10 +1062,13 @@ namespace BluePrints.Common.ViewModel.Reporting
                 //Deliverable_Milestone nextCriticalMilestone = deliverable_milestones.FirstOrDefault(x => x.DueDate <= ReportingDataDate);
                 //if (nextCriticalMilestone != null)
                 //    return true;
-                
+
                 //return false;
                 //use the following measure as easier benchmark of overdue deliverable
-                return Total_Earned_Percentage <= SchedulePercentage;
+                decimal schedulePercentageRound = Math.Round(SchedulePercentage, 0);
+                decimal totalEarnedPercentageRound = Math.Round(Total_Earned_Percentage, 0);
+
+                return totalEarnedPercentageRound < schedulePercentageRound;
             }
         }
 
