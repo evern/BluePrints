@@ -1065,8 +1065,8 @@ namespace BluePrints.Common.ViewModel.Reporting
 
                 //return false;
                 //use the following measure as easier benchmark of overdue deliverable
-                decimal schedulePercentageRound = Math.Round(SchedulePercentage, 0);
-                decimal totalEarnedPercentageRound = Math.Round(Total_Earned_Percentage, 0);
+                decimal schedulePercentageRound = Math.Round(SchedulePercentage, 2);
+                decimal totalEarnedPercentageRound = Math.Round(Total_Earned_Percentage, 2);
 
                 return totalEarnedPercentageRound < schedulePercentageRound;
             }
