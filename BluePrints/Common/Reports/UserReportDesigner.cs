@@ -132,6 +132,11 @@ namespace BluePrints.Common.Reports
                 returnReport = new XtraReportChangeRegister();
                 reportDesigner1.OpenReport(returnReport);
             }
+            else if (currentReportType == ReportType.Change_Notice)
+            {
+                returnReport = new XtraReportChangeNotice();
+                reportDesigner1.OpenReport(returnReport);
+            }
 
             return returnReport;
         }

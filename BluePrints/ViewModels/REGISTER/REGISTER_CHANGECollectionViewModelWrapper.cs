@@ -22,6 +22,8 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Windows;
+using DevExpress.XtraPrinting;
+using System.Diagnostics;
 
 namespace BluePrints.ViewModels
 {
@@ -218,7 +220,7 @@ namespace BluePrints.ViewModels
 
         bool showReport = false;
         XtraReportChangeRegister rptChangeRegister;
-        XtraReportChangeRegisterStandalone rptChangeNotice;
+        XtraReportChangeNotice rptChangeNotice;
         public void ViewReport()
         {
             showReport = true;
@@ -273,7 +275,7 @@ namespace BluePrints.ViewModels
         private void exportDesignChangeNotices(IEnumerable<REGISTER_CHANGE> registerChanges)
         {
             showDesignChangeNotice = false;
-            rptChangeNotice = new XtraReportChangeRegisterStandalone();
+            rptChangeNotice = new XtraReportChangeNotice();
             PROJECT_REPORT dbProjectReport = PROJECT_REPORTCollection.FirstOrDefault(x => x.REPORT_TYPE == ReportType.Change_Notice.ToString());
             if (dbProjectReport != null)
             {
@@ -286,45 +288,53 @@ namespace BluePrints.ViewModels
                 }
             }
 
-            //string ResultPath = string.Empty;
-            //int exportCount = 0;
-            //if (FolderBrowserDialogService.ShowDialog())
-            //{
-                foreach(REGISTER_CHANGE registerChange in registerChanges)
+            IFileInfo fileInfo = null;
+            foreach (REGISTER_CHANGE registerChange in registerChanges)
+            {
+                if (selectedDesignChangeNoticeGuids.Any(x => x == registerChange.GUID))
                 {
-                    if (selectedDesignChangeNoticeGuids.Any(x => x == registerChange.GUID))
+                    //argument is passed into the report as collection that contains a single element, because each report is only showing a single record
+                    List<REGISTER_CHANGE> exportRegisterChange = new List<REGISTER_CHANGE>();
+                    exportRegisterChange.Add(registerChange);
+                    rptChangeNotice.AssignProperties(loadPROJECT, exportRegisterChange);
+                    //DocumentPreviewWindow previewWindow = new DocumentPreviewWindow();
+                    //previewWindow.PreviewControl.DocumentSource = rptChangeNotice;
+                    //previewWindow.WindowStartupLocation = WindowStartupLocation.CenterScreen;
+                    //previewWindow.WindowState = WindowState.Maximized;
+                    rptChangeNotice.RequestParameters = false;
+                    //rptChangeNotice.CreateDocument(true);
+                    //previewWindow.Show();
+
+                    SaveFileDialogService.DefaultExt = "docx";
+                    SaveFileDialogService.Filter = "Word Files (.docx)|*.docx|All Files (*.*)|*.*";
+                    string fileName = string.Concat(loadPROJECT.NUMBER, BluePrintsResources.Register_Change_Suffix, registerChange.NUMBER);
+                    SaveFileDialogService.Title = "Save Change Notice " + registerChange.NUMBER;
+                    SaveFileDialogService.DefaultFileName = fileName;
+
+                    if (SaveFileDialogService.ShowDialog())
                     {
-                        //argument is passed into the report as collection that contains a single element, because each report is only showing a single record
-                        List<REGISTER_CHANGE> exportRegisterChange = new List<REGISTER_CHANGE>();
-                        exportRegisterChange.Add(registerChange);
-                        rptChangeNotice.AssignProperties(loadPROJECT, exportRegisterChange);
-                        DocumentPreviewWindow previewWindow = new DocumentPreviewWindow();
-                        previewWindow.PreviewControl.DocumentSource = rptChangeNotice;
-                        previewWindow.WindowStartupLocation = WindowStartupLocation.CenterScreen;
-                        previewWindow.WindowState = WindowState.Maximized;
-                        rptChangeNotice.RequestParameters = false;
-                        rptChangeNotice.CreateDocument(true);
-                        previewWindow.Show();
-
                         //export to desktop routine
+                        fileInfo = SaveFileDialogService.File;
+                        rptChangeNotice.AssignProperties(loadPROJECT, exportRegisterChange);
+                        rptChangeNotice.CreateDocument();
+                        
+                        try
+                        {
+                            DocxExportOptions DocxExportOptions = new DocxExportOptions();
+                            DocxExportOptions.ExportMode = DocxExportMode.SingleFile;
+                            DocxExportOptions.TableLayout = true;
+                            string exportPath = SaveFileDialogService.GetFullFileName();
+                            rptChangeNotice.ExportToDocx(exportPath, DocxExportOptions);
 
-                        //ResultPath = FolderBrowserDialogService.ResultPath;
-                        //rptChangeNotice.AssignProperties(loadPROJECT, exportRegisterChange);
-                        //rptChangeNotice.CreateDocument();
-                        //string fileName = loadPROJECT.NUMBER + "_ChangeNotice_" + registerChange.NUMBER + ".pdf";
-                        //try
-                        //{
-                        //    rptChangeNotice.ExportToPdf(ResultPath + "\\" + fileName);
-                        //    exportCount += 1;
-                        //}
-                        //catch
-                        //{
-                        //    MessageBoxService.ShowMessage("Cannot export " + fileName + " because it is in use");
-                        //}
+                            Process.Start(exportPath);
+                        }
+                        catch
+                        {
+                            MessageBoxService.ShowMessage("Cannot export " + fileName + " because it is in use");
+                        }
+
                     }
-                //}
-
-                //MessageBoxService.ShowMessage("Exported " + exportCount + " reports to " + ResultPath);
+                }
             }
 
             selectedDesignChangeNoticeGuids.Clear();

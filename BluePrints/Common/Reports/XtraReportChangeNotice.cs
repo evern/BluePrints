@@ -3,19 +3,18 @@ using System.Drawing;
 using System.Collections;
 using System.ComponentModel;
 using DevExpress.XtraReports.UI;
-using BluePrints.Data;
 using System.Collections.Generic;
-using System.Linq;
+using BluePrints.Data;
 using BluePrints.Common.Resources;
+using System.Linq;
 
 namespace BluePrints.Common.Reports
 {
-    public partial class XtraReportChangeRegisterStandalone : DevExpress.XtraReports.UI.XtraReport
+    public partial class XtraReportChangeNotice : DevExpress.XtraReports.UI.XtraReport
     {
-        public XtraReportChangeRegisterStandalone()
+        public XtraReportChangeNotice()
         {
             InitializeComponent();
-            this.PrintingSystem.Document.AutoFitToPagesWidth = 1;
         }
 
         IEnumerable<REGISTER_CHANGE> registerChanges;
@@ -23,12 +22,17 @@ namespace BluePrints.Common.Reports
         {
             this.registerChanges = registerChanges;
             objectDataSource1.DataSource = registerChanges;
-            this.Name = xrLabel1.Text;
             projectName.Value = string.Concat(project.NUMBER, " - ", project.NAME);
-            documentName.Value = string.Concat(project.NUMBER, BluePrintsResources.Register_Change_Suffix);
-            revision.Value = "A";
 
             if(registerChanges.Count() > 0)
+            {
+                REGISTER_CHANGE registerChange = registerChanges.First();
+                documentName.Value = string.Concat(project.NUMBER, BluePrintsResources.Register_Change_Suffix, registerChange.NUMBER);
+            }
+
+            revision.Value = "A";
+
+            if (registerChanges.Count() > 0)
             {
                 //need to set false because previous report might have set it to true
                 xrCheckBoxInternal.Checked = false;

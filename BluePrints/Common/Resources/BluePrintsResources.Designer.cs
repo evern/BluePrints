@@ -817,7 +817,7 @@ namespace BluePrints.Common.Resources {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to -CN-001.
+        ///   Looks up a localized string similar to -CN-.
         /// </summary>
         internal static string Register_Change_Suffix {
             get {
