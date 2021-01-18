@@ -375,13 +375,15 @@ namespace BluePrints.ViewModels
             }
 
             FORECAST_HISTORY forecastHistory = FORECAST_HISTORYCollection.OrderByDescending(x => x.EAC_DATE).FirstOrDefault(x => x.EAC_DATE < FixedDataDateMonthEnd);
-            if(forecastHistory != null)
+            IEnumerable<FORECAST_EAC> forecastEACs = FORECAST_EACCollection.Where(x => x.FORECAST_DATE.Date == PreviousEACDataDate.Date);
+
+            if (forecastHistory != null)
             {
                 ForecastSummary.Prev_Original_Revenue = forecastHistory.ORIGINAL_REVENUE;
                 ForecastSummary.Prev_Approved_Variation = forecastHistory.APPROVED_VARIATION;
                 ForecastSummary.Prev_Unapproved_Variation = forecastHistory.UNAPPROVED_VARIATION;
                 ForecastSummary.Prev_Total_Unapproved_Variation = forecastHistory.TOTAL_UNAPPROVED_VARIATION;
-                ForecastSummary.Prev_Total_EAC = forecastHistory.TOTAL_EAC;
+                ForecastSummary.Prev_Total_EAC = forecastHistory.TOTAL_EAC == null ? forecastEACs.Sum(x => x.FORECAST_COSTS) : forecastHistory.TOTAL_EAC;
             }
 
             //dynamic revenueLine = ExoQueries.GetProjectRevenue(primeroEntitiesUnitOfWork, loadPROJECT.NUMBER);
@@ -721,7 +723,7 @@ namespace BluePrints.ViewModels
             //child data table is used to record original value of actuals + committed + remaining values before it is overridden by forecasts
             foreach (ForecastJobData commodityJob in commodityJobs)
             {
-                ForecastHelper.PopulateEAC(commodityJob, FORECAST_EACCollection, (DateTime)FixedDataDate);
+                ForecastHelper.PopulateEAC(commodityJob, FORECAST_EACCollection, PreviousEACDataDate);
                 updateAdditionalJobInfo(commodityJob);
                 
                 DataRow commodityRow = updateDataTable(commodityJob, isNewData);
@@ -3060,6 +3062,16 @@ namespace BluePrints.ViewModels
             get
             {
                 return GetEntities<RATE>();
+            }
+        }
+
+        public DateTime PreviousEACDataDate
+        {
+            get
+            {
+                DateTime previousEACDataDate = new DateTime(FixedDataDateMonthEnd.Year, FixedDataDateMonthEnd.Month, 1);
+                previousEACDataDate = previousEACDataDate.AddDays(-1);
+                return previousEACDataDate;
             }
         }
 

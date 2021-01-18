@@ -237,11 +237,8 @@ namespace BluePrints.Common.ViewModel.Misc
             return forecastProjection;
         }
 
-        public static void PopulateEAC(ForecastJobData forecastProjection, IEnumerable<FORECAST_EAC> FORECAST_EACCollection, DateTime dataDate)
+        public static void PopulateEAC(ForecastJobData forecastProjection, IEnumerable<FORECAST_EAC> FORECAST_EACCollection, DateTime previousEACDataDate)
         {
-            DateTime previousEACDataDate = new DateTime(dataDate.Year, dataDate.Month, 1);
-            previousEACDataDate = previousEACDataDate.AddDays(-1);
-
             //populate previous estimate to completion
             FORECAST_EAC previousEAC = FORECAST_EACCollection.FirstOrDefault(x => x.SUBJOB_CODE == forecastProjection.Projection.SubJobCode && x.DISCIPLINE_CODE == forecastProjection.Projection.DisciplineCode && x.COMMODITY_CODE == forecastProjection.Projection.CommodityCode && x.VARIATION_CODE == forecastProjection.Projection.VariationCode && x.FORECAST_DATE.Date == previousEACDataDate.Date);
             if (previousEAC != null)
