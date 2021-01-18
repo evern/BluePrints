@@ -385,6 +385,8 @@ namespace BluePrints.ViewModels
                 ForecastSummary.Prev_Total_Unapproved_Variation = forecastHistory.TOTAL_UNAPPROVED_VARIATION;
                 ForecastSummary.Prev_Total_EAC = forecastHistory.TOTAL_EAC == null ? forecastEACs.Sum(x => x.FORECAST_COSTS) : forecastHistory.TOTAL_EAC;
             }
+            else
+                ForecastSummary.Prev_Total_EAC = forecastEACs.Sum(x => x.FORECAST_COSTS);
 
             //dynamic revenueLine = ExoQueries.GetProjectRevenue(primeroEntitiesUnitOfWork, loadPROJECT.NUMBER);
             //if (revenueLine != null)
