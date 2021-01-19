@@ -101,7 +101,7 @@ namespace BluePrints.ViewModels
             FixedStartDate = null;
             FixedDataDate = null;
 
-            adjustDataDate();
+            //adjustDataDate();
         }
 
         private void adjustDataDate()
