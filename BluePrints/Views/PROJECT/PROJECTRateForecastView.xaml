@@ -272,6 +272,28 @@
                                 </local:GridControlEx>
                             </dxdo:LayoutPanel>
                         </dxdo:LayoutGroup>
+                        <dxdo:LayoutGroup FontFamily="Calibri" FontSize="12" MaxWidth="450" Margin="0" Padding="5" BorderThickness="0" ItemHeight="*" ItemWidth="275" Orientation="Vertical">
+                            <dxdo:LayoutPanel AutoHidden="False" ItemWidth="275" ShowHideButton="True">
+                                <dx:LoadingDecorator HorizontalAlignment="Stretch" x:Name="summaryLoadingDecorator" dx:DXSerializer.StoreLayoutMode="None" IsSplashScreenShown="{Binding IsLoading}">
+                                    <dxlc:LayoutControl Padding="0" Background="Transparent" Orientation="Vertical" IsEnabled="{Binding IsLoading, Converter={StaticResource BooleanNegationConverter}}" >
+                                        <dxlc:LayoutGroup Orientation="Vertical" Header="Summary" View="GroupBox">
+                                            <dxlc:LayoutItem Label="Revenue" LabelPosition="Left">
+                                                <dxe:TextEdit IsReadOnly="True" Mask="c0" MaskType="Numeric" MaskUseAsDisplayFormat="True" Text="{Binding TotalRevenue, Mode=OneWay}" />
+                                            </dxlc:LayoutItem>
+                                            <dxlc:LayoutItem Label="Cost" LabelPosition="Left">
+                                                <dxe:TextEdit IsReadOnly="True" Mask="c0" MaskType="Numeric" MaskUseAsDisplayFormat="True" Text="{Binding TotalActuals, Mode=OneWay}" />
+                                            </dxlc:LayoutItem>
+                                            <dxlc:LayoutItem Label="Margin" LabelPosition="Left">
+                                                <dxe:TextEdit IsReadOnly="True" Mask="c0" MaskType="Numeric" MaskUseAsDisplayFormat="True" Text="{Binding Margin, Mode=OneWay}" />
+                                            </dxlc:LayoutItem>
+                                            <dxlc:LayoutItem Label="Margin %" LabelPosition="Left">
+                                                <dxe:TextEdit IsReadOnly="True" Mask="p0" MaskType="Numeric" MaskUseAsDisplayFormat="True" Text="{Binding MarginPercentage, Mode=OneWay}" />
+                                            </dxlc:LayoutItem>
+                                        </dxlc:LayoutGroup>
+                                    </dxlc:LayoutControl>
+                                </dx:LoadingDecorator>
+                            </dxdo:LayoutPanel>
+                        </dxdo:LayoutGroup>
                     </dxdo:LayoutGroup>
                 </dxdo:DockLayoutManager>
             </DockPanel>

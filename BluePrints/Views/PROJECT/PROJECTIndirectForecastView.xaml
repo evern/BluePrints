@@ -272,6 +272,7 @@
                                 </local:GridControlEx>
                             </dxdo:LayoutPanel>
                         </dxdo:LayoutGroup>
+                        
                     </dxdo:LayoutGroup>
                 </dxdo:DockLayoutManager>
             </DockPanel>

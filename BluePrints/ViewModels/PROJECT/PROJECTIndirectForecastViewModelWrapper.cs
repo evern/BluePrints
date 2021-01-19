@@ -324,7 +324,8 @@ namespace BluePrints.ViewModels
                             projection.VariationCode = findActual.Variation_Code;
                         }
 
-                        addNewJobRow(projection, null, findActual.StockCode);
+                        //need to instantiate a new forecast job else e.NewValue will be null when editing cells binded to forecast job
+                        addNewJobRow(projection, new FORECAST_JOB(), findActual.StockCode);
                     }
                 }
             }
@@ -336,22 +337,6 @@ namespace BluePrints.ViewModels
             LoadingScreenManager.CloseLoadingScreen();
         }
 
-        private void populateProjectionTotalActuals(ExoSubJobProjection projection, DataRow row)
-        {
-            if (AllActuals != null)
-            {
-                string stockCode = string.Empty;
-                if (!row.IsNull(columnStockItem))
-                    stockCode = row[columnStockItem].ToString();
-
-                IEnumerable<ExoDataPoint> currentJobExoActualsByFullCode = AllActuals.Where(x => x.Commodity_Code == projection.CommodityCode && x.Discipline_Code == projection.DisciplineCode && x.Subjob_Name == projection.SubJobCode && x.Variation_Code == projection.VariationCode);
-                IEnumerable<ExoDataPoint> currentJobExoactualsByStockCode = currentJobExoActualsByFullCode.Where(x => x.StockCode == stockCode);
-                row[columnTotalActuals] = currentJobExoactualsByStockCode.Sum(x => x.Costs);
-            }
-            else
-                row[columnTotalActuals] = 0;
-        }
-
         private void addNewJobRow(ExoSubJobProjection projection, FORECAST_JOB job, string stockCode = "")
         {
             DataRow newRow = dataPointsTable.NewRow();
@@ -359,10 +344,22 @@ namespace BluePrints.ViewModels
             newRow[columnProjection] = projection;
             newRow[columnForecastJob] = job;
             newRow[columnTotalActuals] = projection.TotalCosts;
-            newRow[columnStockItem] = stockCode == string.Empty ? findDefaultStockCode(projection) : stockCode;
 
+            string assignStockCode = string.Empty;
+            if (stockCode == string.Empty)
+            {
+                if (job.STOCK_ITEM == string.Empty)
+                    assignStockCode = findDefaultStockCode(projection);
+                else
+                    assignStockCode = job.STOCK_ITEM;
+            }
+            else
+                assignStockCode = stockCode;
+
+            newRow[columnStockItem] = assignStockCode;
+
+            job.STOCK_ITEM = assignStockCode;
             populateStockItemsData(newRow, false);
-            populateProjectionTotalActuals(projection, newRow);
             mapJobDataToDatatable(newRow);
             dataPointsTable.Rows.Add(newRow);
 
@@ -452,6 +449,22 @@ namespace BluePrints.ViewModels
             }
             else
                 row[columnTotalCosts] = 0.00m;
+
+            //update actual costs
+            if (AllActuals != null)
+            {
+                string stockCode = string.Empty;
+                if (!row.IsNull(columnStockItem))
+                    stockCode = row[columnStockItem].ToString();
+
+                IEnumerable<ExoDataPoint> currentJobExoActualsByFullCode = AllActuals.Where(x => x.Commodity_Code == projection.CommodityCode && x.Discipline_Code == projection.DisciplineCode && x.Subjob_Name == projection.SubJobCode && x.Variation_Code == projection.VariationCode);
+                IEnumerable<ExoDataPoint> currentJobExoactualsByStockCode = currentJobExoActualsByFullCode.Where(x => x.StockCode == stockCode);
+                row[columnTotalActuals] = currentJobExoactualsByStockCode.Sum(x => x.Costs);
+            }
+            else
+                row[columnTotalActuals] = 0;
+
+            raiseSummaryChanges();
         }
 
         private void populateStockItemsData(DataRow row, bool isNewRow, FORECAST_JOB forecastJob = null)
@@ -728,6 +741,9 @@ namespace BluePrints.ViewModels
         private bool basePasteData(DataRow newRow, ColumnBase copyColumn, string pasteData, bool isLastRow, out List<ErrorMessage> errorMessages)
         {
             errorMessages = new List<ErrorMessage>();
+            if (!newRow.IsNull(columnFullCode) && ((FORECAST_JOB)newRow[columnForecastJob]).GUID == Guid.Empty)
+                findExistingOrAddNewFORECAST_JOB(newRow);
+
             DateTime columnDateTime;
             if(copyColumn.FieldName == columnFullCode)
             {
@@ -849,7 +865,7 @@ namespace BluePrints.ViewModels
                 return;
 
             FORECAST_JOB editFORECAST_JOB = row[columnForecastJob] == DBNull.Value ? null : (FORECAST_JOB)row[columnForecastJob];
-                
+
             //MainViewModel.Entities.FirstOrDefault(x => x.GUID == guidToSearch);
             if (editFORECAST_JOB == null)
             {
@@ -935,17 +951,9 @@ namespace BluePrints.ViewModels
 
             //new item handling
             FORECAST_JOB newFORECAST_JOB;
-            if (dataRowView[columnForecastJob] == DBNull.Value)
+            if (dataRowView[columnForecastJob] == DBNull.Value || ((FORECAST_JOB)dataRowView[columnForecastJob]).GUID == Guid.Empty)
             {
-                if (dataRowView[columnFullCode] != DBNull.Value)
-                    findExistingOrAddNewFORECAST_JOB(dataRowView.Row);
-
-                //when forecast job is not added for some reason
-                if(dataRowView[columnForecastJob] == DBNull.Value)
-                {
-                    newFORECAST_JOB = new FORECAST_JOB();
-                    dataRowView[columnForecastJob] = newFORECAST_JOB;
-                }
+                findExistingOrAddNewFORECAST_JOB(dataRowView.Row);
             }
             else
                 newFORECAST_JOB = (FORECAST_JOB)dataRowView[columnForecastJob];
@@ -957,7 +965,6 @@ namespace BluePrints.ViewModels
                     ExoSubJobProjection queryJob = QueryJobs.FirstOrDefault(x => x.FullCode == e.Value.ToString());
                     dataRowView[columnProjection] = queryJob;
                     dataRowView[columnStockItem] = findDefaultStockCode(queryJob);
-                    populateProjectionTotalActuals(queryJob, dataRowView.Row);
                 }
 
                 mapDataTableToJobData(dataRowView.Row);
@@ -1145,6 +1152,11 @@ namespace BluePrints.ViewModels
                     summaries.Add(new SummaryDescriptor() { FieldName = columnFieldName, DisplayFormat = "n0", Type = SummaryItemType.Sum });
                 }
             }
+        }
+
+        protected virtual void raiseSummaryChanges()
+        {
+
         }
 
         private List<DateTime> generateDates()

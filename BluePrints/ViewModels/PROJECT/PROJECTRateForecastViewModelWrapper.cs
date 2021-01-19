@@ -121,7 +121,7 @@ namespace BluePrints.ViewModels
             columns.Add(new ColumnDescriptor() { FieldName = columnTotalCosts, ReadOnly = false, Header = "Total $ Sell", Fixed = FixedStyle.Left, Width = 75, Settings = SettingsType.Number, Mask = "c0" });
             summaries.Add(new SummaryDescriptor() { FieldName = columnTotalCosts, DisplayFormat = "c0", Type = SummaryItemType.Sum });
             columns.Add(new ColumnDescriptor() { FieldName = columnTotalActuals, ReadOnly = false, Header = "Total $ Cost", Fixed = FixedStyle.Left, Width = 75, Settings = SettingsType.Number, Mask = "c0" });
-            summaries.Add(new SummaryDescriptor() { FieldName = columnTotalCosts, DisplayFormat = "c0", Type = SummaryItemType.Sum });
+            summaries.Add(new SummaryDescriptor() { FieldName = columnTotalActuals, DisplayFormat = "c0", Type = SummaryItemType.Sum });
 
             foreach (DateTime alignedDate in alignedDates.OrderBy(x => x))
             {
@@ -150,5 +150,52 @@ namespace BluePrints.ViewModels
         }
 
         public IEnumerable<ExoDataPoint> ActualsDetail => AllActuals;
+
+        protected override void raiseSummaryChanges()
+        {
+            this.RaisePropertyChanged(x => x.TotalRevenue);
+            this.RaisePropertyChanged(x => x.TotalActuals);
+            this.RaisePropertyChanged(x => x.Margin);
+            this.RaisePropertyChanged(x => x.MarginPercentage);
+
+            base.raiseSummaryChanges();
+        }
+
+        //summaries
+        public decimal TotalRevenue
+        {
+            get
+            {
+                decimal totalRevenue = 0;
+                if(DataPointsTable != null)
+                    foreach(DataRow row in DataPointsTable.Rows)
+                    {
+                        if (!row.IsNull(columnTotalCosts))
+                            totalRevenue += (decimal)row[columnTotalCosts];
+                    }
+
+                return totalRevenue;
+            }
+        }
+
+        public decimal TotalActuals
+        {
+            get
+            {
+                decimal totalActuals = 0;
+                if (DataPointsTable != null)
+                    foreach (DataRow row in DataPointsTable.Rows)
+                    {
+                        if (!row.IsNull(columnTotalActuals))
+                            totalActuals += (decimal)row[columnTotalActuals];
+                    }
+
+                return totalActuals;
+            }
+        }
+
+        public decimal Margin => TotalRevenue - TotalActuals;
+
+        public decimal MarginPercentage => TotalRevenue == 0 ? 0 : Margin / TotalRevenue;
     }
 }
