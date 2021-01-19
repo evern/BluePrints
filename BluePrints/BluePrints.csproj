@@ -1106,6 +1106,7 @@
     <Compile Include="ViewModels\PROGRESS_ITEM\OffsiteDirectProgressCollectionViewModelWrapper.cs" />
     <Compile Include="ViewModels\EXOSUBJOB\EXO_POCollectionViewModelWrapper.cs" />
     <Compile Include="ViewModels\PROJECT\PROJECTForecastEACReportViewModelWrapper.cs" />
+    <Compile Include="ViewModels\PROJECT\PROJECTRateForecastViewModelWrapper.cs" />
     <Compile Include="ViewModels\PROJECT\PROJECTPlanViewModelWrapper.cs" />
     <Compile Include="ViewModels\PROJECT\PROJECT_REVENUECollectionViewModelWrapper.cs" />
     <Compile Include="ViewModels\PROJECT\PROJECTIndirectForecastViewModelWrapper.cs" />
@@ -1219,6 +1220,9 @@
     </Compile>
     <Compile Include="Views\PROJECT\PROJECTForecastEACReportView.xaml.cs">
       <DependentUpon>PROJECTForecastEACReportView.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Views\PROJECT\PROJECTRateForecastView.xaml.cs">
+      <DependentUpon>PROJECTRateForecastView.xaml</DependentUpon>
     </Compile>
     <Compile Include="Views\PROJECT\PROJECTPOCollectionView.xaml.cs">
       <DependentUpon>PROJECTPOCollectionView.xaml</DependentUpon>
@@ -2189,6 +2193,10 @@
       <SubType>Designer</SubType>
     </Page>
     <Page Include="Views\PROJECT\PROJECTForecastEACReportView.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Views\PROJECT\PROJECTRateForecastView.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>

@@ -435,4 +435,7 @@
   <data name="Category_LeadProjects" xml:space="preserve">
     <value>Lead projects category</value>
   </data>
+  <data name="Menu_Project_Forecast_Rate" xml:space="preserve">
+    <value>Project rate forecast maintenance menu</value>
+  </data>
 </root>

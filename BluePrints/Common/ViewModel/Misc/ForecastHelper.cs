@@ -3,6 +3,7 @@ using BluePrints.Common.Misc;
 using BluePrints.Common.Projections;
 using BluePrints.Common.Resources;
 using BluePrints.Common.ViewModel.Reporting;
+using BluePrints.Common.ViewModel.Utils;
 using BluePrints.Data;
 using BluePrints.PrimeroData;
 using BluePrints.ViewModels;
@@ -258,10 +259,7 @@ namespace BluePrints.Common.ViewModel.Misc
         /// </summary>
         private static string NormalizeCode(string code)
         {
-            if (code == null)
-                return string.Empty;
-
-            return code;
+            return BluePrintsDataUtils.NormalizeCode(code);
         }
 
         /// <summary>

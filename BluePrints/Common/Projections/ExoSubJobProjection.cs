@@ -104,7 +104,6 @@ namespace BluePrints.Common.Projections
             return StockCode;
         }
 
-
         public bool CommodityIsIndirectOnly { get; set; }
         public string VariationCode { get; set; }
         public decimal ExoBudget { get; set; }
@@ -200,11 +199,7 @@ namespace BluePrints.Common.Projections
                 if (SubJobId == null || DisciplineId == null || CommodityId == null)
                     return string.Empty;
 
-                string fullCode = SubJobCode + "-" + DisciplineCode + "-" + CommodityCode;
-                if (VariationCode != string.Empty && VariationCode != null)
-                    fullCode += "-" + VariationCode;
-
-                return fullCode;
+                return BluePrintsDataUtils.ConcatFullCode(SubJobCode, DisciplineCode, CommodityCode, VariationCode);
             }
         }
 
@@ -219,6 +214,9 @@ namespace BluePrints.Common.Projections
                 return subJobCode + "-" + disciplineCode + "-" + commodityCode;
             }
         }
+
+        //rate forecast members
+        public decimal TotalCosts { get; set; }
     }
 
     public static class ExoMethods
@@ -1311,7 +1309,7 @@ namespace BluePrints.Common.Projections
             IPrimeroEntitiesUnitOfWork primeroUnitOfWork, Data.PROJECT PROJECT, ref List<ExoTimeAuthorisation> exoLines)
         {
             exoLines = GetProjectLinesIgnoreCostCentres(primeroUnitOfWork, PROJECT.NUMBER);
-            List<ExoTimeAuthorisation> exoAuthorisations = GetExoLinesAuthorisations(primeroUnitOfWork, PROJECT.NUMBER);
+            //List<ExoTimeAuthorisation> exoAuthorisations = GetExoLinesAuthorisations(primeroUnitOfWork, PROJECT.NUMBER);
             List<ExoSubJobProjection> exoSubJobs = new List<ExoSubJobProjection>();
             foreach (ExoTimeAuthorisation exoLine in exoLines)
             {

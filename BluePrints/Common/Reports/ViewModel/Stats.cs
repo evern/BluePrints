@@ -528,6 +528,14 @@ namespace BluePrints.Common.ViewModel.Reporting
 
         public bool NewEntityFromView { get => throw new NotImplementedException(); set => throw new NotImplementedException(); }
 
+        public string FullCode
+        {
+            get
+            {
+                return BluePrintsDataUtils.ConcatFullCode(Subjob_Name, Discipline_Code, Commodity_Code, Variation_Code);
+            }
+        }
+
         public void Update()
         {
             //for compliance in collection view model wrapper, but we never call this

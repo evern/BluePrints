@@ -6,6 +6,7 @@ namespace BluePrints.Data
     using BluePrints.Common.Base;
     using BluePrints.Common.Projections;
     using BluePrints.Common.ViewModel.Reporting;
+    using BluePrints.Common.ViewModel.Utils;
     using DevExpress.Mvvm;
     using System;
     using System.Collections.Generic;
@@ -32,6 +33,9 @@ namespace BluePrints.Data
                 return GUID;
             }
         }
+
+        [NotMapped]
+        public string FullCode => BluePrintsDataUtils.ConcatFullCode(SUBJOB_CODE, DISCIPLINE_CODE, COMMODITY_CODE, VARIATION_CODE);
 
         [NotMapped]
         public ExoSubJobProjection ExoJob { get; set; }

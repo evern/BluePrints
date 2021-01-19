@@ -27,6 +27,7 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Data;
+using System.Globalization;
 using System.Linq;
 using System.Text.RegularExpressions;
 using System.Windows;
@@ -189,6 +190,7 @@ namespace BluePrints.ViewModels
             base.OnAfterAssignedCallbackAndRaisePropertyChanged();
         }
 
+        protected bool showAllJobs = false;
         private void refreshJobs()
         {
             List<ExoTimeAuthorisation> jobLines = new List<ExoTimeAuthorisation>();
@@ -196,20 +198,24 @@ namespace BluePrints.ViewModels
             List<string> indirectPhases = bluePrintsEntitiesUnitOfWork.PHASES.Where(x => x.PHASE_TYPE == Common.PhaseType.Indirect).Select(x => x.INTERNAL_NUM).ToList();
             List<ExoSubJobProjection> tempQueryJobs = ExoQueries.GetNativeExoSubJobProjection(primeroEntitiesUnitOfWork, LoadPROJECT, ref jobLines).ToList();
             QueryJobs = new List<ExoSubJobProjection>();
-            foreach (ExoSubJobProjection tempQueryJob in tempQueryJobs)
+            if (showAllJobs)
+                QueryJobs.AddRange(tempQueryJobs.OrderBy(x => x.FullCode));
+            else
             {
-                if (tempQueryJob.SubJobId == null)
-                    continue;
-
-                foreach (string indirectPhase in indirectPhases)
+                foreach (ExoSubJobProjection tempQueryJob in tempQueryJobs)
                 {
-                    if (tempQueryJob.SubJobCode.Contains(indirectPhase))
-                        QueryJobs.Add(tempQueryJob);
+                    if (tempQueryJob.SubJobId == null)
+                        continue;
+
+                    foreach (string indirectPhase in indirectPhases)
+                    {
+                        if (tempQueryJob.SubJobCode.Contains(indirectPhase))
+                            QueryJobs.Add(tempQueryJob);
+                    }
                 }
             }
 
             List<ExoSubJobProjection> uniqueQueryJobs = new List<ExoSubJobProjection>();
-
             foreach (ExoSubJobProjection queryJob in QueryJobs)
             {
                 if (!uniqueQueryJobs.Any(x => x.FullCode == queryJob.FullCode))
@@ -233,9 +239,10 @@ namespace BluePrints.ViewModels
             }
         }
 
-        private void loadDataPointsTable()
+        protected void loadDataPointsTable()
         {
             IsLoading = true;
+            this.RaisePropertyChanged(x => x.IsLoading);
             //get immutable data
             alignedDataDateCollection = generateDates();
             this.RaisePropertyChanged(x => x.IsLoading);
@@ -246,6 +253,9 @@ namespace BluePrints.ViewModels
             this.RaisePropertyChanged(x => x.IsLoading);
         }
 
+        protected List<ExoDataPoint> exoActuals;
+        protected List<ExoDataPoint> exoMaterials;
+        public List<ExoDataPoint> AllActuals;
         private void updateDataPointsTable()
         {
             GridControlService.GridControl.BeginDataUpdate();
@@ -269,6 +279,7 @@ namespace BluePrints.ViewModels
             DataPointsTable.Columns.Add(columnRecommendedForecastRate, typeof(decimal));
             dataPointsTable.Columns.Add(columnTotalHours, typeof(decimal));
             dataPointsTable.Columns.Add(columnTotalCosts, typeof(decimal));
+            dataPointsTable.Columns.Add(columnTotalActuals, typeof(decimal));
 
             foreach (DateTime alignedDataDate in alignedDataDateCollection)
             {
@@ -289,12 +300,73 @@ namespace BluePrints.ViewModels
                     continue;
                 }
 
-                DataRow newRow = dataPointsTable.NewRow();
-                newRow[columnFullCode] = projection.FullCode;
-                newRow[columnProjection] = projection;
-                newRow[columnForecastJob] = job;
-                mapJobDataToDatatable(newRow);
-                dataPointsTable.Rows.Add(newRow);
+                addNewJobRow(projection, job);
+                LoadingScreenManager.Progress();
+            }
+
+            //add dummy entries when there are actuals
+            if(showAllJobs)
+            {
+                var actualsGroupByFullStockCode = AllActuals.GroupBy(x => new { x.FullCode, x.StockCode }).Select(g => new { g.Key.FullCode, g.Key.StockCode, Actual = g.First() });
+                foreach(var actualGroupByFullStockCode in actualsGroupByFullStockCode)
+                {
+                    FORECAST_JOB findFORECAST_JOB = MainViewModel.Entities.FirstOrDefault(x => x.FullCode == actualGroupByFullStockCode.FullCode && x.STOCK_ITEM == actualGroupByFullStockCode.StockCode);
+                    if (findFORECAST_JOB == null)
+                    {
+                        ExoDataPoint findActual = actualGroupByFullStockCode.Actual;
+                        ExoSubJobProjection projection = QueryJobs.Where(x => x.CommodityId != null && x.DisciplineId != null && x.SubJobId != null).FirstOrDefault(x => x.CommodityCode == findActual.Commodity_Code && x.DisciplineCode == findActual.Discipline_Code && x.SubJobCode == findActual.Subjob_Name && x.VariationCode == findActual.Variation_Code);
+                        if (projection == null)
+                        {
+                            projection = new ExoSubJobProjection();
+                            projection.CommodityCode = findActual.Commodity_Code;
+                            projection.DisciplineCode = findActual.Discipline_Code;
+                            projection.SubJobCode = findActual.Subjob_Name;
+                            projection.VariationCode = findActual.Variation_Code;
+                        }
+
+                        addNewJobRow(projection, null, findActual.StockCode);
+                    }
+                }
+            }
+
+            GridControlService.GridControl.EndDataUpdate();
+
+            LoadingScreenManager.SetMessage("Deleting deprecated indirect forecasts");
+            MainViewModel.BaseBulkDelete(deleteJobs);
+            LoadingScreenManager.CloseLoadingScreen();
+        }
+
+        private void populateProjectionTotalActuals(ExoSubJobProjection projection, DataRow row)
+        {
+            if (AllActuals != null)
+            {
+                string stockCode = string.Empty;
+                if (!row.IsNull(columnStockItem))
+                    stockCode = row[columnStockItem].ToString();
+
+                IEnumerable<ExoDataPoint> currentJobExoActualsByFullCode = AllActuals.Where(x => x.Commodity_Code == projection.CommodityCode && x.Discipline_Code == projection.DisciplineCode && x.Subjob_Name == projection.SubJobCode && x.Variation_Code == projection.VariationCode);
+                IEnumerable<ExoDataPoint> currentJobExoactualsByStockCode = currentJobExoActualsByFullCode.Where(x => x.StockCode == stockCode);
+                row[columnTotalActuals] = currentJobExoactualsByStockCode.Sum(x => x.Costs);
+            }
+            else
+                row[columnTotalActuals] = 0;
+        }
+
+        private void addNewJobRow(ExoSubJobProjection projection, FORECAST_JOB job, string stockCode = "")
+        {
+            DataRow newRow = dataPointsTable.NewRow();
+            newRow[columnFullCode] = projection.FullCode;
+            newRow[columnProjection] = projection;
+            newRow[columnForecastJob] = job;
+            newRow[columnTotalActuals] = projection.TotalCosts;
+            newRow[columnStockItem] = stockCode == string.Empty ? findDefaultStockCode(projection) : stockCode;
+
+            populateStockItemsData(newRow, false);
+            populateProjectionTotalActuals(projection, newRow);
+            mapJobDataToDatatable(newRow);
+            dataPointsTable.Rows.Add(newRow);
+
+            if(job != null)
                 foreach (DateTime alignedDate in alignedDataDateCollection)
                 {
                     string columnFieldName = alignedDate.Date.ToString(BluePrintsResources.ColumnDateFormat);
@@ -306,20 +378,14 @@ namespace BluePrints.ViewModels
                         newRow[columnFieldName] = DBNull.Value;
                 }
 
-                updateRowReadOnlyAttributes(newRow);
-
-                LoadingScreenManager.Progress();
-            }
-
-            GridControlService.GridControl.EndDataUpdate();
-
-            LoadingScreenManager.SetMessage("Deleting deprecated indirect forecasts");
-            MainViewModel.BaseBulkDelete(deleteJobs);
-            LoadingScreenManager.CloseLoadingScreen();
+            updateRowReadOnlyAttributes(newRow);
         }
 
         private void mapJobDataToDatatable(DataRow row)
         {
+            if (row.IsNull(columnForecastJob))
+                return;
+
             FORECAST_JOB forecastJob = (FORECAST_JOB)row[columnForecastJob];
             row[columnDescription] = forecastJob.DESCRIPTION;
             row[columnStockItem] = forecastJob.STOCK_ITEM;
@@ -330,6 +396,9 @@ namespace BluePrints.ViewModels
 
         private void mapDataTableToJobData(DataRow row)
         {
+            if (row.IsNull(columnForecastJob))
+                return;
+
             FORECAST_JOB forecastJob = (FORECAST_JOB)row[columnForecastJob];
             forecastJob.DESCRIPTION = row[columnDescription].ToString();
             forecastJob.STOCK_ITEM = row[columnStockItem].ToString();
@@ -345,7 +414,10 @@ namespace BluePrints.ViewModels
 
             //update commodity name
             ExoSubJobProjection projection = (ExoSubJobProjection)row[columnProjection];
-            FORECAST_JOB forecastJob = (FORECAST_JOB)row[columnForecastJob];
+            FORECAST_JOB forecastJob = null;
+            if(!row.IsNull(columnForecastJob))
+                forecastJob = (FORECAST_JOB)row[columnForecastJob];
+
             JOB_COSTTYPES findCOST_TYPE = JOB_COSTTYPESCollection.FirstOrDefault(x => x.SHORTCODE == projection.CommodityCode);
             if (findCOST_TYPE != null)
                 row[columnCommodityName] = findCOST_TYPE.COSTDESC;
@@ -353,37 +425,19 @@ namespace BluePrints.ViewModels
                 row[columnCommodityName] = string.Empty;
 
             //update stock item name          
-            if (forecastJob.STOCK_ITEM != string.Empty)
+            if (forecastJob != null && forecastJob.STOCK_ITEM != string.Empty)
             {
-                STOCK_ITEMS findSTOCK_ITEM = STOCK_ITEMCollection.FirstOrDefault(x => x.STOCKCODE == forecastJob.STOCK_ITEM);
-                if (findSTOCK_ITEM != null)
-                {
-                    row[columnStockItemName] = findSTOCK_ITEM.DESCRIPTION;
-                    decimal? newDecimalValue = null;
-                    if (findSTOCK_ITEM.STDCOST != null && findSTOCK_ITEM.STDCOST > 0)
-                        newDecimalValue = Convert.ToDecimal(findSTOCK_ITEM.STDCOST);
-
-                    if (newDecimalValue == null)
-                    {
-                        row[columnRecommendedForecastRate] = DBNull.Value;
-                        if(isNewRow)
-                            forecastJob.FORECAST_RATE = 0;
-                    }
-                    else
-                    {
-                        row[columnRecommendedForecastRate] = newDecimalValue;
-                        if (isNewRow)
-                            forecastJob.FORECAST_RATE = newDecimalValue;
-                    }
-                }
-                else
-                    row[columnStockItemName] = string.Empty;
+                populateStockItemsData(row, isNewRow, forecastJob);
             }
             else
                 row[columnStockItemName] = string.Empty;
 
-            if (forecastJob.GUID == Guid.Empty)
+            if (forecastJob == null || forecastJob.GUID == Guid.Empty)
+            {
+                row[columnTotalHours] = 0.00m;
+                row[columnTotalCosts] = 0.00m;
                 return;
+            }
 
             //update total hours
             decimal rate = 0.00m;
@@ -398,6 +452,39 @@ namespace BluePrints.ViewModels
             }
             else
                 row[columnTotalCosts] = 0.00m;
+        }
+
+        private void populateStockItemsData(DataRow row, bool isNewRow, FORECAST_JOB forecastJob = null)
+        {
+            string stockCode = row.IsNull(columnStockItem) ? string.Empty : row[columnStockItem].ToString();
+            if (stockCode != string.Empty)
+            {
+                STOCK_ITEMS findSTOCK_ITEM = STOCK_ITEMCollection.FirstOrDefault(x => x.STOCKCODE == stockCode);
+                if (findSTOCK_ITEM != null)
+                {
+                    row[columnStockItemName] = findSTOCK_ITEM.DESCRIPTION;
+                    decimal? newDecimalValue = null;
+                    if (findSTOCK_ITEM.STDCOST != null && findSTOCK_ITEM.STDCOST > 0)
+                        newDecimalValue = Convert.ToDecimal(findSTOCK_ITEM.STDCOST);
+
+                    if (newDecimalValue == null)
+                    {
+                        row[columnRecommendedForecastRate] = DBNull.Value;
+                        if (isNewRow && forecastJob != null)
+                            forecastJob.FORECAST_RATE = 0;
+                    }
+                    else
+                    {
+                        row[columnRecommendedForecastRate] = newDecimalValue;
+                        if (isNewRow && forecastJob != null)
+                            forecastJob.FORECAST_RATE = newDecimalValue;
+                    }
+                }
+                else
+                    row[columnStockItemName] = string.Empty;
+            }
+            else
+                row[columnStockItemName] = string.Empty;
         }
 
         private string findDefaultStockCode(ExoSubJobProjection exoSubJobProjection)
@@ -675,7 +762,7 @@ namespace BluePrints.ViewModels
                 if (MainViewModel.IsPasteCellLevel)
                     EntitiesUndoRedoManager.AddUndo(updatedForecastJobFromDataRow(newRow), copyColumn.FieldName, oldCheckedStatus, newCheckedStatus, EntityMessageType.Changed);
             }
-            else if (copyColumn.FieldName.Contains(BindableBase.GetPropertyName(() => new FORECAST_JOB().FORECAST_RATE)) || DateTime.TryParse(copyColumn.FieldName, out columnDateTime))
+            else if (copyColumn.FieldName.Contains(BindableBase.GetPropertyName(() => new FORECAST_JOB().FORECAST_RATE)) || DateTime.TryParseExact(copyColumn.FieldName, "dd-MMM-yy", CultureInfo.InvariantCulture, DateTimeStyles.None, out columnDateTime))
             {
                 var rgx = new Regex(BluePrintsResources.Regex_NumbersOnly);
                 var cleanColumnString = rgx.Replace(pasteData, string.Empty);
@@ -782,6 +869,12 @@ namespace BluePrints.ViewModels
                     editFORECAST_JOB.VARIATION_CODE = projection.VariationCode;
 
                 editFORECAST_JOB.GUID_PROJECT = LoadPROJECT.GUID;
+
+                string stockCode = string.Empty;
+                if (!row.IsNull(columnStockItem))
+                    stockCode = row[columnStockItem].ToString();
+
+                editFORECAST_JOB.STOCK_ITEM = stockCode;
                 MainViewModel.Save(editFORECAST_JOB);
                 row[columnForecastJob] = editFORECAST_JOB;
                 //add undo must be after so that Guid is populated
@@ -820,7 +913,7 @@ namespace BluePrints.ViewModels
                 foreach (DataColumn column in DataPointsTable.Columns)
                 {
                     DateTime dateTime;
-                    if (DateTime.TryParse(column.ColumnName, out dateTime))
+                    if (DateTime.TryParseExact(column.ColumnName, "dd-MMM-yy", CultureInfo.InvariantCulture, DateTimeStyles.None, out dateTime))
                     {
                         decimal dateValue = row[column.ColumnName] == DBNull.Value ? 0.00m : ((decimal)row[column.ColumnName]);
                         forecastJob.DatesForecasts.Add(new KeyValuePair<string, decimal>(column.ColumnName, dateValue));
@@ -841,23 +934,30 @@ namespace BluePrints.ViewModels
                 return;
 
             //new item handling
-            if (e.RowHandle == GridControl.NewItemRowHandle)
+            FORECAST_JOB newFORECAST_JOB;
+            if (dataRowView[columnForecastJob] == DBNull.Value)
             {
+                if (dataRowView[columnFullCode] != DBNull.Value)
+                    findExistingOrAddNewFORECAST_JOB(dataRowView.Row);
 
-                FORECAST_JOB newFORECAST_JOB;
-                if (dataRowView[columnForecastJob] == DBNull.Value)
+                //when forecast job is not added for some reason
+                if(dataRowView[columnForecastJob] == DBNull.Value)
                 {
                     newFORECAST_JOB = new FORECAST_JOB();
                     dataRowView[columnForecastJob] = newFORECAST_JOB;
                 }
-                else
-                    newFORECAST_JOB = (FORECAST_JOB)dataRowView[columnForecastJob];
+            }
+            else
+                newFORECAST_JOB = (FORECAST_JOB)dataRowView[columnForecastJob];
 
+            if (e.RowHandle == GridControl.NewItemRowHandle)
+            {
                 if (e.Column.FieldName == columnFullCode && e.Value != null)
                 {
                     ExoSubJobProjection queryJob = QueryJobs.FirstOrDefault(x => x.FullCode == e.Value.ToString());
                     dataRowView[columnProjection] = queryJob;
                     dataRowView[columnStockItem] = findDefaultStockCode(queryJob);
+                    populateProjectionTotalActuals(queryJob, dataRowView.Row);
                 }
 
                 mapDataTableToJobData(dataRowView.Row);
@@ -932,7 +1032,7 @@ namespace BluePrints.ViewModels
                     return;
                 }
             }
-            else if (DateTime.TryParse(fieldName, out dateTime))
+            else if (DateTime.TryParseExact(fieldName, "dd-MMM-yy", CultureInfo.InvariantCulture, DateTimeStyles.None, out dateTime))
             {
                 decimal? forecastHours = null;
                 decimal convertUnits = 0;
@@ -998,21 +1098,22 @@ namespace BluePrints.ViewModels
             return null;
         }
 
-        static string columnFullCode = "FullCode";
-        static string columnForecastJob = BluePrintsResources.Forecast_ForecastJobColumn;
-        static string columnCommodityName = "CommodityName";
-        static string columnProjection = "Projection";
-        static string columnStockItemName = "StockItemName";
-        static string columnRecommendedForecastRate = "RecommendedRate";
-        static string columnTotalHours = "TOTAL_HOURS";
-        static string columnTotalCosts = "TOTAL_COSTS";
-        static string columnDescription = "Description";
-        static string columnStockItem = "StockItem";
-        static string columnReference = "Reference";
-        static string columnNote = "Note";
-        static string columnUOM = BluePrintsResources.ForecastIndirectUOMColumn;
-        static string columnForecastRate = columnForecastJob + "." + BindableBase.GetPropertyName(() => new FORECAST_JOB().FORECAST_RATE);
-        private void InitializeColumnSource(ObservableCollection<ColumnDescriptor> columns, ObservableCollection<SummaryDescriptor> summaries, List<DateTime> alignedDates, bool isChild)
+        protected static string columnFullCode = "FullCode";
+        protected static string columnForecastJob = BluePrintsResources.Forecast_ForecastJobColumn;
+        protected static string columnCommodityName = "CommodityName";
+        protected static string columnProjection = "Projection";
+        protected static string columnStockItemName = "StockItemName";
+        protected static string columnRecommendedForecastRate = "RecommendedRate";
+        protected static string columnTotalHours = "TOTAL_HOURS";
+        protected static string columnTotalCosts = "TOTAL_COSTS";
+        protected static string columnTotalActuals = "TOTAL_ACTUALS";
+        protected static string columnDescription = "Description";
+        protected static string columnStockItem = "StockItem";
+        protected static string columnReference = "Reference";
+        protected static string columnNote = "Note";
+        protected static string columnUOM = BluePrintsResources.ForecastIndirectUOMColumn;
+        protected static string columnForecastRate = columnForecastJob + "." + BindableBase.GetPropertyName(() => new FORECAST_JOB().FORECAST_RATE);
+        protected virtual void InitializeColumnSource(ObservableCollection<ColumnDescriptor> columns, ObservableCollection<SummaryDescriptor> summaries, List<DateTime> alignedDates, bool isChild)
         {
             columns.Clear();
             summaries.Clear();
@@ -1045,6 +1146,7 @@ namespace BluePrints.ViewModels
                 }
             }
         }
+
         private List<DateTime> generateDates()
         {
             return ChronologicalHelpers.GenerateEndDatesCollection((DateTime)FixedDataDate, FixedEndDate, true);
