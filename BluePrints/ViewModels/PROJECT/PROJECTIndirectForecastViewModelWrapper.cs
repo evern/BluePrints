@@ -433,22 +433,23 @@ namespace BluePrints.ViewModels
             {
                 row[columnTotalHours] = 0.00m;
                 row[columnTotalCosts] = 0.00m;
-                return;
-            }
-
-            //update total hours
-            decimal rate = 0.00m;
-            decimal totalForecastHours = FORECAST_JOB_HOURCollection.Where(x => x.GUID_FORECAST_JOB == forecastJob.GUID && x.FORECAST_HOUR != null && x.FORECAST_DATE > FixedDataDate).Sum(x => (decimal)x.FORECAST_HOUR);
-            row[columnTotalHours] = totalForecastHours;
-
-            //update total costs
-            if (forecastJob.FORECAST_RATE != null)
-            {
-                rate = (decimal)forecastJob.FORECAST_RATE;
-                row[columnTotalCosts] = rate * totalForecastHours;
             }
             else
-                row[columnTotalCosts] = 0.00m;
+            {
+                //update total hours
+                decimal rate = 0.00m;
+                decimal totalForecastHours = FORECAST_JOB_HOURCollection.Where(x => x.GUID_FORECAST_JOB == forecastJob.GUID && x.FORECAST_HOUR != null && x.FORECAST_DATE > FixedDataDate).Sum(x => (decimal)x.FORECAST_HOUR);
+                row[columnTotalHours] = totalForecastHours;
+
+                //update total costs
+                if (forecastJob.FORECAST_RATE != null)
+                {
+                    rate = (decimal)forecastJob.FORECAST_RATE;
+                    row[columnTotalCosts] = rate * totalForecastHours;
+                }
+                else
+                    row[columnTotalCosts] = 0.00m;
+            }
 
             //update actual costs
             if (AllActuals != null)
