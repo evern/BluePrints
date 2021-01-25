@@ -71,7 +71,7 @@
                                 <dxe:DateEditSettings MaxValue="12/31/9999 23:59:59" MinValue="1753-01-01" />
                             </dxg:GridColumn.EditSettings>
                         </dxg:GridColumn>
-                        <dxg:GridColumn Header="Previous Report Date" FieldName="PREVIOUS_REPORT_DATE" HeaderToolTip="What is the previous report date. It is used to stop progressing from P6 overriding earned units before this date">
+                        <dxg:GridColumn Header="Previous Report Date" FieldName="PREVIOUS_REPORT_DATE" HeaderToolTip="What is the previous report date. It is used to stop progressing from P6 function overriding earned units before this date">
                             <dxg:GridColumn.EditSettings>
                                 <dxe:DateEditSettings MaxValue="12/31/9999 23:59:59" MinValue="1753-01-01" />
                             </dxg:GridColumn.EditSettings>
@@ -79,6 +79,11 @@
                         <dxg:GridColumn Header="Report Date" FieldName="REPORT_DATE" HeaderToolTip="What is the report date. It is used to limit S-Curve from getting earned or burned after this date">
                             <dxg:GridColumn.EditSettings>
                                 <dxe:DateEditSettings MaxValue="12/31/9999 23:59:59" MinValue="1753-01-01" />
+                            </dxg:GridColumn.EditSettings>
+                        </dxg:GridColumn>
+                        <dxg:GridColumn Header="Disable Auto Report Date" FieldName="DISABLE_AUTO_REPORT_DATE" AllowBestFit="false" Width="75" HeaderToolTip="Disable report date to automatically move to end of previous period when opening this screen">
+                            <dxg:GridColumn.EditSettings>
+                                <dxe:CheckEditSettings />
                             </dxg:GridColumn.EditSettings>
                         </dxg:GridColumn>
                         <dxg:GridColumn Header="Interval" FieldName="INTERVAL_TYPE">

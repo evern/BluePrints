@@ -145,7 +145,7 @@ namespace BluePrints.Common.ViewModel.Utils
             if (navigationType == DateNavigationType.Current)
             {
                 //for users that always uses report date
-                if(isReportDate)
+                if(isReportDate && !loadPROGRESS.DISABLE_AUTO_REPORT_DATE)
                 {
                     //rewind the data one week when progress is updated for the current week but reporting is done on the previous week
                     //will be saved when data date is saved
