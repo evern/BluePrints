@@ -726,16 +726,6 @@ namespace BluePrints.ViewModels
             return true;
         }
 
-        protected override bool OnBeforeApplyingProjectionPropertiesToEntityIsContinue(FORECAST_JOB projectionEntity, FORECAST_JOB entity)
-        {
-            //because both types are the same, conventional projection copy will not execute so we manually do it here
-            if (projectionEntity.CREATED.Year == 1)
-                projectionEntity.CREATED = DateTime.Now;
-
-            DataUtils.ShallowCopy(entity, projectionEntity);
-            return base.OnBeforeApplyingProjectionPropertiesToEntityIsContinue(projectionEntity, entity);
-        }
-
         /// <summary>
         /// Influence column(s) when changes happens in other column
         /// </summary>

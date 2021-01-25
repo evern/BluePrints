@@ -80,6 +80,7 @@ namespace BluePrints.ViewModels
         protected IUnitOfWorkFactory<IBluePrintsEntitiesUnitOfWork> bluePrintsUnitOfWorkFactory = BluePrintsEntitiesUnitOfWorkSource.GetUnitOfWorkFactory();
         protected IUnitOfWorkFactory<IPrimeroEntitiesUnitOfWork> primeroUnitOfWorkFactory = PrimeroEntitiesUnitOfWorkSource.GetUnitOfWorkFactory();
         protected IUnitOfWorkFactory<IP6EntitiesUnitOfWork> p6UnitOfWorkFactory = P6EntitiesUnitOfWorkSource.GetUnitOfWorkFactory();
+        protected DispatcherTimer delayedRefreshDispatcher;
         private Action<object> navigateCore;
         public bool ForceRetrieveAllJobs { get; set; } //force exo burned to retrieve subjobs that aren't defined
         public bool ForceRetrieveAllUnits { get; set; } //force exo burned to retrieve units that are beyond data date
@@ -101,7 +102,10 @@ namespace BluePrints.ViewModels
             FixedStartDate = null;
             FixedDataDate = null;
 
-            //adjustDataDate();
+            delayedRefreshDispatcher = new DispatcherTimer();
+            delayedRefreshDispatcher.Interval = new TimeSpan(0, 0, 0, 1);
+            delayedRefreshDispatcher.Tick += delayedRefreshDispatcher_Tick;
+            adjustDataDate();
         }
 
         private void adjustDataDate()
@@ -1524,6 +1528,69 @@ namespace BluePrints.ViewModels
             }
         }
 
+        public bool CanDateBackward()
+        {
+            if (IsLoading || liveDesignProgress == null)
+                return false;
+
+            if (liveDesignProgress.DATA_DATE > liveDesignProgress.PROGRESS_START)
+                return true;
+
+            return false;
+        }
+
+        public bool CanDateForward()
+        {
+            if (IsLoading || liveDesignProgress == null)
+                return false;
+
+            return true;
+        }
+
+        public void DateForward()
+        {
+            DateChange(DateNavigationType.Forward);
+        }
+
+        public void DateBackward()
+        {
+            DateChange(DateNavigationType.Backward);
+        }
+
+        protected void DateChange(DateNavigationType navigationType)
+        {
+            if (BluePrintsUtils.ProgressDateChange(navigationType, liveDesignProgress, true))
+            {
+                PROGRESSCollectionViewModel.Save(liveDesignProgress);
+                delayedRefreshDispatcher.Start();
+            }
+        }
+
+        public bool IsDisableAutoReportDate
+        {
+            get
+            {
+                if (liveDesignProgress == null)
+                    return false;
+
+                return liveDesignProgress.DISABLE_AUTO_REPORT_DATE;
+            }
+            set
+            {
+                if(PROGRESSCollectionViewModel != null)
+                {
+                    liveDesignProgress.DISABLE_AUTO_REPORT_DATE = !liveDesignProgress.DISABLE_AUTO_REPORT_DATE;
+                    PROGRESSCollectionViewModel.Save(liveDesignProgress);
+                }
+            }
+        }
+
+        protected virtual void delayedRefreshDispatcher_Tick(object sender, EventArgs e)
+        {
+            delayedRefreshDispatcher.Stop();
+            FullRefresh();
+        }
+
         protected PROGRESS liveConstructProgress
         {
             get
@@ -1613,6 +1680,17 @@ namespace BluePrints.ViewModels
                 return
                     (CollectionViewModel<PROJECT, PROJECT, Guid, IBluePrintsEntitiesUnitOfWork>)
                     loaderCollection.GetViewModel<PROJECT>();
+            }
+        }
+
+        public CollectionViewModel<PROGRESS, PROGRESS, Guid, IBluePrintsEntitiesUnitOfWork> PROGRESSCollectionViewModel
+        {
+            get
+            {
+                if (MainViewModel == null)
+                    return null;
+
+                return (CollectionViewModel<PROGRESS, PROGRESS, Guid, IBluePrintsEntitiesUnitOfWork>)loaderCollection.GetViewModel<PROGRESS>();
             }
         }
         #endregion

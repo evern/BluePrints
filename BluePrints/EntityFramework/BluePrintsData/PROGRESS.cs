@@ -41,6 +41,8 @@ namespace BluePrints.Data
 
         public DateTime? REPORT_DATE { get; set; }
 
+        public bool DISABLE_AUTO_REPORT_DATE { get; set; }
+
         public bool USE_CURRENT_WEEK { get; set; }
 
         public DateTime CREATED { get; set; }

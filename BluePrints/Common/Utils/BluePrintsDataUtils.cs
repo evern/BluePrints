@@ -144,6 +144,7 @@ namespace BluePrints.Common.ViewModel.Utils
 
             if (navigationType == DateNavigationType.Current)
             {
+                //for users that always uses report date
                 if(isReportDate)
                 {
                     //rewind the data one week when progress is updated for the current week but reporting is done on the previous week
@@ -161,6 +162,7 @@ namespace BluePrints.Common.ViewModel.Utils
                     else
                         return false;
                 }
+                //for users that always uses data date
                 else
                 {
                     if (loadPROGRESS.USE_CURRENT_WEEK)
@@ -168,6 +170,9 @@ namespace BluePrints.Common.ViewModel.Utils
                         if (loadPROGRESS.DATA_DATE.Date != endOfCurrentWeek.Date)
                         {
                             loadPROGRESS.DATA_DATE = endOfCurrentWeek;
+                            if(!loadPROGRESS.DISABLE_AUTO_REPORT_DATE)
+                                loadPROGRESS.REPORT_DATE = endOfPreviousWeek;
+
                             return true;
                         }
                         else
@@ -178,6 +183,9 @@ namespace BluePrints.Common.ViewModel.Utils
                         if (loadPROGRESS.DATA_DATE.Date != endOfPreviousWeek.Date)
                         {
                             loadPROGRESS.DATA_DATE = endOfPreviousWeek;
+                            if (!loadPROGRESS.DISABLE_AUTO_REPORT_DATE)
+                                loadPROGRESS.REPORT_DATE = endOfPreviousWeek;
+
                             return true;
                         }
                         else

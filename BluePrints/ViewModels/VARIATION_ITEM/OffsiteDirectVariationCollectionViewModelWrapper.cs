@@ -99,23 +99,6 @@ namespace BluePrints.ViewModels
                 return query.Where(x => x.GUID_BASELINE == loadVARIATION.GUID_BASELINE);
         }
 
-        protected override void AssignCallBacksAndRaisePropertyChange(IEnumerable<BASELINE_ITEMProgress> entities)
-        {
-            VARIATION_ITEMSCollectionViewModel.OnBeforeApplyingProjectionPropertiesToEntityIsContinueCallBack = OnBeforeApplyingProjectionPropertiesToEntityIsContinue;
-            base.AssignCallBacksAndRaisePropertyChange(entities);
-        }
-
-        protected virtual bool OnBeforeApplyingProjectionPropertiesToEntityIsContinue(VARIATION_ITEM projectionEntity, VARIATION_ITEM entity)
-        {           
-            //because both types are the same, conventional projection copy will not execute so we manually do it here
-            if (projectionEntity.CREATED.Year == 1)
-                projectionEntity.CREATED = DateTime.Now;
-
-            //because newly created variation_item is not an EF entry and not a projection, need manually map it here
-            DataUtils.ShallowCopy(entity, projectionEntity);
-            return true;
-        }
-
         protected override void OnAfterAssignedCallbackAndRaisePropertyChanged()
         {
             if (loadVARIATION.SUBMITTED != null || loadVARIATION.APPROVED != null)

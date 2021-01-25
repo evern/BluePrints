@@ -43,11 +43,23 @@
                 <dxb:BarManager.Items>
                     <dxb:BarSubItem ItemLinksSource="{StaticResource RibbonDefaultGridButtons}" />
                     <dxb:BarButtonItem x:Name="biRefreshFromP6" Command="{Binding Refresh_From_P6Command}" IsEnabled="{Binding IsLoading, Converter={dxmvvm:BooleanNegationConverter}}" Content="Refresh" Glyph="{dx:DXImage Image=Reset2_16x16.png}" LargeGlyph="{dx:DXImage Image=Reset2_32x32.png}" ToolTip="Recalculate stats from P6. Must be performed after pressing F9 in P6" />
+                    <dxb:BarButtonItem x:Name="biDateBackwards" Command="{Binding DateBackwardCommand}" Content="Backward" Glyph="{dx:DXImage Image=HistoryItem_16x16.png}" LargeGlyph="{dx:DXImage Image=HistoryItem_32x32.png}" ToolTip="Rewind data date to previous interval" />
                     <dxb:BarEditItem x:Name="beDesignDataDate" IsReadOnly="True" Content="Data Date" IsEnabled="{Binding IsLoading, Converter={dxmvvm:BooleanNegationConverter}}" EditValue="{Binding DesignDataDate, Mode=OneWay}" >
                         <dxb:BarEditItem.EditSettings>
                             <dxe:TextEditSettings />
                         </dxb:BarEditItem.EditSettings>
                     </dxb:BarEditItem>
+                    <dxb:BarButtonItem x:Name="biDateForward" Command="{Binding DateForwardCommand}" Content="Forward" Glyph="{dx:DXImage Image=HistoryItem_16x16.png}" LargeGlyph="{dx:DXImage Image=HistoryItem_32x32.png}" ToolTip="Forward data date to next interval">
+                        <dxb:BarButtonItem.GlyphTemplate>
+                            <DataTemplate>
+                                <Image RenderTransformOrigin="0.5,0.5" Source="{Binding RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=dxb:BarItemLinkInfo}, Path=Item.LargeGlyph}">
+                                    <Image.RenderTransform>
+                                        <ScaleTransform ScaleX="-1" />
+                                    </Image.RenderTransform>
+                                </Image>
+                            </DataTemplate>
+                        </dxb:BarButtonItem.GlyphTemplate>
+                    </dxb:BarButtonItem>
                     <dxb:BarButtonItem x:Name="biExportPlanned" Content="Export Planned" ToolTip="Export planned datapoints to excel" Command="{Binding ExportPlannedCommand}" LargeGlyph="{dx:DXImage Image=ExportToXLSX_32x32.png}" Glyph="{dx:DXImage Image=ExportToXLSX_16x16.png}" />
                     <dxb:BarButtonItem x:Name="biExportCurrent" Content="Export Current" ToolTip="Export current (planned including variation) datapoints to excel" Command="{Binding ExportCurrentCommand}" LargeGlyph="{dx:DXImage Image=ExportToXLSX_32x32.png}" Glyph="{dx:DXImage Image=ExportToXLSX_16x16.png}" />
                     <dxb:BarButtonItem x:Name="biExportEarned" Content="Export Earned" ToolTip="Export earned datapoints to excel" Command="{Binding ExportEarnedCommand}" LargeGlyph="{dx:DXImage Image=ExportToXLSX_32x32.png}" Glyph="{dx:DXImage Image=ExportToXLSX_16x16.png}" />
@@ -95,6 +107,11 @@
                     <dxb:BarButtonItem x:Name="biEditEstimate" Command="{Binding EditEstimateCommand}" Content="Construction Baseline Revisions" Glyph="{dx:DXImage Image=Cube_16x16.png}" LargeGlyph="{dx:DXImage Image=Cube_32x32.png}" ToolTip="View all revisions of project estimate" />
                     <dxb:BarButtonItem x:Name="biEditProgress" Command="{Binding EditProgressCommand}" Content="Progress Revision" Glyph="{dx:DXImage Image=Date&amp;Time_16x16.png}" LargeGlyph="{dx:DXImage Image=Date&amp;Time_32x32.png}" ToolTip="View all revisions of project progress" />
                     <dxb:BarButtonItem x:Name="biLocalExportToExcel" Command="{Binding ExportToExcelCommand}" Content="Export All" Glyph="{dx:DXImage Image=ExportToXLSX_16x16.png}" LargeGlyph="{dx:DXImage Image=ExportToXLSX_32x32.png}" RibbonStyle="SmallWithText" ToolTip="Export all datapoints to excel" />
+                    <dxb:BarEditItem x:Name="biDisableAutoReportDate" IsEnabled="{Binding IsLoading, Converter={dxmvvm:BooleanNegationConverter}}" Content="Disable Auto Report Date" EditValue="{Binding IsAutoReportDate}" Glyph="{dx:DXImage Image=AutoFitToGrid_16x16.png}" LargeGlyph="{dx:DXImage Image=AutoFitToGrid_32x32.png}" ToolTip="Disable report date to automatically move to end of previous period when opening this screen" >
+                        <dxb:BarEditItem.EditSettings>
+                            <dxe:CheckEditSettings />
+                        </dxb:BarEditItem.EditSettings>
+                    </dxb:BarEditItem>
                 </dxb:BarManager.Items>
                 <DockPanel>
                     <dxr:RibbonControl Style="{StaticResource DefaultRibbonControlStyle}">
@@ -112,7 +129,10 @@
                                     <dxb:BarButtonItemLink BarItemName="biViewReport1" />
                                 </dxr:RibbonPageGroup>
                                 <dxr:RibbonPageGroup MergeType="Replace" Caption="Data Date">
+                                    <dxb:BarButtonItemLink BarItemName="biDateBackwards" />
                                     <dxb:BarEditItemLink BarItemName="beDesignDataDate" />
+                                    <dxb:BarButtonItemLink BarItemName="biDateForward" />
+                                    <dxb:BarEditItemLink BarItemName="biDisableAutoReportDate" />
                                 </dxr:RibbonPageGroup>
                                 <dxr:RibbonPageGroup MergeType="Replace" Caption="Chart">
                                     <dxb:BarButtonItemLink BarItemName="biCheckUnits" />
