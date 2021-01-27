@@ -2554,6 +2554,18 @@ namespace BluePrints.ViewModels
             SaveDateAndRefresh();
         }
 
+        public bool CanSaveSummary()
+        {
+            return !IsLoading;
+        }
+
+        public void SaveSummary()
+        {
+            IBluePrintsEntitiesUnitOfWork bluePrintsEntitiesUnitOfWork = BluePrintsEntitiesUnitOfWorkSource.GetUnitOfWorkFactory().CreateUnitOfWork();
+            findExistingOrAddNewEACHistory(FixedDataDateMonthEnd, ForecastSummary, bluePrintsEntitiesUnitOfWork);
+            MessageBoxService.ShowMessage("Summary saved for excel for data date " + FixedDataDateMonthEnd.ToShortDateString(), "Excel Data Saved", MessageButton.OK);
+        }
+
         private FORECAST_EAC createNewEAC(DateTime forecastDate, ExoSubJobProjection projection, decimal newPreviousEAC)
         {
             FORECAST_EAC newFORECAST_EAC = new FORECAST_EAC();
