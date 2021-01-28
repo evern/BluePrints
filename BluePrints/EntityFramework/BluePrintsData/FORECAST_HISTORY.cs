@@ -21,6 +21,8 @@ namespace BluePrints.Data
 
         public decimal? ORIGINAL_REVENUE { get; set; }
 
+        public decimal? ORIGINAL_COSTS { get; set; }
+
         public decimal? APPROVED_VARIATION { get; set; }
 
         public decimal? UNAPPROVED_VARIATION { get; set; }
@@ -28,6 +30,10 @@ namespace BluePrints.Data
         public decimal? TOTAL_UNAPPROVED_VARIATION { get; set; }
 
         public decimal? TOTAL_EAC { get; set; }
+
+        public decimal? CONTINGENCY { get; set; }
+
+        public decimal? CASHFLOW { get; set; }
 
         public DateTime EAC_DATE { get; set; }
 

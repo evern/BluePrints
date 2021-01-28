@@ -2510,17 +2510,16 @@ namespace BluePrints.ViewModels
             }
 
             LoadingScreenManager.ShowLoadingScreen(DataPointsTable.Rows.Count);
-            IBluePrintsEntitiesUnitOfWork bluePrintsEntitiesUnitOfWork = BluePrintsEntitiesUnitOfWorkSource.GetUnitOfWorkFactory().CreateUnitOfWork();
 
             DateTime firstForecastDate = new DateTime(FixedDataDateMonthEnd.Year, FixedDataDateMonthEnd.Month, 1).AddMonths(2).AddDays(-1);
             foreach (DataRow masterRow in DataPointsTable.Rows)
             {
                 ForecastJobData entity = (ForecastJobData)masterRow[columnEntity];
                 ExoSubJobProjection projection = entity.Projection;
-                findExistingOrAddNewEAC(FixedDataDateMonthEnd, entity, bluePrintsEntitiesUnitOfWork, entity.EstimateAtCompletion, false);
+                findExistingOrAddNewEAC(FixedDataDateMonthEnd, entity, bluePrintsUnitOfWork, entity.EstimateAtCompletion, false);
                 decimal firstForecastDateValue = (decimal)masterRow[firstForecastDate.ToString(BluePrintsResources.ColumnDateFormat)];
                 
-                FORECAST findFORECASTS = bluePrintsEntitiesUnitOfWork.FORECASTS.FirstOrDefault(x => x.FORECAST_TYPE == ForecastDataType.DataDateForecast && x.FORECAST_DATE == firstForecastDate && x.SUBJOB_CODE == projection.SubJobCode && x.DISCIPLINE_CODE == projection.DisciplineCode && x.COMMODITY_CODE == projection.CommodityCode && x.VARIATION_CODE == projection.VariationCode);
+                FORECAST findFORECASTS = bluePrintsUnitOfWork.FORECASTS.FirstOrDefault(x => x.FORECAST_TYPE == ForecastDataType.DataDateForecast && x.FORECAST_DATE == firstForecastDate && x.SUBJOB_CODE == projection.SubJobCode && x.DISCIPLINE_CODE == projection.DisciplineCode && x.COMMODITY_CODE == projection.CommodityCode && x.VARIATION_CODE == projection.VariationCode);
                 if (findFORECASTS != null)
                     findFORECASTS.FORECAST_UNITS = firstForecastDateValue;
                 else
@@ -2535,18 +2534,18 @@ namespace BluePrints.ViewModels
                     findFORECASTS.FORECAST_DATE = firstForecastDate;
                     findFORECASTS.FORECAST_UNITS = firstForecastDateValue;
                     findFORECASTS.FORECAST_TYPE = ForecastDataType.DataDateForecast;
-                    bluePrintsEntitiesUnitOfWork.FORECASTS.Add(findFORECASTS);
+                    bluePrintsUnitOfWork.FORECASTS.Add(findFORECASTS);
                 }
 
                 LoadingScreenManager.Progress();
             }
 
-            findExistingOrAddNewEACHistory(FixedDataDateMonthEnd, ForecastSummary, bluePrintsEntitiesUnitOfWork);
+            findExistingOrAddNewEACHistory(FixedDataDateMonthEnd, ForecastSummary, bluePrintsUnitOfWork);
 
             LoadingScreenManager.CloseLoadingScreen();
             LoadingScreenManager.ShowLoadingScreen(1);
             LoadingScreenManager.SetMessage("Saving changes...");
-            bluePrintsEntitiesUnitOfWork.SaveChanges();
+            bluePrintsUnitOfWork.SaveChanges();
             LoadingScreenManager.CloseLoadingScreen();
             MessageBoxService.ShowMessage("EAC for data date: " + FixedDataDateMonthEnd.ToString(BluePrintsResources.ColumnDateFormat) + " is saved\nData date will be changed to next month after closing this dialog", "EAC Saved", MessageButton.OK, MessageIcon.Information);
             FixedDataDate = FixedDataDateMonthEnd.AddMonths(1);
@@ -2611,7 +2610,7 @@ namespace BluePrints.ViewModels
 
         private void findExistingOrAddNewEACHistory(DateTime forecastDate, ForecastSummary entity, IBluePrintsEntitiesUnitOfWork bluePrintsEntitiesUnitOfWork)
         {
-            FORECAST_HISTORY forecast_history = FORECAST_HISTORYCollection.FirstOrDefault(x => x.EAC_DATE == forecastDate);
+            FORECAST_HISTORY forecast_history = bluePrintsEntitiesUnitOfWork.FORECAST_HISTORIES.FirstOrDefault(x => x.EAC_DATE == forecastDate && x.GUID_PROJECT == LoadPROJECT.GUID);
 
             if (forecast_history == null)
             {
@@ -2621,11 +2620,14 @@ namespace BluePrints.ViewModels
 
             forecast_history.ORIGINAL_REVENUE = entity.Original_Revenue;
             forecast_history.APPROVED_VARIATION = entity.Approved_Var_Revenue;
+            forecast_history.ORIGINAL_COSTS = entity.Budget_Cost;
             forecast_history.UNAPPROVED_VARIATION = entity.Unapproved_Var_Revenue;
             forecast_history.TOTAL_UNAPPROVED_VARIATION = entity.Total_Unapproved_Var_Revenue;
             forecast_history.TOTAL_EAC = entity.EstimateAtCompletion;
             forecast_history.EAC_DATE = forecastDate;
             forecast_history.GUID_PROJECT = LoadPROJECT.GUID;
+            forecast_history.CONTINGENCY = entity.Contingency;
+            forecast_history.CASHFLOW = entity.UnderOverClaim;
             forecast_history.CREATED = DateTime.Now;
             forecast_history.CREATEDBY = LoginCredentials.CurrentUserGuid;
 
