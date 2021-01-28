@@ -51,9 +51,9 @@ namespace BluePrints.Common.ViewModel.Converters
                                 totalCosts = Math.Round(totalCosts);
                                 decimal currentValue = (decimal)values[2];
 
+                                currentValue = Math.Round(currentValue);
                                 if (totalCosts != 0)
                                 {
-                                    currentValue = Math.Round(currentValue);
                                     if (currentValue > totalCosts)
                                         return new System.Windows.Media.SolidColorBrush(Colors.Chartreuse);
                                     else if (currentValue < totalCosts)
@@ -61,6 +61,9 @@ namespace BluePrints.Common.ViewModel.Converters
                                 }
                                 else if (currentValue > 0)
                                     return new System.Windows.Media.SolidColorBrush(Colors.Chartreuse);
+                                else if(p6RemainingCosts != 0 && currentValue == 0)
+                                    return new System.Windows.Media.SolidColorBrush(Colors.Yellow);
+
                             }
                         }
                     }
