@@ -66,9 +66,9 @@ namespace BluePrints.Common.ViewModel.Converters
                                 if (associatedCosts != string.Empty)
                                     associatedCosts = associatedCosts.Substring(0, associatedCosts.Length - 1);
 
+                                currentValue = Math.Round(currentValue);
                                 if (totalCosts != 0)
                                 {
-                                    currentValue = Math.Round(currentValue);
                                     if (currentValue > totalCosts)
                                         return "Color is green because edited cell value is higher than the cost of " + associatedCosts;
                                     else if (currentValue < totalCosts)
@@ -81,6 +81,8 @@ namespace BluePrints.Common.ViewModel.Converters
                                 }
                                 else if (currentValue > 0)
                                     return "Color is green to indicate that this cell has been edited";
+                                else if (p6RemainingCosts != 0 && currentValue == 0)
+                                    return "Color is yellow to indicate that this cell have P6 hours but no costs";
                             }
                         }
                     }
