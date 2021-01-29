@@ -318,6 +318,11 @@ namespace BluePrints.BluePrintsEntitiesDataModel
         IRepository<REGISTER_NC, Guid> REGISTER_NC { get; }
 
         /// <summary>
+        /// The REGISTER_TQ entities repository.
+        /// </summary>
+        IRepository<REGISTER_TQ, Guid> REGISTER_TQ { get; }
+
+        /// <summary>
         /// The REGISTER entities repository.
         /// </summary>
         IRepository<REGISTER, Guid> REGISTERS { get; }

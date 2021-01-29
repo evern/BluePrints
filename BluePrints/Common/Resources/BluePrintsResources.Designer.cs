@@ -835,6 +835,15 @@ namespace BluePrints.Common.Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to -TQ-.
+        /// </summary>
+        internal static string Register_TQ_Suffix {
+            get {
+                return ResourceManager.GetString("Register_TQ_Suffix", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to p4y57zcvp.
         /// </summary>
         internal static string SecurityKey {

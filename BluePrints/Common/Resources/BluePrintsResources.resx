@@ -393,4 +393,7 @@
   <data name="TrueConversionString" xml:space="preserve">
     <value>Yes</value>
   </data>
+  <data name="Register_TQ_Suffix" xml:space="preserve">
+    <value>-TQ-</value>
+  </data>
 </root>
