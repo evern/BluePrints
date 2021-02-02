@@ -861,9 +861,37 @@ namespace BluePrints.ViewModels
                         {
                             decimal maximumReducibleUnits = -1 * (deliverable.Total_Units - deliverable.Earned_Units_Total);
                             if (deliverable.DisplayVariationUnits < maximumReducibleUnits)
-                                variationUnits = maximumReducibleUnits;
+                            {
+                                decimal totalUnitsToReduce = -1 * deliverable.DisplayVariationUnits;
+                                //code to reduce latest earned units
+                                IQueryable<PROGRESS_ITEM> deliverablePROGRESSES = bluePrintsUnitOfWork.PROGRESS_ITEMS.Where(x => x.GUID_ORIBASEITEM == deliverable.OriginalEntityKey).OrderByDescending(x => x.EARNED_DATE);
+                                foreach(PROGRESS_ITEM deliverablePROGRESS in deliverablePROGRESSES)
+                                {
+                                    if (totalUnitsToReduce > 0)
+                                    {
+                                        if (deliverablePROGRESS.EARNED_UNITS >= totalUnitsToReduce)
+                                        {
+                                            deliverablePROGRESS.EARNED_UNITS -= totalUnitsToReduce;
+                                            totalUnitsToReduce = 0;
+                                        }
+                                        else
+                                        {
+                                            totalUnitsToReduce -= deliverablePROGRESS.EARNED_UNITS;
+                                            deliverablePROGRESS.EARNED_UNITS = 0;
+                                        }
+                                    }
+                                    else
+                                        break;
+                                }
+
+                                bluePrintsUnitOfWork.SaveChanges();
+                                //variationUnits = maximumReducibleUnits;
+                                variationUnits = deliverable.DisplayVariationUnits;
+                            }
                             else
                                 variationUnits = deliverable.DisplayVariationUnits;
+
+                            
                         }
                         else
                             variationUnits = deliverable.DisplayVariationUnits;
@@ -913,7 +941,7 @@ namespace BluePrints.ViewModels
                 }
 
                 //if its purely a scan to determine variation
-                if (SelectedEntity.Entity.TYPE == VariationType.External && (deliverable.DisplayVariationAction == VariationAction.Add || (deliverable.DisplayVariationAction == VariationAction.Append && deliverable.DisplayVariationUnits > 0)) && variationCode != string.Empty)
+                if (SelectedEntity.Entity.TYPE == VariationType.External && (deliverable.DisplayVariationAction == VariationAction.Add || (deliverable.DisplayVariationAction == VariationAction.Append)) && variationCode != string.Empty)
                 {
                     string subJobCode = deliverable.Subjob_Name;
                     string disciplineCode = deliverable.Discipline_Code;

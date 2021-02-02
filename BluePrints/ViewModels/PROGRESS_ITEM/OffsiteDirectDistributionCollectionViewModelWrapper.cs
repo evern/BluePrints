@@ -672,7 +672,6 @@ namespace BluePrints.ViewModels
                         return;
                     }
 
-
                     //The addition of removal of units from current data date needs to be balanced by progress in the future, starting from the next progress
                     totalUnitsDifferences = totalUnitsDifferences * -1;
                     for (int i = 0; i < futureProgressToEdit.Count; i++)
