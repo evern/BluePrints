@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?>
+﻿<?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="12.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
   <PropertyGroup>
@@ -601,6 +601,7 @@
     <Compile Include="Common\Misc\Messages.cs" />
     <Compile Include="Common\Misc\ProjectUnitOfWorkContext.cs" />
     <Compile Include="Common\Misc\RiskMatrix.cs" />
+    <Compile Include="Common\Misc\VariationApprovalAction.cs" />
     <Compile Include="Common\Projections\BASELINE_ITEMProgress.cs" />
     <Compile Include="Common\Projections\BUDGET_ITEMProjection.cs" />
     <Compile Include="Common\Projections\DesignTimesheet.cs" />
@@ -799,6 +800,7 @@
     <Compile Include="Common\ViewModel\GanttChart\GanttCanvas.cs" />
     <Compile Include="Common\ViewModel\GanttChart\P6_Activity.cs" />
     <Compile Include="Common\ViewModel\Misc\CodesValidationModel.cs" />
+    <Compile Include="Common\ViewModel\Misc\VariationApprovalViewModel.cs" />
     <Compile Include="Common\ViewModel\Misc\TenderProfileItemEditModel.cs" />
     <Compile Include="Common\ViewModel\Misc\TenderProfileItemEditConfirmationViewModel.cs" />
     <Compile Include="Common\ViewModel\Misc\DeliverableEditConfirmationViewModel.cs" />
@@ -819,6 +821,9 @@
     </Compile>
     <Compile Include="Common\View\BookTimeDialog.xaml.cs">
       <DependentUpon>BookTimeDialog.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Common\View\ListVariationApprovalAction.xaml.cs">
+      <DependentUpon>ListVariationApprovalAction.xaml</DependentUpon>
     </Compile>
     <Compile Include="Common\View\TenderProfileItemEditConfirmation.xaml.cs">
       <DependentUpon>TenderProfileItemEditConfirmation.xaml</DependentUpon>
@@ -1997,6 +2002,10 @@
       <SubType>Designer</SubType>
     </Page>
     <Page Include="Common\View\BookTimeDialog.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Common\View\ListVariationApprovalAction.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>

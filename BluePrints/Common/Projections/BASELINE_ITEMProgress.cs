@@ -143,10 +143,13 @@ namespace BluePrints.Common.Projections
 
                 if (base.PROGRESS_ITEM_BeforeDataDate == null || Total_Units == 0)
                     return 0;
-                if (base.PROGRESS_ITEM_Current == null)
-                    return -1 * Total_Units;
                 else
-                    return -1 * (Total_Units - base.Earned_Units_ToDate);
+                    return -1 * Total_Units;
+                //restrict max negative value to account for total earned
+                //if (base.PROGRESS_ITEM_Current == null)
+                //    return -1 * Total_Units;
+                //else
+                //    return -1 * (Total_Units - base.Earned_Units_ToDate);
             }
         }
 

@@ -1615,6 +1615,43 @@ namespace BluePrints.Common.ViewModel.Utils
                 workpack.NAME = string.Empty;
         }
 
+        public static void CreateProgressBackup(PROGRESS selectedPROGRESS)
+        {
+            IUnitOfWorkFactory<IBluePrintsEntitiesUnitOfWork> bluePrintsUnitOfWorkFactory = BluePrintsEntitiesUnitOfWorkSource.GetUnitOfWorkFactory();
+            IBluePrintsEntitiesUnitOfWork bluePrintsUOW = bluePrintsUnitOfWorkFactory.CreateUnitOfWork();
+
+            if (selectedPROGRESS == null)
+                return;
+
+            PROGRESS backupPROGRESS = new PROGRESS();
+            DataUtils.ShallowCopy(backupPROGRESS, selectedPROGRESS);
+            backupPROGRESS.GUID = Guid.Empty;
+            backupPROGRESS.NAME = "BACKUP " + DateTime.Now.ToShortDateString() + " - " + DateTime.Now.ToShortTimeString();
+            backupPROGRESS.STATUS = ProgressStatus.Superseded;
+            bluePrintsUOW.PROGRESSES.Add(backupPROGRESS);
+            //need to save progress to get GUID
+            bluePrintsUOW.SaveChanges();
+
+            LoadingScreenManager.ShowLoadingScreen(selectedPROGRESS.PROGRESS_ITEM.Count());
+            decimal totalBackupUnits = 0;
+            if (selectedPROGRESS.PROGRESS_ITEM != null)
+                foreach (PROGRESS_ITEM progress_item in selectedPROGRESS.PROGRESS_ITEM)
+                {
+                    totalBackupUnits += progress_item.EARNED_UNITS;
+                    LoadingScreenManager.SetMessage("Total Backed Up Units: " + totalBackupUnits);
+
+                    PROGRESS_ITEM newPROGRESS_ITEM = new PROGRESS_ITEM();
+                    DataUtils.ShallowCopy(newPROGRESS_ITEM, progress_item);
+                    newPROGRESS_ITEM.GUID = Guid.Empty;
+                    newPROGRESS_ITEM.GUID_PROGRESS = backupPROGRESS.GUID;
+                    bluePrintsUOW.PROGRESS_ITEMS.Add(newPROGRESS_ITEM);
+                    LoadingScreenManager.Progress();
+                }
+
+            bluePrintsUOW.SaveChanges();
+            LoadingScreenManager.CloseLoadingScreen();
+        }
+
         /// <summary>
         /// Searches rate cascadingly for IRATE interface
         /// </summary>

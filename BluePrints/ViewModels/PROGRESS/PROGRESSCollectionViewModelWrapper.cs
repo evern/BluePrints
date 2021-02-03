@@ -100,9 +100,9 @@ namespace BluePrints.ViewModels
         public override void UnifiedCellValueChanged(string field_name, object old_value, object new_value, PROGRESS projection, bool isNew)
         {
             //always save data date as end of day
-            if(field_name == BindableBase.GetPropertyName(() => new PROGRESS().DATA_DATE))
+            if (field_name == BindableBase.GetPropertyName(() => new PROGRESS().DATA_DATE))
             {
-                if(new_value != null)
+                if (new_value != null)
                 {
                     DateTime dataDate = (DateTime)new_value;
                     projection.DATA_DATE = dataDate.Date.AddDays(1).AddSeconds(-1);
@@ -277,12 +277,12 @@ namespace BluePrints.ViewModels
             }
             else if (field_name == BindableBase.GetPropertyName(() => new PROGRESS().DATA_DATE) && new_value != null)
             {
-                if(projection.PROGRESS_ITEM != null && projection.PROGRESS_ITEM.Count > 0)
+                if (projection.PROGRESS_ITEM != null && projection.PROGRESS_ITEM.Count > 0)
                 {
                     DateTime newDateTime = (DateTime)new_value;
                     DateTime currentDateTime = projection.DATA_DATE;
 
-                    if(newDateTime.DayOfWeek != currentDateTime.DayOfWeek)
+                    if (newDateTime.DayOfWeek != currentDateTime.DayOfWeek)
                     {
                         UICommand backwardCommand = new UICommand()
                         {

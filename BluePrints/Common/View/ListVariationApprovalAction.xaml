@@ -1,0 +1,72 @@
+﻿<UserControl
+    x:Name="userControl"
+    x:Class="BluePrints.Views.ListVariationApprovalAction"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:dx="http://schemas.devexpress.com/winfx/2008/xaml/core"
+    xmlns:dxlc="http://schemas.devexpress.com/winfx/2008/xaml/layoutcontrol"
+    xmlns:dxe="http://schemas.devexpress.com/winfx/2008/xaml/editors"
+    xmlns:dxg="http://schemas.devexpress.com/winfx/2008/xaml/grid"
+    xmlns:dxmvvm="http://schemas.devexpress.com/winfx/2008/xaml/mvvm" 
+    xmlns:services="clr-namespace:BaseModel.ViewModel.Services;assembly=BaseModel"
+    xmlns:dxr="http://schemas.devexpress.com/winfx/2008/xaml/ribbon" 
+    xmlns:dxb="http://schemas.devexpress.com/winfx/2008/xaml/bars" 
+    xmlns:custom="clr-namespace:BaseModel.Misc;assembly=BaseModel" Width="1000" Height="600">
+    <dxlc:LayoutControl Orientation="Vertical">
+        <dxmvvm:Interaction.Behaviors>
+            <services:TableViewService x:Name="DefaultTableViewService" TableView="{Binding ElementName=tableView}" />
+            <dxmvvm:FolderBrowserDialogService Description="Choose Folder" RestorePreviouslySelectedDirectory="True" RootFolder="Desktop" ShowNewFolderButton="True" />
+        </dxmvvm:Interaction.Behaviors>
+        <dxlc:LayoutGroup Name="LayoutGroupContent" Height="500" Orientation="Vertical" View="Group">
+            <dxlc:LayoutItem HorizontalAlignment="Center" Height="50">
+                <Button Command="{Binding ExportToExcelCommand}" ToolTip="Export current view to excel. Includes grouping, sorting and column visibility preferences">
+                    <StackPanel Orientation="Horizontal">
+                        <Image Source="{dx:DXImage Image=ExportToXLSX_16x16.png}" Width="16" Height="16" Margin="0, 0, 3, 0" />
+                        <TextBlock Text="Export" VerticalAlignment="Center" />
+                    </StackPanel>
+                </Button>
+            </dxlc:LayoutItem>
+            <dxlc:LayoutItem Height="50">
+                <TextBlock TextWrapping="Wrap" Text="These deliverable have negative variation units more than earned, please select whether to erode earned or reduce by best effort, a backup of progress will be automatically taken" />
+            </dxlc:LayoutItem>
+            <dxlc:LayoutItem Height="400">
+                <dxg:GridControl x:Name="GridControl" dx:DXSerializer.SerializationID="GridControlList" dx:DXSerializer.StoreLayoutMode="All" ItemsSource="{Binding SourceObjects}" SelectionMode="Row">
+                    <dxg:GridControl.Columns>
+                        <dxg:GridColumn FieldName="Deliverable.Deliverable_Name" Header="Internal Name" FixedWidth="True" Width="250" ReadOnly="True" />
+                        <dxg:GridColumn FieldName="Deliverable.Total_Units" Header="Total Units" AllowBestFit="false" ReadOnly="True" Width="60" HeaderToolTip="Budget + Other Variations">
+                            <dxg:GridColumn.EditSettings>
+                                <dxe:SpinEditSettings Increment="1" IsFloatValue="False" IsTextEditable="True" Mask="n0" MaskType="Numeric" MaskUseAsDisplayFormat="True" MaxValue="99" MinValue="1" />
+                            </dxg:GridColumn.EditSettings>
+                        </dxg:GridColumn>
+                        <dxg:GridColumn FieldName="Deliverable.Earned_Units_Total" Header="Earned Units" AllowBestFit="false" ReadOnly="True" Width="60" HeaderToolTip="Earned units from progress">
+                            <dxg:GridColumn.EditSettings>
+                                <dxe:SpinEditSettings Increment="1" IsFloatValue="False" IsTextEditable="True" Mask="n0" MaskType="Numeric" MaskUseAsDisplayFormat="True" MaxValue="99" MinValue="1" />
+                            </dxg:GridColumn.EditSettings>
+                        </dxg:GridColumn>
+                        <dxg:GridColumn FieldName="MaximumReducibleUnits" Header="Maximum Reducible" AllowBestFit="false" ReadOnly="True" Width="60" HeaderToolTip="Maximum reducible units before earned is eroded">
+                            <dxg:GridColumn.EditSettings>
+                                <dxe:SpinEditSettings Increment="1" IsFloatValue="False" IsTextEditable="True" Mask="n0" MaskType="Numeric" MaskUseAsDisplayFormat="True" MaxValue="99" MinValue="1" />
+                            </dxg:GridColumn.EditSettings>
+                        </dxg:GridColumn>
+                        <dxg:GridColumn FieldName="Deliverable.DisplayVariationUnits" Header="Variation Reduction" AllowBestFit="false" ReadOnly="True" Width="60" HeaderToolTip="To be reduced units from variation">
+                            <dxg:GridColumn.EditSettings>
+                                <dxe:SpinEditSettings Increment="1" IsFloatValue="False" IsTextEditable="True" Mask="n0" MaskType="Numeric" MaskUseAsDisplayFormat="True" MaxValue="99" MinValue="1" />
+                            </dxg:GridColumn.EditSettings>
+                        </dxg:GridColumn>
+                        <dxg:GridColumn FieldName="ReduceEarned" Header="Variation Reduction" AllowBestFit="false" ReadOnly="True" Width="60" HeaderToolTip="If this is false, variation reduction units will be set as maximum reducible units, else earned will be reduced from latest date onwards">
+                            <dxg:GridColumn.EditSettings>
+                                <dxe:CheckEditSettings />
+                            </dxg:GridColumn.EditSettings>
+                        </dxg:GridColumn>
+                    </dxg:GridControl.Columns>
+                    <dxg:GridControl.TotalSummary>
+                        <dxg:GridSummaryItem dx:DXSerializer.Enabled="False" Alignment="Right" SummaryType="Count" />
+                    </dxg:GridControl.TotalSummary>
+                    <dxg:GridControl.View>
+                        <dxg:TableView x:Name="tableView" ShowFixedTotalSummary="True" AutoWidth="True" ShowGroupPanel="False" ShowGroupedColumns="False" />
+                    </dxg:GridControl.View>
+                </dxg:GridControl>
+            </dxlc:LayoutItem>
+        </dxlc:LayoutGroup>
+    </dxlc:LayoutControl>
+</UserControl>

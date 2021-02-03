@@ -9,8 +9,10 @@ using BaseModel.ViewModel.Loader;
 using BluePrints.BluePrintsEntitiesDataModel;
 using BluePrints.Common;
 using BluePrints.Common.Base;
+using BluePrints.Common.Misc;
 using BluePrints.Common.Projections;
 using BluePrints.Common.Resources;
+using BluePrints.Common.ViewModel;
 using BluePrints.Common.ViewModel.Misc;
 using BluePrints.Common.ViewModel.Reporting;
 using BluePrints.Data;
@@ -754,6 +756,78 @@ namespace BluePrints.ViewModels
             where TBaseline : class, IAmBaseline, new()
             where TEntity : class, IDeliverable, ISupportVariationRevision, new()
         {
+            IBluePrintsEntitiesUnitOfWork bluePrintsUnitOfWork = bluePrintsUnitOfWorkFactory.CreateUnitOfWork();
+            List<VariationApprovalAction<TEntity>> approvalActions = new List<VariationApprovalAction<TEntity>>();
+
+            //run through deliverables first to check for reduction in units more than earned
+            foreach (var deliverable in deliverables)
+            {
+                if (deliverable.DisplayVariationAction == VariationAction.Append)
+                {
+                    if (deliverable.DisplayVariationUnits < 0)
+                    {
+                        decimal maximumReducibleUnits = -1 * (deliverable.Total_Units - deliverable.Earned_Units_Total);
+                        if (deliverable.DisplayVariationUnits < maximumReducibleUnits)
+                        {
+                            VariationApprovalAction<TEntity> deliverableAction = new VariationApprovalAction<TEntity>(deliverable);
+                            approvalActions.Add(deliverableAction);
+                        }
+                    }
+                }
+            }
+
+
+            if (approvalActions.Count > 0)
+            {
+                VariationApprovalViewModel<TEntity> viewModel = VariationApprovalViewModel<TEntity>.CreateViewModel(approvalActions);
+                if (ErrorMessagesDialogService.ShowDialog(MessageButton.OKCancel, string.Empty, "ListVariationApprovalAction", viewModel) == MessageResult.OK)
+                {
+                    foreach (VariationApprovalAction<TEntity> approvalAction in approvalActions)
+                    {
+                        if(approvalAction.ReduceEarned)
+                        {
+                            decimal totalUnitsToReduce = -1 * approvalAction.Deliverable.DisplayVariationUnits;
+                            //code to reduce latest earned units
+                            IQueryable<PROGRESS_ITEM> deliverablePROGRESSES = bluePrintsUnitOfWork.PROGRESS_ITEMS.Where(x => x.PROGRESS.STATUS == ProgressStatus.Live).Where(x => x.GUID_ORIBASEITEM == approvalAction.Deliverable.OriginalEntityKey).OrderByDescending(x => x.EARNED_DATE);
+                            foreach (PROGRESS_ITEM deliverablePROGRESS in deliverablePROGRESSES)
+                            {
+                                if (totalUnitsToReduce > 0)
+                                {
+                                    if (deliverablePROGRESS.EARNED_UNITS >= totalUnitsToReduce)
+                                    {
+                                        deliverablePROGRESS.EARNED_UNITS -= totalUnitsToReduce;
+                                        totalUnitsToReduce = 0;
+                                    }
+                                    else
+                                    {
+                                        totalUnitsToReduce -= deliverablePROGRESS.EARNED_UNITS;
+                                        deliverablePROGRESS.EARNED_UNITS = 0;
+                                    }
+                                }
+                                else
+                                    break;
+                            }
+
+                            bluePrintsUnitOfWork.SaveChanges();
+                        }
+                        else
+                        {
+                            approvalAction.Deliverable.DisplayVariationUnits = approvalAction.MaximumReducibleUnits;
+                        }
+                    }
+                }
+                else
+                {
+                    isSubmitting = false;
+                    isApproving = false;
+                    this.RaisePropertyChanged(x => IsBusy);
+                    this.RaisePropertyChanged(x => IsSubmitted);
+                    this.RaisePropertyChanged(x => IsApproved);
+                    LoadingScreenManager.CloseLoadingScreen();
+                    return;
+                }
+            }
+
             string variationCode = SelectedEntity.Entity.NAME;
             TBaseline revisedBaseline = null;
             //only revise baseline if variation is approved, this method can be called from submitted which creates a new variation with IsCreateExoVariation == true
@@ -782,7 +856,6 @@ namespace BluePrints.ViewModels
 
             LoadingScreenManager.ShowLoadingScreen(deliverables.Count());
             List<ExoSubJobProjection> exoVariations = new List<ExoSubJobProjection>();
-            IBluePrintsEntitiesUnitOfWork bluePrintsUnitOfWork = bluePrintsUnitOfWorkFactory.CreateUnitOfWork();
 
             List<ErrorMessage> errorMessages = new List<ErrorMessage>();
             foreach (var deliverable in deliverables)
@@ -833,7 +906,6 @@ namespace BluePrints.ViewModels
 
                         Messenger.Default.Send(new EntityMessage<BASELINE_ITEM, Guid>(removeDeliverable.GUID, MainViewModel.Key, EntityMessageType.Deleted, this, CurrentHWID, false));
                         bluePrintsUnitOfWork.BASELINE_ITEMS.Remove(removeDeliverable);
-                            
                         bluePrintsUnitOfWork.SaveChanges();
                     }
                 }
@@ -861,42 +933,13 @@ namespace BluePrints.ViewModels
                         {
                             decimal maximumReducibleUnits = -1 * (deliverable.Total_Units - deliverable.Earned_Units_Total);
                             if (deliverable.DisplayVariationUnits < maximumReducibleUnits)
-                            {
-                                decimal totalUnitsToReduce = -1 * deliverable.DisplayVariationUnits;
-                                //code to reduce latest earned units
-                                IQueryable<PROGRESS_ITEM> deliverablePROGRESSES = bluePrintsUnitOfWork.PROGRESS_ITEMS.Where(x => x.GUID_ORIBASEITEM == deliverable.OriginalEntityKey).OrderByDescending(x => x.EARNED_DATE);
-                                foreach(PROGRESS_ITEM deliverablePROGRESS in deliverablePROGRESSES)
-                                {
-                                    if (totalUnitsToReduce > 0)
-                                    {
-                                        if (deliverablePROGRESS.EARNED_UNITS >= totalUnitsToReduce)
-                                        {
-                                            deliverablePROGRESS.EARNED_UNITS -= totalUnitsToReduce;
-                                            totalUnitsToReduce = 0;
-                                        }
-                                        else
-                                        {
-                                            totalUnitsToReduce -= deliverablePROGRESS.EARNED_UNITS;
-                                            deliverablePROGRESS.EARNED_UNITS = 0;
-                                        }
-                                    }
-                                    else
-                                        break;
-                                }
-
-                                bluePrintsUnitOfWork.SaveChanges();
-                                //variationUnits = maximumReducibleUnits;
-                                variationUnits = deliverable.DisplayVariationUnits;
-                            }
+                                variationUnits = maximumReducibleUnits;
                             else
                                 variationUnits = deliverable.DisplayVariationUnits;
-
-                            
                         }
                         else
                             variationUnits = deliverable.DisplayVariationUnits;
 
-                        //copyDeliverable = new TEntity();
                     }
                     else if (deliverable.DisplayVariationAction == VariationAction.Add)
                     {
