@@ -18,6 +18,7 @@ namespace BluePrints.Data
         public PROGRESS()
         {
             PROGRESS_ITEM = new HashSet<PROGRESS_ITEM>();
+            PROGRESS_ETC = new HashSet<PROGRESS_ETC>();
             PROGRESS_START = DateTime.Now;
             DATA_DATE = DateTime.Now;
             INTERVAL_COUNT = 1;

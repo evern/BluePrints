@@ -1,6 +1,7 @@
 ﻿using BaseModel.Data.Helpers;
 using BaseModel.DataModel;
 using BaseModel.Misc;
+using BaseModel.ViewModel.Base;
 using BaseModel.ViewModel.Dialogs;
 using BaseModel.ViewModel.Document;
 using BaseModel.ViewModel.Loader;
@@ -67,12 +68,18 @@ namespace BluePrints.ViewModels
         protected override void addEntitiesLoader()
         {
             loaderCollection.AddLoaderDescription(bluePrintsUnitOfWorkFactory, x => x.PROJECTS, PROJECTProjectionFunc, x => loadPROJECT = x);
+            loaderCollection.AddLoaderDescription(bluePrintsUnitOfWorkFactory, x => x.PROGRESS_ITEMS, PROGRESS_ITEMProjectionFunc);
             loaderCollection.AddLoaderDescription(p6UnitOfWorkFactory, x => x.PROJWBS, P6PROJECTProjectionFunc);
         }
 
         private Func<IRepositoryQuery<PROJECT>, IQueryable<PROJECT>> PROJECTProjectionFunc()
         {
             return query => query.Where(x => x.GUID == loadPROJECT.GUID);
+        }
+
+        private Func<IRepositoryQuery<PROGRESS_ITEM>, IQueryable<PROGRESS_ITEM>> PROGRESS_ITEMProjectionFunc()
+        {
+            return query => query.Where(x => x.PROGRESS.GUID_PROJECT == loadPROJECT.GUID);
         }
 
         private Func<IRepositoryQuery<PROJWBS>, IQueryable<PROJWBS>> P6PROJECTProjectionFunc()
@@ -90,13 +97,53 @@ namespace BluePrints.ViewModels
             return query => query.Where(x => x.GUID_PROJECT == loadPROJECT.GUID);
         }
 
+        List<Guid> deleteGuids = new List<Guid>();
         protected override void AssignCallBacksAndRaisePropertyChange(IEnumerable<PROGRESS> entities)
         {
             MainViewModel.SetParentViewModel(this);
             base.AssignCallBacksAndRaisePropertyChange(entities);
         }
 
+        //have to resort to this due to EF error
+        //to reproduce the error remove this convention and make a backup of a progress, then edit any field, then delete
+        //somehow TreeCreated on softdeleteinterceptor is not triggered
+        //the error is: The relationship could not be changed because one or more of the foreign-key properties is non-nullable
+        protected override void OnAfterAssignedCallbackAndRaisePropertyChanged()
+        {
+            if (deleteGuids.Count() > 0)
+            {
+                foreach (Guid deleteGuid in deleteGuids)
+                {
+                    PROGRESS findPROGRESS = MainViewModel.Entities.FirstOrDefault(x => x.GUID == deleteGuid);
+                    if (findPROGRESS != null)
+                        MainViewModel.Delete(findPROGRESS);
+                }
+
+                deleteGuids.Clear();
+            }
+
+            base.OnAfterAssignedCallbackAndRaisePropertyChanged();
+        }
+
         #region Collection Call Backs
+        public override void BulkDelete()
+        {
+            if (MessageBoxService.ShowMessage("Are you sure you want to delete " + SelectedEntities.Count + " selected entries?", "Confirmation", MessageButton.OKCancel) == MessageResult.Cancel)
+                return;
+
+            foreach (PROGRESS projection in SelectedEntities)
+            {
+                deleteGuids.Add(projection.GUID);
+            }
+
+            FullRefresh();
+        }
+
+        protected override void OnBeforeProjectionsDelete(IEnumerable<PROGRESS> projections)
+        {
+            base.OnBeforeProjectionsDelete(projections);
+        }
+
         public override void UnifiedCellValueChanged(string field_name, object old_value, object new_value, PROGRESS projection, bool isNew)
         {
             //always save data date as end of day
@@ -194,25 +241,32 @@ namespace BluePrints.ViewModels
             //need to save progress to get GUID
             bluePrintsUOW.SaveChanges();
 
-            LoadingScreenManager.ShowLoadingScreen(selectedPROGRESS.PROGRESS_ITEM.Count());
             decimal totalBackupUnits = 0;
             if (selectedPROGRESS.PROGRESS_ITEM != null)
+            {
                 foreach (PROGRESS_ITEM progress_item in selectedPROGRESS.PROGRESS_ITEM)
                 {
-                    totalBackupUnits += progress_item.EARNED_UNITS;
-                    LoadingScreenManager.SetMessage("Total Backed Up Units: " + totalBackupUnits);
-
                     PROGRESS_ITEM newPROGRESS_ITEM = new PROGRESS_ITEM();
                     DataUtils.ShallowCopy(newPROGRESS_ITEM, progress_item);
                     newPROGRESS_ITEM.GUID = Guid.Empty;
                     newPROGRESS_ITEM.GUID_PROGRESS = backupPROGRESS.GUID;
                     bluePrintsUOW.PROGRESS_ITEMS.Add(newPROGRESS_ITEM);
-                    LoadingScreenManager.Progress();
                 }
+            }
+
+            if (selectedPROGRESS.PROGRESS_ETC != null)
+            {
+                foreach (PROGRESS_ETC progressETC in selectedPROGRESS.PROGRESS_ETC)
+                {
+                    PROGRESS_ETC newPROGRESS_ETC = new PROGRESS_ETC();
+                    DataUtils.ShallowCopy(newPROGRESS_ETC, progressETC);
+                    newPROGRESS_ETC.GUID = Guid.Empty;
+                    newPROGRESS_ETC.GUID_PROGRESS = backupPROGRESS.GUID;
+                    bluePrintsUOW.PROGRESS_ETCS.Add(newPROGRESS_ETC);
+                }
+            }
 
             bluePrintsUOW.SaveChanges();
-            LoadingScreenManager.CloseLoadingScreen();
-
             FullRefresh();
         }
 
@@ -381,6 +435,17 @@ namespace BluePrints.ViewModels
         private DevExpress.Mvvm.IDialogService EarnedDataDateRealignmentDialogService
         {
             get { return this.GetRequiredService<DevExpress.Mvvm.IDialogService>("EarnedDataDateRealignmentDialogService"); }
+        }
+
+        public CollectionViewModel<PROGRESS_ITEM, PROGRESS_ITEM, Guid, IBluePrintsEntitiesUnitOfWork> PROGRESS_ITEMCollectionViewModel
+        {
+            get
+            {
+                if (MainViewModel == null)
+                    return null;
+
+                return (CollectionViewModel<PROGRESS_ITEM, PROGRESS_ITEM, Guid, IBluePrintsEntitiesUnitOfWork>)loaderCollection.GetViewModel<PROGRESS_ITEM>();
+            }
         }
         #endregion
     }

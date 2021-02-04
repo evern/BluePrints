@@ -7,11 +7,6 @@ namespace BluePrints.Data
 
     public partial class PROGRESS_ETC : EntityBase, IGuidEntityKey, ICanSync, IHaveCreatedDate
     {
-        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2214:DoNotCallOverridableMethodsInConstructors")]
-        public PROGRESS_ETC()
-        {
-        }
-
         [NotMapped]
         public DateTime EntityCreatedDate
         {
