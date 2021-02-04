@@ -899,6 +899,16 @@ namespace BluePrints.Common.ViewModel.Reporting
 
         public decimal Budget_Adjustment_Costs => Budget_Adjustment_Units * Entity.Budget_ItemRate;
 
+        public decimal Budget_Adjustment_Internal_Costs => Budget_Adjustment_Units * Budget_ItemInternalRate;
+
+        public decimal Budget_ItemInternalRate => Entity.Budget_ItemInternalRate;
+
+        public decimal Budget_InternalCost => Entity.Budget_InternalCost;
+
+        public decimal Variation_InternalCosts => Variation_Units * Budget_ItemInternalRate;
+
+        public decimal Total_InternalCosts => Budget_InternalCost + Variation_InternalCosts + Budget_Adjustment_Internal_Costs;
+
         public string Discipline_Code => Entity.Discipline_Code;
 
         public string Deliverable_Name => Entity.Deliverable_Name;
@@ -913,7 +923,7 @@ namespace BluePrints.Common.ViewModel.Reporting
 
         public decimal Variation_Costs => Variation_Units * Entity.Budget_ItemRate;
 
-        public decimal Total_Costs => Budget_Costs + Variation_Costs;
+        public decimal Total_Costs => Budget_Costs + Variation_Costs + Budget_Adjustment_Costs;
 
         public void SetProgressItems(List<PROGRESS_ITEM> progresses)
         {
@@ -1143,7 +1153,7 @@ namespace BluePrints.Common.ViewModel.Reporting
             }
         }
 
-        public decimal MinEstimateUnits => Earned_Units_Total > Unadjusted_Budget_Units ? Unadjusted_Budget_Units : Earned_Units_Total - Variation_Units < 0 ? 0 : Earned_Units_Total - Variation_Units;
+        public decimal MinEstimateUnits => Earned_Units_Total - Budget_Adjustment_Units - Variation_Units < 0 ? 0 : Earned_Units_Total - Budget_Adjustment_Units - Variation_Units;
 
         public decimal Unadjusted_Budget_Units => Entity.Budget_Units;
 
@@ -1188,14 +1198,6 @@ namespace BluePrints.Common.ViewModel.Reporting
         public decimal Total_Quantity => Entity.Total_Quantity;
 
         public string Project_Number => Entity.Project_Number;
-
-        public decimal Budget_ItemInternalRate => Entity.Budget_ItemInternalRate;
-
-        public decimal Budget_InternalCost => Entity.Budget_InternalCost;
-
-        public decimal Variation_InternalCosts => Variation_Units * Budget_ItemInternalRate;
-
-        public decimal Total_InternalCosts => Budget_InternalCost + Variation_InternalCosts;
     }
 
     public class DeliverableEarnedPercentages

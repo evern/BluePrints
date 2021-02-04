@@ -787,7 +787,7 @@ namespace BluePrints.ViewModels
             List<ErrorMessage> errorMessages = new List<ErrorMessage>();
             foreach (var deliverable in deliverables)
             {
-                if(variationStage == VariationStages.Unapprove)
+                if (variationStage == VariationStages.Unapprove)
                 {
                     //check whether unapproving current deliverable will cause it's total units to go below earned units
                     var earnedUnitsQuery = from PROGRESS_ITEM in bluePrintsUnitOfWork.PROGRESS_ITEMS
@@ -803,8 +803,8 @@ namespace BluePrints.ViewModels
                     //    errorMessages.Add(new ErrorMessage(deliverable.Deliverable_Name, "Cannot unapprove this item because reduced units (" + reducedUnits.ToString() + ") will be less than earned units (" + earnedUnits.ToString() + ")"));
                     //else
                     //{
-                        //remove deliverable only when none of the attached variations are associated with it
-                        //BASELINE_ITEM.GUID_VARIATION != null only finds deliverable's that was added through variation, so we don't touch any deliverable that weren't added through variation
+                    //remove deliverable only when none of the attached variations are associated with it
+                    //BASELINE_ITEM.GUID_VARIATION != null only finds deliverable's that was added through variation, so we don't touch any deliverable that weren't added through variation
                     var deliverableVariationQuery = from BASELINE_ITEM in bluePrintsUnitOfWork.BASELINE_ITEMS
                                                     join BASELINE in bluePrintsUnitOfWork.BASELINES
                                                     on BASELINE_ITEM.GUID_BASELINE equals BASELINE.GUID
@@ -833,13 +833,13 @@ namespace BluePrints.ViewModels
 
                         Messenger.Default.Send(new EntityMessage<BASELINE_ITEM, Guid>(removeDeliverable.GUID, MainViewModel.Key, EntityMessageType.Deleted, this, CurrentHWID, false));
                         bluePrintsUnitOfWork.BASELINE_ITEMS.Remove(removeDeliverable);
-                            
+
                         bluePrintsUnitOfWork.SaveChanges();
                     }
                 }
                 //}
                 //only revise when new baseline is created
-                else if(variationStage == VariationStages.Approve && revisedBaseline != null && revisedBaseline.GUID != Guid.Empty)
+                else if (variationStage == VariationStages.Approve && revisedBaseline != null && revisedBaseline.GUID != Guid.Empty)
                 {
                     VARIATION_ITEM updateVARIATION_ITEM = deliverable.VARIATION_ITEM;
                     decimal? variationUnits = null;
@@ -861,37 +861,9 @@ namespace BluePrints.ViewModels
                         {
                             decimal maximumReducibleUnits = -1 * (deliverable.Total_Units - deliverable.Earned_Units_Total);
                             if (deliverable.DisplayVariationUnits < maximumReducibleUnits)
-                            {
-                                decimal totalUnitsToReduce = -1 * deliverable.DisplayVariationUnits;
-                                //code to reduce latest earned units
-                                IQueryable<PROGRESS_ITEM> deliverablePROGRESSES = bluePrintsUnitOfWork.PROGRESS_ITEMS.Where(x => x.GUID_ORIBASEITEM == deliverable.OriginalEntityKey).OrderByDescending(x => x.EARNED_DATE);
-                                foreach(PROGRESS_ITEM deliverablePROGRESS in deliverablePROGRESSES)
-                                {
-                                    if (totalUnitsToReduce > 0)
-                                    {
-                                        if (deliverablePROGRESS.EARNED_UNITS >= totalUnitsToReduce)
-                                        {
-                                            deliverablePROGRESS.EARNED_UNITS -= totalUnitsToReduce;
-                                            totalUnitsToReduce = 0;
-                                        }
-                                        else
-                                        {
-                                            totalUnitsToReduce -= deliverablePROGRESS.EARNED_UNITS;
-                                            deliverablePROGRESS.EARNED_UNITS = 0;
-                                        }
-                                    }
-                                    else
-                                        break;
-                                }
-
-                                bluePrintsUnitOfWork.SaveChanges();
-                                //variationUnits = maximumReducibleUnits;
-                                variationUnits = deliverable.DisplayVariationUnits;
-                            }
+                                variationUnits = maximumReducibleUnits;
                             else
                                 variationUnits = deliverable.DisplayVariationUnits;
-
-                            
                         }
                         else
                             variationUnits = deliverable.DisplayVariationUnits;
@@ -933,7 +905,7 @@ namespace BluePrints.ViewModels
                     }
 
                     //Save variation units for future viewing
-                    if(variationUnits != null)
+                    if (variationUnits != null)
                     {
                         deliverable.VARIATION_ITEM.VARIATION_UNITS = (decimal)variationUnits;
                         VARIATION_ITEMSViewModel.Save(updateVARIATION_ITEM);
@@ -941,7 +913,7 @@ namespace BluePrints.ViewModels
                 }
 
                 //if its purely a scan to determine variation
-                if (SelectedEntity.Entity.TYPE == VariationType.External && (deliverable.DisplayVariationAction == VariationAction.Add || (deliverable.DisplayVariationAction == VariationAction.Append)) && variationCode != string.Empty)
+                if (SelectedEntity.Entity.TYPE == VariationType.External && (deliverable.DisplayVariationAction == VariationAction.Add || (deliverable.DisplayVariationAction == VariationAction.Append && deliverable.DisplayVariationUnits > 0)) && variationCode != string.Empty)
                 {
                     string subJobCode = deliverable.Subjob_Name;
                     string disciplineCode = deliverable.Discipline_Code;
@@ -999,7 +971,7 @@ namespace BluePrints.ViewModels
                 else
                     addVariationJobToExo(exoVariations, variationStage);
 
-                if(variationStage != VariationStages.Update)
+                if (variationStage != VariationStages.Update)
                     backwardCompatibilityDC_HOURS(liveBASELINE.GUID);
 
                 //because live baseline has been changed, full refresh is required
