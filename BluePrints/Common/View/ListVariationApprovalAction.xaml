@@ -46,9 +46,9 @@
                         </dxr:RibbonPage>
                     </dxr:RibbonDefaultPageCategory>
                 </dxr:RibbonControl>
-                <dxlc:LayoutItem Height="100">
+                <dxlc:LayoutItem Height="120">
                     <TextBlock TextWrapping="Wrap">
-                        These deliverable have negative variation units that'll erode earn value when proceed, please select whether to:<LineBreak/>1. Erode earned<LineBreak/>Use max reducible units, overriding specified negative variation<LineBreak/>A backup of progress will be automatically taken
+                        These deliverable have negative variation units that'll erode earn value when proceed, please select whether to:<LineBreak/><LineBreak/>1. Reduce earned by checking 'Reduce Earn Value'<LineBreak/><LineBreak/>2. Use max reducible units, overriding specified negative variation<LineBreak/><LineBreak/>A backup of progress will be automatically taken before variation approvals
                     </TextBlock>
                 </dxlc:LayoutItem>
                 <dxlc:LayoutItem Height="400">

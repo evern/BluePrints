@@ -759,8 +759,9 @@ namespace BluePrints.ViewModels
         {
             IBluePrintsEntitiesUnitOfWork bluePrintsUnitOfWork = bluePrintsUnitOfWorkFactory.CreateUnitOfWork();
             List<VariationApprovalAction<TEntity>> approvalActions = new List<VariationApprovalAction<TEntity>>();
+            string variationCode = SelectedEntity.Entity.NAME;
 
-            if(variationStage == VariationStages.Approve || variationStage == VariationStages.Unapprove)
+            if (variationStage == VariationStages.Approve || variationStage == VariationStages.Unapprove)
             {
                 //run through deliverables first to check for reduction in units more than earned
                 foreach (var deliverable in deliverables)
@@ -797,10 +798,15 @@ namespace BluePrints.ViewModels
                         PROGRESS livePROGRESS = bluePrintsUnitOfWork.PROGRESSES.FirstOrDefault(x => x.STATUS == ProgressStatus.Live && x.GUID_PROJECT == loadPROJECT.GUID);
                         if (livePROGRESS != null)
                         {
-                            LoadingScreenManager.ShowLoadingScreen(1);
-                            LoadingScreenManager.SetMessage("Creating progress backup");
-                            BluePrintsDataUtils.CreateProgressBackup(livePROGRESS);
-                            LoadingScreenManager.CloseLoadingScreen();
+                            if(approvalActions.Any(x => x.ReduceEarned))
+                            {
+                                LoadingScreenManager.ShowLoadingScreen(1);
+                                LoadingScreenManager.SetMessage("Creating progress backup");
+
+                                string backupPrefixStr = string.Concat(variationCode, " ", variationStage.ToString());
+                                BluePrintsDataUtils.CreateProgressBackup(livePROGRESS, backupPrefixStr);
+                                LoadingScreenManager.CloseLoadingScreen();
+                            }
 
                             foreach (VariationApprovalAction<TEntity> approvalAction in approvalActions)
                             {
@@ -855,7 +861,6 @@ namespace BluePrints.ViewModels
                 }
             }
 
-            string variationCode = SelectedEntity.Entity.NAME;
             TBaseline revisedBaseline = null;
             //only revise baseline if variation is approved, this method can be called from submitted which creates a new variation with IsCreateExoVariation == true
             if (variationStage == VariationStages.Approve)

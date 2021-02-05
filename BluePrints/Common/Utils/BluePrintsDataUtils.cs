@@ -1615,7 +1615,7 @@ namespace BluePrints.Common.ViewModel.Utils
                 workpack.NAME = string.Empty;
         }
 
-        public static void CreateProgressBackup(PROGRESS selectedPROGRESS)
+        public static void CreateProgressBackup(PROGRESS selectedPROGRESS, string backupPrefix = "")
         {
             IUnitOfWorkFactory<IBluePrintsEntitiesUnitOfWork> bluePrintsUnitOfWorkFactory = BluePrintsEntitiesUnitOfWorkSource.GetUnitOfWorkFactory();
             IBluePrintsEntitiesUnitOfWork bluePrintsUOW = bluePrintsUnitOfWorkFactory.CreateUnitOfWork();
@@ -1623,10 +1623,11 @@ namespace BluePrints.Common.ViewModel.Utils
             if (selectedPROGRESS == null)
                 return;
 
+            string backupPrefixStr = backupPrefix == string.Empty ? "BACKUP " : backupPrefix + " ";
             PROGRESS backupPROGRESS = new PROGRESS();
             DataUtils.ShallowCopy(backupPROGRESS, selectedPROGRESS);
             backupPROGRESS.GUID = Guid.Empty;
-            backupPROGRESS.NAME = "BACKUP " + DateTime.Now.ToShortDateString() + " - " + DateTime.Now.ToShortTimeString();
+            backupPROGRESS.NAME = backupPrefixStr + DateTime.Now.ToShortDateString() + " - " + DateTime.Now.ToShortTimeString();
             backupPROGRESS.STATUS = ProgressStatus.Superseded;
             bluePrintsUOW.PROGRESSES.Add(backupPROGRESS);
             //need to save progress to get GUID
