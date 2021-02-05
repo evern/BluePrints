@@ -145,8 +145,7 @@ namespace BluePrints.Common.Projections
                     return 0;
                 else
                     return -1 * Total_Units;
-
-                //restrict negative variation units from eroding earned value
+                //restrict max negative value to account for total earned
                 //if (base.PROGRESS_ITEM_Current == null)
                 //    return -1 * Total_Units;
                 //else

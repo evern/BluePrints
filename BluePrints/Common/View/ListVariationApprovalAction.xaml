@@ -1,0 +1,101 @@
+﻿<UserControl
+    x:Name="userControl"
+    x:Class="BluePrints.Views.ListVariationApprovalAction"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:dx="http://schemas.devexpress.com/winfx/2008/xaml/core"
+    xmlns:dxlc="http://schemas.devexpress.com/winfx/2008/xaml/layoutcontrol"
+    xmlns:dxe="http://schemas.devexpress.com/winfx/2008/xaml/editors"
+    xmlns:dxg="http://schemas.devexpress.com/winfx/2008/xaml/grid"
+    xmlns:dxmvvm="http://schemas.devexpress.com/winfx/2008/xaml/mvvm" 
+    xmlns:services="clr-namespace:BaseModel.ViewModel.Services;assembly=BaseModel"
+    xmlns:dxr="http://schemas.devexpress.com/winfx/2008/xaml/ribbon" 
+    xmlns:dxb="http://schemas.devexpress.com/winfx/2008/xaml/bars" 
+    xmlns:custom="clr-namespace:BaseModel.Misc;assembly=BaseModel" Width="1000" Height="600">
+    <UserControl.Resources>
+        <ResourceDictionary>
+            <ResourceDictionary.MergedDictionaries>
+                <ResourceDictionary Source="pack://application:,,,/BaseModel;component/View/ResourceDictionaries/DefaultControlResourceDictionary.xaml" />
+            </ResourceDictionary.MergedDictionaries>
+        </ResourceDictionary>
+    </UserControl.Resources>
+    <dxlc:LayoutControl Orientation="Vertical">
+        <dxb:BarManager>
+            <dxb:BarManager.Items>
+                <dxb:BarButtonItem x:Name="biExportToExcel1" Command="{Binding ExportToExcelCommand}" Content="Export" Glyph="{dx:DXImage Images/Export/ExportToXLSX_16x16.png}" LargeGlyph="{dx:DXImage Image=ExportToXLSX_32x32.png}" RibbonStyle="SmallWithText" ToolTip="Export current view to excel. Includes grouping, sorting and column visibility preferences" />
+                <dxb:BarButtonItem x:Name="biCheckEarnedReduction" Command="{Binding CheckEarnedReductionCommand}" CommandParameter="{Binding RelativeSource={RelativeSource Self}}" Content="Check" Glyph="{dx:DXImage Images/Conditional Formatting/IconSetSymbols3_16x16.png}" RibbonStyle="SmallWithText" ToolTip="Check selected deliverable's reduce earned" />
+                <dxb:BarButtonItem x:Name="biUncheckEarnedReduction" Command="{Binding UncheckEarnedReductionCommand}" CommandParameter="{Binding RelativeSource={RelativeSource Self}}" Content="Uncheck" Glyph="{dx:DXImage Images/Edit/Delete_16x16.png}" RibbonStyle="SmallWithText" ToolTip="Uncheck selected deliverable's reduce earned" />
+            </dxb:BarManager.Items>
+            <dxmvvm:Interaction.Behaviors>
+                <services:TableViewService x:Name="DefaultTableViewService" TableView="{Binding ElementName=tableView}" />
+                <dxmvvm:FolderBrowserDialogService Description="Choose Folder" RestorePreviouslySelectedDirectory="True" RootFolder="Desktop" ShowNewFolderButton="True" />
+            </dxmvvm:Interaction.Behaviors>
+            <dxlc:LayoutGroup Name="LayoutGroupContent" Height="500" Orientation="Vertical" View="Group">
+                <dxr:RibbonControl Style="{StaticResource DefaultRibbonControlStyle}">
+                    <dxr:RibbonDefaultPageCategory MergeType="Replace" Caption="defaultCategory">
+                        <dxr:RibbonPage MergeType="Replace" Caption="Grid">
+                            <dxr:RibbonPageGroup MergeType="Replace" Caption="Grid" >
+                                <dxb:BarButtonItemLink BarItemName="biExportToExcel1" />
+                                <dxb:BarButtonItemLink BarItemName="biCheckEarnedReduction" />
+                                <dxb:BarButtonItemLink BarItemName="biUncheckEarnedReduction" />
+                            </dxr:RibbonPageGroup>
+                            <dxr:RibbonPageGroup MergeType="Replace" Caption="Tools">
+                                <dxb:BarButtonItemLink BarItemName="biAddRowBefore" />
+                                <dxb:BarButtonItemLink BarItemName="biAddRowAfter"  />
+                            </dxr:RibbonPageGroup>
+                        </dxr:RibbonPage>
+                    </dxr:RibbonDefaultPageCategory>
+                </dxr:RibbonControl>
+                <dxlc:LayoutItem Height="100">
+                    <TextBlock TextWrapping="Wrap">
+                        These deliverable have negative variation units that'll erode earn value when proceed, please select whether to:<LineBreak/>1. Erode earned<LineBreak/>Use max reducible units, overriding specified negative variation<LineBreak/>A backup of progress will be automatically taken
+                    </TextBlock>
+                </dxlc:LayoutItem>
+                <dxlc:LayoutItem Height="400">
+                    <dxg:GridControl x:Name="GridControl" dx:DXSerializer.SerializationID="GridControlList" dx:DXSerializer.StoreLayoutMode="All" ItemsSource="{Binding SourceObjects}" SelectedItems="{Binding SelectedDeliverables, Mode=TwoWay}" SelectionMode="Row">
+                        <dxg:GridControl.Columns>
+                            <dxg:GridColumn FieldName="Deliverable.Deliverable_Name" Header="Internal Name" FixedWidth="True" Width="250" ReadOnly="True" />
+                            <dxg:GridColumn FieldName="Deliverable.Total_Units" Header="Total Units" AllowBestFit="false" ReadOnly="True" Width="60" HeaderToolTip="Budget + Other Variations">
+                                <dxg:GridColumn.EditSettings>
+                                    <dxe:SpinEditSettings Increment="1" IsFloatValue="False" IsTextEditable="True" Mask="n0" MaskType="Numeric" MaskUseAsDisplayFormat="True" />
+                                </dxg:GridColumn.EditSettings>
+                            </dxg:GridColumn>
+                            <dxg:GridColumn FieldName="Deliverable.Earned_Units_Total" Header="Earned Units" AllowBestFit="false" ReadOnly="True" Width="60" HeaderToolTip="Earned units from progress">
+                                <dxg:GridColumn.EditSettings>
+                                    <dxe:SpinEditSettings Increment="1" IsFloatValue="False" IsTextEditable="True" Mask="n0" MaskType="Numeric" MaskUseAsDisplayFormat="True" />
+                                </dxg:GridColumn.EditSettings>
+                            </dxg:GridColumn>
+                            <dxg:GridColumn FieldName="MaximumReducibleUnits" Header="Maximum Reducible" AllowBestFit="false" ReadOnly="True" Width="60" HeaderToolTip="Maximum reducible units before earned is eroded">
+                                <dxg:GridColumn.EditSettings>
+                                    <dxe:SpinEditSettings Increment="1" IsFloatValue="False" IsTextEditable="True" Mask="n0" MaskType="Numeric" MaskUseAsDisplayFormat="True" />
+                                </dxg:GridColumn.EditSettings>
+                            </dxg:GridColumn>
+                            <dxg:GridColumn FieldName="DisplayVariationUnits" Header="Variation Reduction" AllowBestFit="false" ReadOnly="True" Width="60" HeaderToolTip="To be reduced units from variation">
+                                <dxg:GridColumn.EditSettings>
+                                    <dxe:SpinEditSettings Increment="1" IsFloatValue="False" IsTextEditable="True" Mask="n0" MaskType="Numeric" MaskUseAsDisplayFormat="True" />
+                                </dxg:GridColumn.EditSettings>
+                            </dxg:GridColumn>
+                            <dxg:GridColumn FieldName="ReduceEarned" Header="Reduce Earn Value" AllowBestFit="false" Width="60" HeaderToolTip="If this is false, variation reduction units will be set as maximum reducible units, else earned will be reduced from latest date onwards">
+                                <dxg:GridColumn.EditSettings>
+                                    <dxe:CheckEditSettings />
+                                </dxg:GridColumn.EditSettings>
+                            </dxg:GridColumn>
+                        </dxg:GridControl.Columns>
+                        <dxg:GridControl.TotalSummary>
+                            <dxg:GridSummaryItem dx:DXSerializer.Enabled="False" Alignment="Right" SummaryType="Count" />
+                        </dxg:GridControl.TotalSummary>
+                        <dxg:GridControl.View>
+                            <dxg:TableView x:Name="tableView" ShowFixedTotalSummary="True" AutoWidth="True" ShowGroupPanel="False" ShowGroupedColumns="False" >
+                                <dxg:TableView.RowCellMenuCustomizations>
+                                    <dxb:BarButtonItemLink BarItemName="biExportToExcel1" />
+                                    <dxb:BarButtonItemLink BarItemName="biCheckEarnedReduction"  />
+                                    <dxb:BarButtonItemLink BarItemName="biUncheckEarnedReduction" />
+                                </dxg:TableView.RowCellMenuCustomizations>
+                            </dxg:TableView>
+                        </dxg:GridControl.View>
+                    </dxg:GridControl>
+                </dxlc:LayoutItem>
+            </dxlc:LayoutGroup>
+        </dxb:BarManager>
+    </dxlc:LayoutControl>
+</UserControl>

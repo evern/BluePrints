@@ -1615,6 +1615,50 @@ namespace BluePrints.Common.ViewModel.Utils
                 workpack.NAME = string.Empty;
         }
 
+        public static void CreateProgressBackup(PROGRESS selectedPROGRESS)
+        {
+            IUnitOfWorkFactory<IBluePrintsEntitiesUnitOfWork> bluePrintsUnitOfWorkFactory = BluePrintsEntitiesUnitOfWorkSource.GetUnitOfWorkFactory();
+            IBluePrintsEntitiesUnitOfWork bluePrintsUOW = bluePrintsUnitOfWorkFactory.CreateUnitOfWork();
+
+            if (selectedPROGRESS == null)
+                return;
+
+            PROGRESS backupPROGRESS = new PROGRESS();
+            DataUtils.ShallowCopy(backupPROGRESS, selectedPROGRESS);
+            backupPROGRESS.GUID = Guid.Empty;
+            backupPROGRESS.NAME = "BACKUP " + DateTime.Now.ToShortDateString() + " - " + DateTime.Now.ToShortTimeString();
+            backupPROGRESS.STATUS = ProgressStatus.Superseded;
+            bluePrintsUOW.PROGRESSES.Add(backupPROGRESS);
+            //need to save progress to get GUID
+            bluePrintsUOW.SaveChanges();
+
+            if (selectedPROGRESS.PROGRESS_ITEM != null)
+            {
+                foreach (PROGRESS_ITEM progress_item in selectedPROGRESS.PROGRESS_ITEM)
+                {
+                    PROGRESS_ITEM newPROGRESS_ITEM = new PROGRESS_ITEM();
+                    DataUtils.ShallowCopy(newPROGRESS_ITEM, progress_item);
+                    newPROGRESS_ITEM.GUID = Guid.Empty;
+                    newPROGRESS_ITEM.GUID_PROGRESS = backupPROGRESS.GUID;
+                    bluePrintsUOW.PROGRESS_ITEMS.Add(newPROGRESS_ITEM);
+                }
+            }
+
+            if (selectedPROGRESS.PROGRESS_ETC != null)
+            {
+                foreach (PROGRESS_ETC progressETC in selectedPROGRESS.PROGRESS_ETC)
+                {
+                    PROGRESS_ETC newPROGRESS_ETC = new PROGRESS_ETC();
+                    DataUtils.ShallowCopy(newPROGRESS_ETC, progressETC);
+                    newPROGRESS_ETC.GUID = Guid.Empty;
+                    newPROGRESS_ETC.GUID_PROGRESS = backupPROGRESS.GUID;
+                    bluePrintsUOW.PROGRESS_ETCS.Add(newPROGRESS_ETC);
+                }
+            }
+
+            bluePrintsUOW.SaveChanges();
+        }
+
         /// <summary>
         /// Searches rate cascadingly for IRATE interface
         /// </summary>
