@@ -23,8 +23,8 @@
     <UpdatePeriodically>false</UpdatePeriodically>
     <UpdateRequired>true</UpdateRequired>
     <MapFileExtensions>true</MapFileExtensions>
-    <MinimumRequiredVersion>1.0.6.244</MinimumRequiredVersion>
-    <ApplicationRevision>244</ApplicationRevision>
+    <MinimumRequiredVersion>1.0.6.246</MinimumRequiredVersion>
+    <ApplicationRevision>246</ApplicationRevision>
     <ApplicationVersion>1.0.6.%2a</ApplicationVersion>
     <UseApplicationTrust>false</UseApplicationTrust>
     <PublishWizardCompleted>true</PublishWizardCompleted>
@@ -87,7 +87,7 @@
     <ApplicationIcon>Common\Images\LogoBeta.ico</ApplicationIcon>
     <PublishUrl>\\Fileserver\\General\BLUEPRINTS_BETA_LIVE\</PublishUrl>
     <OutputPath>bin\Perth_Beta\</OutputPath>
-    <DefineConstants>TRACE;BETA</DefineConstants>
+    <DefineConstants>TRACE;BETA;DEBUG;PERTH</DefineConstants>
     <Optimize>true</Optimize>
     <DebugType>pdbonly</DebugType>
     <PlatformTarget>AnyCPU</PlatformTarget>
@@ -151,10 +151,10 @@
     <Prefer32Bit>true</Prefer32Bit>
   </PropertyGroup>
   <PropertyGroup>
-    <AssemblyName>BluePrints</AssemblyName>
+    <AssemblyName>BluePrints BETA</AssemblyName>
   </PropertyGroup>
   <PropertyGroup>
-    <ApplicationIcon>Common\Images\Logo.ico</ApplicationIcon>
+    <ApplicationIcon>Common\Images\LogoBeta.ico</ApplicationIcon>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Debug|x64'">
     <DebugSymbols>true</DebugSymbols>
