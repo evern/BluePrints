@@ -277,9 +277,12 @@ namespace BluePrints.ViewModels
             dataPointsTable.Columns.Add(columnForecastJob, typeof(FORECAST_JOB));
             dataPointsTable.Columns.Add(columnStockItemName, typeof(string));
             DataPointsTable.Columns.Add(columnRecommendedForecastRate, typeof(decimal));
-            dataPointsTable.Columns.Add(columnTotalHours, typeof(decimal));
-            dataPointsTable.Columns.Add(columnTotalCosts, typeof(decimal));
-            dataPointsTable.Columns.Add(columnTotalActuals, typeof(decimal));
+            dataPointsTable.Columns.Add(columnTotalForecastSellQuantity, typeof(decimal));
+            dataPointsTable.Columns.Add(columnTotalForecastSellCosts, typeof(decimal));
+            dataPointsTable.Columns.Add(columnTotalForecastSellFromProjectStart, typeof(decimal));
+            dataPointsTable.Columns.Add(columnTotalActualCosts, typeof(decimal));
+            dataPointsTable.Columns.Add(columnTotalActualSellCosts, typeof(decimal));
+            dataPointsTable.Columns.Add(columnTotalForecastCosts, typeof(decimal));
 
             foreach (DateTime alignedDataDate in alignedDataDateCollection)
             {
@@ -343,7 +346,6 @@ namespace BluePrints.ViewModels
             newRow[columnFullCode] = projection.FullCode;
             newRow[columnProjection] = projection;
             newRow[columnForecastJob] = job;
-            newRow[columnTotalActuals] = projection.TotalCosts;
 
             string assignStockCode = string.Empty;
             if (stockCode == string.Empty)
@@ -431,24 +433,40 @@ namespace BluePrints.ViewModels
 
             if (forecastJob == null || forecastJob.GUID == Guid.Empty)
             {
-                row[columnTotalHours] = 0.00m;
-                row[columnTotalCosts] = 0.00m;
+                row[columnTotalForecastSellQuantity] = 0.00m;
+                row[columnTotalForecastSellCosts] = 0.00m;
                 return;
             }
 
             //update total hours
             decimal rate = 0.00m;
-            decimal totalForecastHours = FORECAST_JOB_HOURCollection.Where(x => x.GUID_FORECAST_JOB == forecastJob.GUID && x.FORECAST_HOUR != null && x.FORECAST_DATE > FixedDataDate).Sum(x => (decimal)x.FORECAST_HOUR);
-            row[columnTotalHours] = totalForecastHours;
+            IEnumerable<FORECAST_JOB_HOUR> currentJobFORECAST_JOB_HOUR = FORECAST_JOB_HOURCollection.Where(x => x.GUID_FORECAST_JOB == forecastJob.GUID && x.FORECAST_HOUR != null);
+            decimal forecastHoursFromProjectStart = currentJobFORECAST_JOB_HOUR.Sum(x => (decimal)x.FORECAST_HOUR);
+
+            decimal totalForecastHours = currentJobFORECAST_JOB_HOUR.Where(x => x.FORECAST_DATE > FixedDataDate).Sum(x => (decimal)x.FORECAST_HOUR);
+            row[columnTotalForecastSellQuantity] = totalForecastHours;
+
+            decimal recommendedRate = 0.00m;
+            if(!row.IsNull(columnRecommendedForecastRate))
+            {
+                recommendedRate = (decimal)row[columnRecommendedForecastRate];
+                row[columnTotalForecastCosts] = recommendedRate * totalForecastHours;
+            }
+            else
+                row[columnTotalForecastCosts] = 0.00m;
 
             //update total costs
             if (forecastJob.FORECAST_RATE != null)
             {
                 rate = (decimal)forecastJob.FORECAST_RATE;
-                row[columnTotalCosts] = rate * totalForecastHours;
+                row[columnTotalForecastSellCosts] = rate * totalForecastHours;
+                row[columnTotalForecastSellFromProjectStart] = rate * forecastHoursFromProjectStart;
             }
             else
-                row[columnTotalCosts] = 0.00m;
+            {
+                row[columnTotalForecastSellCosts] = 0.00m;
+                row[columnTotalForecastSellFromProjectStart] = 0.00m;
+            }
 
             //update actual costs
             if (AllActuals != null)
@@ -457,12 +475,13 @@ namespace BluePrints.ViewModels
                 if (!row.IsNull(columnStockItem))
                     stockCode = row[columnStockItem].ToString();
 
-                IEnumerable<ExoDataPoint> currentJobExoActualsByFullCode = AllActuals.Where(x => x.Commodity_Code == projection.CommodityCode && x.Discipline_Code == projection.DisciplineCode && x.Subjob_Name == projection.SubJobCode && x.Variation_Code == projection.VariationCode);
+                IEnumerable<ExoDataPoint> currentJobExoActualsByFullCode = AllActuals.Where(x => x.ActualDate <= FixedDataDate).Where(x => x.Commodity_Code == projection.CommodityCode && x.Discipline_Code == projection.DisciplineCode && x.Subjob_Name == projection.SubJobCode && x.Variation_Code == projection.VariationCode);
                 IEnumerable<ExoDataPoint> currentJobExoactualsByStockCode = currentJobExoActualsByFullCode.Where(x => x.StockCode == stockCode);
-                row[columnTotalActuals] = currentJobExoactualsByStockCode.Sum(x => x.Costs);
+                row[columnTotalActualCosts] = currentJobExoactualsByStockCode.Sum(x => x.Costs);
+                row[columnTotalActualSellCosts] = currentJobExoactualsByStockCode.Sum(x => x.Charge);
             }
             else
-                row[columnTotalActuals] = 0;
+                row[columnTotalActualCosts] = 0;
 
             raiseSummaryChanges();
         }
@@ -1111,9 +1130,12 @@ namespace BluePrints.ViewModels
         protected static string columnProjection = "Projection";
         protected static string columnStockItemName = "StockItemName";
         protected static string columnRecommendedForecastRate = "RecommendedRate";
-        protected static string columnTotalHours = "TOTAL_HOURS";
-        protected static string columnTotalCosts = "TOTAL_COSTS";
-        protected static string columnTotalActuals = "TOTAL_ACTUALS";
+        protected static string columnTotalForecastSellQuantity = "TotalForecastHours";
+        protected static string columnTotalForecastCosts = "TotalForecastCosts";
+        protected static string columnTotalForecastSellCosts = "TotalForecastSellCosts";
+        protected static string columnTotalActualCosts = "TotalActualCosts";
+        protected static string columnTotalActualSellCosts = "TotalActualSellCosts";
+        protected static string columnTotalForecastSellFromProjectStart = "TotalForecastSellFromProjectStart";
         protected static string columnDescription = "Description";
         protected static string columnStockItem = "StockItem";
         protected static string columnReference = "Reference";
@@ -1137,10 +1159,16 @@ namespace BluePrints.ViewModels
             columns.Add(new ColumnDescriptor() { FieldName = columnRecommendedForecastRate, ReadOnly = true, Header = "Recommended Rate", Fixed = FixedStyle.Left, Width = 75, Settings = SettingsType.Number, Mask = "c0" });
             columns.Add(new ColumnDescriptor() { FieldName = columnForecastRate, ReadOnly = false, Header = "Rate", Fixed = FixedStyle.Left, Width = 75, Settings = SettingsType.Number, Mask = "c0" });
             columns.Add(new ColumnDescriptor() { FieldName = columnForecastJob + "." + BindableBase.GetPropertyName(() => new FORECAST_JOB().IS_FLOATING_RATE), ReadOnly = false, Header = "Floating Rate", Fixed = FixedStyle.Left, Width = 75, Settings = SettingsType.Default });
-            columns.Add(new ColumnDescriptor() { FieldName = columnTotalHours, ReadOnly = true, Header = "Total Hrs", Fixed = FixedStyle.Left, Width = 75, Settings = SettingsType.Number, Mask = "n0" });
-            summaries.Add(new SummaryDescriptor() { FieldName = columnTotalHours, DisplayFormat = "n0", Type = SummaryItemType.Sum });
-            columns.Add(new ColumnDescriptor() { FieldName = columnTotalCosts, ReadOnly = false, Header = "Total $", Fixed = FixedStyle.Left, Width = 75, Settings = SettingsType.Number, Mask = "c0" });
-            summaries.Add(new SummaryDescriptor() { FieldName = columnTotalCosts, DisplayFormat = "c0", Type = SummaryItemType.Sum });
+            columns.Add(new ColumnDescriptor() { FieldName = columnTotalForecastSellQuantity, ReadOnly = true, Header = "Total Hrs", Fixed = FixedStyle.Left, Width = 75, Settings = SettingsType.Number, Mask = "n0" });
+            summaries.Add(new SummaryDescriptor() { FieldName = columnTotalForecastSellQuantity, DisplayFormat = "n0", Type = SummaryItemType.Sum });
+            columns.Add(new ColumnDescriptor() { FieldName = columnTotalForecastSellCosts, ReadOnly = false, Header = "Total $", Fixed = FixedStyle.Left, Width = 75, Settings = SettingsType.Number, Mask = "c0" });
+            summaries.Add(new SummaryDescriptor() { FieldName = columnTotalForecastSellCosts, DisplayFormat = "c0", Type = SummaryItemType.Sum });
+            columns.Add(new ColumnDescriptor() { FieldName = columnTotalActualSellCosts, ReadOnly = false, Visible = false, Header = "Total Actual Sell $", Fixed = FixedStyle.Left, Width = 75, Settings = SettingsType.Number, Mask = "c0" });
+            summaries.Add(new SummaryDescriptor() { FieldName = columnTotalActualSellCosts, DisplayFormat = "c0", Type = SummaryItemType.Sum });
+            columns.Add(new ColumnDescriptor() { FieldName = columnTotalForecastCosts, Visible = false, ReadOnly = false, Header = "Total Forecast $", Fixed = FixedStyle.Left, Width = 75, Settings = SettingsType.Number, Mask = "c0" });
+            summaries.Add(new SummaryDescriptor() { FieldName = columnTotalForecastCosts, DisplayFormat = "c0", Type = SummaryItemType.Sum });
+            columns.Add(new ColumnDescriptor() { FieldName = columnTotalForecastSellFromProjectStart, Visible = false, ReadOnly = false, Header = "Total $ From Project Start", Fixed = FixedStyle.Left, Width = 75, Settings = SettingsType.Number, Mask = "c0" });
+            summaries.Add(new SummaryDescriptor() { FieldName = columnTotalForecastSellFromProjectStart, DisplayFormat = "c0", Type = SummaryItemType.Sum });
 
             foreach (DateTime alignedDate in alignedDates.OrderBy(x => x))
             {

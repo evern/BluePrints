@@ -99,42 +99,6 @@ namespace BluePrints.ViewModels
             exoLoadingBackgroundWorker.RunWorkerAsync();
         }
 
-        protected override void InitializeColumnSource(ObservableCollection<ColumnDescriptor> columns, ObservableCollection<SummaryDescriptor> summaries, List<DateTime> alignedDates, bool isChild)
-        {
-            columns.Clear();
-            summaries.Clear();
-
-            columns.Add(new ColumnDescriptor() { FieldName = columnFullCode, ReadOnly = false, Header = "Full Code", ItemsSource = QueryJobs, Fixed = FixedStyle.Left, Width = 150, Settings = SettingsType.FullCode });
-            summaries.Add(new SummaryDescriptor() { FieldName = columnFullCode, DisplayFormat = "Total {0} Records", Type = SummaryItemType.Count });
-            columns.Add(new ColumnDescriptor() { FieldName = columnCommodityName, ReadOnly = true, Header = "Commodity Name (AutoFilled)", Fixed = FixedStyle.Left, Width = 150, Settings = SettingsType.Default });
-            columns.Add(new ColumnDescriptor() { FieldName = columnDescription, ReadOnly = false, Header = "Description", Fixed = FixedStyle.Left, Width = 100, Settings = SettingsType.Default });
-            columns.Add(new ColumnDescriptor() { FieldName = columnStockItem, ReadOnly = false, Header = "Stock Code", ItemsSource = STOCK_ITEMCollection, HeaderToolTip = "Changing this value will automatically populate rate", Fixed = FixedStyle.Left, Width = 50, Settings = SettingsType.StockItem });
-            columns.Add(new ColumnDescriptor() { FieldName = columnStockItemName, ReadOnly = true, Header = "Stock Name (AutoFilled)", Fixed = FixedStyle.Left, Width = 100, Settings = SettingsType.Default });
-            columns.Add(new ColumnDescriptor() { FieldName = columnReference, ReadOnly = false, Header = "Reference", Fixed = FixedStyle.Left, Width = 75, Settings = SettingsType.Default });
-            columns.Add(new ColumnDescriptor() { FieldName = columnNote, ReadOnly = false, Header = "Note", Fixed = FixedStyle.Left, Width = 75, Settings = SettingsType.Default });
-            columns.Add(new ColumnDescriptor() { FieldName = columnUOM, ReadOnly = false, Header = "UOM", Fixed = FixedStyle.Left, Width = 50, Settings = SettingsType.Default });
-            columns.Add(new ColumnDescriptor() { FieldName = columnRecommendedForecastRate, ReadOnly = true, Header = "Recommended Rate", Fixed = FixedStyle.Left, Width = 75, Settings = SettingsType.Number, Mask = "c0" });
-            columns.Add(new ColumnDescriptor() { FieldName = columnForecastRate, ReadOnly = false, Header = "Sell Rate", Fixed = FixedStyle.Left, Width = 75, Settings = SettingsType.Number, Mask = "c0" });
-            columns.Add(new ColumnDescriptor() { FieldName = columnForecastJob + "." + BindableBase.GetPropertyName(() => new FORECAST_JOB().IS_FLOATING_RATE), ReadOnly = false, Header = "Floating Rate", Fixed = FixedStyle.Left, Width = 75, Settings = SettingsType.Default });
-            columns.Add(new ColumnDescriptor() { FieldName = columnTotalHours, ReadOnly = true, Header = "Total Hrs", Fixed = FixedStyle.Left, Width = 75, Settings = SettingsType.Number, Mask = "n0" });
-            summaries.Add(new SummaryDescriptor() { FieldName = columnTotalHours, DisplayFormat = "n0", Type = SummaryItemType.Sum });
-            columns.Add(new ColumnDescriptor() { FieldName = columnTotalCosts, ReadOnly = false, Header = "Total $ Sell", Fixed = FixedStyle.Left, Width = 75, Settings = SettingsType.Number, Mask = "c0" });
-            summaries.Add(new SummaryDescriptor() { FieldName = columnTotalCosts, DisplayFormat = "c0", Type = SummaryItemType.Sum });
-            columns.Add(new ColumnDescriptor() { FieldName = columnTotalActuals, ReadOnly = false, Header = "Total $ Cost", Fixed = FixedStyle.Left, Width = 75, Settings = SettingsType.Number, Mask = "c0" });
-            summaries.Add(new SummaryDescriptor() { FieldName = columnTotalActuals, DisplayFormat = "c0", Type = SummaryItemType.Sum });
-
-            foreach (DateTime alignedDate in alignedDates.OrderBy(x => x))
-            {
-                string columnFieldName = alignedDate.Date.ToString(BluePrintsResources.ColumnDateFormat);
-
-                if (alignedDate > FixedDataDateMonthEnd)
-                {
-                    columns.Add(new ColumnDescriptor() { FieldName = columnFieldName, Header = columnFieldName, Fixed = FixedStyle.None, Width = 60, Settings = SettingsType.ForecastFuture });
-                    summaries.Add(new SummaryDescriptor() { FieldName = columnFieldName, DisplayFormat = "n0", Type = SummaryItemType.Sum });
-                }
-            }
-        }
-
         public DateTime ActualsCutOffDate
         {
             get
@@ -153,8 +117,13 @@ namespace BluePrints.ViewModels
 
         protected override void raiseSummaryChanges()
         {
-            this.RaisePropertyChanged(x => x.TotalRevenue);
-            this.RaisePropertyChanged(x => x.TotalActuals);
+            this.RaisePropertyChanged(x => x.TotalRevenue); ;
+            this.RaisePropertyChanged(x => x.TotalSellActual);
+            this.RaisePropertyChanged(x => x.TotalCostActual);
+            this.RaisePropertyChanged(x => x.TotalSellForecast);
+            this.RaisePropertyChanged(x => x.TotalCostForecast);
+            this.RaisePropertyChanged(x => x.EACSell);
+            this.RaisePropertyChanged(x => x.EACCost);
             this.RaisePropertyChanged(x => x.Margin);
             this.RaisePropertyChanged(x => x.MarginPercentage);
 
@@ -170,31 +139,83 @@ namespace BluePrints.ViewModels
                 if(DataPointsTable != null)
                     foreach(DataRow row in DataPointsTable.Rows)
                     {
-                        if (!row.IsNull(columnTotalCosts))
-                            totalRevenue += (decimal)row[columnTotalCosts];
+                        if (!row.IsNull(columnTotalForecastSellFromProjectStart))
+                            totalRevenue += (decimal)row[columnTotalForecastSellFromProjectStart];
                     }
 
                 return totalRevenue;
             }
         }
 
-        public decimal TotalActuals
+        public decimal TotalSellActual
         {
             get
             {
-                decimal totalActuals = 0;
+                decimal totalSellActual = 0;
                 if (DataPointsTable != null)
                     foreach (DataRow row in DataPointsTable.Rows)
                     {
-                        if (!row.IsNull(columnTotalActuals))
-                            totalActuals += (decimal)row[columnTotalActuals];
+                        if (!row.IsNull(columnTotalActualSellCosts))
+                            totalSellActual += (decimal)row[columnTotalActualSellCosts];
                     }
 
-                return totalActuals;
+                return totalSellActual;
             }
         }
 
-        public decimal Margin => TotalRevenue - TotalActuals;
+        public decimal TotalCostActual
+        {
+            get
+            {
+                decimal totalCostActual = 0;
+                if (DataPointsTable != null)
+                    foreach (DataRow row in DataPointsTable.Rows)
+                    {
+                        if (!row.IsNull(columnTotalActualCosts))
+                            totalCostActual += (decimal)row[columnTotalActualCosts];
+                    }
+
+                return totalCostActual;
+            }
+        }
+
+        public decimal TotalSellForecast
+        {
+            get
+            {
+                decimal totalSellForecast = 0;
+                if (DataPointsTable != null)
+                    foreach (DataRow row in DataPointsTable.Rows)
+                    {
+                        if (!row.IsNull(columnTotalForecastSellCosts))
+                            totalSellForecast += (decimal)row[columnTotalForecastSellCosts];
+                    }
+
+                return totalSellForecast;
+            }
+        }
+
+        public decimal TotalCostForecast
+        {
+            get
+            {
+                decimal totalCostForecast = 0;
+                if (DataPointsTable != null)
+                    foreach (DataRow row in DataPointsTable.Rows)
+                    {
+                        if (!row.IsNull(columnTotalForecastCosts))
+                            totalCostForecast += (decimal)row[columnTotalForecastCosts];
+                    }
+
+                return totalCostForecast;
+            }
+        }
+
+        public decimal EACSell => TotalSellActual + TotalSellForecast;
+
+        public decimal EACCost => TotalCostActual + TotalCostForecast;
+
+        public decimal Margin => TotalRevenue - TotalCostActual;
 
         public decimal MarginPercentage => TotalRevenue == 0 ? 0 : Margin / TotalRevenue;
     }

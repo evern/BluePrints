@@ -214,9 +214,6 @@ namespace BluePrints.Common.Projections
                 return subJobCode + "-" + disciplineCode + "-" + commodityCode;
             }
         }
-
-        //rate forecast members
-        public decimal TotalCosts { get; set; }
     }
 
     public static class ExoMethods

@@ -551,6 +551,7 @@ namespace BluePrints.Common.ViewModel.Reporting
         public decimal TotalCosts { get; set; }
         public decimal Units { get; set; }
         public decimal Costs { get; set; }
+        public decimal Charge { get; set; }
         //Used to store actuals while storing burn
         public decimal Actuals { get; set; }
         public decimal BudgetedUnits { get; set; }

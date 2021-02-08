@@ -844,7 +844,7 @@ namespace BluePrints.Common.ViewModel.Utils
                                       on JOBTRANS.NARRATIVE_SEQNO equals NARRATIVES.SEQNO into PONarratives
                                       from PONarrate in PONarratives.DefaultIfEmpty()
                                       where JOBCOST_HDR2.JOBCODE == projectNumber && JOBTRANS.TRANSTYPE == "T" && JOBTRANS.LINE_STATUS != "X" && JOBTRANS.TRANSDATE <= dataDate
-                                      select new { JOBCOST_HDR1.JOBCODE, JOBTRANS.EXCHRATE, JOBTRANS.QUANTITY, JOBTRANS.STOCKCODE, JOBTRANS.LINETOTAL, JOBTRANS.LINECOST, JOBTRANS.TRANSDATE, JOBCOST_RESOURCE.RESOURCENAME, JOBCOST_RESOURCE.TITLE, JOB_COSTGROUPS.COSTDESC, GROUP_SHORTCODE = JOB_COSTGROUPS.SHORTCODE, COSTDESC3 = JOB_COSTTYPES.COSTDESC, JOB_COSTTYPES.SHORTCODE, VARIATIONCODE = JOBTRANS.X_VARIATIONCODE, JOBTRANS.INVOICED, JOBTRANS.INVOICEDATE, JOBTRANS.INVSEQNO, PONarrate.NARRATIVE };
+                                      select new { JOBCOST_HDR1.JOBCODE, JOBTRANS.EXCHRATE, JOBTRANS.QUANTITY, JOBTRANS.STOCKCODE, JOBTRANS.LINETOTAL, JOBTRANS.LINECOST, JOBTRANS.LINECHARGE, JOBTRANS.TRANSDATE, JOBCOST_RESOURCE.RESOURCENAME, JOBCOST_RESOURCE.TITLE, JOB_COSTGROUPS.COSTDESC, GROUP_SHORTCODE = JOB_COSTGROUPS.SHORTCODE, COSTDESC3 = JOB_COSTTYPES.COSTDESC, JOB_COSTTYPES.SHORTCODE, VARIATIONCODE = JOBTRANS.X_VARIATIONCODE, JOBTRANS.INVOICED, JOBTRANS.INVOICEDATE, JOBTRANS.INVSEQNO, PONarrate.NARRATIVE };
 
                 var jobTransactionsList = jobTransactions.ToList();
                 if (showLoadingScreen)
@@ -865,6 +865,7 @@ namespace BluePrints.Common.ViewModel.Utils
                             burnedDataPoint.Units = jobTransaction.QUANTITY == null ? 0 : (decimal)jobTransaction.QUANTITY;
                             //burnedDataPoint.Costs = (decimal)jobTransaction.LINETOTAL * currencyConversion;
                             burnedDataPoint.Costs = jobTransaction.LINECOST == null ? 0 : (decimal)jobTransaction.LINECOST * currencyConversion;
+                            burnedDataPoint.Charge = jobTransaction.LINECHARGE == null ? 0 : (decimal)jobTransaction.LINECHARGE * currencyConversion;
                             burnedDataPoint.CostPerQty = burnedDataPoint.Units == 0 ? 0 : burnedDataPoint.Costs / burnedDataPoint.Units;
                             //burnedDataPoint.ProgressDate = alignedDataDates.FirstOrDefault(dates => dates.Date >= jobTransaction.TRANSDATE);
                             burnedDataPoint.ActualDate = jobTransaction.TRANSDATE == null ? DateTime.Now : (DateTime)jobTransaction.TRANSDATE;
@@ -956,6 +957,7 @@ namespace BluePrints.Common.ViewModel.Utils
                         decimal lineCost = jobMaterial.LINECOST == null ? 0 : (decimal)jobMaterial.LINECOST;
                         materialDataPoint.Units = qty;
                         materialDataPoint.Costs = lineCost * currencyConversion;
+                        materialDataPoint.Charge = jobMaterial.linecharge == null ? 0 : (decimal)jobMaterial.linecharge;
                         materialDataPoint.CostPerQty = materialDataPoint.Units == 0 ? 0 : materialDataPoint.Costs / materialDataPoint.Units;
 
                         if (alignedDataDates != null)
