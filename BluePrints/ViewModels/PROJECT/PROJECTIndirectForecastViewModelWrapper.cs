@@ -8,6 +8,7 @@ using BaseModel.ViewModel.Dialogs;
 using BaseModel.ViewModel.Loader;
 using BaseModel.ViewModel.UndoRedo;
 using BluePrints.BluePrintsEntitiesDataModel;
+using BluePrints.Common;
 using BluePrints.Common.Base;
 using BluePrints.Common.Projections;
 using BluePrints.Common.Resources;
@@ -133,6 +134,12 @@ namespace BluePrints.ViewModels
             loaderCollection.AddLoaderDescription<JOB_COSTTYPES, JOB_COSTTYPES, int, IPrimeroEntitiesUnitOfWork>(primeroUnitOfWorkFactory, x => x.JOB_COSTTYPES);
             loaderCollection.AddLoaderDescription<JOB_COSTGROUPS, JOB_COSTGROUPS, int, IPrimeroEntitiesUnitOfWork>(primeroUnitOfWorkFactory, x => x.JOB_COSTGROUPS);
             loaderCollection.AddLoaderDescription(bluePrintsUnitOfWorkFactory, x => x.FORECAST_EACS, FORECAST_EACProjectionFunc);
+            loaderCollection.AddLoaderDescription(bluePrintsUnitOfWorkFactory, x => x.VARIATION_CONSTRUCTIONS, VARIATION_CONSTRUCTIONProjectionFunc);
+        }
+
+        protected virtual Func<IRepositoryQuery<VARIATION_CONSTRUCTION>, IQueryable<VARIATION_CONSTRUCTION>> VARIATION_CONSTRUCTIONProjectionFunc()
+        {
+            return query => query.Where(x => x.GUID_PROJECT == LoadPROJECT.GUID);
         }
 
         private Func<IRepositoryQuery<Data.PROJECT>, IQueryable<Data.PROJECT>> PROJECTProjectionFunc()
@@ -262,8 +269,6 @@ namespace BluePrints.ViewModels
             dataPointsTable = new DataTable();
             dataPointsTable.RowChanged += DataPointsTable_RowChanged;
             InitializeColumnSource(ParentViewColumns, ParentSummaries, alignedDataDateCollection, false);
-            LoadingScreenManager.ShowLoadingScreen(MainViewModel.Entities.Count);
-            LoadingScreenManager.SetMessage("Preparing View...");
 
             //construct data points table
             dataPointsTable.Columns.Add(columnFullCode, typeof(string));
@@ -283,6 +288,8 @@ namespace BluePrints.ViewModels
             dataPointsTable.Columns.Add(columnTotalActualCosts, typeof(decimal));
             dataPointsTable.Columns.Add(columnTotalActualSellCosts, typeof(decimal));
             dataPointsTable.Columns.Add(columnTotalForecastCosts, typeof(decimal));
+            DataPointsTable.Columns.Add(columnTotalApprovedVariationsHours, typeof(decimal));
+            DataPointsTable.Columns.Add(columnTotalUnapprovedVariationsHours, typeof(decimal));
 
             foreach (DateTime alignedDataDate in alignedDataDateCollection)
             {
@@ -304,7 +311,6 @@ namespace BluePrints.ViewModels
                 }
 
                 addNewJobRow(projection, job);
-                LoadingScreenManager.Progress();
             }
 
             //add dummy entries when there are actuals
@@ -334,10 +340,7 @@ namespace BluePrints.ViewModels
             }
 
             GridControlService.GridControl.EndDataUpdate();
-
-            LoadingScreenManager.SetMessage("Deleting deprecated indirect forecasts");
             MainViewModel.BaseBulkDelete(deleteJobs);
-            LoadingScreenManager.CloseLoadingScreen();
         }
 
         private void addNewJobRow(ExoSubJobProjection projection, FORECAST_JOB job, string stockCode = "")
@@ -446,16 +449,7 @@ namespace BluePrints.ViewModels
             decimal totalForecastHours = currentJobFORECAST_JOB_HOUR.Where(x => x.FORECAST_DATE > FixedDataDate).Sum(x => (decimal)x.FORECAST_HOUR);
             row[columnTotalForecastSellQuantity] = totalForecastHours;
 
-            decimal recommendedRate = 0.00m;
-            if(!row.IsNull(columnRecommendedForecastRate))
-            {
-                recommendedRate = (decimal)row[columnRecommendedForecastRate];
-                row[columnTotalForecastCosts] = recommendedRate * totalForecastHours;
-            }
-            else
-                row[columnTotalForecastCosts] = 0.00m;
-
-            //update total costs
+            //sell
             if (forecastJob.FORECAST_RATE != null)
             {
                 rate = (decimal)forecastJob.FORECAST_RATE;
@@ -466,6 +460,39 @@ namespace BluePrints.ViewModels
             {
                 row[columnTotalForecastSellCosts] = 0.00m;
                 row[columnTotalForecastSellFromProjectStart] = 0.00m;
+            }
+            
+            //cost
+            decimal recommendedRate = 0.00m;
+            if (!row.IsNull(columnRecommendedForecastRate))
+            {
+                recommendedRate = (decimal)row[columnRecommendedForecastRate];
+                row[columnTotalForecastCosts] = recommendedRate * totalForecastHours;
+            }
+            else
+                row[columnTotalForecastCosts] = 0.00m;
+
+            //variation
+            if (row.IsNull(columnTotalApprovedVariationsHours))
+            {
+                IEnumerable<VARIATION_CONSTRUCTION_ITEM> submittedVariationConstructionItem = VARIATION_CONSTRUCTIONCollection.Where(x => x.STATUS == Common.VariationConstructionStatus.Approved).SelectMany(x => x.VARIATION_CONSTRUCTION_ITEM);
+                decimal approvedHours = submittedVariationConstructionItem.Where(x => x.SUBJOB == forecastJob.SUBJOB_CODE && x.COSTGROUP == forecastJob.DISCIPLINE_CODE && x.COSTTYPE == forecastJob.COMMODITY_CODE && x.STOCKCODE == forecastJob.STOCK_ITEM).Sum(x => x.HOURS);
+                row[columnTotalApprovedVariationsHours] = approvedHours;
+            }
+            else
+            {
+                row[columnTotalApprovedVariationsHours] = 0.00m;
+            }
+
+            if(row.IsNull(columnTotalUnapprovedVariationsHours))
+            {
+                IEnumerable<VARIATION_CONSTRUCTION_ITEM> submittedVariationConstructionItem = VARIATION_CONSTRUCTIONCollection.Where(x => x.STATUS == Common.VariationConstructionStatus.Submitted).SelectMany(x => x.VARIATION_CONSTRUCTION_ITEM);
+                decimal unapprovedHours = submittedVariationConstructionItem.Where(x => x.SUBJOB == forecastJob.SUBJOB_CODE && x.COSTGROUP == forecastJob.DISCIPLINE_CODE && x.COSTTYPE == forecastJob.COMMODITY_CODE && x.STOCKCODE == forecastJob.STOCK_ITEM).Sum(x => x.HOURS);
+                row[columnTotalUnapprovedVariationsHours] = unapprovedHours;
+            }
+            else
+            {
+                row[columnTotalUnapprovedVariationsHours] = 0.00m;
             }
 
             //update actual costs
@@ -580,8 +607,8 @@ namespace BluePrints.ViewModels
             EntitiesUndoRedoManager.PauseActionId();
             List<ErrorMessage> errorMessages = new List<ErrorMessage>();
 
-            LoadingScreenManager.ShowLoadingScreen(RowData.Count());
-            LoadingScreenManager.SetMessage("Pasting Rows...");
+            Common.LoadingScreenManager.ShowLoadingScreen(RowData.Count());
+            Common.LoadingScreenManager.SetMessage("Pasting Rows...");
             foreach (var Row in RowData)
             {
                 var ColumnStrings = Row.Split('\t');
@@ -618,12 +645,12 @@ namespace BluePrints.ViewModels
                         errorMessages.Add(new ErrorMessage(fullCode, "Row is not pasted, because of invalid WBS code doesn't exists"));
                 }
 
-                LoadingScreenManager.Progress();
+                Common.LoadingScreenManager.Progress();
             }
 
             focusNewlyAddedProjectionTimer.Start();
             EntitiesUndoRedoManager.UnpauseActionId();
-            LoadingScreenManager.CloseLoadingScreen();
+            Common.LoadingScreenManager.CloseLoadingScreen();
             return errorMessages;
         }
 
@@ -1135,6 +1162,14 @@ namespace BluePrints.ViewModels
         protected static string columnTotalForecastSellCosts = "TotalForecastSellCosts";
         protected static string columnTotalActualCosts = "TotalActualCosts";
         protected static string columnTotalActualSellCosts = "TotalActualSellCosts";
+        protected static string columnTotalApprovedVariationsHours = "TotalApprovedVariationsHours";
+        protected static string columnTotalUnapprovedVariationsHours = "TotalUnapprovedVariationsHours";
+
+        protected static string columnTotalApprovedVariationsSell = "TotalApprovedVariationsSell";
+        protected static string columnTotalUnapprovedVariationsSell = "TotalUnapprovedVariationsSell";
+
+        protected static string columnTotalApprovedVariationsCost = "TotalApprovedVariationsCost";
+
         protected static string columnTotalForecastSellFromProjectStart = "TotalForecastSellFromProjectStart";
         protected static string columnDescription = "Description";
         protected static string columnStockItem = "StockItem";
@@ -1169,6 +1204,14 @@ namespace BluePrints.ViewModels
             summaries.Add(new SummaryDescriptor() { FieldName = columnTotalForecastCosts, DisplayFormat = "c0", Type = SummaryItemType.Sum });
             columns.Add(new ColumnDescriptor() { FieldName = columnTotalForecastSellFromProjectStart, Visible = false, ReadOnly = false, Header = "Total $ From Project Start", Fixed = FixedStyle.Left, Width = 75, Settings = SettingsType.Number, Mask = "c0" });
             summaries.Add(new SummaryDescriptor() { FieldName = columnTotalForecastSellFromProjectStart, DisplayFormat = "c0", Type = SummaryItemType.Sum });
+            columns.Add(new ColumnDescriptor() { FieldName = columnTotalApprovedVariationsHours, Visible = true, ReadOnly = false, Header = "Total Approved Variation Hours", Fixed = FixedStyle.Left, Width = 75, Settings = SettingsType.Number, Mask = "n0" });
+            summaries.Add(new SummaryDescriptor() { FieldName = columnTotalApprovedVariationsHours, DisplayFormat = "n0", Type = SummaryItemType.Sum });
+            columns.Add(new ColumnDescriptor() { FieldName = columnTotalUnapprovedVariationsHours, Visible = true, ReadOnly = false, Header = "Total Unapproved Variation Hours", Fixed = FixedStyle.Left, Width = 75, Settings = SettingsType.Number, Mask = "n0" });
+            summaries.Add(new SummaryDescriptor() { FieldName = columnTotalUnapprovedVariationsHours, DisplayFormat = "n0", Type = SummaryItemType.Sum });
+            columns.Add(new ColumnDescriptor() { FieldName = columnTotalApprovedVariationsCost, Visible = false, ReadOnly = false, Header = "Total Approved Variation Cost", Fixed = FixedStyle.Left, Width = 75, Settings = SettingsType.Number, Mask = "c0" });
+            summaries.Add(new SummaryDescriptor() { FieldName = columnTotalApprovedVariationsCost, DisplayFormat = "c0", Type = SummaryItemType.Sum });
+            columns.Add(new ColumnDescriptor() { FieldName = columnTotalApprovedVariationsSell, Visible = false, ReadOnly = false, Header = "Total Approved Variation Sell", Fixed = FixedStyle.Left, Width = 75, Settings = SettingsType.Number, Mask = "c0" });
+            summaries.Add(new SummaryDescriptor() { FieldName = columnTotalUnapprovedVariationsSell, DisplayFormat = "c0", Type = SummaryItemType.Sum });
 
             foreach (DateTime alignedDate in alignedDates.OrderBy(x => x))
             {
@@ -1711,6 +1754,14 @@ namespace BluePrints.ViewModels
                 return
                     (CollectionViewModel<PROJECT, PROJECT, Guid, IBluePrintsEntitiesUnitOfWork>)
                     loaderCollection.GetViewModel<PROJECT>();
+            }
+        }
+
+        public IEnumerable<VARIATION_CONSTRUCTION> VARIATION_CONSTRUCTIONCollection
+        {
+            get
+            {
+                return GetEntities<VARIATION_CONSTRUCTION>();
             }
         }
 

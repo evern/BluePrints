@@ -8,6 +8,7 @@ using BaseModel.ViewModel.Dialogs;
 using BaseModel.ViewModel.Loader;
 using BaseModel.ViewModel.UndoRedo;
 using BluePrints.BluePrintsEntitiesDataModel;
+using BluePrints.Common;
 using BluePrints.Common.Base;
 using BluePrints.Common.Projections;
 using BluePrints.Common.Resources;
@@ -67,6 +68,11 @@ namespace BluePrints.ViewModels
             base.resolveParameters(parameter);
         }
 
+        protected override void addEntitiesLoader()
+        {
+            base.addEntitiesLoader();
+        }
+
         private void ExoLoadingBackgroundWorker_DoWork(object sender, DoWorkEventArgs e)
         {
             primeroUnitOfWorkFactory = PrimeroEntitiesUnitOfWorkSource.GetUnitOfWorkFactory(LoadPROJECT.OfficeNameForExo == BluePrintsResources.OfficeMontreal);
@@ -117,7 +123,11 @@ namespace BluePrints.ViewModels
 
         protected override void raiseSummaryChanges()
         {
-            this.RaisePropertyChanged(x => x.TotalRevenue); ;
+            this.RaisePropertyChanged(x => x.TotalRevenue);
+            this.RaisePropertyChanged(x => x.RevisedRevenue);
+            this.RaisePropertyChanged(x => x.EACRevenue);
+            this.RaisePropertyChanged(x => x.UnapprovedVariationSell);
+            this.RaisePropertyChanged(x => x.ApprovedVariationSell);
             this.RaisePropertyChanged(x => x.TotalSellActual);
             this.RaisePropertyChanged(x => x.TotalCostActual);
             this.RaisePropertyChanged(x => x.TotalSellForecast);
@@ -146,6 +156,10 @@ namespace BluePrints.ViewModels
                 return totalRevenue;
             }
         }
+
+        public decimal RevisedRevenue => TotalRevenue + ApprovedVariationSell;
+
+        public decimal EACRevenue => RevisedRevenue + UnapprovedVariationSell;
 
         public decimal TotalSellActual
         {
@@ -211,12 +225,30 @@ namespace BluePrints.ViewModels
             }
         }
 
+        public decimal UnapprovedVariationSell
+        {
+            get
+            {
+                decimal UnapprovedVariationSell = VARIATION_CONSTRUCTIONCollection.Where(x => x.STATUS == VariationConstructionStatus.Submitted).Sum(x => x.ManualApprovedEstimatedValue);
+                return UnapprovedVariationSell;
+            }
+        }
+
+        public decimal ApprovedVariationSell
+        {
+            get
+            {
+                decimal approvedVariationSell = VARIATION_CONSTRUCTIONCollection.Where(x => x.STATUS == VariationConstructionStatus.Approved).Sum(x => x.ManualApprovedEstimatedValue);
+                return approvedVariationSell;
+            }
+        }
+
         public decimal EACSell => TotalSellActual + TotalSellForecast;
 
         public decimal EACCost => TotalCostActual + TotalCostForecast;
 
-        public decimal Margin => TotalRevenue - TotalCostActual;
+        public decimal Margin => EACRevenue - TotalCostActual;
 
-        public decimal MarginPercentage => TotalRevenue == 0 ? 0 : Margin / TotalRevenue;
+        public decimal MarginPercentage => EACRevenue == 0 ? 0 : Margin / EACRevenue;
     }
 }
