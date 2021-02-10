@@ -120,6 +120,8 @@ namespace BluePrints.ViewModels
         }
 
         public IEnumerable<ExoDataPoint> ActualsDetail => AllActuals;
+        protected override string strTotalCosts => "Total Sell $ Excl. Variation";
+        protected override string strTotalQty => "Total Sell Qty";
 
         protected override void raiseSummaryChanges()
         {

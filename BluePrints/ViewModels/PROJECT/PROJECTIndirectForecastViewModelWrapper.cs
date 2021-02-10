@@ -449,11 +449,32 @@ namespace BluePrints.ViewModels
             decimal totalForecastHours = currentJobFORECAST_JOB_HOUR.Where(x => x.FORECAST_DATE > FixedDataDate).Sum(x => (decimal)x.FORECAST_HOUR);
             row[columnTotalForecastSellQuantity] = totalForecastHours;
 
+            //variation
+            if (row.IsNull(columnTotalApprovedVariationsHours))
+            {
+                IEnumerable<VARIATION_CONSTRUCTION_ITEM> submittedVariationConstructionItem = VARIATION_CONSTRUCTIONCollection.Where(x => x.STATUS == Common.VariationConstructionStatus.Approved).SelectMany(x => x.VARIATION_CONSTRUCTION_ITEM);
+                decimal approvedHours = submittedVariationConstructionItem.Where(x => x.SUBJOB == forecastJob.SUBJOB_CODE && x.COSTGROUP == forecastJob.DISCIPLINE_CODE && x.COSTTYPE == forecastJob.COMMODITY_CODE && x.STOCKCODE == forecastJob.STOCK_ITEM).Sum(x => x.HOURS);
+                row[columnTotalApprovedVariationsHours] = approvedHours;
+            }
+
+            if (row.IsNull(columnTotalUnapprovedVariationsHours))
+            {
+                IEnumerable<VARIATION_CONSTRUCTION_ITEM> submittedVariationConstructionItem = VARIATION_CONSTRUCTIONCollection.Where(x => x.STATUS == Common.VariationConstructionStatus.Submitted).SelectMany(x => x.VARIATION_CONSTRUCTION_ITEM);
+                decimal unapprovedHours = submittedVariationConstructionItem.Where(x => x.SUBJOB == forecastJob.SUBJOB_CODE && x.COSTGROUP == forecastJob.DISCIPLINE_CODE && x.COSTTYPE == forecastJob.COMMODITY_CODE && x.STOCKCODE == forecastJob.STOCK_ITEM).Sum(x => x.HOURS);
+                row[columnTotalUnapprovedVariationsHours] = unapprovedHours;
+            }
+
+            decimal approvedVariationHours = (decimal)row[columnTotalApprovedVariationsHours];
             //sell
             if (forecastJob.FORECAST_RATE != null)
             {
                 rate = (decimal)forecastJob.FORECAST_RATE;
-                row[columnTotalForecastSellCosts] = rate * totalForecastHours;
+
+                decimal totalHoursExclVariationHours = (totalForecastHours - approvedVariationHours);
+                if (totalHoursExclVariationHours < 0)
+                    totalHoursExclVariationHours = 0;
+
+                row[columnTotalForecastSellCosts] = rate * totalHoursExclVariationHours;
                 row[columnTotalForecastSellFromProjectStart] = rate * forecastHoursFromProjectStart;
             }
             else
@@ -472,28 +493,10 @@ namespace BluePrints.ViewModels
             else
                 row[columnTotalForecastCosts] = 0.00m;
 
-            //variation
-            if (row.IsNull(columnTotalApprovedVariationsHours))
-            {
-                IEnumerable<VARIATION_CONSTRUCTION_ITEM> submittedVariationConstructionItem = VARIATION_CONSTRUCTIONCollection.Where(x => x.STATUS == Common.VariationConstructionStatus.Approved).SelectMany(x => x.VARIATION_CONSTRUCTION_ITEM);
-                decimal approvedHours = submittedVariationConstructionItem.Where(x => x.SUBJOB == forecastJob.SUBJOB_CODE && x.COSTGROUP == forecastJob.DISCIPLINE_CODE && x.COSTTYPE == forecastJob.COMMODITY_CODE && x.STOCKCODE == forecastJob.STOCK_ITEM).Sum(x => x.HOURS);
-                row[columnTotalApprovedVariationsHours] = approvedHours;
-            }
+            if (totalForecastHours < approvedVariationHours)
+                forecastJob.ErrorMessage = "Forecast quantity cannot be less than variation quantity";
             else
-            {
-                row[columnTotalApprovedVariationsHours] = 0.00m;
-            }
-
-            if(row.IsNull(columnTotalUnapprovedVariationsHours))
-            {
-                IEnumerable<VARIATION_CONSTRUCTION_ITEM> submittedVariationConstructionItem = VARIATION_CONSTRUCTIONCollection.Where(x => x.STATUS == Common.VariationConstructionStatus.Submitted).SelectMany(x => x.VARIATION_CONSTRUCTION_ITEM);
-                decimal unapprovedHours = submittedVariationConstructionItem.Where(x => x.SUBJOB == forecastJob.SUBJOB_CODE && x.COSTGROUP == forecastJob.DISCIPLINE_CODE && x.COSTTYPE == forecastJob.COMMODITY_CODE && x.STOCKCODE == forecastJob.STOCK_ITEM).Sum(x => x.HOURS);
-                row[columnTotalUnapprovedVariationsHours] = unapprovedHours;
-            }
-            else
-            {
-                row[columnTotalUnapprovedVariationsHours] = 0.00m;
-            }
+                forecastJob.ErrorMessage = string.Empty;
 
             //update actual costs
             if (AllActuals != null)
@@ -1177,6 +1180,8 @@ namespace BluePrints.ViewModels
         protected static string columnNote = "Note";
         protected static string columnUOM = BluePrintsResources.ForecastIndirectUOMColumn;
         protected static string columnForecastRate = columnForecastJob + "." + BindableBase.GetPropertyName(() => new FORECAST_JOB().FORECAST_RATE);
+        protected virtual string strTotalQty => "Total Hrs";
+        protected virtual string strTotalCosts => "Total $";
         protected virtual void InitializeColumnSource(ObservableCollection<ColumnDescriptor> columns, ObservableCollection<SummaryDescriptor> summaries, List<DateTime> alignedDates, bool isChild)
         {
             columns.Clear();
@@ -1194,9 +1199,9 @@ namespace BluePrints.ViewModels
             columns.Add(new ColumnDescriptor() { FieldName = columnRecommendedForecastRate, ReadOnly = true, Header = "Recommended Rate", Fixed = FixedStyle.Left, Width = 75, Settings = SettingsType.Number, Mask = "c0" });
             columns.Add(new ColumnDescriptor() { FieldName = columnForecastRate, ReadOnly = false, Header = "Rate", Fixed = FixedStyle.Left, Width = 75, Settings = SettingsType.Number, Mask = "c0" });
             columns.Add(new ColumnDescriptor() { FieldName = columnForecastJob + "." + BindableBase.GetPropertyName(() => new FORECAST_JOB().IS_FLOATING_RATE), ReadOnly = false, Header = "Floating Rate", Fixed = FixedStyle.Left, Width = 75, Settings = SettingsType.Default });
-            columns.Add(new ColumnDescriptor() { FieldName = columnTotalForecastSellQuantity, ReadOnly = true, Header = "Total Hrs", Fixed = FixedStyle.Left, Width = 75, Settings = SettingsType.Number, Mask = "n0" });
+            columns.Add(new ColumnDescriptor() { FieldName = columnTotalForecastSellQuantity, ReadOnly = true, Header = strTotalQty, Fixed = FixedStyle.Left, Width = 75, Settings = SettingsType.JobError, Mask = "n0" });
             summaries.Add(new SummaryDescriptor() { FieldName = columnTotalForecastSellQuantity, DisplayFormat = "n0", Type = SummaryItemType.Sum });
-            columns.Add(new ColumnDescriptor() { FieldName = columnTotalForecastSellCosts, ReadOnly = false, Header = "Total $", Fixed = FixedStyle.Left, Width = 75, Settings = SettingsType.Number, Mask = "c0" });
+            columns.Add(new ColumnDescriptor() { FieldName = columnTotalForecastSellCosts, ReadOnly = false, Header = strTotalCosts, Fixed = FixedStyle.Left, Width = 75, Settings = SettingsType.Number, Mask = "c0" });
             summaries.Add(new SummaryDescriptor() { FieldName = columnTotalForecastSellCosts, DisplayFormat = "c0", Type = SummaryItemType.Sum });
             columns.Add(new ColumnDescriptor() { FieldName = columnTotalActualSellCosts, ReadOnly = false, Visible = false, Header = "Total Actual Sell $", Fixed = FixedStyle.Left, Width = 75, Settings = SettingsType.Number, Mask = "c0" });
             summaries.Add(new SummaryDescriptor() { FieldName = columnTotalActualSellCosts, DisplayFormat = "c0", Type = SummaryItemType.Sum });
@@ -1219,7 +1224,7 @@ namespace BluePrints.ViewModels
 
                 if (alignedDate > FixedDataDateMonthEnd)
                 {
-                    columns.Add(new ColumnDescriptor() { FieldName = columnFieldName, Header = columnFieldName, Fixed = FixedStyle.None, Width = 60, Settings = SettingsType.ForecastFuture });
+                    columns.Add(new ColumnDescriptor() { FieldName = columnFieldName, Header = columnFieldName, Mask = "n0", Fixed = FixedStyle.None, Width = 60, Settings = SettingsType.ForecastFuture });
                     summaries.Add(new SummaryDescriptor() { FieldName = columnFieldName, DisplayFormat = "n0", Type = SummaryItemType.Sum });
                 }
             }

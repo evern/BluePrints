@@ -43,5 +43,11 @@ namespace BluePrints.Data
         [NotMapped]
         public List<KeyValuePair<string, decimal>> DatesForecasts = new List<KeyValuePair<string, decimal>>();
         public string Office => this.PROJECT.NUMBER + " " + this.PROJECT.OfficeName;
+
+        [NotMapped]
+        public decimal IsErrorMessageImageWidth => ErrorMessage == null || ErrorMessage == string.Empty ? 0 : 15;
+
+        [NotMapped]
+        public string ErrorMessage { get; set; }
     }
 }
