@@ -123,6 +123,7 @@ namespace BluePrints.Common.ViewModel.Reporting
         public Stats Actual { get; set; }
         public Stats Material { get; set; }
         public Stats PO { get; set; }
+        public Stats PreviousPO { get; set; }
         #endregion
 
         #region Progress Stats Summary

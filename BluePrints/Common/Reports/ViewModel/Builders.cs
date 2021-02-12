@@ -46,6 +46,7 @@ namespace BluePrints.Common.ViewModel.Reporting
                 List<ExoDataPoint> burnedDataPoints;
                 List<ExoDataPoint> materialDataPoints = new List<ExoDataPoint>();
                 List<ExoDataPoint> poDataPoints = new List<ExoDataPoint>();
+                List<ExoDataPoint> previousPODataPoints = new List<ExoDataPoint>();
                 DateTime loopDate = FirstAlignedDataDate;
 
                 IEnumerable<SUBJOB> subjobs = projectSUBJOBS;
@@ -67,11 +68,13 @@ namespace BluePrints.Common.ViewModel.Reporting
                 List<SUBJOB> missingSUBJOBS = new List<SUBJOB>();
 
                 burnedDataPoints = BluePrintsDataUtils.GetBurned(primeroUOW, projectNumber, actualsDataDate, qualifiedSubjobs, missingSUBJOBS, CurrencyConversion, showLoadingScreen);
-
+                DateTime previousPODataDate = new DateTime(poDataDate.Year, poDataDate.Month, 1);
+                previousPODataDate = previousPODataDate.AddDays(-1);
                 if(!timeOnly)
                 {
                     materialDataPoints = BluePrintsDataUtils.GetMaterials(primeroUOW, projectNumber, actualsDataDate, null, CurrencyConversion, showLoadingScreen);
                     poDataPoints = BluePrintsDataUtils.GetEXOPO(primeroUOW, projectNumber, poDataDate, null, showLoadingScreen);
+                    previousPODataPoints = BluePrintsDataUtils.GetEXOPO(primeroUOW, projectNumber, previousPODataDate, null, showLoadingScreen);
                 }
                 else
                 {
@@ -92,12 +95,14 @@ namespace BluePrints.Common.ViewModel.Reporting
                 projectSummaryStats.Actual = new Stats(summaryObject);
                 projectSummaryStats.Material = new Stats(summaryObject);
                 projectSummaryStats.PO = new Stats(summaryObject);
+                projectSummaryStats.PreviousPO = new Stats(summaryObject);
                 projectSummaryStats.RemainingActual = new Stats(summaryObject, true);
 
                 projectSummaryStats.Burned.SetData(burnedDataPoints);
                 projectSummaryStats.Actual.SetData(burnedDataPoints);
                 projectSummaryStats.Material.SetData(materialDataPoints);
                 projectSummaryStats.PO.SetData(poDataPoints);
+                projectSummaryStats.PreviousPO.SetData(previousPODataPoints);
 
                 projectSummaryStats.RemainingActual.SetRemainingActualData(projectSummaryStats.Reportables, projectSummaryStats.Burned.GetData());
 

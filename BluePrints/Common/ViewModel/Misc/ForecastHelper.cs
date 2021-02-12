@@ -146,7 +146,13 @@ namespace BluePrints.Common.ViewModel.Misc
                 jobForecastSummary.PORemainingCosts = currentJobPOForecasts.Where(x => x.FORECAST_VALUE != null).Sum(x => (decimal)x.FORECAST_VALUE);
             }
 
-            
+            //get previous po and populate forecasts
+            IEnumerable<SummaryStats> previousPOStats = summaryStats.Where(x => x.PreviousPO != null && x.PreviousPO.DataPoints != null);
+            if (previousPOStats != null && previousPOStats.Count() > 0)
+            {
+                IEnumerable<Common.ViewModel.Reporting.ExoDataPoint> previousPODataPoints = previousPOStats.SelectMany(x => x.PO.ExoDataPoints);
+                jobForecastSummary.PreviousOutstanding = previousPODataPoints.Where(x => x.ActualDate <= dataDate).Sum(x => x.Costs);
+            }
 
             //get relevant forecast EACs
             List<FORECAST_EAC> currentJobEACs = new List<FORECAST_EAC>();
