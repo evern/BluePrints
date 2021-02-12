@@ -103,11 +103,16 @@ namespace BluePrints.Common.ViewModel.Misc
             IEnumerable<SummaryStats> actualStats = summaryStats.Where(x => x.Actual != null && x.Actual.DataPoints != null);
             if (actualStats.Count() > 0)
             {
+                DateTime previousDataDate = new DateTime(dataDate.Year, dataDate.Month, 1);
+                previousDataDate = previousDataDate.AddDays(-1);
                 actualDataPoints.AddRange(actualStats.SelectMany(x => x.Actual.ExoDataPoints.Where(y => y.ActualDate <= dataDate)));
                 IEnumerable<ExoDataPoint> actualDataPointsPostDD = actualStats.SelectMany(x => x.Actual.ExoDataPoints.Where(y => y.ActualDate > dataDate));
+                IEnumerable<ExoDataPoint> actualDataPointsPreviousDD = actualStats.SelectMany(x => x.Actual.ExoDataPoints.Where(y => y.ActualDate <= previousDataDate));
                 jobForecastSummary.ActualUnits = actualDataPoints.Sum(x => x.Units);
                 jobForecastSummary.ActualUnitsPostDataDate = actualDataPointsPostDD.Sum(x => x.Units);
                 jobForecastSummary.ActualCostsPostDataDate = actualDataPointsPostDD.Sum(x => x.Costs);
+                jobForecastSummary.ActualUnitsPreviousDataDate = actualDataPointsPreviousDD.Sum(x => x.Units);
+                jobForecastSummary.ActualCostsPreviousDataDate = actualDataPointsPreviousDD.Sum(x => x.Costs);
                 jobForecastSummary.ActualCosts = actualDataPoints.Sum(x => x.Costs);
                 jobForecastSummary.Invoiced = actualDataPoints.Sum(x => x.InvoiceAmount);
             }
@@ -129,7 +134,7 @@ namespace BluePrints.Common.ViewModel.Misc
             {
                 IEnumerable<Common.ViewModel.Reporting.ExoDataPoint> poDataPoints = poStats.SelectMany(x => x.PO.ExoDataPoints);
                 jobForecastSummary.Outstanding = poDataPoints.Sum(x => x.Costs);
-
+                jobForecastSummary.PreviousOutstanding = poDataPoints.Where(x => x.ActualDate <= dataDate).Sum(x => x.Costs);
                 //group the pos into PO numbers group to get the total remaining cost
                 //costs is remaining cost in this case
                 var poItems = poDataPoints.GroupBy(x => new { x.PONumber, x.Subjob_Name, x.Discipline_Code, x.Commodity_Code, x.Variation_Code }).Select(g => new { g.Key.PONumber, g.Key.Subjob_Name, g.Key.Discipline_Code, g.Key.Commodity_Code, g.Key.Variation_Code }).ToList();
@@ -140,6 +145,8 @@ namespace BluePrints.Common.ViewModel.Misc
 
                 jobForecastSummary.PORemainingCosts = currentJobPOForecasts.Where(x => x.FORECAST_VALUE != null).Sum(x => (decimal)x.FORECAST_VALUE);
             }
+
+            
 
             //get relevant forecast EACs
             List<FORECAST_EAC> currentJobEACs = new List<FORECAST_EAC>();

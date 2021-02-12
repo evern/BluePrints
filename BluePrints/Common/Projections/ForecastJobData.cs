@@ -89,14 +89,19 @@ namespace BluePrints.Common.Projections
         public decimal ActualUnits { get; set; }
         public decimal ActualUnitsPostDataDate { get; set; }
         public decimal ActualCostsPostDataDate { get; set; }
+        public decimal ActualUnitsPreviousDataDate { get; set; }
+        public decimal ActualCostsPreviousDataDate { get; set; }
         public decimal Invoiced { get; set; }
         public decimal Outstanding { get; set; }
+        public decimal PreviousOutstanding { get; set; }
         public decimal P6BudgetedUnits { get; set; }
         public decimal P6RemainingUnits { get; set; }
         public decimal? EarnedUnits { get; set; }
         public decimal ProgressETC { get; set; }
         public decimal? P6RemainingUnitsOverride { get; set; }
-
+        public decimal TotalCommitment => ActualCosts + Outstanding;
+        public decimal TotalCommitmentPrevious => ActualCostsPreviousDataDate + PreviousOutstanding;
+        public decimal TotalCommitmentDifference => TotalCommitment - TotalCommitmentPrevious;
         public bool IsProductivityFloating { get; set; }
 
         public decimal Productivity { get; set; }
