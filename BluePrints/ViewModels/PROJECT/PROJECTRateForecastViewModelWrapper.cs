@@ -101,6 +101,13 @@ namespace BluePrints.ViewModels
             mainThreadDispatcher.BeginInvoke(new Action(() => loadDataPointsTable()));
         }
 
+        protected override void AssignCallBacksAndRaisePropertyChange(IEnumerable<FORECAST_JOB> entities)
+        {
+            MainViewModel.SetParentViewModel(this);
+            MainViewModel.IsPasteCellLevel = true;
+            base.AssignCallBacksAndRaisePropertyChange(entities);
+        }
+
         protected override void OnAfterAssignedCallbackAndRaisePropertyChanged()
         {
             exoLoadingBackgroundWorker.RunWorkerAsync();

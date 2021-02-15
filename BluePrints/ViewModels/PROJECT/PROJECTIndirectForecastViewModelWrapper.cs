@@ -1299,7 +1299,6 @@ namespace BluePrints.ViewModels
         protected override void AssignCallBacksAndRaisePropertyChange(IEnumerable<FORECAST_JOB> entities)
         {
             MainViewModel.SetParentViewModel(this);
-            MainViewModel.IsPasteCellLevel = false;
             base.AssignCallBacksAndRaisePropertyChange(entities);
         }
 
