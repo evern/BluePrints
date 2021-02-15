@@ -101,9 +101,9 @@ namespace BluePrints.Common.ViewModel.Misc
             //get actual data points and populate summary
             List<ExoDataPoint> actualDataPoints = new List<ExoDataPoint>();
             IEnumerable<SummaryStats> actualStats = summaryStats.Where(x => x.Actual != null && x.Actual.DataPoints != null);
+            DateTime previousDataDate = new DateTime(dataDate.Year, dataDate.Month, 1);
             if (actualStats.Count() > 0)
             {
-                DateTime previousDataDate = new DateTime(dataDate.Year, dataDate.Month, 1);
                 previousDataDate = previousDataDate.AddDays(-1);
                 actualDataPoints.AddRange(actualStats.SelectMany(x => x.Actual.ExoDataPoints.Where(y => y.ActualDate <= dataDate)));
                 IEnumerable<ExoDataPoint> actualDataPointsPostDD = actualStats.SelectMany(x => x.Actual.ExoDataPoints.Where(y => y.ActualDate > dataDate));
@@ -123,6 +123,13 @@ namespace BluePrints.Common.ViewModel.Misc
             if (materialStats != null && materialStats.Count() > 0)
             {
                 materialDataPoints.AddRange(materialStats.SelectMany(x => x.Material.ExoDataPoints.Where(y => y.ActualDate <= dataDate)));
+                IEnumerable<ExoDataPoint> materialDataPointsPostDD = materialStats.SelectMany(x => x.Material.ExoDataPoints.Where(y => y.ActualDate > dataDate));
+                IEnumerable<ExoDataPoint> materialDataPointsPreviousDD = materialStats.SelectMany(x => x.Material.ExoDataPoints.Where(y => y.ActualDate <= previousDataDate));
+
+                jobForecastSummary.ActualUnitsPostDataDate += materialDataPointsPostDD.Sum(x => x.Units);
+                jobForecastSummary.ActualCostsPostDataDate += materialDataPointsPostDD.Sum(x => x.Costs);
+                jobForecastSummary.ActualUnitsPreviousDataDate += materialDataPointsPreviousDD.Sum(x => x.Units);
+                jobForecastSummary.ActualCostsPreviousDataDate += materialDataPointsPreviousDD.Sum(x => x.Costs);
                 jobForecastSummary.ActualCosts += materialDataPoints.Where(x => x.ActualDate <= dataDate).Sum(x => x.Costs);
                 jobForecastSummary.Invoiced = materialDataPoints.Sum(x => x.InvoiceAmount);
             }
