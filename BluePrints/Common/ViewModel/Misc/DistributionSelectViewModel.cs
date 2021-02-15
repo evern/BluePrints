@@ -1,12 +1,15 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Data;
+using System.Globalization;
 using System.Linq;
 using System.Windows;
 using BluePrints.Common.Misc;
 using BluePrints.Common.Projections;
+using BluePrints.Common.Resources;
 using BluePrints.Common.ViewModel.Reporting;
 using DevExpress.Data;
+using DevExpress.Mvvm;
 using DevExpress.Mvvm.POCO;
 using DevExpress.Xpf.Editors;
 using DevExpress.Xpf.Grid;
@@ -41,22 +44,22 @@ namespace BaseModel.ViewModel.Dialogs
 
         bool isCompletelyLoaded = false;
         public DataTable SimulationTable { get; set; }
-        string entityColumnName { get; set; }
+        public string EntityColumnName { get; set; }
         GridControl gridControl;
 
         protected DistributionSelectViewModel(GridControl gridControl, IList<GridCell> selectedCells, string entityColumnName)
         {
-            this.entityColumnName = entityColumnName;
+            this.EntityColumnName = entityColumnName;
             this.gridControl = gridControl;
             curveBeginPercentage = 0;
-            hiddenColumnFieldNames.Add(this.entityColumnName);
+            hiddenColumnFieldNames.Add(this.EntityColumnName);
             var selected_cells_groupby_rows = selectedCells.GroupBy(x => x.RowHandle).Select(group => new { RowIndex = group.Key, Cells = group.ToList() });
             IEnumerable<string> columnNames = selected_cells_groupby_rows.SelectMany(x => x.Cells.Select(y => y.Column.FieldName));
             List<DateTime> columnDates = new List<DateTime>();
             foreach(string columnName in columnNames)
             {
                 DateTime parseDateTime;
-                if (DateTime.TryParse(columnName, out parseDateTime))
+                if (DateTime.TryParseExact(columnName, BluePrintsResources.ColumnDateFormat, CultureInfo.InvariantCulture, DateTimeStyles.None, out parseDateTime))
                 {
                     columnDates.Add(parseDateTime);
                 }
@@ -69,18 +72,18 @@ namespace BaseModel.ViewModel.Dialogs
             columnDates = columnDates.OrderBy(x => x).ToList();
             foreach(DateTime columnDate in columnDates)
             {
-                string columnFieldName = columnDate.Date.ToShortDateString();
+                string columnFieldName = columnDate.Date.ToString(BluePrintsResources.ColumnDateFormat);
                 if(!SimulationTable.Columns.Contains(columnFieldName))
                     SimulationTable.Columns.Add(columnFieldName, typeof(decimal));
             }
 
-            foreach(var groupedCells in selected_cells_groupby_rows)
+            foreach (var groupedCells in selected_cells_groupby_rows)
             {
                 DataRowView editing_row_view = (DataRowView)gridControl.GetRow(groupedCells.RowIndex);
                 DataRow editing_row = editing_row_view.Row;
-                T job = (T)editing_row[this.entityColumnName];
+                T job = (T)editing_row[this.EntityColumnName];
 
-                foreach(var column in groupedCells.Cells)
+                foreach (var column in groupedCells.Cells)
                 {
                     BuildRowStats(job, column.Column.FieldName, editing_row[column.Column.FieldName]);
                 }
@@ -89,6 +92,11 @@ namespace BaseModel.ViewModel.Dialogs
             distributeUnits("Equal");
             isCompletelyLoaded = true;
         }
+
+        public string SubjobName => EntityColumnName + ".SUBJOB_CODE";
+        public string DisciplineCode => EntityColumnName + ".DISCIPLINE_CODE";
+        public string CommodityCode => EntityColumnName + ".COMMODITY_CODE";
+        public string VariationCode => EntityColumnName + ".VARIATION_CODE";
 
         private void distributeUnits(string method)
         {
@@ -183,7 +191,8 @@ namespace BaseModel.ViewModel.Dialogs
             for (int i = 0; i < SimulationTable.Columns.Count; i++)
             {
                 DateTime parseDateTime;
-                if(DateTime.TryParse(SimulationTable.Columns[i].ColumnName, out parseDateTime))
+
+                if (DateTime.TryParseExact(SimulationTable.Columns[i].ColumnName, BluePrintsResources.ColumnDateFormat, CultureInfo.InvariantCulture, DateTimeStyles.None, out parseDateTime))
                 {
                     columnDictionary.Add(i, SimulationTable.Columns[i].ColumnName);
                 }
@@ -198,18 +207,18 @@ namespace BaseModel.ViewModel.Dialogs
                 return null;
 
             DataRow findExistingOrNewDataRow = (from DataRow dr in SimulationTable.Rows
-                                                where (((T)dr[entityColumnName])).SUBJOB_CODE == job.SUBJOB_CODE && ((T)dr[entityColumnName]).DISCIPLINE_CODE == job.DISCIPLINE_CODE
+                                                where (((T)dr[EntityColumnName])).SUBJOB_CODE == job.SUBJOB_CODE && ((T)dr[EntityColumnName]).DISCIPLINE_CODE == job.DISCIPLINE_CODE
                                                 select dr).FirstOrDefault();
             
             if (findExistingOrNewDataRow == null)
             {
                 findExistingOrNewDataRow = SimulationTable.NewRow();
-                findExistingOrNewDataRow[entityColumnName] = job;
+                findExistingOrNewDataRow[EntityColumnName] = job;
 
                 SimulationTable.Rows.Add(findExistingOrNewDataRow);
             }
 
-            if(value != DBNull.Value)
+            if (value != DBNull.Value)
                 findExistingOrNewDataRow[fieldName] = (decimal)value;
 
             return findExistingOrNewDataRow;
@@ -227,7 +236,7 @@ namespace BaseModel.ViewModel.Dialogs
             if (!hiddenColumnFieldNames.Any(x => x == e.Column.FieldName))
             {
                 DateTime parsedate;
-                if (DateTime.TryParse(e.Column.FieldName, out parsedate))
+                if (DateTime.TryParseExact(e.Column.FieldName, BluePrintsResources.ColumnDateFormat, CultureInfo.InvariantCulture, DateTimeStyles.None, out parsedate))
                 {
                     e.Column.CellTemplate = Application.Current.Resources["forecastTemplateFuture"] as DataTemplate;
                     e.Column.FilterPopupMode = FilterPopupMode.Excel;
@@ -240,6 +249,7 @@ namespace BaseModel.ViewModel.Dialogs
             }
             else
             {
+                e.Column.Visible = false;
                 e.Cancel = true;
             }
         }

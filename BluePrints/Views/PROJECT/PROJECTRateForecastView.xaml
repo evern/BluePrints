@@ -200,15 +200,13 @@
     <Grid Style="{StaticResource CollectionView.RootContainer}">
         <dxmvvm:Interaction.Behaviors>
             <dxc:FilteringBehavior x:Name="filteringBehavior" SourceType="{x:Type viewmodel:CostFilteringViewModel}" />
-            <dx:DialogService x:Name="CustomPODialogService">
-                <dx:DialogService.DialogStyle>
+            <dxc:DialogService x:Name="DistributionDialogService">
+                <dxc:DialogService.DialogStyle>
                     <Style TargetType="dx:DXDialogWindow">
                         <Setter Property="SizeToContent" Value="WidthAndHeight" />
-                        <Setter Property="MinWidth" Value="200" />
-                        <Setter Property="MinHeight" Value="200" />
                     </Style>
-                </dx:DialogService.DialogStyle>
-            </dx:DialogService>
+                </dxc:DialogService.DialogStyle>
+            </dxc:DialogService>
             <dxmvvm:OpenFileDialogService RestorePreviouslySelectedDirectory="True" />
         </dxmvvm:Interaction.Behaviors>
         <dxb:BarManager>

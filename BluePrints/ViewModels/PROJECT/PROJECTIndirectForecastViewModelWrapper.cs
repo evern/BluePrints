@@ -978,7 +978,7 @@ namespace BluePrints.ViewModels
                 foreach (DataColumn column in DataPointsTable.Columns)
                 {
                     DateTime dateTime;
-                    if (DateTime.TryParseExact(column.ColumnName, "dd-MMM-yy", CultureInfo.InvariantCulture, DateTimeStyles.None, out dateTime))
+                    if (DateTime.TryParseExact(column.ColumnName, BluePrintsResources.ColumnDateFormat, CultureInfo.InvariantCulture, DateTimeStyles.None, out dateTime))
                     {
                         decimal dateValue = row[column.ColumnName] == DBNull.Value ? 0.00m : ((decimal)row[column.ColumnName]);
                         forecastJob.DatesForecasts.Add(new KeyValuePair<string, decimal>(column.ColumnName, dateValue));

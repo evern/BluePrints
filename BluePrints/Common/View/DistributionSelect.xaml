@@ -40,11 +40,14 @@
                 <dxlc:LayoutItem>
                     <dxg:GridControl x:Name="gridControl" MaxHeight="500" AutoGenerateColumns="AddNew" ItemsSource="{Binding SimulationTable}">
                         <dxmvvm:Interaction.Behaviors>
-                            <dxmvvm:EventToCommand Command="{Binding DataContext.AutoGeneratingPercentageColumnsCommand, ElementName=userControl}" EventName="AutoGeneratingColumn" PassEventArgsToCommand="True" />
+                            <dxmvvm:EventToCommand Command="{Binding AutoGeneratingPercentageColumnsCommand}" EventName="AutoGeneratingColumn" PassEventArgsToCommand="True" />
                         </dxmvvm:Interaction.Behaviors>
                         <dxg:GridControl.Columns>
-                            <dxg:GridColumn FieldName="Entity.SubJob.Code" Fixed="Left" Header="Subjob" ReadOnly="True" VisibleIndex="10" />
-                            <dxg:GridColumn FieldName="Entity.Discipline.Code" Fixed="Left" Header="Discipline" ReadOnly="True" VisibleIndex="20" />
+                            <dxg:GridColumn FieldName="{Binding EntityColumnName}" Visible="False" Fixed="Left" Header="Entity" ReadOnly="True" VisibleIndex="1" />
+                            <dxg:GridColumn FieldName="{Binding SubjobName}" Fixed="Left" Header="Subjob" ReadOnly="True" VisibleIndex="10" />
+                            <dxg:GridColumn FieldName="{Binding DisciplineCode}" Fixed="Left" Header="Discipline" ReadOnly="True" VisibleIndex="20" />
+                            <dxg:GridColumn FieldName="{Binding CommodityCode}" Fixed="Left" Header="Commodity" ReadOnly="True" VisibleIndex="30" />
+                            <dxg:GridColumn FieldName="{Binding VariationCode}" Fixed="Left" Header="Variation" ReadOnly="True" VisibleIndex="40" />
                         </dxg:GridControl.Columns>
                         <dxg:GridControl.View>
                             <dxg:TableView x:Name="tableView" AllowEditing="False" AllowGrouping="False" NewItemRowPosition="None" ShowTotalSummary="True" />
