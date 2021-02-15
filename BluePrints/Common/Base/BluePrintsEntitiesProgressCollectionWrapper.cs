@@ -256,7 +256,7 @@ namespace BluePrints.Common.Base
         List<ProjectUnitOfWorkContext> projectContexts;
         private List<ProjectUnitOfWorkContext> getProjectContexts()
         {
-            if(projectContexts == null)
+            if (projectContexts == null)
             {
                 IPrimeroEntitiesUnitOfWork perthUOW = PrimeroEntitiesUnitOfWorkSource.GetUnitOfWorkFactory().CreateUnitOfWork();
                 IPrimeroEntitiesUnitOfWork montrealUOW = PrimeroEntitiesUnitOfWorkSource.GetUnitOfWorkFactory(true).CreateUnitOfWork();
@@ -316,7 +316,7 @@ namespace BluePrints.Common.Base
         /// </summary>
         /// <param name="projectionEntity"></param>
         /// <param name="isNewEntity"></param>
-        protected virtual void OnAfterEntitySavedCallBack(TMainProjectionEntity projectionEntity,TMainEntity entity, bool isNewEntity)
+        protected virtual void OnAfterEntitySavedCallBack(TMainProjectionEntity projectionEntity, TMainEntity entity, bool isNewEntity)
         {
             //because undo/redo operation still relies on mainviewmodel progress needs to be re-checked even though we had onExistingRowAddUndoAndSaveIsContinue
             if (!manuallySaveProgressOnAfterBaselineItemSaved && projectionEntity.ShouldSaveProgress)
@@ -324,12 +324,12 @@ namespace BluePrints.Common.Base
                 saveProgressItem(projectionEntity);
             }
 
-            if(projectionEntity.ShouldSaveProgressETC)
+            if (projectionEntity.ShouldSaveProgressETC)
             {
                 saveProgressETC(projectionEntity);
             }
         }
-        
+
         private void saveProgressItem(TMainProjectionEntity projection)
         {
             IEnumerable<PROGRESS_ITEM> newPRORESS_ITEMS = projection.GetExistingOrNewEditedProgresses(PROGRESS_ITEMSCollectionViewModel.FindActualProjectionByExpression);
@@ -392,7 +392,7 @@ namespace BluePrints.Common.Base
         protected virtual void onMainViewModelFirstLoaded(object sender, EventArgs e)
         {
             onMainViewModelFirstLoadedTimer.Stop();
-            if(!statsCalculatedOnProjection)
+            if (!statsCalculatedOnProjection)
             {
                 InitializeSummarizer();
                 IsLoading = true;
@@ -433,7 +433,7 @@ namespace BluePrints.Common.Base
 
         protected virtual void BackgroundWorkerBuildStats()
         {
-            if(fullSummarizer != null)
+            if (fullSummarizer != null)
             {
                 fullSummarizer.BuildBudgeted();
                 fullSummarizer.BuildEarned();
@@ -456,7 +456,7 @@ namespace BluePrints.Common.Base
 
         protected override void BackgroundRefresh()
         {
-            if(IsCalculationCompleted)
+            if (IsCalculationCompleted)
                 base.BackgroundRefresh();
         }
         #endregion
@@ -464,7 +464,7 @@ namespace BluePrints.Common.Base
         #region Set current data date
         protected void SetPROGRESStoCurrentDateOnLoaded(PROGRESS entity)
         {
-            if(entity == null && !SupressCompulsoryEntityNotFoundMessage)
+            if (entity == null && !SupressCompulsoryEntityNotFoundMessage)
                 mainThreadDispatcher.BeginInvoke(new Action(() => MessageBoxService.ShowMessage("Live progress not found")));
 
             loadPROGRESS = entity;
@@ -489,7 +489,7 @@ namespace BluePrints.Common.Base
                 {
                     DateTime newValue = value.Date.AddDays(1).AddSeconds(-1);
 
-                    if(isUseReportDate)
+                    if (isUseReportDate)
                     {
                         if (loadPROGRESS.REPORT_DATE == newValue)
                             return;
@@ -607,7 +607,7 @@ namespace BluePrints.Common.Base
             if (isBusy)
                 return;
 
-            if(BluePrintsUtils.ProgressDateChange(navigationType, loadPROGRESS, isUseReportDate))
+            if (BluePrintsUtils.ProgressDateChange(navigationType, loadPROGRESS, isUseReportDate))
                 delayedPROGRESSSavingDispatcher.Start();
         }
         #endregion
@@ -752,9 +752,9 @@ namespace BluePrints.Common.Base
             bluePrintsUOW.SaveChanges();
 
             LoadingScreenManager.ShowLoadingScreen(loadPROGRESS.PROGRESS_ITEM.Count());
-                LoadingScreenManager.SetMessage("Phase 1 of 2: Creating Backup of Progress");
+            LoadingScreenManager.SetMessage("Phase 1 of 2: Creating Backup of Progress");
 
-            if(loadPROGRESS.PROGRESS_ITEM != null)
+            if (loadPROGRESS.PROGRESS_ITEM != null)
                 foreach (PROGRESS_ITEM progress_item in loadPROGRESS.PROGRESS_ITEM)
                 {
                     PROGRESS_ITEM newPROGRESS_ITEM = new PROGRESS_ITEM();
@@ -962,7 +962,7 @@ namespace BluePrints.Common.Base
                 DateTime taskStartDate;
                 DateTime taskEndDate;
                 TimeSpan interval = ChronologicalHelpers.ConvertProgressIntervalToPeriod(loadPROGRESS);
-                DateTime progressUpperLimitDate = loadPROGRESS.DATA_DATE.AddDays(-1 *interval.Days);
+                DateTime progressUpperLimitDate = loadPROGRESS.DATA_DATE.AddDays(-1 * interval.Days);
 
                 if (task != null)
                 {
@@ -1112,7 +1112,7 @@ namespace BluePrints.Common.Base
                 decimal proRate = simulation.MaxUnits / spareSimulations.Sum(x => x.MaxUnits);
                 decimal proratedParity = (totalParity * proRate);
                 decimal postAdjustmentUnits = simulation.PostPushUnits + proratedParity;
-                if(proratedParity < 0)
+                if (proratedParity < 0)
                 {
                     if (postAdjustmentUnits < 0)
                     {
@@ -1122,7 +1122,7 @@ namespace BluePrints.Common.Base
                 }
                 else
                 {
-                    if(postAdjustmentUnits > simulation.MaxUnits)
+                    if (postAdjustmentUnits > simulation.MaxUnits)
                     {
                         proratedParity = (simulation.MaxUnits - simulation.PostPushUnits);
                         postAdjustmentUnits = simulation.MaxUnits;
@@ -1202,16 +1202,16 @@ namespace BluePrints.Common.Base
         private void removeOrReduceDataPointsForTasks(IEnumerable<PROGRESS_ITEM> progresses, decimal reduceUnits)
         {
             reduceUnits *= -1;
-            foreach(PROGRESS_ITEM progress in progresses.OrderByDescending(x => x.EARNED_DATE))
-            { 
-                if(reduceUnits > 0)
+            foreach (PROGRESS_ITEM progress in progresses.OrderByDescending(x => x.EARNED_DATE))
+            {
+                if (reduceUnits > 0)
                 {
                     if (progress.EARNED_UNITS < reduceUnits)
                     {
                         reduceUnits -= progress.EARNED_UNITS;
                         progress.EARNED_UNITS = 0;
                     }
-                    else if(progress.EARNED_UNITS >= reduceUnits)
+                    else if (progress.EARNED_UNITS >= reduceUnits)
                     {
                         progress.EARNED_UNITS -= reduceUnits;
                         reduceUnits = 0;
@@ -1289,13 +1289,13 @@ namespace BluePrints.Common.Base
                 IReportable current_progress_deliverable = deliverable as IReportable;
                 if (current_progress_deliverable == null)
                     continue;
-                
+
                 bool isNullProgress = false;
                 //comment this off because duration needs to be calculated even if deliverable is not progressed
                 if (current_progress_deliverable.PROGRESS_ITEM_UpToCurrentDataDate == null || current_progress_deliverable.PROGRESS_ITEM_UpToCurrentDataDate.Where(x => x.EARNED_UNITS > 0).Count() == 0)
                     isNullProgress = true;
 
-                DateTime? first_progress_date = isNullProgress ? (DateTime?)null :  current_progress_deliverable.PROGRESS_ITEM_UpToCurrentDataDate.Where(x => x.EARNED_UNITS > 0).Min(x => x.EARNED_DATE);
+                DateTime? first_progress_date = isNullProgress ? (DateTime?)null : current_progress_deliverable.PROGRESS_ITEM_UpToCurrentDataDate.Where(x => x.EARNED_UNITS > 0).Min(x => x.EARNED_DATE);
                 DateTime? last_progress_date = isNullProgress ? (DateTime?)null : current_progress_deliverable.PROGRESS_ITEM_UpToCurrentDataDate.Where(x => x.EARNED_UNITS > 0).Max(x => x.EARNED_DATE);
 
                 decimal total_percentage_to_date;
@@ -1368,7 +1368,7 @@ namespace BluePrints.Common.Base
                             continue;
 
                         errorMessages.Add(new P6ErrorMessage("Pushed", P6TASK.task_code, current_progress_deliverable.Deliverable_Name, current_assignment_units, last_progress_date));
-                        
+
                         //set activity start date
                         DateTime? first_earned_week_start_date = isNullProgress ? (DateTime?)null : ((DateTime)first_progress_date).AddDays(-1 * intervalTimeSpan.Days).AddSeconds(1);
                         bool any_write_exclusions = P6TASK.TASKACTV.Any(x => x.ACTVCODE.short_name == P6_BluePrints_Override.NONE.ToString()) || P6TASK.TASKACTV.Any(x => x.ACTVCODE.short_name == P6_BluePrints_Override.FINISH.ToString());
@@ -1376,8 +1376,8 @@ namespace BluePrints.Common.Base
                         if ((P6TASK.act_start_date == null || !any_write_exclusions))
                             if (!isNullProgress)
                             {
-                                if(P6TASK.act_start_date == null || P6TASK.act_start_date > ((DateTime)first_earned_week_start_date).Date)
-                                    P6TASK.act_start_date = ((DateTime)first_earned_week_start_date).Date.AddHours(6);
+                                if (P6TASK.act_start_date == null || P6TASK.act_start_date > ((DateTime)first_earned_week_start_date).Date)
+                                    P6TASK.act_start_date = ((DateTime)first_earned_week_start_date).Date;
                             }
 
                         //if this is the first time processing the task
@@ -1398,7 +1398,7 @@ namespace BluePrints.Common.Base
 
                         if (P6TASK.target_work_qty <= 0)
                         {
-                            if(!isDeliverableCancelled)
+                            if (!isDeliverableCancelled)
                             {
                                 errorMessages.Add(new P6ErrorMessage("No budgeted units", P6TASK.task_code, "", 0, null));
                                 break;
@@ -1420,7 +1420,7 @@ namespace BluePrints.Common.Base
                             #region Commercially approved variation temporary fix
                             //this happens when variation is not pushed to P6, so we have to re-Adjust P6 units act_work_qty back to target_work_qty and set remain_work_qty as 0
                             P6TASK.act_work_qty = P6TASK.target_work_qty;
-                            P6TASK.remain_work_qty = 0; 
+                            P6TASK.remain_work_qty = 0;
                             #endregion
 
                             //if (!isDeliverableCancelled)
@@ -1447,9 +1447,9 @@ namespace BluePrints.Common.Base
 
                                     //find a date where all deliverables has achieved p6 assignment high value percentage
                                     DateTime? latestFirstHighestPercentageOccuranceDate = null;
-                                    foreach(var currentActivityValidReportable in currentActivityValidReportables)
+                                    foreach (var currentActivityValidReportable in currentActivityValidReportables)
                                     {
-                                        if(currentActivityValidReportable.Stats.Earned.CumulativeDataPoints.Any(x => x.UnitsPercentage >= p6_assignment.HIGH_VALUE))
+                                        if (currentActivityValidReportable.Stats.Earned.CumulativeDataPoints.Any(x => x.UnitsPercentage >= p6_assignment.HIGH_VALUE))
                                         {
                                             DateTime firstPercentageOccuranceDate = currentActivityValidReportable.Stats.Earned.CumulativeDataPoints.OrderBy(x => x.ProgressDate).First(x => x.UnitsPercentage >= p6_assignment.HIGH_VALUE).ProgressDate;
                                             if (latestFirstHighestPercentageOccuranceDate == null || latestFirstHighestPercentageOccuranceDate < firstPercentageOccuranceDate)
@@ -1457,7 +1457,7 @@ namespace BluePrints.Common.Base
                                         }
                                     }
 
-                                    if(latestFirstHighestPercentageOccuranceDate != null)
+                                    if (latestFirstHighestPercentageOccuranceDate != null)
                                     {
                                         P6TASK.act_end_date = latestFirstHighestPercentageOccuranceDate;
                                         P6TASK.late_start_date = null;
@@ -1472,9 +1472,9 @@ namespace BluePrints.Common.Base
                             P6TASK.status_code = P6TASKSTATUS.TK_Active.ToString();
                             //when user select none or user select finish only, don't update start
                             any_write_exclusions = P6TASK.TASKACTV.Any(x => x.ACTVCODE.short_name == P6_BluePrints_Override.NONE.ToString()) || P6TASK.TASKACTV.Any(x => x.ACTVCODE.short_name == P6_BluePrints_Override.FINISH.ToString());
-                            if (P6TASK.act_start_date == null || !any_write_exclusions)
+                            if (P6TASK.act_start_date == null && !any_write_exclusions)
                                 if (!isNullProgress)
-                                    P6TASK.act_start_date = ((DateTime)first_progress_date).Date.AddHours(6);
+                                    P6TASK.act_start_date = ((DateTime)first_progress_date).Date;
 
                             P6TASK.act_end_date = null;
 
@@ -1531,7 +1531,7 @@ namespace BluePrints.Common.Base
                     else
                     {
                         decimal assignedUnits = 0;
-                        if(deliverable.Total_Units > 0)
+                        if (deliverable.Total_Units > 0)
                         {
                             foreach (PROGRESS_ITEM progressItem in current_progress_deliverable.PROGRESS_ITEM_UpToCurrentDataDate)
                             {
@@ -1584,7 +1584,7 @@ namespace BluePrints.Common.Base
 
             List<StatsCalculationType> calcTypes = new List<StatsCalculationType>();
             calcTypes.Add(StatsCalculationType.Earned);
-            foreach(var displayEntity in Entities)
+            foreach (var displayEntity in Entities)
             {
                 displayEntity.BuildStats(1, calcTypes);
             }
@@ -1594,7 +1594,7 @@ namespace BluePrints.Common.Base
             IEnumerable<TASK> task_source = scheduling_view_model.TASK_Source;
 
             //reset all tasks target to 0
-            foreach(TASK task in task_source)
+            foreach (TASK task in task_source)
             {
                 task.act_work_qty = 0;
                 task.target_work_qty = 0;
@@ -1698,7 +1698,7 @@ namespace BluePrints.Common.Base
             if (predecessor_relationships.Count() > 0)
             {
                 IEnumerable<TASK> predecessor_tasks = task_source.Where(x => predecessor_relationships.Any(y => y.pred_task_id == x.task_id));
-                foreach(TASK predecessor_task in predecessor_tasks)
+                foreach (TASK predecessor_task in predecessor_tasks)
                 {
                     task_collector.Add(predecessor_task);
                     recurseGetPredecessorTask(predecessor_task, task_source, taskpred_source, task_collector);
@@ -1727,7 +1727,7 @@ namespace BluePrints.Common.Base
 
         protected abstract void dispose_scheduling_view_model();
         #endregion
-        
+
         #region Custom Summary
         private decimal cumulative_total_units = 0;
         private decimal cumulative_baseline_units = 0;
@@ -1784,7 +1784,7 @@ namespace BluePrints.Common.Base
                     }
                     else if ((((GridSummaryItem)e.Item).FieldName) == BindableBase.GetPropertyName(() => new BASELINE_ITEMProgress().Baseline_Percentage))
                     {
-                        if(cumulative_baseline_units > 0)
+                        if (cumulative_baseline_units > 0)
                         {
                             IReportable reportable = ((IReportable)e.Row);
                             cumulative_current_units += reportable.Earned_Units_ToDate;
@@ -1823,10 +1823,10 @@ namespace BluePrints.Common.Base
         {
             calculatePlannedBackgroundWorker.CancelAsync();
             progressSaveBackgroundWorker.CancelAsync();
-//            if (loadPROJECT != null)
-//#pragma warning disable CS4014 // Because this call is not awaited, execution of the current method continues before the call is completed
-//                BluePrintsContextHelper.AsyncRefreshDeliverablesDataPointsByProject(loadPROJECT.NUMBER);
-//#pragma warning restore CS4014 // Because this call is not awaited, execution of the current method continues before the call is completed
+            //            if (loadPROJECT != null)
+            //#pragma warning disable CS4014 // Because this call is not awaited, execution of the current method continues before the call is completed
+            //                BluePrintsContextHelper.AsyncRefreshDeliverablesDataPointsByProject(loadPROJECT.NUMBER);
+            //#pragma warning restore CS4014 // Because this call is not awaited, execution of the current method continues before the call is completed
             base.OnClose(e);
         }
 
@@ -2007,7 +2007,7 @@ namespace BluePrints.Common.Base
             else
             {
                 ProjectUnitOfWorkContext projectContext = getProjectContexts().FirstOrDefault(x => x.ProjectNumber == SelectedEntity.Project_Number);
-                if(projectContext != null)
+                if (projectContext != null)
                 {
                     BluePrintsUtils.BookTime(SelectedEntity, projectContext.PrimeroEntitiesUnitOfWork, exoAuthorisations, SelectedEntity.Deliverable_Name, MessageBoxService, BookTimeDialogService, projectContext.Project, USERCollection);
                 }
