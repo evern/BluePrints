@@ -790,8 +790,14 @@ namespace BluePrints.ViewModels
         private bool basePasteData(DataRow newRow, ColumnBase copyColumn, string pasteData, bool isLastRow, out List<ErrorMessage> errorMessages)
         {
             errorMessages = new List<ErrorMessage>();
+            bool isForecastJobExists = false;
             if (!newRow.IsNull(columnFullCode) && ((FORECAST_JOB)newRow[columnForecastJob]).GUID == Guid.Empty)
-                findExistingOrAddNewFORECAST_JOB(newRow);
+                isForecastJobExists = findExistingOrAddNewFORECAST_JOB(newRow);
+            else
+                isForecastJobExists = true;
+
+            if (!isForecastJobExists)
+                return false;
 
             DateTime columnDateTime;
             if(copyColumn.FieldName == columnFullCode)
@@ -908,10 +914,10 @@ namespace BluePrints.ViewModels
             }
         }
 
-        private void findExistingOrAddNewFORECAST_JOB(DataRow row)
+        private bool findExistingOrAddNewFORECAST_JOB(DataRow row)
         {
             if (row[columnFullCode] == DBNull.Value)
-                return;
+                return false;
 
             FORECAST_JOB editFORECAST_JOB = row[columnForecastJob] == DBNull.Value ? null : (FORECAST_JOB)row[columnForecastJob];
 
@@ -943,7 +949,10 @@ namespace BluePrints.ViewModels
                 MainViewModel.Save(editFORECAST_JOB);
                 row[columnForecastJob] = editFORECAST_JOB;
                 //add undo must be after so that Guid is populated
+                return true;
             }
+            else
+                return false;
         }
 
         private DataRow createNewDataRowFromFORECAST_JOB(FORECAST_JOB job)
