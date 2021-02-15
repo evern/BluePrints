@@ -5,6 +5,7 @@ using System.Linq;
 using System.Windows;
 using BluePrints.Common.Misc;
 using BluePrints.Common.Projections;
+using BluePrints.Common.ViewModel.Reporting;
 using DevExpress.Data;
 using DevExpress.Mvvm.POCO;
 using DevExpress.Xpf.Editors;
@@ -12,11 +13,12 @@ using DevExpress.Xpf.Grid;
 
 namespace BaseModel.ViewModel.Dialogs
 {
-    public class DistributionSelectViewModel
+    public class DistributionSelectViewModel<T>
+        where T : IHaveWBSCodeString
     {
-        public static DistributionSelectViewModel Create(GridControl gridControl, IList<GridCell> selectedCells)
+        public static DistributionSelectViewModel<T> Create(GridControl gridControl, IList<GridCell> selectedCells, string entityColumn)
         {
-            return ViewModelSource.Create(() => new DistributionSelectViewModel(gridControl, selectedCells));
+            return ViewModelSource.Create(() => new DistributionSelectViewModel<T>(gridControl, selectedCells, entityColumn));
         }
 
         List<string> hiddenColumnFieldNames = new List<string>();
@@ -39,14 +41,15 @@ namespace BaseModel.ViewModel.Dialogs
 
         bool isCompletelyLoaded = false;
         public DataTable SimulationTable { get; set; }
-        string columnEntity = "Entity";
+        string entityColumnName { get; set; }
         GridControl gridControl;
 
-        protected DistributionSelectViewModel(GridControl gridControl, IList<GridCell> selectedCells)
+        protected DistributionSelectViewModel(GridControl gridControl, IList<GridCell> selectedCells, string entityColumnName)
         {
+            this.entityColumnName = entityColumnName;
             this.gridControl = gridControl;
             curveBeginPercentage = 0;
-            hiddenColumnFieldNames.Add(columnEntity);
+            hiddenColumnFieldNames.Add(this.entityColumnName);
             var selected_cells_groupby_rows = selectedCells.GroupBy(x => x.RowHandle).Select(group => new { RowIndex = group.Key, Cells = group.ToList() });
             IEnumerable<string> columnNames = selected_cells_groupby_rows.SelectMany(x => x.Cells.Select(y => y.Column.FieldName));
             List<DateTime> columnDates = new List<DateTime>();
@@ -62,7 +65,7 @@ namespace BaseModel.ViewModel.Dialogs
             }
 
             SimulationTable = new DataTable();
-            SimulationTable.Columns.Add("Entity", typeof(ForecastJobData));
+            SimulationTable.Columns.Add(entityColumnName, typeof(T));
             columnDates = columnDates.OrderBy(x => x).ToList();
             foreach(DateTime columnDate in columnDates)
             {
@@ -75,7 +78,7 @@ namespace BaseModel.ViewModel.Dialogs
             {
                 DataRowView editing_row_view = (DataRowView)gridControl.GetRow(groupedCells.RowIndex);
                 DataRow editing_row = editing_row_view.Row;
-                ForecastJobData job = (ForecastJobData)editing_row[columnEntity];
+                T job = (T)editing_row[this.entityColumnName];
 
                 foreach(var column in groupedCells.Cells)
                 {
@@ -189,19 +192,19 @@ namespace BaseModel.ViewModel.Dialogs
             return columnDictionary;
         }
 
-        private DataRow BuildRowStats(ForecastJobData job, string fieldName, object value)
+        private DataRow BuildRowStats(T job, string fieldName, object value)
         {
             if (SimulationTable == null)
                 return null;
 
             DataRow findExistingOrNewDataRow = (from DataRow dr in SimulationTable.Rows
-                                                where (((ForecastJobData)dr[columnEntity])).Projection.SubJobCode == job.Projection.SubJobCode && ((ForecastJobData)dr[columnEntity]).Projection.DisciplineCode == job.Projection.DisciplineCode
+                                                where (((T)dr[entityColumnName])).SUBJOB_CODE == job.SUBJOB_CODE && ((T)dr[entityColumnName]).DISCIPLINE_CODE == job.DISCIPLINE_CODE
                                                 select dr).FirstOrDefault();
             
             if (findExistingOrNewDataRow == null)
             {
                 findExistingOrNewDataRow = SimulationTable.NewRow();
-                findExistingOrNewDataRow[columnEntity] = job;
+                findExistingOrNewDataRow[entityColumnName] = job;
 
                 SimulationTable.Rows.Add(findExistingOrNewDataRow);
             }

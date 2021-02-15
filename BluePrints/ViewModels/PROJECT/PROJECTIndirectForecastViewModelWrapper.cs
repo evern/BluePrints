@@ -234,7 +234,7 @@ namespace BluePrints.ViewModels
         }
         #endregion
         #region View Properties
-        DataTable dataPointsTable = null;
+        protected DataTable dataPointsTable = null;
         public DataTable DataPointsTable
         {
             get
@@ -780,7 +780,7 @@ namespace BluePrints.ViewModels
             }
         }
 
-        private void pasteCellData(GridControl gridControl, TableView gridTableView, string[] RowData, out List<ErrorMessage> errorMessages)
+        protected void pasteCellData(GridControl gridControl, TableView gridTableView, string[] RowData, out List<ErrorMessage> errorMessages)
         {
             EntitiesUndoRedoManager.PauseActionId();
             GridControlHelpers.PasteCellData(gridControl, gridTableView, RowData, basePasteData, out errorMessages);
@@ -1100,26 +1100,7 @@ namespace BluePrints.ViewModels
                         forecastHours = convertUnits;
                 }
 
-                FORECAST_JOB forecastJob = (FORECAST_JOB)row[columnForecastJob];
-                FORECAST_JOB_HOUR forecastJobHour = FORECAST_JOB_HOURCollection.FirstOrDefault(x => x.GUID_FORECAST_JOB == forecastJob.GUID && x.FORECAST_DATE.Date == dateTime.Date);
-                FORECAST_JOB_HOUR editForecastJobHour;
-                if (forecastJobHour == null)
-                    editForecastJobHour = new FORECAST_JOB_HOUR();
-                else
-                    editForecastJobHour = forecastJobHour;
-
-                editForecastJobHour.FORECAST_DATE = dateTime.Date;
-                editForecastJobHour.GUID_FORECAST_JOB = forecastJob.GUID;
-                editForecastJobHour.FORECAST_HOUR = forecastHours;
-                FORECAST_JOB_HOURCollectionViewModel.Save(editForecastJobHour);
-
-                //for undo/redo
-                if (forecastHours == null)
-                    row[fieldName] = DBNull.Value;
-                else
-                    row[fieldName] = forecastHours;
-
-                updatedForecastJobFromDataRow(row);
+                findExistingOrAddNewForecastJobHours(row, fieldName, dateTime, forecastHours);
             }
             else if(fieldName.Contains(columnForecastJob))
             {
@@ -1138,6 +1119,30 @@ namespace BluePrints.ViewModels
 
             if (!skipUpdate)
                 updateRowReadOnlyAttributes(row);
+        }
+        
+        protected void findExistingOrAddNewForecastJobHours(DataRow row, string fieldName, DateTime dateTime, decimal? forecastHours)
+        {
+            FORECAST_JOB forecastJob = (FORECAST_JOB)row[columnForecastJob];
+            FORECAST_JOB_HOUR forecastJobHour = FORECAST_JOB_HOURCollection.FirstOrDefault(x => x.GUID_FORECAST_JOB == forecastJob.GUID && x.FORECAST_DATE.Date == dateTime.Date);
+            FORECAST_JOB_HOUR editForecastJobHour;
+            if (forecastJobHour == null)
+                editForecastJobHour = new FORECAST_JOB_HOUR();
+            else
+                editForecastJobHour = forecastJobHour;
+
+            editForecastJobHour.FORECAST_DATE = dateTime.Date;
+            editForecastJobHour.GUID_FORECAST_JOB = forecastJob.GUID;
+            editForecastJobHour.FORECAST_HOUR = forecastHours;
+            FORECAST_JOB_HOURCollectionViewModel.Save(editForecastJobHour);
+            
+            //for undo/redo
+            if (forecastHours == null)
+                row[fieldName] = DBNull.Value;
+            else
+                row[fieldName] = forecastHours;
+
+            updatedForecastJobFromDataRow(row);
         }
 
         private DataRow searchRow(Guid guid)

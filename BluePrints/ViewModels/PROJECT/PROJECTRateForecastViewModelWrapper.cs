@@ -28,6 +28,7 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Data;
+using System.Globalization;
 using System.Linq;
 using System.Text.RegularExpressions;
 using System.Windows;
@@ -117,6 +118,85 @@ namespace BluePrints.ViewModels
                     return new DateTime(forecastStartDate.Year, forecastStartDate.Month, 1).AddDays(-1);
                 }
             }
+        }
+
+        private DevExpress.Mvvm.IDialogService DistributionDialogService
+        {
+            get { return this.GetRequiredService<DevExpress.Mvvm.IDialogService>("DistributionDialogService"); }
+        }
+
+        public bool CanDistributeUnits(object parameter)
+        {
+            if (IsLoading)
+                return false;
+
+            GridControl gridControl = (GridControl)parameter;
+            TableView tableView = gridControl.View as TableView;
+            var selected_cells = tableView.GetSelectedCells();
+            if (selected_cells.Count == 0)
+            {
+                selected_cells = Enumerable.Range(0, gridControl.VisibleRowCount)
+                .Select(x => (GridControl)gridControl.GetDetail(x))
+                .Where(x => x != null).
+                SelectMany(x => ((TableView)(x).View).GetSelectedCells()).ToList();
+
+                if (selected_cells.Count == 0)
+                    return false;
+                else
+                {
+                    if (selected_cells.First().Column == null)
+                        return false;
+
+                    tableView = (TableView)selected_cells.First().Column.View;
+                    gridControl = tableView.Grid;
+                }
+            }
+
+            return true;
+        }
+
+        public void DistributeUnits(object parameter)
+        {
+            GridControl gridControl = (GridControl)parameter;
+            TableView tableView = gridControl.View as TableView;
+            var selected_cells = tableView.GetSelectedCells();
+            if (selected_cells.Count == 0)
+            {
+                selected_cells = Enumerable.Range(0, gridControl.VisibleRowCount)
+                .Select(x => (GridControl)gridControl.GetDetail(x))
+                .Where(x => x != null).
+                SelectMany(x => ((TableView)(x).View).GetSelectedCells()).ToList();
+
+                if (selected_cells.Count == 0)
+                    return;
+                else
+                {
+                    tableView = (TableView)selected_cells.First().Column.View;
+                    gridControl = tableView.Grid;
+                }
+            }
+
+            foreach (var selectedCell in selected_cells)
+            {
+                var gridColumn = gridControl.Columns[selectedCell.Column.FieldName];
+                if (gridColumn == null || gridColumn.ReadOnly)
+                {
+                    MessageBoxService.ShowMessage("Your selection contains read only cell, please revise your selection");
+                    return;
+                }
+            }
+
+            List<ErrorMessage> errorMessages = new List<ErrorMessage>();
+            var distributionSelectViewModel = DistributionSelectViewModel<FORECAST_JOB>.Create(gridControl, selected_cells, columnForecastJob);
+            if (DistributionDialogService.ShowDialog(MessageButton.OKCancel, "Select distribution method", "DistributionSelect", distributionSelectViewModel) == MessageResult.OK)
+            {
+                string newValueString = distributionSelectViewModel.ConvertToPasteData();
+                string[] RowData = DataUtils.ExcelSplit(newValueString).ToArray();
+
+                pasteCellData(gridControl, tableView, RowData, out errorMessages);
+            }
+
+            ShowErrorMessage("Errors", errorMessages);
         }
 
         public IEnumerable<ExoDataPoint> ActualsDetail => AllActuals;
