@@ -435,4 +435,7 @@
   <data name="Category_LeadProjects" xml:space="preserve">
     <value>Lead projects category</value>
   </data>
+  <data name="Menu_Project_Register_TQ" xml:space="preserve">
+    <value>Project TQ register</value>
+  </data>
 </root>

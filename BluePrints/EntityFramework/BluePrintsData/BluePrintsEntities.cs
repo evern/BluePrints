@@ -767,6 +767,12 @@ namespace BluePrints.Data
                 .HasForeignKey(e => e.GUID_PROJECT)
                 .WillCascadeOnDelete(false);
 
+            modelBuilder.Entity<DISCIPLINE>()
+                .HasMany(e => e.REGISTER_TQ)
+                .WithRequired(e => e.DISCIPLINE)
+                .HasForeignKey(e => e.GUID_DISCIPLINE)
+                .WillCascadeOnDelete(false);
+
             modelBuilder.Entity<RA_GUIDE_PROMPT>()
                 .HasMany(e => e.RA_GUIDE_SUBPROMPT)
                 .WithRequired(e => e.RA_GUIDE_PROMPT)

@@ -71,6 +71,7 @@ namespace BluePrints.ViewModels
             loaderCollection.AddLoaderDescription(bluePrintsUnitOfWorkFactory, x => x.PROJECT_REPORTS, PROJECT_REPORTProjectionFunc, null, true);
             loaderCollection.AddLoaderDescription(bluePrintsUnitOfWorkFactory, x => x.AREAS, AREAProjectionFunc);
             loaderCollection.AddLoaderDescription(bluePrintsUnitOfWorkFactory, x => x.USERS, USERProjectionFunc);
+            loaderCollection.AddLoaderDescription<DISCIPLINE, DISCIPLINE, Guid, IBluePrintsEntitiesUnitOfWork>(bluePrintsUnitOfWorkFactory, x => x.DISCIPLINES);
         }
 
         protected virtual Func<IRepositoryQuery<USER>, IQueryable<USER>> USERProjectionFunc()
@@ -118,7 +119,7 @@ namespace BluePrints.ViewModels
         public override void UnifiedNewRowInitializationFromView(REGISTER_TQ projection)
         {
             if(LoginCredentials.CurrentUser.GUID != Guid.Empty)
-                projection.GUID_RAISEDBY = LoginCredentials.CurrentUser.GUID;
+                projection.RAISEDBY = LoginCredentials.CurrentUser.Full_Name;
 
             base.UnifiedNewRowInitializationFromView(projection);
         }
@@ -351,11 +352,22 @@ namespace BluePrints.ViewModels
             }
         }
 
-        public IEnumerable<USER> USERCollection
+        public IEnumerable<string> USERStrCollection
         {
             get
             {
                 var collection = GetEntities<USER>();
+                if (collection != null)
+                    collection = collection.OrderBy(x => x.NAME);
+                return collection.Select(x => x.Full_Name);
+            }
+        }
+
+        public IEnumerable<DISCIPLINE> DISCIPLINECollection
+        {
+            get
+            {
+                var collection = GetEntities<DISCIPLINE>();
                 if (collection != null)
                     collection = collection.OrderBy(x => x.NAME);
                 return collection;

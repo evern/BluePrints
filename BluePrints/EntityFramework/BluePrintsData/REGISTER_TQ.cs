@@ -12,14 +12,16 @@ namespace BluePrints.Data
         [Key]
         public Guid GUID { get; set; }
 
-        [StringLength(150)]
-        public string NUMBER { get; set; }
-
         public Guid GUID_PROJECT { get; set; }
 
         public Guid GUID_DISCIPLINE { get; set; }
 
-        public Guid? GUID_RAISEDBY { get; set; }
+        [Required]
+        [StringLength(150)]
+        public string NUMBER { get; set; }
+
+        [StringLength(300)]
+        public string RAISEDBY { get; set; }
 
         public DateTime? DATE_RAISED { get; set; }
 
@@ -43,17 +45,27 @@ namespace BluePrints.Data
         [StringLength(4000)]
         public string RESPONSE { get; set; }
 
-        public int? STATUS { get; set; }
+        public RegisterTQ_Status? STATUS { get; set; }
 
-        public int? OPENCLOSE { get; set; }
+        public RegisterTQ_OpenClose? OPENCLOSE { get; set; }
 
         [StringLength(4000)]
         public string NEW_COMMENTS { get; set; }
 
+        public DateTime CREATED { get; set; }
+
+        public Guid CREATEDBY { get; set; }
+
+        public DateTime? UPDATED { get; set; }
+
+        public Guid? UPDATEDBY { get; set; }
+
+        public DateTime? DELETED { get; set; }
+
+        public Guid? DELETEDBY { get; set; }
+
+        public virtual DISCIPLINE DISCIPLINE { get; set; }
+
         public virtual PROJECT PROJECT { get; set; }
-
-        public virtual REGISTER_TQ REGISTER_TQ1 { get; set; }
-
-        public virtual REGISTER_TQ REGISTER_TQ2 { get; set; }
     }
 }

@@ -727,6 +727,15 @@ namespace BluePrints.Common.Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Project TQ register.
+        /// </summary>
+        internal static string Menu_Project_Register_TQ {
+            get {
+                return ResourceManager.GetString("Menu_Project_Register_TQ", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Project studies maintenance.
         /// </summary>
         internal static string Menu_Project_Studies {
