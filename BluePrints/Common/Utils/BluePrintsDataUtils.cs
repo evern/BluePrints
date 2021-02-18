@@ -128,6 +128,20 @@ namespace BluePrints.Common.ViewModel.Utils
         }
 
         /// <summary>
+        /// Day of week with Sunday being 7
+        /// </summary>
+        public static int GetTrueDayOfWeek(int DayOfWeekUS)
+        {
+            int retVal = 0;
+            if (DayOfWeekUS == 0)
+                retVal = 7;
+            else
+                retVal = DayOfWeekUS;
+
+            return retVal;
+        }
+
+        /// <summary>
         /// Change the progress data date
         /// </summary>
         /// <param name="navigationType">Forward, backward or last week ending</param>
@@ -139,7 +153,10 @@ namespace BluePrints.Common.ViewModel.Utils
             DateTime endOfDayToday = DateTime.Now.Date.AddDays(1).AddSeconds(-1);
             int multiplier;
 
-            DateTime endOfCurrentWeek = DateTime.Today.Date.AddDays(((int)loadPROGRESS.DATA_DATE.DayOfWeek - (int)DateTime.Today.DayOfWeek)).AddDays(1).AddSeconds(-1);
+            int trueDayOfWeekDataDate = GetTrueDayOfWeek((int)loadPROGRESS.DATA_DATE.DayOfWeek);
+            int trueDayOfWeekToday = GetTrueDayOfWeek((int)DateTime.Today.DayOfWeek);
+
+            DateTime endOfCurrentWeek = DateTime.Today.Date.AddDays(trueDayOfWeekDataDate - trueDayOfWeekToday).AddDays(1).AddSeconds(-1);
             DateTime endOfPreviousWeek = endOfCurrentWeek.AddDays(-7);
 
             if (navigationType == DateNavigationType.Current)
