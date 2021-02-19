@@ -32,8 +32,7 @@ namespace BluePrints.ViewModels
             IEnumerable<USER> activeDirectoryUSERS = EmailServices.GetUSERS();
             var existingUSERS = ExistingUSERS;
             foreach (var activeDirectoryUSER in activeDirectoryUSERS)
-                if (!existingUSERS.Any(x => x.NAME == activeDirectoryUSER.NAME))
-                    Entities.Add(activeDirectoryUSER);
+                Entities.Add(activeDirectoryUSER);
         }
     }
 }
