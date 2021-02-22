@@ -230,7 +230,6 @@ namespace BluePrints.ViewModels
         DispatcherTimer delayedDateChangeMessageBoxTimer;
         BackgroundWorker projectSavingBackgroundWorker = new BackgroundWorker();
 
-
         protected int spreadSheetPhaseIndex = 0;
         protected int spreadSheetAreaIndex = 1;
         protected int spreadSheetSubAreaIndex = 2;
@@ -356,45 +355,6 @@ namespace BluePrints.ViewModels
             IPrimeroEntitiesUnitOfWork threadSafePrimeroEntitiesUnitOfWork = PrimeroEntitiesUnitOfWorkSource.GetUnitOfWorkFactory(LoadPROJECT.OfficeNameForExo == BluePrintsResources.OfficeMontreal).CreateUnitOfWork();
             masterJob = ExoQueries.GetProjectSubJob(threadSafePrimeroEntitiesUnitOfWork, LoadPROJECT.NUMBER, LoadPROJECT.NUMBER);
             copyLine = ExoQueries.GetAnyProjectLineByJobNumber(threadSafePrimeroEntitiesUnitOfWork, LoadPROJECT.NUMBER);
-        }
-
-        private void loadSummaryStats()
-        {
-            IPrimeroEntitiesUnitOfWork threadSafePrimeroEntitiesUnitOfWork = PrimeroEntitiesUnitOfWorkSource.GetUnitOfWorkFactory(LoadPROJECT.OfficeNameForExo == BluePrintsResources.OfficeMontreal).CreateUnitOfWork();
-            List<ExoTimeAuthorisation> jobLines = new List<ExoTimeAuthorisation>(); 
-            queryJobs = ExoQueries.GetNativeExoSubJobProjection(threadSafePrimeroEntitiesUnitOfWork, LoadPROJECT, ref jobLines);
-            queryJobLines = jobLines;
-
-            dynamic revenueLine = ExoQueries.GetProjectRevenue(threadSafePrimeroEntitiesUnitOfWork, LoadPROJECT.NUMBER);
-            if (revenueLine != null)
-            {
-                if(LoadPROJECT.ORI_REVENUE == null)
-                    LoadPROJECT.ORI_REVENUE = Convert.ToDecimal(revenueLine.BUDGETED_REV);
-
-                savePROJECT();
-            }
-
-            FORECAST_HISTORY forecastHistory = FORECAST_HISTORYCollection.OrderByDescending(x => x.EAC_DATE).FirstOrDefault(x => x.EAC_DATE < FixedDataDateMonthEnd);
-            IEnumerable<FORECAST_EAC> forecastEACs = FORECAST_EACCollection.Where(x => x.FORECAST_DATE.Date == PreviousEACDataDate.Date);
-
-            if (forecastHistory != null)
-            {
-                ForecastSummary.Prev_Original_Revenue = forecastHistory.ORIGINAL_REVENUE;
-                ForecastSummary.Prev_Approved_Variation = forecastHistory.APPROVED_VARIATION;
-                ForecastSummary.Prev_Unapproved_Variation = forecastHistory.UNAPPROVED_VARIATION;
-                ForecastSummary.Prev_Total_Unapproved_Variation = forecastHistory.TOTAL_UNAPPROVED_VARIATION;
-                ForecastSummary.Prev_Total_EAC = forecastHistory.TOTAL_EAC == null ? forecastEACs.Sum(x => x.FORECAST_COSTS) : forecastHistory.TOTAL_EAC;
-            }
-            else
-                ForecastSummary.Prev_Total_EAC = forecastEACs.Sum(x => x.FORECAST_COSTS);
-
-            //dynamic revenueLine = ExoQueries.GetProjectRevenue(primeroEntitiesUnitOfWork, loadPROJECT.NUMBER);
-            //if (revenueLine != null)
-            ForecastSummary.Original_Revenue = LoadPROJECT.ORI_REVENUE == null ? 0 : (decimal)LoadPROJECT.ORI_REVENUE;
-            ForecastSummary.Approved_Var_Revenue = LoadPROJECT.VAR_REVENUE == null || LoadPROJECT.VAR_REVENUE == 0 ? VARIATION_CONSTRUCTIONCollection.Where(x => x.STATUS == VariationConstructionStatus.Approved).Sum(x => x.ManualApprovedEstimatedValue) : (decimal)LoadPROJECT.VAR_REVENUE;
-            ForecastSummary.Unapproved_Var_Revenue = LoadPROJECT.UNAPPROVED_VAR_REVENUE == null ? 0 : (decimal)LoadPROJECT.UNAPPROVED_VAR_REVENUE;
-            ForecastSummary.Total_Unapproved_Var_Revenue = LoadPROJECT.TOTAL_UNAPPROVED_VAR_REVENUE == null || LoadPROJECT.TOTAL_UNAPPROVED_VAR_REVENUE == 0 ? VARIATION_CONSTRUCTIONCollection.Where(x => x.STATUS == VariationConstructionStatus.Submitted).Sum(x => x.ManualApprovedEstimatedValue) : (decimal)LoadPROJECT.TOTAL_UNAPPROVED_VAR_REVENUE;
-            ForecastSummary.TotalClaims = ExoQueries.GetProjectClaims(threadSafePrimeroEntitiesUnitOfWork, LoadPROJECT.NUMBER);
         }
 
         protected override List<StatsCalculationType> getForecastTypes()
@@ -562,6 +522,12 @@ namespace BluePrints.ViewModels
             loadSummaryTask.Start();
 
             Task.WaitAll(TaskList.ToArray());
+        }
+
+        private void loadSummaryStats()
+        {
+            IPrimeroEntitiesUnitOfWork threadSafePrimeroEntitiesUnitOfWork = PrimeroEntitiesUnitOfWorkSource.GetUnitOfWorkFactory(LoadPROJECT.OfficeNameForExo == BluePrintsResources.OfficeMontreal).CreateUnitOfWork();
+            BluePrintsDataUtils.LoadSummaryStats(queryJobs, queryJobLines, threadSafePrimeroEntitiesUnitOfWork, LoadPROJECT, savePROJECT, FixedDataDateMonthEnd, PreviousEACDataDate, ForecastSummary, FORECAST_HISTORYCollection, VARIATION_CONSTRUCTIONCollection, FORECAST_EACCollection);
         }
 
         bool isLoadingExo = true;

@@ -98,6 +98,7 @@ namespace BluePrints.ViewModels
             AllActuals.AddRange(exoActuals);
             AllActuals.AddRange(exoMaterials);
             isExoDataLoaded = true;
+            mainThreadDispatcher.BeginInvoke(new Action(() => LoadSummaryStats(QueryJobs, QueryJobLines)));
             mainThreadDispatcher.BeginInvoke(new Action(() => loadDataPointsTable()));
         }
 
@@ -207,111 +208,23 @@ namespace BluePrints.ViewModels
         }
 
         public IEnumerable<ExoDataPoint> ActualsDetail => AllActuals;
-        protected override string strTotalCosts => "Total Sell $ Excl. Variation";
+        protected override string strTotalCosts => "Total Sell $";
         protected override string strTotalQty => "Total Sell Qty";
 
         protected override void raiseSummaryChanges()
         {
+            this.RaisePropertyChanged(x => x.ForecastSummary);
             this.RaisePropertyChanged(x => x.TotalRevenue);
-            this.RaisePropertyChanged(x => x.RevisedRevenue);
-            this.RaisePropertyChanged(x => x.EACRevenue);
             this.RaisePropertyChanged(x => x.UnapprovedVariationSell);
             this.RaisePropertyChanged(x => x.ApprovedVariationSell);
-            this.RaisePropertyChanged(x => x.TotalSellActual);
+            this.RaisePropertyChanged(x => x.TotalSellActualBeforeDataDate);
             this.RaisePropertyChanged(x => x.TotalCostActual);
-            this.RaisePropertyChanged(x => x.TotalSellForecast);
+            this.RaisePropertyChanged(x => x.TotalSellForecastAfterDataDate);
             this.RaisePropertyChanged(x => x.TotalCostForecast);
             this.RaisePropertyChanged(x => x.EACSell);
             this.RaisePropertyChanged(x => x.EACCost);
-            this.RaisePropertyChanged(x => x.Margin);
-            this.RaisePropertyChanged(x => x.MarginPercentage);
 
             base.raiseSummaryChanges();
-        }
-
-        //summaries
-        public decimal TotalRevenue
-        {
-            get
-            {
-                decimal totalRevenue = 0;
-                if(DataPointsTable != null)
-                    foreach(DataRow row in DataPointsTable.Rows)
-                    {
-                        if (!row.IsNull(columnTotalForecastSellFromProjectStart))
-                            totalRevenue += (decimal)row[columnTotalForecastSellFromProjectStart];
-                    }
-
-                return totalRevenue;
-            }
-        }
-
-        public decimal RevisedRevenue => TotalRevenue + ApprovedVariationSell;
-
-        public decimal EACRevenue => RevisedRevenue + UnapprovedVariationSell;
-
-        public decimal TotalSellActual
-        {
-            get
-            {
-                decimal totalSellActual = 0;
-                if (DataPointsTable != null)
-                    foreach (DataRow row in DataPointsTable.Rows)
-                    {
-                        if (!row.IsNull(columnTotalActualSellCosts))
-                            totalSellActual += (decimal)row[columnTotalActualSellCosts];
-                    }
-
-                return totalSellActual;
-            }
-        }
-
-        public decimal TotalCostActual
-        {
-            get
-            {
-                decimal totalCostActual = 0;
-                if (DataPointsTable != null)
-                    foreach (DataRow row in DataPointsTable.Rows)
-                    {
-                        if (!row.IsNull(columnTotalActualCosts))
-                            totalCostActual += (decimal)row[columnTotalActualCosts];
-                    }
-
-                return totalCostActual;
-            }
-        }
-
-        public decimal TotalSellForecast
-        {
-            get
-            {
-                decimal totalSellForecast = 0;
-                if (DataPointsTable != null)
-                    foreach (DataRow row in DataPointsTable.Rows)
-                    {
-                        if (!row.IsNull(columnTotalForecastSellCosts))
-                            totalSellForecast += (decimal)row[columnTotalForecastSellCosts];
-                    }
-
-                return totalSellForecast;
-            }
-        }
-
-        public decimal TotalCostForecast
-        {
-            get
-            {
-                decimal totalCostForecast = 0;
-                if (DataPointsTable != null)
-                    foreach (DataRow row in DataPointsTable.Rows)
-                    {
-                        if (!row.IsNull(columnTotalForecastCosts))
-                            totalCostForecast += (decimal)row[columnTotalForecastCosts];
-                    }
-
-                return totalCostForecast;
-            }
         }
 
         public decimal UnapprovedVariationSell
@@ -331,13 +244,5 @@ namespace BluePrints.ViewModels
                 return approvedVariationSell;
             }
         }
-
-        public decimal EACSell => TotalSellActual + TotalSellForecast;
-
-        public decimal EACCost => TotalCostActual + TotalCostForecast;
-
-        public decimal Margin => EACRevenue - TotalCostActual;
-
-        public decimal MarginPercentage => EACRevenue == 0 ? 0 : Margin / EACRevenue;
     }
 }

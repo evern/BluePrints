@@ -305,35 +305,60 @@
                                 <dx:LoadingDecorator HorizontalAlignment="Stretch" x:Name="summaryLoadingDecorator" dx:DXSerializer.StoreLayoutMode="None" IsSplashScreenShown="{Binding IsLoading}">
                                     <dxlc:LayoutControl Padding="0" Background="Transparent" Orientation="Vertical" IsEnabled="{Binding IsLoading, Converter={StaticResource BooleanNegationConverter}}" >
                                         <dxlc:LayoutGroup Orientation="Vertical" Header="Summary" View="GroupBox">
-                                            <dxlc:LayoutItem Label="Revenue" LabelPosition="Left">
-                                                <dxe:TextEdit IsReadOnly="True" Mask="c0" MaskType="Numeric" MaskUseAsDisplayFormat="True" Text="{Binding TotalRevenue, Mode=OneWay}" />
+                                            <dxlc:LayoutItem Label="Original Revenue" LabelPosition="Left">
+                                                <dxe:SpinEdit Style="{StaticResource SingleObjectView.SpinEditControlContainer}" Tag="ORI_REVENUE" Mask="c0" MaskType="Numeric" MaskUseAsDisplayFormat="True" EditValue="{Binding LoadPROJECT.ORI_REVENUE, Mode=OneWay}" />
                                             </dxlc:LayoutItem>
                                             <dxlc:LayoutItem Label="Approved Variation" LabelPosition="Left">
-                                                <dxe:TextEdit IsReadOnly="True" Mask="c0" MaskType="Numeric" MaskUseAsDisplayFormat="True" Text="{Binding ApprovedVariationSell, Mode=OneWay}" />
+                                                <dxe:SpinEdit Style="{StaticResource SingleObjectView.SpinEditControlContainer}" NullValueButtonPlacement="EditBox" Tag="VAR_REVENUE" Mask="c0" MaskType="Numeric" MaskUseAsDisplayFormat="True" EditValue="{Binding ForecastSummary.Approved_Var_Revenue, Mode=OneWay}" />
+                                            </dxlc:LayoutItem>
+                                            <dxlc:LayoutItem>
+                                                <dxe:CheckEdit Content="Manual" IsChecked="{Binding IsManualApprovedVariationRevenue, Mode=OneWay}" ToolTip="Approved variation revenue is manual" />
                                             </dxlc:LayoutItem>
                                             <dxlc:LayoutItem Label="Revised Revenue" LabelPosition="Left">
-                                                <dxe:TextEdit IsReadOnly="True" Mask="c0" MaskType="Numeric" MaskUseAsDisplayFormat="True" Text="{Binding RevisedRevenue, Mode=OneWay}" />
+                                                <dxe:TextEdit IsReadOnly="True" Mask="c0" MaskType="Numeric" MaskUseAsDisplayFormat="True" Text="{Binding ForecastSummary.Revised_Revenue, Mode=OneWay}" />
+                                            </dxlc:LayoutItem>
+                                            <dxlc:LayoutItem Label="Forecast Costs" LabelPosition="Left">
+                                                <dxe:TextEdit IsReadOnly="True" Mask="c0" MaskType="Numeric" MaskUseAsDisplayFormat="True" Text="{Binding ForecastSummary.Budget_Cost, Mode=OneWay}" />
+                                            </dxlc:LayoutItem>
+                                            <dxlc:LayoutItem Label="Forecast Margin" LabelPosition="Left">
+                                                <dxe:TextEdit IsReadOnly="True" Mask="c0" MaskType="Numeric" MaskUseAsDisplayFormat="True" Foreground="Black" Background="{Binding ForecastSummary.Budget_Margin_Background}" Text="{Binding ForecastSummary.Budget_Margin, Mode=OneWay}" />
+                                            </dxlc:LayoutItem>
+                                            <dxlc:LayoutItem Label="Forecast %" LabelPosition="Left">
+                                                <dxe:TextEdit IsReadOnly="True" Mask="p2" MaskType="Numeric" MaskUseAsDisplayFormat="True" Foreground="Black" Background="{Binding ForecastSummary.Budget_Margin_Percent_Background}" Text="{Binding ForecastSummary.Budget_Margin_Percent, Mode=OneWay}" />
+                                            </dxlc:LayoutItem>
+                                        </dxlc:LayoutGroup>
+                                        <dxlc:LayoutGroup Orientation="Vertical" Header="Current" View="GroupBox">
+                                            <dxlc:LayoutItem Label="Revenue Approved" LabelPosition="Left">
+                                                <dxe:TextEdit IsReadOnly="True" Mask="c0" MaskType="Numeric" MaskUseAsDisplayFormat="True" Text="{Binding ForecastSummary.Revised_Revenue, Mode=OneWay}" />
                                             </dxlc:LayoutItem>
                                             <dxlc:LayoutItem Label="Unapproved Variation" LabelPosition="Left">
-                                                <dxe:TextEdit IsReadOnly="True" Mask="c0" MaskType="Numeric" MaskUseAsDisplayFormat="True" Text="{Binding UnapprovedVariationSell, Mode=OneWay}" />
+                                                <dxe:SpinEdit Style="{StaticResource SingleObjectView.SpinEditControlContainer}" Tag="UNAPPROVED_VAR_REVENUE" Mask="c0" MaskType="Numeric" MaskUseAsDisplayFormat="True" EditValue="{Binding ForecastSummary.Unapproved_Var_Revenue, Mode=OneWay}" />
                                             </dxlc:LayoutItem>
                                             <dxlc:LayoutItem Label="EAC Revenue" LabelPosition="Left">
-                                                <dxe:TextEdit IsReadOnly="True" Mask="c0" MaskType="Numeric" MaskUseAsDisplayFormat="True" Text="{Binding EACRevenue, Mode=OneWay}" />
+                                                <dxe:TextEdit IsReadOnly="True" Mask="c0" MaskType="Numeric" MaskUseAsDisplayFormat="True" Text="{Binding ForecastSummary.EAC_Revenue, Mode=OneWay}" />
                                             </dxlc:LayoutItem>
-                                            <dxlc:LayoutItem Label="Total Cost Actual" LabelPosition="Left">
-                                                <dxe:TextEdit IsReadOnly="True" Mask="c0" MaskType="Numeric" MaskUseAsDisplayFormat="True" Text="{Binding TotalCostActual, Mode=OneWay}" />
+                                            <dxlc:LayoutItem Label="Actuals" LabelPosition="Left">
+                                                <dxe:TextEdit IsReadOnly="True" Mask="c0" MaskType="Numeric" MaskUseAsDisplayFormat="True" Text="{Binding ForecastSummary.Current_Cost, Mode=OneWay}" />
                                             </dxlc:LayoutItem>
-                                            <dxlc:LayoutItem Label="Margin" LabelPosition="Left">
-                                                <dxe:TextEdit IsReadOnly="True" Mask="c0" MaskType="Numeric" MaskUseAsDisplayFormat="True" Text="{Binding Margin, Mode=OneWay}" />
+                                            <dxlc:LayoutItem Label="EAC Cost" LabelPosition="Left">
+                                                <dxe:TextEdit IsReadOnly="True" Mask="c0" MaskType="Numeric" MaskUseAsDisplayFormat="True" Text="{Binding ForecastSummary.EstimateAtCompletion, Mode=OneWay}" />
                                             </dxlc:LayoutItem>
-                                            <dxlc:LayoutItem Label="Margin %" LabelPosition="Left">
-                                                <dxe:TextEdit IsReadOnly="True" Mask="p0" MaskType="Numeric" MaskUseAsDisplayFormat="True" Text="{Binding MarginPercentage, Mode=OneWay}" />
+                                            <dxlc:LayoutItem Label="EAC Margin" LabelPosition="Left">
+                                                <dxe:TextEdit IsReadOnly="True" Mask="c0" MaskType="Numeric" MaskUseAsDisplayFormat="True" Foreground="Black" Background="{Binding ForecastSummary.EAC_Margin_Background}" Text="{Binding ForecastSummary.EAC_Margin, Mode=OneWay}" />
                                             </dxlc:LayoutItem>
+                                            <dxlc:LayoutItem Label="EAC %" LabelPosition="Left">
+                                                <dxe:TextEdit IsReadOnly="True" Mask="p2" MaskType="Numeric" MaskUseAsDisplayFormat="True" Foreground="Black" Background="{Binding ForecastSummary.EAC_Margin_Percent_Background}" Text="{Binding ForecastSummary.EAC_Margin_Percent, Mode=OneWay}" />
+                                            </dxlc:LayoutItem>
+                                            <dxlc:LayoutItem Label="Contingency" LabelPosition="Left">
+                                                <dxe:TextEdit IsReadOnly="True" Mask="c0" MaskType="Numeric" MaskUseAsDisplayFormat="True" Text="{Binding ForecastSummary.Contingency, Mode=OneWay}" />
+                                            </dxlc:LayoutItem>
+                                        </dxlc:LayoutGroup>
+                                        <dxlc:LayoutGroup Orientation="Vertical" Header="Forecast" View="GroupBox">
                                             <dxlc:LayoutItem Label="Total Sell Actual" LabelPosition="Left">
-                                                <dxe:TextEdit IsReadOnly="True" Mask="c0" MaskType="Numeric" MaskUseAsDisplayFormat="True" Text="{Binding TotalSellActual, Mode=OneWay}" />
+                                                <dxe:TextEdit IsReadOnly="True" Mask="c0" MaskType="Numeric" MaskUseAsDisplayFormat="True" Text="{Binding TotalSellActualBeforeDataDate, Mode=OneWay}" />
                                             </dxlc:LayoutItem>
                                             <dxlc:LayoutItem Label="Total Sell Forecast" LabelPosition="Left">
-                                                <dxe:TextEdit IsReadOnly="True" Mask="c0" MaskType="Numeric" MaskUseAsDisplayFormat="True" Text="{Binding TotalSellForecast, Mode=OneWay}" />
+                                                <dxe:TextEdit IsReadOnly="True" Mask="c0" MaskType="Numeric" MaskUseAsDisplayFormat="True" Text="{Binding TotalSellForecastAfterDataDate, Mode=OneWay}" />
                                             </dxlc:LayoutItem>
                                             <dxlc:LayoutItem Label="Total Cost Forecast" LabelPosition="Left">
                                                 <dxe:TextEdit IsReadOnly="True" Mask="c0" MaskType="Numeric" MaskUseAsDisplayFormat="True" Text="{Binding TotalCostForecast, Mode=OneWay}" />

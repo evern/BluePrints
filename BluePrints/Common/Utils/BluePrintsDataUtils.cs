@@ -15,6 +15,7 @@ using BluePrints.Common.ViewModel.Reporting;
 using BluePrints.Data;
 using BluePrints.PrimeroData;
 using BluePrints.PrimeroData.PrimeroEntitiesDataModel;
+using BluePrints.ViewModels;
 using DevExpress.Data.Filtering;
 using DevExpress.Mvvm;
 using DevExpress.Xpf.Grid;
@@ -1852,6 +1853,42 @@ namespace BluePrints.Common.ViewModel.Utils
             PROJECTCollectionViewModel.Save(project);
             ChangedStartDataDate = saveDateTime;
             LoadDataDate = saveDateTime;
+        }
+
+        public static void LoadSummaryStats(IEnumerable<ExoSubJobProjection> queryJobs, IEnumerable<ExoTimeAuthorisation> queryJobLines, IPrimeroEntitiesUnitOfWork threadSafePrimeroEntitiesUnitOfWork, PROJECT loadProject, Action saveProject, DateTime FixedDataDateMonthEnd, DateTime PreviousEACDataDate, ForecastSummary ForecastSummary, IEnumerable<FORECAST_HISTORY> FORECAST_HISTORYCollection, IEnumerable<VARIATION_CONSTRUCTION> VARIATION_CONSTRUCTIONCollection, IEnumerable<FORECAST_EAC> FORECAST_EACCollection, bool skipRevenueLoading = false)
+        {
+            dynamic revenueLine = ExoQueries.GetProjectRevenue(threadSafePrimeroEntitiesUnitOfWork, loadProject.NUMBER);
+            if (revenueLine != null)
+            {
+                if (loadProject.ORI_REVENUE == null)
+                    loadProject.ORI_REVENUE = Convert.ToDecimal(revenueLine.BUDGETED_REV);
+
+                saveProject();
+            }
+
+            FORECAST_HISTORY forecastHistory = FORECAST_HISTORYCollection.OrderByDescending(x => x.EAC_DATE).FirstOrDefault(x => x.EAC_DATE < FixedDataDateMonthEnd);
+            IEnumerable<FORECAST_EAC> forecastEACs = FORECAST_EACCollection.Where(x => x.FORECAST_DATE.Date == PreviousEACDataDate.Date);
+
+            if (forecastHistory != null)
+            {
+                ForecastSummary.Prev_Original_Revenue = forecastHistory.ORIGINAL_REVENUE;
+                ForecastSummary.Prev_Approved_Variation = forecastHistory.APPROVED_VARIATION;
+                ForecastSummary.Prev_Unapproved_Variation = forecastHistory.UNAPPROVED_VARIATION;
+                ForecastSummary.Prev_Total_Unapproved_Variation = forecastHistory.TOTAL_UNAPPROVED_VARIATION;
+                ForecastSummary.Prev_Total_EAC = forecastHistory.TOTAL_EAC == null ? forecastEACs.Sum(x => x.FORECAST_COSTS) : forecastHistory.TOTAL_EAC;
+            }
+            else
+                ForecastSummary.Prev_Total_EAC = forecastEACs.Sum(x => x.FORECAST_COSTS);
+
+            //dynamic revenueLine = ExoQueries.GetProjectRevenue(primeroEntitiesUnitOfWork, loadPROJECT.NUMBER);
+            //if (revenueLine != null)
+            if(!skipRevenueLoading)
+                ForecastSummary.Original_Revenue = loadProject.ORI_REVENUE == null ? 0 : (decimal)loadProject.ORI_REVENUE;
+
+            ForecastSummary.Approved_Var_Revenue = loadProject.VAR_REVENUE == null || loadProject.VAR_REVENUE == 0 ? VARIATION_CONSTRUCTIONCollection.Where(x => x.STATUS == VariationConstructionStatus.Approved).Sum(x => x.ManualApprovedEstimatedValue) : (decimal)loadProject.VAR_REVENUE;
+            ForecastSummary.Unapproved_Var_Revenue = loadProject.UNAPPROVED_VAR_REVENUE == null ? 0 : (decimal)loadProject.UNAPPROVED_VAR_REVENUE;
+            ForecastSummary.Total_Unapproved_Var_Revenue = loadProject.TOTAL_UNAPPROVED_VAR_REVENUE == null || loadProject.TOTAL_UNAPPROVED_VAR_REVENUE == 0 ? VARIATION_CONSTRUCTIONCollection.Where(x => x.STATUS == VariationConstructionStatus.Submitted).Sum(x => x.ManualApprovedEstimatedValue) : (decimal)loadProject.TOTAL_UNAPPROVED_VAR_REVENUE;
+            ForecastSummary.TotalClaims = ExoQueries.GetProjectClaims(threadSafePrimeroEntitiesUnitOfWork, loadProject.NUMBER);
         }
     }
 }
