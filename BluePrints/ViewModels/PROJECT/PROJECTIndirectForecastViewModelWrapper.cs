@@ -609,10 +609,10 @@ namespace BluePrints.ViewModels
             else
                 row[columnTotalForecastCosts] = 0.00m;
 
-            if (totalForecastHoursAfterDataDate < approvedVariationHours)
-                forecastJob.ErrorMessage = "Forecast quantity cannot be less than variation quantity";
-            else
-                forecastJob.ErrorMessage = string.Empty;
+            //if (totalForecastHoursAfterDataDate < approvedVariationHours)
+            //    forecastJob.ErrorMessage = "Forecast quantity cannot be less than variation quantity";
+            //else
+            forecastJob.ErrorMessage = string.Empty;
 
             //update actual costs
             if (AllActuals != null)
