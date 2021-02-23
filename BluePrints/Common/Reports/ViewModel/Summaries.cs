@@ -91,6 +91,7 @@ namespace BluePrints.Common.ViewModel.Reporting
             IEnumerable<ExoDataPoint> actual_data_points = summary_stats.Actual.GetData().Select(x => (ExoDataPoint)x);
             IEnumerable<ExoDataPoint> material_data_points = summary_stats.Material.GetData().Select(x => (ExoDataPoint)x);
             IEnumerable<ExoDataPoint> po_data_points = summary_stats.PO.GetData().Select(x => (ExoDataPoint)x);
+            IEnumerable<ExoDataPoint> previousPO_data_points = summary_stats.PreviousPO.GetData().Select(x => (ExoDataPoint)x);
             //IEnumerable<DataPoint> remaining_actual_data_points = summary_stats.RemainingActual.GetData();
 
             List<ExoDataPoint> burnedRawDataPoints = burned_data_points.Where(predicate).ToList();
@@ -101,6 +102,9 @@ namespace BluePrints.Common.ViewModel.Reporting
             grouped_summary_stats.Material.SetData(materialRawDataPoints);
             List<ExoDataPoint> poRawDataPoints = po_data_points.Where(predicate).ToList();
             grouped_summary_stats.PO.SetData(poRawDataPoints);
+            List<ExoDataPoint> poPreviousRawDataPoints = previousPO_data_points.Where(predicate).ToList();
+            grouped_summary_stats.PreviousPO.SetData(poPreviousRawDataPoints);
+
             //Cannot uset setdata on remaining actual because there's no Func<DataPoint, bool> predicate to apply filter on data
             //grouped_summary_stats.RemainingActual.SetData(remaining_actual_data_points);
             grouped_summary_stats.RemainingActual.SetRemainingActualData(grouped_summary_stats.Reportables, grouped_summary_stats.Burned.GetData());
@@ -186,7 +190,7 @@ namespace BluePrints.Common.ViewModel.Reporting
             Actual = new Stats(ReportingDataDate, BudgetedUnits, totalUnits, BudgetedQty, TotalQty, BudgetedCosts, totalCosts, FirstAlignedDataDate, ReportingInterval, VariationAdjustments);
             Material = new Stats(ReportingDataDate, BudgetedUnits, totalUnits, BudgetedQty, TotalQty, BudgetedCosts, totalCosts, FirstAlignedDataDate, ReportingInterval, VariationAdjustments);
             PO = new Stats(ReportingDataDate, BudgetedUnits, totalUnits, BudgetedQty, TotalQty, BudgetedCosts, totalCosts, FirstAlignedDataDate, ReportingInterval, VariationAdjustments);
-
+            PreviousPO = new Stats(ReportingDataDate, BudgetedUnits, totalUnits, BudgetedQty, TotalQty, BudgetedCosts, totalCosts, FirstAlignedDataDate, ReportingInterval, VariationAdjustments);
             RemainingActual = new Stats(ReportingDataDate, BudgetedUnits, totalUnits, BudgetedQty, TotalQty, BudgetedCosts, totalCosts, FirstAlignedDataDate, ReportingInterval, VariationAdjustments, !forceRetrieveRemainingDataPoints, false, null, forceRetrieveRemainingDataPoints);
         }
 
@@ -204,10 +208,13 @@ namespace BluePrints.Common.ViewModel.Reporting
             Actual.SetData(cleanSummaryStats.Where(x => x.Actual != null && x.Actual.DataPoints != null).SelectMany(x => x.Actual.DataPoints).ToList());
 
             Material = new Stats(ReportingDataDate, BudgetedUnits, TotalUnits, BudgetedQty, TotalQty, BudgetedCosts, TotalCosts, FirstAlignedDataDate, ReportingInterval, VariationAdjustments);
-            Material.SetData(cleanSummaryStats.Where(x => x.Actual != null && x.Actual.DataPoints != null).SelectMany(x => x.Actual.DataPoints).ToList());
+            Material.SetData(cleanSummaryStats.Where(x => x.Material != null && x.Material.DataPoints != null).SelectMany(x => x.Material.DataPoints).ToList());
 
             PO = new Stats(ReportingDataDate, BudgetedUnits, TotalUnits, BudgetedQty, TotalQty, BudgetedCosts, TotalCosts, FirstAlignedDataDate, ReportingInterval, VariationAdjustments);
-            PO.SetData(cleanSummaryStats.Where(x => x.Actual != null && x.Actual.DataPoints != null).SelectMany(x => x.Actual.DataPoints).ToList());
+            PO.SetData(cleanSummaryStats.Where(x => x.PO != null && x.PO.DataPoints != null).SelectMany(x => x.PO.DataPoints).ToList());
+
+            PreviousPO = new Stats(ReportingDataDate, BudgetedUnits, TotalUnits, BudgetedQty, TotalQty, BudgetedCosts, TotalCosts, FirstAlignedDataDate, ReportingInterval, VariationAdjustments);
+            PreviousPO.SetData(cleanSummaryStats.Where(x => x.PreviousPO != null && x.PreviousPO.DataPoints != null).SelectMany(x => x.PreviousPO.DataPoints).ToList());
 
             RemainingActual = new Stats(ReportingDataDate, BudgetedUnits, TotalUnits, BudgetedQty, TotalQty, BudgetedCosts, TotalCosts, FirstAlignedDataDate, ReportingInterval, VariationAdjustments, true);
             //RemainingActual.SetData(cleanSummaryStats.Where(x => x.RemainingActual != null && x.RemainingActual.DataPoints != null).SelectMany(x => x.RemainingActual.DataPoints).ToList());
@@ -236,12 +243,16 @@ namespace BluePrints.Common.ViewModel.Reporting
                 Actual.SetData(summaryStats.Actual.GetData().ToList());
 
             Material = new Stats(ReportingDataDate, BudgetedUnits, TotalUnits, BudgetedQty, TotalQty, BudgetedCosts, TotalCosts, FirstAlignedDataDate, ReportingInterval, VariationAdjustments);
-            if (summaryStats.Actual != null && summaryStats.Actual.DataPoints != null)
-                Material.SetData(summaryStats.Actual.GetData().ToList());
+            if (summaryStats.Material != null && summaryStats.Material.DataPoints != null)
+                Material.SetData(summaryStats.Material.GetData().ToList());
 
             PO = new Stats(ReportingDataDate, BudgetedUnits, TotalUnits, BudgetedQty, TotalQty, BudgetedCosts, TotalCosts, FirstAlignedDataDate, ReportingInterval, VariationAdjustments);
-            if (summaryStats.Actual != null && summaryStats.Actual.DataPoints != null)
-                PO.SetData(summaryStats.Actual.GetData().ToList());
+            if (summaryStats.PO != null && summaryStats.PO.DataPoints != null)
+                PO.SetData(summaryStats.PO.GetData().ToList());
+
+            PreviousPO = new Stats(ReportingDataDate, BudgetedUnits, TotalUnits, BudgetedQty, TotalQty, BudgetedCosts, TotalCosts, FirstAlignedDataDate, ReportingInterval, VariationAdjustments);
+            if (summaryStats.PreviousPO != null && summaryStats.PreviousPO.DataPoints != null)
+                PreviousPO.SetData(summaryStats.PreviousPO.GetData().ToList());
 
             RemainingActual = new Stats(ReportingDataDate, BudgetedUnits, TotalUnits, BudgetedQty, TotalQty, BudgetedCosts, TotalCosts, FirstAlignedDataDate, ReportingInterval, VariationAdjustments, true);
             if (summaryStats.RemainingActual != null && summaryStats.RemainingActual.DataPoints != null)
