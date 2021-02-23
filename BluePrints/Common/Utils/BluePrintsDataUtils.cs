@@ -1681,9 +1681,9 @@ namespace BluePrints.Common.ViewModel.Utils
         /// Searches rate cascadingly for IRATE interface
         /// </summary>
         /// <returns></returns>
-        public static RATE CascadeRateSearch(Guid? phaseGuid, Guid? disciplineGuid, Guid? departmentGuid, string commodityCode, IEnumerable<RATE> RATECollection, CostType CostType)
+        public static RATE CascadeRateSearch(Guid? disciplineGuid, Guid? departmentGuid, string commodityCode, IEnumerable<RATE> RATECollection, CostType costType, PhaseType phaseType)
         {
-            IEnumerable<RATE> rateByPhase = RATECollection.Where(y => y.COST_TYPE == CostType && (y.GUID_PHASE == phaseGuid));
+            IEnumerable<RATE> rateByPhase = RATECollection.Where(y => y.COST_TYPE == costType && y.Phase_Type == phaseType);
             //order by descending places null GUID's at the end, so First() won't pick it up
             IEnumerable<RATE> rateByCommodities;
             rateByCommodities = rateByPhase.Where(y => (y.COMMODITY_CODE == commodityCode) || (y.COMMODITY_CODE == string.Empty || y.COMMODITY_CODE == null)).OrderByDescending(y => y.COMMODITY_CODE);
