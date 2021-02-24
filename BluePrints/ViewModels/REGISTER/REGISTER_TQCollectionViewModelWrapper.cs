@@ -10,6 +10,7 @@ using BluePrints.Common.Base;
 using BluePrints.Common.Misc;
 using BluePrints.Common.Reports;
 using BluePrints.Common.Resources;
+using BaseModel.ViewModel.Document;
 using BluePrints.Common.ViewModel.Utils;
 using BluePrints.Data;
 using DevExpress.Mvvm;
@@ -24,6 +25,7 @@ using System.Linq;
 using System.Windows;
 using DevExpress.XtraPrinting;
 using System.Diagnostics;
+using System.Windows.Threading;
 
 namespace BluePrints.ViewModels
 {
@@ -55,14 +57,16 @@ namespace BluePrints.ViewModels
 
         private PROJECT loadPROJECT;
         int defaultNumericFieldLengthForRegisters;
-        private IUnitOfWorkFactory<IBluePrintsEntitiesUnitOfWork> bluePrintsUnitOfWorkFactory =
-            BluePrintsEntitiesUnitOfWorkSource.GetUnitOfWorkFactory();
-
+        private IUnitOfWorkFactory<IBluePrintsEntitiesUnitOfWork> bluePrintsUnitOfWorkFactory = BluePrintsEntitiesUnitOfWorkSource.GetUnitOfWorkFactory();
+        DispatcherTimer delayedPathSelectionTimer;
         protected override void resolveParameters(object parameter)
         {
             var PROJECTParameter = (EntitiesParameter<PROJECT>) parameter;
             loadPROJECT = PROJECTParameter.GetEntity();
             defaultNumericFieldLengthForRegisters = Int32.Parse(BluePrintsResources.Default_Register_Numeric_Length);
+            delayedPathSelectionTimer = new DispatcherTimer();
+            delayedPathSelectionTimer.Interval = new TimeSpan(0, 0, 0, 1);
+            delayedPathSelectionTimer.Tick += DelayedPathSelectionTimer_Tick;
         }
 
         protected override void addEntitiesLoader()
@@ -71,12 +75,18 @@ namespace BluePrints.ViewModels
             loaderCollection.AddLoaderDescription(bluePrintsUnitOfWorkFactory, x => x.PROJECT_REPORTS, PROJECT_REPORTProjectionFunc, null, true);
             loaderCollection.AddLoaderDescription(bluePrintsUnitOfWorkFactory, x => x.AREAS, AREAProjectionFunc);
             loaderCollection.AddLoaderDescription(bluePrintsUnitOfWorkFactory, x => x.USERS, USERProjectionFunc);
+            loaderCollection.AddLoaderDescription(bluePrintsUnitOfWorkFactory, x => x.REGISTER_CLARIFICATIONS, REGISTER_CLARIFICATIONProjectionFunc);
             loaderCollection.AddLoaderDescription<DISCIPLINE, DISCIPLINE, Guid, IBluePrintsEntitiesUnitOfWork>(bluePrintsUnitOfWorkFactory, x => x.DISCIPLINES);
         }
 
         protected virtual Func<IRepositoryQuery<USER>, IQueryable<USER>> USERProjectionFunc()
         {
             return query => query.Where(x => x.LEAVE_DATE == null || x.LEAVE_DATE > DateTime.Now);
+        }
+
+        protected virtual Func<IRepositoryQuery<REGISTER_CLARIFICATION>, IQueryable<REGISTER_CLARIFICATION>> REGISTER_CLARIFICATIONProjectionFunc()
+        {
+            return query => query.Where(x => x.GUID_PROJECT == loadPROJECT.GUID);
         }
 
         private Func<IRepositoryQuery<PROJECT>, IQueryable<PROJECT>> PROJECTProjectionFunc()
@@ -200,8 +210,7 @@ namespace BluePrints.ViewModels
 
         public void EditReport()
         {
-            var reportDesigner = new UserReportDesigner(loadPROJECT,
-                (CollectionViewModel<PROJECT_REPORT, PROJECT_REPORT, Guid, IBluePrintsEntitiesUnitOfWork>)
+            var reportDesigner = new UserReportDesigner(loadPROJECT, (CollectionViewModel<PROJECT_REPORT, PROJECT_REPORT, Guid, IBluePrintsEntitiesUnitOfWork>)
                 loaderCollection.GetViewModel<PROJECT_REPORT>(), ReportType.Change_Register);
             if (reportDesigner.ShowDialog() == System.Windows.Forms.DialogResult.OK)
                 reportDesigner.Dispose();
@@ -211,13 +220,42 @@ namespace BluePrints.ViewModels
 
         public void EditNotice()
         {
-            var reportDesigner = new UserReportDesigner(loadPROJECT,
-                (CollectionViewModel<PROJECT_REPORT, PROJECT_REPORT, Guid, IBluePrintsEntitiesUnitOfWork>)
+            var reportDesigner = new UserReportDesigner(loadPROJECT, (CollectionViewModel<PROJECT_REPORT, PROJECT_REPORT, Guid, IBluePrintsEntitiesUnitOfWork>)
                 loaderCollection.GetViewModel<PROJECT_REPORT>(), ReportType.Change_Notice);
             if (reportDesigner.ShowDialog() == System.Windows.Forms.DialogResult.OK)
                 reportDesigner.Dispose();
             else
                 reportDesigner.Dispose();
+        }
+
+        protected IDocumentManagerService DocumentManagerService
+        {
+            get { return this.GetService<IDocumentManagerService>(); }
+        }
+
+        public void SendToClarificationRegister()
+        {
+            if (SelectedEntity == null)
+                return;
+
+            if(!REGISTER_CLARIFICATIONCollection.Any(x => x.TQ_NUMBER == SelectedEntity.NUMBER))
+            {
+                var editingEntity = SelectedEntity;
+                REGISTER_CLARIFICATION newRegister = new REGISTER_CLARIFICATION();
+                newRegister.GUID_PROJECT = loadPROJECT.GUID;
+                newRegister.TQ_NUMBER = editingEntity.NUMBER;
+                newRegister.TQ_PATH = editingEntity.TQ_PATH;
+                newRegister.CREATED = DateTime.Now;
+                newRegister.CREATEDBY = LoginCredentials.CurrentUserGuid;
+                REGISTER_CLARIFICATIONCollectionViewModel.Save(newRegister);
+            }
+
+            DocumentInfo DocumentInfo = new DocumentInfo("View_ClarificationRegister" + loadPROJECT.GUID.ToString(),
+                new EntitiesParameter<PROJECT>(loadPROJECT),
+                    "REGISTER_CLARIFICATIONCollectionView",
+                    "[" + loadPROJECT.NUMBER + "] Clarification Register");
+
+            DocumentManagerService.ShowExistingEntityDocumentWithLogging(DocumentInfo, this);
         }
 
         bool showReport = false;
@@ -271,10 +309,16 @@ namespace BluePrints.ViewModels
 
         private bool beforeShownEditor(EditorEventArgs e)
         {
-            if(e.Column.FieldName == BindableBase.GetPropertyName(() => new REGISTER_TQ().TQ_PATH))
-                mainThreadDispatcher.BeginInvoke(new Action(() => SpecifyPath()));
+            if (e.Column.FieldName == BindableBase.GetPropertyName(() => new REGISTER_TQ().TQ_PATH))
+                delayedPathSelectionTimer.Start();
 
             return true;
+        }
+
+        private void DelayedPathSelectionTimer_Tick(object sender, EventArgs e)
+        {
+            delayedPathSelectionTimer.Stop();
+            SpecifyPath();
         }
 
         public bool CanSpecifyPath()
@@ -293,6 +337,7 @@ namespace BluePrints.ViewModels
                 string fullPath = OpenFileDialogService.File.GetFullName();
                 SelectedEntity.TQ_PATH = fullPath;
                 MainViewModel.Save(SelectedEntity);
+                GridControlService.RefreshData();
             }
         }
 
@@ -407,11 +452,33 @@ namespace BluePrints.ViewModels
             }
         }
 
+        public IEnumerable<REGISTER_CLARIFICATION> REGISTER_CLARIFICATIONCollection
+        {
+            get
+            {
+                var collection = GetEntities<REGISTER_CLARIFICATION>();
+                if (collection != null)
+                    collection = collection.OrderBy(x => x.TQ_NUMBER);
+                return collection;
+            }
+        }
+
         public IEnumerable<PROJECT_REPORT> PROJECT_REPORTCollection
         {
             get
             {
                 return GetEntities<PROJECT_REPORT>();
+            }
+        }
+
+        public CollectionViewModel<REGISTER_CLARIFICATION, REGISTER_CLARIFICATION, Guid, IBluePrintsEntitiesUnitOfWork> REGISTER_CLARIFICATIONCollectionViewModel
+        {
+            get
+            {
+                if (MainViewModel == null)
+                    return null;
+
+                return (CollectionViewModel<REGISTER_CLARIFICATION, REGISTER_CLARIFICATION, Guid, IBluePrintsEntitiesUnitOfWork>)loaderCollection.GetViewModel<REGISTER_CLARIFICATION>();
             }
         }
         #endregion

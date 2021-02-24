@@ -28,8 +28,7 @@ using System.Diagnostics;
 namespace BluePrints.ViewModels
 {
     public class REGISTER_CLARIFICATIONCollectionViewModelWrapper :
-        BluePrintsEntitiesAutoNumberCollectionWrapper
-        <REGISTER_TQ, REGISTER_TQ, Guid, IBluePrintsEntitiesUnitOfWork>
+        BluePrintsEntitiesCollectionWrapper<REGISTER_CLARIFICATION, REGISTER_CLARIFICATION, Guid, IBluePrintsEntitiesUnitOfWork>
     {
         /// <summary>
         /// Creates a new instance of REGISTERCollectionViewModelWrapper as a POCO view model.
@@ -89,74 +88,27 @@ namespace BluePrints.ViewModels
 
         protected override void onAuxiliaryEntitiesCollectionLoaded()
         {
-            CreateMainViewModel(bluePrintsUnitOfWorkFactory, x => x.REGISTER_TQ);
+            CreateMainViewModel(bluePrintsUnitOfWorkFactory, x => x.REGISTER_CLARIFICATIONS);
         }
 
-        protected override Func<IRepositoryQuery<REGISTER_TQ>, IQueryable<REGISTER_TQ>> specifyMainViewModelProjection()
+        protected override Func<IRepositoryQuery<REGISTER_CLARIFICATION>, IQueryable<REGISTER_CLARIFICATION>> specifyMainViewModelProjection()
         {
-            return query => query.Where(x => x.GUID_PROJECT == loadPROJECT.GUID).OrderBy(x => x.NUMBER);
+            return query => query.Where(x => x.GUID_PROJECT == loadPROJECT.GUID).OrderBy(x => x.TQ_NUMBER);
         }
 
-        protected override void AssignCallBacksAndRaisePropertyChange(IEnumerable<REGISTER_TQ> entities)
+        protected override void AssignCallBacksAndRaisePropertyChange(IEnumerable<REGISTER_CLARIFICATION> entities)
         {
             MainViewModel.SetParentViewModel(this);
             base.AssignCallBacksAndRaisePropertyChange(entities);
         }
 
         #region Collection Call Backs
-        public override void UnifiedNewRowInitializationFromView(REGISTER_TQ projection)
+        public override string UnifiedRowValidation(REGISTER_CLARIFICATION projection)
         {
-            if(LoginCredentials.CurrentUser.GUID != Guid.Empty)
-                projection.RAISEDBY = LoginCredentials.CurrentUser.Full_Name;
-
-            base.UnifiedNewRowInitializationFromView(projection);
-        }
-
-        protected override OperationInterceptMode OnBeforeProjectionSaveIsContinue(REGISTER_TQ projection, out bool isNew)
-        {
-            projection.GUID_PROJECT = loadPROJECT.GUID;
-            if (projection.GUID == Guid.Empty && projection.DATE_RAISED == null)
-                projection.DATE_RAISED = DateTime.Now.Date;
-            return base.OnBeforeProjectionSaveIsContinue(projection, out isNew);
-        }
-
-        public override string UnifiedRowValidation(REGISTER_TQ projection)
-        {
-            return string.Empty;
-        }
-
-        public override string UnifiedValueValidation(REGISTER_TQ projection, string field_name, object new_value, bool isPaste)
-        {
-            if (field_name == BindableBase.GetPropertyName(() => new REGISTER_TQ().DATE_RESPONDED))
-            {
-                DateTime? dateClosed = (DateTime?)new_value;
-                if (projection.DATE_RAISED != null && dateClosed != null && projection.DATE_RAISED > dateClosed)
-                    return "Date responded cannot be earlier than date raised";
-            }
-
-            if (field_name == BindableBase.GetPropertyName(() => new REGISTER_TQ().DATE_RAISED))
-            {
-                DateTime? dateRaised = (DateTime?)new_value;
-                if (projection.DATE_RESPONDED != null && dateRaised != null && dateRaised > projection.DATE_RESPONDED)
-                    return "Date responded cannot be later than date closed";
-            }
-
             return string.Empty;
         }
         #endregion
 
-        #endregion
-
-        #region IEntityNumber
-        protected override string GetEntityNumberFieldName()
-        {
-            return BindableBase.GetPropertyName(() => new REGISTER_TQ().NUMBER);
-        }
-
-        protected override int DefaultNumericFieldLength()
-        {
-            return Int32.Parse(BluePrintsResources.Default_Register_Numeric_Length);
-        }
         #endregion
 
         #region View Properties
@@ -166,8 +118,8 @@ namespace BluePrints.ViewModels
         /// </summary>
         public override string ViewName
         {
-            //get { return "REGISTER_TQCollectionViewModelWrapper" + view_project_specific_affix; }
-            get { return "REGISTER_TQCollectionViewModelWrapper_v2"; }
+            //get { return "REGISTER_CLARIFICATIONCollectionViewModelWrapper" + view_project_specific_affix; }
+            get { return "View_ClarificationRegister" + loadPROJECT.GUID; }
         }
 
         private string view_project_specific_affix
@@ -182,7 +134,7 @@ namespace BluePrints.ViewModels
 
         protected override string ExportFilename()
         {
-            return loadPROJECT.NUMBER + "_REGISTER_TQ";
+            return loadPROJECT.NUMBER + "_REGISTER_CLARIFICATION";
         }
 
         public void EditReport()
@@ -217,7 +169,7 @@ namespace BluePrints.ViewModels
             FullRefresh();
         }
 
-        private void previewReport(IEnumerable<REGISTER_TQ> registerChanges)
+        private void previewReport(IEnumerable<REGISTER_CLARIFICATION> registerChanges)
         {
             LoadingScreenManager.ShowLoadingScreen(1);
             showReport = false;
@@ -249,6 +201,11 @@ namespace BluePrints.ViewModels
             rptChangeRegister.CreateDocument(true);
             LoadingScreenManager.CloseLoadingScreen();
             previewWindow.Show();
+        }
+
+        public override string UnifiedValueValidation(REGISTER_CLARIFICATION projection, string field_name, object new_value, bool isPaste)
+        {
+            return string.Empty;
         }
 
         public IEnumerable<PROJECT_REPORT> PROJECT_REPORTCollection
