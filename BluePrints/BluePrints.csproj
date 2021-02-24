@@ -746,6 +746,12 @@
     <Compile Include="Common\Reports\XtraReportTimesheet.Designer.cs">
       <DependentUpon>XtraReportTimesheet.cs</DependentUpon>
     </Compile>
+    <Compile Include="Common\Reports\XtraReportTQRegister.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="Common\Reports\XtraReportTQRegister.Designer.cs">
+      <DependentUpon>XtraReportTQRegister.cs</DependentUpon>
+    </Compile>
     <Compile Include="Common\Resources\UserPreferences.Designer.cs">
       <DependentUpon>UserPreferences.resx</DependentUpon>
       <AutoGen>True</AutoGen>
@@ -883,6 +889,8 @@
     </Compile>
     <Compile Include="EntityFramework\Annotations\FORECAST_HISTORY.cs" />
     <Compile Include="EntityFramework\Annotations\PROGRESS_ETC.cs" />
+    <Compile Include="EntityFramework\Annotations\REGISTER_CLARIFICATION.cs" />
+    <Compile Include="EntityFramework\Annotations\REGISTER_TQ.cs" />
     <Compile Include="EntityFramework\Annotations\X_VARIATION_QUERY.cs" />
     <Compile Include="EntityFramework\Annotations\JOBCOST_LINES_AUDIT.cs" />
     <Compile Include="EntityFramework\Annotations\JOB_TIMESHEETS.cs" />
@@ -962,6 +970,8 @@
     <Compile Include="EntityFramework\Annotations\X_JOB_TRANSACTIONS_DETAIL_SeqNo.cs" />
     <Compile Include="EntityFramework\BluePrintsData\FORECAST_HISTORY.cs" />
     <Compile Include="EntityFramework\BluePrintsData\PROGRESS_ETC.cs" />
+    <Compile Include="EntityFramework\BluePrintsData\REGISTER_CLARIFICATION.cs" />
+    <Compile Include="EntityFramework\BluePrintsData\REGISTER_TQ.cs" />
     <Compile Include="EntityFramework\BluePrintsData\X_VARIATION_QUERY.cs" />
     <Compile Include="EntityFramework\BluePrintsData\JOBCOST_LINES_AUDIT.cs" />
     <Compile Include="EntityFramework\BluePrintsData\FORECAST_EAC.cs" />
@@ -1122,6 +1132,8 @@
     <Compile Include="ViewModels\RA_STUDY\RA_STUDYCollectionViewModelWrapper.cs" />
     <Compile Include="ViewModels\RA_STUDY\RA_GUIDE_SUBPROMPTCollectionViewModelWrapper.cs" />
     <Compile Include="ViewModels\RA_STUDY\RA_STUDY_TYPECollectionViewModelWrapper.cs" />
+    <Compile Include="ViewModels\REGISTER\REGISTER_CLARIFICATIONCollectionViewModelWrapper.cs" />
+    <Compile Include="ViewModels\REGISTER\REGISTER_TQCollectionViewModelWrapper.cs" />
     <Compile Include="ViewModels\STOCK_CODE\STOCK_CODECollectionViewModelWrapper.cs" />
     <Compile Include="ViewModels\BUDGET_ITEM\BUDGET_ITEMSchedulingViewModelWrapper.cs" />
     <Compile Include="ViewModels\ESTIMATE_ITEM\ESTIMATE_ITEMCollectionViewModelWrapper.cs" />
@@ -1263,6 +1275,12 @@
     </Compile>
     <Compile Include="Views\RA_STUDY\RA_STUDY_TYPECollectionView.xaml.cs">
       <DependentUpon>RA_STUDY_TYPECollectionView.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Views\REGISTER\REGISTER_CLARIFICATIONCollectionView.xaml.cs">
+      <DependentUpon>REGISTER_CLARIFICATIONCollectionView.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Views\REGISTER\REGISTER_TQCollectionView.xaml.cs">
+      <DependentUpon>REGISTER_TQCollectionView.xaml</DependentUpon>
     </Compile>
     <Compile Include="Views\STOCK_CODE\STOCK_CODECollectionView.xaml.cs">
       <DependentUpon>STOCK_CODECollectionView.xaml</DependentUpon>
@@ -2253,6 +2271,14 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>
+    <Page Include="Views\REGISTER\REGISTER_CLARIFICATIONCollectionView.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Views\REGISTER\REGISTER_TQCollectionView.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
     <Page Include="Views\STOCK_CODE\STOCK_CODECollectionView.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
@@ -2552,6 +2578,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Common\Reports\XtraReportTimesheet.resx">
       <DependentUpon>XtraReportTimesheet.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Common\Reports\XtraReportTQRegister.resx">
+      <DependentUpon>XtraReportTQRegister.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Common\Resources\UserPreferences.resx">
       <Generator>ResXFileCodeGenerator</Generator>

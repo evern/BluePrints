@@ -682,6 +682,15 @@ namespace BluePrints.Common.Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Project Clarification Register.
+        /// </summary>
+        internal static string Menu_Project_Register_Clarification {
+            get {
+                return ResourceManager.GetString("Menu_Project_Register_Clarification", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Project hold register maintenance.
         /// </summary>
         internal static string Menu_Project_Register_Hold {
@@ -723,6 +732,15 @@ namespace BluePrints.Common.Resources {
         internal static string Menu_Project_Register_Risk {
             get {
                 return ResourceManager.GetString("Menu_Project_Register_Risk", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Project TQ register.
+        /// </summary>
+        internal static string Menu_Project_Register_TQ {
+            get {
+                return ResourceManager.GetString("Menu_Project_Register_TQ", resourceCulture);
             }
         }
         
