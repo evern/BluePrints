@@ -216,6 +216,11 @@ namespace BluePrints.BluePrintsEntitiesDataModel
             get { return GetRepository(x => x.Set<REGISTER_CHANGE>(), (REGISTER_CHANGE x) => x.GUID); }
         }
 
+        IRepository<REGISTER_CLARIFICATION, Guid> IBluePrintsEntitiesUnitOfWork.REGISTER_CLARIFICATIONS
+        {
+            get { return GetRepository(x => x.Set<REGISTER_CLARIFICATION>(), (REGISTER_CLARIFICATION x) => x.GUID); }
+        }
+
         IRepository<REGISTER_TQ, Guid> IBluePrintsEntitiesUnitOfWork.REGISTER_TQ
         {
             get { return GetRepository(x => x.Set<REGISTER_TQ>(), (REGISTER_TQ x) => x.GUID); }

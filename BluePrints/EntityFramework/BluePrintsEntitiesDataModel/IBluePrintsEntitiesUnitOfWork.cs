@@ -328,6 +328,11 @@ namespace BluePrints.BluePrintsEntitiesDataModel
         IRepository<REGISTER, Guid> REGISTERS { get; }
 
         /// <summary>
+        /// The REGISTER_CLARIFICATION entities repository.
+        /// </summary>
+        IRepository<REGISTER_CLARIFICATION, Guid> REGISTER_CLARIFICATIONS { get; }
+
+        /// <summary>
         /// The ROLE_PERMISSIONS entities repository.
         /// </summary>
         IRepository<ROLE_PERMISSION, Guid> ROLE_PERMISSIONS { get; }

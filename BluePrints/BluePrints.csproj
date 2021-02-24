@@ -878,6 +878,7 @@
     </Compile>
     <Compile Include="EntityFramework\Annotations\FORECAST_HISTORY.cs" />
     <Compile Include="EntityFramework\Annotations\PROGRESS_ETC.cs" />
+    <Compile Include="EntityFramework\Annotations\REGISTER_CLARIFICATION.cs" />
     <Compile Include="EntityFramework\Annotations\REGISTER_TQ.cs" />
     <Compile Include="EntityFramework\Annotations\X_VARIATION_QUERY.cs" />
     <Compile Include="EntityFramework\Annotations\JOBCOST_LINES_AUDIT.cs" />
@@ -958,6 +959,7 @@
     <Compile Include="EntityFramework\Annotations\X_JOB_TRANSACTIONS_DETAIL_SeqNo.cs" />
     <Compile Include="EntityFramework\BluePrintsData\FORECAST_HISTORY.cs" />
     <Compile Include="EntityFramework\BluePrintsData\PROGRESS_ETC.cs" />
+    <Compile Include="EntityFramework\BluePrintsData\REGISTER_CLARIFICATION.cs" />
     <Compile Include="EntityFramework\BluePrintsData\REGISTER_TQ.cs" />
     <Compile Include="EntityFramework\BluePrintsData\X_VARIATION_QUERY.cs" />
     <Compile Include="EntityFramework\BluePrintsData\JOBCOST_LINES_AUDIT.cs" />
