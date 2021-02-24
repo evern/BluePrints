@@ -745,6 +745,12 @@
     <Compile Include="Common\Reports\XtraReportTimesheet.Designer.cs">
       <DependentUpon>XtraReportTimesheet.cs</DependentUpon>
     </Compile>
+    <Compile Include="Common\Reports\XtraReportTQRegister.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="Common\Reports\XtraReportTQRegister.Designer.cs">
+      <DependentUpon>XtraReportTQRegister.cs</DependentUpon>
+    </Compile>
     <Compile Include="Common\Resources\UserPreferences.Designer.cs">
       <DependentUpon>UserPreferences.resx</DependentUpon>
       <AutoGen>True</AutoGen>
@@ -2563,6 +2569,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Common\Reports\XtraReportTimesheet.resx">
       <DependentUpon>XtraReportTimesheet.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Common\Reports\XtraReportTQRegister.resx">
+      <DependentUpon>XtraReportTQRegister.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Common\Resources\UserPreferences.resx">
       <Generator>ResXFileCodeGenerator</Generator>

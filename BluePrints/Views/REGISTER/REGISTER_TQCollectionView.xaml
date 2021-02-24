@@ -71,8 +71,6 @@
                                 <dxb:BarButtonItemLink BarItemName="biExportToExcel1" />
                                 <dxb:BarButtonItemLink BarItemName="biEditReport1" />
                                 <dxb:BarButtonItemLink BarItemName="biViewReport1" />
-                                <dxb:BarButtonItemLink BarItemName="biEditNotice1" />
-                                <dxb:BarButtonItemLink BarItemName="biExportNotice" />
                                 <dxb:BarButtonItemLink BarItemName="biSpecifyPath" />
                                 <dxb:BarButtonItemLink BarItemName="biSendToClarificationRegister" />
                             </dxr:RibbonPageGroup>
@@ -125,14 +123,19 @@
                                             <dxe:DateEditSettings DisplayFormat="dd-MMM-yyyy" />
                                         </dxg:GridColumn.EditSettings>
                                     </dxg:GridColumn>
-                                    <dxg:GridColumn Header="Response Days" FieldName="RESPONSE_DAYS" AllowBestFit="false" Width="100" AllowMoving="false">
+                                    <dxg:GridColumn Header="Response Time (days)" FieldName="ResponseTime" AllowMoving="false" >
                                         <dxg:GridColumn.EditSettings>
-                                            <dxe:SpinEditSettings Mask="###,##0 Days" MaskType="Numeric" MaskUseAsDisplayFormat="True" />
+                                            <dxe:TextEditSettings Mask="###,##0 Days" MaskType="Numeric" MaskUseAsDisplayFormat="True" />
                                         </dxg:GridColumn.EditSettings>
                                     </dxg:GridColumn>
                                     <dxg:GridColumn Header="Response" FieldName="RESPONSE" AllowBestFit="false" Width="150" AllowMoving="false">
                                         <dxg:GridColumn.EditSettings>
                                             <dxe:TextEditSettings TextWrapping="Wrap" AcceptsReturn="True"/>
+                                        </dxg:GridColumn.EditSettings>
+                                    </dxg:GridColumn>
+                                    <dxg:GridColumn Header="Days Open" FieldName="DaysOpen" AllowMoving="false" >
+                                        <dxg:GridColumn.EditSettings>
+                                            <dxe:TextEditSettings DisplayFormat="n0" />
                                         </dxg:GridColumn.EditSettings>
                                     </dxg:GridColumn>
                                     <dxg:GridColumn Header="Status" FieldName="STATUS" AllowMoving="false">

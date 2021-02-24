@@ -40,8 +40,6 @@ namespace BluePrints.Data
 
         public DateTime? DATE_RESPONDED { get; set; }
 
-        public int? RESPONSE_DAYS { get; set; }
-
         [StringLength(4000)]
         public string RESPONSE { get; set; }
 

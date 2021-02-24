@@ -220,7 +220,6 @@
             // 
             // ReportHeader
             // 
-            this.ReportHeader.Expanded = false;
             this.ReportHeader.HeightF = 0F;
             this.ReportHeader.Name = "ReportHeader";
             // 
@@ -228,7 +227,6 @@
             // 
             this.GroupHeader1.Controls.AddRange(new DevExpress.XtraReports.UI.XRControl[] {
             this.table1});
-            this.GroupHeader1.Expanded = false;
             this.GroupHeader1.GroupUnion = DevExpress.XtraReports.UI.GroupUnion.WithFirstDetail;
             this.GroupHeader1.HeightF = 73.13888F;
             this.GroupHeader1.Name = "GroupHeader1";
@@ -1001,7 +999,6 @@
             this.PageHeader.Controls.AddRange(new DevExpress.XtraReports.UI.XRControl[] {
             this.xrLabel2,
             this.label1});
-            this.PageHeader.Expanded = false;
             this.PageHeader.HeightF = 62.67089F;
             this.PageHeader.Name = "PageHeader";
             // 

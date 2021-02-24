@@ -120,8 +120,6 @@ namespace BluePrints.ViewModels
             MainViewModel.SetParentViewModel(this);
             if (showReport)
                 mainThreadDispatcher.BeginInvoke(new Action(() => previewReport(entities)));
-            else if(showDesignChangeNotice)
-                mainThreadDispatcher.BeginInvoke(new Action(() => exportDesignChangeNotices(entities)));
 
             base.AssignCallBacksAndRaisePropertyChange(entities);
         }
@@ -211,7 +209,7 @@ namespace BluePrints.ViewModels
         public void EditReport()
         {
             var reportDesigner = new UserReportDesigner(loadPROJECT, (CollectionViewModel<PROJECT_REPORT, PROJECT_REPORT, Guid, IBluePrintsEntitiesUnitOfWork>)
-                loaderCollection.GetViewModel<PROJECT_REPORT>(), ReportType.Change_Register);
+                loaderCollection.GetViewModel<PROJECT_REPORT>(), ReportType.TQ_Register);
             if (reportDesigner.ShowDialog() == System.Windows.Forms.DialogResult.OK)
                 reportDesigner.Dispose();
             else
@@ -259,7 +257,7 @@ namespace BluePrints.ViewModels
         }
 
         bool showReport = false;
-        XtraReportChangeRegister rptChangeRegister;
+        XtraReportTQRegister rptTQRegister;
         XtraReportChangeNotice rptChangeNotice;
         public void ViewReport()
         {
@@ -268,12 +266,12 @@ namespace BluePrints.ViewModels
             FullRefresh();
         }
 
-        private void previewReport(IEnumerable<REGISTER_TQ> registerChanges)
+        private void previewReport(IEnumerable<REGISTER_TQ> registerTQ)
         {
             LoadingScreenManager.ShowLoadingScreen(1);
             showReport = false;
-            rptChangeRegister = new XtraReportChangeRegister();
-            PROJECT_REPORT dbProjectReport = PROJECT_REPORTCollection.FirstOrDefault(x => x.REPORT_TYPE == ReportType.Change_Register.ToString());
+            rptTQRegister = new XtraReportTQRegister();
+            PROJECT_REPORT dbProjectReport = PROJECT_REPORTCollection.FirstOrDefault(x => x.REPORT_TYPE == ReportType.TQ_Register.ToString());
             if (dbProjectReport != null)
             {
                 var reportString = dbProjectReport.REPORT.ToString();
@@ -281,23 +279,23 @@ namespace BluePrints.ViewModels
                 {
                     sw.Write(reportString);
                     sw.Flush();
-                    rptChangeRegister.LoadLayout(sw.BaseStream);
+                    rptTQRegister.LoadLayout(sw.BaseStream);
                 }
             }
 
             //set paperkind depending on project location
             if (loadPROJECT.OFFICE.NAME.ToUpper().Contains("PERTH"))
-                rptChangeRegister.PaperKind = System.Drawing.Printing.PaperKind.A3;
+                rptTQRegister.PaperKind = System.Drawing.Printing.PaperKind.A3;
             else
-                rptChangeRegister.PaperKind = System.Drawing.Printing.PaperKind.Tabloid;
+                rptTQRegister.PaperKind = System.Drawing.Printing.PaperKind.Tabloid;
 
-            //rptChangeRegister.AssignProperties(loadPROJECT, registerChanges);
+            rptTQRegister.AssignProperties(loadPROJECT, registerTQ);
             DocumentPreviewWindow previewWindow = new DocumentPreviewWindow();
-            previewWindow.PreviewControl.DocumentSource = rptChangeRegister;
+            previewWindow.PreviewControl.DocumentSource = rptTQRegister;
             previewWindow.WindowStartupLocation = WindowStartupLocation.CenterScreen;
             previewWindow.WindowState = WindowState.Maximized;
-            rptChangeRegister.RequestParameters = false;
-            rptChangeRegister.CreateDocument(true);
+            rptTQRegister.RequestParameters = false;
+            rptTQRegister.CreateDocument(true);
             LoadingScreenManager.CloseLoadingScreen();
             previewWindow.Show();
         }
@@ -351,7 +349,7 @@ namespace BluePrints.ViewModels
             FullRefresh();
         }
 
-        private void exportDesignChangeNotices(IEnumerable<REGISTER_TQ> registerChanges)
+        private void exportTQNotices(IEnumerable<REGISTER_TQ> registerChanges)
         {
             showDesignChangeNotice = false;
             rptChangeNotice = new XtraReportChangeNotice();
