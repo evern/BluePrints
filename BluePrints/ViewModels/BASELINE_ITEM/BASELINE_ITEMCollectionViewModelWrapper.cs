@@ -2109,7 +2109,7 @@ namespace BluePrints.ViewModels
                 {
                     string errorName = "Department: " + findDEPARTMENT.NAME + ", Discipline: " + findDISCIPLINE.NAME;
                     DOCTYPE findDOCTYPE = DOCTYPECollection.FirstOrDefault(x => x.GUID == deliverable.GUID_DOCTYPE);
-                    RATE findRATE = BluePrintsDataUtils.CascadeRateSearch(deliverable.GUID_PHASE, deliverable.GUID_DISCIPLINE, deliverable.GUID_DEPARTMENT, findDOCTYPE == null ? string.Empty : findDOCTYPE.CODE, RATECollection, CostType.Charge);
+                    RATE findRATE = BluePrintsDataUtils.CascadeRateSearch(deliverable.GUID_DISCIPLINE, deliverable.GUID_DEPARTMENT, findDOCTYPE == null ? string.Empty : findDOCTYPE.CODE, RATECollection, CostType.Charge, PhaseType.Design);
                     if(findRATE != null && findRATE.RATE1 != null)
                     {
                         if(findRATE.IsUsingGangRate)

@@ -809,7 +809,8 @@ namespace BluePrints.ViewModels
                     if (rateCOMMODITY != null)
                         commodityCode = rateCOMMODITY.CODE;
 
-                    commodityJob.FallBackRate = BluePrintsDataUtils.CascadeRateSearch(ratePHASE.GUID, rateDISCIPLINE.GUID, null, commodityCode, RATECollection, CostType.Cost);
+                    if(ratePHASE.PHASE_TYPE != null)
+                        commodityJob.FallBackRate = BluePrintsDataUtils.CascadeRateSearch(rateDISCIPLINE.GUID, null, commodityCode, RATECollection, CostType.Cost, (PhaseType)ratePHASE.PHASE_TYPE);
                 }
             }
             #endregion

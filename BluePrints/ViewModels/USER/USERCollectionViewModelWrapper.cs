@@ -18,6 +18,8 @@ using System.Windows.Threading;
 using System.ComponentModel;
 using DevExpress.Data.Filtering;
 using BaseModel.ViewModel.Base;
+using BaseModel.ViewModel.Dialogs;
+using BaseModel.Misc;
 
 namespace BluePrints.ViewModels
 {
@@ -523,27 +525,43 @@ namespace BluePrints.ViewModels
         public void Import()
         {
             var selectEntitiesViewModel = USERSelectionViewModel.Create(MainViewModel.Entities);
+
+            List<ErrorMessage> messages = new List<ErrorMessage>();
             if (USERImportDialogService.ShowDialog(MessageButton.OKCancel, "Select Users to Import", "USERSelectionView", selectEntitiesViewModel) == MessageResult.OK)
             {
                 List<USER> add_new_users = new List<USER>();
                 foreach(USER selected_entity in selectEntitiesViewModel.SelectedEntities)
                 {
-                    USER new_user = new USER();
-                    new_user.TITLE = selected_entity.TITLE;
-                    new_user.DESCRIPTION = selected_entity.DESCRIPTION;
-                    new_user.FIRST_NAME = selected_entity.FIRST_NAME;
-                    new_user.LAST_NAME = selected_entity.LAST_NAME;
-                    new_user.NAME = selected_entity.NAME;
-                    new_user.CREATED = DateTime.Now;
-                    new_user.DEPARTMENT = selected_entity.DEPARTMENT;
-                    DEPARTMENT department = DEPARTMENTCollection.FirstOrDefault(x => x.NAME.ToUpper() == selected_entity.DEPARTMENT.ToUpper());
-                    if (department != null)
-                        new_user.GUID_DEPARTMENT = department.GUID;
+                    if (MainViewModel.Entities.Any(x => x.NAME == selected_entity.NAME))
+                    {
+                        messages.Add(new ErrorMessage(selected_entity.NAME, "Already Added"));
+                    }
+                    else
+                    {
+                        USER new_user = new USER();
 
-                    add_new_users.Add(new_user);
+                        new_user.TITLE = selected_entity.TITLE;
+                        new_user.DESCRIPTION = selected_entity.DESCRIPTION;
+                        new_user.FIRST_NAME = selected_entity.FIRST_NAME;
+                        new_user.LAST_NAME = selected_entity.LAST_NAME;
+                        new_user.NAME = selected_entity.NAME;
+                        new_user.CREATED = DateTime.Now;
+                        new_user.DEPARTMENT = selected_entity.DEPARTMENT;
+                        DEPARTMENT department = DEPARTMENTCollection.FirstOrDefault(x => x.NAME.ToUpper() == selected_entity.DEPARTMENT.ToUpper());
+                        if (department != null)
+                            new_user.GUID_DEPARTMENT = department.GUID;
+
+                        add_new_users.Add(new_user);
+                    }
                 }
 
                 MainViewModel.BaseBulkSave(add_new_users);
+            }
+
+            if(messages.Count > 0)
+            {
+                DialogCollectionViewModel<ErrorMessage> viewModel = DialogCollectionViewModel<ErrorMessage>.Create(messages, "User(s) has already been added");
+                ErrorMessagesDialogService.ShowDialog(MessageButton.OKCancel, string.Empty, "ListErrorMessages", viewModel);
             }
 
             selectEntitiesViewModel = null;

@@ -136,12 +136,13 @@ namespace BluePrints.Common.ViewModel.Misc
 
             //get po and populate forecasts
             IEnumerable<SummaryStats> poStats = summaryStats.Where(x => x.PO != null && x.PO.DataPoints != null);
+
             List<FORECAST_PO> currentJobPOForecasts = new List<FORECAST_PO>();
             if (poStats != null && poStats.Count() > 0)
             {
                 IEnumerable<Common.ViewModel.Reporting.ExoDataPoint> poDataPoints = poStats.SelectMany(x => x.PO.ExoDataPoints);
                 jobForecastSummary.Outstanding = poDataPoints.Sum(x => x.Costs);
-                jobForecastSummary.PreviousOutstanding = poDataPoints.Where(x => x.ActualDate <= dataDate).Sum(x => x.Costs);
+
                 //group the pos into PO numbers group to get the total remaining cost
                 //costs is remaining cost in this case
                 var poItems = poDataPoints.GroupBy(x => new { x.PONumber, x.Subjob_Name, x.Discipline_Code, x.Commodity_Code, x.Variation_Code }).Select(g => new { g.Key.PONumber, g.Key.Subjob_Name, g.Key.Discipline_Code, g.Key.Commodity_Code, g.Key.Variation_Code }).ToList();
@@ -157,7 +158,7 @@ namespace BluePrints.Common.ViewModel.Misc
             IEnumerable<SummaryStats> previousPOStats = summaryStats.Where(x => x.PreviousPO != null && x.PreviousPO.DataPoints != null);
             if (previousPOStats != null && previousPOStats.Count() > 0)
             {
-                IEnumerable<Common.ViewModel.Reporting.ExoDataPoint> previousPODataPoints = previousPOStats.SelectMany(x => x.PO.ExoDataPoints);
+                IEnumerable<Common.ViewModel.Reporting.ExoDataPoint> previousPODataPoints = previousPOStats.SelectMany(x => x.PreviousPO.ExoDataPoints);
                 jobForecastSummary.PreviousOutstanding = previousPODataPoints.Where(x => x.ActualDate <= dataDate).Sum(x => x.Costs);
             }
 
@@ -374,14 +375,14 @@ namespace BluePrints.Common.ViewModel.Misc
             if (findCOMMODITY_CODE != null)
             {
                 JOB_COSTTYPES findJOB_COSTTYPE = JOB_COSTTYPESCollection.FirstOrDefault(x => x.SHORTCODE == commodityCode);
-                if(findJOB_COSTTYPE != null)
+                if (findJOB_COSTTYPE != null)
                     commodityCodeName = findJOB_COSTTYPE.COSTDESC;
 
                 commodityCodeDescription = findCOMMODITY_CODE.DESCRIPTION;
                 commodityCodeUOM = findCOMMODITY_CODE.UOM;
             }
 
-            if(tryHarderOnLookup)
+            if (tryHarderOnLookup)
             {
                 if (subJobTitle == string.Empty)
                 {
