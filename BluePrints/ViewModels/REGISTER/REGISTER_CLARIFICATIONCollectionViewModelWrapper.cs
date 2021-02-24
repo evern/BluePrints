@@ -27,7 +27,7 @@ using System.Diagnostics;
 
 namespace BluePrints.ViewModels
 {
-    public class REGISTER_TQCollectionViewModelWrapper :
+    public class REGISTER_CLARIFICATIONCollectionViewModelWrapper :
         BluePrintsEntitiesAutoNumberCollectionWrapper
         <REGISTER_TQ, REGISTER_TQ, Guid, IBluePrintsEntitiesUnitOfWork>
     {
@@ -35,10 +35,10 @@ namespace BluePrints.ViewModels
         /// Creates a new instance of REGISTERCollectionViewModelWrapper as a POCO view model.
         /// </summary>
         /// <param name="unitOfWorkFactory">A factory used to create a unit of work instance.</param>
-        public static REGISTER_TQCollectionViewModelWrapper Create(
+        public static REGISTER_CLARIFICATIONCollectionViewModelWrapper Create(
             IUnitOfWorkFactory<IBluePrintsEntitiesUnitOfWork> unitOfWorkFactory = null)
         {
-            return ViewModelSource.Create(() => new REGISTER_TQCollectionViewModelWrapper(unitOfWorkFactory));
+            return ViewModelSource.Create(() => new REGISTER_CLARIFICATIONCollectionViewModelWrapper(unitOfWorkFactory));
         }
 
         /// <summary>
@@ -46,7 +46,7 @@ namespace BluePrints.ViewModels
         /// This constructor is declared protected to avoid undesired instantiation of the REGISTERCollectionViewModelWrapper type without the POCO proxy factory.
         /// </summary>
         /// <param name="unitOfWorkFactory">A factory used to create a unit of work instance.</param>
-        protected REGISTER_TQCollectionViewModelWrapper(
+        protected REGISTER_CLARIFICATIONCollectionViewModelWrapper(
             IUnitOfWorkFactory<IBluePrintsEntitiesUnitOfWork> unitOfWorkFactory = null)
         {
         }
@@ -54,24 +54,17 @@ namespace BluePrints.ViewModels
         #region Database Operations
 
         private PROJECT loadPROJECT;
-        int defaultNumericFieldLengthForRegisters;
-        private IUnitOfWorkFactory<IBluePrintsEntitiesUnitOfWork> bluePrintsUnitOfWorkFactory =
-            BluePrintsEntitiesUnitOfWorkSource.GetUnitOfWorkFactory();
-
+        private IUnitOfWorkFactory<IBluePrintsEntitiesUnitOfWork> bluePrintsUnitOfWorkFactory = BluePrintsEntitiesUnitOfWorkSource.GetUnitOfWorkFactory();
         protected override void resolveParameters(object parameter)
         {
             var PROJECTParameter = (EntitiesParameter<PROJECT>) parameter;
             loadPROJECT = PROJECTParameter.GetEntity();
-            defaultNumericFieldLengthForRegisters = Int32.Parse(BluePrintsResources.Default_Register_Numeric_Length);
         }
 
         protected override void addEntitiesLoader()
         {
             loaderCollection.AddLoaderDescription(bluePrintsUnitOfWorkFactory, x => x.PROJECTS, PROJECTProjectionFunc, x => loadPROJECT = x);
-            loaderCollection.AddLoaderDescription(bluePrintsUnitOfWorkFactory, x => x.PROJECT_REPORTS, PROJECT_REPORTProjectionFunc, null, true);
-            loaderCollection.AddLoaderDescription(bluePrintsUnitOfWorkFactory, x => x.AREAS, AREAProjectionFunc);
-            loaderCollection.AddLoaderDescription(bluePrintsUnitOfWorkFactory, x => x.USERS, USERProjectionFunc);
-            loaderCollection.AddLoaderDescription<DISCIPLINE, DISCIPLINE, Guid, IBluePrintsEntitiesUnitOfWork>(bluePrintsUnitOfWorkFactory, x => x.DISCIPLINES);
+            loaderCollection.AddLoaderDescription(bluePrintsUnitOfWorkFactory, x => x.PROJECT_REPORTS, PROJECT_REPORTProjectionFunc);
         }
 
         protected virtual Func<IRepositoryQuery<USER>, IQueryable<USER>> USERProjectionFunc()
@@ -84,14 +77,14 @@ namespace BluePrints.ViewModels
             return query => query.Where(x => x.GUID == loadPROJECT.GUID);
         }
 
+        protected virtual Func<IRepositoryQuery<PROJECT_REPORT>, IQueryable<PROJECT_REPORT>> PROJECT_REPORTProjectionFunc()
+        {
+            return query => query.Where(x => x.GUID_PROJECT == loadPROJECT.GUID && (x.REPORT_TYPE == ReportType.Clarification_Register.ToString() || x.REPORT_TYPE == ReportType.Clarification_Register.ToString()));
+        }
+
         private Func<IRepositoryQuery<AREA>, IQueryable<AREA>> AREAProjectionFunc()
         {
             return query => query.Where(x => x.GUID_PROJECT == loadPROJECT.GUID);
-        }
-
-        protected virtual Func<IRepositoryQuery<PROJECT_REPORT>, IQueryable<PROJECT_REPORT>> PROJECT_REPORTProjectionFunc()
-        {
-            return query => query.Where(x => x.GUID_PROJECT == loadPROJECT.GUID && (x.REPORT_TYPE == ReportType.Change_Register.ToString() || x.REPORT_TYPE == ReportType.Change_Notice.ToString()));
         }
 
         protected override void onAuxiliaryEntitiesCollectionLoaded()
@@ -106,13 +99,7 @@ namespace BluePrints.ViewModels
 
         protected override void AssignCallBacksAndRaisePropertyChange(IEnumerable<REGISTER_TQ> entities)
         {
-            MainViewModel.BeforeShownEditor = beforeShownEditor;
             MainViewModel.SetParentViewModel(this);
-            if (showReport)
-                mainThreadDispatcher.BeginInvoke(new Action(() => previewReport(entities)));
-            else if(showDesignChangeNotice)
-                mainThreadDispatcher.BeginInvoke(new Action(() => exportDesignChangeNotices(entities)));
-
             base.AssignCallBacksAndRaisePropertyChange(entities);
         }
 
@@ -235,7 +222,7 @@ namespace BluePrints.ViewModels
             LoadingScreenManager.ShowLoadingScreen(1);
             showReport = false;
             rptChangeRegister = new XtraReportChangeRegister();
-            PROJECT_REPORT dbProjectReport = PROJECT_REPORTCollection.FirstOrDefault(x => x.REPORT_TYPE == ReportType.Change_Register.ToString());
+            PROJECT_REPORT dbProjectReport = PROJECT_REPORTCollection.FirstOrDefault(x => x.REPORT_TYPE == ReportType.TQ_Register.ToString());
             if (dbProjectReport != null)
             {
                 var reportString = dbProjectReport.REPORT.ToString();
@@ -262,149 +249,6 @@ namespace BluePrints.ViewModels
             rptChangeRegister.CreateDocument(true);
             LoadingScreenManager.CloseLoadingScreen();
             previewWindow.Show();
-        }
-
-        protected IOpenFileDialogService OpenFileDialogService
-        {
-            get { return this.GetService<IOpenFileDialogService>(); }
-        }
-
-        private bool beforeShownEditor(EditorEventArgs e)
-        {
-            if(e.Column.FieldName == BindableBase.GetPropertyName(() => new REGISTER_TQ().TQ_PATH))
-                mainThreadDispatcher.BeginInvoke(new Action(() => SpecifyPath()));
-
-            return true;
-        }
-
-        public bool CanSpecifyPath()
-        {
-            return SelectedEntity != null;
-        }
-
-        public void SpecifyPath()
-        {
-            OpenFileDialogService.Filter = "PDF (*.PDF)|*.PDF";
-            bool DialogResult;
-
-            DialogResult = OpenFileDialogService.ShowDialog();
-            if (DialogResult)
-            {
-                string fullPath = OpenFileDialogService.File.GetFullName();
-                SelectedEntity.TQ_PATH = fullPath;
-                MainViewModel.Save(SelectedEntity);
-            }
-        }
-
-        bool showDesignChangeNotice = false;
-        List<Guid> selectedDesignChangeNoticeGuids = new List<Guid>();
-        public void ExportDesignChangeNotice()
-        {
-            showDesignChangeNotice = true;
-            selectedDesignChangeNoticeGuids.AddRange(SelectedEntities.Select(x => x.GUID).ToList());
-            //to make sure all navigational properties are loaded
-            FullRefresh();
-        }
-
-        private void exportDesignChangeNotices(IEnumerable<REGISTER_TQ> registerChanges)
-        {
-            showDesignChangeNotice = false;
-            rptChangeNotice = new XtraReportChangeNotice();
-            PROJECT_REPORT dbProjectReport = PROJECT_REPORTCollection.FirstOrDefault(x => x.REPORT_TYPE == ReportType.Change_Notice.ToString());
-            if (dbProjectReport != null)
-            {
-                var reportString = dbProjectReport.REPORT.ToString();
-                using (var sw = new StreamWriter(new MemoryStream()))
-                {
-                    sw.Write(reportString);
-                    sw.Flush();
-                    rptChangeNotice.LoadLayout(sw.BaseStream);
-                }
-            }
-
-            IFileInfo fileInfo = null;
-            foreach (REGISTER_TQ registerChange in registerChanges)
-            {
-                if (selectedDesignChangeNoticeGuids.Any(x => x == registerChange.GUID))
-                {
-                    //argument is passed into the report as collection that contains a single element, because each report is only showing a single record
-                    List<REGISTER_TQ> exportRegisterChange = new List<REGISTER_TQ>();
-                    exportRegisterChange.Add(registerChange);
-                    //rptChangeNotice.AssignProperties(loadPROJECT, exportRegisterChange);
-                    //DocumentPreviewWindow previewWindow = new DocumentPreviewWindow();
-                    //previewWindow.PreviewControl.DocumentSource = rptChangeNotice;
-                    //previewWindow.WindowStartupLocation = WindowStartupLocation.CenterScreen;
-                    //previewWindow.WindowState = WindowState.Maximized;
-                    rptChangeNotice.RequestParameters = false;
-                    //rptChangeNotice.CreateDocument(true);
-                    //previewWindow.Show();
-
-                    SaveFileDialogService.DefaultExt = "docx";
-                    SaveFileDialogService.Filter = "Word Files (.docx)|*.docx|All Files (*.*)|*.*";
-                    string fileName = string.Concat(loadPROJECT.NUMBER, BluePrintsResources.Register_TQ_Suffix, registerChange.NUMBER);
-                    SaveFileDialogService.Title = "Save Change Notice " + registerChange.NUMBER;
-                    SaveFileDialogService.DefaultFileName = fileName;
-
-                    if (SaveFileDialogService.ShowDialog())
-                    {
-                        //export to desktop routine
-                        fileInfo = SaveFileDialogService.File;
-                        //rptChangeNotice.AssignProperties(loadPROJECT, exportRegisterChange);
-                        rptChangeNotice.CreateDocument();
-                        
-                        try
-                        {
-                            DocxExportOptions DocxExportOptions = new DocxExportOptions();
-                            DocxExportOptions.ExportMode = DocxExportMode.SingleFile;
-                            DocxExportOptions.TableLayout = true;
-                            string exportPath = SaveFileDialogService.GetFullFileName();
-                            rptChangeNotice.ExportToDocx(exportPath, DocxExportOptions);
-
-                            Process.Start(exportPath);
-                        }
-                        catch
-                        {
-                            MessageBoxService.ShowMessage("Cannot export " + fileName + " because it is in use");
-                        }
-
-                    }
-                }
-            }
-
-            selectedDesignChangeNoticeGuids.Clear();
-        }
-
-        public IEnumerable<AREA> AREACollection
-        {
-            get
-            {
-                var collection = GetEntities<AREA>();
-                if (collection != null)
-                    collection = collection.OrderBy(x => x.INTERNAL_NUM);
-                return collection;
-            }
-        }
-
-        public IEnumerable<string> USERStrCollection
-        {
-            get
-            {
-                var collection = GetEntities<USER>();
-                if (collection != null)
-                    collection = collection.OrderBy(x => x.NAME);
-                return collection.Select(x => x.Full_Name);
-            }
-        }
-
-        public IEnumerable<DISCIPLINE> DISCIPLINECollection
-        {
-            get
-            {
-                var collection = GetEntities<DISCIPLINE>();
-                if (collection != null)
-                    collection = collection.OrderBy(x => x.NAME);
-                return collection;
-            }
         }
 
         public IEnumerable<PROJECT_REPORT> PROJECT_REPORTCollection

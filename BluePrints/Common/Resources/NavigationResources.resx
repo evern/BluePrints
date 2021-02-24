@@ -438,4 +438,7 @@
   <data name="Menu_Project_Register_TQ" xml:space="preserve">
     <value>Project TQ register</value>
   </data>
+  <data name="Menu_Project_Register_Clarification" xml:space="preserve">
+    <value>Project Clarification Register</value>
+  </data>
 </root>

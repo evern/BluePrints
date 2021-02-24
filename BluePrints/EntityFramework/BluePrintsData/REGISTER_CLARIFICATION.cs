@@ -24,6 +24,9 @@ namespace BluePrints.Data
         [StringLength(4000)]
         public string CLARIFICATION_REQUIRED { get; set; }
 
+        [StringLength(4000)]
+        public string RESPONSE { get; set; }
+
         public DateTime CREATED { get; set; }
 
         public Guid CREATEDBY { get; set; }

@@ -45,6 +45,9 @@ namespace BluePrints.Data
         [StringLength(4000)]
         public string RESPONSE { get; set; }
 
+        [StringLength(500)]
+        public string TQ_PATH { get; set; }
+
         public RegisterTQ_Status? STATUS { get; set; }
 
         public RegisterTQ_OpenClose? OPENCLOSE { get; set; }
