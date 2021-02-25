@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?>
+﻿<?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="12.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
   <PropertyGroup>
@@ -745,6 +745,12 @@
     </Compile>
     <Compile Include="Common\Reports\XtraReportTimesheet.Designer.cs">
       <DependentUpon>XtraReportTimesheet.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Common\Reports\XtraReportTQNotice.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="Common\Reports\XtraReportTQNotice.Designer.cs">
+      <DependentUpon>XtraReportTQNotice.cs</DependentUpon>
     </Compile>
     <Compile Include="Common\Reports\XtraReportTQRegister.cs">
       <SubType>Component</SubType>
@@ -2578,6 +2584,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Common\Reports\XtraReportTimesheet.resx">
       <DependentUpon>XtraReportTimesheet.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Common\Reports\XtraReportTQNotice.resx">
+      <DependentUpon>XtraReportTQNotice.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Common\Reports\XtraReportTQRegister.resx">
       <DependentUpon>XtraReportTQRegister.cs</DependentUpon>
