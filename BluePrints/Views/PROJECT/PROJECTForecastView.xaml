@@ -438,7 +438,7 @@
                                                 <dxg:FormatCondition FieldName="Entity.Productivity" Value1="1" ValueRule="Less">
                                                     <dxc:Format Background="#FFFF9B98"/>
                                                 </dxg:FormatCondition>
-                                                <dxg:FormatCondition FieldName="Entity.PercentagePeriodMovement" Value1="0.05" ValueRule="Greater">
+                                                <dxg:FormatCondition FieldName="Entity.PercentagePeriodMovement" Value1="0" ValueRule="Less">
                                                     <dxc:Format Background="#FFFF9B98" />
                                                 </dxg:FormatCondition>
                                             </dxg:TableView.FormatConditions>
