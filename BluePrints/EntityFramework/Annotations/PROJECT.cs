@@ -149,7 +149,7 @@ namespace BluePrints.Data
         {
             get
             {
-                return STATUS == ProjectStatus.Tender || STATUS == ProjectStatus.TenderSubmitted;
+                return STATUS == ProjectStatus.Tender || STATUS == ProjectStatus.TenderSubmitted || STATUS == ProjectStatus.Lead;
             }
         }
 
