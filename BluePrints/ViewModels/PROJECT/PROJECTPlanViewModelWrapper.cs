@@ -582,6 +582,8 @@ namespace BluePrints.ViewModels
 
                         //follow the same convention as progress view
                         progress.DATA_DATE = earliestDeliverableStartDate.AddDays(-6).AddSeconds(-1);
+                        progress.REPORT_DATE = progress.DATA_DATE;
+                        progress.DISABLE_AUTO_REPORT_DATE = true;
                     }
                 }
 

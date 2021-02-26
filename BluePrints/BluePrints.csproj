@@ -23,8 +23,8 @@
     <UpdatePeriodically>false</UpdatePeriodically>
     <UpdateRequired>true</UpdateRequired>
     <MapFileExtensions>true</MapFileExtensions>
-    <MinimumRequiredVersion>1.0.6.272</MinimumRequiredVersion>
-    <ApplicationRevision>272</ApplicationRevision>
+    <MinimumRequiredVersion>1.0.6.274</MinimumRequiredVersion>
+    <ApplicationRevision>274</ApplicationRevision>
     <ApplicationVersion>1.0.6.%2a</ApplicationVersion>
     <UseApplicationTrust>false</UseApplicationTrust>
     <PublishWizardCompleted>true</PublishWizardCompleted>
@@ -746,6 +746,18 @@
     <Compile Include="Common\Reports\XtraReportTimesheet.Designer.cs">
       <DependentUpon>XtraReportTimesheet.cs</DependentUpon>
     </Compile>
+    <Compile Include="Common\Reports\XtraReportTQNotice.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="Common\Reports\XtraReportTQNotice.Designer.cs">
+      <DependentUpon>XtraReportTQNotice.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Common\Reports\XtraReportTQRegister.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="Common\Reports\XtraReportTQRegister.Designer.cs">
+      <DependentUpon>XtraReportTQRegister.cs</DependentUpon>
+    </Compile>
     <Compile Include="Common\Resources\UserPreferences.Designer.cs">
       <DependentUpon>UserPreferences.resx</DependentUpon>
       <AutoGen>True</AutoGen>
@@ -883,6 +895,8 @@
     </Compile>
     <Compile Include="EntityFramework\Annotations\FORECAST_HISTORY.cs" />
     <Compile Include="EntityFramework\Annotations\PROGRESS_ETC.cs" />
+    <Compile Include="EntityFramework\Annotations\REGISTER_CLARIFICATION.cs" />
+    <Compile Include="EntityFramework\Annotations\REGISTER_TQ.cs" />
     <Compile Include="EntityFramework\Annotations\X_VARIATION_QUERY.cs" />
     <Compile Include="EntityFramework\Annotations\JOBCOST_LINES_AUDIT.cs" />
     <Compile Include="EntityFramework\Annotations\JOB_TIMESHEETS.cs" />
@@ -962,6 +976,8 @@
     <Compile Include="EntityFramework\Annotations\X_JOB_TRANSACTIONS_DETAIL_SeqNo.cs" />
     <Compile Include="EntityFramework\BluePrintsData\FORECAST_HISTORY.cs" />
     <Compile Include="EntityFramework\BluePrintsData\PROGRESS_ETC.cs" />
+    <Compile Include="EntityFramework\BluePrintsData\REGISTER_CLARIFICATION.cs" />
+    <Compile Include="EntityFramework\BluePrintsData\REGISTER_TQ.cs" />
     <Compile Include="EntityFramework\BluePrintsData\X_VARIATION_QUERY.cs" />
     <Compile Include="EntityFramework\BluePrintsData\JOBCOST_LINES_AUDIT.cs" />
     <Compile Include="EntityFramework\BluePrintsData\FORECAST_EAC.cs" />
@@ -2552,6 +2568,12 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Common\Reports\XtraReportTimesheet.resx">
       <DependentUpon>XtraReportTimesheet.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Common\Reports\XtraReportTQNotice.resx">
+      <DependentUpon>XtraReportTQNotice.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Common\Reports\XtraReportTQRegister.resx">
+      <DependentUpon>XtraReportTQRegister.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Common\Resources\UserPreferences.resx">
       <Generator>ResXFileCodeGenerator</Generator>
