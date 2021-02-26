@@ -23,6 +23,7 @@ namespace BluePrints.Data
             TENDER_PROFILE_ITEM = new HashSet<TENDER_PROFILE_ITEM>();
             USER = new HashSet<USER>();
             WORKPACK = new HashSet<WORKPACK>();
+            REGISTER_TQ = new HashSet<REGISTER_TQ>();
         }
 
         [Key]
@@ -74,6 +75,9 @@ namespace BluePrints.Data
 
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
         public virtual ICollection<REGISTER_NC> REGISTER_NC { get; set; }
+
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
+        public virtual ICollection<REGISTER_TQ> REGISTER_TQ { get; set; }
 
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
         public virtual ICollection<TENDER_PROFILE_ITEM> TENDER_PROFILE_ITEM { get; set; }

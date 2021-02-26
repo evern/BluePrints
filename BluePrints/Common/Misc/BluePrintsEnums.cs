@@ -368,7 +368,10 @@ namespace BluePrints.Common
         Change_Register,
         Change_Notice,
         Timesheet_Report,
-        Construction_Variation_Report
+        Construction_Variation_Report,
+        TQ_Register,
+        Clarification_Register,
+        TQ_Notice
     }
 
     public enum P6TASKTYPE
@@ -972,6 +975,30 @@ namespace BluePrints.Common
         Water = 26,
         [Display(Name = "ZincCopperLead")]
         ZincCopperLead = 27
+    }
+
+    public enum RegisterTQ_Status
+    {
+        [Display(Name = "Accepted")]
+        Accepted = 0,
+        [Display(Name = "Rejected")]
+        Rejected = 1,
+        [Display(Name = "Cancelled")]
+        Cancelled = 2
+    }
+
+    public enum RegisterTQ_OpenClose
+    {
+        [Display(Name = "Open")]
+        Open = 0,
+        [Display(Name = "Closed")]
+        Closed = 1,
+        [Display(Name = "Closed (Pending - See Comments)")]
+        ClosedPending = 2,
+        [Display(Name = "Cancelled")]
+        Cancelled = 3,
+        [Display(Name = "Not Issued")]
+        NotIssued = 4,
     }
 
     public class ReportingEnum

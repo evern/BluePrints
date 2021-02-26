@@ -336,7 +336,7 @@ namespace BluePrints.ViewModels
         }
 
         bool shouldInvokeTenderSubjobDates = false;
-        public override void UnifiedCellValueChanged(string field_name, object old_value, object new_value, PROJECT projection, bool isNew)
+        public override void UnifiedCellValueChanging(string field_name, object old_value, object new_value, PROJECT projection, bool isNew)
         {
             if (field_name == BindableBase.GetPropertyName(() => new PROJECT().DOC_KICKOFF) || field_name == BindableBase.GetPropertyName(() => new PROJECT().DOC_CLOSEOUT) || field_name == BindableBase.GetPropertyName(() => new PROJECT().DOC_SIDREPORT))
             {

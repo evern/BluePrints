@@ -120,7 +120,7 @@ namespace BluePrints.Common.Projections
         public decimal EstimateAtCompletion => ActualCosts + Outstanding + Uncommitted;
         public decimal CurrentEstimateAtCompletion => ActualCosts + Outstanding + CurrentUncommitted;
         public decimal PeriodMovement => PreviousEAC - EstimateAtCompletion;
-
+        public decimal PercentagePeriodMovement => PreviousEAC == 0 ? 0 : PeriodMovement / PreviousEAC;
         public bool IsContingency
         {
             get
