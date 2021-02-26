@@ -835,7 +835,7 @@ namespace BluePrints.Common.Resources {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to -TQ-.
+        ///   Looks up a localized string similar to -TQY-.
         /// </summary>
         internal static string Register_TQ_Suffix {
             get {

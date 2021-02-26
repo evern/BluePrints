@@ -370,7 +370,8 @@ namespace BluePrints.Common
         Timesheet_Report,
         Construction_Variation_Report,
         TQ_Register,
-        Clarification_Register
+        Clarification_Register,
+        TQ_Notice
     }
 
     public enum P6TASKTYPE

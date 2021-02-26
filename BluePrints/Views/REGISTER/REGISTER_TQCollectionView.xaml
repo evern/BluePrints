@@ -51,6 +51,7 @@
                 <dxb:BarButtonItem x:Name="biEditNotice1" Command="{Binding EditNoticeCommand}" Content="Edit Notice" Glyph="{dx:DXImage Image=Edit_16x16.png}" LargeGlyph="{dx:DXImage Image=Edit_32x32.png}" RibbonStyle="SmallWithText" ToolTip="Redesign the design change notice layout" />
                 <dxb:BarButtonItem x:Name="biSpecifyPath" Command="{Binding SpecifyPathCommand}" Content="Specify Path" Glyph="{dx:DXImage Image=ExportToPDF_16x16.png}" LargeGlyph="{dx:DXImage Image=ExportToPDF_32x32.png}" RibbonStyle="SmallWithText" ToolTip="Specify the PDF path" />
                 <dxb:BarButtonItem x:Name="biSendToClarificationRegister" Command="{Binding SendToClarificationRegisterCommand}" Content="Send to Clarification Register" ToolTip="Send selected issue to clarification register" LargeGlyph="{dx:DXImage Image=BOTask_32x32.png}" Glyph="{dx:DXImage Image=BOTask_16x16.png}" />
+                <dxb:BarButtonItem x:Name="biExportNotice" Command="{Binding ExportTQNoticeCommand}" Content="Export Selected" Glyph="{dx:DXImage Image=ExportToDOC_16x16.png}" LargeGlyph="{dx:DXImage Image=ExportToDOC_32x32.png}" RibbonStyle="SmallWithText" ToolTip="View and export selected design change notice(s) to DOCX" />
             </dxb:BarManager.Items>
             <DockPanel>
                 <dxr:RibbonControl Style="{StaticResource DefaultRibbonControlStyle}">
@@ -73,6 +74,7 @@
                                 <dxb:BarButtonItemLink BarItemName="biViewReport1" />
                                 <dxb:BarButtonItemLink BarItemName="biSpecifyPath" />
                                 <dxb:BarButtonItemLink BarItemName="biSendToClarificationRegister" />
+                                <dxb:BarButtonItemLink BarItemName="biExportNotice" />
                             </dxr:RibbonPageGroup>
                         </dxr:RibbonPage>
                     </dxr:RibbonDefaultPageCategory>
