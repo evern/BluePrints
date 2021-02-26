@@ -101,7 +101,7 @@ namespace BluePrints.ViewModels
 
         protected virtual Func<IRepositoryQuery<PROJECT_REPORT>, IQueryable<PROJECT_REPORT>> PROJECT_REPORTProjectionFunc()
         {
-            return query => query.Where(x => x.GUID_PROJECT == loadPROJECT.GUID && (x.REPORT_TYPE == ReportType.Change_Register.ToString() || x.REPORT_TYPE == ReportType.Change_Notice.ToString()));
+            return query => query.Where(x => x.GUID_PROJECT == loadPROJECT.GUID && (x.REPORT_TYPE == ReportType.TQ_Register.ToString() || x.REPORT_TYPE == ReportType.TQ_Notice.ToString()));
         }
 
         protected override void onAuxiliaryEntitiesCollectionLoaded()
@@ -120,6 +120,8 @@ namespace BluePrints.ViewModels
             MainViewModel.SetParentViewModel(this);
             if (showReport)
                 mainThreadDispatcher.BeginInvoke(new Action(() => previewReport(entities)));
+            else if (showNotice)
+                mainThreadDispatcher.BeginInvoke(new Action(() => exportTQNotices(entities)));
 
             base.AssignCallBacksAndRaisePropertyChange(entities);
         }
@@ -219,7 +221,7 @@ namespace BluePrints.ViewModels
         public void EditNotice()
         {
             var reportDesigner = new UserReportDesigner(loadPROJECT, (CollectionViewModel<PROJECT_REPORT, PROJECT_REPORT, Guid, IBluePrintsEntitiesUnitOfWork>)
-                loaderCollection.GetViewModel<PROJECT_REPORT>(), ReportType.Change_Notice);
+                loaderCollection.GetViewModel<PROJECT_REPORT>(), ReportType.TQ_Notice);
             if (reportDesigner.ShowDialog() == System.Windows.Forms.DialogResult.OK)
                 reportDesigner.Dispose();
             else
@@ -258,7 +260,7 @@ namespace BluePrints.ViewModels
 
         bool showReport = false;
         XtraReportTQRegister rptTQRegister;
-        XtraReportChangeNotice rptChangeNotice;
+        XtraReportTQNotice rptTQNotice;
         public void ViewReport()
         {
             showReport = true;
@@ -339,21 +341,21 @@ namespace BluePrints.ViewModels
             }
         }
 
-        bool showDesignChangeNotice = false;
+        bool showNotice = false;
         List<Guid> selectedDesignChangeNoticeGuids = new List<Guid>();
-        public void ExportDesignChangeNotice()
+        public void ExportTQNotice()
         {
-            showDesignChangeNotice = true;
+            showNotice = true;
             selectedDesignChangeNoticeGuids.AddRange(SelectedEntities.Select(x => x.GUID).ToList());
             //to make sure all navigational properties are loaded
             FullRefresh();
         }
 
-        private void exportTQNotices(IEnumerable<REGISTER_TQ> registerChanges)
+        private void exportTQNotices(IEnumerable<REGISTER_TQ> registerTQs)
         {
-            showDesignChangeNotice = false;
-            rptChangeNotice = new XtraReportChangeNotice();
-            PROJECT_REPORT dbProjectReport = PROJECT_REPORTCollection.FirstOrDefault(x => x.REPORT_TYPE == ReportType.Change_Notice.ToString());
+            showNotice = false;
+            rptTQNotice = new XtraReportTQNotice();
+            PROJECT_REPORT dbProjectReport = PROJECT_REPORTCollection.FirstOrDefault(x => x.REPORT_TYPE == ReportType.TQ_Notice.ToString());
             if (dbProjectReport != null)
             {
                 var reportString = dbProjectReport.REPORT.ToString();
@@ -361,31 +363,25 @@ namespace BluePrints.ViewModels
                 {
                     sw.Write(reportString);
                     sw.Flush();
-                    rptChangeNotice.LoadLayout(sw.BaseStream);
+                    rptTQNotice.LoadLayout(sw.BaseStream);
                 }
             }
 
             IFileInfo fileInfo = null;
-            foreach (REGISTER_TQ registerChange in registerChanges)
+            foreach (REGISTER_TQ registerTQ in registerTQs)
             {
-                if (selectedDesignChangeNoticeGuids.Any(x => x == registerChange.GUID))
+                if (selectedDesignChangeNoticeGuids.Any(x => x == registerTQ.GUID))
                 {
                     //argument is passed into the report as collection that contains a single element, because each report is only showing a single record
-                    List<REGISTER_TQ> exportRegisterChange = new List<REGISTER_TQ>();
-                    exportRegisterChange.Add(registerChange);
-                    //rptChangeNotice.AssignProperties(loadPROJECT, exportRegisterChange);
-                    //DocumentPreviewWindow previewWindow = new DocumentPreviewWindow();
-                    //previewWindow.PreviewControl.DocumentSource = rptChangeNotice;
-                    //previewWindow.WindowStartupLocation = WindowStartupLocation.CenterScreen;
-                    //previewWindow.WindowState = WindowState.Maximized;
-                    rptChangeNotice.RequestParameters = false;
-                    //rptChangeNotice.CreateDocument(true);
-                    //previewWindow.Show();
+                    List<REGISTER_TQ> exportRegisterTQ = new List<REGISTER_TQ>();
+                    exportRegisterTQ.Add(registerTQ);
+                    rptTQNotice.AssignProperties(loadPROJECT, exportRegisterTQ);
+                    rptTQNotice.RequestParameters = false;
 
                     SaveFileDialogService.DefaultExt = "docx";
                     SaveFileDialogService.Filter = "Word Files (.docx)|*.docx|All Files (*.*)|*.*";
-                    string fileName = string.Concat(loadPROJECT.NUMBER, BluePrintsResources.Register_TQ_Suffix, registerChange.NUMBER);
-                    SaveFileDialogService.Title = "Save Change Notice " + registerChange.NUMBER;
+                    string fileName = string.Concat(loadPROJECT.NUMBER, BluePrintsResources.Register_TQ_Suffix, registerTQ.NUMBER);
+                    SaveFileDialogService.Title = "Save TQ Notice " + registerTQ.NUMBER;
                     SaveFileDialogService.DefaultFileName = fileName;
 
                     if (SaveFileDialogService.ShowDialog())
@@ -393,7 +389,7 @@ namespace BluePrints.ViewModels
                         //export to desktop routine
                         fileInfo = SaveFileDialogService.File;
                         //rptChangeNotice.AssignProperties(loadPROJECT, exportRegisterChange);
-                        rptChangeNotice.CreateDocument();
+                        rptTQNotice.CreateDocument();
                         
                         try
                         {
@@ -401,7 +397,7 @@ namespace BluePrints.ViewModels
                             DocxExportOptions.ExportMode = DocxExportMode.SingleFile;
                             DocxExportOptions.TableLayout = true;
                             string exportPath = SaveFileDialogService.GetFullFileName();
-                            rptChangeNotice.ExportToDocx(exportPath, DocxExportOptions);
+                            rptTQNotice.ExportToDocx(exportPath, DocxExportOptions);
 
                             Process.Start(exportPath);
                         }

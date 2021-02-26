@@ -31,7 +31,7 @@ namespace BluePrints.Data
                 if (DATE_RESPONSE == null || DATE_REQUESTED == null)
                     return 0;
 
-                double responseTime = (((DateTime)DATE_REQUESTED) - ((DateTime)DATE_RESPONSE)).TotalDays;
+                double responseTime = (((DateTime)DATE_RESPONSE) - ((DateTime)DATE_REQUESTED)).TotalDays;
                 return Convert.ToInt32(responseTime);
             }
         }
