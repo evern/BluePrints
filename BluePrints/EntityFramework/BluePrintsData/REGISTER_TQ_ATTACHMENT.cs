@@ -15,6 +15,10 @@ namespace BluePrints.Data
         public Guid GUID_REGISTER_TQ { get; set; }
 
         [Required]
+        [StringLength(100)]
+        public string ATTACHMENT_NAME { get; set; }
+
+        [Required]
         [StringLength(4000)]
         public string ATTACHMENT_PATH { get; set; }
 

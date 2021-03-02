@@ -50,7 +50,7 @@ namespace BluePrints.Data
         [StringLength(4000)]
         public string PROPOSED_SOLUTION { get; set; }
 
-        public int? IMPACT { get; set; }
+        public RegisterTQ_Impact? IMPACT { get; set; }
 
         [StringLength(100)]
         public string APPROVER { get; set; }
@@ -63,9 +63,9 @@ namespace BluePrints.Data
         [StringLength(4000)]
         public string RESPONSE { get; set; }
 
-        public int? STATUS { get; set; }
+        public RegisterTQ_ResponseStatus? RESPONSE_STATUS { get; set; }
 
-        public int? OPENCLOSE { get; set; }
+        public RegisterTQ_OpenClose? OPENCLOSE { get; set; }
 
         [StringLength(4000)]
         public string NEW_COMMENTS { get; set; }

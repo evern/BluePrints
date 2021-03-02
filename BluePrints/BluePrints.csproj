@@ -805,6 +805,7 @@
     <Compile Include="Common\ViewModel\GanttChart\GanttCanvas.cs" />
     <Compile Include="Common\ViewModel\GanttChart\P6_Activity.cs" />
     <Compile Include="Common\ViewModel\Misc\CodesValidationModel.cs" />
+    <Compile Include="Common\ViewModel\Misc\ListImportDocumentsViewModel.cs" />
     <Compile Include="Common\ViewModel\Misc\TenderProfileItemEditModel.cs" />
     <Compile Include="Common\ViewModel\Misc\TenderProfileItemEditConfirmationViewModel.cs" />
     <Compile Include="Common\ViewModel\Misc\DeliverableEditConfirmationViewModel.cs" />
@@ -825,6 +826,9 @@
     </Compile>
     <Compile Include="Common\View\BookTimeDialog.xaml.cs">
       <DependentUpon>BookTimeDialog.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Common\View\ListImportDocuments.xaml.cs">
+      <DependentUpon>ListImportDocuments.xaml</DependentUpon>
     </Compile>
     <Compile Include="Common\View\TenderProfileItemEditConfirmation.xaml.cs">
       <DependentUpon>TenderProfileItemEditConfirmation.xaml</DependentUpon>
@@ -2013,6 +2017,10 @@
       <SubType>Designer</SubType>
     </Page>
     <Page Include="Common\View\BookTimeDialog.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Common\View\ListImportDocuments.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>

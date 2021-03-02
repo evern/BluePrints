@@ -10,6 +10,11 @@ namespace BluePrints.Data
 
     public partial class REGISTER_TQ_ATTACHMENT : EntityBase, IGuidEntityKey, ICanSync, IHaveCreatedDate
     {
+        public REGISTER_TQ_ATTACHMENT()
+        {
+
+        }
+
         [NotMapped]
         public DateTime EntityCreatedDate
         {
@@ -18,6 +23,11 @@ namespace BluePrints.Data
         }
 
         public string EntityGroup => string.Empty;
+
+        public override string ToString()
+        {
+            return ATTACHMENT_NAME;
+        }
 
         public string Office => this.REGISTER_TQ.PROJECT.NUMBER + " " + this.REGISTER_TQ.PROJECT.OfficeName;
     }
