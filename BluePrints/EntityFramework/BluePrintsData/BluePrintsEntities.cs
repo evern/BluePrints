@@ -852,6 +852,12 @@ namespace BluePrints.Data
                 .Property(e => e.UNIQUE_H_NUM)
                 .IsFixedLength();
 
+            modelBuilder.Entity<REGISTER_TQ>()
+                .HasMany(e => e.REGISTER_TQ_ATTACHMENT)
+                .WithRequired(e => e.REGISTER_TQ)
+                .HasForeignKey(e => e.GUID_REGISTER_TQ)
+                .WillCascadeOnDelete(false);
+
             modelBuilder.Entity<REGISTER_HOLD>()
                 .HasMany(e => e.REGISTER_HOLD_REF)
                 .WithRequired(e => e.REGISTER_HOLD)

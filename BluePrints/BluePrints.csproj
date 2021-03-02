@@ -885,6 +885,7 @@
     <Compile Include="EntityFramework\Annotations\FORECAST_HISTORY.cs" />
     <Compile Include="EntityFramework\Annotations\PROGRESS_ETC.cs" />
     <Compile Include="EntityFramework\Annotations\REGISTER_CLARIFICATION.cs" />
+    <Compile Include="EntityFramework\Annotations\REGISTER_TQ_ATTACHMENT.cs" />
     <Compile Include="EntityFramework\Annotations\REGISTER_TQ.cs" />
     <Compile Include="EntityFramework\Annotations\X_VARIATION_QUERY.cs" />
     <Compile Include="EntityFramework\Annotations\JOBCOST_LINES_AUDIT.cs" />
@@ -966,6 +967,7 @@
     <Compile Include="EntityFramework\BluePrintsData\FORECAST_HISTORY.cs" />
     <Compile Include="EntityFramework\BluePrintsData\PROGRESS_ETC.cs" />
     <Compile Include="EntityFramework\BluePrintsData\REGISTER_CLARIFICATION.cs" />
+    <Compile Include="EntityFramework\BluePrintsData\REGISTER_TQ_ATTACHMENT.cs" />
     <Compile Include="EntityFramework\BluePrintsData\REGISTER_TQ.cs" />
     <Compile Include="EntityFramework\BluePrintsData\X_VARIATION_QUERY.cs" />
     <Compile Include="EntityFramework\BluePrintsData\JOBCOST_LINES_AUDIT.cs" />
@@ -1127,7 +1129,6 @@
     <Compile Include="ViewModels\RA_STUDY\RA_STUDYCollectionViewModelWrapper.cs" />
     <Compile Include="ViewModels\RA_STUDY\RA_GUIDE_SUBPROMPTCollectionViewModelWrapper.cs" />
     <Compile Include="ViewModels\RA_STUDY\RA_STUDY_TYPECollectionViewModelWrapper.cs" />
-    <Compile Include="ViewModels\REGISTER\REGISTER_CLARIFICATIONCollectionViewModelWrapper.cs" />
     <Compile Include="ViewModels\REGISTER\REGISTER_TQCollectionViewModelWrapper.cs" />
     <Compile Include="ViewModels\STOCK_CODE\STOCK_CODECollectionViewModelWrapper.cs" />
     <Compile Include="ViewModels\BUDGET_ITEM\BUDGET_ITEMSchedulingViewModelWrapper.cs" />
@@ -1270,9 +1271,6 @@
     </Compile>
     <Compile Include="Views\RA_STUDY\RA_STUDY_TYPECollectionView.xaml.cs">
       <DependentUpon>RA_STUDY_TYPECollectionView.xaml</DependentUpon>
-    </Compile>
-    <Compile Include="Views\REGISTER\REGISTER_CLARIFICATIONCollectionView.xaml.cs">
-      <DependentUpon>REGISTER_CLARIFICATIONCollectionView.xaml</DependentUpon>
     </Compile>
     <Compile Include="Views\REGISTER\REGISTER_TQCollectionView.xaml.cs">
       <DependentUpon>REGISTER_TQCollectionView.xaml</DependentUpon>
@@ -2259,10 +2257,6 @@
       <SubType>Designer</SubType>
     </Page>
     <Page Include="Views\RA_STUDY\RA_STUDY_TYPECollectionView.xaml">
-      <Generator>MSBuild:Compile</Generator>
-      <SubType>Designer</SubType>
-    </Page>
-    <Page Include="Views\REGISTER\REGISTER_CLARIFICATIONCollectionView.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>

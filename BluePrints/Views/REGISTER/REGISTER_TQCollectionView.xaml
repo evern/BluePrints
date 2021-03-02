@@ -72,7 +72,6 @@
                                 <dxb:BarButtonItemLink BarItemName="biEditReport1" />
                                 <dxb:BarButtonItemLink BarItemName="biViewReport1" />
                                 <dxb:BarButtonItemLink BarItemName="biSpecifyPath" />
-                                <dxb:BarButtonItemLink BarItemName="biSendToClarificationRegister" />
                             </dxr:RibbonPageGroup>
                         </dxr:RibbonPage>
                     </dxr:RibbonDefaultPageCategory>

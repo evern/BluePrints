@@ -9,6 +9,12 @@ namespace BluePrints.Data
 
     public partial class REGISTER_TQ
     {
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2214:DoNotCallOverridableMethodsInConstructors")]
+        public REGISTER_TQ()
+        {
+            REGISTER_TQ_ATTACHMENT = new HashSet<REGISTER_TQ_ATTACHMENT>();
+        }
+
         [Key]
         public Guid GUID { get; set; }
 
@@ -20,7 +26,7 @@ namespace BluePrints.Data
         [StringLength(150)]
         public string NUMBER { get; set; }
 
-        [StringLength(300)]
+        [StringLength(100)]
         public string RAISEDBY { get; set; }
 
         public DateTime? DATE_RAISED { get; set; }
@@ -38,20 +44,34 @@ namespace BluePrints.Data
         [StringLength(4000)]
         public string COMMENTS { get; set; }
 
+        [StringLength(4000)]
+        public string DESCRIPTION { get; set; }
+
+        [StringLength(4000)]
+        public string PROPOSED_SOLUTION { get; set; }
+
+        public int? IMPACT { get; set; }
+
+        [StringLength(100)]
+        public string APPROVER { get; set; }
+
+        [StringLength(300)]
+        public string RELATED_TQ { get; set; }
+
         public DateTime? DATE_RESPONDED { get; set; }
 
         [StringLength(4000)]
         public string RESPONSE { get; set; }
 
-        [StringLength(500)]
-        public string TQ_PATH { get; set; }
+        public int? STATUS { get; set; }
 
-        public RegisterTQ_Status? STATUS { get; set; }
-
-        public RegisterTQ_OpenClose? OPENCLOSE { get; set; }
+        public int? OPENCLOSE { get; set; }
 
         [StringLength(4000)]
         public string NEW_COMMENTS { get; set; }
+
+        [StringLength(500)]
+        public string TQ_PATH { get; set; }
 
         public DateTime CREATED { get; set; }
 
@@ -68,5 +88,8 @@ namespace BluePrints.Data
         public virtual DISCIPLINE DISCIPLINE { get; set; }
 
         public virtual PROJECT PROJECT { get; set; }
+
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
+        public virtual ICollection<REGISTER_TQ_ATTACHMENT> REGISTER_TQ_ATTACHMENT { get; set; }
     }
 }
