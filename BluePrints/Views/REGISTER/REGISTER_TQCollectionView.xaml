@@ -212,9 +212,26 @@
                                             <dxe:TextEditSettings TextWrapping="Wrap" AcceptsReturn="True"/>
                                         </dxg:GridColumn.EditSettings>
                                     </dxg:GridColumn>
-                                    <dxg:GridColumn Header="TQ Path" FieldName="TQ_PATH" AllowBestFit="false" ReadOnly="True" Width="150" AllowMoving="false">
+                                    <dxg:GridColumn Header="TQ Path" FieldName="TQ_PATH" AllowBestFit="false" Width="150" AllowMoving="false">
+                                        <dxg:GridColumn.CellTemplate>
+                                            <DataTemplate>
+                                                <Grid>
+                                                    <Grid.ColumnDefinitions>
+                                                        <ColumnDefinition Width="*" />
+                                                        <ColumnDefinition Width="15" />
+                                                    </Grid.ColumnDefinitions>
+                                                    <dxe:HyperlinkEdit Name="PART_Editor" ShowNullText="True" AllowNullInput="True" ShowNullTextForEmptyValue="True" NullText="Double click here to browse" Grid.Column="0" AllowAutoNavigate="True" >
+                                                    </dxe:HyperlinkEdit>
+                                                    <Image Grid.Column="1" Source="{dx:DXImage Image=Action_Close.png}" ToolTip="Clear path">
+                                                        <dxmvvm:Interaction.Behaviors>
+                                                            <dxmvvm:EventToCommand Command="{Binding DataContext.ClearPathCommand, ElementName=userControl}" EventName="PreviewMouseDown" PassEventArgsToCommand="True" />
+                                                        </dxmvvm:Interaction.Behaviors>
+                                                    </Image>
+                                                </Grid>
+                                            </DataTemplate>
+                                        </dxg:GridColumn.CellTemplate>
                                         <dxg:GridColumn.EditSettings>
-                                            <dxe:HyperlinkEditSettings AllowAutoNavigate="True" />
+                                            <dxe:HyperlinkEditSettings AllowAutoNavigate="True" AllowNullInput="True" ShowNullText="True" ShowNullTextForEmptyValue="True" NullText="Double click here to browse" />
                                         </dxg:GridColumn.EditSettings>
                                     </dxg:GridColumn>
                                 </dxg:GridControl.Columns>

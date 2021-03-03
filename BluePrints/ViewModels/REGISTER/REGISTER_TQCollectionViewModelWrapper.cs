@@ -391,7 +391,30 @@ namespace BluePrints.ViewModels
             {
                 string fullPath = OpenFileDialogService.File.GetFullName();
                 SelectedEntity.TQ_PATH = fullPath;
+
                 MainViewModel.Save(SelectedEntity);
+                TableViewService.CommitEditing();
+                GridControlService.RefreshData();
+            }
+        }
+
+        public void ClearPath(System.Windows.Input.MouseButtonEventArgs e)
+        {
+            if (e.LeftButton != System.Windows.Input.MouseButtonState.Pressed)
+                return;
+
+            if (SelectedEntity == null)
+            {
+                MessageBoxService.ShowMessage("Please select an entry");
+                return;
+            }
+
+            if(MessageBoxService.ShowMessage("Are you sure you want to clear TQ path for TQ " + SelectedEntity.NUMBER + "?", "Clear TQ Path", MessageButton.OKCancel) == MessageResult.OK)
+            {
+                SelectedEntity.TQ_PATH = null;
+
+                MainViewModel.Save(SelectedEntity);
+                TableViewService.CommitEditing();
                 GridControlService.RefreshData();
             }
         }
