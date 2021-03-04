@@ -71,7 +71,7 @@ namespace BluePrints.ViewModels
             {
                 if (value == null)
                 {
-                    fixedDataDate = null;
+                    //when opening up multiple tabs, devexpress sometimes come in and set fixed data date as null
                     return;
                 }
 
@@ -114,7 +114,6 @@ namespace BluePrints.ViewModels
             primeroUnitOfWorkFactory = PrimeroEntitiesUnitOfWorkSource.GetUnitOfWorkFactory(LoadPROJECT.OfficeNameForExo == BluePrintsResources.OfficeMontreal);
             primeroEntitiesUnitOfWork = primeroUnitOfWorkFactory.CreateUnitOfWork();
             IsWeeks = true;
-            refreshJobs();
             IsLoading = true;
             this.RaisePropertyChanged(x => x.IsLoading);
 
@@ -185,6 +184,7 @@ namespace BluePrints.ViewModels
 
         protected override void OnAfterAssignedCallbackAndRaisePropertyChanged()
         {
+            refreshJobs();
             loadDataPointsTable();
             base.OnAfterAssignedCallbackAndRaisePropertyChanged();
         }
@@ -516,7 +516,7 @@ namespace BluePrints.ViewModels
         public override void FullRefresh()
         {
             EntitiesUndoRedoManager.Clear();
-            refreshJobs();
+            //refreshJobs();
             base.FullRefresh();
         }
 

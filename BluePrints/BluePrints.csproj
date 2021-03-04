@@ -23,8 +23,8 @@
     <UpdatePeriodically>false</UpdatePeriodically>
     <UpdateRequired>true</UpdateRequired>
     <MapFileExtensions>true</MapFileExtensions>
-    <MinimumRequiredVersion>1.0.6.274</MinimumRequiredVersion>
-    <ApplicationRevision>274</ApplicationRevision>
+    <MinimumRequiredVersion>1.0.6.280</MinimumRequiredVersion>
+    <ApplicationRevision>280</ApplicationRevision>
     <ApplicationVersion>1.0.6.%2a</ApplicationVersion>
     <UseApplicationTrust>false</UseApplicationTrust>
     <PublishWizardCompleted>true</PublishWizardCompleted>
@@ -2588,6 +2588,7 @@
     <EmbeddedResource Include="Common\Resources\NavigationResources.resx">
       <Generator>ResXFileCodeGenerator</Generator>
       <LastGenOutput>NavigationResources.Designer.cs</LastGenOutput>
+      <SubType>Designer</SubType>
     </EmbeddedResource>
     <EmbeddedResource Include="Properties\licenses.licx" />
     <EmbeddedResource Include="Properties\Resources.resx">
