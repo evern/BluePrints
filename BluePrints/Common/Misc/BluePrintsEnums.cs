@@ -994,9 +994,9 @@ namespace BluePrints.Common
         [Display(Name = "Accepted - Closed")]
         Accepted = 0,
         [Display(Name = "Accepted - With Comments")]
-        Rejected = 1,
+        AcceptedWComments = 1,
         [Display(Name = "Rejected - Resubmit")]
-        Cancelled = 2
+        Rejected = 2
     }
     
     public enum RegisterTQ_OpenClose

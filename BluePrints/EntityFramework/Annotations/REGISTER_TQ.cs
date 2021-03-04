@@ -86,5 +86,25 @@ namespace BluePrints.Data
                 return documents.Select(x => (REGISTER_TQ_ATTACHMENT)x);
             }
         }
+
+        [NotMapped]
+        public string ReferenceDocuments
+        {
+            get
+            {
+                if (DocumentAssignments.Count() == 0)
+                    return string.Empty;
+
+                string documentAssignments = string.Empty;
+                foreach(REGISTER_TQ_ATTACHMENT documentAssignment in DocumentAssignments)
+                {
+                    documentAssignments = string.Concat(documentAssignments, "\n", documentAssignment);
+                }
+
+                //remove carriage return from the beginning
+                documentAssignments = documentAssignments.Substring(1, documentAssignments.Length - 1);
+                return documentAssignments;
+            }
+        }
     }
 }

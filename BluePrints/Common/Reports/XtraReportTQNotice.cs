@@ -41,13 +41,24 @@ namespace BluePrints.Common.Reports
                 xrCheckBoxOther.Checked = false;
                 xrCheckBoxAccepted.Checked = false;
                 xrCheckBoxAcceptedWComments.Checked = false;
-                xrCheckBoxRevise.Checked = false;
+                xrCheckBoxRejected.Checked = false;
 
                 REGISTER_TQ rptRegisterTQ = registerTQs.First();
-                if (rptRegisterTQ.STATUS == RegisterTQ_Status.Accepted)
+                if (rptRegisterTQ.RESPONSE_STATUS == RegisterTQ_ResponseStatus.Accepted)
                     xrCheckBoxAccepted.Checked = true;
-                else if (rptRegisterTQ.STATUS == RegisterTQ_Status.Rejected)
-                    xrCheckBoxRevise.Checked = true;
+                else if (rptRegisterTQ.RESPONSE_STATUS == RegisterTQ_ResponseStatus.AcceptedWComments)
+                    xrCheckBoxAcceptedWComments.Checked = true;
+                else if(rptRegisterTQ.RESPONSE_STATUS == RegisterTQ_ResponseStatus.Rejected)
+                    xrCheckBoxRejected.Checked = true;
+
+                if (rptRegisterTQ.IMPACT == RegisterTQ_Impact.Commercial)
+                    xrCheckBoxCommercial.Checked = true;
+                else if (rptRegisterTQ.IMPACT == RegisterTQ_Impact.Other)
+                    xrCheckBoxOther.Checked = true;
+                else if (rptRegisterTQ.IMPACT == RegisterTQ_Impact.Quality)
+                    xrCheckBoxQuality.Checked = true;
+                else if (rptRegisterTQ.IMPACT == RegisterTQ_Impact.Schedule)
+                    xrCheckBoxSchedule.Checked = true;
             }
         }
     }
