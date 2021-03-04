@@ -1,4 +1,4 @@
-﻿<?xml version="1.0" encoding="utf-8"?>
+<?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="12.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
   <PropertyGroup>
@@ -23,8 +23,8 @@
     <UpdatePeriodically>false</UpdatePeriodically>
     <UpdateRequired>true</UpdateRequired>
     <MapFileExtensions>true</MapFileExtensions>
-    <MinimumRequiredVersion>1.0.6.276</MinimumRequiredVersion>
-    <ApplicationRevision>276</ApplicationRevision>
+    <MinimumRequiredVersion>1.0.6.284</MinimumRequiredVersion>
+    <ApplicationRevision>284</ApplicationRevision>
     <ApplicationVersion>1.0.6.%2a</ApplicationVersion>
     <UseApplicationTrust>false</UseApplicationTrust>
     <PublishWizardCompleted>true</PublishWizardCompleted>
@@ -1138,8 +1138,6 @@
     <Compile Include="ViewModels\RA_STUDY\RA_STUDYCollectionViewModelWrapper.cs" />
     <Compile Include="ViewModels\RA_STUDY\RA_GUIDE_SUBPROMPTCollectionViewModelWrapper.cs" />
     <Compile Include="ViewModels\RA_STUDY\RA_STUDY_TYPECollectionViewModelWrapper.cs" />
-    <Compile Include="ViewModels\REGISTER\REGISTER_CLARIFICATIONCollectionViewModelWrapper.cs" />
-    <Compile Include="ViewModels\REGISTER\REGISTER_TQCollectionViewModelWrapper.cs" />
     <Compile Include="ViewModels\STOCK_CODE\STOCK_CODECollectionViewModelWrapper.cs" />
     <Compile Include="ViewModels\BUDGET_ITEM\BUDGET_ITEMSchedulingViewModelWrapper.cs" />
     <Compile Include="ViewModels\ESTIMATE_ITEM\ESTIMATE_ITEMCollectionViewModelWrapper.cs" />
@@ -1281,12 +1279,6 @@
     </Compile>
     <Compile Include="Views\RA_STUDY\RA_STUDY_TYPECollectionView.xaml.cs">
       <DependentUpon>RA_STUDY_TYPECollectionView.xaml</DependentUpon>
-    </Compile>
-    <Compile Include="Views\REGISTER\REGISTER_CLARIFICATIONCollectionView.xaml.cs">
-      <DependentUpon>REGISTER_CLARIFICATIONCollectionView.xaml</DependentUpon>
-    </Compile>
-    <Compile Include="Views\REGISTER\REGISTER_TQCollectionView.xaml.cs">
-      <DependentUpon>REGISTER_TQCollectionView.xaml</DependentUpon>
     </Compile>
     <Compile Include="Views\STOCK_CODE\STOCK_CODECollectionView.xaml.cs">
       <DependentUpon>STOCK_CODECollectionView.xaml</DependentUpon>
@@ -2277,14 +2269,6 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>
-    <Page Include="Views\REGISTER\REGISTER_CLARIFICATIONCollectionView.xaml">
-      <Generator>MSBuild:Compile</Generator>
-      <SubType>Designer</SubType>
-    </Page>
-    <Page Include="Views\REGISTER\REGISTER_TQCollectionView.xaml">
-      <Generator>MSBuild:Compile</Generator>
-      <SubType>Designer</SubType>
-    </Page>
     <Page Include="Views\STOCK_CODE\STOCK_CODECollectionView.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
@@ -2604,6 +2588,7 @@
     <EmbeddedResource Include="Common\Resources\NavigationResources.resx">
       <Generator>ResXFileCodeGenerator</Generator>
       <LastGenOutput>NavigationResources.Designer.cs</LastGenOutput>
+      <SubType>Designer</SubType>
     </EmbeddedResource>
     <EmbeddedResource Include="Properties\licenses.licx" />
     <EmbeddedResource Include="Properties\Resources.resx">

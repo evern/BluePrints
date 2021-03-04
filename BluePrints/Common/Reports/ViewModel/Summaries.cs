@@ -296,18 +296,18 @@ namespace BluePrints.Common.ViewModel.Reporting
             {
                 if (Earned.CurrentPeriodCumulativeDataPoint != null)
                     totalEarnedUOM = Earned.CurrentPeriodCumulativeDataPoint.Costs;
-                if (Burned.CurrentPeriodDataPoint != null)
+                if (Burned.CurrentPeriodCumulativeDataPoint != null)
                     totalBurnedUOM = Burned.CurrentPeriodCumulativeDataPoint.Costs;
-                if (Budgeted.CurrentPeriodDataPoint != null)
+                if (Budgeted.CurrentPeriodCumulativeDataPoint != null)
                     totalPlannedUOM = Budgeted.CurrentPeriodCumulativeDataPoint.Costs;
             }
             else
             {
-                if (Earned.CurrentPeriodDataPoint != null)
+                if (Earned.CurrentPeriodCumulativeDataPoint != null)
                     totalEarnedUOM = Earned.CurrentPeriodCumulativeDataPoint.Units;
-                if (Burned.CurrentPeriodDataPoint != null)
+                if (Burned.CurrentPeriodCumulativeDataPoint != null)
                     totalBurnedUOM = Burned.CurrentPeriodCumulativeDataPoint.Units;
-                if (Budgeted.CurrentPeriodDataPoint != null)
+                if (Budgeted.CurrentPeriodCumulativeDataPoint != null)
                     totalPlannedUOM = Budgeted.CurrentPeriodCumulativeDataPoint.Units;
             }
 

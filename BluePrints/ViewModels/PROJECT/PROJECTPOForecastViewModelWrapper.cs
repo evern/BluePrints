@@ -723,127 +723,134 @@ namespace BluePrints.ViewModels
 
         private void paymentSpread(GridControl gridControl, bool useDefaultSpreadPeriod = false)
         {
-            TableView tableView = gridControl.View as TableView;
-            var selectedCells = tableView.GetSelectedCells();
-
-            var selected_cells = tableView.GetSelectedCells();
-            if (selected_cells.Count == 0)
+            try
             {
-                selected_cells = Enumerable.Range(0, gridControl.VisibleRowCount)
-                .Select(x => (GridControl)gridControl.GetDetail(x))
-                .Where(x => x != null).
-                SelectMany(x => ((TableView)(x).View).GetSelectedCells()).ToList();
+                TableView tableView = gridControl.View as TableView;
+                var selectedCells = tableView.GetSelectedCells();
 
+                var selected_cells = tableView.GetSelectedCells();
                 if (selected_cells.Count == 0)
-                    return;
-                else
                 {
-                    tableView = (TableView)selected_cells.First().Column.View;
-                    gridControl = tableView.Grid;
+                    selected_cells = Enumerable.Range(0, gridControl.VisibleRowCount)
+                    .Select(x => (GridControl)gridControl.GetDetail(x))
+                    .Where(x => x != null).
+                    SelectMany(x => ((TableView)(x).View).GetSelectedCells()).ToList();
+
+                    if (selected_cells.Count == 0)
+                        return;
+                    else
+                    {
+                        tableView = (TableView)selected_cells.First().Column.View;
+                        gridControl = tableView.Grid;
+                    }
+                }
+
+                POSpreadViewModel poSpreadViewModel = POSpreadViewModel.Create(spreadPeriod, spreadInterval);
+                if (useDefaultSpreadPeriod || CustomPODialogService.ShowDialog(MessageButton.OKCancel, "Change Spread Parameter", "POSpreadView", poSpreadViewModel) == MessageResult.OK)
+                {
+                    //remember user choice
+                    spreadPeriod = poSpreadViewModel.Period;
+                    spreadInterval = poSpreadViewModel.Interval;
+
+                    if (spreadPeriod == null || spreadInterval == null)
+                        return;
+
+                    EntitiesUndoRedoManager.PauseActionId();
+                    var selected_cells_groupby_columns = selected_cells.GroupBy(x => x.Column.FieldName).Select(group => new { FieldName = group.Key, Cells = group.ToList() });
+                    GridCell first_selected_cell = selected_cells.First();
+                    GridCell last_selected_cell = selected_cells.Last();
+
+                    int first_row_handle = selected_cells.Min(x => x.RowHandle);
+                    int last_row_handle = selected_cells.Max(x => x.RowHandle);
+                    int first_row_visible_index = gridControl.GetRowVisibleIndexByHandle(first_row_handle);
+                    int last_row_visible_index = gridControl.GetRowVisibleIndexByHandle(last_row_handle);
+                    int numberOfSelectedRows = (last_row_visible_index - first_row_visible_index) + 1;
+
+                    List<GridColumn> visible_columns = tableView.VisibleColumns.ToList();
+                    int first_column_visible_index = visible_columns.First(x => x.FieldName == first_selected_cell.Column.FieldName).VisibleIndex;
+                    int last_column_visible_index = visible_columns.First(x => x.FieldName == last_selected_cell.Column.FieldName).VisibleIndex;
+
+                    int rowOffsetSelection = numberOfSelectedRows;
+                    int columnOffsetSelection = (int)((decimal)spreadPeriod * (decimal)spreadInterval);
+
+                    int pasteValueRowOffset = 0;
+                    //becayse the date doesn't exists yet in the datatable
+                    bool forceRefreshDataTable = false;
+
+                    LoadingScreenManager.ShowLoadingScreen(numberOfSelectedRows);
+                    for (int rowOffset = 0; rowOffset < rowOffsetSelection; rowOffset++)
+                    {
+                        LoadingScreenManager.Progress();
+                        int current_row_visible_index = first_row_visible_index + rowOffset;
+                        int current_row_handle = gridControl.GetRowHandleByVisibleIndex(current_row_visible_index);
+                        object rowObject = gridControl.GetRow(current_row_handle);
+                        if (rowObject == null)
+                            continue;
+
+                        DataRowView editing_row_view = (DataRowView)rowObject;
+                        DataRow editing_row = editing_row_view.Row;
+                        POForecastProjection projection = (POForecastProjection)editing_row[columnEntity];
+                        clearPOForecast(projection.PONO, projection.VariationCode);
+                        decimal costPerPeriod = projection.PO_RemainingPrice / (decimal)spreadPeriod;
+
+                        //decimal remainingPrice = projection.PO_RemainingPrice < 0 ? 0 : projection.PO_RemainingPrice;
+                        //decimal costPerPeriod = remainingPrice / (decimal)spreadPeriod;
+                        DateTime? lastProcessedDate = null;
+
+                        for (int columnOffset = 0; columnOffset < columnOffsetSelection; columnOffset += (int)spreadInterval)
+                        {
+                            string parseFieldName = string.Empty;
+                            GridColumn current_column = null;
+                            object oldValue = null;
+                            if (!visible_columns.Any(x => x.VisibleIndex == (first_column_visible_index + columnOffset)))
+                            {
+                                if (lastProcessedDate == null)
+                                    continue;
+
+                                parseFieldName = ((DateTime)lastProcessedDate).AddMonths((int)spreadInterval).AddDays(-1).ToString(BluePrintsResources.ColumnDateFormat);
+                                oldValue = 0.00m;
+                                forceRefreshDataTable = true;
+                            }
+                            else
+                            {
+                                current_column = visible_columns.First(x => x.VisibleIndex == (first_column_visible_index + columnOffset));
+                                if (parseFieldName == string.Empty)
+                                    parseFieldName = current_column.FieldName;
+                            }
+
+                            DateTime parseDateTime;
+                            if (DateTime.TryParse(parseFieldName, out parseDateTime))
+                            {
+                                if (dataPointsTable.Columns.Contains(parseFieldName))
+                                    oldValue = editing_row[parseFieldName];
+
+                                addUndo(editing_row, parseFieldName, oldValue, costPerPeriod, EntityMessageType.Changed);
+                                findExistingOrAddNewFORECAST_PO(editing_row, parseDateTime, costPerPeriod, true);
+                                lastProcessedDate = parseDateTime;
+                            }
+                        }
+
+                        if (!forceRefreshDataTable)
+                        {
+                            updateRowPOForecast(alignedDataDateCollection, Entities, allExoActuals, ActualsCutOffDate, string.Empty, string.Empty, editing_row);
+
+                            //because grid doesn't refresh totals
+                            GridControlService.RefreshData();
+                        }
+
+                        pasteValueRowOffset += 1;
+                    }
+                    LoadingScreenManager.CloseLoadingScreen();
+
+                    if (forceRefreshDataTable)
+                        refreshDataTable();
+
+                    EntitiesUndoRedoManager.UnpauseActionId();
                 }
             }
-
-            POSpreadViewModel poSpreadViewModel = POSpreadViewModel.Create(spreadPeriod, spreadInterval);
-            if (useDefaultSpreadPeriod || CustomPODialogService.ShowDialog(MessageButton.OKCancel, "Change Spread Parameter", "POSpreadView", poSpreadViewModel) == MessageResult.OK)
+            catch
             {
-                //remember user choice
-                spreadPeriod = poSpreadViewModel.Period;
-                spreadInterval = poSpreadViewModel.Interval;
-
-                if (spreadPeriod == null || spreadInterval == null)
-                    return;
-
-                EntitiesUndoRedoManager.PauseActionId();
-                var selected_cells_groupby_columns = selected_cells.GroupBy(x => x.Column.FieldName).Select(group => new { FieldName = group.Key, Cells = group.ToList() });
-                GridCell first_selected_cell = selected_cells.First();
-                GridCell last_selected_cell = selected_cells.Last();
-
-                int first_row_handle = selected_cells.Min(x => x.RowHandle);
-                int last_row_handle = selected_cells.Max(x => x.RowHandle);
-                int first_row_visible_index = gridControl.GetRowVisibleIndexByHandle(first_row_handle);
-                int last_row_visible_index = gridControl.GetRowVisibleIndexByHandle(last_row_handle);
-                int numberOfSelectedRows = (last_row_visible_index - first_row_visible_index) + 1;
-
-                List<GridColumn> visible_columns = tableView.VisibleColumns.ToList();
-                int first_column_visible_index = visible_columns.First(x => x.FieldName == first_selected_cell.Column.FieldName).VisibleIndex;
-                int last_column_visible_index = visible_columns.First(x => x.FieldName == last_selected_cell.Column.FieldName).VisibleIndex;
-
-                int rowOffsetSelection = numberOfSelectedRows;
-                int columnOffsetSelection = (int)((decimal)spreadPeriod * (decimal)spreadInterval);
-
-                int pasteValueRowOffset = 0;
-                //becayse the date doesn't exists yet in the datatable
-                bool forceRefreshDataTable = false;
-
-                LoadingScreenManager.ShowLoadingScreen(numberOfSelectedRows);
-                for (int rowOffset = 0; rowOffset < rowOffsetSelection; rowOffset++)
-                {
-                    LoadingScreenManager.Progress();
-                    int current_row_visible_index = first_row_visible_index + rowOffset;
-                    int current_row_handle = gridControl.GetRowHandleByVisibleIndex(current_row_visible_index);
-                    object rowObject = gridControl.GetRow(current_row_handle);
-                    if (rowObject == null)
-                        continue;
-
-                    DataRowView editing_row_view = (DataRowView)rowObject;
-                    DataRow editing_row = editing_row_view.Row;
-                    POForecastProjection projection = (POForecastProjection)editing_row[columnEntity];
-                    clearPOForecast(projection.PONO, projection.VariationCode);
-                    decimal costPerPeriod = projection.PO_RemainingPrice / (decimal)spreadPeriod;
-
-                    //decimal remainingPrice = projection.PO_RemainingPrice < 0 ? 0 : projection.PO_RemainingPrice;
-                    //decimal costPerPeriod = remainingPrice / (decimal)spreadPeriod;
-                    DateTime? lastProcessedDate = null;
-
-                    for (int columnOffset = 0; columnOffset < columnOffsetSelection; columnOffset += (int)spreadInterval)
-                    {
-                        string parseFieldName = string.Empty;
-                        GridColumn current_column = null;
-                        object oldValue = null;
-                        if (!visible_columns.Any(x => x.VisibleIndex == (first_column_visible_index + columnOffset)))
-                        {
-                            if (lastProcessedDate == null)
-                                continue;
-
-                            parseFieldName = ((DateTime)lastProcessedDate).AddMonths((int)spreadInterval).AddDays(-1).ToString(BluePrintsResources.ColumnDateFormat);
-                            oldValue = 0.00m;
-                            forceRefreshDataTable = true;
-                        }
-                        else
-                        {
-                            current_column = visible_columns.First(x => x.VisibleIndex == (first_column_visible_index + columnOffset));
-                            if (parseFieldName == string.Empty)
-                                parseFieldName = current_column.FieldName;
-                        }
-
-                        DateTime parseDateTime;
-                        if (DateTime.TryParse(parseFieldName, out parseDateTime))
-                        {
-                            if(dataPointsTable.Columns.Contains(parseFieldName))
-                                oldValue = editing_row[parseFieldName];
-
-                            addUndo(editing_row, parseFieldName, oldValue, costPerPeriod, EntityMessageType.Changed);
-                            findExistingOrAddNewFORECAST_PO(editing_row, parseDateTime, costPerPeriod, true);
-                            lastProcessedDate = parseDateTime;
-                        }
-                    }
-
-                    if (!forceRefreshDataTable)
-                    {
-                        updateRowPOForecast(alignedDataDateCollection, Entities, allExoActuals, ActualsCutOffDate, string.Empty, string.Empty, editing_row);
-
-                        //because grid doesn't refresh totals
-                        GridControlService.RefreshData();
-                    }
-
-                    pasteValueRowOffset += 1;
-                }
-                LoadingScreenManager.CloseLoadingScreen();
-
-                if (forceRefreshDataTable)
-                    refreshDataTable();
-
-                EntitiesUndoRedoManager.UnpauseActionId();
+                MessageBoxService.ShowMessage("Exception: Please contact " + BluePrintsResources.ITEmail + " to troubleshoot", "Error", MessageButton.OK);
             }
         }
 
