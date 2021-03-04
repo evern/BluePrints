@@ -977,28 +977,36 @@ namespace BluePrints.Common
         ZincCopperLead = 27
     }
 
-    public enum RegisterTQ_Status
+    public enum RegisterTQ_Impact
     {
-        [Display(Name = "Accepted")]
-        Accepted = 0,
-        [Display(Name = "Rejected")]
-        Rejected = 1,
-        [Display(Name = "Cancelled")]
-        Cancelled = 2
+        [Display(Name = "Commercial")]
+        Commercial = 0,
+        [Display(Name = "Schedule")]
+        Schedule = 1,
+        [Display(Name = "Quality")]
+        Quality = 2,
+        [Display(Name = "Other")]
+        Other = 2
     }
 
+    public enum RegisterTQ_ResponseStatus
+    {
+        [Display(Name = "Accepted - Closed")]
+        Accepted = 0,
+        [Display(Name = "Accepted - With Comments")]
+        Rejected = 1,
+        [Display(Name = "Rejected - Resubmit")]
+        Cancelled = 2
+    }
+    
     public enum RegisterTQ_OpenClose
     {
         [Display(Name = "Open")]
         Open = 0,
         [Display(Name = "Closed")]
         Closed = 1,
-        [Display(Name = "Closed (Pending - See Comments)")]
-        ClosedPending = 2,
-        [Display(Name = "Cancelled")]
-        Cancelled = 3,
-        [Display(Name = "Not Issued")]
-        NotIssued = 4,
+        [Display(Name = "Clarification Required")]
+        ClarificationRequired = 2
     }
 
     public class ReportingEnum

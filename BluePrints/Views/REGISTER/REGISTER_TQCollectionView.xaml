@@ -1,4 +1,4 @@
-﻿<UserControl x:Class="BluePrints.Views.REGISTER_TQCollectionView" xmlns="http://schemas.microsoft.com/netfx/2009/xaml/presentation" xmlns:dxdo="http://schemas.devexpress.com/winfx/2008/xaml/docking" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" xmlns:common="clr-namespace:BluePrints.Common" xmlns:custom="clr-namespace:BaseModel.Misc;assembly=BaseModel" xmlns:d="http://schemas.microsoft.com/expression/blend/2008" xmlns:dx="http://schemas.devexpress.com/winfx/2008/xaml/core" xmlns:dxb="http://schemas.devexpress.com/winfx/2008/xaml/bars" xmlns:dxe="http://schemas.devexpress.com/winfx/2008/xaml/editors" xmlns:dxg="http://schemas.devexpress.com/winfx/2008/xaml/grid" xmlns:dxlc="http://schemas.devexpress.com/winfx/2008/xaml/layoutcontrol" xmlns:dxmvvm="http://schemas.devexpress.com/winfx/2008/xaml/mvvm" xmlns:dxr="http://schemas.devexpress.com/winfx/2008/xaml/ribbon" xmlns:dxrudex="http://schemas.devexpress.com/winfx/2008/xaml/reports/userdesignerextensions" xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" xmlns:view="clr-namespace:BluePrints.Views" xmlns:viewmodel="clr-namespace:BluePrints.ViewModels" x:Name="userControl" d:DesignHeight="400" d:DesignWidth="600" DataContext="{dxmvvm:ViewModelSource viewmodel:REGISTER_TQCollectionViewModelWrapper}" mc:Ignorable="d">
+﻿<UserControl x:Class="BluePrints.Views.REGISTER_TQCollectionView" xmlns:dxc="http://schemas.devexpress.com/winfx/2008/xaml/core" xmlns="http://schemas.microsoft.com/netfx/2009/xaml/presentation" xmlns:dxdo="http://schemas.devexpress.com/winfx/2008/xaml/docking" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" xmlns:common="clr-namespace:BluePrints.Common" xmlns:custom="clr-namespace:BaseModel.Misc;assembly=BaseModel" xmlns:d="http://schemas.microsoft.com/expression/blend/2008" xmlns:dx="http://schemas.devexpress.com/winfx/2008/xaml/core" xmlns:dxb="http://schemas.devexpress.com/winfx/2008/xaml/bars" xmlns:dxe="http://schemas.devexpress.com/winfx/2008/xaml/editors" xmlns:dxg="http://schemas.devexpress.com/winfx/2008/xaml/grid" xmlns:dxlc="http://schemas.devexpress.com/winfx/2008/xaml/layoutcontrol" xmlns:dxmvvm="http://schemas.devexpress.com/winfx/2008/xaml/mvvm" xmlns:dxr="http://schemas.devexpress.com/winfx/2008/xaml/ribbon" xmlns:dxrudex="http://schemas.devexpress.com/winfx/2008/xaml/reports/userdesignerextensions" xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" xmlns:view="clr-namespace:BluePrints.Views" xmlns:viewmodel="clr-namespace:BluePrints.ViewModels" x:Name="userControl" d:DesignHeight="400" d:DesignWidth="600" DataContext="{dxmvvm:ViewModelSource viewmodel:REGISTER_TQCollectionViewModelWrapper}" mc:Ignorable="d">
     <UserControl.Resources>
         <ResourceDictionary>
             <ResourceDictionary.MergedDictionaries>
@@ -12,6 +12,17 @@
         <dxmvvm:OpenFileDialogService Title="Select Document" Multiselect="False" />
     </dxmvvm:Interaction.Behaviors>
     <Grid Style="{StaticResource CollectionView.RootContainer}">
+        <dxmvvm:Interaction.Behaviors>
+            <dxc:DialogService x:Name="ImportDocumentsDialog">
+                <dxc:DialogService.DialogStyle>
+                    <Style TargetType="dx:DXDialogWindow">
+                        <Setter Property="SizeToContent" Value="WidthAndHeight" />
+                        <Setter Property="MinWidth" Value="800" />
+                        <Setter Property="MinHeight" Value="600" />
+                    </Style>
+                </dxc:DialogService.DialogStyle>
+            </dxc:DialogService>
+        </dxmvvm:Interaction.Behaviors>
         <dxb:BarManager>
             <dxb:BarManager.Items>
                 <dxb:BarSubItem ItemLinksSource="{StaticResource RibbonDefaultGridButtons}" />
@@ -51,7 +62,7 @@
                 <dxb:BarButtonItem x:Name="biEditNotice1" Command="{Binding EditNoticeCommand}" Content="Edit Notice" Glyph="{dx:DXImage Image=Edit_16x16.png}" LargeGlyph="{dx:DXImage Image=Edit_32x32.png}" RibbonStyle="SmallWithText" ToolTip="Redesign the design change notice layout" />
                 <dxb:BarButtonItem x:Name="biSpecifyPath" Command="{Binding SpecifyPathCommand}" Content="Specify Path" Glyph="{dx:DXImage Image=ExportToPDF_16x16.png}" LargeGlyph="{dx:DXImage Image=ExportToPDF_32x32.png}" RibbonStyle="SmallWithText" ToolTip="Specify the PDF path" />
                 <dxb:BarButtonItem x:Name="biSendToClarificationRegister" Command="{Binding SendToClarificationRegisterCommand}" Content="Send to Clarification Register" ToolTip="Send selected issue to clarification register" LargeGlyph="{dx:DXImage Image=BOTask_32x32.png}" Glyph="{dx:DXImage Image=BOTask_16x16.png}" />
-                <dxb:BarButtonItem x:Name="biExportNotice" Command="{Binding ExportTQNoticeCommand}" Content="Export Selected" Glyph="{dx:DXImage Image=ExportToDOC_16x16.png}" LargeGlyph="{dx:DXImage Image=ExportToDOC_32x32.png}" RibbonStyle="SmallWithText" ToolTip="View and export selected design change notice(s) to DOCX" />
+                <dxb:BarButtonItem x:Name="biSpecifyReference" Command="{Binding SpecifyReferencesCommand}" Content="Import Documents" ToolTip="Specify reference documents and attachments" LargeGlyph="{dx:DXImage Image=BOTask_32x32.png}" Glyph="{dx:DXImage Image=BOTask_16x16.png}" />
             </dxb:BarManager.Items>
             <DockPanel>
                 <dxr:RibbonControl Style="{StaticResource DefaultRibbonControlStyle}">
@@ -73,8 +84,7 @@
                                 <dxb:BarButtonItemLink BarItemName="biEditReport1" />
                                 <dxb:BarButtonItemLink BarItemName="biViewReport1" />
                                 <dxb:BarButtonItemLink BarItemName="biSpecifyPath" />
-                                <dxb:BarButtonItemLink BarItemName="biSendToClarificationRegister" />
-                                <dxb:BarButtonItemLink BarItemName="biExportNotice" />
+                                <dxb:BarButtonItemLink BarItemName="biSpecifyReference" />
                             </dxr:RibbonPageGroup>
                         </dxr:RibbonPage>
                     </dxr:RibbonDefaultPageCategory>
@@ -95,14 +105,14 @@
                                             <dxe:ComboBoxEditSettings AutoComplete="False" IsTextEditable="True" ItemsSource="{Binding USERStrCollection}" />
                                         </dxg:GridColumn.EditSettings>
                                     </dxg:GridColumn>
-                                    <dxg:GridColumn Header="Addressed To" AllowBestFit="false" Width="100" FieldName="ADDRESSED_TO" AllowMoving="false">
-                                        <dxg:GridColumn.EditSettings>
-                                            <dxe:TextEditSettings TextWrapping="Wrap" AcceptsReturn="True"/>
-                                        </dxg:GridColumn.EditSettings>
-                                    </dxg:GridColumn>
                                     <dxg:GridColumn Header="Date Requested" FieldName="DATE_REQUESTED" AllowMoving="false" >
                                         <dxg:GridColumn.EditSettings>
                                             <dxe:DateEditSettings DisplayFormat="dd-MMM-yyyy" />
+                                        </dxg:GridColumn.EditSettings>
+                                    </dxg:GridColumn>
+                                    <dxg:GridColumn Header="Addressed To" AllowBestFit="false" Width="100" FieldName="ADDRESSED_TO" AllowMoving="false">
+                                        <dxg:GridColumn.EditSettings>
+                                            <dxe:TextEditSettings TextWrapping="Wrap" AcceptsReturn="True"/>
                                         </dxg:GridColumn.EditSettings>
                                     </dxg:GridColumn>
                                     <dxg:GridColumn Header="Date Response Req'd" FieldName="DATE_RESPONSE" AllowMoving="false" >
@@ -115,24 +125,67 @@
                                             <dxe:TextEditSettings TextWrapping="Wrap" AcceptsReturn="True"/>
                                         </dxg:GridColumn.EditSettings>
                                     </dxg:GridColumn>
+                                    <dxg:GridColumn Header="Description" FieldName="DESCRIPTION" AllowBestFit="false" Width="150" AllowMoving="false">
+                                        <dxg:GridColumn.EditSettings>
+                                            <dxe:TextEditSettings TextWrapping="Wrap" AcceptsReturn="True"/>
+                                        </dxg:GridColumn.EditSettings>
+                                    </dxg:GridColumn>
+                                    <dxg:GridColumn Header="Reference Documents and Attachments" ReadOnly="True" FieldName="Documents">
+                                        <dxg:GridColumn.EditSettings>
+                                            <dxe:ComboBoxEditSettings
+                                                AllowDefaultButton="True"
+                                                ShowPopupIfReadOnly="False"
+                                                ImmediatePopup="True">
+                                                <dxmvvm:Interaction.Behaviors>
+                                                    <dxmvvm:EventToCommand Command="{Binding SpecifyReferencesCommand}" EventName="DefaultButtonClick" />
+                                                </dxmvvm:Interaction.Behaviors>
+                                                <dxe:ComboBoxEditSettings.StyleSettings>
+                                                    <dxe:CheckedTokenComboBoxStyleSettings NewTokenPosition="Far" EnableTokenWrapping="True" ShowTokenButtons="True" AllowEditTokens="False" />
+                                                </dxe:ComboBoxEditSettings.StyleSettings>
+                                            </dxe:ComboBoxEditSettings>
+                                        </dxg:GridColumn.EditSettings>
+                                    </dxg:GridColumn>
+                                    <dxg:GridColumn Header="Proposed Solution" FieldName="PROPOSED_SOLUTION" AllowBestFit="false" Width="150" AllowMoving="false">
+                                        <dxg:GridColumn.EditSettings>
+                                            <dxe:TextEditSettings TextWrapping="Wrap" AcceptsReturn="True"/>
+                                        </dxg:GridColumn.EditSettings>
+                                    </dxg:GridColumn>
+                                    <dxg:GridColumn Header="Impact" FieldName="IMPACT" AllowMoving="false">
+                                        <dxg:GridColumn.EditSettings>
+                                            <dxe:ComboBoxEditSettings AutoComplete="True" IsTextEditable="True">
+                                                <dxe:ComboBoxEditSettings.ItemsSource>
+                                                    <dxe:EnumItemsSource EnumType="{x:Type common:RegisterTQ_Impact}" />
+                                                </dxe:ComboBoxEditSettings.ItemsSource>
+                                            </dxe:ComboBoxEditSettings>
+                                        </dxg:GridColumn.EditSettings>
+                                    </dxg:GridColumn>
                                     <dxg:GridColumn Header="Comments" FieldName="COMMENTS" AllowBestFit="false" Width="150" AllowMoving="false">
                                         <dxg:GridColumn.EditSettings>
                                             <dxe:TextEditSettings TextWrapping="Wrap" AcceptsReturn="True"/>
                                         </dxg:GridColumn.EditSettings>
                                     </dxg:GridColumn>
-                                    <dxg:GridColumn Header="Date Responded" FieldName="DATE_RESPONDED" AllowMoving="false" >
+                                    <dxg:GridColumn Header="Approver" FieldName="APPROVER" AllowBestFit="false" Width="100" AllowMoving="false">
                                         <dxg:GridColumn.EditSettings>
-                                            <dxe:DateEditSettings DisplayFormat="dd-MMM-yyyy" />
-                                        </dxg:GridColumn.EditSettings>
-                                    </dxg:GridColumn>
-                                    <dxg:GridColumn Header="Response Time (days)" FieldName="ResponseTime" AllowMoving="false" >
-                                        <dxg:GridColumn.EditSettings>
-                                            <dxe:TextEditSettings Mask="###,##0 Days" MaskType="Numeric" MaskUseAsDisplayFormat="True" />
+                                            <dxe:ComboBoxEditSettings AutoComplete="False" IsTextEditable="True" ItemsSource="{Binding USERStrCollection}" />
                                         </dxg:GridColumn.EditSettings>
                                     </dxg:GridColumn>
                                     <dxg:GridColumn Header="Response" FieldName="RESPONSE" AllowBestFit="false" Width="150" AllowMoving="false">
                                         <dxg:GridColumn.EditSettings>
                                             <dxe:TextEditSettings TextWrapping="Wrap" AcceptsReturn="True"/>
+                                        </dxg:GridColumn.EditSettings>
+                                    </dxg:GridColumn>
+                                    <dxg:GridColumn Header="Status" FieldName="RESPONSE_STATUS" AllowMoving="false">
+                                        <dxg:GridColumn.EditSettings>
+                                            <dxe:ComboBoxEditSettings AutoComplete="True" IsTextEditable="True">
+                                                <dxe:ComboBoxEditSettings.ItemsSource>
+                                                    <dxe:EnumItemsSource EnumType="{x:Type common:RegisterTQ_ResponseStatus}" />
+                                                </dxe:ComboBoxEditSettings.ItemsSource>
+                                            </dxe:ComboBoxEditSettings>
+                                        </dxg:GridColumn.EditSettings>
+                                    </dxg:GridColumn>
+                                    <dxg:GridColumn Header="Date Responded" FieldName="DATE_RESPONDED" AllowMoving="false" >
+                                        <dxg:GridColumn.EditSettings>
+                                            <dxe:DateEditSettings DisplayFormat="dd-MMM-yyyy" />
                                         </dxg:GridColumn.EditSettings>
                                     </dxg:GridColumn>
                                     <dxg:GridColumn Header="Days Open" FieldName="DaysOpen" AllowMoving="false" >
@@ -144,28 +197,41 @@
                                         <dxg:GridColumn.EditSettings>
                                             <dxe:ComboBoxEditSettings AutoComplete="True" IsTextEditable="True">
                                                 <dxe:ComboBoxEditSettings.ItemsSource>
-                                                    <dxe:EnumItemsSource EnumType="{x:Type common:RegisterTQ_Status}" />
-                                                </dxe:ComboBoxEditSettings.ItemsSource>
-                                            </dxe:ComboBoxEditSettings>
-                                        </dxg:GridColumn.EditSettings>
-                                    </dxg:GridColumn>
-                                    <dxg:GridColumn Header="Open / Closed" FieldName="OPENCLOSE" AllowMoving="false">
-                                        <dxg:GridColumn.EditSettings>
-                                            <dxe:ComboBoxEditSettings AutoComplete="True" IsTextEditable="True">
-                                                <dxe:ComboBoxEditSettings.ItemsSource>
                                                     <dxe:EnumItemsSource EnumType="{x:Type common:RegisterTQ_OpenClose}" />
                                                 </dxe:ComboBoxEditSettings.ItemsSource>
                                             </dxe:ComboBoxEditSettings>
                                         </dxg:GridColumn.EditSettings>
                                     </dxg:GridColumn>
-                                    <dxg:GridColumn Header="New Comment" FieldName="NEW_COMMENTS" AllowBestFit="false" Width="150" AllowMoving="false">
+                                    <dxg:GridColumn Header="Related TQ Number" FieldName="RELATED_TQ" AllowBestFit="false" Width="150" AllowMoving="false">
                                         <dxg:GridColumn.EditSettings>
                                             <dxe:TextEditSettings TextWrapping="Wrap" AcceptsReturn="True"/>
                                         </dxg:GridColumn.EditSettings>
                                     </dxg:GridColumn>
-                                    <dxg:GridColumn Header="TQ Path" FieldName="TQ_PATH" AllowBestFit="false" ReadOnly="True" Width="150" AllowMoving="false">
+                                    <dxg:GridColumn Header="Comment" FieldName="NEW_COMMENTS" AllowBestFit="false" Width="150" AllowMoving="false">
                                         <dxg:GridColumn.EditSettings>
-                                            <dxe:HyperlinkEditSettings AllowAutoNavigate="True" />
+                                            <dxe:TextEditSettings TextWrapping="Wrap" AcceptsReturn="True"/>
+                                        </dxg:GridColumn.EditSettings>
+                                    </dxg:GridColumn>
+                                    <dxg:GridColumn Header="TQ Path" FieldName="TQ_PATH" AllowBestFit="false" Width="150" AllowMoving="false">
+                                        <dxg:GridColumn.CellTemplate>
+                                            <DataTemplate>
+                                                <Grid>
+                                                    <Grid.ColumnDefinitions>
+                                                        <ColumnDefinition Width="*" />
+                                                        <ColumnDefinition Width="15" />
+                                                    </Grid.ColumnDefinitions>
+                                                    <dxe:HyperlinkEdit Name="PART_Editor" ShowNullText="True" AllowNullInput="True" ShowNullTextForEmptyValue="True" NullText="Double click here to browse" Grid.Column="0" AllowAutoNavigate="True" >
+                                                    </dxe:HyperlinkEdit>
+                                                    <Image Grid.Column="1" Source="{dx:DXImage Image=Action_Close.png}" ToolTip="Clear path">
+                                                        <dxmvvm:Interaction.Behaviors>
+                                                            <dxmvvm:EventToCommand Command="{Binding DataContext.ClearPathCommand, ElementName=userControl}" EventName="PreviewMouseDown" PassEventArgsToCommand="True" />
+                                                        </dxmvvm:Interaction.Behaviors>
+                                                    </Image>
+                                                </Grid>
+                                            </DataTemplate>
+                                        </dxg:GridColumn.CellTemplate>
+                                        <dxg:GridColumn.EditSettings>
+                                            <dxe:HyperlinkEditSettings AllowAutoNavigate="True" AllowNullInput="True" ShowNullText="True" ShowNullTextForEmptyValue="True" NullText="Double click here to browse" />
                                         </dxg:GridColumn.EditSettings>
                                     </dxg:GridColumn>
                                 </dxg:GridControl.Columns>
@@ -185,7 +251,7 @@
                                             <dxb:BarSubItemLink BarItemName="biDuplicateMulti" />
                                             <dxb:BarItemLinkSeparator />
                                             <dxb:BarButtonItemLink BarItemName="biSpecifyPath" />
-                                            <dxb:BarButtonItemLink BarItemName="biSendToClarificationRegister" />
+                                            <dxb:BarButtonItemLink BarItemName="biSpecifyReference" />
                                             <dxb:BarItemLinkSeparator />
                                             <dxb:BarButtonItemLink BarItemName="biBulkDelete1" />
                                             <dxb:BarButtonItemLink BarItemName="biFullRefresh1" />

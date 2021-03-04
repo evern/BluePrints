@@ -464,6 +464,11 @@ namespace BluePrints.BluePrintsEntitiesDataModel
             get { return GetRepository((CLIENT_PROJECT x) => x.GUID); }
         }
 
+        IRepository<REGISTER_TQ_ATTACHMENT, Guid> IBluePrintsEntitiesUnitOfWork.REGISTER_TQ_ATTACHMENTS
+        {
+            get { return GetRepository((REGISTER_TQ_ATTACHMENT x) => x.GUID); }
+        }
+
         IRepository<WORKPACK, Guid> IBluePrintsEntitiesUnitOfWork.WORKPACKS
         {
             get { return GetRepository((WORKPACK x) => x.GUID); }

@@ -26,6 +26,8 @@ using System.Windows;
 using DevExpress.XtraPrinting;
 using System.Diagnostics;
 using System.Windows.Threading;
+using BaseModel.ViewModel.Dialogs;
+using System.Collections.ObjectModel;
 
 namespace BluePrints.ViewModels
 {
@@ -76,6 +78,7 @@ namespace BluePrints.ViewModels
             loaderCollection.AddLoaderDescription(bluePrintsUnitOfWorkFactory, x => x.AREAS, AREAProjectionFunc);
             loaderCollection.AddLoaderDescription(bluePrintsUnitOfWorkFactory, x => x.USERS, USERProjectionFunc);
             loaderCollection.AddLoaderDescription(bluePrintsUnitOfWorkFactory, x => x.REGISTER_CLARIFICATIONS, REGISTER_CLARIFICATIONProjectionFunc);
+            loaderCollection.AddLoaderDescription(bluePrintsUnitOfWorkFactory, x => x.REGISTER_TQ_ATTACHMENTS, REGISTER_TQ_ATTACHMENTProjectionFunc);
             loaderCollection.AddLoaderDescription<DISCIPLINE, DISCIPLINE, Guid, IBluePrintsEntitiesUnitOfWork>(bluePrintsUnitOfWorkFactory, x => x.DISCIPLINES);
         }
 
@@ -87,6 +90,11 @@ namespace BluePrints.ViewModels
         protected virtual Func<IRepositoryQuery<REGISTER_CLARIFICATION>, IQueryable<REGISTER_CLARIFICATION>> REGISTER_CLARIFICATIONProjectionFunc()
         {
             return query => query.Where(x => x.GUID_PROJECT == loadPROJECT.GUID);
+        }
+
+        protected virtual Func<IRepositoryQuery<REGISTER_TQ_ATTACHMENT>, IQueryable<REGISTER_TQ_ATTACHMENT>> REGISTER_TQ_ATTACHMENTProjectionFunc()
+        {
+            return query => query.Where(x => x.REGISTER_TQ.GUID_PROJECT == loadPROJECT.GUID);
         }
 
         private Func<IRepositoryQuery<PROJECT>, IQueryable<PROJECT>> PROJECTProjectionFunc()
@@ -111,11 +119,21 @@ namespace BluePrints.ViewModels
 
         protected override Func<IRepositoryQuery<REGISTER_TQ>, IQueryable<REGISTER_TQ>> specifyMainViewModelProjection()
         {
-            return query => query.Where(x => x.GUID_PROJECT == loadPROJECT.GUID).OrderBy(x => x.NUMBER);
+            return query => populateTQReferences(query.Where(x => x.GUID_PROJECT == loadPROJECT.GUID).OrderBy(x => x.NUMBER));
+        }
+
+        private IQueryable<REGISTER_TQ> populateTQReferences(IQueryable<REGISTER_TQ> query)
+        {
+            List<REGISTER_TQ> registerTQ = query.ToList();
+            //need to call ToList for tokenComboBoxEditSettings to work
+            registerTQ.ForEach(x => x.Documents = REGISTER_TQ_ATTACHMENTCollection.Where(y => y.GUID_REGISTER_TQ == x.GUID).ToList());
+            
+            return registerTQ.AsQueryable();
         }
 
         protected override void AssignCallBacksAndRaisePropertyChange(IEnumerable<REGISTER_TQ> entities)
         {
+            MainViewModel.OnAfterProjectionSavedCallBack = onAfterEntitySaved;
             MainViewModel.BeforeShownEditor = beforeShownEditor;
             MainViewModel.SetParentViewModel(this);
             if (showReport)
@@ -127,6 +145,45 @@ namespace BluePrints.ViewModels
         }
 
         #region Collection Call Backs
+        private void onAfterEntitySaved(REGISTER_TQ entity, REGISTER_TQ projection, bool isNewEntity)
+        {
+            saveTQDocument(entity);
+        }
+
+        private void saveTQDocument(REGISTER_TQ entity)
+        {
+            if (entity.DocumentAssignments != null)
+            {
+                List<REGISTER_TQ_ATTACHMENT> removeDocuments = new List<REGISTER_TQ_ATTACHMENT>();
+                foreach (REGISTER_TQ_ATTACHMENT document in REGISTER_TQ_ATTACHMENTCollection.Where(x => x.GUID_REGISTER_TQ == entity.GUID))
+                {
+                    if (!entity.DocumentAssignments.Any(x => x.GUID == document.GUID))
+                        removeDocuments.Add(document);
+                }
+
+                REGISTER_TQ_ATTACHMENTCollectionViewModel.BaseBulkDelete(removeDocuments);
+
+                List<REGISTER_TQ_ATTACHMENT> addDocuments = new List<REGISTER_TQ_ATTACHMENT>();
+                foreach (REGISTER_TQ_ATTACHMENT document in entity.DocumentAssignments)
+                {
+                    if (document.GUID == Guid.Empty || !entity.REGISTER_TQ_ATTACHMENT.Any(x => x.GUID == document.GUID))
+                        addDocuments.Add(new REGISTER_TQ_ATTACHMENT() { GUID_REGISTER_TQ = entity.GUID, ATTACHMENT_PATH = document.ATTACHMENT_PATH, ATTACHMENT_NAME = document.ATTACHMENT_NAME });
+                }
+
+                REGISTER_TQ_ATTACHMENTCollectionViewModel.BaseBulkSave(addDocuments);
+            }
+            else
+            {
+                List<REGISTER_TQ_ATTACHMENT> removeDocuments = new List<REGISTER_TQ_ATTACHMENT>();
+                foreach (REGISTER_TQ_ATTACHMENT assignment in REGISTER_TQ_ATTACHMENTCollection.Where(x => x.GUID_REGISTER_TQ == entity.GUID))
+                {
+                    removeDocuments.Add(assignment);
+                }
+
+                REGISTER_TQ_ATTACHMENTCollectionViewModel.BaseBulkDelete(removeDocuments);
+            }
+        }
+
         public override void UnifiedNewRowInitializationFromView(REGISTER_TQ projection)
         {
             if(LoginCredentials.CurrentUser.GUID != Guid.Empty)
@@ -336,7 +393,30 @@ namespace BluePrints.ViewModels
             {
                 string fullPath = OpenFileDialogService.File.GetFullName();
                 SelectedEntity.TQ_PATH = fullPath;
+
                 MainViewModel.Save(SelectedEntity);
+                TableViewService.CommitEditing();
+                GridControlService.RefreshData();
+            }
+        }
+
+        public void ClearPath(System.Windows.Input.MouseButtonEventArgs e)
+        {
+            if (e.LeftButton != System.Windows.Input.MouseButtonState.Pressed)
+                return;
+
+            if (SelectedEntity == null)
+            {
+                MessageBoxService.ShowMessage("Please select an entry");
+                return;
+            }
+
+            if(MessageBoxService.ShowMessage("Are you sure you want to clear TQ path for TQ " + SelectedEntity.NUMBER + "?", "Clear TQ Path", MessageButton.OKCancel) == MessageResult.OK)
+            {
+                SelectedEntity.TQ_PATH = null;
+
+                MainViewModel.Save(SelectedEntity);
+                TableViewService.CommitEditing();
                 GridControlService.RefreshData();
             }
         }
@@ -413,6 +493,30 @@ namespace BluePrints.ViewModels
             selectedDesignChangeNoticeGuids.Clear();
         }
 
+        private DevExpress.Mvvm.IDialogService ImportDocumentsDialogService
+        {
+            get { return this.GetRequiredService<DevExpress.Mvvm.IDialogService>("ImportDocumentsDialog"); }
+        }
+
+        public void SpecifyReferences()
+        {
+            if (SelectedEntity == null)
+            {
+                MessageBoxService.ShowMessage("Please select an entry");
+                return;
+            }
+
+            ListImportDocumentsViewModel viewModel = ListImportDocumentsViewModel.Create(SelectedEntity.DocumentAssignments);
+            if (ImportDocumentsDialogService.ShowDialog(MessageButton.OKCancel, string.Empty, "ListImportDocuments", viewModel) == MessageResult.OK)
+            {
+                List<REGISTER_TQ_ATTACHMENT> entityDocuments = (List<REGISTER_TQ_ATTACHMENT>)SelectedEntity.Documents;
+                entityDocuments.Clear();
+                entityDocuments.AddRange(viewModel.SourceObjects);
+                MainViewModel.Save(SelectedEntity);
+                TableViewService.CommitEditing();
+            }
+        }
+
         public IEnumerable<AREA> AREACollection
         {
             get
@@ -462,6 +566,25 @@ namespace BluePrints.ViewModels
             get
             {
                 return GetEntities<PROJECT_REPORT>();
+            }
+        }
+
+        public IEnumerable<REGISTER_TQ_ATTACHMENT> REGISTER_TQ_ATTACHMENTCollection
+        {
+            get
+            {
+                return GetEntities<REGISTER_TQ_ATTACHMENT>();
+            }
+        }
+
+        public CollectionViewModel<REGISTER_TQ_ATTACHMENT, REGISTER_TQ_ATTACHMENT, Guid, IBluePrintsEntitiesUnitOfWork> REGISTER_TQ_ATTACHMENTCollectionViewModel
+        {
+            get
+            {
+                if (MainViewModel == null)
+                    return null;
+
+                return (CollectionViewModel<REGISTER_TQ_ATTACHMENT, REGISTER_TQ_ATTACHMENT, Guid, IBluePrintsEntitiesUnitOfWork>)loaderCollection.GetViewModel<REGISTER_TQ_ATTACHMENT>();
             }
         }
 

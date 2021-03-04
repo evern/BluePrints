@@ -6,7 +6,9 @@ namespace BluePrints.Data
     using BluePrints.Common.Base;
     using DevExpress.Mvvm;
     using System;
+    using System.Collections.Generic;
     using System.ComponentModel.DataAnnotations.Schema;
+    using System.Linq;
 
     public partial class REGISTER_TQ : EntityBase, IGuidEntityKey, ICanSync, IEntityNumber, IHaveCreatedDate
     {
@@ -56,5 +58,33 @@ namespace BluePrints.Data
         public string EntityGroup => string.Empty;
 
         public string Office => this.PROJECT.NUMBER + " " + this.PROJECT.OfficeName;
+
+        [NotMapped]
+        private IEnumerable<object> documents;
+
+        [NotMapped]
+        public object Documents
+        {
+            get { return documents; }
+            set
+            {
+                if (value != documents)
+                {
+                    documents = value as IEnumerable<object>;
+                }
+            }
+        }
+
+        [NotMapped]
+        public IEnumerable<REGISTER_TQ_ATTACHMENT> DocumentAssignments
+        {
+            get
+            {
+                if (documents == null)
+                    return null;
+
+                return documents.Select(x => (REGISTER_TQ_ATTACHMENT)x);
+            }
+        }
     }
 }

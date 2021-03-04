@@ -11,7 +11,7 @@
     xmlns:services="clr-namespace:BaseModel.ViewModel.Services;assembly=BaseModel"
     xmlns:dxr="http://schemas.devexpress.com/winfx/2008/xaml/ribbon" 
     xmlns:dxb="http://schemas.devexpress.com/winfx/2008/xaml/bars" 
-    xmlns:custom="clr-namespace:BaseModel.Misc;assembly=BaseModel" Width="1000" Height="600">
+    Width="1000" Height="600">
     <dxlc:LayoutControl Orientation="Vertical">
         <dxmvvm:Interaction.Behaviors>
             <services:TableViewService x:Name="DefaultTableViewService" TableView="{Binding ElementName=tableView}" />
