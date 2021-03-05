@@ -1009,6 +1009,14 @@ namespace BluePrints.Common
         ClarificationRequired = 2
     }
 
+    public enum ForecastEACType
+    {
+        [Display(Name = "EAC")]
+        EAC = 0,
+        [Display(Name = "Previous Commitment")]
+        PreviousCommitment = 1
+    }
+
     public class ReportingEnum
     {
         /// <summary>

@@ -74,7 +74,7 @@ namespace BluePrints.Common.ViewModel.Reporting
                 {
                     materialDataPoints = BluePrintsDataUtils.GetMaterials(primeroUOW, projectNumber, actualsDataDate, null, CurrencyConversion, showLoadingScreen);
                     poDataPoints = BluePrintsDataUtils.GetEXOPO(primeroUOW, projectNumber, poDataDate, null, showLoadingScreen);
-                    previousPODataPoints = BluePrintsDataUtils.GetEXOPO(primeroUOW, projectNumber, previousPODataDate, null, showLoadingScreen);
+                    //previousPODataPoints = BluePrintsDataUtils.GetEXOPO(primeroUOW, projectNumber, previousPODataDate, null, showLoadingScreen);
                 }
                 else
                 {

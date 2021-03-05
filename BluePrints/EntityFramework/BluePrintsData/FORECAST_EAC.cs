@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 
 namespace BluePrints.Data
 {
+    using BluePrints.Common;
     using System;
     using System.Collections.Generic;
     using System.ComponentModel.DataAnnotations;
@@ -35,6 +36,8 @@ namespace BluePrints.Data
         public DateTime FORECAST_DATE { get; set; }
 
         public decimal? FORECAST_COSTS { get; set; }
+
+        public ForecastEACType TYPE { get; set; }
 
         public DateTime CREATED { get; set; }
 

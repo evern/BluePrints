@@ -539,6 +539,7 @@ namespace BluePrints.Common.ViewModel.Reporting
     {
         public DateTime ProgressDate { get; set; }
         public DateTime ActualDate { get; set; }
+        public DateTime? PURCHORD_HDRLastUpdated { get; set; }
         public decimal TotalUnits { get; set; }
         public decimal TotalCosts { get; set; }
         public decimal Units { get; set; }

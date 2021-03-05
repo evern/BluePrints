@@ -211,7 +211,8 @@
                                         <dxg:GridColumn FieldName="Commodity_Code" Header="Commodity" ReadOnly="True" SortIndex="30" VisibleIndex="30" />
                                         <dxg:GridColumn FieldName="StockCode" Header="Stock" ReadOnly="True" SortIndex="40" VisibleIndex="40" />
                                         <dxg:GridColumn FieldName="Variation_Code" Header="Variation" ReadOnly="True" Visible="True" VisibleIndex="50" />
-                                        <dxg:GridColumn FieldName="ActualDate" Header="Trans. Date" ReadOnly="True" SortIndex="50" VisibleIndex="60" />
+                                        <dxg:GridColumn FieldName="PURCHORD_HDRLastUpdated" Header="PO Hdr Last Updated" FilterPopupMode="DateAlt" ReadOnly="True" VisibleIndex="55" />
+                                        <dxg:GridColumn FieldName="ActualDate" Header="Trans. Date" ReadOnly="True" FilterPopupMode="DateAlt" SortIndex="50" VisibleIndex="60" />
                                     </dxg:GridControlBand>
                                     <dxg:GridControlBand Header="Commodity">
                                         <dxg:GridColumn FieldName="Description" Header="Description" ReadOnly="True" VisibleIndex="70" />
