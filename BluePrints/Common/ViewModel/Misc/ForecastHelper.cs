@@ -102,9 +102,9 @@ namespace BluePrints.Common.ViewModel.Misc
             List<ExoDataPoint> actualDataPoints = new List<ExoDataPoint>();
             IEnumerable<SummaryStats> actualStats = summaryStats.Where(x => x.Actual != null && x.Actual.DataPoints != null);
             DateTime previousDataDate = new DateTime(dataDate.Year, dataDate.Month, 1);
+            previousDataDate = previousDataDate.AddDays(-1);
             if (actualStats.Count() > 0)
             {
-                previousDataDate = previousDataDate.AddDays(-1);
                 actualDataPoints.AddRange(actualStats.SelectMany(x => x.Actual.ExoDataPoints.Where(y => y.ActualDate <= dataDate)));
                 IEnumerable<ExoDataPoint> actualDataPointsPostDD = actualStats.SelectMany(x => x.Actual.ExoDataPoints.Where(y => y.ActualDate > dataDate));
                 IEnumerable<ExoDataPoint> actualDataPointsPreviousDD = actualStats.SelectMany(x => x.Actual.ExoDataPoints.Where(y => y.ActualDate <= previousDataDate));
@@ -135,7 +135,7 @@ namespace BluePrints.Common.ViewModel.Misc
             }
 
             //get previous total commitment
-            IEnumerable<FORECAST_EAC> PreviousCommitmentCollection = FORECAST_EACPreviousCommitmentCollection.Where(x => x.SUBJOB_CODE == projection.SubJobCode && x.DISCIPLINE_CODE == projection.DisciplineCode && x.COMMODITY_CODE == projection.CommodityCode && x.VARIATION_CODE == projection.VariationCode).ToList();
+            IEnumerable<FORECAST_EAC> PreviousCommitmentCollection = FORECAST_EACPreviousCommitmentCollection.Where(x => x.SUBJOB_CODE == projection.SubJobCode && x.DISCIPLINE_CODE == projection.DisciplineCode && x.COMMODITY_CODE == projection.CommodityCode && x.VARIATION_CODE == projection.VariationCode).Where(x => x.FORECAST_DATE == previousDataDate).ToList();
             jobForecastSummary.TotalCommitmentPrevious = PreviousCommitmentCollection.Where(x => x.FORECAST_COSTS != null).Sum(x => (decimal)x.FORECAST_COSTS);
 
             //get po and populate forecasts
