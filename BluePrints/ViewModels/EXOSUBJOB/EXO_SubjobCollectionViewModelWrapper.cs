@@ -179,7 +179,7 @@ namespace BluePrints.ViewModels
 
         protected override Func<IRepositoryQuery<BASELINE_ITEM>, IQueryable<ExoSubJobProjection>> specifyMainViewModelProjection()
         {
-            return query => ExoQueries.GetNativeExoSubJobEditableProjection(localPrimeroUnitOfWork, loadPROJECT, COMMODITY_CODECollection, STOCK_ITEMSCollection, exoSTAFFS, loadPROJECT.OfficeNameForExo);
+            return query => ExoQueries.GetNativeExoSubJobEditableProjection(localPrimeroUnitOfWork, loadPROJECT, COMMODITY_CODECollection, STOCK_ITEMSCollection, exoSTAFFS, loadPROJECT.OfficeNameForExo, true);
         }
        
         protected override void AssignCallBacksAndRaisePropertyChange(IEnumerable<ExoSubJobProjection> entities)
@@ -761,7 +761,7 @@ namespace BluePrints.ViewModels
                     allCommodityCodes.AddRange(Entities.Select(x => x.CommodityCode));
                 }
 
-                return allCommodityCodes.OrderBy(x => x);
+                return allCommodityCodes;
             }
         }
 
