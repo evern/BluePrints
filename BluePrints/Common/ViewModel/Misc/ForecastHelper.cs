@@ -111,8 +111,8 @@ namespace BluePrints.Common.ViewModel.Misc
                 jobForecastSummary.ActualUnits = actualDataPoints.Sum(x => x.Units);
                 jobForecastSummary.ActualUnitsPostDataDate = actualDataPointsPostDD.Sum(x => x.Units);
                 jobForecastSummary.ActualCostsPostDataDate = actualDataPointsPostDD.Sum(x => x.Costs);
-                //jobForecastSummary.ActualUnitsPreviousDataDate = actualDataPointsPreviousDD.Sum(x => x.Units);
-                //jobForecastSummary.ActualCostsPreviousDataDate = actualDataPointsPreviousDD.Sum(x => x.Costs);
+                jobForecastSummary.ActualUnitsPreviousDataDate = actualDataPointsPreviousDD.Sum(x => x.Units);
+                jobForecastSummary.ActualCostsPreviousDataDate = actualDataPointsPreviousDD.Sum(x => x.Costs);
                 jobForecastSummary.ActualCosts = actualDataPoints.Sum(x => x.Costs);
                 jobForecastSummary.Invoiced = actualDataPoints.Sum(x => x.InvoiceAmount);
             }
@@ -128,15 +128,16 @@ namespace BluePrints.Common.ViewModel.Misc
 
                 jobForecastSummary.ActualUnitsPostDataDate += materialDataPointsPostDD.Sum(x => x.Units);
                 jobForecastSummary.ActualCostsPostDataDate += materialDataPointsPostDD.Sum(x => x.Costs);
-                //jobForecastSummary.ActualUnitsPreviousDataDate += materialDataPointsPreviousDD.Sum(x => x.Units);
-                //jobForecastSummary.ActualCostsPreviousDataDate += materialDataPointsPreviousDD.Sum(x => x.Costs);
+                jobForecastSummary.ActualUnitsPreviousDataDate += materialDataPointsPreviousDD.Sum(x => x.Units);
+                jobForecastSummary.ActualCostsPreviousDataDate += materialDataPointsPreviousDD.Sum(x => x.Costs);
                 jobForecastSummary.ActualCosts += materialDataPoints.Where(x => x.ActualDate <= dataDate).Sum(x => x.Costs);
                 jobForecastSummary.Invoiced = materialDataPoints.Sum(x => x.InvoiceAmount);
             }
 
             //get previous total commitment
             IEnumerable<FORECAST_EAC> PreviousCommitmentCollection = FORECAST_EACPreviousCommitmentCollection.Where(x => x.SUBJOB_CODE == projection.SubJobCode && x.DISCIPLINE_CODE == projection.DisciplineCode && x.COMMODITY_CODE == projection.CommodityCode && x.VARIATION_CODE == projection.VariationCode).Where(x => x.FORECAST_DATE == previousDataDate).ToList();
-            jobForecastSummary.TotalCommitmentPrevious = PreviousCommitmentCollection.Where(x => x.FORECAST_COSTS != null).Sum(x => (decimal)x.FORECAST_COSTS);
+            if(PreviousCommitmentCollection.Where(x => x.FORECAST_COSTS != null).Count() > 0)
+                jobForecastSummary.TotalCommitmentPreviousSaved = PreviousCommitmentCollection.Where(x => x.FORECAST_COSTS != null).Sum(x => (decimal)x.FORECAST_COSTS);
 
             //get po and populate forecasts
             IEnumerable<SummaryStats> poStats = summaryStats.Where(x => x.PO != null && x.PO.DataPoints != null);
@@ -159,12 +160,12 @@ namespace BluePrints.Common.ViewModel.Misc
             }
 
             //get previous po and populate forecasts
-            //IEnumerable<SummaryStats> previousPOStats = summaryStats.Where(x => x.PreviousPO != null && x.PreviousPO.DataPoints != null);
-            //if (previousPOStats != null && previousPOStats.Count() > 0)
-            //{
-            //    IEnumerable<Common.ViewModel.Reporting.ExoDataPoint> previousPODataPoints = previousPOStats.SelectMany(x => x.PreviousPO.ExoDataPoints);
-            //    jobForecastSummary.PreviousOutstanding = previousPODataPoints.Where(x => x.ActualDate <= dataDate).Sum(x => x.Costs);
-            //}
+            IEnumerable<SummaryStats> previousPOStats = summaryStats.Where(x => x.PreviousPO != null && x.PreviousPO.DataPoints != null);
+            if (previousPOStats != null && previousPOStats.Count() > 0)
+            {
+                IEnumerable<Common.ViewModel.Reporting.ExoDataPoint> previousPODataPoints = previousPOStats.SelectMany(x => x.PreviousPO.ExoDataPoints);
+                jobForecastSummary.PreviousOutstanding = previousPODataPoints.Where(x => x.ActualDate <= dataDate).Sum(x => x.Costs);
+            }
 
             //get relevant forecast EACs
             List<FORECAST_EAC> currentJobEACs = new List<FORECAST_EAC>();
