@@ -30,6 +30,7 @@ namespace BluePrints.Common.Projections
         protected abstract bool ignoreBudgetError { get; }
         protected abstract string variationCode { get; }
 
+        public bool IgnoreValidationError { get; set; }
         #region Commodity Codes
         private IEnumerable<COMMODITY_CODE> COMMODITY_CODES { get; set; }
         public void PopulateCommodityCodes(IEnumerable<COMMODITY_CODE> COMMODITY_CODECollection)
@@ -239,42 +240,45 @@ namespace BluePrints.Common.Projections
 
         public void GetPropertyError(string propertyName, ErrorInfo info)
         {
-            if (subJobCode != null && subJobCode.Length == 15)
+            if(!IgnoreValidationError)
             {
-                if (stockCode != BluePrintsResources.VariationStockCode)
+                if (subJobCode != null && subJobCode.Length == 15)
                 {
+                    if (stockCode != BluePrintsResources.VariationStockCode)
+                    {
+                        if (propertyName == commodityCodePropertyName && !IsCommodityCodeValid)
+                        {
+                            info.ErrorText = "Invalid commodity code, please check phase and discipline";
+                        }
+
+                        if (propertyName == stockCodePropertyName && !IsStockCodeValid)
+                        {
+                            info.ErrorText = "Invalid stock code, please check commodity code";
+                        }
+
+                        if (propertyName == exoBudgetPropertyName)
+                        {
+                            if (isLineExists && !ignoreBudgetError && Math.Round(exoBudget, 0) != Math.Round(budget, 0))
+                                info.ErrorText = "Exo budget doesn't equal to budget from deliverables list";
+                        }
+                    }
+                }
+                else
+                {
+                    if (propertyName == disciplineCodePropertyName && disciplineCode != BluePrintsResources.Default_TenderDisciplineCode)
+                    {
+                        info.ErrorText = "Discipline code must be " + BluePrintsResources.Default_TenderDisciplineCode;
+                    }
+
                     if (propertyName == commodityCodePropertyName && !IsCommodityCodeValid)
                     {
-                        info.ErrorText = "Invalid commodity code, please check phase and discipline";
+                        info.ErrorText = "Commodity code must be " + BluePrintsResources.Default_TenderCommodityCode;
                     }
 
                     if (propertyName == stockCodePropertyName && !IsStockCodeValid)
                     {
-                        info.ErrorText = "Invalid stock code, please check commodity code";
+                        info.ErrorText = "Stock code must be " + BluePrintsResources.Default_TenderStockCode;
                     }
-
-                    if (propertyName == exoBudgetPropertyName)
-                    {
-                        if (isLineExists && !ignoreBudgetError && Math.Round(exoBudget, 0) != Math.Round(budget, 0))
-                            info.ErrorText = "Exo budget doesn't equal to budget from deliverables list";
-                    }
-                }
-            }
-            else
-            {
-                if (propertyName == disciplineCodePropertyName && disciplineCode != BluePrintsResources.Default_TenderDisciplineCode)
-                {
-                    info.ErrorText = "Discipline code must be " + BluePrintsResources.Default_TenderDisciplineCode;
-                }
-
-                if (propertyName == commodityCodePropertyName && !IsCommodityCodeValid)
-                {
-                    info.ErrorText = "Commodity code must be " + BluePrintsResources.Default_TenderCommodityCode;
-                }
-
-                if (propertyName == stockCodePropertyName && !IsStockCodeValid)
-                {
-                    info.ErrorText = "Stock code must be " + BluePrintsResources.Default_TenderStockCode;
                 }
             }
         }

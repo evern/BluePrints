@@ -1369,7 +1369,7 @@ namespace BluePrints.Common.Projections
         }
 
         public static IQueryable<ExoSubJobProjection> GetNativeExoSubJobEditableProjection(
-            IPrimeroEntitiesUnitOfWork primeroUnitOfWork, Data.PROJECT PROJECT, IEnumerable<COMMODITY_CODE> COMMODITY_CODECollection, IEnumerable<STOCK_ITEMS> STOCK_ITEMSCollection, IEnumerable<STAFF> ExoSTAFFS, string officeName)
+            IPrimeroEntitiesUnitOfWork primeroUnitOfWork, Data.PROJECT PROJECT, IEnumerable<COMMODITY_CODE> COMMODITY_CODECollection, IEnumerable<STOCK_ITEMS> STOCK_ITEMSCollection, IEnumerable<STAFF> ExoSTAFFS, string officeName, bool ignoreValidationError = false)
         {
             List<ExoTimeAuthorisation> exoLines = GetProjectLinesIgnoreCostCentres(primeroUnitOfWork, PROJECT.NUMBER);
             List<ExoTimeAuthorisation> exoAuthorisations = GetExoLinesAuthorisations(primeroUnitOfWork, PROJECT.NUMBER);
@@ -1392,6 +1392,7 @@ namespace BluePrints.Common.Projections
                 projection.StockName = exoLine.StockName;
                 projection.VariationCode = exoLine.VariationCode;
                 projection.ExoBudget = exoLine.BudgetCosts;
+                projection.IgnoreValidationError = ignoreValidationError;
                 projection.PopulateCommodityCodes(COMMODITY_CODECollection);
                 projection.PopulateStockItems(STOCK_ITEMSCollection);
                 projection.AuthUsers = new ObservableCollection<ExoSubJobAuth>();
