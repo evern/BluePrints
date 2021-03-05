@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?>
+﻿<?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="12.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
   <PropertyGroup>
@@ -812,6 +812,7 @@
     <Compile Include="Common\ViewModel\GanttChart\GanttCanvas.cs" />
     <Compile Include="Common\ViewModel\GanttChart\P6_Activity.cs" />
     <Compile Include="Common\ViewModel\Misc\CodesValidationModel.cs" />
+    <Compile Include="Common\ViewModel\Misc\ListImportDocumentsViewModel.cs" />
     <Compile Include="Common\ViewModel\Misc\VariationApprovalViewModel.cs" />
     <Compile Include="Common\ViewModel\Misc\TenderProfileItemEditModel.cs" />
     <Compile Include="Common\ViewModel\Misc\TenderProfileItemEditConfirmationViewModel.cs" />
@@ -833,6 +834,9 @@
     </Compile>
     <Compile Include="Common\View\BookTimeDialog.xaml.cs">
       <DependentUpon>BookTimeDialog.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Common\View\ListImportDocuments.xaml.cs">
+      <DependentUpon>ListImportDocuments.xaml</DependentUpon>
     </Compile>
     <Compile Include="Common\View\ListVariationApprovalAction.xaml.cs">
       <DependentUpon>ListVariationApprovalAction.xaml</DependentUpon>
@@ -897,6 +901,7 @@
     <Compile Include="EntityFramework\Annotations\PROGRESS_ETC.cs" />
     <Compile Include="EntityFramework\Annotations\REGISTER_CLARIFICATION.cs" />
     <Compile Include="EntityFramework\Annotations\REGISTER_TQ.cs" />
+    <Compile Include="EntityFramework\Annotations\REGISTER_TQ_ATTACHMENT.cs" />
     <Compile Include="EntityFramework\Annotations\X_VARIATION_QUERY.cs" />
     <Compile Include="EntityFramework\Annotations\JOBCOST_LINES_AUDIT.cs" />
     <Compile Include="EntityFramework\Annotations\JOB_TIMESHEETS.cs" />
@@ -978,6 +983,7 @@
     <Compile Include="EntityFramework\BluePrintsData\PROGRESS_ETC.cs" />
     <Compile Include="EntityFramework\BluePrintsData\REGISTER_CLARIFICATION.cs" />
     <Compile Include="EntityFramework\BluePrintsData\REGISTER_TQ.cs" />
+    <Compile Include="EntityFramework\BluePrintsData\REGISTER_TQ_ATTACHMENT.cs" />
     <Compile Include="EntityFramework\BluePrintsData\X_VARIATION_QUERY.cs" />
     <Compile Include="EntityFramework\BluePrintsData\JOBCOST_LINES_AUDIT.cs" />
     <Compile Include="EntityFramework\BluePrintsData\FORECAST_EAC.cs" />
@@ -1138,6 +1144,7 @@
     <Compile Include="ViewModels\RA_STUDY\RA_STUDYCollectionViewModelWrapper.cs" />
     <Compile Include="ViewModels\RA_STUDY\RA_GUIDE_SUBPROMPTCollectionViewModelWrapper.cs" />
     <Compile Include="ViewModels\RA_STUDY\RA_STUDY_TYPECollectionViewModelWrapper.cs" />
+    <Compile Include="ViewModels\REGISTER\REGISTER_TQCollectionViewModelWrapper.cs" />
     <Compile Include="ViewModels\STOCK_CODE\STOCK_CODECollectionViewModelWrapper.cs" />
     <Compile Include="ViewModels\BUDGET_ITEM\BUDGET_ITEMSchedulingViewModelWrapper.cs" />
     <Compile Include="ViewModels\ESTIMATE_ITEM\ESTIMATE_ITEMCollectionViewModelWrapper.cs" />
@@ -1279,6 +1286,9 @@
     </Compile>
     <Compile Include="Views\RA_STUDY\RA_STUDY_TYPECollectionView.xaml.cs">
       <DependentUpon>RA_STUDY_TYPECollectionView.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Views\REGISTER\REGISTER_TQCollectionView.xaml.cs">
+      <DependentUpon>REGISTER_TQCollectionView.xaml</DependentUpon>
     </Compile>
     <Compile Include="Views\STOCK_CODE\STOCK_CODECollectionView.xaml.cs">
       <DependentUpon>STOCK_CODECollectionView.xaml</DependentUpon>
@@ -2021,6 +2031,10 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>
+    <Page Include="Common\View\ListImportDocuments.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
     <Page Include="Common\View\ListVariationApprovalAction.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
@@ -2266,6 +2280,10 @@
       <SubType>Designer</SubType>
     </Page>
     <Page Include="Views\RA_STUDY\RA_STUDY_TYPECollectionView.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Views\REGISTER\REGISTER_TQCollectionView.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>
