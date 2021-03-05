@@ -131,7 +131,7 @@ namespace BaseModel.ViewModel.Dialogs
 
         public virtual void ManualAddFile()
         {
-            TableViewService.TableView.AddNewRow();
+            TableViewService.AddNewRow();
             refreshGrid();
         }
 
