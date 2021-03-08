@@ -8,6 +8,7 @@ using DevExpress.Mvvm;
 using DevExpress.XtraEditors.DXErrorProvider;
 using System;
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations.Schema;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -30,6 +31,7 @@ namespace BluePrints.Common.Projections
         protected abstract bool ignoreBudgetError { get; }
         protected abstract string variationCode { get; }
 
+        [NotMapped]
         public bool IgnoreValidationError { get; set; }
         #region Commodity Codes
         private IEnumerable<COMMODITY_CODE> COMMODITY_CODES { get; set; }
