@@ -288,6 +288,11 @@ namespace BluePrints.BluePrintsEntitiesDataModel
         IRepository<REGISTER_CHANGE, Guid> REGISTER_CHANGE { get; }
 
         /// <summary>
+        /// The REGISTER_CHANGE_ATTACHMENT entities repository.
+        /// </summary>
+        IRepository<REGISTER_CHANGE_ATTACHMENT, Guid> REGISTER_CHANGE_ATTACHMENTS { get; }
+
+        /// <summary>
         /// The REGISTER_HOLD entities repository.
         /// </summary>
         IRepository<REGISTER_HOLD, Guid> REGISTER_HOLD { get; }
@@ -326,8 +331,7 @@ namespace BluePrints.BluePrintsEntitiesDataModel
         /// The REGISTER_TQ_ATTACHMENT entities repository.
         /// </summary>
         IRepository<REGISTER_TQ_ATTACHMENT, Guid> REGISTER_TQ_ATTACHMENTS { get; }
-
-
+        
         /// <summary>
         /// The REGISTER entities repository.
         /// </summary>

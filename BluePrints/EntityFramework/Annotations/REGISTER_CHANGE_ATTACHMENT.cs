@@ -1,21 +1,18 @@
 namespace BluePrints.Data
 {
+    using BaseModel.Attributes;
     using BaseModel.DataModel;
     using BaseModel.Misc;
     using BluePrints.Common;
     using BluePrints.Common.Base;
+    using BluePrints.Common.Resources;
     using BluePrints.Common.ViewModel.Reporting;
     using DevExpress.Mvvm;
     using System;
     using System.ComponentModel.DataAnnotations.Schema;
 
-    public partial class REGISTER_TQ_ATTACHMENT : EntityBase, IGuidEntityKey, ICanSync, IHaveCreatedDate, IAmAttachmentPath
+    public partial class REGISTER_CHANGE_ATTACHMENT : EntityBase, IGuidEntityKey, ICanSync, IHaveCreatedDate, IAmAttachmentPath
     {
-        public REGISTER_TQ_ATTACHMENT()
-        {
-
-        }
-
         [NotMapped]
         public DateTime EntityCreatedDate
         {
@@ -25,17 +22,17 @@ namespace BluePrints.Data
 
         public string EntityGroup => string.Empty;
 
-        public override string ToString()
-        {
-            return ATTACHMENT_NAME;
-        }
-
-        public string Office => this.REGISTER_TQ.PROJECT.NUMBER + " " + this.REGISTER_TQ.PROJECT.OfficeName;
+        public string Office => this.REGISTER_CHANGE.PROJECT.NUMBER + " " + this.REGISTER_CHANGE.PROJECT.OfficeName;
 
         [NotMapped]
         public string AttachmentPath { get => ATTACHMENT_PATH; set => ATTACHMENT_PATH = value; }
 
         [NotMapped]
         public string AttachmentName { get => ATTACHMENT_NAME; set => ATTACHMENT_NAME = value; }
+
+        public override string ToString()
+        {
+            return ATTACHMENT_NAME;
+        }
     }
 }

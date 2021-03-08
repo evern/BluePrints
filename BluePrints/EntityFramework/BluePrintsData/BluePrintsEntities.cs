@@ -858,6 +858,12 @@ namespace BluePrints.Data
                 .HasForeignKey(e => e.GUID_REGISTER_TQ)
                 .WillCascadeOnDelete(false);
 
+            modelBuilder.Entity<REGISTER_CHANGE>()
+                .HasMany(e => e.REGISTER_CHANGE_ATTACHMENT)
+                .WithRequired(e => e.REGISTER_CHANGE)
+                .HasForeignKey(e => e.GUID_REGISTER_CHANGE)
+                .WillCascadeOnDelete(false);
+
             modelBuilder.Entity<REGISTER_HOLD>()
                 .HasMany(e => e.REGISTER_HOLD_REF)
                 .WithRequired(e => e.REGISTER_HOLD)

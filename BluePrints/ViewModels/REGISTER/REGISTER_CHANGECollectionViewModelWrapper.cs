@@ -24,6 +24,9 @@ using System.Linq;
 using System.Windows;
 using DevExpress.XtraPrinting;
 using System.Diagnostics;
+using System.Windows.Threading;
+using DevExpress.Mvvm.UI;
+using BaseModel.ViewModel.Dialogs;
 
 namespace BluePrints.ViewModels
 {
@@ -57,12 +60,16 @@ namespace BluePrints.ViewModels
         int defaultNumericFieldLengthForRegisters;
         private IUnitOfWorkFactory<IBluePrintsEntitiesUnitOfWork> bluePrintsUnitOfWorkFactory =
             BluePrintsEntitiesUnitOfWorkSource.GetUnitOfWorkFactory();
-
+        DispatcherTimer delayedPathSelectionTimer;
         protected override void resolveParameters(object parameter)
         {
             var PROJECTParameter = (EntitiesParameter<PROJECT>) parameter;
             loadPROJECT = PROJECTParameter.GetEntity();
             defaultNumericFieldLengthForRegisters = Int32.Parse(BluePrintsResources.Default_Register_Numeric_Length);
+
+            delayedPathSelectionTimer = new DispatcherTimer();
+            delayedPathSelectionTimer.Interval = new TimeSpan(0, 0, 0, 1);
+            delayedPathSelectionTimer.Tick += DelayedPathSelectionTimer_Tick;
         }
 
         protected override void addEntitiesLoader()
@@ -71,11 +78,17 @@ namespace BluePrints.ViewModels
             loaderCollection.AddLoaderDescription(bluePrintsUnitOfWorkFactory, x => x.PROJECT_REPORTS, PROJECT_REPORTProjectionFunc, null, true);
             loaderCollection.AddLoaderDescription(bluePrintsUnitOfWorkFactory, x => x.AREAS, AREAProjectionFunc);
             loaderCollection.AddLoaderDescription(bluePrintsUnitOfWorkFactory, x => x.USERS, USERProjectionFunc);
+            loaderCollection.AddLoaderDescription(bluePrintsUnitOfWorkFactory, x => x.REGISTER_CHANGE_ATTACHMENTS, REGISTER_CHANGE_ATTACHMENTProjectionFunc);
         }
 
         protected virtual Func<IRepositoryQuery<USER>, IQueryable<USER>> USERProjectionFunc()
         {
             return query => query.Where(x => x.LEAVE_DATE == null || x.LEAVE_DATE > DateTime.Now);
+        }
+
+        protected virtual Func<IRepositoryQuery<REGISTER_CHANGE_ATTACHMENT>, IQueryable<REGISTER_CHANGE_ATTACHMENT>> REGISTER_CHANGE_ATTACHMENTProjectionFunc()
+        {
+            return query => query.Where(x => x.REGISTER_CHANGE.GUID_PROJECT == loadPROJECT.GUID);
         }
 
         private Func<IRepositoryQuery<PROJECT>, IQueryable<PROJECT>> PROJECTProjectionFunc()
@@ -100,11 +113,22 @@ namespace BluePrints.ViewModels
 
         protected override Func<IRepositoryQuery<REGISTER_CHANGE>, IQueryable<REGISTER_CHANGE>> specifyMainViewModelProjection()
         {
-            return query => query.Where(x => x.GUID_PROJECT == loadPROJECT.GUID).OrderBy(x => x.NUMBER);
+            return query => populateCHANGEReferences(query.Where(x => x.GUID_PROJECT == loadPROJECT.GUID).OrderBy(x => x.NUMBER));
+        }
+
+        private IQueryable<REGISTER_CHANGE> populateCHANGEReferences(IQueryable<REGISTER_CHANGE> query)
+        {
+            List<REGISTER_CHANGE> registerCHANGE = query.ToList();
+            //need to call ToList for tokenComboBoxEditSettings to work
+            registerCHANGE.ForEach(x => x.Documents = REGISTER_CHANGE_ATTACHMENTCollection.Where(y => y.GUID_REGISTER_CHANGE == x.GUID).ToList());
+
+            return registerCHANGE.AsQueryable();
         }
 
         protected override void AssignCallBacksAndRaisePropertyChange(IEnumerable<REGISTER_CHANGE> entities)
         {
+            MainViewModel.OnAfterProjectionSavedCallBack = onAfterEntitySaved;
+            MainViewModel.BeforeShownEditor = beforeShownEditor;
             MainViewModel.SetParentViewModel(this);
             if (showReport)
                 mainThreadDispatcher.BeginInvoke(new Action(() => previewReport(entities)));
@@ -115,6 +139,46 @@ namespace BluePrints.ViewModels
         }
 
         #region Collection Call Backs
+        private void onAfterEntitySaved(REGISTER_CHANGE entity, REGISTER_CHANGE projection, bool isNewEntity)
+        {
+            saveCHANGEDocument(entity);
+        }
+
+        private void saveCHANGEDocument(REGISTER_CHANGE entity)
+        {
+            if (entity.DocumentAssignments != null)
+            {
+                List<REGISTER_CHANGE_ATTACHMENT> removeDocuments = new List<REGISTER_CHANGE_ATTACHMENT>();
+                foreach (REGISTER_CHANGE_ATTACHMENT document in REGISTER_CHANGE_ATTACHMENTCollection.Where(x => x.GUID_REGISTER_CHANGE == entity.GUID))
+                {
+                    if (!entity.DocumentAssignments.Any(x => x.GUID == document.GUID))
+                        removeDocuments.Add(document);
+                }
+
+                REGISTER_CHANGE_ATTACHMENTCollectionViewModel.BaseBulkDelete(removeDocuments);
+
+                List<REGISTER_CHANGE_ATTACHMENT> addDocuments = new List<REGISTER_CHANGE_ATTACHMENT>();
+                foreach (REGISTER_CHANGE_ATTACHMENT document in entity.DocumentAssignments)
+                {
+                    if (document.GUID == Guid.Empty || !entity.REGISTER_CHANGE_ATTACHMENT.Any(x => x.GUID == document.GUID))
+                        addDocuments.Add(new REGISTER_CHANGE_ATTACHMENT() { GUID_REGISTER_CHANGE = entity.GUID, ATTACHMENT_PATH = document.ATTACHMENT_PATH, ATTACHMENT_NAME = document.ATTACHMENT_NAME });
+                }
+
+                REGISTER_CHANGE_ATTACHMENTCollectionViewModel.BaseBulkSave(addDocuments);
+            }
+            else
+            {
+                List<REGISTER_CHANGE_ATTACHMENT> removeDocuments = new List<REGISTER_CHANGE_ATTACHMENT>();
+                foreach (REGISTER_CHANGE_ATTACHMENT assignment in REGISTER_CHANGE_ATTACHMENTCollection.Where(x => x.GUID_REGISTER_CHANGE == entity.GUID))
+                {
+                    removeDocuments.Add(assignment);
+                }
+
+                REGISTER_CHANGE_ATTACHMENTCollectionViewModel.BaseBulkDelete(removeDocuments);
+            }
+
+        }
+
         public override void UnifiedNewRowInitializationFromView(REGISTER_CHANGE projection)
         {
             if(LoginCredentials.CurrentUser.GUID != Guid.Empty)
@@ -194,6 +258,92 @@ namespace BluePrints.ViewModels
         protected override string ExportFilename()
         {
             return loadPROJECT.NUMBER + "_Register_Change";
+        }
+
+        private bool beforeShownEditor(EditorEventArgs e)
+        {
+            if (e.Column.FieldName == BindableBase.GetPropertyName(() => new REGISTER_CHANGE().CHANGE_PATH))
+                delayedPathSelectionTimer.Start();
+
+            return true;
+        }
+
+        private void DelayedPathSelectionTimer_Tick(object sender, EventArgs e)
+        {
+            delayedPathSelectionTimer.Stop();
+            SpecifyPath();
+        }
+
+        public bool CanSpecifyPath()
+        {
+            return SelectedEntity != null;
+        }
+
+        protected IOpenFileDialogService OpenFileDialogService
+        {
+            get { return this.GetService<IOpenFileDialogService>(); }
+        }
+
+        public void SpecifyPath()
+        {
+            OpenFileDialogService.Filter = "PDF (*.PDF)|*.PDF";
+            bool DialogResult;
+
+            DialogResult = OpenFileDialogService.ShowDialog();
+            if (DialogResult)
+            {
+                string fullPath = OpenFileDialogService.File.GetFullName();
+                SelectedEntity.CHANGE_PATH = fullPath;
+
+                MainViewModel.Save(SelectedEntity);
+                TableViewService.CommitEditing();
+                GridControlService.RefreshData();
+            }
+        }
+
+        public void ClearPath(System.Windows.Input.MouseButtonEventArgs e)
+        {
+            if (e.LeftButton != System.Windows.Input.MouseButtonState.Pressed)
+                return;
+
+            if (SelectedEntity == null)
+            {
+                MessageBoxService.ShowMessage("Please select an entry");
+                return;
+            }
+
+            if (MessageBoxService.ShowMessage("Are you sure you want to clear path for " + SelectedEntity.NUMBER + "?", "Clear Path", MessageButton.OKCancel) == MessageResult.OK)
+            {
+                SelectedEntity.CHANGE_PATH = null;
+
+                MainViewModel.Save(SelectedEntity);
+                TableViewService.CommitEditing();
+                GridControlService.RefreshData();
+            }
+        }
+
+        private DevExpress.Mvvm.IDialogService ImportDocumentsDialogService
+        {
+            get { return this.GetRequiredService<DevExpress.Mvvm.IDialogService>("ImportDocumentsDialog"); }
+        }
+
+        public void SpecifyReferences()
+        {
+            if (SelectedEntity == null)
+            {
+                MessageBoxService.ShowMessage("Please select an entry");
+                return;
+            }
+
+            ListImportDocumentsViewModel<REGISTER_CHANGE_ATTACHMENT> viewModel = ListImportDocumentsViewModel<REGISTER_CHANGE_ATTACHMENT>.Create(SelectedEntity.DocumentAssignments);
+            if (ImportDocumentsDialogService.ShowDialog(MessageButton.OKCancel, string.Empty, "ListImportDocuments", viewModel) == MessageResult.OK)
+            {
+                List<REGISTER_CHANGE_ATTACHMENT> entityDocuments = (List<REGISTER_CHANGE_ATTACHMENT>)SelectedEntity.Documents;
+                entityDocuments.Clear();
+                entityDocuments.AddRange(viewModel.GetSelectedDocuments());
+                MainViewModel.Save(SelectedEntity);
+                TableViewService.CommitEditing();
+            }
         }
 
         public void EditReport()
@@ -369,6 +519,26 @@ namespace BluePrints.ViewModels
                 return GetEntities<PROJECT_REPORT>();
             }
         }
+
+        public IEnumerable<REGISTER_CHANGE_ATTACHMENT> REGISTER_CHANGE_ATTACHMENTCollection
+        {
+            get
+            {
+                return GetEntities<REGISTER_CHANGE_ATTACHMENT>();
+            }
+        }
+
+        public CollectionViewModel<REGISTER_CHANGE_ATTACHMENT, REGISTER_CHANGE_ATTACHMENT, Guid, IBluePrintsEntitiesUnitOfWork> REGISTER_CHANGE_ATTACHMENTCollectionViewModel
+        {
+            get
+            {
+                if (MainViewModel == null)
+                    return null;
+
+                return (CollectionViewModel<REGISTER_CHANGE_ATTACHMENT, REGISTER_CHANGE_ATTACHMENT, Guid, IBluePrintsEntitiesUnitOfWork>)loaderCollection.GetViewModel<REGISTER_CHANGE_ATTACHMENT>();
+            }
+        }
+
         #endregion
     }
 }

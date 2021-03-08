@@ -790,6 +790,15 @@ namespace BluePrints.Common.Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Information:.
+        /// </summary>
+        internal static string ReferenceInfoLineName {
+            get {
+                return ResourceManager.GetString("ReferenceInfoLineName", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to [A-Z]{2}\d{2}.
         /// </summary>
         internal static string Regex_DISCIPLINE {

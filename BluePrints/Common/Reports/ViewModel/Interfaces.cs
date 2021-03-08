@@ -305,6 +305,12 @@ namespace BluePrints.Common.ViewModel.Reporting
         string P6_Mod_Baseline_Name { get; }
     }
 
+    public interface IAmAttachmentPath
+    {
+        string AttachmentPath { get; set; }
+        string AttachmentName { get; set; }
+    }
+
     public interface IHaveHours
     {
         decimal Budget_Units { get; }

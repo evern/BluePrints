@@ -8,7 +8,9 @@ namespace BluePrints.Data
     using BluePrints.Common.Resources;
     using DevExpress.Mvvm;
     using System;
+    using System.Collections.Generic;
     using System.ComponentModel.DataAnnotations.Schema;
+    using System.Linq;
 
     [ConstraintAttributes("NUMBER")]
     public partial class REGISTER_CHANGE : EntityBase, IGuidEntityKey, ICanSync, IEntityNumber, IHaveCreatedDate
@@ -63,6 +65,54 @@ namespace BluePrints.Data
             {
                 decimal capexImpact = CAPEX_IMPACT == null ? 0 : ((decimal)CAPEX_IMPACT);
                 return EPCM_CostImpact + capexImpact;
+            }
+        }
+
+        [NotMapped]
+        private IEnumerable<object> documents;
+
+        [NotMapped]
+        public object Documents
+        {
+            get { return documents; }
+            set
+            {
+                if (value != documents)
+                {
+                    documents = value as IEnumerable<object>;
+                }
+            }
+        }
+
+        [NotMapped]
+        public IEnumerable<REGISTER_CHANGE_ATTACHMENT> DocumentAssignments
+        {
+            get
+            {
+                if (documents == null)
+                    return null;
+
+                return documents.Select(x => (REGISTER_CHANGE_ATTACHMENT)x);
+            }
+        }
+
+        [NotMapped]
+        public string ReferenceDocuments
+        {
+            get
+            {
+                if (DocumentAssignments.Count() == 0)
+                    return string.Empty;
+
+                string documentAssignments = string.Empty;
+                foreach (REGISTER_CHANGE_ATTACHMENT documentAssignment in DocumentAssignments)
+                {
+                    documentAssignments = string.Concat(documentAssignments, "\n", documentAssignment);
+                }
+
+                //remove carriage return from the beginning
+                documentAssignments = documentAssignments.Substring(1, documentAssignments.Length - 1);
+                return documentAssignments;
             }
         }
 

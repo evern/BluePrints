@@ -299,6 +299,11 @@ namespace BluePrints.BluePrintsEntitiesDataModel
             get { return GetRepository((REGISTER_CHANGE x) => x.GUID); }
         }
 
+        IRepository<REGISTER_CHANGE_ATTACHMENT, Guid> IBluePrintsEntitiesUnitOfWork.REGISTER_CHANGE_ATTACHMENTS
+        {
+            get { return GetRepository((REGISTER_CHANGE_ATTACHMENT x) => x.GUID); }
+        }
+
         IRepository<REGISTER_CLARIFICATION, Guid> IBluePrintsEntitiesUnitOfWork.REGISTER_CLARIFICATIONS
         {
             get { return GetRepository((REGISTER_CLARIFICATION x) => x.GUID); }

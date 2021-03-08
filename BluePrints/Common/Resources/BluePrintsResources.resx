@@ -396,4 +396,7 @@
   <data name="Register_TQ_Suffix" xml:space="preserve">
     <value>-TQY-</value>
   </data>
+  <data name="ReferenceInfoLineName" xml:space="preserve">
+    <value>Information:</value>
+  </data>
 </root>

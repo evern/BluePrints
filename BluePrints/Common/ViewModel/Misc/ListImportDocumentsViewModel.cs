@@ -1,5 +1,7 @@
 ﻿using BaseModel.Data.Helpers;
 using BaseModel.ViewModel.Services;
+using BluePrints.Common.Resources;
+using BluePrints.Common.ViewModel.Reporting;
 using BluePrints.Data;
 using DevExpress.Mvvm;
 using DevExpress.Mvvm.DataAnnotations;
@@ -14,11 +16,12 @@ using System.Windows.Threading;
 
 namespace BaseModel.ViewModel.Dialogs
 {
-    public class ListImportDocumentsViewModel
+    public class ListImportDocumentsViewModel<T>
+        where T : IAmAttachmentPath, new()
     {
-        public static ListImportDocumentsViewModel Create(IEnumerable<REGISTER_TQ_ATTACHMENT> enumerableObjects)
+        public static ListImportDocumentsViewModel<T> Create(IEnumerable<T> enumerableObjects)
         {
-            return ViewModelSource.Create(() => new ListImportDocumentsViewModel(enumerableObjects));
+            return ViewModelSource.Create(() => new ListImportDocumentsViewModel<T>(enumerableObjects));
         }
 
         [ServiceProperty(Key = "DefaultTableViewService")]
@@ -27,13 +30,13 @@ namespace BaseModel.ViewModel.Dialogs
         [ServiceProperty(Key = "DefaultGridControlService")]
         public virtual IGridControlService GridControlService { get { return null; } }
 
-        ObservableCollection<REGISTER_TQ_ATTACHMENT> sourceObjects;
-        public ObservableCollection<REGISTER_TQ_ATTACHMENT> SourceObjects
+        ObservableCollection<T> sourceObjects;
+        public ObservableCollection<T> SourceObjects
         {
             get
             {
                 if (sourceObjects == null)
-                    sourceObjects = new ObservableCollection<REGISTER_TQ_ATTACHMENT>();
+                    sourceObjects = new ObservableCollection<T>();
 
                 return sourceObjects;
             }
@@ -41,15 +44,15 @@ namespace BaseModel.ViewModel.Dialogs
 
         public string Message { get; set; }
 
-        protected ObservableCollection<REGISTER_TQ_ATTACHMENT> selectedentities { get; set; }
-        public ObservableCollection<REGISTER_TQ_ATTACHMENT> SelectedEntities
+        protected ObservableCollection<T> selectedentities { get; set; }
+        public ObservableCollection<T> SelectedEntities
         {
             get { return selectedentities; }
             set { selectedentities = value; }
         }
 
-        REGISTER_TQ_ATTACHMENT selectedEntity;
-        public virtual REGISTER_TQ_ATTACHMENT SelectedEntity
+        T selectedEntity;
+        public virtual T SelectedEntity
         {
             get => selectedEntity;
             set
@@ -69,22 +72,47 @@ namespace BaseModel.ViewModel.Dialogs
         }
 
         DispatcherTimer delayedRefreshTimer;
-        IEnumerable<REGISTER_TQ_ATTACHMENT> enumerableDocuments;
-        protected ListImportDocumentsViewModel(IEnumerable<REGISTER_TQ_ATTACHMENT> enumerableObjects)
+        IEnumerable<T> enumerableDocuments;
+        string infoObjectStr = BluePrintsResources.ReferenceInfoLineName;
+        string infoObjectPathStr = "Press Add Empty Row and manually Type to add custom reference";
+
+        protected ListImportDocumentsViewModel(IEnumerable<T> enumerableObjects)
         {
-            SelectedEntities = new ObservableCollection<REGISTER_TQ_ATTACHMENT>();
+            SelectedEntities = new ObservableCollection<T>();
             SelectedEntities.CollectionChanged += SelectedEntities_CollectionChanged;
             enumerableDocuments = enumerableObjects;
             if(enumerableDocuments != null)
-                foreach (REGISTER_TQ_ATTACHMENT enumerableDocument in enumerableDocuments)
+            {
+                if(enumerableDocuments.Count() == 0)
                 {
-                    SourceObjects.Add(enumerableDocument);
+                    //workaround an issue where grid doesn't show anything subsequently if there's no object at binding time
+                    SourceObjects.Add(new T() { AttachmentName = infoObjectStr, AttachmentPath = infoObjectPathStr });
                 }
+                else
+                {
+                    foreach (T enumerableDocument in enumerableDocuments)
+                    {
+                        SourceObjects.Add(enumerableDocument);
+                    }
+                }
+            }
 
             delayedRefreshTimer = new DispatcherTimer();
             delayedRefreshTimer.Interval = new TimeSpan(0, 0, 0, 1);
             delayedRefreshTimer.Tick += delayedRefreshTimer_Tick;
             delayedRefreshTimer.Start();
+        }
+
+        public List<T> GetSelectedDocuments()
+        {
+            List<T> returnDocuments = new List<T>();
+            foreach(T sourceObject in SourceObjects)
+            {
+                if (sourceObject.AttachmentName != BluePrintsResources.ReferenceInfoLineName && sourceObject.AttachmentName != null && sourceObject.AttachmentName != string.Empty)
+                    returnDocuments.Add(sourceObject);
+            }
+
+            return returnDocuments;
         }
 
         private void SelectedEntities_CollectionChanged(object sender, System.Collections.Specialized.NotifyCollectionChangedEventArgs e)
@@ -108,11 +136,11 @@ namespace BaseModel.ViewModel.Dialogs
 
         public virtual void DeleteFiles()
         {
-            List<REGISTER_TQ_ATTACHMENT> removeEntities = new List<REGISTER_TQ_ATTACHMENT>();
+            List<T> removeEntities = new List<T>();
             removeEntities.AddRange(SelectedEntities);
             for(int i = 0;i < removeEntities.Count;i++)
             {
-                REGISTER_TQ_ATTACHMENT document = removeEntities[i];
+                T document = removeEntities[i];
                 SourceObjects.Remove(document);
             }
 
@@ -127,6 +155,8 @@ namespace BaseModel.ViewModel.Dialogs
             GridControlService.GridControl.ItemsSource = null;
             GridControlService.GridControl.ItemsSource = SourceObjects;
             GridControlService.RefreshData();
+            TableViewService.TableView.UpdateLayout();
+            TableViewService.TableView.TopRowIndex = 0;
         }
 
         public virtual void ManualAddFile()
@@ -142,7 +172,7 @@ namespace BaseModel.ViewModel.Dialogs
             {
                 foreach(IFileInfo file in OpenFileDialogService.Files)
                 {
-                    SourceObjects.Add(new REGISTER_TQ_ATTACHMENT() { ATTACHMENT_PATH = file.GetFullName(), ATTACHMENT_NAME = file.Name });
+                    SourceObjects.Add(new T() { AttachmentPath = file.GetFullName(), AttachmentName = file.Name });
                 }
             }
 

@@ -506,12 +506,13 @@ namespace BluePrints.ViewModels
                 return;
             }
 
-            ListImportDocumentsViewModel viewModel = ListImportDocumentsViewModel.Create(SelectedEntity.DocumentAssignments);
+            ListImportDocumentsViewModel<REGISTER_TQ_ATTACHMENT> viewModel = ListImportDocumentsViewModel<REGISTER_TQ_ATTACHMENT>.Create(SelectedEntity.DocumentAssignments);
             if (ImportDocumentsDialogService.ShowDialog(MessageButton.OKCancel, string.Empty, "ListImportDocuments", viewModel) == MessageResult.OK)
             {
                 List<REGISTER_TQ_ATTACHMENT> entityDocuments = (List<REGISTER_TQ_ATTACHMENT>)SelectedEntity.Documents;
                 entityDocuments.Clear();
-                entityDocuments.AddRange(viewModel.SourceObjects);
+                entityDocuments.AddRange(viewModel.GetSelectedDocuments());
+
                 MainViewModel.Save(SelectedEntity);
                 TableViewService.CommitEditing();
             }

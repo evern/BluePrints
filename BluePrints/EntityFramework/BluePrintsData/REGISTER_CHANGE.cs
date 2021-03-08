@@ -55,6 +55,9 @@ namespace BluePrints.Data
 
         public bool? APPROVED { get; set; }
 
+        [StringLength(500)]
+        public string CHANGE_PATH { get; set; }
+
         public DateTime? DATE_RAISED { get; set; }
 
         public DateTime? DATE_CLOSED { get; set; }
@@ -76,5 +79,8 @@ namespace BluePrints.Data
         public virtual PROJECT PROJECT { get; set; }
 
         public virtual USER USER { get; set; }
+
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
+        public virtual ICollection<REGISTER_CHANGE_ATTACHMENT> REGISTER_CHANGE_ATTACHMENT { get; set; }
     }
 }
