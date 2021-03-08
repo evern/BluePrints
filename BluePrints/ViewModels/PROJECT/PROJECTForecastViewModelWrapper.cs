@@ -269,6 +269,12 @@ namespace BluePrints.ViewModels
             get => isShowActualsHistory;
             set
             {
+                if(value)
+                {
+                    if (MessageBoxService.ShowMessage("Please note that productivity isn't shown in 'Show Actuals History' mode, do you wish to continue?", "Warning", MessageButton.YesNo) == MessageResult.No)
+                        return;
+                }
+
                 isShowActualsHistory = value;
                 BluePrintsDataUtils.SaveUserPreference(DataUtils.GetNameOf(() => UserPreferences.Forecast_ShowActuals), value ? UserPreferences.PreferenceTrueValue : UserPreferences.PreferenceFalseValue);
                 ForecastSummary.Reset();
@@ -684,6 +690,11 @@ namespace BluePrints.ViewModels
                 allDataPoints.AddRange(actualStats.SelectMany(x => x.ExoDataPoints));
                 allDataPoints.AddRange(materialStats.SelectMany(x => x.ExoDataPoints));
                 allDataPoints.AddRange(poStats.SelectMany(x => x.ExoDataPoints));
+
+                IEnumerable<ExoDataPoint> findDataPoint = allDataPoints.Where(x => x.Variation_Code == "VR-053 (SI 008) Potable Water Supply");
+                string s;
+                if (findDataPoint.Count() > 0)
+                    s = findDataPoint.Count().ToString();
             }
 
             if (allDataPoints.Count == 0)
@@ -1056,8 +1067,13 @@ namespace BluePrints.ViewModels
                 summaries.Add(new SummaryDescriptor() { FieldName = "Entity.ProgressETC", DisplayFormat = "n0", Type = SummaryItemType.Sum });
                 columns.Add(new ColumnDescriptor() { FieldName = "Entity.P6RemainingUnitsOverride", ReadOnly = true, Header = "PF Units", Fixed = FixedStyle.Left, Width = 50, Settings = SettingsType.Number, Mask = "n0", HeaderToolTip = "Remaining units from refreshing P6" });
                 summaries.Add(new SummaryDescriptor() { FieldName = "Entity.P6RemainingUnitsOverride", DisplayFormat = "n0", Type = SummaryItemType.Sum });
-                columns.Add(new ColumnDescriptor() { FieldName = "Entity.Productivity", ReadOnly = false, Visible = false, Header = "PF", Increment = 0.1m, Fixed = FixedStyle.Left, Width = 50, Settings = SettingsType.Number, Mask = "n2", HeaderToolTip = "Productivity Factor, 0 means there aren't any units from P6" });
-                columns.Add(new ColumnDescriptor() { FieldName = "Entity.CurrentProductivity", ReadOnly = true, Visible = false, Header = "Current PF", Increment = 0.1m, Fixed = FixedStyle.Left, Width = 50, Settings = SettingsType.Number, Mask = "n2", HeaderToolTip = "Current productivity factor, 0 means there aren't any earned or actuals units" });
+
+                if (!IsShowActualsHistory)
+                {
+                    columns.Add(new ColumnDescriptor() { FieldName = "Entity.Productivity", ReadOnly = false, Visible = false, Header = "PF", Increment = 0.1m, Fixed = FixedStyle.Left, Width = 50, Settings = SettingsType.Number, Mask = "n2", HeaderToolTip = "Productivity Factor, 0 means there aren't any units from P6" });
+                    columns.Add(new ColumnDescriptor() { FieldName = "Entity.CurrentProductivity", ReadOnly = true, Visible = false, Header = "Current PF", Increment = 0.1m, Fixed = FixedStyle.Left, Width = 50, Settings = SettingsType.Number, Mask = "n2", HeaderToolTip = "Current productivity factor, 0 means there aren't any earned or actuals units" });
+                }
+
                 columns.Add(new ColumnDescriptor() { FieldName = "Entity.IsProductivityFloating", Visible = false, ReadOnly = true, Header = "Floating PF", Fixed = FixedStyle.Left, Width = 50, Settings = SettingsType.Default, HeaderToolTip = "Productivity on job with floating productivity can be updated to match current productivity" });
                 columns.Add(new ColumnDescriptor() { FieldName = "Entity.ActualCosts", ReadOnly = true, Header = "Actual Costs (B)", Fixed = FixedStyle.Left, Width = 70, Settings = SettingsType.Number, Mask = "c0", HeaderToolTip = "Costs burned to Date" });
                 summaries.Add(new SummaryDescriptor() { FieldName = "Entity.ActualCosts", DisplayFormat = "c0", Type = SummaryItemType.Sum });
