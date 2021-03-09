@@ -155,8 +155,6 @@ namespace BaseModel.ViewModel.Dialogs
             GridControlService.GridControl.ItemsSource = null;
             GridControlService.GridControl.ItemsSource = SourceObjects;
             GridControlService.RefreshData();
-            TableViewService.TableView.UpdateLayout();
-            TableViewService.TableView.TopRowIndex = 0;
         }
 
         public virtual void ManualAddFile()

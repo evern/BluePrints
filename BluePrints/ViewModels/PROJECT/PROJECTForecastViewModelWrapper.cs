@@ -690,11 +690,6 @@ namespace BluePrints.ViewModels
                 allDataPoints.AddRange(actualStats.SelectMany(x => x.ExoDataPoints));
                 allDataPoints.AddRange(materialStats.SelectMany(x => x.ExoDataPoints));
                 allDataPoints.AddRange(poStats.SelectMany(x => x.ExoDataPoints));
-
-                IEnumerable<ExoDataPoint> findDataPoint = allDataPoints.Where(x => x.Variation_Code == "VR-053 (SI 008) Potable Water Supply");
-                string s;
-                if (findDataPoint.Count() > 0)
-                    s = findDataPoint.Count().ToString();
             }
 
             if (allDataPoints.Count == 0)
