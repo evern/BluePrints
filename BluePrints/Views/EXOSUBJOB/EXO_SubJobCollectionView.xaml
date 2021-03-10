@@ -75,16 +75,19 @@
                         <dxg:GridColumn FieldName="CommodityCode" Header="Cost Type" AllowBestFit="false" Width="50" HeaderToolTip="Cost type in exo, type in free text or select from combo box">
                             <dxg:GridColumn.CellTemplate>
                                 <DataTemplate>
-                                    <dxg:LookUpEdit Name="PART_Editor" AutoComplete="True" AutoPopulateColumns="False" DisplayMember="CODE" IncrementalFiltering="True" IsTextEditable="true" ItemsSource="{Binding DataContext.COMMODITY_CODECollection,ElementName=userControl}" NullValueButtonPlacement="Popup" PopupMinWidth="700" ValueMember="CODE">
+                                    <dxg:LookUpEdit Name="PART_Editor" AutoComplete="True" AutoPopulateColumns="False" DisplayMember="CODE" IncrementalFiltering="True" IsTextEditable="true" ItemsSource="{Binding DataContext.COMMODITY_CODECollection, ElementName=userControl}" NullValueButtonPlacement="Popup" PopupMinWidth="700" ValueMember="CODE">
+                                        <dxmvvm:Interaction.Behaviors>
+                                            <dxmvvm:EventToCommand Command="{Binding DataContext.CommodityCodePopupOpeningCommand, ElementName=userControl}" EventName="PopupOpening" PassEventArgsToCommand="True" />
+                                        </dxmvvm:Interaction.Behaviors>
                                         <dxg:LookUpEdit.StyleSettings>
                                             <dxg:SearchLookUpEditStyleSettings />
                                         </dxg:LookUpEdit.StyleSettings>
                                         <dxg:LookUpEdit.PopupContentTemplate>
                                             <ControlTemplate TargetType="ContentControl">
-                                                <dxg:GridControl x:Name="PART_GridControl" SelectionMode="Row" ShowBorder="False">
+                                                <dxg:GridControl x:Name="PART_GridControl" SelectionMode="Row" ShowBorder="False" FilterString="[IsValid] = 'True'">
                                                     <dxg:GridControl.Columns>
-                                                        <!--<dxg:GridColumn FieldName="IsValid" Width="75" Header="Is Valid" ReadOnly="True" />-->
-                                                        <dxg:GridColumn Width="50" FieldName="CODE" Header="Code" SortIndex="1" ReadOnly="True" />
+                                                        <dxg:GridColumn FieldName="IsValid" Width="75" Header="Is Valid" ReadOnly="True" />
+                                                        <dxg:GridColumn Width="50" FieldName="CODE" Header="Code" ReadOnly="True" />
                                                         <dxg:GridColumn Width="200" FieldName="NAME" Header="Name" ReadOnly="True" />
                                                         <dxg:GridColumn Width="50" FieldName="UOM" Header="UOM" ReadOnly="True" />
                                                         <dxg:GridColumn Width="*" FieldName="DESCRIPTION" Header="Description" ReadOnly="True" />
@@ -103,15 +106,18 @@
                             <dxg:GridColumn.CellTemplate>
                                 <DataTemplate>
                                     <dxg:LookUpEdit Name="PART_Editor" AutoComplete="True" AutoPopulateColumns="False" DisplayMember="STOCKCODE" IncrementalFiltering="True" IsTextEditable="true" ItemsSource="{Binding DataContext.STOCK_ITEMSCollection, ElementName=userControl}" NullValueButtonPlacement="Popup" PopupMinWidth="500" ValueMember="STOCKCODE">
+                                        <dxmvvm:Interaction.Behaviors>
+                                            <dxmvvm:EventToCommand Command="{Binding DataContext.StockCodePopupOpeningCommand, ElementName=userControl}" EventName="PopupOpening" PassEventArgsToCommand="True" />
+                                        </dxmvvm:Interaction.Behaviors>
                                         <dxg:LookUpEdit.StyleSettings>
                                             <dxg:SearchLookUpEditStyleSettings />
                                         </dxg:LookUpEdit.StyleSettings>
                                         <dxg:LookUpEdit.PopupContentTemplate>
                                             <ControlTemplate TargetType="ContentControl">
-                                                <dxg:GridControl x:Name="PART_GridControl" SelectionMode="Row" ShowBorder="False">
+                                                <dxg:GridControl x:Name="PART_GridControl" SelectionMode="Row" ShowBorder="False" FilterString="[IsValid] = 'True'">
                                                     <dxg:GridControl.Columns>
-                                                        <!--<dxg:GridColumn FieldName="IsValid" Width="75" Header="Is Valid" ReadOnly="True" />-->
-                                                        <dxg:GridColumn FieldName="STOCKCODE" Header="Code" SortIndex="1" ReadOnly="True" />
+                                                        <dxg:GridColumn FieldName="IsValid" Width="75" Header="Is Valid" ReadOnly="True" />
+                                                        <dxg:GridColumn FieldName="STOCKCODE" Header="Code" ReadOnly="True" />
                                                         <dxg:GridColumn FieldName="DESCRIPTION" Width="*" Header="Description" ReadOnly="True" />
                                                     </dxg:GridControl.Columns>
                                                     <dxg:GridControl.View>

@@ -84,7 +84,7 @@ namespace BluePrints.Common.Projections
             {
                 if (taggedValidCommodityCodes == null)
                 {
-                    if(COMMODITY_CODES == null)
+                    if (COMMODITY_CODES == null)
                         return new List<COMMODITY_CODE>();
 
                     taggedValidCommodityCodes = new List<COMMODITY_CODE>();
@@ -133,7 +133,7 @@ namespace BluePrints.Common.Projections
             {
                 if (taggedValidStockItems == null)
                 {
-                    if(STOCK_ITEMS == null)
+                    if (STOCK_ITEMS == null)
                         return new List<STOCK_ITEMS>();
 
                     taggedValidStockItems = new List<STOCK_ITEMS>();

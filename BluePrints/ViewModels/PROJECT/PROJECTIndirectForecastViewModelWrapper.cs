@@ -510,7 +510,7 @@ namespace BluePrints.ViewModels
             foreach (DataRow saveDataRow in saveDataRows)
             {
                 FORECAST_JOB forecastJob = (FORECAST_JOB)saveDataRow[columnForecastJob];
-                forecastJob.PrepareForSaveChanges();
+                forecastJob.PrepareForSaveChanges(false);
                 updateRowReadOnlyAttributes(saveDataRow);
                 LoadingScreenManager.Progress();
             }
@@ -566,7 +566,7 @@ namespace BluePrints.ViewModels
             DataRow newRow = DataPointsTable.NewRow();
             newRow[columnFullCode] = queryJob.FullCode;
             newRow[columnProjection] = queryJob;
-            findExistingOrAddNewFORECAST_JOB(newRow);
+            findExistingOrAddNewFORECAST_JOB(newRow, false);
             for (var i = 1; i < ColumnStrings.Count(); i++)
             {
                 if (i > gridTableView.VisibleColumns.Count - 1)
@@ -748,7 +748,7 @@ namespace BluePrints.ViewModels
 
                 DataRowView row = (DataRowView)e.Row;
 
-                findExistingOrAddNewFORECAST_JOB(row.Row);
+                findExistingOrAddNewFORECAST_JOB(row.Row, true);
                 EntitiesUndoRedoManager.AddUndo(updateForecastJobFromDataRow(row.Row), null, null, null, EntityMessageType.Added);
                 focusNewlyAddedProjectionTimer.Start();
                 //added not working well atm because when row is removed from datatable its itemarray is cleared
@@ -757,7 +757,7 @@ namespace BluePrints.ViewModels
             }
         }
 
-        private void findExistingOrAddNewFORECAST_JOB(DataRow row)
+        private void findExistingOrAddNewFORECAST_JOB(DataRow row, bool commitToDb)
         {
             if (row[columnFullCode] == DBNull.Value)
                 return;
@@ -784,7 +784,7 @@ namespace BluePrints.ViewModels
                     editFORECAST_JOB.VARIATION_CODE = projection.VariationCode;
 
                 editFORECAST_JOB.GUID_PROJECT = LoadPROJECT.GUID;
-                editFORECAST_JOB.PrepareForSaveChanges();
+                editFORECAST_JOB.PrepareForSaveChanges(commitToDb);
                 //MainViewModel.Save(editFORECAST_JOB);
                 row[columnForecastJob] = editFORECAST_JOB;
                 //add undo must be after so that Guid is populated
@@ -930,7 +930,7 @@ namespace BluePrints.ViewModels
                     row[columnStockItem] = defaultStockItem;
 
                     updateForecastJobFromDataRow(row);
-                    findExistingOrAddNewFORECAST_JOB(row);
+                    findExistingOrAddNewFORECAST_JOB(row, saveChanges);
                     updateRowReadOnlyAttributes(row);
                     return;
                 }
@@ -962,7 +962,7 @@ namespace BluePrints.ViewModels
                 editForecastJobHour.FORECAST_HOUR = forecastHours;
 
                 if (saveChanges)
-                    forecastJob.PrepareForSaveChanges();
+                    forecastJob.PrepareForSaveChanges(saveChanges);
                 //FORECAST_JOB_HOURCollectionViewModel.Save(editForecastJobHour);
 
                 //for undo/redo
@@ -979,7 +979,7 @@ namespace BluePrints.ViewModels
                 DataUtils.SetNestedValue(sanitisedPropertyName, forecastJob, newValue);
 
                 if (saveChanges)
-                    forecastJob.PrepareForSaveChanges();
+                    forecastJob.PrepareForSaveChanges(saveChanges);
 
                 //findExistingOrAddNewFORECAST_JOB(row);
             }
@@ -989,7 +989,7 @@ namespace BluePrints.ViewModels
                 mapDataTableToJobData(row);
 
                 if (saveChanges)
-                    forecastJob.PrepareForSaveChanges();
+                    forecastJob.PrepareForSaveChanges(saveChanges);
 
                 //findExistingOrAddNewFORECAST_JOB(row);
             }
@@ -1170,7 +1170,7 @@ namespace BluePrints.ViewModels
             foreach (UndoRedoEntityInfo<FORECAST_JOB> entityProperty in bulkDeleteProperties)
             {
                 DataRow newRow = createNewDataRowFromFORECAST_JOB(entityProperty.ChangedEntity);
-                findExistingOrAddNewFORECAST_JOB(newRow);
+                findExistingOrAddNewFORECAST_JOB(newRow, true);
                 foreach (KeyValuePair<string, decimal> datesForecast in entityProperty.ChangedEntity.DatesForecasts)
                     commitCellValue(datesForecast.Key, newRow, datesForecast.Value, true);
 
@@ -1209,7 +1209,7 @@ namespace BluePrints.ViewModels
             foreach (UndoRedoEntityInfo<FORECAST_JOB> entityProperty in bulkAddedProperties)
             {
                 DataRow newRow = createNewDataRowFromFORECAST_JOB(entityProperty.ChangedEntity);
-                findExistingOrAddNewFORECAST_JOB(newRow);
+                findExistingOrAddNewFORECAST_JOB(newRow, true);
                 foreach (KeyValuePair<string, decimal> datesForecast in entityProperty.ChangedEntity.DatesForecasts)
                 {
                     commitCellValue(datesForecast.Key, newRow, datesForecast.Value, true);

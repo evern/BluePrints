@@ -1369,10 +1369,15 @@ namespace BluePrints.Common.Projections
         }
 
         public static IQueryable<ExoSubJobProjection> GetNativeExoSubJobEditableProjection(
-            IPrimeroEntitiesUnitOfWork primeroUnitOfWork, Data.PROJECT PROJECT, IEnumerable<COMMODITY_CODE> COMMODITY_CODECollection, IEnumerable<STOCK_ITEMS> STOCK_ITEMSCollection, IEnumerable<STAFF> ExoSTAFFS, string officeName, bool ignoreValidationError = false)
+            IPrimeroEntitiesUnitOfWork primeroUnitOfWork, Data.PROJECT PROJECT, IEnumerable<COMMODITY_CODE> COMMODITY_CODECollection, IEnumerable<STOCK_ITEMS> STOCK_ITEMSCollection, IEnumerable<STAFF> ExoSTAFFS, string officeName, bool ignoreValidationError = false, bool skipExoStaff = false)
         {
             List<ExoTimeAuthorisation> exoLines = GetProjectLinesIgnoreCostCentres(primeroUnitOfWork, PROJECT.NUMBER);
-            List<ExoTimeAuthorisation> exoAuthorisations = GetExoLinesAuthorisations(primeroUnitOfWork, PROJECT.NUMBER);
+            List<ExoTimeAuthorisation> exoAuthorisations;
+            if (skipExoStaff)
+                exoAuthorisations = new List<ExoTimeAuthorisation>();
+            else
+                exoAuthorisations = GetExoLinesAuthorisations(primeroUnitOfWork, PROJECT.NUMBER);
+
             List<ExoSubJobProjection> exoSubJobs = new List<ExoSubJobProjection>();
             foreach (ExoTimeAuthorisation exoLine in exoLines)
             {

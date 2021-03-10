@@ -24,8 +24,10 @@ using DevExpress.Data.Filtering;
 using DevExpress.Mvvm;
 using DevExpress.Mvvm.POCO;
 using DevExpress.Xpf.Bars;
+using DevExpress.Xpf.Editors;
 using DevExpress.Xpf.Grid;
 using DevExpress.Xpf.Printing;
+using DevExpress.XtraEditors;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
@@ -179,7 +181,7 @@ namespace BluePrints.ViewModels
 
         protected override Func<IRepositoryQuery<BASELINE_ITEM>, IQueryable<ExoSubJobProjection>> specifyMainViewModelProjection()
         {
-            return query => ExoQueries.GetNativeExoSubJobEditableProjection(localPrimeroUnitOfWork, loadPROJECT, COMMODITY_CODECollection, STOCK_ITEMSCollection, exoSTAFFS, loadPROJECT.OfficeNameForExo, true);
+            return query => ExoQueries.GetNativeExoSubJobEditableProjection(localPrimeroUnitOfWork, loadPROJECT, COMMODITY_CODECollection, STOCK_ITEMSCollection, exoSTAFFS, loadPROJECT.OfficeNameForExo, false, true);
         }
        
         protected override void AssignCallBacksAndRaisePropertyChange(IEnumerable<ExoSubJobProjection> entities)
@@ -188,6 +190,20 @@ namespace BluePrints.ViewModels
             MainViewModel.SetParentViewModel(this);
 
             base.AssignCallBacksAndRaisePropertyChange(entities);
+        }
+
+        //only populate lookup edit items source with validated entries during pop up opening to reduce memory footprint
+        public void CommodityCodePopupOpening(OpenPopupEventArgs e)
+        {
+            DevExpress.Xpf.Grid.LookUp.LookUpEdit sender = e.Source as DevExpress.Xpf.Grid.LookUp.LookUpEdit;
+            sender.ItemsSource = SelectedEntity.TaggedValidCommodityCodes;
+        }
+
+        //only populate lookup edit items source with validated entries during pop up opening to reduce memory footprint
+        public void StockCodePopupOpening(OpenPopupEventArgs e)
+        {
+            DevExpress.Xpf.Grid.LookUp.LookUpEdit sender = e.Source as DevExpress.Xpf.Grid.LookUp.LookUpEdit;
+            sender.ItemsSource = SelectedEntity.TaggedValidStockItems;
         }
 
         protected override OperationInterceptMode OnBeforeProjectionSaveIsContinue(ExoSubJobProjection projection, out bool isNew)

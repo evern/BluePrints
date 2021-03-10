@@ -47,7 +47,7 @@ namespace BluePrints.Data
         [NotMapped]
         public List<FORECAST_JOB_HOUR> ForecastJobHours { get; set; }
 
-        public void PrepareForSaveChanges()
+        public void PrepareForSaveChanges(bool commitToDb)
         {
             if (BluePrintsEntitiesUnitOfWork == null)
                 return;
@@ -67,6 +67,9 @@ namespace BluePrints.Data
                     //BluePrintsEntitiesUnitOfWork.FORECAST_JOB_HOURS.Add(forecastJobHour);
                 }
             }
+
+            if (commitToDb)
+                BluePrintsEntitiesUnitOfWork.SaveChanges();
         }
     }
 }
