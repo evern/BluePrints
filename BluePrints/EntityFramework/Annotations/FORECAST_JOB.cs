@@ -3,6 +3,7 @@ namespace BluePrints.Data
     using BaseModel.Attributes;
     using BaseModel.DataModel;
     using BaseModel.Misc;
+    using BluePrints.BluePrintsEntitiesDataModel;
     using BluePrints.Common.Base;
     using BluePrints.Common.Projections;
     using BluePrints.Common.ViewModel.Reporting;
@@ -39,5 +40,33 @@ namespace BluePrints.Data
         [NotMapped]
         public List<KeyValuePair<string, decimal>> DatesForecasts = new List<KeyValuePair<string, decimal>>();
         public string Office => this.PROJECT.NUMBER + " " + this.PROJECT.OfficeName;
+
+        [NotMapped]
+        public IBluePrintsEntitiesUnitOfWork BluePrintsEntitiesUnitOfWork { get; set; }
+
+        [NotMapped]
+        public List<FORECAST_JOB_HOUR> ForecastJobHours { get; set; }
+
+        public void PrepareForSaveChanges()
+        {
+            if (BluePrintsEntitiesUnitOfWork == null)
+                return;
+
+            if (this.GUID == Guid.Empty)
+            {
+                BluePrintsEntitiesUnitOfWork.FORECAST_JOBS.Add(this);
+            }
+            //BluePrintsEntitiesUnitOfWork.SaveChanges();
+
+            foreach(FORECAST_JOB_HOUR forecastJobHour in ForecastJobHours)
+            {
+                if(forecastJobHour.GUID == Guid.Empty)
+                {
+                    this.FORECAST_JOB_HOUR.Add(forecastJobHour);
+                    //forecastJobHour.GUID_FORECAST_JOB = this.GUID;
+                    //BluePrintsEntitiesUnitOfWork.FORECAST_JOB_HOURS.Add(forecastJobHour);
+                }
+            }
+        }
     }
 }

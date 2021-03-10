@@ -20,6 +20,7 @@ namespace BluePrints.Data
         public FORECAST_JOB()
         {
             FORECAST_JOB_HOUR = new HashSet<FORECAST_JOB_HOUR>();
+            ForecastJobHours = new List<FORECAST_JOB_HOUR>();
         }
 
         [Key]
