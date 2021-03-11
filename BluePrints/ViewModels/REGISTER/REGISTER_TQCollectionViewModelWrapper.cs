@@ -385,6 +385,12 @@ namespace BluePrints.ViewModels
 
         public void SpecifyPath()
         {
+            if(SelectedEntity == null)
+            {
+                MessageBoxService.ShowMessage("Please select an entry that has already been added");
+                return;
+            }
+
             OpenFileDialogService.Filter = "PDF (*.PDF)|*.PDF";
             bool DialogResult;
 
