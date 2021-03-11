@@ -116,6 +116,8 @@ namespace BluePrints.Data
             }
         }
 
+        public decimal PathImageWidth => CHANGE_PATH == null || CHANGE_PATH == string.Empty ? 0 : 15;
+
         public string EntityGroup => string.Empty;
 
         public string Office => this.PROJECT.NUMBER + " " + this.PROJECT.OfficeName;

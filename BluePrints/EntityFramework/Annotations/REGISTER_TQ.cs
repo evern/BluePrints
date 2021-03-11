@@ -106,5 +106,7 @@ namespace BluePrints.Data
                 return documentAssignments;
             }
         }
+
+        public decimal PathImageWidth => TQ_PATH == null || TQ_PATH == string.Empty ? 0 : 15;
     }
 }
