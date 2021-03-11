@@ -860,7 +860,9 @@ namespace BluePrints.ViewModels
                 {
                     ExoSubJobProjection queryJob = QueryJobs.FirstOrDefault(x => x.FullCode == e.Value.ToString());
                     dataRowView[columnProjection] = queryJob;
-                    dataRowView[columnStockItem] = findDefaultStockCode(queryJob);
+
+                    if(dataRowView[columnStockItem] == DBNull.Value || dataRowView[columnStockItem].ToString() == string.Empty)
+                        dataRowView[columnStockItem] = findDefaultStockCode(queryJob);
                 }
 
                 mapDataTableToJobData(dataRowView.Row);
@@ -926,8 +928,11 @@ namespace BluePrints.ViewModels
                         row[columnProjection] = DBNull.Value;
                     }
 
-                    string defaultStockItem = findDefaultStockCode(job);
-                    row[columnStockItem] = defaultStockItem;
+                    if(row[columnStockItem] == DBNull.Value || row[columnStockItem].ToString() == string.Empty)
+                    {
+                        string defaultStockItem = findDefaultStockCode(job);
+                        row[columnStockItem] = defaultStockItem;
+                    }
 
                     updateForecastJobFromDataRow(row);
                     findExistingOrAddNewFORECAST_JOB(row, saveChanges);
