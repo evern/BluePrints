@@ -13,6 +13,7 @@ namespace BluePrints.Data
         public REGISTER_TQ()
         {
             REGISTER_TQ_ATTACHMENT = new HashSet<REGISTER_TQ_ATTACHMENT>();
+            Documents = new List<REGISTER_TQ_ATTACHMENT>();
         }
 
         [Key]
