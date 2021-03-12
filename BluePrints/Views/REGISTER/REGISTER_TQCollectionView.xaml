@@ -221,7 +221,7 @@
                                                 <Grid>
                                                     <Grid.ColumnDefinitions>
                                                         <ColumnDefinition Width="*" />
-                                                        <ColumnDefinition Width="{Binding RowData.Row.PathImageWidth}" />
+                                                        <ColumnDefinition Width="{Binding RowData.Row.PathImageWidth, FallbackValue=0}" />
                                                     </Grid.ColumnDefinitions>
                                                     <dxe:HyperlinkEdit Name="PART_Editor" ShowNullText="True" AllowNullInput="True" ShowNullTextForEmptyValue="True" NullText="Double click here to browse" Grid.Column="0" AllowAutoNavigate="True" >
                                                     </dxe:HyperlinkEdit>
