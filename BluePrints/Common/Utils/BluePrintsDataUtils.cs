@@ -791,6 +791,23 @@ namespace BluePrints.Common.ViewModel.Utils
             }
         }
 
+        public static DateTime GetEarliestTransactionDate(IPrimeroEntitiesUnitOfWork primeroUOW, string projectNumber)
+        {
+            var jobTransactions = from JOBTRANS in primeroUOW.JOB_TRANSACTIONS
+                                  join JOBCOST_HDR2 in primeroUOW.JOBCOST_HDR
+                                  on JOBTRANS.MASTER_JOBNO equals JOBCOST_HDR2.JOBNO
+                                  join JOBCOST_HDR1 in primeroUOW.JOBCOST_HDR
+                                  on JOBTRANS.JOBNO equals JOBCOST_HDR1.JOBNO
+                                  where JOBCOST_HDR2.JOBCODE == projectNumber
+                                  select new { JOBTRANS.TRANSDATE };
+
+            var jobTransactionsList = jobTransactions.Where(x => x.TRANSDATE != null).ToList();
+            if (jobTransactionsList.Count > 0)
+                return jobTransactionsList.Min(x => (DateTime)x.TRANSDATE);
+            else
+                return DateTime.Now;
+        }
+
         public static List<ExoDataPoint> GetRevenue(IPrimeroEntitiesUnitOfWork primeroUOW, string projectNumber, DateTime dataDate, decimal currencyConversion = 1, bool showLoadingScreen = false)
         {
             ConcurrentBag<ExoDataPoint> revenueDataPoints = new ConcurrentBag<ExoDataPoint>();

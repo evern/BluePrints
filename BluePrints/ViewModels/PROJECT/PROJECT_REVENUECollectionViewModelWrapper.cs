@@ -94,6 +94,8 @@ namespace BluePrints.ViewModels
             if(!isFirstLoaded)
             {
                 List<DateTime> earliestDates = new List<DateTime>();
+                DateTime earliestTransactionDate = BluePrintsDataUtils.GetEarliestTransactionDate(primeroUnitOfWork, loadPROJECT.NUMBER);
+                earliestDates.Add(earliestTransactionDate);
                 DateTime? firstRecordedRevenueDate = revenueDataPoints.Count == 0 ? (DateTime?)null : revenueDataPoints.Min(x => x.InvoiceDate);
 
                 if (firstRecordedRevenueDate != null)
