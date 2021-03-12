@@ -15,6 +15,11 @@ namespace BluePrints.Data
     [ConstraintAttributes("NUMBER")]
     public partial class REGISTER_CHANGE : EntityBase, IGuidEntityKey, ICanSync, IEntityNumber, IHaveCreatedDate
     {
+        public REGISTER_CHANGE()
+        {
+            Documents = new List<REGISTER_CHANGE_ATTACHMENT>();
+        }
+
         [NotMapped]
         public string EntityNumber
         {
