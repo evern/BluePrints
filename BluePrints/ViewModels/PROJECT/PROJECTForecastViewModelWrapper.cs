@@ -3017,7 +3017,7 @@ namespace BluePrints.ViewModels
             }
         }
 
-        public IEnumerable<DOCTYPE> DOCTYPECollection
+        public new IEnumerable<DOCTYPE> DOCTYPECollection
         {
             get
             {
