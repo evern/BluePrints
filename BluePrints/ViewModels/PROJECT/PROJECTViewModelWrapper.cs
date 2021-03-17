@@ -166,6 +166,7 @@ namespace BluePrints.ViewModels
             loaderCollection.AddLoaderDescription<USER, USER, Guid, IBluePrintsEntitiesUnitOfWork>(bluePrintsUnitOfWorkFactory, x => x.USERS);
             loaderCollection.AddLoaderDescription(bluePrintsUnitOfWorkFactory, x => x.BASELINE_ITEM_WORKS, BASELINE_ITEM_WORKProjectionFunc);
             loaderCollection.AddLoaderDescription(bluePrintsUnitOfWorkFactory, x => x.STOCK_CODES, STOCK_CODEProjectionFunc);
+            loaderCollection.AddLoaderDescription<DOCTYPE, DOCTYPE, Guid, IBluePrintsEntitiesUnitOfWork>(bluePrintsUnitOfWorkFactory, x => x.DOCTYPES);
         }
 
         private Func<IRepositoryQuery<BASELINE>, IQueryable<BASELINE>> BASELINEProjectionFunc()
@@ -322,7 +323,7 @@ namespace BluePrints.ViewModels
 
         protected virtual List<DashboardFlatStructure> getDashboardStructure(PROJECT_Dashboard project, bool isVariationSeparated, bool forceRetrieveRemainingDataPoints = false)
         {
-            return DashboardHelpers.ProjectDashboardSummaryBuilder((ProjectSummaryStats)project.Stats, out hierarchicalDashboard, SUBJOBCollection, ShowLoadingScreen, isVariationSeparated, forceRetrieveRemainingDataPoints);
+            return DashboardHelpers.ProjectDashboardSummaryBuilder((ProjectSummaryStats)project.Stats, out hierarchicalDashboard, SUBJOBCollection, ShowLoadingScreen, isVariationSeparated, forceRetrieveRemainingDataPoints, DOCTYPECollection);
         }
 
         private void summaryBackgroundWorker_RunWorkerCompleted(object sender, RunWorkerCompletedEventArgs e)
@@ -1410,7 +1411,7 @@ namespace BluePrints.ViewModels
         /// </summary>
         public override string ViewName
         {
-            get { return "PROJECTViewModelWrapper_v2" + view_project_specific_affix; }
+            get { return "PROJECTViewModelWrapper_v3" + view_project_specific_affix; }
         }
 
         private string view_project_specific_affix
@@ -1646,6 +1647,15 @@ namespace BluePrints.ViewModels
             get
             {
                 var collection = GetEntities<BASELINE_ITEM_WORK>();
+                return collection;
+            }
+        }
+
+        public IEnumerable<DOCTYPE> DOCTYPECollection
+        {
+            get
+            {
+                var collection = GetEntities<DOCTYPE>();
                 return collection;
             }
         }

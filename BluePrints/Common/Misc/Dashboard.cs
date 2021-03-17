@@ -76,7 +76,7 @@ namespace BluePrints.Common.Misc
         public string SubjobCode { get; set; }
         public string AreaCode { get; set; }
         public string SubAreaCode { get; set; }
-        //public string DepartmentCode { get; set; }
+        public string DepartmentCode { get; set; }
         public string DisciplineCode { get; set; }
         public string CommodityCode { get; set; }
         public string Variation_Code { get; set; }
@@ -91,9 +91,9 @@ namespace BluePrints.Common.Misc
         public string User { get; set; }
         public string Role { get; set; }
         public string Subjob_Name { get; set; }
-        //public string Department_Name { get; set; }
         public string Discipline_Name { get; set; }
         public string Commodity_Code { get; set; }
+        public string Department_Code { get; set; }
         public string Internal_Name { get; set; }
         public DateTime Data_Date { get; set; }
         public StatsType Type { get; set; }
@@ -218,7 +218,7 @@ namespace BluePrints.Common.Misc
             return new_export;
         }
 
-        public static List<Dashboard_Export_Data_Point> BuildExportData(List<DashboardTreeStructure> Subjob_Dashboards)
+        public static List<Dashboard_Export_Data_Point> BuildExportData(List<DashboardTreeStructure> Subjob_Dashboards, IEnumerable<DOCTYPE> DOCTYPECollection = null)
         {
             List<Dashboard_Export_Data_Point> export_data = new List<Dashboard_Export_Data_Point>();
             IEnumerable<DashboardTreeStructure> commodity_code_dashboards = Subjob_Dashboards.SelectMany(x => x.Child_Dashboards.SelectMany(discipline => discipline.Child_Dashboards));
@@ -239,7 +239,7 @@ namespace BluePrints.Common.Misc
                             isDisciplineDataPointsGathered = true;
                             isSubjobDataPointsGathered = true;
 
-                            List<Dashboard_Export_Data_Point> burned_data = buildExportDataByType2(commodity_dashboard, commodity_dashboard.Parent_Dashboard.Parent_Dashboard.Code, commodity_dashboard.Parent_Dashboard.Code, summaryCommodity.Burned.DataPoints, StatsType.Burned, summaryCommodity.Actual.DataPoints);
+                            List<Dashboard_Export_Data_Point> burned_data = buildExportDataByType(commodity_dashboard, commodity_dashboard.Parent_Dashboard.Parent_Dashboard.Code, commodity_dashboard.Parent_Dashboard.Code, commodity_dashboard.Code, summaryCommodity.Burned.DataPoints, StatsType.Burned, summaryCommodity.Actual.DataPoints, DOCTYPECollection);
                             if (burned_data.Count > 0)
                             {
                                 export_data.AddRange(burned_data);
@@ -253,7 +253,7 @@ namespace BluePrints.Common.Misc
                         isDisciplineDataPointsGathered = true;
                         isSubjobDataPointsGathered = true;
 
-                        List<Dashboard_Export_Data_Point> burned_data = buildExportDataByType2(discipline_dashboard, discipline_dashboard.Parent_Dashboard.Code, discipline_dashboard.Code, summaryDiscipline.Burned.DataPoints, StatsType.Burned, summaryDiscipline.Actual.DataPoints);
+                        List<Dashboard_Export_Data_Point> burned_data = buildExportDataByType(discipline_dashboard, discipline_dashboard.Parent_Dashboard.Code, discipline_dashboard.Code, string.Empty, summaryDiscipline.Burned.DataPoints, StatsType.Burned, summaryDiscipline.Actual.DataPoints);
                         if (burned_data.Count > 0)
                         {
                             export_data.AddRange(burned_data);
@@ -264,7 +264,7 @@ namespace BluePrints.Common.Misc
                 SummaryStats summarySubjob = (SummaryStats)subjob_dashboard.Stats;
                 if (!isSubjobDataPointsGathered && summarySubjob.Burned != null)
                 {
-                    List<Dashboard_Export_Data_Point> burned_data = buildExportDataByType2(subjob_dashboard, subjob_dashboard.Code, string.Empty, summarySubjob.Burned.DataPoints, StatsType.Burned, summarySubjob.Actual.DataPoints);
+                    List<Dashboard_Export_Data_Point> burned_data = buildExportDataByType(subjob_dashboard, subjob_dashboard.Code, string.Empty, string.Empty, summarySubjob.Burned.DataPoints, StatsType.Burned, summarySubjob.Actual.DataPoints);
                     if (burned_data.Count > 0)
                     {
                         export_data.AddRange(burned_data);
@@ -304,7 +304,7 @@ namespace BluePrints.Common.Misc
             return export_data;
         }
 
-        private static List<Dashboard_Export_Data_Point> buildExportDataByType2(DashboardTreeStructure commodity_code_dashboard, string subJobName, string disciplineName, IEnumerable<ViewModel.Reporting.DataPoint> data_points, StatsType stats_type, IEnumerable<ViewModel.Reporting.DataPoint> actual_data_points = null)
+        private static List<Dashboard_Export_Data_Point> buildExportDataByType(DashboardTreeStructure commodity_code_dashboard, string subJobName, string disciplineName, string commodityCode, IEnumerable<ViewModel.Reporting.DataPoint> data_points, StatsType stats_type, IEnumerable<ViewModel.Reporting.DataPoint> actual_data_points = null, IEnumerable<DOCTYPE> DOCTYPECollection = null)
         {
             List<Dashboard_Export_Data_Point> export_data_by_type = new List<Dashboard_Export_Data_Point>();
             if (data_points == null)
@@ -319,6 +319,15 @@ namespace BluePrints.Common.Misc
                 new_export_data.Costs = data_point.Costs;
                 new_export_data.Subjob_Name = subJobName;
                 new_export_data.Discipline_Name = disciplineName;
+                new_export_data.Commodity_Code = commodityCode;
+
+                if(DOCTYPECollection != null)
+                {
+                    DOCTYPE findDOCTYPE = DOCTYPECollection.FirstOrDefault(x => x.CODE == commodityCode);
+                    if (findDOCTYPE != null)
+                        new_export_data.Department_Code = findDOCTYPE.CODE;
+                }
+
                 if (actual_data_points != null)
                 {
                     ViewModel.Reporting.DataPoint current_period_actual = actual_data_points.FirstOrDefault(x => x.ProgressDate == data_point.ProgressDate);
@@ -563,7 +572,7 @@ namespace BluePrints.Common.Misc
             return project_dashboard.Child_Dashboards;
         }
 
-        public static List<DashboardFlatStructure> ProjectDashboardSummaryBuilder(ProjectSummaryStats project_summary_stats, out List<DashboardTreeStructure> hierarchicalDashboards, IEnumerable<SUBJOB> SUBJOBCollection, bool showLoadingScreen, bool isVariationSeparated = false, bool forceRetrieveRemainingDataPoints = false)
+        public static List<DashboardFlatStructure> ProjectDashboardSummaryBuilder(ProjectSummaryStats project_summary_stats, out List<DashboardTreeStructure> hierarchicalDashboards, IEnumerable<SUBJOB> SUBJOBCollection, bool showLoadingScreen, bool isVariationSeparated = false, bool forceRetrieveRemainingDataPoints = false, IEnumerable<DOCTYPE> DOCTYPECollection = null)
         {
             List<DashboardFlatStructure> flatDashboards = new List<DashboardFlatStructure>();
             hierarchicalDashboards = ProjectDashboardHierarchicalBuilder(project_summary_stats, showLoadingScreen, isVariationSeparated, forceRetrieveRemainingDataPoints);
@@ -575,7 +584,7 @@ namespace BluePrints.Common.Misc
             foreach(DashboardTreeStructure subJobDashboard in hierarchicalDashboards.OrderBy(x => x.Code))
             {
                 if (subJobDashboard.Child_Dashboards == null || subJobDashboard.Child_Dashboards.Count == 0)
-                    populateFlatDashboards(flatDashboards, subJobDashboard, string.Empty, string.Empty, string.Empty, subJobDashboard.Stats, designSubjobs, constructionSubjobs);
+                    populateFlatDashboards(flatDashboards, subJobDashboard, string.Empty, string.Empty, string.Empty, subJobDashboard.Stats, designSubjobs, constructionSubjobs, DOCTYPECollection);
                 else
                 {
                     if (isVariationSeparated)
@@ -583,18 +592,18 @@ namespace BluePrints.Common.Misc
                         foreach (DashboardTreeStructure variationDashboard in subJobDashboard.Child_Dashboards.OrderBy(x => x.Code))
                         {
                             if (variationDashboard.Child_Dashboards == null || variationDashboard.Child_Dashboards.Count == 0)
-                                populateFlatDashboards(flatDashboards, subJobDashboard, variationDashboard.Code, string.Empty, string.Empty, variationDashboard.Stats, designSubjobs, constructionSubjobs);
+                                populateFlatDashboards(flatDashboards, subJobDashboard, variationDashboard.Code, string.Empty, string.Empty, variationDashboard.Stats, designSubjobs, constructionSubjobs, DOCTYPECollection);
                             else
                             {
                                 foreach (DashboardTreeStructure disciplineDashboard in variationDashboard.Child_Dashboards.OrderBy(x => x.Code))
                                 {
                                     if (disciplineDashboard.Child_Dashboards == null || disciplineDashboard.Child_Dashboards.Count == 0)
-                                        populateFlatDashboards(flatDashboards, subJobDashboard, variationDashboard.Code, disciplineDashboard.Code, string.Empty, disciplineDashboard.Stats, designSubjobs, constructionSubjobs);
+                                        populateFlatDashboards(flatDashboards, subJobDashboard, variationDashboard.Code, disciplineDashboard.Code, string.Empty, disciplineDashboard.Stats, designSubjobs, constructionSubjobs, DOCTYPECollection);
                                     else
                                     {
                                         foreach (DashboardTreeStructure commodityDashboard in disciplineDashboard.Child_Dashboards.OrderBy(x => x.Code))
                                         {
-                                            populateFlatDashboards(flatDashboards, subJobDashboard, variationDashboard.Code, disciplineDashboard.Code, commodityDashboard.Code, commodityDashboard.Stats, designSubjobs, constructionSubjobs);
+                                            populateFlatDashboards(flatDashboards, subJobDashboard, variationDashboard.Code, disciplineDashboard.Code, commodityDashboard.Code, commodityDashboard.Stats, designSubjobs, constructionSubjobs, DOCTYPECollection);
                                         };
                                     }
                                 };
@@ -606,12 +615,12 @@ namespace BluePrints.Common.Misc
                         foreach (DashboardTreeStructure disciplineDashboard in subJobDashboard.Child_Dashboards.OrderBy(x => x.Code))
                         {
                             if (disciplineDashboard.Child_Dashboards == null || disciplineDashboard.Child_Dashboards.Count == 0)
-                                populateFlatDashboards(flatDashboards, subJobDashboard, string.Empty, disciplineDashboard.Code, string.Empty, disciplineDashboard.Stats, designSubjobs, constructionSubjobs);
+                                populateFlatDashboards(flatDashboards, subJobDashboard, string.Empty, disciplineDashboard.Code, string.Empty, disciplineDashboard.Stats, designSubjobs, constructionSubjobs, DOCTYPECollection);
                             else
                             {
                                 foreach (DashboardTreeStructure commodityDashboard in disciplineDashboard.Child_Dashboards.OrderBy(x => x.Code))
                                 {
-                                    populateFlatDashboards(flatDashboards, subJobDashboard, string.Empty, disciplineDashboard.Code, commodityDashboard.Code, commodityDashboard.Stats, designSubjobs, constructionSubjobs);
+                                    populateFlatDashboards(flatDashboards, subJobDashboard, string.Empty, disciplineDashboard.Code, commodityDashboard.Code, commodityDashboard.Stats, designSubjobs, constructionSubjobs, DOCTYPECollection);
                                 };
                             }
                         };
@@ -622,7 +631,7 @@ namespace BluePrints.Common.Misc
             return flatDashboards;
         }
 
-        private static void populateFlatDashboards(List<DashboardFlatStructure> masterDashboardFlat, DashboardTreeStructure subjobDashboard, string variationCode, string disciplineCode, string commodityCode, ProgressStats stats, IEnumerable<SUBJOB> designSubJobs, IEnumerable<SUBJOB> constructSubJobs)
+        private static void populateFlatDashboards(List<DashboardFlatStructure> masterDashboardFlat, DashboardTreeStructure subjobDashboard, string variationCode, string disciplineCode, string commodityCode, ProgressStats stats, IEnumerable<SUBJOB> designSubJobs, IEnumerable<SUBJOB> constructSubJobs, IEnumerable<DOCTYPE> DOCTYPECollection = null)
         {
             DashboardFlatStructure newDashboard = new DashboardFlatStructure();
             newDashboard.SubjobCode = subjobDashboard.Code;
@@ -632,6 +641,11 @@ namespace BluePrints.Common.Misc
             newDashboard.Phase = designSubJobs.Any(x => x.PHASE.INTERNAL_NUM == subjobDashboard.PhaseCodeFromSubJobCode) ? PhaseType.Design : constructSubJobs.Any(x => x.PHASE.INTERNAL_NUM == subjobDashboard.PhaseCodeFromSubJobCode) ? PhaseType.Construct : (PhaseType?)null;
             newDashboard.DisciplineCode = disciplineCode;
             newDashboard.CommodityCode = commodityCode;
+
+            DOCTYPE findDOCTYPE = DOCTYPECollection.FirstOrDefault(x => x.CODE == commodityCode);
+            if (findDOCTYPE != null)
+                newDashboard.DepartmentCode = findDOCTYPE.DEPARTMENT.CODE;
+
             newDashboard.Variation_Code = variationCode;
             newDashboard.Stats = stats;
             newDashboard.ShouldHide = shouldHideSubjobDashboard(stats);
