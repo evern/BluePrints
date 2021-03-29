@@ -96,6 +96,9 @@ namespace BluePrints.PrimeroData
         protected override bool isLineExists => true;
 
         protected override bool ignoreBudgetError => true;
+
+        public bool ReceiptStatus => Status == 2 ? true : false;
+
         private IEnumerable<JOB_COSTTYPES> JOB_COSTTYPES { get; set; }
         public void PopulateCostTypes(IEnumerable<JOB_COSTTYPES> JOB_COSTTYPESCollection)
         {
