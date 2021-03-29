@@ -37,6 +37,8 @@ namespace BluePrints.Data
         public decimal? BUDGETED_UNITS { get; set; }
 
         public bool ALLOW_EXCEED { get; set; }
+        
+        public bool REBASELINE { get; set; }
 
         public BaselineStatus STATUS { get; set; }
 
