@@ -161,6 +161,11 @@
                                             <dxg:GridColumn FieldName="X_VARIATIONCODE" Header="Variation" ReadOnly="{Binding IsReadOnly}" SortIndex="40" Visible="True" VisibleIndex="50" />
                                             <dxg:GridColumn FieldName="OrderDate" Header="Order Date" ReadOnly="True" SortIndex="50" FilterPopupMode="DateAlt" VisibleIndex="60" />
                                             <dxg:GridColumn FieldName="HDR_SEQNO" AllowBestFit="false" Width="60" Header="PO Number" ReadOnly="True" VisibleIndex="70" />
+                                            <dxg:GridColumn FieldName="ReceiptStatus" AllowBestFit="false" Width="60" Header="Fully Receipted/Cancelled" ReadOnly="True" VisibleIndex="80" >
+                                                <dxg:GridColumn.EditSettings>
+                                                    <dxe:CheckEditSettings />
+                                                </dxg:GridColumn.EditSettings>
+                                            </dxg:GridColumn>
                                         </dxg:GridControlBand>
                                         <dxg:GridControlBand Header="Commodity">
                                             <dxg:GridColumn FieldName="DESCRIPTION" Width="200" Header="Description" ReadOnly="True" VisibleIndex="70" />
