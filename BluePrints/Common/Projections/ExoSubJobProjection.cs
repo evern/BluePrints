@@ -193,6 +193,19 @@ namespace BluePrints.Common.Projections
             return FullCode;
         }
 
+        public string AreaCode
+        {
+            get
+            {
+                if (SubJobCode == string.Empty)
+                    return string.Empty;
+                else if (SubJobCode.Length < 15)
+                    return string.Empty;
+
+                return SubJobCode.Substring(6, 3);
+            }
+        }
+
         public string FullCode
         {
             get

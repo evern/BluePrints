@@ -1044,6 +1044,7 @@ namespace BluePrints.ViewModels
                 summaries.Add(new SummaryDescriptor() { FieldName = "Entity.Projection.PhaseCode", DisplayFormat = "{0} Record(s)", Type = SummaryItemType.Count });
                 columns.Add(new ColumnDescriptor() { FieldName = "Entity.Projection.SubJobCode", ReadOnly = true, Header = "Subjob", Fixed = FixedStyle.Left, Width = 110, Settings = SettingsType.JobError });
                 columns.Add(new ColumnDescriptor() { FieldName = "Entity.Projection.SubJobTitle", ReadOnly = true, Header = "Subjob Title", Visible = false, Fixed = FixedStyle.Left, Width = 95, Settings = SettingsType.Default });
+                columns.Add(new ColumnDescriptor() { FieldName = "Entity.Projection.AreaCode", ReadOnly = true, Visible = false, Header = "Area", Fixed = FixedStyle.Left, Width = 60, Settings = SettingsType.Default });
                 columns.Add(new ColumnDescriptor() { FieldName = "Entity.Projection.DisciplineCode", ReadOnly = true, Header = "Discipline", Fixed = FixedStyle.Left, Width = 38, Settings = SettingsType.Default });
                 columns.Add(new ColumnDescriptor() { FieldName = "Entity.Projection.CommodityCode", ReadOnly = true, Header = "Commodity", Fixed = FixedStyle.Left, Width = 35, Settings = SettingsType.CommodityCode });
                 columns.Add(new ColumnDescriptor() { FieldName = "Entity.Projection.CommodityName", ReadOnly = true, Header = "Commodity Name", Fixed = FixedStyle.Left, Width = 50, Settings = SettingsType.Default });
