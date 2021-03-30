@@ -279,7 +279,7 @@ namespace BluePrints.Data
         }
 
         [NotMapped]
-        public decimal RecommendedRate => Transactions == null ? 0 : Transactions.Average(x => x.CostPerQty);
+        public decimal RecommendedRate => TransactionCount == 0 ? 0 : Transactions.Average(x => x.CostPerQty);
 
         [NotMapped]
         public decimal TransactionCount => Transactions == null ? 0 : Transactions.Count;
