@@ -163,7 +163,7 @@ namespace BluePrints.ViewModels
             IEnumerable<TransactionRate> transactionRatesByCommodity = transactionRatesByDiscipline.Where(x => (rate.COMMODITY_CODE == string.Empty || rate.COMMODITY_CODE == null || x.CommodityCode == rate.COMMODITY_CODE));
             List <TransactionRate> burned = transactionRatesByCommodity.ToList();
             if (burned.Count > 0)
-                rate.Transactions = burned.SelectMany(x => x.Transactions).ToList();
+                rate.Transactions = burned.SelectMany(x => x.Transactions).Where(x => x.CostPerQty > 0).ToList();
 
             if (!rate.IsRateExists && !isEditRateField)
                 rate.RATE1 = rate.RecommendedRate;
