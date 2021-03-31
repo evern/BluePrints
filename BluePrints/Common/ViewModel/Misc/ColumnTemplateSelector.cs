@@ -13,6 +13,7 @@ namespace BluePrints.Common.ViewModel.Misc
         public SummaryItemType Type { get; set; }
         public string FieldName { get; set; }
         public string DisplayFormat { get; set; }
+        public GridSummaryItemAlignment Alignment { get; set; }
     }
 
     public class ColumnDescriptor

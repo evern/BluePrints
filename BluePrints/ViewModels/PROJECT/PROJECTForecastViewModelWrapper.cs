@@ -1041,7 +1041,6 @@ namespace BluePrints.ViewModels
                 bool isPreviousEACReadOnly = LoginCredentials.getPermissionStatus(DataUtils.GetNameOf(() => NavigationResources.Permission_Forecast_EditPreviousEAC)) == LoginCredentials.PermissionStatus.None;
 
                 columns.Add(new ColumnDescriptor() { FieldName = "Entity.Projection.PhaseCode", ReadOnly = true, Header = "Phase", Fixed = FixedStyle.Left, Width = 50, Settings = SettingsType.Default });
-                summaries.Add(new SummaryDescriptor() { FieldName = "Entity.Projection.PhaseCode", DisplayFormat = "{0} Record(s)", Type = SummaryItemType.Count });
                 columns.Add(new ColumnDescriptor() { FieldName = "Entity.Projection.SubJobCode", ReadOnly = true, Header = "Subjob", Fixed = FixedStyle.Left, Width = 110, Settings = SettingsType.JobError });
                 columns.Add(new ColumnDescriptor() { FieldName = "Entity.Projection.SubJobTitle", ReadOnly = true, Header = "Subjob Title", Visible = false, Fixed = FixedStyle.Left, Width = 95, Settings = SettingsType.Default });
                 columns.Add(new ColumnDescriptor() { FieldName = "Entity.Projection.AreaCode", ReadOnly = true, Visible = false, Header = "Area", Fixed = FixedStyle.Left, Width = 60, Settings = SettingsType.Default });
@@ -1103,6 +1102,7 @@ namespace BluePrints.ViewModels
                 columns.Add(new ColumnDescriptor() { FieldName = "Entity.PeriodMovement", Header = "Period Move (G)", Fixed = FixedStyle.Left, Width = 75, Settings = SettingsType.Number, Mask = "c0", HeaderToolTip = "Difference from previous EAC" });
                 summaries.Add(new SummaryDescriptor() { FieldName = "Entity.PeriodMovement", DisplayFormat = "c0", Type = SummaryItemType.Sum });
                 columns.Add(new ColumnDescriptor() { FieldName = "Entity.PercentagePeriodMovement", Header = "Percentage Period Move (G / F)", Fixed = FixedStyle.Left, Width = 75, Settings = SettingsType.Number, Mask = "p0", HeaderToolTip = "Period Movement / Previous EAC" });
+                summaries.Add(new SummaryDescriptor() { FieldName = "Entity.PercentagePeriodMovement", DisplayFormat = "{0} Record(s)", Type = SummaryItemType.Count });
             }
             else
             {

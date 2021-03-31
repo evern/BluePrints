@@ -235,7 +235,8 @@
                 <ContentControl>
                     <dxg:GridSummaryItem FieldName="{Binding Path=(dxci:DependencyObjectExtensions.DataContext).FieldName, RelativeSource={RelativeSource Self}}"
                                          SummaryType="{Binding Path=(dxci:DependencyObjectExtensions.DataContext).Type, RelativeSource={RelativeSource Self}}"
-                                         DisplayFormat="{Binding Path=(dxci:DependencyObjectExtensions.DataContext).DisplayFormat, RelativeSource={RelativeSource Self}}"/>
+                                         DisplayFormat="{Binding Path=(dxci:DependencyObjectExtensions.DataContext).DisplayFormat, RelativeSource={RelativeSource Self}}"
+                                         Alignment="{Binding Path=(dxci:DependencyObjectExtensions.DataContext).Alignment, RelativeSource={RelativeSource Self}}" />
                 </ContentControl>
             </DataTemplate>
             <converter:DynamicDateColumnDisplayStringConverter x:Key="DynamicDateColumnDisplayStringConverter" />
@@ -409,7 +410,7 @@
                                                     <dxmvvm:EventToCommand Command="{Binding AutoGeneratingChildColumnsCommand}" EventName="AutoGeneratingColumn" PassEventArgsToCommand="True" />
                                                 </dxmvvm:Interaction.Behaviors>
                                                 <dxg:GridControl.View>
-                                                    <dxg:TableView x:Name="tableViewChild" TotalSummaryContentStyle="{StaticResource TotalSummaryStyle}" GroupColumnSummaryContentStyle="{StaticResource GroupSummaryStyle}" ColumnHeaderTemplate="{StaticResource ForecastHeaderTemplate}" RowStyle="{StaticResource TableRowStyle}" AllowEditing="True" AllowGrouping="True" NewItemRowPosition="None" ShowTotalSummary="True" Style="{StaticResource DefaultMinimalTableViewTemplate}" ScrollBarAnnotationMode="None">
+                                                    <dxg:TableView x:Name="tableViewChild" TotalSummaryContentStyle="{StaticResource TotalSummaryStyle}" GroupColumnSummaryContentStyle="{StaticResource GroupSummaryStyle}" ColumnHeaderTemplate="{StaticResource ForecastHeaderTemplate}" RowStyle="{StaticResource TableRowStyle}" AllowEditing="True" AllowGrouping="True" ShowGroupedColumns="False" NewItemRowPosition="None" ShowTotalSummary="True" Style="{StaticResource DefaultMinimalTableViewTemplate}" ScrollBarAnnotationMode="None">
                                                         <dxmvvm:Interaction.Behaviors>
                                                             <dxmvvm:EventToCommand Command="{Binding CellValueChangedUpdateCommand}" EventName="CellValueChanged" PassEventArgsToCommand="True" />
                                                         </dxmvvm:Interaction.Behaviors>
@@ -427,7 +428,7 @@
                                         </dxg:DataControlDetailDescriptor>
                                     </dxg:GridControl.DetailDescriptor>
                                     <dxg:GridControl.View>
-                                        <dxg:TableView x:Name="tableView" ShowFilterPanelMode="ShowAlways" RowStyle="{StaticResource TableRowStyle}" TotalSummaryContentStyle="{StaticResource TotalSummaryStyle}" GroupColumnSummaryContentStyle="{StaticResource GroupSummaryStyle}" ColumnHeaderTemplate="{StaticResource ForecastHeaderTemplate}" custom:GroupChildSelector.Mode="Hierarchical" GroupSummaryDisplayMode="AlignByColumns" NewItemRowPosition="None" PrintAllDetails="True" ShowEditFormOnDoubleClick="True" ShowTotalSummary="True" Style="{StaticResource DefaultMinimalTableViewTemplate}" ScrollBarAnnotationMode="None">
+                                        <dxg:TableView x:Name="tableView" ShowFilterPanelMode="ShowAlways" RowStyle="{StaticResource TableRowStyle}" TotalSummaryContentStyle="{StaticResource TotalSummaryStyle}" GroupColumnSummaryContentStyle="{StaticResource GroupSummaryStyle}" ColumnHeaderTemplate="{StaticResource ForecastHeaderTemplate}" ShowGroupedColumns="False" custom:GroupChildSelector.Mode="Hierarchical" GroupSummaryDisplayMode="AlignByColumns" NewItemRowPosition="None" PrintAllDetails="True" ShowEditFormOnDoubleClick="True" ShowTotalSummary="True" Style="{StaticResource DefaultMinimalTableViewTemplate}" ScrollBarAnnotationMode="None">
                                             <dxg:TableView.FormatConditions>
                                                 <dxg:FormatCondition FieldName="Entity.PeriodMovement" Value1="-1" ValueRule="Less">
                                                     <dxc:Format Background="#FFFF9B98"/>
@@ -458,6 +459,9 @@
                                             </dxg:TableView.RowCellMenuCustomizations>
                                         </dxg:TableView>
                                     </dxg:GridControl.View>
+                                    <dxg:GridControl.GroupSummary>
+                                        <dxg:GridSummaryItem Alignment="Right" SummaryType="Count" />
+                                    </dxg:GridControl.GroupSummary>
                                 </local:GridControlEx>
                             </dxdo:LayoutPanel>
                             <dxdo:LayoutPanel FontFamily="Calibri" FontSize="12" ItemHeight="30" ShowControlBox="False" ShowCloseButton="False" ShowCollapseButton="False" ShowPinButton="False">
@@ -527,7 +531,7 @@
                                         </dxg:GridControlBand>
                                     </dxg:GridControl.Bands>
                                     <dxg:GridControl.GroupSummary>
-                                        <dxg:GridSummaryItem DisplayFormat="Records: {0:n0}" FieldName="Subjob_Name" SummaryType="Count" />
+                                        <dxg:GridSummaryItem DisplayFormat="Record(s): {0:n0}" FieldName="InvoiceDate" SummaryType="Count" />
                                         <dxg:GridSummaryItem DisplayFormat="n0" FieldName="DisplayActualQty" ShowInColumn="DisplayActualQty" SummaryType="Sum" />
                                         <dxg:GridSummaryItem DisplayFormat="n0" FieldName="DisplayRemainingQty" ShowInColumn="DisplayRemainingQty" SummaryType="Sum" />
                                         <dxg:GridSummaryItem DisplayFormat="c0" FieldName="DisplayActualCost" ShowInColumn="DisplayActualCost" SummaryType="Sum" />
@@ -536,7 +540,7 @@
                                         <dxg:GridSummaryItem DisplayFormat="c0" FieldName="Costs" ShowInColumn="Costs" SummaryType="Sum" />
                                     </dxg:GridControl.GroupSummary>
                                     <dxg:GridControl.TotalSummary>
-                                        <dxg:GridSummaryItem DisplayFormat="Records: {0:n0}" FieldName="Subjob_Name" SummaryType="Count" />
+                                        <dxg:GridSummaryItem DisplayFormat="Record(s): {0:n0}" FieldName="InvoiceDate" SummaryType="Count" />
                                         <dxg:GridSummaryItem DisplayFormat="n0" FieldName="DisplayActualQty" ShowInColumn="DisplayActualQty" SummaryType="Sum" />
                                         <dxg:GridSummaryItem DisplayFormat="n0" FieldName="DisplayRemainingQty" ShowInColumn="DisplayRemainingQty" SummaryType="Sum" />
                                         <dxg:GridSummaryItem DisplayFormat="c0" FieldName="DisplayActualCost" ShowInColumn="DisplayActualCost" SummaryType="Sum" />
@@ -545,7 +549,7 @@
                                         <dxg:GridSummaryItem DisplayFormat="c0" FieldName="Costs" ShowInColumn="Costs" SummaryType="Sum" />
                                     </dxg:GridControl.TotalSummary>
                                     <dxg:GridControl.View>
-                                        <dxg:TableView x:Name="tableViewDetail" GroupSummaryDisplayMode="AlignByColumns" TotalSummaryContentStyle="{StaticResource TotalSummaryStyle}" GroupColumnSummaryContentStyle="{StaticResource GroupSummaryStyle}" ColumnHeaderTemplate="{StaticResource ForecastHeaderTemplate}" NewItemRowPosition="None" ShowTotalSummary="True" Style="{StaticResource DefaultMinimalTableViewTemplate}" >
+                                        <dxg:TableView x:Name="tableViewDetail" GroupSummaryDisplayMode="AlignByColumns" TotalSummaryContentStyle="{StaticResource TotalSummaryStyle}" GroupColumnSummaryContentStyle="{StaticResource GroupSummaryStyle}" ColumnHeaderTemplate="{StaticResource ForecastHeaderTemplate}" NewItemRowPosition="None" ShowGroupedColumns="False" ShowTotalSummary="True" Style="{StaticResource DefaultMinimalTableViewTemplate}" >
                                             <dxg:TableView.RowCellMenuCustomizations>
                                                 <dxb:BarButtonItemLink BarItemName="biCopyDetailWithHeader1" />
                                             </dxg:TableView.RowCellMenuCustomizations>
