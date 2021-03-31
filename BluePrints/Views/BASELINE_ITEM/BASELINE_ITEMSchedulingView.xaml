@@ -79,6 +79,7 @@
                 <dxb:BarButtonItem x:Name="biCheckAssignments" Content="Check and Delete Assignments" ToolTip="Check for invalid assignment and prompt to remove them" Command="{Binding Check_AssignmentsCommand}" LargeGlyph="{dx:DXImageOffice2013 Image=Delete_32x32.png}" Glyph="{dx:DXImage Image=Delete_16x16.png}" />
                 <dxb:BarButtonItem x:Name="biRemapP6Ids" Content="Remap P6 Ids" ToolTip="Map old assignments activity id to new assignments activity id" Command="{Binding Remap_P6_IdsCommand}" LargeGlyph="{dx:DXImage Image=DuplicateValues_32x32.png}" Glyph="{dxc:DXImage Image=DuplicateValues_16x16.png}" />
                 <dxb:BarButtonItem x:Name="biPushToP6" Content="Push to P6" ToolTip="Push assigned units to budgeted units in P6" Command="{Binding PushToP6Command}" LargeGlyph="{dx:DXImage Image=DoubleNext_32x32.png}" Glyph="{dx:DXImage Image=DoubleNext_16x16.png}" />
+                <dxb:BarButtonItem x:Name="biExportLocal" Content="Export Relationship" ToolTip="Export relationship assignment to excel" Command="{Binding ExportToExcelCommand}" LargeGlyph="{dx:DXImage Image=ExportToXLSX_32x32.png}" Glyph="{dx:DXImage Image=ExportToXLSX_16x16.png}" />
             </dxb:BarManager.Items>
             <DockPanel>
                 <dxr:RibbonControl Style="{StaticResource DefaultRibbonControlStyle}">
@@ -98,6 +99,7 @@
                                 <dxb:BarButtonItemLink BarItemName="biCheckAssignments" />
                                 <dxb:BarButtonItemLink BarItemName="biRemapP6Ids" />
                                 <dxb:BarButtonItemLink BarItemName="biPushToP6" />
+                                <dxb:BarButtonItemLink BarItemName="biExportLocal" />
                             </dxr:RibbonPageGroup>
                         </dxr:RibbonPage>
                     </dxr:RibbonDefaultPageCategory>
@@ -108,11 +110,9 @@
                     </Grid.RowDefinitions>
                     <custom:GridControlEx x:Name="GridControlExcelExport" Grid.Row="0" dxc:DXSerializer.Enabled="False" ItemsSource="{Binding ExcelExportData}" Visibility="Collapsed">
                         <dxg:GridControl.Columns>
-                            <dxg:GridColumn Header="Unique Id" FieldName="DeliverableKey" ReadOnly="True" />
-                            <dxg:GridColumn Header="Deliverable Id" FieldName="INTERNAL_NUM" ReadOnly="True" />
-                            <dxg:GridColumn Header="Deliverable Description" FieldName="Deliverable_Description" ReadOnly="True" />
+                            <dxg:GridColumn Header="Deliverable Name" FieldName="INTERNAL_NUM" ReadOnly="True" />
                             <dxg:GridColumn Header="P6 Id" FieldName="P6_ACTIVITY" ReadOnly="True" />
-                            <dxg:GridColumn Header="P6 Description" FieldName="P6_Description" ReadOnly="True" />
+                            <!--<dxg:GridColumn Header="P6 Description" FieldName="P6_Description" ReadOnly="True" />-->
                             <dxg:GridColumn Header="Current Assignment Units" FieldName="UNITS" ReadOnly="True" />
                             <dxg:GridColumn FieldName="FromPercentage" ReadOnly="True">
                                 <dxg:GridColumn.EditSettings>

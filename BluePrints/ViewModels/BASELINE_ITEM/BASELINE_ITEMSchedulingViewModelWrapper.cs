@@ -187,7 +187,7 @@ namespace BluePrints.ViewModels
                 FullRefreshWithoutClearingUndoRedo();
                 return;
             }
-
+            
             base.OnAfterAuxiliaryEntitiesChanged(key, changedType, messageType, sender, senderKey, isBulkRefresh);
         }
         
@@ -779,7 +779,6 @@ namespace BluePrints.ViewModels
         {
             return loadPROJECT.NUMBER + "_Baseline_Rev_" + loadBASELINE.REVISION;
         }
-
         #endregion
 
         #region For Variation Usage
