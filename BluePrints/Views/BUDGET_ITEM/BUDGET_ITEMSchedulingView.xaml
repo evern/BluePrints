@@ -60,6 +60,7 @@
                 <dxb:BarButtonItem x:Name="biCheckAssignments" Command="{Binding Check_AssignmentsCommand}" Content="Check and Delete Assignments" Glyph="{dx:DXImage Image=Delete_16x16.png}" LargeGlyph="{dx:DXImageOffice2013 Image=Delete_32x32.png}" ToolTip="Check for invalid assignment and prompt to remove them" />
                 <dxb:BarButtonItem x:Name="biRemapP6Ids" Command="{Binding Remap_P6_IdsCommand}" Content="Remap P6 Ids" Glyph="{dxc:DXImage Image=DuplicateValues_16x16.png}" LargeGlyph="{dx:DXImage Image=DuplicateValues_32x32.png}" ToolTip="Map old assignments activity id to new assignments activity id" />
                 <dxb:BarButtonItem x:Name="biAutoAssign" Command="{Binding AutoAssignActNameCommand}" Content="Auto Assign" Glyph="{dx:DXImage Image=DoubleNext_16x16.png}" LargeGlyph="{dx:DXImage Image=DoubleNext_32x32.png}" ToolTip="Auto assign budget item to p6 activities based on activity codes" />
+                <dxb:BarButtonItem x:Name="biExportLocal" Content="Export Relationship" ToolTip="Export relationship assignment to excel" Command="{Binding ExportToExcelCommand}" LargeGlyph="{dx:DXImage Image=ExportToXLSX_32x32.png}" Glyph="{dx:DXImage Image=ExportToXLSX_16x16.png}" />
             </dxb:BarManager.Items>
             <DockPanel>
                 <dxr:RibbonControl Style="{StaticResource DefaultRibbonControlStyle}">
@@ -79,10 +80,38 @@
                                 <dxb:BarButtonItemLink BarItemName="biCheckAssignments" />
                                 <dxb:BarButtonItemLink BarItemName="biRemapP6Ids" />
                                 <dxb:BarButtonItemLink BarItemName="biAutoAssign" />
+                                <dxb:BarButtonItemLink BarItemName="biExportLocal" />
                             </dxr:RibbonPageGroup>
                         </dxr:RibbonPage>
                     </dxr:RibbonDefaultPageCategory>
                 </dxr:RibbonControl>
+                <Grid>
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="0" />
+                    </Grid.RowDefinitions>
+                    <custom:GridControlEx x:Name="GridControlExcelExport" Grid.Row="0" dxc:DXSerializer.Enabled="False" ItemsSource="{Binding ExcelExportData}" Visibility="Collapsed">
+                        <dxg:GridControl.Columns>
+                            <dxg:GridColumn Header="Deliverable Name" FieldName="INTERNAL_NUM" ReadOnly="True" />
+                            <dxg:GridColumn Header="P6 Id" FieldName="P6_ACTIVITY" ReadOnly="True" />
+                            <!--<dxg:GridColumn Header="P6 Description" FieldName="P6_Description" ReadOnly="True" />-->
+                            <dxg:GridColumn Header="Current Assignment Units" FieldName="UNITS" ReadOnly="True" />
+                            <dxg:GridColumn FieldName="FromPercentage" ReadOnly="True">
+                                <dxg:GridColumn.EditSettings>
+                                    <dxe:SpinEditSettings Increment="1" Mask="p2" MaskType="Numeric" MaskUseAsDisplayFormat="True" MinValue="0" />
+                                </dxg:GridColumn.EditSettings>
+                            </dxg:GridColumn>
+                            <dxg:GridColumn FieldName="ToPercentage" ReadOnly="True">
+                                <dxg:GridColumn.EditSettings>
+                                    <dxe:SpinEditSettings Increment="1" Mask="p2" MaskType="Numeric" MaskUseAsDisplayFormat="True" MinValue="0" />
+                                </dxg:GridColumn.EditSettings>
+                            </dxg:GridColumn>
+                        </dxg:GridControl.Columns>
+                        <dxg:GridControl.View>
+                            <!--  need to set tableView name here for export to work  -->
+                            <dxg:TableView Name="tableView" AllowEditing="False" />
+                        </dxg:GridControl.View>
+                    </custom:GridControlEx>
+                </Grid>
                 <dxlc:LayoutControl Orientation="Vertical">
                     <dxlc:LayoutGroup Name="LayoutGroupGrid" Height="500" dxlc:LayoutControl.AllowVerticalSizing="True" Header="Edit Value" Orientation="Vertical" View="Group">
                         <dxlc:LayoutGroup HorizontalAlignment="Stretch" Orientation="Horizontal">
@@ -286,7 +315,7 @@
                                 <dxg:GridSummaryItem FieldName="Entity.Entity.COMMODITY_CODE" dxc:DXSerializer.Enabled="False" DisplayFormat="{}{0} Record(s)" SummaryType="Count" />
                             </dxg:GridControl.TotalSummary>
                             <dxg:GridControl.View>
-                                <dxg:TableView x:Name="tableView" AutoWidth="True" NewItemRowPosition="None" RowStyle="{StaticResource SelectedRowStyle}" Style="{StaticResource DefaultTableViewTemplate}">
+                                <dxg:TableView AutoWidth="True" NewItemRowPosition="None" RowStyle="{StaticResource SelectedRowStyle}" Style="{StaticResource DefaultTableViewTemplate}">
                                     <dxg:TableView.FormatConditions>
                                         <dxg:DataBarFormatCondition FieldName="Assigned_Percentage" MaxValue="1" MinValue="0">
                                             <dxc:DataBarFormat BorderBrush="#FF63C384" BorderBrushNegative="#FFFF555A">
