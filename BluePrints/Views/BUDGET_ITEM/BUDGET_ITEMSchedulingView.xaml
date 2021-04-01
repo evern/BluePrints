@@ -91,7 +91,7 @@
                     </Grid.RowDefinitions>
                     <custom:GridControlEx x:Name="GridControlExcelExport" Grid.Row="0" dxc:DXSerializer.Enabled="False" ItemsSource="{Binding ExcelExportData}" Visibility="Collapsed">
                         <dxg:GridControl.Columns>
-                            <dxg:GridColumn Header="Deliverable Name" FieldName="INTERNAL_NUM" ReadOnly="True" />
+                            <dxg:GridColumn Header="Job Name" FieldName="INTERNAL_NUM" ReadOnly="True" />
                             <dxg:GridColumn Header="P6 Id" FieldName="P6_ACTIVITY" ReadOnly="True" />
                             <!--<dxg:GridColumn Header="P6 Description" FieldName="P6_Description" ReadOnly="True" />-->
                             <dxg:GridColumn Header="Current Assignment Units" FieldName="UNITS" ReadOnly="True" />

@@ -23,8 +23,8 @@
     <UpdatePeriodically>false</UpdatePeriodically>
     <UpdateRequired>true</UpdateRequired>
     <MapFileExtensions>true</MapFileExtensions>
-    <MinimumRequiredVersion>1.0.6.310</MinimumRequiredVersion>
-    <ApplicationRevision>310</ApplicationRevision>
+    <MinimumRequiredVersion>1.0.6.312</MinimumRequiredVersion>
+    <ApplicationRevision>312</ApplicationRevision>
     <ApplicationVersion>1.0.6.%2a</ApplicationVersion>
     <UseApplicationTrust>false</UseApplicationTrust>
     <PublishWizardCompleted>true</PublishWizardCompleted>
