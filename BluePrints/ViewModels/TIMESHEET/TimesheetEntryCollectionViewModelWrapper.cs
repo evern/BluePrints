@@ -9,6 +9,7 @@ using BluePrints.BluePrintsEntitiesDataModel;
 using BluePrints.Common;
 using BluePrints.Common.Base;
 using BluePrints.Common.Filtering;
+using BluePrints.Common.Helpers;
 using BluePrints.Common.Misc;
 using BluePrints.Common.Projections;
 using BluePrints.Common.Reports;
@@ -168,9 +169,7 @@ namespace BluePrints.ViewModels
         #region Collection Call Backs
         protected override void OnAfterAssignedCallbackAndRaisePropertyChanged()
         {
-            doNotPrompt = true;
-            ReadFromExo();
-            doNotPrompt = false;
+            loadDataPointsTable();
             base.OnAfterAssignedCallbackAndRaisePropertyChanged();
         }
 
@@ -182,7 +181,6 @@ namespace BluePrints.ViewModels
             isReadingFromExo = true;
             IsTimesheetLoaded = false;
             base.FullRefresh();
-            refreshDataPointsTable();
         }
         #endregion
 
@@ -241,7 +239,7 @@ namespace BluePrints.ViewModels
         private void refreshDataPointsTable()
         {
             dataPointsTable = null;
-            mainThreadDispatcher.BeginInvoke(new Action(() => this.RaisePropertyChanged(x => x.DataPointsTable)));
+            mainThreadDispatcher.BeginInvoke(new Action(() => loadDataPointsTable()));
         }
 
         protected override void onAfterRefresh()
@@ -326,6 +324,55 @@ namespace BluePrints.ViewModels
             }
         }
 
+        private void loadDataPointsTable()
+        {
+            IsLoading = true;
+            this.RaisePropertyChanged(x => x.IsLoading);
+
+            dataPointsTable = null;
+
+            updateDataPointsTable();
+            this.RaisePropertyChanged(x => x.DataPointsTable);
+
+            doNotPrompt = true;
+            ReadFromExo();
+            doNotPrompt = false;
+
+            IsLoading = false;
+            this.RaisePropertyChanged(x => x.IsLoading);
+            TableViewService.ScrollToLast();
+            CommonMethods.AddSaveLayoutHandler(GridControlService.GetGridColumns());
+        }
+
+        private void updateDataPointsTable()
+        {
+            GridControlService.BeginDataUpdate();
+
+            dataPointsTable = new DataTable();
+            dataPointsTable.RowChanged += DataPointsTable_RowChanged;
+            TimeSpan interval = new TimeSpan(1, 0, 0, 0);
+            List<DateTime> alignedDataDateCollection = ChronologicalHelpers.GenerateAlignedDatesCollection(DateFrom, DateTo, interval);
+            InitializeColumnSource(ColumnDescriptors, SummaryDescriptors, alignedDataDateCollection);
+            dataPointsTable.Columns.Add(columnResourceSeqNo, typeof(int));
+            dataPointsTable.Columns.Add(columnJobNo, typeof(int));
+            dataPointsTable.Columns.Add(columnCostGroup, typeof(int));
+            dataPointsTable.Columns.Add(columnCostType, typeof(int));
+            dataPointsTable.Columns.Add(columnStockCode, typeof(string));
+            dataPointsTable.Columns.Add(columnVariationCode, typeof(string));
+            dataPointsTable.Columns.Add(columnNarrative, typeof(string));
+
+            foreach (DateTime alignedDataDate in alignedDataDateCollection)
+            {
+                string columnFieldName = alignedDataDate.Date.ToShortDateString();
+                dataPointsTable.Columns.Add(columnFieldName, typeof(decimal));
+            }
+
+            //unique code must be added to the end, because it is invisible, so it won't interfere with copy paste
+            dataPointsTable.Columns.Add(columnUniqueCode, typeof(string));
+
+            GridControlService.EndDataUpdate();
+        }
+
         DataTable dataPointsTable = null;
         //to prevent table new row from getting called when it's loading
         bool isReadingFromExo = true;
@@ -333,40 +380,7 @@ namespace BluePrints.ViewModels
         {
             get
             {
-                if (MainViewModel == null || Entities == null)
-                    return null;
-
-                if(dataPointsTable == null)
-                {
-                    dataPointsTable = new DataTable();
-                    dataPointsTable.RowChanged += DataPointsTable_RowChanged;
-                    TimeSpan interval = new TimeSpan(1, 0, 0, 0);
-                    List<DateTime> alignedDataDateCollection = ChronologicalHelpers.GenerateAlignedDatesCollection(DateFrom, DateTo, interval);
-                    InitializeColumnSource(ColumnDescriptors, SummaryDescriptors, alignedDataDateCollection);
-                    dataPointsTable.Columns.Add(columnResourceSeqNo, typeof(int));
-                    dataPointsTable.Columns.Add(columnJobNo, typeof(int));
-                    dataPointsTable.Columns.Add(columnCostGroup, typeof(int));
-                    dataPointsTable.Columns.Add(columnCostType, typeof(int));
-                    dataPointsTable.Columns.Add(columnStockCode, typeof(string));
-                    dataPointsTable.Columns.Add(columnVariationCode, typeof(string));
-                    dataPointsTable.Columns.Add(columnNarrative, typeof(string));
-
-                    foreach (DateTime alignedDataDate in alignedDataDateCollection)
-                    {
-                        string columnFieldName = alignedDataDate.Date.ToShortDateString();
-                        dataPointsTable.Columns.Add(columnFieldName, typeof(decimal));
-                    }
-
-                    //unique code must be added to the end, because it is invisible, so it won't interfere with copy paste
-                    dataPointsTable.Columns.Add(columnUniqueCode, typeof(string));
-                    TableViewService.ScrollToLast();
-                }
-
                 return dataPointsTable;
-            }
-            set
-            {
-                dataPointsTable = value;
             }
         }
 

@@ -8,6 +8,7 @@ using BaseModel.ViewModel.Services;
 using BluePrints.BluePrintsEntitiesDataModel;
 using BluePrints.Common;
 using BluePrints.Common.Base;
+using BluePrints.Common.Helpers;
 using BluePrints.Common.Projections;
 using BluePrints.Common.Resources;
 using BluePrints.Common.ViewModel;
@@ -162,6 +163,12 @@ namespace BluePrints.ViewModels
             }
 
             return null;
+        }
+
+        protected override void OnAfterAssignedCallbackAndRaisePropertyChanged()
+        {
+            loadDataPointsTable();
+            base.OnAfterAssignedCallbackAndRaisePropertyChanged();
         }
         #endregion
 
@@ -1878,41 +1885,49 @@ namespace BluePrints.ViewModels
             }
         }
 
+        private void loadDataPointsTable()
+        {
+            IsLoading = true;
+            this.RaisePropertyChanged(x => x.IsLoading);
+
+            dataPointsTable = null;
+
+            updateDataPointsTable();
+            this.RaisePropertyChanged(x => x.DataPointsTable);
+
+            IsLoading = false;
+            this.RaisePropertyChanged(x => x.IsLoading);
+            CommonMethods.AddSaveLayoutHandler(GridControlService.GetGridColumns());
+        }
+
+        private void updateDataPointsTable()
+        {
+            GridControlService.BeginDataUpdate();
+            dataPointsTable = new DataTable();
+            dataPointsTable.RowChanged += DataPointsTable_RowChanged;
+
+            if (ParentColumns.Count() == 0)
+                InitializeParentColumnSource(ParentColumns, ParentSummaries, alignedDateCollection);
+
+            if (ChildColumns.Count() == 0)
+                InitializeChildColumnSource(ChildColumns, ChildSummaries, alignedDateCollection);
+
+            dataPointsTable.Columns.Add(columnProject, typeof(PROJECTTenderProfile));
+            dataPointsTable.Columns.Add(columnTenderProfileDataTable, typeof(DataTable));
+            populateAlignedDataDate(dataPointsTable, alignedDateCollection);
+
+            foreach (PROJECTTenderProfile entity in Entities)
+            {
+                BuildRowStats(entity, false);
+            }
+
+            GridControlService.EndDataUpdate();
+        }
+
         public DataTable DataPointsTable
         {
             get
             {
-                if (MainViewModel == null || Entities == null)
-                    return null;
-
-                if (dataPointsTable == null)
-                {
-                    IsLoading = true;
-                    this.RaisePropertyChanged(x => x.IsLoading);
-                    GridControlService.BeginDataUpdate();
-                    dataPointsTable = new DataTable();
-                    dataPointsTable.RowChanged += DataPointsTable_RowChanged;
-
-                    if (ParentColumns.Count() == 0)
-                        InitializeParentColumnSource(ParentColumns, ParentSummaries, alignedDateCollection);
-
-                    if (ChildColumns.Count() == 0)
-                        InitializeChildColumnSource(ChildColumns, ChildSummaries, alignedDateCollection);
-
-                    dataPointsTable.Columns.Add(columnProject, typeof(PROJECTTenderProfile));
-                    dataPointsTable.Columns.Add(columnTenderProfileDataTable, typeof(DataTable));
-                    populateAlignedDataDate(dataPointsTable, alignedDateCollection);
-
-                    foreach (PROJECTTenderProfile entity in Entities)
-                    {
-                        BuildRowStats(entity, false);
-                    }
-
-                    GridControlService.EndDataUpdate();
-                    IsLoading = false;
-                    this.RaisePropertyChanged(x => x.IsLoading);
-                }
-
                 return dataPointsTable;
             }
         }

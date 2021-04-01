@@ -4,6 +4,7 @@ using BaseModel.View;
 using BaseModel.ViewModel.Loader;
 using BluePrints.BluePrintsEntitiesDataModel;
 using BluePrints.Common.Base;
+using BluePrints.Common.Helpers;
 using BluePrints.Common.Projections;
 using BluePrints.Common.Resources;
 using BluePrints.Common.ViewModel.Misc;
@@ -81,6 +82,7 @@ namespace BluePrints.ViewModels
             updateDataPointsTable();
             this.RaisePropertyChanged(x => x.DataPointsTable);
             this.RaisePropertyChanged(x => x.IsLoadingForecast);
+            CommonMethods.AddSaveLayoutHandler(GridControlService.GetGridColumns());
         }
 
         DataTable dataPointsTable = null;

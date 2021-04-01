@@ -44,6 +44,7 @@ using System.Windows.Media;
 using DevExpress.Xpf.Core.Serialization;
 using System.Windows.Input;
 using BluePrints.Common.ViewModel.Utils;
+using BluePrints.Common.Helpers;
 
 namespace BluePrints.ViewModels
 {
@@ -320,6 +321,7 @@ namespace BluePrints.ViewModels
 
             IsLoading = false;
             this.RaisePropertyChanged(x => x.IsLoading);
+            CommonMethods.AddSaveLayoutHandler(GridControlService.GetGridColumns());
         }
 
         public bool FullScreenView = true;
@@ -1110,7 +1112,8 @@ namespace BluePrints.ViewModels
                 columns.Add(new ColumnDescriptor() { FieldName = "Entity.DropDownIndirectBudget", ReadOnly = true, Header = "Budget (A)", Increment = 1, Fixed = FixedStyle.Left, Width = 50, Settings = SettingsType.Budget, HeaderToolTip = "Indirect budget from Exo" });
             }
 
-            foreach (DateTime alignedDate in alignedDates.OrderBy(x => x))
+            int dateColumnVisibleIndex = 1;
+            foreach (DateTime alignedDate in alignedDates.OrderByDescending(x => x))
             {
                 string columnFieldName = alignedDate.Date.ToString(BluePrintsResources.ColumnDateFormat);
 
@@ -1118,18 +1121,20 @@ namespace BluePrints.ViewModels
                 {
                     //do not show actuals
                     if(isShowActualsHistory)
-                        columns.Add(new ColumnDescriptor() { FieldName = columnFieldName, ReadOnly = true, Header = columnFieldName, Fixed = FixedStyle.None, Width = 60, Settings = SettingsType.ForecastPast });
+                        columns.Add(new ColumnDescriptor() { FieldName = columnFieldName, VisibleIndex = dateColumnVisibleIndex, ReadOnly = true, Header = columnFieldName, Fixed = FixedStyle.None, Width = 60, Settings = SettingsType.ForecastPast });
                 }
                 else
                 {
                     if (isChild)
-                        columns.Add(new ColumnDescriptor() { FieldName = columnFieldName, ReadOnly = false, Header = columnFieldName, Fixed = FixedStyle.None, Width = 60, Settings = SettingsType.ForecastChild });
+                        columns.Add(new ColumnDescriptor() { FieldName = columnFieldName, VisibleIndex = dateColumnVisibleIndex, ReadOnly = false, Header = columnFieldName, Fixed = FixedStyle.None, Width = 60, Settings = SettingsType.ForecastChild });
                     else
-                        columns.Add(new ColumnDescriptor() { FieldName = columnFieldName, ReadOnly = false, Header = columnFieldName, Fixed = FixedStyle.None, Width = 60, Settings = SettingsType.ForecastFuture });
+                        columns.Add(new ColumnDescriptor() { FieldName = columnFieldName, VisibleIndex = dateColumnVisibleIndex, ReadOnly = false, Header = columnFieldName, Fixed = FixedStyle.None, Width = 60, Settings = SettingsType.ForecastFuture });
                 }
 
                 if(!isChild)
                     summaries.Add(new SummaryDescriptor() { FieldName = columnFieldName, DisplayFormat = "c0", Type = SummaryItemType.Sum });
+
+                dateColumnVisibleIndex += 1;
             }
         }
 
@@ -1469,120 +1474,6 @@ namespace BluePrints.ViewModels
             this.RaisePropertyChanged(x => x.FilterCriteria);
             this.RaisePropertyChanged(x => x.IsPOColumnsVisible);
             this.RaisePropertyChanged(x => x.ActualsDetail);
-        }
-
-        public void HideColumns(AutoGeneratingColumnEventArgs e)
-        {
-            if (hiddenColumnFieldNames.Any(x => x == e.Column.FieldName))
-            {
-                e.Cancel = true;
-            }
-            else
-            {
-                DateTime parsedate;
-                if (DateTime.TryParse(e.Column.FieldName, out parsedate))
-                {
-                    e.Column.HeaderTemplate = Application.Current.Resources["ForecastHeaderTemplate"] as DataTemplate;
-                    e.Column.Width = 60;
-                    e.Column.AllowBestFit = DevExpress.Utils.DefaultBoolean.False;
-                }
-                else
-                {
-                    e.Column.ReadOnly = true;
-                    e.Column.Fixed = FixedStyle.Left;
-                }
-            }
-        }
-
-        public void AutoGeneratingColumns(AutoGeneratingColumnEventArgs e)
-        {
-            GridControl gridControl = (GridControl)e.Source;
-            DateTime parsedate;
-            if (DateTime.TryParse(e.Column.FieldName, out parsedate))
-            {
-                if(parsedate <= FixedDataDateMonthEnd)
-                {
-                    e.Column.HeaderTemplate = Application.Current.Resources["ForecastHeaderTemplate"] as DataTemplate;
-                    e.Column.CellTemplate = Application.Current.Resources["forecastTemplatePast"] as DataTemplate;
-                    e.Column.AllowEditing = DevExpress.Utils.DefaultBoolean.False;
-                    e.Column.ReadOnly = true;
-                }
-                else
-                {
-                    e.Column.HeaderTemplate = Application.Current.Resources["ForecastHeaderTemplate"] as DataTemplate;
-                    e.Column.CellTemplate = Application.Current.Resources["forecastTemplateFuture"] as DataTemplate;
-                    e.Column.ReadOnly = false;
-                }
-
-                GridControlService.AddSummary(e.Column.FieldName, SummaryItemType.Sum, "c0");
-                e.Column.FilterPopupMode = FilterPopupMode.Excel;
-                e.Column.Width = 60;
-                e.Column.AllowBestFit = DevExpress.Utils.DefaultBoolean.False;
-                e.Column.AddHandler(DXSerializer.AllowPropertyEvent, new AllowPropertyEventHandler(column_AllowProperty));
-            }
-            else
-            {
-                if (e.Column.FieldType == typeof(decimal))
-                    GridControlService.AddSummary(e.Column.FieldName, SummaryItemType.Sum, e.Column.FieldName + ": {0:c0}");
-
-                e.Column.ReadOnly = true;
-                e.Column.Fixed = FixedStyle.Left;
-                e.Column.AddHandler(DXSerializer.AllowPropertyEvent, new AllowPropertyEventHandler(column_AllowProperty));
-            }
-        }
-
-        /// <summary>
-        /// prevent layout saving of autogenerated columns
-        /// </summary>
-        void column_AllowProperty(object sender, AllowPropertyEventArgs e)
-        {
-            e.Allow = false;
-        }
-
-        //there's a problem here where detaildescriptor autogeneratingcolumn only called once when expanded, so when user clicks refresh the old dates still stays
-        public void AutoGeneratingChildColumns(AutoGeneratingColumnEventArgs e)
-        {
-            if (!hiddenColumnFieldNames.Any(x => x == e.Column.FieldName))
-            {
-                GridControl gridControl = (GridControl)e.Source;
-                DateTime parsedate;
-                if (DateTime.TryParse(e.Column.FieldName, out parsedate))
-                {
-                    //even this doesn't fix the problem because it is only called once
-                    if(!alignedDataDateCollection.Any(x => x.Date.Date == parsedate))
-                    {
-                        e.Cancel = true;
-                    }
-                    else
-                    {
-                        if (parsedate <= FixedDataDateMonthEnd)
-                        {
-                            e.Column.CellTemplate = Application.Current.Resources["forecastTemplatePast"] as DataTemplate;
-                            e.Column.AllowEditing = DevExpress.Utils.DefaultBoolean.False;
-                            e.Column.ReadOnly = true;
-                        }
-                        else
-                            e.Column.CellTemplate = Application.Current.Resources["forecastTemplateChild"] as DataTemplate;
-
-                        e.Column.Width = 75;
-                        e.Column.AddHandler(DXSerializer.AllowPropertyEvent, new AllowPropertyEventHandler(column_AllowProperty));
-                        //GridControlService.AddSummary(e.Column.FieldName, SummaryItemType.Sum, "n0");
-                        e.Column.FilterPopupMode = FilterPopupMode.Excel;
-                    }
-                }
-                else
-                {
-                    if (e.Column.FieldType == typeof(decimal))
-                        GridControlService.AddSummary(e.Column.FieldName, SummaryItemType.Sum, e.Column.FieldName + ": {0:c0}");
-
-                    e.Column.ReadOnly = true;
-                    e.Column.Fixed = FixedStyle.Left;
-                }
-            }
-            else
-            {
-                e.Cancel = true;
-            }
         }
 
         private bool gridSummaryItemExists(GridSummaryItemCollection gridSummaryItems, string fieldName)

@@ -131,6 +131,7 @@
                         Fixed="{Binding Path=(dxci:DependencyObjectExtensions.DataContext).Fixed, RelativeSource={RelativeSource Self}}"
                         ReadOnly="{Binding Path=(dxci:DependencyObjectExtensions.DataContext).ReadOnly, RelativeSource={RelativeSource Self}}"
                         Visible="{Binding Path=(dxci:DependencyObjectExtensions.DataContext).Visible, RelativeSource={RelativeSource Self}, Mode=TwoWay}"
+                        VisibleIndex="{Binding Path=(dxci:DependencyObjectExtensions.DataContext).VisibleIndex, RelativeSource={RelativeSource Self}}"
                         HeaderToolTip="{Binding Path=(dxci:DependencyObjectExtensions.DataContext).HeaderToolTip, RelativeSource={RelativeSource Self}}" >
                         <dxg:GridColumn.CellTemplate>
                             <DataTemplate>
@@ -166,6 +167,7 @@
                         Width="{Binding Path=(dxci:DependencyObjectExtensions.DataContext).Width, RelativeSource={RelativeSource Self}}"
                         Fixed="{Binding Path=(dxci:DependencyObjectExtensions.DataContext).Fixed, RelativeSource={RelativeSource Self}}"
                         Visible="{Binding Path=(dxci:DependencyObjectExtensions.DataContext).Visible, RelativeSource={RelativeSource Self}, Mode=TwoWay}"
+                        VisibleIndex="{Binding Path=(dxci:DependencyObjectExtensions.DataContext).VisibleIndex, RelativeSource={RelativeSource Self}}"
                         ReadOnly="{Binding Path=(dxci:DependencyObjectExtensions.DataContext).ReadOnly, RelativeSource={RelativeSource Self}}"
                         HeaderToolTip="{Binding Path=(dxci:DependencyObjectExtensions.DataContext).HeaderToolTip, RelativeSource={RelativeSource Self}}" >
                         <dxg:GridColumn.CellTemplate>
@@ -202,6 +204,7 @@
                         Width="{Binding Path=(dxci:DependencyObjectExtensions.DataContext).Width, RelativeSource={RelativeSource Self}}"
                         Fixed="{Binding Path=(dxci:DependencyObjectExtensions.DataContext).Fixed, RelativeSource={RelativeSource Self}}"
                         Visible="{Binding Path=(dxci:DependencyObjectExtensions.DataContext).Visible, RelativeSource={RelativeSource Self}, Mode=TwoWay}"
+                        VisibleIndex="{Binding Path=(dxci:DependencyObjectExtensions.DataContext).VisibleIndex, RelativeSource={RelativeSource Self}}"
                         ReadOnly="{Binding Path=(dxci:DependencyObjectExtensions.DataContext).ReadOnly, RelativeSource={RelativeSource Self}}"
                         HeaderToolTip="{Binding Path=(dxci:DependencyObjectExtensions.DataContext).HeaderToolTip, RelativeSource={RelativeSource Self}}" >
                         <dxg:GridColumn.CellTemplate>
@@ -391,7 +394,6 @@
                                         ColumnGeneratorTemplateSelector="{StaticResource ColumnTemplateSelector}" ColumnsSource="{Binding ParentViewColumns}" dxc:DXSerializer.SerializationID="GridControlForecast" dxc:DXSerializer.StoreLayoutMode="All" AutoExpandAllGroups="False" ShowAllTableValuesInCheckedFilterPopup="False" AutoGenerateColumns="None" ClipboardCopyMode="ExcludeHeader" ItemsSource="{Binding DataPointsTable}" SelectedItems="{Binding SelectedDataRows, Mode=TwoWay}" SelectionMode="{Binding SelectMode}" ShowLoadingPanel="{Binding IsLoading}">
                                     <dxmvvm:Interaction.Behaviors>
                                         <dxmvvm:EventToCommand Command="{Binding PastingFromClipboardCommand}" EventName="PastingFromClipboard" PassEventArgsToCommand="True" />
-                                        <dxmvvm:EventToCommand Command="{Binding AutoGeneratingColumnsCommand}" EventName="AutoGeneratingColumn" PassEventArgsToCommand="True" />
                                         <dxmvvm:KeyToCommand Command="{Binding ResetCellContentCommand}" KeyGesture="Delete" />
                                     </dxmvvm:Interaction.Behaviors>
                                     <dxg:GridControl.DetailDescriptor>
@@ -407,7 +409,6 @@
                                                 </i:Interaction.Behaviors>
                                                 <dxmvvm:Interaction.Behaviors>
                                                     <dxmvvm:EventToCommand Command="{Binding PastingFromClipboardCommand}" EventName="PastingFromClipboard" PassEventArgsToCommand="True" />
-                                                    <dxmvvm:EventToCommand Command="{Binding AutoGeneratingChildColumnsCommand}" EventName="AutoGeneratingColumn" PassEventArgsToCommand="True" />
                                                 </dxmvvm:Interaction.Behaviors>
                                                 <dxg:GridControl.View>
                                                     <dxg:TableView x:Name="tableViewChild" TotalSummaryContentStyle="{StaticResource TotalSummaryStyle}" GroupColumnSummaryContentStyle="{StaticResource GroupSummaryStyle}" ColumnHeaderTemplate="{StaticResource ForecastHeaderTemplate}" RowStyle="{StaticResource TableRowStyle}" AllowEditing="True" AllowGrouping="True" ShowGroupedColumns="False" NewItemRowPosition="None" ShowTotalSummary="True" Style="{StaticResource DefaultMinimalTableViewTemplate}" ScrollBarAnnotationMode="None">

@@ -236,11 +236,14 @@ namespace BluePrints.Common.Base
             base.AssignCallBacksAndRaisePropertyChange(entities);
         }
 
+        protected bool skipExoDataLoading = false;
         protected override void OnAfterAssignedCallbackAndRaisePropertyChanged()
         {
             //IsLoading = false;
             //this.RaisePropertyChanged(x => x.IsLoading);
-            Task.Run(() => loadExoData());
+            if(!skipExoDataLoading)
+                Task.Run(() => loadExoData());
+
             base.OnAfterAssignedCallbackAndRaisePropertyChanged();
         }
 

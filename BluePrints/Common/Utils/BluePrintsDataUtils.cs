@@ -514,7 +514,7 @@ namespace BluePrints.Common.ViewModel.Utils
             newDesignPROGRESS.GUID_PROJECT = entity.GUID;
             newDesignPROGRESS.NAME = entity.NUMBER + "WEEKLY_001";
             newDesignPROGRESS.PROGRESS_START = tenderStartDate == null ? DateTime.Now : (DateTime)tenderStartDate;
-            newDesignPROGRESS.DATA_DATE = CommonMethods.StartOfWeek(newDesignPROGRESS.PROGRESS_START, DayOfWeek.Sunday).AddDays(1).AddSeconds(-1);
+            newDesignPROGRESS.DATA_DATE = CommonMethods.GetStartOfWeek(newDesignPROGRESS.PROGRESS_START, DayOfWeek.Sunday).AddDays(1).AddSeconds(-1);
             newDesignPROGRESS.INTERVAL_COUNT = 1;
             newDesignPROGRESS.INTERVAL_TYPE = ProgressIntervalType.Weekly;
             newDesignPROGRESS.STATUS = ProgressStatus.Live;
@@ -526,7 +526,7 @@ namespace BluePrints.Common.ViewModel.Utils
             newConstructionPROGRESS.GUID_PROJECT = entity.GUID;
             newConstructionPROGRESS.NAME = entity.NUMBER + "DAILY_001";
             newConstructionPROGRESS.PROGRESS_START = tenderStartDate == null ? DateTime.Now : (DateTime)tenderStartDate;
-            newConstructionPROGRESS.DATA_DATE = CommonMethods.StartOfWeek(newConstructionPROGRESS.PROGRESS_START, DayOfWeek.Sunday).AddDays(1).AddSeconds(-1);
+            newConstructionPROGRESS.DATA_DATE = CommonMethods.GetStartOfWeek(newConstructionPROGRESS.PROGRESS_START, DayOfWeek.Sunday).AddDays(1).AddSeconds(-1);
             newConstructionPROGRESS.INTERVAL_COUNT = 1;
             newConstructionPROGRESS.INTERVAL_TYPE = ProgressIntervalType.Daily;
             newConstructionPROGRESS.STATUS = ProgressStatus.Live;
@@ -601,7 +601,7 @@ namespace BluePrints.Common.ViewModel.Utils
             SUBJOB newSUBJOB = new SUBJOB();
             newSUBJOB.GUID_PROJECT = entity.GUID;
             newSUBJOB.INTERNAL_NAME1 = entity.NUMBER;
-            newSUBJOB.STARTDATE = tenderStartDate == null ? CommonMethods.StartOfWeek(DateTime.Now, DayOfWeek.Sunday) : tenderStartDate;
+            newSUBJOB.STARTDATE = tenderStartDate == null ? CommonMethods.GetStartOfWeek(DateTime.Now, DayOfWeek.Sunday) : tenderStartDate;
             newSUBJOB.ENDDATE = tenderEndDate == null ? ((DateTime)newSUBJOB.STARTDATE).AddDays(7).AddSeconds(-1) : tenderEndDate;
             newSUBJOB.REVIEWSTARTDATE = (DateTime)newSUBJOB.STARTDATE; //effectively nullifies review date
             newSUBJOB.REVIEWENDDATE = (DateTime)newSUBJOB.STARTDATE; //effectively nullifies review date
@@ -621,7 +621,7 @@ namespace BluePrints.Common.ViewModel.Utils
                 SUBJOB defaultDesignSUBJOB = new SUBJOB();
                 defaultDesignSUBJOB.GUID_PROJECT = entity.GUID;
                 defaultDesignSUBJOB.INTERNAL_NAME1 = entity.NUMBER + "-000-00-D1";
-                defaultDesignSUBJOB.STARTDATE = tenderStartDate == null ? CommonMethods.StartOfWeek(DateTime.Now, DayOfWeek.Sunday) : tenderStartDate;
+                defaultDesignSUBJOB.STARTDATE = tenderStartDate == null ? CommonMethods.GetStartOfWeek(DateTime.Now, DayOfWeek.Sunday) : tenderStartDate;
                 defaultDesignSUBJOB.ENDDATE = tenderEndDate == null ? ((DateTime)newSUBJOB.STARTDATE).AddDays(7).AddSeconds(-1) : tenderEndDate;
                 defaultDesignSUBJOB.REVIEWSTARTDATE = (DateTime)newSUBJOB.STARTDATE; //effectively nullifies review date
                 defaultDesignSUBJOB.REVIEWENDDATE = (DateTime)newSUBJOB.STARTDATE; //effectively nullifies review date
@@ -721,7 +721,7 @@ namespace BluePrints.Common.ViewModel.Utils
                 SUBJOB indirectDesignSUBJOB = new SUBJOB();
                 indirectDesignSUBJOB.GUID_PROJECT = entity.GUID;
                 indirectDesignSUBJOB.INTERNAL_NAME1 = entity.NUMBER + "-000-00-I1";
-                indirectDesignSUBJOB.STARTDATE = tenderStartDate == null ? CommonMethods.StartOfWeek(DateTime.Now, DayOfWeek.Sunday) : tenderStartDate;
+                indirectDesignSUBJOB.STARTDATE = tenderStartDate == null ? CommonMethods.GetStartOfWeek(DateTime.Now, DayOfWeek.Sunday) : tenderStartDate;
                 indirectDesignSUBJOB.ENDDATE = tenderEndDate == null ? ((DateTime)newSUBJOB.STARTDATE).AddDays(7).AddSeconds(-1) : tenderEndDate;
                 indirectDesignSUBJOB.REVIEWSTARTDATE = (DateTime)newSUBJOB.STARTDATE; //effectively nullifies review date
                 indirectDesignSUBJOB.REVIEWENDDATE = (DateTime)newSUBJOB.STARTDATE; //effectively nullifies review date

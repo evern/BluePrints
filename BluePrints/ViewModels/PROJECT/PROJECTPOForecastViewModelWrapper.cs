@@ -8,6 +8,7 @@ using BaseModel.ViewModel.UndoRedo;
 using BluePrints.BluePrintsEntitiesDataModel;
 using BluePrints.Common;
 using BluePrints.Common.Base;
+using BluePrints.Common.Helpers;
 using BluePrints.Common.Projections;
 using BluePrints.Common.Resources;
 using BluePrints.Common.ViewModel.Misc;
@@ -131,7 +132,7 @@ namespace BluePrints.ViewModels
 
             generateAlignedDataDates();
             isExoDataLoaded = true;
-            mainThreadDispatcher.BeginInvoke(new Action(() => this.RaisePropertyChanged(x => x.DataPointsTable)));
+            mainThreadDispatcher.BeginInvoke(new Action(() => loadDataPointsTable()));
         }
 
         private void CloseEditorDispatcher_Tick(object sender, EventArgs e)
@@ -443,70 +444,85 @@ namespace BluePrints.ViewModels
                 return summaryDescriptors;
             }
         }
+
+        private void loadDataPointsTable()
+        {
+            IsLoading = true;
+            this.RaisePropertyChanged(x => x.IsLoading);
+
+            dataPointsTable = null;
+
+            updateDataPointsTable();
+            this.RaisePropertyChanged(x => x.DataPointsTable);
+
+            IsLoading = false;
+            this.RaisePropertyChanged(x => x.IsLoading);
+            this.RaisePropertyChanged(x => x.PODetails);
+            CommonMethods.AddSaveLayoutHandler(GridControlService.GetGridColumns());
+        }
+
+        private void updateDataPointsTable()
+        {
+            GridControlService.BeginDataUpdate();
+
+            //generate aligned dates
+            if (alignedDataDateCollection == null || alignedDataDateCollection.Count == 0)
+                return;
+
+            //initialize view source
+            InitializeColumnSource(ColumnDescriptors, SummaryDescriptors, alignedDataDateCollection);
+
+            //initialize datatable schema
+            dataPointsTable = new DataTable();
+            dataPointsTable.Columns.Add(columnEntity, typeof(POForecastProjection));
+
+            foreach (DateTime alignedDataDate in alignedDataDateCollection)
+            {
+                string columnFieldName = alignedDataDate.Date.ToString(BluePrintsResources.ColumnDateFormat);
+                dataPointsTable.Columns.Add(columnFieldName, typeof(decimal));
+            }
+
+            //construction projection from grouped po lines
+            List<POLine> poLines = getPOLines();
+            List<POForecastProjection> projections = new List<POForecastProjection>();
+            foreach (var poLine in poLines.OrderBy(x => x.PONumber))
+            {
+                POForecastProjection newForecast = ViewModelSource.Create(() => new POForecastProjection());
+                newForecast.PONO = poLine.PONumber;
+                //since it's a group it'll always contain at least a single element
+                ExoDataPoint dataPoint = poLine.DataPoints.First();
+                newForecast.Description = dataPoint.Description;
+                newForecast.Supplier = dataPoint.Supplier;
+                newForecast.ExoPOs = poLine.DataPoints;
+                newForecast.VariationCode = poLine.VariationCode;
+
+                //populate comment
+                FORECAST_PO_SETTING forecastPOSetting = FORECAST_PO_SETTINGCollection.FirstOrDefault(x => x.PONO == poLine.PONumber && x.VARIATION_CODE == poLine.VariationCode);
+                if (forecastPOSetting != null)
+                    newForecast.Comments = forecastPOSetting.PO_COMMENTS;
+
+                projections.Add(newForecast);
+            }
+
+            //gets the forecasted data into dates bucket in the row and adds to datatable
+            foreach (POForecastProjection projection in projections)
+            {
+                DataRow newRow = DataPointsTable.NewRow();
+                newRow[columnEntity] = projection;
+                updateRowPOForecast(alignedDataDateCollection, Entities, allExoActuals, ActualsCutOffDate, projection.PONO, projection.VariationCode, newRow);
+                dataPointsTable.Rows.Add(newRow);
+            }
+
+            //TableViewService.ScrollToLast();
+
+            GridControlService.EndDataUpdate();
+        }
+
         DataTable dataPointsTable = null;
         public virtual DataTable DataPointsTable
         {
             get
             {
-                if (MainViewModel == null || allExoPos == null || !isExoDataLoaded)
-                    return null;
-
-                if (dataPointsTable == null)
-                {
-                    //generate aligned dates
-                    if (alignedDataDateCollection == null || alignedDataDateCollection.Count == 0)
-                        return null;
-
-                    //initialize view source
-                    InitializeColumnSource(ColumnDescriptors, SummaryDescriptors, alignedDataDateCollection);
-
-                    //initialize datatable schema
-                    dataPointsTable = new DataTable();
-                    dataPointsTable.Columns.Add(columnEntity, typeof(POForecastProjection));
-
-                    foreach (DateTime alignedDataDate in alignedDataDateCollection)
-                    {
-                        string columnFieldName = alignedDataDate.Date.ToString(BluePrintsResources.ColumnDateFormat);
-                        dataPointsTable.Columns.Add(columnFieldName, typeof(decimal));
-                    }
-
-                    //construction projection from grouped po lines
-                    List<POLine> poLines = getPOLines();
-                    List<POForecastProjection> projections = new List<POForecastProjection>();
-                    foreach (var poLine in poLines.OrderBy(x => x.PONumber))
-                    {
-                        POForecastProjection newForecast = ViewModelSource.Create(() => new POForecastProjection());
-                        newForecast.PONO = poLine.PONumber;
-                        //since it's a group it'll always contain at least a single element
-                        ExoDataPoint dataPoint = poLine.DataPoints.First();
-                        newForecast.Description = dataPoint.Description;
-                        newForecast.Supplier = dataPoint.Supplier;
-                        newForecast.ExoPOs = poLine.DataPoints;
-                        newForecast.VariationCode = poLine.VariationCode;
-
-                        //populate comment
-                        FORECAST_PO_SETTING forecastPOSetting = FORECAST_PO_SETTINGCollection.FirstOrDefault(x => x.PONO == poLine.PONumber && x.VARIATION_CODE == poLine.VariationCode);
-                        if (forecastPOSetting != null)
-                            newForecast.Comments = forecastPOSetting.PO_COMMENTS;
-
-                        projections.Add(newForecast);
-                    }
-
-                    //gets the forecasted data into dates bucket in the row and adds to datatable
-                    foreach (POForecastProjection projection in projections)
-                    {
-                        DataRow newRow = DataPointsTable.NewRow();
-                        newRow[columnEntity] = projection;
-                        updateRowPOForecast(alignedDataDateCollection, Entities, allExoActuals, ActualsCutOffDate, projection.PONO, projection.VariationCode, newRow);
-                        dataPointsTable.Rows.Add(newRow);
-                    }
-
-                    //TableViewService.ScrollToLast();
-                    IsLoading = false;
-                    this.RaisePropertyChanged(x => x.PODetails);
-                    this.RaisePropertyChanged(x => x.IsLoading);
-                }
-
                 return dataPointsTable;
             }
         }
@@ -978,6 +994,7 @@ namespace BluePrints.ViewModels
         {
             generateAlignedDataDates();
             dataPointsTable = null;
+            updateDataPointsTable();
             this.RaisePropertyChanged(x => x.DataPointsTable);
         }
 

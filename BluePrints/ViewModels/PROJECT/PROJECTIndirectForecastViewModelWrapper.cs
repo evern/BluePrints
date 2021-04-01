@@ -9,6 +9,7 @@ using BaseModel.ViewModel.Loader;
 using BaseModel.ViewModel.UndoRedo;
 using BluePrints.BluePrintsEntitiesDataModel;
 using BluePrints.Common.Base;
+using BluePrints.Common.Helpers;
 using BluePrints.Common.Projections;
 using BluePrints.Common.Resources;
 using BluePrints.Common.ViewModel.Misc;
@@ -21,6 +22,7 @@ using DevExpress.Data;
 using DevExpress.Mvvm;
 using DevExpress.Mvvm.POCO;
 using DevExpress.Xpf.Bars;
+using DevExpress.Xpf.Core.Serialization;
 using DevExpress.Xpf.Grid;
 using System;
 using System.Collections.Generic;
@@ -238,6 +240,7 @@ namespace BluePrints.ViewModels
             this.RaisePropertyChanged(x => x.DataPointsTable);
             IsLoading = false;
             this.RaisePropertyChanged(x => x.IsLoading);
+            CommonMethods.AddSaveLayoutHandler(GridControlService.GetGridColumns());
         }
 
         private void updateDataPointsTable()

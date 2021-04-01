@@ -4,6 +4,8 @@ using BluePrints.Data;
 using BluePrints.PrimeroData;
 using BluePrints.PrimeroData.PrimeroEntitiesDataModel;
 using DevExpress.Mvvm;
+using DevExpress.Xpf.Core.Serialization;
+using DevExpress.Xpf.Grid;
 using System;
 using System.Collections.Generic;
 using System.Management;
@@ -12,7 +14,7 @@ namespace BluePrints.Common.Helpers
 {
     public static class CommonMethods
     {
-        public static DateTime StartOfWeek(this DateTime dt, DayOfWeek startOfWeek)
+        public static DateTime GetStartOfWeek(this DateTime dt, DayOfWeek startOfWeek)
         {
             int diff = dt.DayOfWeek - startOfWeek;
             if (diff < 0)
@@ -87,6 +89,27 @@ namespace BluePrints.Common.Helpers
             }
 
             projection.Update();
+        }
+
+        /// <summary>
+        /// prevent dynamically generated dates column from being saved when saving layout
+        /// </summary>
+        public static void AddSaveLayoutHandler(List<GridColumn> GridColumns)
+        {
+            foreach (GridColumn column in GridColumns)
+            {
+                DateTime parsedate;
+                if (DateTime.TryParse(column.FieldName, out parsedate))
+                    column.AddHandler(DXSerializer.AllowPropertyEvent, new AllowPropertyEventHandler(column_AllowProperty));
+            }
+        }
+
+        /// <summary>
+        /// prevent saving all properties
+        /// </summary>
+        private static void column_AllowProperty(object sender, AllowPropertyEventArgs e)
+        {
+            e.Allow = false;
         }
     }
 }

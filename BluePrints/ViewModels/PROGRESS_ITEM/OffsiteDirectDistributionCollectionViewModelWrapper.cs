@@ -9,6 +9,7 @@ using BluePrints.BluePrintsEntitiesDataModel;
 using BluePrints.Common;
 using BluePrints.Common.Base;
 using BluePrints.Common.Filtering;
+using BluePrints.Common.Helpers;
 using BluePrints.Common.Misc;
 using BluePrints.Common.Projections;
 using BluePrints.Common.Reports;
@@ -179,6 +180,13 @@ namespace BluePrints.ViewModels
             doNotApplyBestFit = true;
         }
 
+        protected override void OnAfterAssignedCallbackAndRaisePropertyChanged()
+        {
+            loadDataPointsTable();
+            skipExoDataLoading = true;
+            base.OnAfterAssignedCallbackAndRaisePropertyChanged();
+        }
+
         private void applyBestFit()
         {
             if (TableViewService != null && !isBestFitApplied)
@@ -235,7 +243,7 @@ namespace BluePrints.ViewModels
         {
             alignedDataDateCollection = null;
             dataPointsTable = null;
-            this.RaisePropertyChanged(x => x.DataPointsTable);
+            loadDataPointsTable();
         }
         
         protected override void onAfterRefresh()
@@ -884,58 +892,68 @@ namespace BluePrints.ViewModels
             }
         }
 
+        private void loadDataPointsTable()
+        {
+            IsLoading = true;
+            this.RaisePropertyChanged(x => x.IsLoading);
+
+            dataPointsTable = null;
+
+            updateDataPointsTable();
+            this.RaisePropertyChanged(x => x.DataPointsTable);
+
+            IsLoading = false;
+            this.RaisePropertyChanged(x => x.IsLoading);
+            TableViewService.ScrollToLast();
+            CommonMethods.AddSaveLayoutHandler(GridControlService.GetGridColumns());
+        }
+
+        private void updateDataPointsTable()
+        {
+            GridControlService.BeginDataUpdate();
+            dataPointsTable = new DataTable();
+            TimeSpan interval = ChronologicalHelpers.ConvertProgressIntervalToPeriod(loadPROGRESS);
+            DateTime firstAlignedDataDate = ChronologicalHelpers.GenerateFirstAlignedDataDate(loadPROGRESS);
+            DateTime? lastEarnedDate = null;
+            if (Entities.Where(x => x.LastDataDate != null).Count() > 0)
+                lastEarnedDate = Entities.Where(x => x.LastDataDate != null).Max(x => x.LastDataDate);
+
+            DateTime lastDataDate = lastEarnedDate == null ? loadPROGRESS.DATA_DATE : ((DateTime)lastEarnedDate > loadPROGRESS.DATA_DATE) ? (DateTime)lastEarnedDate : loadPROGRESS.DATA_DATE;
+            if (alignedDataDateCollection == null)
+            {
+                alignedDataDateCollection = ChronologicalHelpers.GenerateAlignedDatesCollection(firstAlignedDataDate, lastDataDate, interval);
+                InitializeColumnSource(ColumnDescriptors, SummaryDescriptors, alignedDataDateCollection);
+            }
+
+            dataPointsTable.Columns.Add(columnEntity, typeof(BASELINE_ITEMProgress));
+            foreach (DateTime alignedDataDate in alignedDataDateCollection)
+            {
+                //ColorScaleFormatCondition colorScaleFormatCondition = new ColorScaleFormatCondition();
+                string columnFieldName = alignedDataDate.Date.ToShortDateString();
+                //colorScaleFormatCondition.FieldName = columnFieldName;
+                //colorScaleFormatCondition.Format = new ColorScaleFormat() { ColorMin = Colors.LightSalmon, ColorMiddle = Colors.LemonChiffon, ColorMax = Colors.Lime };
+                //colorScaleFormatCondition.MinValue = 0;
+                //colorScaleFormatCondition.MaxValue = 1;
+                //TableViewService.AddFormatCondition(colorScaleFormatCondition);
+
+                dataPointsTable.Columns.Add(columnFieldName, typeof(decimal));
+            }
+
+            foreach (BASELINE_ITEMProgress entity in Entities)
+            {
+                BuildRowStats(entity, false);
+            }
+
+            focusLastColumnTimer.Start();
+            GridControlService.EndDataUpdate();
+        }
+
         DataTable dataPointsTable = null;
         List<DateTime> alignedDataDateCollection = null;
         public DataTable DataPointsTable
         {
             get
             {
-                if (MainViewModel == null || Entities == null)
-                    return null;
-
-                if (!IsCalculationCompleted)
-                    return null;
-
-                if(dataPointsTable == null)
-                {
-                    GridControlService.BeginDataUpdate();
-                    dataPointsTable = new DataTable();
-                    TimeSpan interval = ChronologicalHelpers.ConvertProgressIntervalToPeriod(loadPROGRESS);
-                    DateTime firstAlignedDataDate = ChronologicalHelpers.GenerateFirstAlignedDataDate(loadPROGRESS);
-                    DateTime? lastEarnedDate = null;
-                    if(Entities.Where(x => x.LastDataDate != null).Count() > 0)
-                        lastEarnedDate = Entities.Where(x => x.LastDataDate != null).Max(x => x.LastDataDate);
-
-                    DateTime lastDataDate = lastEarnedDate == null ? loadPROGRESS.DATA_DATE : ((DateTime)lastEarnedDate > loadPROGRESS.DATA_DATE) ? (DateTime)lastEarnedDate : loadPROGRESS.DATA_DATE;
-                    if(alignedDataDateCollection == null)
-                    {
-                        alignedDataDateCollection = ChronologicalHelpers.GenerateAlignedDatesCollection(firstAlignedDataDate, lastDataDate, interval);
-                        InitializeColumnSource(ColumnDescriptors, SummaryDescriptors, alignedDataDateCollection);
-                    }
-
-                    dataPointsTable.Columns.Add(columnEntity, typeof(BASELINE_ITEMProgress));
-                    foreach (DateTime alignedDataDate in alignedDataDateCollection)
-                    {
-                        //ColorScaleFormatCondition colorScaleFormatCondition = new ColorScaleFormatCondition();
-                        string columnFieldName = alignedDataDate.Date.ToShortDateString();
-                        //colorScaleFormatCondition.FieldName = columnFieldName;
-                        //colorScaleFormatCondition.Format = new ColorScaleFormat() { ColorMin = Colors.LightSalmon, ColorMiddle = Colors.LemonChiffon, ColorMax = Colors.Lime };
-                        //colorScaleFormatCondition.MinValue = 0;
-                        //colorScaleFormatCondition.MaxValue = 1;
-                        //TableViewService.AddFormatCondition(colorScaleFormatCondition);
-
-                        dataPointsTable.Columns.Add(columnFieldName, typeof(decimal));
-                    }
-
-                    foreach(BASELINE_ITEMProgress entity in Entities)
-                    {
-                        BuildRowStats(entity, false);
-                    }
-
-                    focusLastColumnTimer.Start();
-                    GridControlService.EndDataUpdate();
-                }
-
                 return dataPointsTable;
             }
         }

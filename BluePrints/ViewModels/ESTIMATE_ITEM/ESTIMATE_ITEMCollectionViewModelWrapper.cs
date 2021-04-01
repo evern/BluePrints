@@ -162,7 +162,7 @@ namespace BluePrints.ViewModels
                 newConstructionPROGRESS.GUID_PROJECT = loadPROJECT.GUID;
                 newConstructionPROGRESS.NAME = loadPROJECT.NUMBER + "DAILY_001";
                 newConstructionPROGRESS.PROGRESS_START = DateTime.Now;
-                newConstructionPROGRESS.DATA_DATE = CommonMethods.StartOfWeek(newConstructionPROGRESS.PROGRESS_START, DayOfWeek.Sunday).AddDays(1).AddSeconds(-1);
+                newConstructionPROGRESS.DATA_DATE = CommonMethods.GetStartOfWeek(newConstructionPROGRESS.PROGRESS_START, DayOfWeek.Sunday).AddDays(1).AddSeconds(-1);
                 newConstructionPROGRESS.INTERVAL_COUNT = 1;
                 newConstructionPROGRESS.INTERVAL_TYPE = ProgressIntervalType.Daily;
                 newConstructionPROGRESS.STATUS = ProgressStatus.Live;

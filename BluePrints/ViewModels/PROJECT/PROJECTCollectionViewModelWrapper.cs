@@ -300,7 +300,7 @@ namespace BluePrints.ViewModels
                         foreach(PROGRESS progress in allProgresses)
                         {
                             progress.PROGRESS_START = (DateTime)tenderStartDate;
-                            progress.DATA_DATE = CommonMethods.StartOfWeek(progress.PROGRESS_START, DayOfWeek.Sunday).AddDays(1).AddSeconds(-1);
+                            progress.DATA_DATE = CommonMethods.GetStartOfWeek(progress.PROGRESS_START, DayOfWeek.Sunday).AddDays(1).AddSeconds(-1);
                         }
 
                         unitOfWork.SaveChanges();
