@@ -12,7 +12,7 @@
         <dxb:BarManager>
             <dxb:BarManager.Items>
                 <dxb:BarSubItem ItemLinksSource="{StaticResource RibbonDefaultGridButtons}" />
-                <dxb:BarButtonItem x:Name="biUploadToExo" Command="{Binding UploadToExoCommand}" Content="Upload Selected to Exo" Glyph="{dxc:DXImage Image=Satellite_16x16.png}" LargeGlyph="{dxc:DXImage Image=Satellite_32x32.png}" ToolTip="Add any missing subjob, cost group, cost type and available lines into exo" />
+                <dxb:BarButtonItem x:Name="biUploadToExo" Command="{Binding UploadToExoCommand}" Content="Upload Selected to Exo" Glyph="{dxc:DXImage Image=Satellite_16x16.png}" LargeGlyph="{dxc:DXImage Image=Satellite_32x32.png}" ToolTip="Add any missing subjob, discipline code, commodity code and available lines into exo" />
                 <dxb:BarButtonItem x:Name="biAlignBudget" Command="{Binding AlignExoBudgetCommand}" Content="Align Selected Budget" Glyph="{dxc:DXImage Images/Actions/ConvertToRange_16x16.png}" LargeGlyph="{dxc:DXImage Images/Actions/ConvertToRange_32x32.png}" ToolTip="Align selected exo budget with budget calculated from deliverable's list" />
                 <dxb:BarButtonItem x:Name="biAutoAssign" Command="{Binding AutoAssignPermissionCommand}" Content="Auto Assign Permission" Glyph="{dxc:DXImage Image=Wizard_16x16.png}" LargeGlyph="{dxc:DXImage Image=Wizard_32x32.png}" ToolTip="Auto assign permission by referencing authorised document type on role" />
                 <dxb:BarCheckItem x:Name="biShowPreferred" Content="Show Preferred User Only" IsEnabled="{Binding IsLoading, Converter={dxmvvm:BooleanNegationConverter}}" Glyph="{dxc:DXImage Image=BOUser_16x16.png}" IsChecked="{Binding ShowPreferred}" LargeGlyph="{dxc:DXImage Image=BOUser_32x32.png}" ToolTip="Show preferred user only (based on role)" />
@@ -57,9 +57,9 @@
                                         </DataTemplate>
                                     </dxg:GridColumn.CellTemplate>
                                 </dxg:GridColumn>
-                                <dxg:GridColumn FieldName="DisciplineCode" Header="Cost Group" AllowBestFit="false" Width="50" HeaderToolTip="Cost group in exo means discipline code in Blueprints" ReadOnly="True" />
-                                <dxg:GridColumn AllowBestFit="false" Width="150" FieldName="DisciplineName" Header="Cost Group Title" HeaderToolTip="Cost group title in exo" ReadOnly="False" />
-                                <dxg:GridColumn FieldName="CommodityCode" Header="Cost Type" AllowBestFit="false" Width="50" HeaderToolTip="Cost type in exo means document type in Blueprints" ReadOnly="True" />
+                                <dxg:GridColumn FieldName="DisciplineCode" Header="Discipline Code" AllowBestFit="false" Width="50" HeaderToolTip="Discipline code in Blueprints means cost group in exo " ReadOnly="True" />
+                                <dxg:GridColumn AllowBestFit="false" Width="150" FieldName="DisciplineName" Header="Discipline Code Title" HeaderToolTip="Discipline code title in exo" ReadOnly="False" />
+                                <dxg:GridColumn FieldName="CommodityCode" Header="Commodity Code" AllowBestFit="false" Width="50" HeaderToolTip="Document type in Blueprints means cost type in exo" ReadOnly="True" />
                                 <dxg:GridColumn FieldName="VariationCode" AllowBestFit="false" Width="70" Header="Variation" ReadOnly="True" />
                                 <dxg:GridColumn FieldName="ExoBudget" Header="Exo Budget" AllowBestFit="false" Width="90" HeaderToolTip="Budget in Exo">
                                     <dxg:GridColumn.EditSettings>

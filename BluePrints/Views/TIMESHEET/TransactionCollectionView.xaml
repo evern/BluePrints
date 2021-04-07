@@ -54,7 +54,7 @@
                                     <dxe:ComboBoxEditSettings AutoComplete="True" DisplayMember="JOBCODE" IsTextEditable="True" ItemsSource="{Binding JOBCOST_HDRCollection}" ValueMember="JOBNO" />
                                 </dxg:GridColumn.EditSettings>
                             </dxg:GridColumn>
-                            <dxg:GridColumn FieldName="COST_GROUP" Header="Cost Group" AllowBestFit="false" Width="50" ReadOnly="{Binding IsReadOnly}">
+                            <dxg:GridColumn FieldName="COST_GROUP" Header="Discipline Code" AllowBestFit="false" Width="50" ReadOnly="{Binding IsReadOnly}">
                                 <dxg:GridColumn.CellTemplate>
                                     <DataTemplate>
                                         <dxg:LookUpEdit Name="PART_Editor" AutoComplete="True" AutoPopulateColumns="False" DisplayMember="SHORTCODE" IncrementalFiltering="True" IsTextEditable="true" ItemsSource="{Binding View.DataContext.JOB_COSTGROUPSCollection}" NullValueButtonPlacement="Popup" PopupWidth="500" ValueMember="SEQNO">
@@ -82,7 +82,7 @@
                                     <dxe:ComboBoxEditSettings AutoComplete="True" DisplayMember="SHORTCODE" IsTextEditable="True" ItemsSource="{Binding JOB_COSTGROUPSCollection}" NullValueButtonPlacement="EditBox" ValueMember="SEQNO" />
                                 </dxg:GridColumn.EditSettings>
                             </dxg:GridColumn>
-                            <dxg:GridColumn FieldName="CostType" AllowBestFit="false" Width="50" Header="Cost Type" ReadOnly="{Binding IsReadOnly}">
+                            <dxg:GridColumn FieldName="CostType" AllowBestFit="false" Width="50" Header="Commodity Code" ReadOnly="{Binding IsReadOnly}">
                                 <dxg:GridColumn.CellTemplate>
                                     <DataTemplate>
                                         <dxg:LookUpEdit Name="PART_Editor" AutoComplete="True" AutoPopulateColumns="False" DisplayMember="SHORTCODE" IncrementalFiltering="True" IsTextEditable="true" ItemsSource="{Binding View.DataContext.JOB_COSTTYPESCollection}" NullValueButtonPlacement="Popup" PopupWidth="500" ValueMember="SEQNO">
@@ -120,7 +120,7 @@
                                     <dxe:ComboBoxEditSettings AutoComplete="True" DisplayMember="JOBCODE" IsTextEditable="True" ItemsSource="{Binding JOBCOST_HDRCollection}" ValueMember="JOBNO" />
                                 </dxg:GridColumn.EditSettings>
                             </dxg:GridColumn>
-                            <dxg:GridColumn FieldName="CostTypeDesc" AllowBestFit="false" Width="100" Header="Cost Type Desc" ReadOnly="True" />
+                            <dxg:GridColumn FieldName="CostTypeDesc" AllowBestFit="false" Width="100" Header="Commodity Code Desc" ReadOnly="True" />
                             <dxg:GridColumn FieldName="accno" Header="Resource" AllowBestFit="false" Width="150" ReadOnly="true" >
                                 <dxg:GridColumn.EditSettings>
                                     <dxe:ComboBoxEditSettings AutoComplete="True" DisplayMember="RESOURCENAME" IsTextEditable="True" ItemsSource="{Binding JOBCOST_RESOURCECollection}" ValueMember="SEQNO" />

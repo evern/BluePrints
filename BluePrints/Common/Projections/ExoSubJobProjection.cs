@@ -497,7 +497,7 @@ namespace BluePrints.Common.Projections
                                 }
                                 else
                                 {
-                                    errorMessages.Add(new ErrorMessage(projection.ErrorMessageIdentificationCode, projection.CommodityCode + " cost type does not exists in exo, please request it from " + BluePrintsResources.Default_CFO));
+                                    errorMessages.Add(new ErrorMessage(projection.ErrorMessageIdentificationCode, projection.CommodityCode + " commodity code does not exists in exo, please request it from " + BluePrintsResources.Default_CFO));
                                     continue;
                                 }
                             }
@@ -548,7 +548,7 @@ namespace BluePrints.Common.Projections
             JOB_COSTGROUPS costGroup = ExoQueries.GetCostGroup(localPrimeroUnitOfWork, projection.DisciplineCode);
             if (costGroup == null)
             {
-                MessageBoxService.ShowMessage(projection.DisciplineCode + " doesn't exists in exo yet, please upload to exo before clicking edit cost group title");
+                MessageBoxService.ShowMessage(projection.DisciplineCode + " doesn't exists in exo yet, please upload to exo before clicking edit discipline title");
                 return;
             }
 

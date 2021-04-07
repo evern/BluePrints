@@ -66,13 +66,13 @@
                                 <dxe:TextEditSettings NullText="Double click this cell to change title" ShowNullText="True" />
                             </dxg:GridColumn.EditSettings>
                         </dxg:GridColumn>
-                        <dxg:GridColumn FieldName="DisciplineCode" Header="Cost Group" AllowBestFit="false" Width="50" HeaderToolTip="Select from combo box and then change last two numbers">
+                        <dxg:GridColumn FieldName="DisciplineCode" Header="Discipline Code" AllowBestFit="false" Width="50" HeaderToolTip="Select from combo box and then change last two numbers">
                             <dxg:GridColumn.EditSettings>
                                 <dxe:ComboBoxEditSettings AutoComplete="True" IsTextEditable="True" ItemsSource="{Binding DISCIPLINE_CODEStringCollection}" Mask="{Binding DisciplineRegex}" MaskType="RegEx" MaskUseAsDisplayFormat="True" ValidateOnTextInput="False" />
                             </dxg:GridColumn.EditSettings>
                         </dxg:GridColumn>
-                        <dxg:GridColumn FieldName="DisciplineName" Header="Cost Group Title" HeaderToolTip="Cost group title in exo, type in free text" />
-                        <dxg:GridColumn FieldName="CommodityCode" Header="Cost Type" AllowBestFit="false" Width="50" HeaderToolTip="Cost type in exo, type in free text or select from combo box">
+                        <dxg:GridColumn FieldName="DisciplineName" Header="Discipline Code Title" HeaderToolTip="Discipline Code Title title in exo, type in free text" />
+                        <dxg:GridColumn FieldName="CommodityCode" Header="Commodity Code" AllowBestFit="false" Width="50" HeaderToolTip="Cost type in exo, type in free text or select from combo box">
                             <dxg:GridColumn.CellTemplate>
                                 <DataTemplate>
                                     <dxg:LookUpEdit Name="PART_Editor" AutoComplete="True" AutoPopulateColumns="False" DisplayMember="CODE" IncrementalFiltering="True" IsTextEditable="true" ItemsSource="{Binding DataContext.COMMODITY_CODECollection, ElementName=userControl}" NullValueButtonPlacement="Popup" PopupMinWidth="700" ValueMember="CODE">

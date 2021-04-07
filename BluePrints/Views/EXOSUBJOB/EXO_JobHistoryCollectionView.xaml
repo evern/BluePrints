@@ -33,8 +33,8 @@
                 <custom:GridControlEx x:Name="GridControl" dx:DXSerializer.SerializationID="GridControlEXO_JobHistory" dx:DXSerializer.StoreLayoutMode="All" Style="{StaticResource DefaultGridControlTemplate}">
                     <dxg:GridControl.Columns>
                         <dxg:GridColumn FieldName="JOBCODE" AllowBestFit="false" Width="110" Header="Subjob" HeaderToolTip="Sub job code" ReadOnly="True"/>
-                        <dxg:GridColumn FieldName="DISCIPLINE_CODE" Header="Cost Group" AllowBestFit="false" Width="50" ReadOnly="True"/>
-                        <dxg:GridColumn FieldName="COMMODITY_CODE" Header="Cost Type" AllowBestFit="false" Width="50" ReadOnly="True"/>
+                        <dxg:GridColumn FieldName="DISCIPLINE_CODE" Header="Discipline Code" AllowBestFit="false" Width="50" ReadOnly="True"/>
+                        <dxg:GridColumn FieldName="COMMODITY_CODE" Header="Commodity Code" AllowBestFit="false" Width="50" ReadOnly="True"/>
                         <dxg:GridColumn FieldName="STOCK_CODE" Header="Stock Code" AllowBestFit="false" Width="50" ReadOnly="True"/>
                         <dxg:GridColumn FieldName="VARIATION_CODE" Header="Variation" AllowBestFit="false" Width="75" ReadOnly="True"/>
                         <dxg:GridColumn FieldName="BUDGET_FROM" Header="Old Budget" AllowBestFit="false" Width="90" ReadOnly="True">

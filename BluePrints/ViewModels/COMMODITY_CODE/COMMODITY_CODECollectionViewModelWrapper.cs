@@ -189,7 +189,7 @@ namespace BluePrints.ViewModels
         {
             string message = string.Empty;
             if (projection.EXO_COSTTYPE == null)
-                message += "Cost Type: " + projection.Entity.CODE + " and ";
+                message += "Commodity Code: " + projection.Entity.CODE + " and ";
             if (projection.EXO_STOCKITEM == null)
                 message += "Stock Code: " + projection.Entity.DEFAULT_STOCKCODE + " and ";
 
@@ -207,7 +207,7 @@ namespace BluePrints.ViewModels
                     string validDisciplineCode = string.Concat(findDISCIPLINE.CODE, BluePrintsResources.DefaultCostGroupAffix);
                     JOB_COSTGROUPS validCostGroup = JOB_COSTGROUPS.FirstOrDefault(x => x.SHORTCODE == validDisciplineCode);
                     if (validCostGroup == null)
-                        return "Cost Group:" + validDisciplineCode + " doesn't exists in exo";
+                        return "Discipline Code:" + validDisciplineCode + " doesn't exists in exo";
                 }
 
             }

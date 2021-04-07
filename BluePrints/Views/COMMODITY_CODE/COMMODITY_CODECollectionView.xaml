@@ -58,7 +58,7 @@
                             </dxg:GridColumn>
                             <dxg:GridColumn FieldName="Entity.DESCRIPTION" AllowBestFit="false" Width="450" Header="Description" />
                             <dxg:GridColumn FieldName="Entity.UOM" Header="UOM" AllowBestFit="false" Width="50" HeaderToolTip="Unit of measure" />
-                            <dxg:GridColumn FieldName="Entity.DEFAULT_COSTGROUP" AllowBestFit="false" Width="50" Header="Cost Group (Auto)" >
+                            <dxg:GridColumn FieldName="Entity.DEFAULT_COSTGROUP" AllowBestFit="false" Width="50" Header="Discipline Code (Auto)" >
                                 <dxg:GridColumn.EditSettings>
                                     <!--Leave comments in header so that when user copy it doesn't copy the nulltext-->
                                     <!--<dxe:TextEditSettings NullText="Leave empty to autogenerate" />-->

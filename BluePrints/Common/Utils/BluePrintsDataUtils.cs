@@ -342,7 +342,7 @@ namespace BluePrints.Common.ViewModel.Utils
             }
             else if (bookTimeViewModel.GetCostType() == null)
             {
-                MessageBoxService.ShowMessage("You do not have authorisation to book time to\nSub Job: " + deliverable.Subjob_Name + "\nCost Group: " + deliverable.Discipline_Code + "\nCost Type: " + deliverable.Commodity_Code + "\n\nPlease contact " + pmName + " for assistance");
+                MessageBoxService.ShowMessage("You do not have authorisation to book time to\nSub Job: " + deliverable.Subjob_Name + "\nDiscipline Code: " + deliverable.Discipline_Code + "\nCommodity Code: " + deliverable.Commodity_Code + "\n\nPlease contact " + pmName + " for assistance");
                 return;
             }
 

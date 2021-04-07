@@ -135,12 +135,12 @@
                                         </DataTemplate>
                                     </dxg:GridColumn.CellTemplate>
                                 </dxg:GridColumn>
-                                <dxg:GridColumn FieldName="COSTGROUPProxy" Header="Cost Group" AllowBestFit="false" Visible="False" Width="60">
+                                <dxg:GridColumn FieldName="COSTGROUPProxy" Header="Discipline Code" AllowBestFit="false" Visible="False" Width="60">
                                     <dxg:GridColumn.EditSettings>
                                         <dxe:ComboBoxEditSettings AutoComplete="True" DisplayMember="SHORTCODE" ValueMember="SHORTCODE" IsTextEditable="True" ItemsSource="{Binding JOB_COSTGROUPCollection}" />
                                     </dxg:GridColumn.EditSettings>
                                 </dxg:GridColumn>
-                                <dxg:GridColumn FieldName="COSTTYPEProxy" AllowBestFit="false" Width="60" Visible="False" Header="Cost Type" >
+                                <dxg:GridColumn FieldName="COSTTYPEProxy" AllowBestFit="false" Width="60" Visible="False" Header="Commodity Code" >
                                     <dxg:GridColumn.CellTemplate>
                                         <DataTemplate>
                                             <dxg:LookUpEdit Name="PART_Editor" AutoComplete="True" AutoPopulateColumns="False" DisplayMember="SHORTCODE" ValueMember="SHORTCODE" IncrementalFiltering="True" IsTextEditable="False" ItemsSource="{Binding RowData.Row.TaggedValidJOB_COSTTYPES}"  PopupMinWidth="700">

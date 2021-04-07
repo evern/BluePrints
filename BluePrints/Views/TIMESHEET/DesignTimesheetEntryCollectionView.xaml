@@ -163,7 +163,7 @@
                                         <viewmodel:DesignTimesheetEditorTemplateSelector />
                                     </dxg:GridColumn.CellTemplateSelector>
                                 </dxg:GridColumn>
-                                <dxg:GridColumn FieldName="COST_TYPE" AllowBestFit="false" Width="150" Header="Cost Type" ReadOnly="{Binding IsReview}">
+                                <dxg:GridColumn FieldName="COST_TYPE" AllowBestFit="false" Width="150" Header="Commodity Code" ReadOnly="{Binding IsReview}">
                                     <dxg:GridColumn.CellTemplateSelector>
                                         <viewmodel:DesignTimesheetEditorTemplateSelector />
                                     </dxg:GridColumn.CellTemplateSelector>

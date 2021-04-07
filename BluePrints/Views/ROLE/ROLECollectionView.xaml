@@ -148,9 +148,9 @@
                             <dxdo:LayoutPanel MinWidth="420" ShowHideButton="True" AutoHidden="True">
                                 <custom:GridControlEx x:Name="GridControlCommodity" MaxHeight="2000" dx:DXSerializer.SerializationID="GridControlCommodity" dx:DXSerializer.StoreLayoutMode="All" ItemsSource="{Binding DocTypePermissions}" SelectedItem="{Binding SelectedDocTypePermission, Mode=TwoWay}">
                                     <dxg:GridControl.Columns>
-                                        <dxg:GridColumn MinWidth="75" AllowEditing="False" FieldName="DocType.CODE" Header="Cost Type" HeaderToolTip="Cost type in exo is document type code in Blueprints" />
+                                        <dxg:GridColumn MinWidth="75" AllowEditing="False" FieldName="DocType.CODE" Header="Document Type" HeaderToolTip="Document type code in Blueprints means cost type in exo" />
                                         <dxg:GridColumn AllowEditing="False" FieldName="DocType.NAME" Header="Description" />
-                                        <dxg:GridColumn FieldName="IsAssigned" Header="Assigned" HeaderToolTip="Indicate whether cost type is recommended for the selected role">
+                                        <dxg:GridColumn FieldName="IsAssigned" Header="Assigned" HeaderToolTip="Indicate whether document type is recommended for the selected role">
                                             <dxg:GridColumn.EditSettings>
                                                 <dxe:CheckEditSettings />
                                             </dxg:GridColumn.EditSettings>

@@ -1561,7 +1561,7 @@ namespace BluePrints.ViewModels
                     int costTypeNo = (int)validateRow[columnCostType];
                     IEnumerable<ExoTimeAuthorisation> findJobLineByCostGroupType = preloadedExoLinesWithCostInfo.Where(x => x.SubJobNo == subJobNo && x.DisciplineId == costGroupNo && x.CommodityId == costTypeNo);
                     if (findJobLineByCostGroupType.Count() == 0)
-                        validateRow.SetColumnError(columnCostGroup, "Invalid, please check whether cost group and cost type exists on job");
+                        validateRow.SetColumnError(columnCostGroup, "Invalid, please check whether discipline code and commodity code exists on job");
                     else
                     {
                         validateRow.SetColumnError(columnJobNo, string.Empty);

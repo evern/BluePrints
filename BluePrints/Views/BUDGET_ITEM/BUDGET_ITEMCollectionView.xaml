@@ -83,7 +83,7 @@
                                 <dxe:ComboBoxEditSettings AutoComplete="True" DisplayMember="INTERNAL_NUM" IsTextEditable="True" ItemsSource="{Binding SUBAREACollection}" NullValueButtonPlacement="EditBox" ValueMember="GUID" />
                             </dxg:GridColumn.EditSettings>
                         </dxg:GridColumn>
-                        <dxg:GridColumn FieldName="Entity.Entity.GUID_DISCIPLINE" Header="Discipline" HeaderToolTip="Discipline code to be concatenated with discipline number to form cost group">
+                        <dxg:GridColumn FieldName="Entity.Entity.GUID_DISCIPLINE" Header="Discipline" HeaderToolTip="Discipline code to be concatenated with discipline number to form discipline code">
                             <dxg:GridColumn.CellTemplate>
                                 <DataTemplate>
                                     <dxe:ComboBoxEdit Name="PART_Editor" AutoComplete="True" DisplayMember="CODE" IsTextEditable="true" IncrementalFiltering="True" ItemsSource="{Binding RowData.Row.Entity.Entity.DisciplineCollection}" NullValueButtonPlacement="Popup"  ValueMember="GUID" />
@@ -94,7 +94,7 @@
                                 <dxe:ComboBoxEditSettings AutoComplete="True" DisplayMember="CODE" IsTextEditable="True" ItemsSource="{Binding DISCIPLINECollection}" ValueMember="GUID" />
                             </dxg:GridColumn.EditSettings>
                         </dxg:GridColumn>
-                        <dxg:GridColumn Header="Discipline Number" FieldName="Entity.Entity.DISCIPLINE_NUM" AllowBestFit="false" Width="60" HeaderToolTip="Number to concatenate after discipline to form cost group">
+                        <dxg:GridColumn Header="Discipline Number" FieldName="Entity.Entity.DISCIPLINE_NUM" AllowBestFit="false" Width="60" HeaderToolTip="Number to concatenate after discipline to form discipline code">
                             <dxg:GridColumn.EditSettings>
                                 <dxe:SpinEditSettings Increment="1" IsFloatValue="False" IsTextEditable="True" Mask="n0" MaskType="Numeric" MaskUseAsDisplayFormat="True" MaxValue="99" MinValue="1" />
                             </dxg:GridColumn.EditSettings>

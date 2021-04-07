@@ -64,12 +64,12 @@
                                         <dxe:SpinEditSettings Increment="1" IsFloatValue="False" IsTextEditable="True" Mask="c2" MaskType="Numeric" MaskUseAsDisplayFormat="True" MinValue="0" />
                                     </dxg:GridColumn.EditSettings>
                                 </dxg:GridColumn>
-                                <dxg:GridColumn FieldName="COSTGROUP" Header="Cost Group" >
+                                <dxg:GridColumn FieldName="COSTGROUP" Header="Discipline Code" >
                                     <dxg:GridColumn.EditSettings>
                                         <dxe:ComboBoxEditSettings AutoComplete="True" DisplayMember="COSTDESC" IsTextEditable="True" ItemsSource="{Binding JOB_COSTGROUPSCollection}" ValueMember="SEQNO" />
                                     </dxg:GridColumn.EditSettings>
                                 </dxg:GridColumn>
-                                <dxg:GridColumn FieldName="COSTTYPE" Header="Cost Type" >
+                                <dxg:GridColumn FieldName="COSTTYPE" Header="Commodity Code" >
                                     <dxg:GridColumn.EditSettings>
                                         <dxe:ComboBoxEditSettings AutoComplete="True" DisplayMember="COSTDESC" IsTextEditable="True" ItemsSource="{Binding JOB_COSTTYPESCollection}" ValueMember="SEQNO" />
                                     </dxg:GridColumn.EditSettings>

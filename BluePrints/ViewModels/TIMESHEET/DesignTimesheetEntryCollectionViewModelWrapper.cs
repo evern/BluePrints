@@ -294,12 +294,12 @@ namespace BluePrints.ViewModels
                 {
                     JOB_COSTGROUPS findCostGroup = projection.CostGroupCollection.FirstOrDefault(x => x.SEQNO == (int)new_value);
                     if (findCostGroup == null)
-                        return "Invalid cost group";
+                        return "Invalid discipline code";
                     else
                         projection.CostGroupNo = findCostGroup.SEQNO;
                 }
                 else
-                    return "Cost group cannot be empty";
+                    return "Discipline code cannot be empty";
             }
 
             if (field_name == BindableBase.GetPropertyName(() => new DesignTimesheet().AreaCode))
@@ -329,12 +329,12 @@ namespace BluePrints.ViewModels
                 {
                     JOB_COSTTYPES findCostType = projection.TaggedValidJOB_COSTTYPES.FirstOrDefault(x => x.SEQNO == (int)new_value);
                     if (findCostType == null)
-                        return "Invalid cost type";
+                        return "Invalid commodity code";
                     else
                         projection.COST_TYPE = findCostType.SEQNO;
                 }
                 else
-                    return "Cost type cannot be empty";
+                    return "Commodity code cannot be empty";
             }
 
             if (field_name == BindableBase.GetPropertyName(() => new DesignTimesheet().DeliverableInternalName))
@@ -394,10 +394,10 @@ namespace BluePrints.ViewModels
             }
 
             if (projection.Timesheet.COST_GROUP == null)
-                return "Invalid discipline";
+                return "Invalid Discipline Code";
 
             if (projection.Timesheet.COST_TYPE == null)
-                return "Invalid cost type";
+                return "Invalid Commodity Code";
 
             return string.Empty;
         }
