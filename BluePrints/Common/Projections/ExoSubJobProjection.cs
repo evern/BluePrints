@@ -548,7 +548,7 @@ namespace BluePrints.Common.Projections
             JOB_COSTGROUPS costGroup = ExoQueries.GetCostGroup(localPrimeroUnitOfWork, projection.DisciplineCode);
             if (costGroup == null)
             {
-                MessageBoxService.ShowMessage(projection.DisciplineCode + " doesn't exists in exo yet, please upload to exo before clicking edit discipline title");
+                MessageBoxService.ShowMessage(projection.DisciplineCode + " doesn't exists in exo yet, please upload to exo before clicking edit discipline code title");
                 return;
             }
 
