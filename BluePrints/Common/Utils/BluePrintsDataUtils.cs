@@ -1699,17 +1699,17 @@ namespace BluePrints.Common.ViewModel.Utils
         /// Searches rate cascadingly for IRATE interface
         /// </summary>
         /// <returns></returns>
-        public static RATE CascadeRateSearch(Guid? disciplineGuid, Guid? departmentGuid, string commodityCode, IEnumerable<RATE> RATECollection, CostType costType, PhaseType phaseType)
+        public static RATE CascadeRateSearch(Guid? areaGuid, Guid? subAreaGuid, Guid? disciplineGuid, Guid? departmentGuid, string commodityCode, IEnumerable<RATE> RATECollection, CostType costType, PhaseType phaseType)
         {
             IEnumerable<RATE> rateByPhase = RATECollection.Where(y => y.COST_TYPE == costType && y.Phase_Type == phaseType);
             //order by descending places null GUID's at the end, so First() won't pick it up
-            IEnumerable<RATE> rateByCommodities;
-            rateByCommodities = rateByPhase.Where(y => (y.COMMODITY_CODE == commodityCode) || (y.COMMODITY_CODE == string.Empty || y.COMMODITY_CODE == null)).OrderByDescending(y => y.COMMODITY_CODE);
-
+            IEnumerable<RATE> rateByCommodities = rateByPhase.Where(y => (y.COMMODITY_CODE == commodityCode) || (y.COMMODITY_CODE == string.Empty || y.COMMODITY_CODE == null)).OrderByDescending(y => y.COMMODITY_CODE);
             IEnumerable<RATE> rateByDiscipline = rateByCommodities.Where(y => (y.GUID_DISCIPLINE == disciplineGuid) || (y.GUID_DISCIPLINE == null)).OrderByDescending(y => y.GUID_DISCIPLINE);
             IEnumerable<RATE> rateByDepartment = rateByDiscipline.Where(y => (y.GUID_DEPARTMENT == departmentGuid) || (y.GUID_DEPARTMENT == null)).OrderByDescending(y => y.GUID_DEPARTMENT);
+            IEnumerable<RATE> rateByArea = rateByDepartment.Where(y => (y.GUID_AREA == areaGuid) || (y.GUID_AREA == null)).OrderByDescending(y => y.GUID_AREA);
+            IEnumerable<RATE> rateBySubArea = rateByArea.Where(y => (y.GUID_SUBAREA == subAreaGuid) || (y.GUID_SUBAREA == null)).OrderByDescending(y => y.GUID_SUBAREA);
 
-            return rateByDepartment.FirstOrDefault();
+            return rateBySubArea.FirstOrDefault();
         }
 
         public static IEnumerable<COMMODITY_CODE> FilterForValidCommodityCodes(IEnumerable<COMMODITY_CODE> COMMODITY_CODES, string fullDisciplineCode, PhaseType? phaseType = null)

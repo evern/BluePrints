@@ -102,6 +102,7 @@ namespace BluePrints.ViewModels
             base.addEntitiesLoader();
             //need to reassign project because forecast dates information on project might changed since navigation is loaded since loadPROJECT comes from navigation
             loaderCollection.AddLoaderDescription(bluePrintsUnitOfWorkFactory, x => x.PROJECTS, PROJECTProjectionFunc, x => setProject(x));
+            loaderCollection.AddLoaderDescription(bluePrintsUnitOfWorkFactory, x => x.AREAS, AREAProjectionFunc);
             loaderCollection.AddLoaderDescription(bluePrintsUnitOfWorkFactory, x => x.FORECASTS, FORECASTProjectionFunc);
             loaderCollection.AddLoaderDescription(bluePrintsUnitOfWorkFactory, x => x.COMMODITY_CODES, COMMODITY_CODEProjectionFunc);
             loaderCollection.AddLoaderDescription(bluePrintsUnitOfWorkFactory, x => x.FORECAST_POS, FORECAST_POProjectionFunc);
@@ -163,6 +164,11 @@ namespace BluePrints.ViewModels
         private Func<IRepositoryQuery<Data.PROJECT>, IQueryable<Data.PROJECT>> PROJECTProjectionFunc()
         {
             return query => query.Where(x => x.GUID == LoadPROJECT.GUID);
+        }
+
+        protected virtual Func<IRepositoryQuery<AREA>, IQueryable<AREA>> AREAProjectionFunc()
+        {
+            return query => query.Where(x => x.GUID_PROJECT == LoadPROJECT.GUID);
         }
 
         private Func<IRepositoryQuery<VARIATION_CONSTRUCTION>, IQueryable<VARIATION_CONSTRUCTION>> VARIATION_REGISTERProjectionFunc()
@@ -810,6 +816,16 @@ namespace BluePrints.ViewModels
                 DISCIPLINE rateDISCIPLINE = DISCIPLINECollection.FirstOrDefault(x => x.CODE == disciplineCode);
                 if (ratePHASE != null && rateDISCIPLINE != null)
                 {
+                    AREA rateAREA = AREACollection.FirstOrDefault(x => x.INTERNAL_NUM == commodityJob.Projection.AreaCode);
+                    Guid areaGUID = rateAREA == null ? Guid.Empty : rateAREA.GUID;
+
+                    Guid? subAreaGUID = null;
+                    if (areaGUID != null)
+                    {
+                        AREA rateSUBAREA = SUBAREACollection.FirstOrDefault(x => x.GUID_PARENT == areaGUID && x.INTERNAL_NUM == commodityJob.Projection.SubAreaCode);
+                        subAreaGUID = rateSUBAREA == null ? Guid.Empty : rateSUBAREA.GUID;
+                    }
+
                     COMMODITY_CODE rateCOMMODITY = COMMODITY_CODECollection.FirstOrDefault(x => x.PHASE_TYPE == ratePHASE.PHASE_TYPE && x.GUID_DISCIPLINE == rateDISCIPLINE.GUID && x.CODE == commodityJob.Projection.CommodityCode);
                     string commodityCode = string.Empty;
 
@@ -818,7 +834,7 @@ namespace BluePrints.ViewModels
                         commodityCode = rateCOMMODITY.CODE;
 
                     if(ratePHASE.PHASE_TYPE != null)
-                        commodityJob.FallBackRate = BluePrintsDataUtils.CascadeRateSearch(rateDISCIPLINE.GUID, null, commodityCode, RATECollection, CostType.Cost, (PhaseType)ratePHASE.PHASE_TYPE);
+                        commodityJob.FallBackRate = BluePrintsDataUtils.CascadeRateSearch(areaGUID, subAreaGUID, rateDISCIPLINE.GUID, null, commodityCode, RATECollection, CostType.Cost, (PhaseType)ratePHASE.PHASE_TYPE);
                 }
             }
             #endregion
@@ -1112,8 +1128,7 @@ namespace BluePrints.ViewModels
                 columns.Add(new ColumnDescriptor() { FieldName = "Entity.DropDownIndirectBudget", ReadOnly = true, Header = "Budget (A)", Increment = 1, Fixed = FixedStyle.Left, Width = 50, Settings = SettingsType.Budget, HeaderToolTip = "Indirect budget from Exo" });
             }
 
-            int dateColumnVisibleIndex = 1;
-            foreach (DateTime alignedDate in alignedDates.OrderByDescending(x => x))
+            foreach (DateTime alignedDate in alignedDates)
             {
                 string columnFieldName = alignedDate.Date.ToString(BluePrintsResources.ColumnDateFormat);
 
@@ -1121,20 +1136,18 @@ namespace BluePrints.ViewModels
                 {
                     //do not show actuals
                     if(isShowActualsHistory)
-                        columns.Add(new ColumnDescriptor() { FieldName = columnFieldName, VisibleIndex = dateColumnVisibleIndex, ReadOnly = true, Header = columnFieldName, Fixed = FixedStyle.None, Width = 60, Settings = SettingsType.ForecastPast });
+                        columns.Add(new ColumnDescriptor() { FieldName = columnFieldName, ReadOnly = true, Header = columnFieldName, Fixed = FixedStyle.None, Width = 60, Settings = SettingsType.ForecastPast });
                 }
                 else
                 {
                     if (isChild)
-                        columns.Add(new ColumnDescriptor() { FieldName = columnFieldName, VisibleIndex = dateColumnVisibleIndex, ReadOnly = false, Header = columnFieldName, Fixed = FixedStyle.None, Width = 60, Settings = SettingsType.ForecastChild });
+                        columns.Add(new ColumnDescriptor() { FieldName = columnFieldName, ReadOnly = false, Header = columnFieldName, Fixed = FixedStyle.None, Width = 60, Settings = SettingsType.ForecastChild });
                     else
-                        columns.Add(new ColumnDescriptor() { FieldName = columnFieldName, VisibleIndex = dateColumnVisibleIndex, ReadOnly = false, Header = columnFieldName, Fixed = FixedStyle.None, Width = 60, Settings = SettingsType.ForecastFuture });
+                        columns.Add(new ColumnDescriptor() { FieldName = columnFieldName, ReadOnly = false, Header = columnFieldName, Fixed = FixedStyle.None, Width = 60, Settings = SettingsType.ForecastFuture });
                 }
 
                 if(!isChild)
                     summaries.Add(new SummaryDescriptor() { FieldName = columnFieldName, DisplayFormat = "c0", Type = SummaryItemType.Sum });
-
-                dateColumnVisibleIndex += 1;
             }
         }
 
@@ -2898,6 +2911,28 @@ namespace BluePrints.ViewModels
             get
             {
                 return GetEntities<Data.PHASE>();
+            }
+        }
+
+        public IEnumerable<AREA> AREACollection
+        {
+            get
+            {
+                var collection = GetEntities<AREA>();
+                if (collection != null)
+                    collection = collection.Where(x => x.GUID_PARENT == null).OrderBy(x => x.INTERNAL_NUM);
+                return collection;
+            }
+        }
+
+        public IEnumerable<AREA> SUBAREACollection
+        {
+            get
+            {
+                var collection = GetEntities<AREA>();
+                if (collection != null)
+                    collection = collection.Where(x => x.GUID_PARENT != null).OrderBy(x => x.INTERNAL_NUM);
+                return collection;
             }
         }
 

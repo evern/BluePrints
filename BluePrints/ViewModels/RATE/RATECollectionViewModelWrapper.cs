@@ -56,11 +56,18 @@ namespace BluePrints.ViewModels
         protected override void addEntitiesLoader()
         {
             loaderCollection.AddLoaderDescription(bluePrintsUnitOfWorkFactory, x => x.PROJECTS, PROJECTProjectionFunc, x => loadPROJECT = x);
+            loaderCollection.AddLoaderDescription(bluePrintsUnitOfWorkFactory, x => x.AREAS, AREAProjectionFunc);
+            loaderCollection.AddLoaderDescription<DEPARTMENT, DEPARTMENT, Guid, IBluePrintsEntitiesUnitOfWork>(bluePrintsUnitOfWorkFactory, x => x.DEPARTMENTS);
             loaderCollection.AddLoaderDescription<DEPARTMENT, DEPARTMENT, Guid, IBluePrintsEntitiesUnitOfWork>(bluePrintsUnitOfWorkFactory, x => x.DEPARTMENTS);
             loaderCollection.AddLoaderDescription<DISCIPLINE, DISCIPLINE, Guid, IBluePrintsEntitiesUnitOfWork>(bluePrintsUnitOfWorkFactory, x => x.DISCIPLINES);
             loaderCollection.AddLoaderDescription<DOCTYPE, DOCTYPE, Guid, IBluePrintsEntitiesUnitOfWork>(bluePrintsUnitOfWorkFactory, x => x.DOCTYPES);
             loaderCollection.AddLoaderDescription(bluePrintsUnitOfWorkFactory, x => x.COMMODITY_CODES, COMMODITY_CODEProjectionFunc);
             loaderCollection.AddLoaderDescription(bluePrintsUnitOfWorkFactory, x => x.PHASES, PHASEProjectionFunc);
+        }
+
+        protected virtual Func<IRepositoryQuery<AREA>, IQueryable<AREA>> AREAProjectionFunc()
+        {
+            return query => query.Where(x => x.GUID_PROJECT == loadPROJECT.GUID);
         }
 
         protected virtual Func<IRepositoryQuery<PHASE>, IQueryable<PHASE>> PHASEProjectionFunc()
@@ -147,13 +154,13 @@ namespace BluePrints.ViewModels
             this.RaisePropertyChanged(x => x.Entities);
         }
 
-        string errorMessage = "Duplicate entries by phase type, charge type, department, discipline and commodity";
+        string errorMessage = "Duplicate entries by area, sub area, department, discipline and commodity";
         public override string UnifiedRowValidation(RATE projection)
         {
             //because projection commodity code is formatted to empty string when null before saving and this method is called before entity is going to be saved
             string commodityCode = projection.COMMODITY_CODE == null ? string.Empty : projection.COMMODITY_CODE;
             populatePHASE(projection);
-            if (Entities.Where(x => x.IsRateExists).Any(x => (x.PHASE_TYPE == projection.PHASE_TYPE && x.CHARGE_TYPE == projection.CHARGE_TYPE && x.GUID_DEPARTMENT == projection.GUID_DEPARTMENT && x.GUID_DISCIPLINE == projection.GUID_DISCIPLINE && x.COMMODITY_CODE == commodityCode) && x.GUID != projection.GUID))
+            if (Entities.Where(x => x.IsRateExists).Any(x => (x.PHASE_TYPE == projection.PHASE_TYPE && x.CHARGE_TYPE == projection.CHARGE_TYPE && x.GUID_AREA == projection.GUID_AREA && x.GUID_SUBAREA == projection.GUID_SUBAREA && x.GUID_DEPARTMENT == projection.GUID_DEPARTMENT && x.GUID_DISCIPLINE == projection.GUID_DISCIPLINE && x.COMMODITY_CODE == commodityCode) && x.GUID != projection.GUID))
                 return errorMessage;
 
             return string.Empty;
@@ -164,27 +171,37 @@ namespace BluePrints.ViewModels
             //do not validate phase type on new row because when enum is instantiated with default values user might get stucked in the cell due to duplication error
             if (projection.GUID != Guid.Empty && field_name == BindableBase.GetPropertyName(() => new RATE().Phase_Type))
             {
-                if (Entities.Where(x => x.IsRateExists).Any(x => (x.PHASE_TYPE == (PhaseType)new_value && x.CHARGE_TYPE == projection.CHARGE_TYPE && x.GUID_DEPARTMENT == projection.GUID_DEPARTMENT && x.GUID_DISCIPLINE == projection.GUID_DISCIPLINE && x.COMMODITY_CODE == projection.COMMODITY_CODE) && x.GUID != projection.GUID))
+                if (Entities.Where(x => x.IsRateExists).Any(x => (x.PHASE_TYPE == (PhaseType)new_value && x.CHARGE_TYPE == projection.CHARGE_TYPE && x.GUID_AREA == projection.GUID_AREA && x.GUID_SUBAREA == projection.GUID_SUBAREA && x.GUID_DEPARTMENT == projection.GUID_DEPARTMENT && x.GUID_DISCIPLINE == projection.GUID_DISCIPLINE && x.COMMODITY_CODE == projection.COMMODITY_CODE) && x.GUID != projection.GUID))
                     return errorMessage;
             }
             if (field_name == BindableBase.GetPropertyName(() => new RATE().CHARGE_TYPE))
             {
-                if (Entities.Where(x => x.IsRateExists).Any(x => (x.PHASE_TYPE == projection.Phase_Type && x.CHARGE_TYPE == (ChargeType)new_value && x.GUID_DEPARTMENT == projection.GUID_DEPARTMENT && x.GUID_DISCIPLINE == projection.GUID_DISCIPLINE && x.COMMODITY_CODE == projection.COMMODITY_CODE) && x.GUID != projection.GUID))
+                if (Entities.Where(x => x.IsRateExists).Any(x => (x.PHASE_TYPE == projection.Phase_Type && x.CHARGE_TYPE == (ChargeType)new_value && x.GUID_AREA == projection.GUID_AREA && x.GUID_SUBAREA == projection.GUID_SUBAREA && x.GUID_DEPARTMENT == projection.GUID_DEPARTMENT && x.GUID_DISCIPLINE == projection.GUID_DISCIPLINE && x.COMMODITY_CODE == projection.COMMODITY_CODE) && x.GUID != projection.GUID))
+                    return errorMessage;
+            }
+            else if (field_name == BindableBase.GetPropertyName(() => new RATE().GUID_AREA))
+            {
+                if (Entities.Where(x => x.IsRateExists).Any(x => (x.PHASE_TYPE == projection.PHASE_TYPE && x.CHARGE_TYPE == projection.CHARGE_TYPE && x.GUID_AREA == (Guid?)new_value && x.GUID_SUBAREA == projection.GUID_SUBAREA && x.GUID_DEPARTMENT == projection.GUID_DEPARTMENT && x.GUID_DISCIPLINE == projection.GUID_DISCIPLINE && x.COMMODITY_CODE == projection.COMMODITY_CODE) && x.GUID != projection.GUID))
+                    return errorMessage;
+            }
+            else if (field_name == BindableBase.GetPropertyName(() => new RATE().GUID_SUBAREA))
+            {
+                if (Entities.Where(x => x.IsRateExists).Any(x => (x.PHASE_TYPE == projection.PHASE_TYPE && x.CHARGE_TYPE == projection.CHARGE_TYPE && x.GUID_AREA == projection.GUID_AREA && x.GUID_SUBAREA == (Guid?)new_value && x.GUID_DEPARTMENT == projection.GUID_DEPARTMENT && x.GUID_DISCIPLINE == projection.GUID_DISCIPLINE && x.COMMODITY_CODE == projection.COMMODITY_CODE) && x.GUID != projection.GUID))
                     return errorMessage;
             }
             else if (field_name == BindableBase.GetPropertyName(() => new RATE().GUID_DEPARTMENT))
             {
-                if (Entities.Where(x => x.IsRateExists).Any(x => (x.PHASE_TYPE == projection.PHASE_TYPE && x.CHARGE_TYPE == projection.CHARGE_TYPE && x.GUID_DEPARTMENT == (Guid?)new_value && x.GUID_DISCIPLINE == projection.GUID_DISCIPLINE && x.COMMODITY_CODE == projection.COMMODITY_CODE) && x.GUID != projection.GUID))
+                if (Entities.Where(x => x.IsRateExists).Any(x => (x.PHASE_TYPE == projection.PHASE_TYPE && x.CHARGE_TYPE == projection.CHARGE_TYPE && x.GUID_AREA == projection.GUID_AREA && x.GUID_SUBAREA == projection.GUID_SUBAREA && x.GUID_DEPARTMENT == (Guid?)new_value && x.GUID_DISCIPLINE == projection.GUID_DISCIPLINE && x.COMMODITY_CODE == projection.COMMODITY_CODE) && x.GUID != projection.GUID))
                     return errorMessage;
             }
             else if (field_name == BindableBase.GetPropertyName(() => new RATE().GUID_DISCIPLINE))
             {
-                if (Entities.Where(x => x.IsRateExists).Any(x => (x.PHASE_TYPE == projection.PHASE_TYPE && x.CHARGE_TYPE == projection.CHARGE_TYPE && x.GUID_DEPARTMENT == projection.GUID_DEPARTMENT && x.GUID_DISCIPLINE == (Guid?)new_value && x.COMMODITY_CODE == projection.COMMODITY_CODE) && x.GUID != projection.GUID))
+                if (Entities.Where(x => x.IsRateExists).Any(x => (x.PHASE_TYPE == projection.PHASE_TYPE && x.CHARGE_TYPE == projection.CHARGE_TYPE && x.GUID_AREA == projection.GUID_AREA && x.GUID_SUBAREA == projection.GUID_SUBAREA && x.GUID_DEPARTMENT == projection.GUID_DEPARTMENT && x.GUID_DISCIPLINE == (Guid?)new_value && x.COMMODITY_CODE == projection.COMMODITY_CODE) && x.GUID != projection.GUID))
                     return errorMessage;
             }
             else if (field_name == BindableBase.GetPropertyName(() => new RATE().COMMODITY_CODE))
             {
-                if (Entities.Where(x => x.IsRateExists).Any(x => (x.PHASE_TYPE == projection.PHASE_TYPE && x.CHARGE_TYPE == projection.CHARGE_TYPE && x.GUID_DEPARTMENT == projection.GUID_DEPARTMENT && x.GUID_DISCIPLINE == projection.GUID_DISCIPLINE && x.COMMODITY_CODE == new_value.ToString()) && x.GUID != projection.GUID))
+                if (Entities.Where(x => x.IsRateExists).Any(x => (x.PHASE_TYPE == projection.PHASE_TYPE && x.CHARGE_TYPE == projection.CHARGE_TYPE && x.GUID_AREA == projection.GUID_AREA && x.GUID_SUBAREA == projection.GUID_SUBAREA && x.GUID_DEPARTMENT == projection.GUID_DEPARTMENT && x.GUID_DISCIPLINE == projection.GUID_DISCIPLINE && x.COMMODITY_CODE == new_value.ToString()) && x.GUID != projection.GUID))
                     return errorMessage;
             }
             else if (field_name == BindableBase.GetPropertyName(() => new RATE().RATE1))
@@ -247,10 +264,10 @@ namespace BluePrints.ViewModels
         public override void UnifiedCellValueChanged(string field_name, object old_value, object new_value, RATE projection, bool isNew)
         {
             compulsoryOnBeforeEntitySaved(projection);
-            if (field_name == BindableBase.GetPropertyName(() => new RATE().GUID_DEPARTMENT) || field_name == BindableBase.GetPropertyName(() => new RATE().GUID_DISCIPLINE))
+            if (field_name == BindableBase.GetPropertyName(() => new RATE().GUID_AREA) || field_name == BindableBase.GetPropertyName(() => new RATE().GUID_DEPARTMENT) || field_name == BindableBase.GetPropertyName(() => new RATE().GUID_DISCIPLINE))
             {
                 populatePHASE(projection);
-                projection.SetLookupProperties(CombinedCommodityCodeCollection, DISCIPLINECollection);
+                projection.SetLookupProperties(CombinedCommodityCodeCollection, DISCIPLINECollection, SUBAREACollection);
             }
 
             //commodity code must be empty string to avoid ambiguity when querying
@@ -264,6 +281,9 @@ namespace BluePrints.ViewModels
         protected void compulsoryOnBeforeEntitySaved(RATE entity)
         {
             entity.GUID_PROJECT = loadPROJECT.GUID;
+
+            if (entity.COMMODITY_CODE == null)
+                entity.COMMODITY_CODE = string.Empty;
             if (entity.IsGangRateCalculatable)
             {
                 entity.RATE1 = entity.GangRate;
@@ -276,7 +296,7 @@ namespace BluePrints.ViewModels
         #region View Properties
         public virtual void CustomColumnDisplayText(CustomColumnDisplayTextEventArgs e)
         {
-            if (e.Column.FieldName == BindableBase.GetPropertyName(() => new RATE().GUID_DEPARTMENT) ||
+            if (e.Column.FieldName == BindableBase.GetPropertyName(() => new RATE().GUID_AREA) || e.Column.FieldName == BindableBase.GetPropertyName(() => new RATE().GUID_SUBAREA) || e.Column.FieldName == BindableBase.GetPropertyName(() => new RATE().GUID_DEPARTMENT) || 
                 e.Column.FieldName == BindableBase.GetPropertyName(() => new RATE().GUID_DISCIPLINE))
             {
                 if (e.Row != null && e.Value == null)
@@ -308,7 +328,7 @@ namespace BluePrints.ViewModels
                 RATE entity = Rates[i];
                 if(entity.IsRateExists)
                 {
-                    if (Rates.Any(x => x.IsRateExists && x.Phase_Type == entity.Phase_Type && x.CHARGE_TYPE == entity.CHARGE_TYPE && x.GUID_DEPARTMENT == entity.GUID_DEPARTMENT && x.GUID_DISCIPLINE == entity.GUID_DISCIPLINE && x.COMMODITY_CODE == entity.COMMODITY_CODE && x.GUID != entity.GUID))
+                    if (Rates.Any(x => x.IsRateExists && x.Phase_Type == entity.Phase_Type && x.CHARGE_TYPE == entity.CHARGE_TYPE && x.GUID_AREA == entity.GUID_AREA && x.GUID_DEPARTMENT == entity.GUID_DEPARTMENT && x.GUID_DISCIPLINE == entity.GUID_DISCIPLINE && x.COMMODITY_CODE == entity.COMMODITY_CODE && x.GUID != entity.GUID))
                     {
                         Rates.Remove(entity);
                         DeleteRates.Add(entity);
@@ -350,7 +370,7 @@ namespace BluePrints.ViewModels
 
         protected bool initializeRATE(RATE rate)
         {
-            rate.SetLookupProperties(CombinedCommodityCodeCollection, DISCIPLINECollection);
+            rate.SetLookupProperties(CombinedCommodityCodeCollection, DISCIPLINECollection, SUBAREACollection);
 
             if (loadCostType == CostType.Charge)
             {
@@ -442,6 +462,28 @@ namespace BluePrints.ViewModels
                 if (collection != null)
                     collection = collection.OrderBy(x => x.NAME);
 
+                return collection;
+            }
+        }
+
+        public IEnumerable<AREA> AREACollection
+        {
+            get
+            {
+                var collection = GetEntities<AREA>();
+                if (collection != null)
+                    collection = collection.Where(x => x.GUID_PARENT == null).OrderBy(x => x.INTERNAL_NUM);
+                return collection;
+            }
+        }
+
+        public IEnumerable<AREA> SUBAREACollection
+        {
+            get
+            {
+                var collection = GetEntities<AREA>();
+                if (collection != null)
+                    collection = collection.Where(x => x.GUID_PARENT != null).OrderBy(x => x.INTERNAL_NUM);
                 return collection;
             }
         }

@@ -17,6 +17,8 @@ namespace BluePrints.Data
             BASELINE_ITEM1 = new HashSet<BASELINE_ITEM>();
             ESTIMATE_ITEM = new HashSet<ESTIMATE_ITEM>();
             ESTIMATE_ITEM1 = new HashSet<ESTIMATE_ITEM>();
+            RATE = new HashSet<RATE>();
+            RATE1 = new HashSet<RATE>();
             REGISTER_CHANGE = new HashSet<REGISTER_CHANGE>();
             REGISTER_HOLD = new HashSet<REGISTER_HOLD>();
             REGISTER_ISSUE = new HashSet<REGISTER_ISSUE>();
@@ -75,6 +77,12 @@ namespace BluePrints.Data
 
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
         public virtual ICollection<ESTIMATE_ITEM> ESTIMATE_ITEM1 { get; set; }
+
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
+        public virtual ICollection<RATE> RATE { get; set; }
+
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
+        public virtual ICollection<RATE> RATE1 { get; set; }
 
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
         public virtual ICollection<REGISTER_CHANGE> REGISTER_CHANGE { get; set; }

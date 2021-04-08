@@ -99,6 +99,22 @@
                                 <dxe:ComboBoxEditSettings AutoComplete="True" IsTextEditable="True" ItemsSource="{dxe:EnumItemsSource EnumType={x:Type common:ChargeType}}" />
                             </dxg:GridColumn.EditSettings>
                         </dxg:GridColumn>
+                        <dxg:GridColumn FieldName="GUID_AREA" Width="100" Header="Area" HeaderToolTip="Which area the current rate will be applied to">
+                            <dxg:GridColumn.EditSettings>
+                                <dxe:ComboBoxEditSettings AutoComplete="True" DisplayMember="INTERNAL_NUM" IsTextEditable="True" ItemsSource="{Binding AREACollection}" NullValueButtonPlacement="EditBox" ValueMember="GUID" />
+                            </dxg:GridColumn.EditSettings>
+                        </dxg:GridColumn>
+                        <dxg:GridColumn AllowBestFit="false" Width="50" FieldName="GUID_SUBAREA" Header="Sub Area" HeaderToolTip="Which subarea the current rate will be applied to">
+                            <dxg:GridColumn.CellTemplate>
+                                <DataTemplate>
+                                    <dxe:ComboBoxEdit x:Name="PART_Editor" DisplayMember="INTERNAL_NUM" ImmediatePopup="True" IncrementalFiltering="True" ItemsSource="{Binding RowData.Row.SubAreaCollection}" NullValueButtonPlacement="EditBox" ValueMember="GUID" />
+                                </DataTemplate>
+                            </dxg:GridColumn.CellTemplate>
+                            <!--For Filtering-->
+                            <dxg:GridColumn.EditSettings>
+                                <dxe:ComboBoxEditSettings AutoComplete="True" DisplayMember="INTERNAL_NUM" IsTextEditable="True" ItemsSource="{Binding SUBAREACollection}" ValueMember="GUID" />
+                            </dxg:GridColumn.EditSettings>
+                        </dxg:GridColumn>
                         <dxg:GridColumn FieldName="GUID_DISCIPLINE" Width="100" Header="Discipline" HeaderToolTip="Which discipline the current rate will be applied to">
                             <dxg:GridColumn.EditSettings>
                                 <dxe:ComboBoxEditSettings AutoComplete="True" DisplayMember="NAME" IsTextEditable="True" ItemsSource="{Binding DISCIPLINECollection}" NullValueButtonPlacement="EditBox" ValueMember="GUID" />

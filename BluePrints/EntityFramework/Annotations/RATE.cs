@@ -14,7 +14,7 @@ namespace BluePrints.Data
     using DevExpress.XtraEditors.DXErrorProvider;
     using BluePrints.Common.ViewModel.Reporting;
 
-    [ConstraintAttributes("GUID_DISCIPLINE, GUID_DEPARTMENT, COMMODITY_CODE, IsRateExists")]
+    [ConstraintAttributes("GUID_AREA, GUID_SUBAREA, GUID_DISCIPLINE, GUID_DEPARTMENT, COMMODITY_CODE, IsRateExists")]
     public partial class RATE : EntityBase, IGuidEntityKey, ICanSync, IHaveCreatedDate, IDXDataErrorInfo
     {
         [NotMapped]
@@ -34,6 +34,24 @@ namespace BluePrints.Data
                 this.Update();
             }
         }
+
+        [NotMapped]
+        public IEnumerable<AREA> SubAreaCollection
+        {
+            get
+            {
+                //when it's in read only mode we can use navigational properties to get sub areas
+                if (AREA != null)
+                    return AREA.AREA1;
+
+                if (GUID_AREA == null || NewItemRowSubAREACollection == null)
+                    return null;
+
+                return NewItemRowSubAREACollection.Where(x => x.GUID_PARENT == GUID_AREA);
+            }
+        }
+
+        public IEnumerable<AREA> NewItemRowSubAREACollection { get; set; }
 
         [NotMapped]
         private IEnumerable<CombinedCommodityCode> allCommodityCodes;
@@ -127,12 +145,14 @@ namespace BluePrints.Data
                 return validDISCIPLINES;
             }
         }
-        public void SetLookupProperties(IEnumerable<CombinedCommodityCode> commodityCodes, IEnumerable<DISCIPLINE> disciplines)
+        public void SetLookupProperties(IEnumerable<CombinedCommodityCode> commodityCodes, IEnumerable<DISCIPLINE> disciplines, IEnumerable<AREA> subAreas)
         {
             validCommodityCodes = null;
             validDISCIPLINES = null;
             this.allCommodityCodes = commodityCodes;
             this.allDISCIPLINES = disciplines;
+            this.NewItemRowSubAREACollection = subAreas;
+
             Update();
         }
 
@@ -160,6 +180,10 @@ namespace BluePrints.Data
                 constraint += PHASE_TYPE.ToString();
                 constraint += CHARGE_TYPE.ToString();
 
+                if (GUID_AREA != null)
+                    constraint += GUID_AREA.ToString();
+                if (GUID_SUBAREA != null)
+                    constraint += GUID_SUBAREA.ToString();
                 if (GUID_DISCIPLINE != null)
                     constraint += GUID_DISCIPLINE.ToString();
                 if (GUID_DISCIPLINE != null)

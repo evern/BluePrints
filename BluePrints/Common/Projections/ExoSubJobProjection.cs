@@ -206,6 +206,19 @@ namespace BluePrints.Common.Projections
             }
         }
 
+        public string SubAreaCode
+        {
+            get
+            {
+                if (SubJobCode == string.Empty)
+                    return string.Empty;
+                else if (SubJobCode.Length < 15)
+                    return string.Empty;
+
+                return SubJobCode.Substring(10, 2);
+            }
+        }
+
         public string FullCode
         {
             get

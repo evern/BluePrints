@@ -16,6 +16,10 @@ namespace BluePrints.Data
 
         public Guid GUID_PROJECT { get; set; }
 
+        public Guid? GUID_AREA { get; set; }
+
+        public Guid? GUID_SUBAREA { get; set; }
+
         public Guid? GUID_PHASE { get; set; }
 
         public CostType COST_TYPE { get; set; }
@@ -75,6 +79,10 @@ namespace BluePrints.Data
         public DateTime? DELETED { get; set; }
 
         public Guid? DELETEDBY { get; set; }
+
+        public virtual AREA AREA { get; set; }
+
+        public virtual AREA SUBAREA { get; set; }
 
         public virtual DEPARTMENT DEPARTMENT { get; set; }
 

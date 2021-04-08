@@ -258,6 +258,16 @@ namespace BluePrints.Data
                 .WithOptional(e => e.DEPARTMENT)
                 .HasForeignKey(e => e.GUID_DEPARTMENT);
 
+            modelBuilder.Entity<AREA>()
+                .HasMany(e => e.RATE)
+                .WithOptional(e => e.AREA)
+                .HasForeignKey(e => e.GUID_AREA);
+
+            modelBuilder.Entity<AREA>()
+                .HasMany(e => e.RATE1)
+                .WithOptional(e => e.SUBAREA)
+                .HasForeignKey(e => e.GUID_SUBAREA);
+
             modelBuilder.Entity<DEPARTMENT>()
                 .HasMany(e => e.RATE)
                 .WithOptional(e => e.DEPARTMENT)
