@@ -160,6 +160,12 @@ namespace BluePrints.ViewModels
             this.RaisePropertyChanged(x => x.Entities);
         }
 
+        protected override OperationInterceptMode OnBeforeProjectionSaveIsContinue(RATE projection, out bool isNew)
+        {
+            compulsoryOnBeforeEntitySaved(projection);
+            return base.OnBeforeProjectionSaveIsContinue(projection, out isNew);
+        }
+
         string errorMessage = "Duplicate entries exists";
         public override string UnifiedRowValidation(RATE projection)
         {
