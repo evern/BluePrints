@@ -35,6 +35,9 @@ namespace BluePrints.Data
         [PasteSkipAttribute("ANY")]
         public string COMMODITY_CODE { get; set; }
 
+        [PasteSkipAttribute("ANY")]
+        public string VARIATION_CODE { get; set; }
+
         public bool IS_FLOATING { get; set; }
 
         public decimal? MANAGER_RATE { get; set; }

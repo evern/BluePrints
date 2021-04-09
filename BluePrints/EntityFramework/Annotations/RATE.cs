@@ -14,7 +14,7 @@ namespace BluePrints.Data
     using DevExpress.XtraEditors.DXErrorProvider;
     using BluePrints.Common.ViewModel.Reporting;
 
-    [ConstraintAttributes("GUID_AREA, GUID_SUBAREA, GUID_DISCIPLINE, GUID_DEPARTMENT, COMMODITY_CODE, IsRateExists")]
+    [ConstraintAttributes("GUID_AREA, GUID_SUBAREA, GUID_DISCIPLINE, GUID_DEPARTMENT, COMMODITY_CODE, VARIATION_CODE, IsRateExists")]
     public partial class RATE : EntityBase, IGuidEntityKey, ICanSync, IHaveCreatedDate, IDXDataErrorInfo
     {
         [NotMapped]
@@ -186,12 +186,12 @@ namespace BluePrints.Data
                     constraint += GUID_SUBAREA.ToString();
                 if (GUID_DISCIPLINE != null)
                     constraint += GUID_DISCIPLINE.ToString();
-                if (GUID_DISCIPLINE != null)
-                    constraint += GUID_DISCIPLINE.ToString();
                 if (GUID_DEPARTMENT != null)
                     constraint += GUID_DEPARTMENT.ToString();
                 if (COMMODITY_CODE != null)
                     constraint += COMMODITY_CODE;
+                if (VARIATION_CODE != null)
+                    constraint += VARIATION_CODE;
 
                 constraint += IsRateExists;
                 return constraint;

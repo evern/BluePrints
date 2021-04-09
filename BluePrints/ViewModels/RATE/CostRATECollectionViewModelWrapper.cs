@@ -72,6 +72,7 @@ namespace BluePrints.ViewModels
         }
 
         public bool IsDepartmentVisible => loadPhaseType != PhaseType.Construct;
+        public bool IsVariationCodeVisible => loadPhaseType == PhaseType.Construct;
         List<TransactionRate> queryTransactionRates = new List<TransactionRate>();
 
         //recommend by non area specific group of transactions
@@ -90,7 +91,7 @@ namespace BluePrints.ViewModels
 
                 actualDataPoints.AddRange(burnedDataPoints);
                 actualDataPoints.AddRange(materialDataPoints);
-                queryTransactionRates = actualDataPoints.GroupBy(x => new { x.PhaseCode, x.AreaCode, x.SubAreaCode, DisciplineCode = x.Discipline_Code, CommodityCode = x.Commodity_Code }).Select(group => new TransactionRate() { RawPhaseCode = group.Key.PhaseCode, RawAreaCode = group.Key.AreaCode, RawSubAreaCode = group.Key.SubAreaCode, RawDisciplineCode = group.Key.DisciplineCode, RawCommodityCode = group.Key.CommodityCode, Transactions = group.ToList() }).ToList();
+                queryTransactionRates = actualDataPoints.GroupBy(x => new { x.PhaseCode, x.AreaCode, x.SubAreaCode, DisciplineCode = x.Discipline_Code, CommodityCode = x.Commodity_Code, x.Variation_Code }).Select(group => new TransactionRate() { RawPhaseCode = group.Key.PhaseCode, RawAreaCode = group.Key.AreaCode, RawSubAreaCode = group.Key.SubAreaCode, RawDisciplineCode = group.Key.DisciplineCode, RawCommodityCode = group.Key.CommodityCode, RawVariationCode =group.Key.Variation_Code, Transactions = group.ToList() }).ToList();
                 recommendUncommittedTransactionRates = actualDataPoints.GroupBy(x => new { x.PhaseCode, DisciplineCode = x.Discipline_Code, CommodityCode = x.Commodity_Code }).Select(group => new TransactionRate() { RawPhaseCode = group.Key.PhaseCode, RawDisciplineCode = group.Key.DisciplineCode, RawCommodityCode = group.Key.CommodityCode, Transactions = group.ToList() }).ToList();
             }
 
@@ -116,7 +117,7 @@ namespace BluePrints.ViewModels
                         IEnumerable<RATE> findCommittedRATES = returnRATES.Where(x => x.GUID_PHASE == findPHASE.GUID && x.GUID_AREA == null && x.GUID_DISCIPLINE == findDISCIPLINE.GUID && x.COMMODITY_CODE == findCOMMODITY_CODE.CODE);
                         if (findCommittedRATES.Count() == 0)
                         {
-                            RATE uncommittedRATE = new RATE() { GUID = Guid.Empty, GUID_PHASE = findPHASE.GUID, GUID_AREA = null, GUID_SUBAREA = null, GUID_DISCIPLINE = findDISCIPLINE.GUID, COMMODITY_CODE = findCOMMODITY_CODE.CODE };
+                            RATE uncommittedRATE = new RATE() { GUID = Guid.Empty, GUID_PHASE = findPHASE.GUID, GUID_AREA = null, GUID_SUBAREA = null, GUID_DISCIPLINE = findDISCIPLINE.GUID, COMMODITY_CODE = findCOMMODITY_CODE.CODE, VARIATION_CODE = null };
                             uncommittedRATE.PHASE_TYPE = (PhaseType)findPHASE.PHASE_TYPE;
 
                             initializeRATE(uncommittedRATE);
@@ -154,6 +155,9 @@ namespace BluePrints.ViewModels
 
         private void setRecommendedRate(RATE rate, bool isEditRateField = false)
         {
+            if (isEditRateField)
+                return;
+
             //try to retrieve rate's discipline if GUID_DISCIPLINE is not null
             DISCIPLINE findDISCIPLINE = rate.DISCIPLINE;
             if(findDISCIPLINE == null && rate.GUID_DISCIPLINE != null)
@@ -176,11 +180,11 @@ namespace BluePrints.ViewModels
             IEnumerable<TransactionRate> transactionRatesBySubArea = transactionRatesByArea.Where(x => (findSubAREA == null || x.RawSubAreaCode == findSubAREA.INTERNAL_NUM));
             IEnumerable<TransactionRate> transactionRatesByDiscipline = transactionRatesBySubArea.Where(x => (findDISCIPLINE == null || x.DisciplineCode == findDISCIPLINE.CODE));
             IEnumerable<TransactionRate> transactionRatesByCommodity = transactionRatesByDiscipline.Where(x => (rate.COMMODITY_CODE == string.Empty || rate.COMMODITY_CODE == null || x.CommodityCode == rate.COMMODITY_CODE));
-            List <TransactionRate> burned = transactionRatesByCommodity.ToList();
-            if (burned.Count > 0)
-                rate.Transactions = burned.SelectMany(x => x.Transactions).Where(x => x.CostPerQty > 0).ToList();
+            IEnumerable<TransactionRate> transactionRatesByVariation = transactionRatesByCommodity.Where(x => (rate.VARIATION_CODE == string.Empty || rate.VARIATION_CODE == null || x.RawVariationCode == rate.VARIATION_CODE));
+            List <TransactionRate> burned = transactionRatesByVariation.ToList();
+            rate.Transactions = burned.SelectMany(x => x.Transactions).Where(x => x.CostPerQty > 0).ToList();
 
-            if (!rate.IsRateExists && !isEditRateField)
+            if (!rate.IsRateExists)
                 rate.RATE1 = rate.RecommendedRate;
         }
 
@@ -214,7 +218,7 @@ namespace BluePrints.ViewModels
 
         public override void OnAfterEntitySaved(RATE projection, RATE entity, bool isNewEntity)
         {
-            RATE uncommittedRATE = Entities.FirstOrDefault(x => !x.IsRateExists && x.GUID != entity.GUID && x.GUID_PHASE == entity.GUID_PHASE && x.GUID_AREA == entity.GUID_AREA && x.GUID_DISCIPLINE == entity.GUID_DISCIPLINE && x.GUID_DEPARTMENT == entity.GUID_DEPARTMENT && x.COMMODITY_CODE == entity.COMMODITY_CODE);
+            RATE uncommittedRATE = Entities.FirstOrDefault(x => !x.IsRateExists && x.GUID != entity.GUID && x.GUID_PHASE == entity.GUID_PHASE && x.GUID_AREA == entity.GUID_AREA && x.GUID_DISCIPLINE == entity.GUID_DISCIPLINE && x.GUID_DEPARTMENT == entity.GUID_DEPARTMENT && x.COMMODITY_CODE == entity.COMMODITY_CODE && x.VARIATION_CODE == entity.VARIATION_CODE);
             if (uncommittedRATE != null)
                 Entities.Remove(uncommittedRATE);
 
@@ -241,7 +245,7 @@ namespace BluePrints.ViewModels
 
         public override void UnifiedCellValueChanged(string field_name, object old_value, object new_value, RATE projection, bool isNew)
         {
-            if (field_name == BindableBase.GetPropertyName(() => new RATE().GUID_PHASE) || field_name == BindableBase.GetPropertyName(() => new RATE().GUID_DISCIPLINE))
+            if (field_name == BindableBase.GetPropertyName(() => new RATE().GUID_AREA) || field_name == BindableBase.GetPropertyName(() => new RATE().GUID_PHASE) || field_name == BindableBase.GetPropertyName(() => new RATE().GUID_DISCIPLINE))
             {
                 populatePHASE(projection);
                 projection.SetLookupProperties(CombinedCommodityCodeCollection, DISCIPLINECollection, SUBAREACollection);
@@ -325,6 +329,7 @@ namespace BluePrints.ViewModels
         public string RawSubAreaCode { get; set; }
         public string RawDisciplineCode { get; set; }
         public string RawCommodityCode { get; set; }
+        public string RawVariationCode { get; set; }
         public decimal AverageRate => Transactions == null ? 0 : Transactions.Average(x => x.CostPerQty);
         public decimal TransactionCount => Transactions == null ? 0 : Transactions.Count;
         public string DisciplineCode => RawDisciplineCode.Length >= 2 ? RawDisciplineCode.Substring(0, 2) : string.Empty;
