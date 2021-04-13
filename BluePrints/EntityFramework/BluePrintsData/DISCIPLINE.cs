@@ -13,7 +13,6 @@ namespace BluePrints.Data
         public DISCIPLINE()
         {
             BASELINE_ITEM = new HashSet<BASELINE_ITEM>();
-            STOCK_CODE = new HashSet<STOCK_CODE>();
             COMMODITY_CODE = new HashSet<COMMODITY_CODE>();
             ESTIMATE_ITEM = new HashSet<ESTIMATE_ITEM>();
             RATE = new HashSet<RATE>();
@@ -51,9 +50,6 @@ namespace BluePrints.Data
 
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
         public virtual ICollection<BASELINE_ITEM> BASELINE_ITEM { get; set; }
-
-        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
-        public virtual ICollection<STOCK_CODE> STOCK_CODE { get; set; }
 
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
         public virtual ICollection<COMMODITY_CODE> COMMODITY_CODE { get; set; }

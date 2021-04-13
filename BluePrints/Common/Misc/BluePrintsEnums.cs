@@ -474,16 +474,6 @@ namespace BluePrints.Common
         Construct
     }
 
-    public enum EstimateProgressType
-    {
-        [Display(Name = "Standalone")]
-        Standalone,
-        [Display(Name = "Trackable")] 
-        Trackable,
-        [Display(Name = "Auto")] 
-        Auto
-    }
-
     public enum CostGroup
     {
         [Display(Name = "Offsite")]

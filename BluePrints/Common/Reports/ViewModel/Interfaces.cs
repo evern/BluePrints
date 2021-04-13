@@ -18,34 +18,17 @@ namespace BluePrints.Common.ViewModel.Reporting
         string VARIATION_CODE { get; set; }
     }
 
-    public interface IReportable_Quantity_Group : IReportable_Quantity
-    {
-        IEnumerable<IReportable_Quantity> Reportables { get; }
-        decimal Trackable_Total_Quantity { get; }
-        decimal Trackable_QuantityPerUnit { get; }
-        decimal Trackable_Total_Units { get; }
-    }
-
     //This interface is only used in variation to describe adjustment hours and costs
     //Variation_Install_Hours here is uncommitted hours wherelse Variation_Install_Hours in IHaveQuantity is coming from committed DC_Quantity
     public interface IVariation_Quantity
     {
         decimal Variation_Install_Cost { get; }
-        decimal Variation_Supply_Cost { get; }
-        decimal Variation_Freight_Cost { get; }
         decimal Variation_Total_Cost { get; }
         decimal Variation_Install_Hours { get; }
     }
 
-    public interface IReportable_Quantity : IReportable, IHaveQuantity, ICanTrack, IHaveStock_Group, ICanProgressByQuantity
+    public interface IReportable_Quantity : IReportable, IHaveQuantity, ICanProgressByQuantity
     {
-        decimal Schedule_Estimated_Quantity { get; }
-        decimal Schedule_Estimated_Current_Period_Quantity { get; }
-        decimal Remaining_Hours_To_Completion { get; }
-        decimal MinEstimateQuantity { get; }
-        decimal Earned_Install_Costs_OnDataDate { get; }
-        decimal Earned_Supply_Costs_OnDataDate { get; }
-        decimal Earned_Total_Costs_OnDataDate { get; }
     }
 
     public interface IReportable_Group : IReportable
@@ -76,7 +59,7 @@ namespace BluePrints.Common.ViewModel.Reporting
         IEnumerable<IDeliverable_Quantity> Deliverables { get; }
     }
 
-    public interface IDeliverable_Quantity : IDeliverable_Rates, IHaveStock_Group, IHaveQuantity, ICanTrack
+    public interface IDeliverable_Quantity : IDeliverable_Rates, IHaveQuantity
     {
         
     }
@@ -127,7 +110,6 @@ namespace BluePrints.Common.ViewModel.Reporting
         decimal CurrentPeriodInstalledQuantity { get; set; }
         decimal MaxCurrentQuantity { get; }
         decimal TotalInstalledQuantity { get; }
-        decimal Trackable_Installed_Quantity { get; }
         decimal AbsoluteTotalInstalledQuantity { get; }
         decimal getCurrentPeriodEarnedUnits(decimal newPercentage);
     }
@@ -242,11 +224,6 @@ namespace BluePrints.Common.ViewModel.Reporting
         Guid? DuplicateFromGuid { get; set; }
     }
 
-    public interface ICanTrack
-    {
-        EstimateProgressType Progress_Type { get; }
-    }
-
     public interface IHaveCosts
     {
         decimal Budget_ItemRate { get; }
@@ -255,25 +232,12 @@ namespace BluePrints.Common.ViewModel.Reporting
         decimal Budget_ItemInternalRate { get; }
         decimal Budget_InternalCost { get; }
     }
-
-    public interface IHaveStockCode
-    {
-        string Estimate_UOM { get; }
-        string Estimate_Stock_Code_Type { get; }
-        string Estimate_Stock_Code_Spec { get; }
-        string Estimate_Stock_Code_Description { get; }
-    }
-
+    
     public interface IHaveDBProductivityOverride
     {
         decimal? DB_Productivity_Override { get; set; }
     }
-
-    public interface IHaveStock_Group
-    {
-        Guid? Stock_Group_Guid { get; }
-    }
-
+   
     public interface IHaveCommodity_Code
     {
         string Commodity_Code { get; }
@@ -321,34 +285,11 @@ namespace BluePrints.Common.ViewModel.Reporting
 
     public interface IHaveQuantity
     {
-        decimal Estimate_Units { get; }
-        decimal Estimate_ItemRate { get; }
-        decimal Estimate_Stock_Code_Install_Hours { get; }
-        decimal Budget_Stock_Code_Install_Hours { get; }
-        decimal Estimate_Stock_Code_Supply_Rate { get; }
-        decimal Budget_Stock_Code_Supply_Rate { get; }
-        decimal Estimate_Quantity { get; }
         decimal Variation_Quantity { get; }
-        decimal Estimate_Install_Hours { get; }
         decimal Budget_Install_Hours { get; }
-        decimal Variation_Install_Hours { get; }
-        decimal Estimate_Install_Cost { get; }
         decimal Budget_Install_Cost { get; }
-        decimal Variation_Install_Cost { get; }
-        decimal Budget_FreightRate { get; }
-        decimal Estimate_FreightRate { get; }
-        decimal Estimate_Freight_Cost { get; }
-        decimal Budget_Freight_Cost { get; }
-        decimal Variation_Freight_Cost { get; }
-        decimal Estimate_Supply_Cost { get; }
-        decimal Budget_Supply_Cost { get; }
-        decimal Variation_Supply_Cost { get; }
         decimal Total_Budget_Install_Cost { get; }
-        decimal Total_Budget_Freight_Cost { get; }
-        decimal Total_Budget_Supply_Cost { get; }
-        decimal Total_Estimate_Cost { get; }
         decimal Total_Budget_Cost { get; }
-        string Estimate_UOM { get; }
         string Budget_UOM { get; }
     }
 

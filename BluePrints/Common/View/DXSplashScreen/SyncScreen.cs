@@ -237,8 +237,6 @@ namespace BluePrints.Common
             qt.Add(createThread<WORKPACK>(8));
             qt.Add(createThread<CLIENT>(8));
             qt.Add(createThread<ESTIMATE>(9));
-            qt.Add(createThread<STOCK_CODE>(9));
-            qt.Add(createThread<STOCK_GROUP>(9));
             qt.Add(createThread<HSE>(10));
             qt.Add(createThread<MEETING>(10));
             qt.Add(createThread<MINUTE_AGENDA>(10));

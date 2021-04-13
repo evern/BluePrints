@@ -19,7 +19,6 @@ namespace BluePrints.Data
         public ESTIMATE_ITEM()
         {
             DISCIPLINE_NUM = 1;
-            PROGRESS_TYPE = 0;
         }
 
         [NotMapped]
@@ -253,10 +252,7 @@ namespace BluePrints.Data
         {
             get
             {
-                if (STOCK_CODE == null)
-                    return 0;
-                else
-                    return DC_QUANTITY * STOCK_CODE.HOURS_INSTALL;
+                return Total_Units;
             }
         }
 
@@ -271,9 +267,6 @@ namespace BluePrints.Data
 
         [NotMapped]
         public decimal Estimated_Value { get => BUDGET_QUANTITY == null ? 0 : (decimal)BUDGET_QUANTITY; set => BUDGET_QUANTITY = value; }
-
-        [NotMapped]
-        public decimal DC_Value { get => DC_QUANTITY; set => DC_QUANTITY = value; }
 
         [NotMapped]
         public string Subjob_Name
@@ -329,7 +322,7 @@ namespace BluePrints.Data
         public decimal Budget_Quantity => BUDGET_QUANTITY == null ? 0 : (decimal)BUDGET_QUANTITY;
 
         [NotMapped]
-        public decimal Total_Quantity => DC_QUANTITY + Budget_Quantity;
+        public decimal Total_Quantity => Budget_Quantity;
 
         public string Variation_Code
         {

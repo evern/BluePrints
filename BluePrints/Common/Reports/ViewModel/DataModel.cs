@@ -14,159 +14,6 @@ using System.Linq.Expressions;
 
 namespace BluePrints.Common.ViewModel.Reporting
 {
-    public class STOCK_GROUPProgress : BluePrintsProgressableByQuantityProjectionBase<STOCK_GROUPProjection>, IReportable_Quantity_Group
-    {
-        public IEnumerable<IReportable_Quantity> Reportables { get; set; }
-
-        public override PROGRESS_ITEM PROGRESS_ITEM_Current
-        {
-            get
-            {
-                PROGRESS_ITEM newPROGRESS_ITEM = new PROGRESS_ITEM();
-                decimal totalCurrentUnits = Reportables.Where(x => x.PROGRESS_ITEM_Current != null).Sum(x => x.PROGRESS_ITEM_Current.EARNED_UNITS);
-                newPROGRESS_ITEM.EARNED_UNITS = totalCurrentUnits;
-                newPROGRESS_ITEM.EARNED_DATE = ReportingDataDate;
-                return newPROGRESS_ITEM;
-            }
-        }
-
-        public override IEnumerable<PROGRESS_ITEM> PROGRESS_ITEM_BeforeDataDate
-        {
-            get
-            {
-                return Reportables.SelectMany(x => x.PROGRESS_ITEM_BeforeDataDate);
-            }
-        }
-
-        public override IEnumerable<PROGRESS_ITEM> PROGRESS_ITEM_AfterDataDate
-        {
-            get
-            {
-                return Reportables.SelectMany(x => x.PROGRESS_ITEM_AfterDataDate);
-            }
-        }
-
-        public override IEnumerable<PROGRESS_ITEM> PROGRESS_ITEM_UpToCurrentDataDate
-        {
-            get
-            {
-                return Reportables.SelectMany(x => x.PROGRESS_ITEM_UpToCurrentDataDate);
-            }
-        }
-
-        public override List<PROGRESS_ITEM> PROGRESS_ITEMS
-        {
-            get { return Reportables.SelectMany(x => x.PROGRESS_ITEMS).ToList(); }
-        }
-
-        protected override decimal getNewPercentage()
-        {
-            decimal aggregate_total_quantity = Reportables.Where(x => x.Progress_Type == EstimateProgressType.Trackable).Sum(x => x.Total_Quantity);
-            if (aggregate_total_quantity == 0)
-                return 0;
-
-            return set_current_period_quantity == null ? 0 : (decimal)set_current_period_quantity / aggregate_total_quantity;
-        }
-
-        private IEnumerable<IReportable_Quantity> trackable_reportables => Reportables.Where(x => x.Progress_Type == EstimateProgressType.Trackable);
-
-        public decimal Trackable_Total_Units => trackable_reportables.Sum(x => x.Total_Units);
-
-        public decimal Trackable_Total_Quantity => trackable_reportables.Sum(x => x.Total_Quantity);
-
-        public override decimal Trackable_Installed_Quantity => trackable_reportables.Sum(x => x.AbsoluteTotalInstalledQuantity);
-
-        public override decimal AbsoluteTotalInstalledQuantity => Reportables.Sum(x => x.AbsoluteTotalInstalledQuantity);
-
-        public override decimal MaxCurrentQuantity => trackable_reportables.Sum(x => x.MaxCurrentQuantity);
-
-        public override decimal Earned_Costs_Total => trackable_reportables.Sum(x => x.Earned_Costs_Total);
-
-        public override decimal Remaining_Hours_To_Completion => Reportables.Sum(x => x.Remaining_Hours_To_Completion);
-
-        public override decimal QuantityPerUnit
-        {
-            get
-            {
-                decimal totalUnits = Reportables.Sum(x => x.Total_Units);
-                if (totalUnits == 0)
-                    return 0;
-
-                decimal totalQuantity = Reportables.Sum(x => x.Total_Quantity);
-                if (totalQuantity == 0)
-                    return 0;
-
-                return totalQuantity / totalUnits;
-            }
-        }
-
-        public override decimal UnitsPerQuantity => Reportables.Sum(x => x.UnitsPerQuantity);
-
-        public override decimal Earned_Install_Costs_OnDataDate => Reportables.Sum(x => x.Earned_Install_Costs_OnDataDate);
-
-        public override decimal Earned_Supply_Costs_OnDataDate => Reportables.Sum(x => x.Earned_Supply_Costs_OnDataDate);
-
-        public decimal Trackable_QuantityPerUnit
-        {
-            get
-            {
-                if (Trackable_Total_Units == 0)
-                    return 0;
-
-                return Trackable_Total_Quantity / Trackable_Total_Units;
-            }
-        }
-
-        public override decimal get_actual_earned_quantity()
-        {
-            decimal trackable_earned_units_ondatadate = trackable_reportables.Sum(x => x.Earned_Units_OnDataDate);
-            return trackable_earned_units_ondatadate * Trackable_QuantityPerUnit;
-        }
-
-        public override IEnumerable<PROGRESS_ITEM> GetExistingOrNewEditedProgresses(Func<Expression<Func<PROGRESS_ITEM, bool>>, PROGRESS_ITEM> repository_find_actual_func)
-        {
-            List<PROGRESS_ITEM> editPROGRESS_ITEMS = new List<PROGRESS_ITEM>();
-            decimal newPercentage = getNewPercentage();
-            foreach (IReportable_Quantity quantityReportable in Reportables)
-            {
-                IEnumerable<PROGRESS_ITEM> savePROGRESS_ITEMS = quantityReportable.GetExistingOrNewEditedProgresses(repository_find_actual_func);
-                if(savePROGRESS_ITEMS.Count() > 0)
-                {
-                    PROGRESS_ITEM savePROGRESS_ITEM = savePROGRESS_ITEMS.First();
-                    savePROGRESS_ITEM.EARNED_UNITS = quantityReportable.getCurrentPeriodEarnedUnits(newPercentage);
-                    editPROGRESS_ITEMS.Add(savePROGRESS_ITEM);
-                }
-            }
-
-            return editPROGRESS_ITEMS;
-        }
-
-        public override decimal? Override_Productivity
-        {
-            get
-            {
-                if (set_override_productivity == null)
-                {
-                    //Group won't have DBProductivityOverride because it's value is derived from childrens
-                    //IHaveDBProductivityOverride dbProductivityOverride = Entity as IHaveDBProductivityOverride;
-                    set_override_productivity = Reportables.Count() == 0 ? 0 : Reportables.Max(x => x.Override_Productivity);
-                }
-
-                return set_override_productivity;
-            }
-            set
-            {
-                foreach(IReportable_Quantity reportable in Reportables)
-                {
-                    reportable.Override_Productivity = value;
-                    reportable.Update();
-                }
-
-                set_override_productivity = value;
-            }
-        }
-    }
-
     public class ESTIMATE_ITEMProgress : BluePrintsProgressableByQuantityProjectionBase<ESTIMATE_ITEMProjection>, IHaveDBProductivityOverride, IHaveProcurementSubjob, IEstimateItem, IDXDataErrorInfo
     {
         public ESTIMATE_ITEMProgress()
@@ -188,27 +35,7 @@ namespace BluePrints.Common.ViewModel.Reporting
 
         public Guid? GUID_VARIATION { get => Entity.Variation_Guid; set => Entity.Variation_Guid = value; }
 
-        public decimal Estimated_Value { get => Entity.Estimated_Value; set => Entity.Estimated_Value = value; }
-
-        public decimal DC_Value { get => Entity.DC_Value; set => Entity.DC_Value = value; }
-
         public Guid? Procurement_Subjob_Guid { get => Entity.Procurement_Subjob_Guid; set => Entity.Procurement_Subjob_Guid = value; }
-
-        public decimal Variance_Quantity => Budget_Quantity - Estimate_Quantity;
-
-        public decimal Variance_Stock_Code_Install_Hours => Budget_Stock_Code_Install_Hours - Estimate_Stock_Code_Install_Hours;
-
-        public decimal Variance_Stock_Code_Supply_Rate => Budget_Stock_Code_Supply_Rate - Estimate_Stock_Code_Supply_Rate;
-
-        public decimal Variance_Supply_Cost => Budget_Supply_Cost - Estimate_Supply_Cost;
-
-        public decimal Variance_Install_Cost => Budget_Install_Cost - Estimate_Install_Cost;
-
-        public decimal Variance_Install_Hours => Budget_Install_Hours - Estimate_Install_Hours;
-
-        public decimal Variance_FreightRate => Budget_FreightRate - Estimate_FreightRate;
-
-        public decimal Variance_Freight_Cost => Budget_Freight_Cost - Estimate_Freight_Cost;
 
         public ESTIMATE_ITEMProgress ReadOnlyEstimate => this;
 
@@ -236,7 +63,7 @@ namespace BluePrints.Common.ViewModel.Reporting
 
 
     public abstract class BluePrintsProgressableByQuantityProjectionBase<TEntity> : BluePrintsProgressableProjectionBase<TEntity>, IReportable_Quantity, ICanAssignP6
-        where TEntity : class, IDeliverable_Rates, IHaveCosts, IHaveCreatedDate, IHaveStock_Group, IHaveQuantity, new()
+        where TEntity : class, IDeliverable_Rates, IHaveCosts, IHaveCreatedDate, IHaveQuantity, new()
     {
         public BluePrintsProgressableByQuantityProjectionBase()
         {
@@ -248,8 +75,6 @@ namespace BluePrints.Common.ViewModel.Reporting
         {
             
         }
-
-        public string Estimate_UOM => Entity.Estimate_UOM;
 
         public string Budget_UOM => Entity.Budget_UOM;
 
@@ -345,8 +170,6 @@ namespace BluePrints.Common.ViewModel.Reporting
 
         public decimal TotalInstalledQuantity => PastInstalledQuantity + CurrentPeriodInstalledQuantity;
 
-        public virtual decimal Trackable_Installed_Quantity => this.Progress_Type == EstimateProgressType.Trackable ? TotalInstalledQuantity : 0;
-
         public decimal FutureInstalledQuantity
         {
             get
@@ -360,67 +183,13 @@ namespace BluePrints.Common.ViewModel.Reporting
 
         public virtual decimal MaxCurrentQuantity => Math.Round(Total_Quantity - PastInstalledQuantity - FutureInstalledQuantity, 2);
 
-        public EstimateProgressType Progress_Type
-        {
-            get
-            {
-                ICanTrack trackableEntity = Entity as ICanTrack;
-                if (trackableEntity != null)
-                    return trackableEntity.Progress_Type;
-
-                return EstimateProgressType.Standalone;
-            }
-        }
-
         public decimal Total_Install_Hours => QuantityPerUnit == 0 ? 0 : AbsoluteTotalInstalledQuantity / QuantityPerUnit;
-
-        public decimal Total_Estimate_Cost => Estimate_Install_Cost + Estimate_Freight_Cost + Estimate_Supply_Cost;
-
-        public decimal Estimate_Stock_Code_Install_Hours => Entity.Estimate_Stock_Code_Install_Hours;
-
-        public decimal Budget_Stock_Code_Install_Hours => Entity.Budget_Stock_Code_Install_Hours;
-
-        public decimal Estimate_Stock_Code_Supply_Rate => Entity.Estimate_Stock_Code_Supply_Rate;
-
-        public decimal Budget_Stock_Code_Supply_Rate => Entity.Budget_Stock_Code_Supply_Rate;
 
         public decimal Variation_Quantity => Entity.Variation_Quantity;
 
         public virtual decimal Earned_Install_Costs_OnDataDate => Earned_Units_OnDataDate * Budget_ItemRate;
 
-        public decimal Estimate_ItemRate => Entity.Estimate_ItemRate;
-
-        public virtual decimal Earned_Supply_Costs_OnDataDate => Earned_Units_OnDataDate * Entity.Estimate_Stock_Code_Supply_Rate;
-
-        public decimal Earned_Total_Costs_OnDataDate => Earned_Install_Costs_OnDataDate + Earned_Supply_Costs_OnDataDate;
-
-        public Guid? Stock_Group_Guid => Entity.Stock_Group_Guid;
-
-        public decimal Budget_FreightRate => Entity.Budget_FreightRate;
-
-        public decimal Estimate_Install_Cost => Entity.Estimate_Install_Cost;
-
-        public decimal Variation_Install_Cost => Entity.Variation_Install_Cost;
-
-        public decimal Estimate_Freight_Cost => Entity.Estimate_Freight_Cost;
-
-        public decimal Variation_Freight_Cost => Entity.Variation_Freight_Cost;
-
-        public decimal Estimate_Install_Hours => Entity.Estimate_Install_Hours;
-
-        public decimal Variation_Install_Hours => Entity.Variation_Install_Hours;
-
-        public decimal Estimate_Supply_Cost => Entity.Estimate_Supply_Cost;
-
-        public decimal Budget_Supply_Cost => Entity.Budget_Supply_Cost;
-
-        public decimal Variation_Supply_Cost => Entity.Variation_Supply_Cost;
-
         public override decimal P6_Assignment_Total_Quantity => Entity.Total_Quantity;
-
-        public override string P6_Assignment_UOM => Entity.Estimate_UOM;
-
-        public decimal Estimate_Quantity => Entity.Estimate_Quantity;
 
         public decimal Budget_Install_Hours => Entity.Budget_Install_Hours;
 
@@ -428,17 +197,7 @@ namespace BluePrints.Common.ViewModel.Reporting
 
         public decimal Total_Budget_Install_Cost => Entity.Total_Budget_Install_Cost;
 
-        public decimal Total_Budget_Freight_Cost => Entity.Total_Budget_Freight_Cost;
-
-        public decimal Total_Budget_Supply_Cost => Entity.Total_Budget_Supply_Cost;
-
         public decimal Total_Budget_Cost => Entity.Total_Budget_Cost;
-
-        public decimal Budget_Freight_Cost => Entity.Budget_Freight_Cost;
-
-        public decimal Estimate_Units => Entity.Estimate_Units;
-
-        public decimal Estimate_FreightRate => Entity.Estimate_FreightRate;
 
         protected override decimal getNewPercentage()
         {
