@@ -146,6 +146,8 @@ namespace BluePrints.Common.Projections
 
         public string EntityNumber { get => Entity.EntityNumber; set => Entity.EntityNumber = value; }
 
+        public long EntitySortNumber => Entity.EntitySortNumber;
+
         public string EntityGroup => Entity.EntityGroup;
 
         public RateRole RateRole { get; set; }

@@ -43,9 +43,7 @@ namespace BluePrints.ViewModels
         }
 
         #region Database Operations
-
         private PROJECT loadPROJECT;
-
         private IUnitOfWorkFactory<IBluePrintsEntitiesUnitOfWork> bluePrintsUnitOfWorkFactory =
             BluePrintsEntitiesUnitOfWorkSource.GetUnitOfWorkFactory();
 

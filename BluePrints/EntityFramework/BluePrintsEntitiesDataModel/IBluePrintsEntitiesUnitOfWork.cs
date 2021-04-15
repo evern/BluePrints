@@ -38,6 +38,11 @@ namespace BluePrints.BluePrintsEntitiesDataModel
         IRepository<CONSTRUCTION_CONFIG, Guid> CONSTRUCTION_CONFIGS { get; }
 
         /// <summary>
+        /// The CONSTRUCTION_STAGE entities repository.
+        /// </summary>
+        IRepository<CONSTRUCTION_STAGE, Guid> CONSTRUCTION_STAGES { get; }
+
+        /// <summary>
         /// The DEPARTMENT entities repository.
         /// </summary>
         IRepository<DEPARTMENT, Guid> DEPARTMENTS { get; }

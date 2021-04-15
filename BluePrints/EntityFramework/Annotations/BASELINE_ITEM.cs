@@ -15,6 +15,7 @@ namespace BluePrints.Data
     using System.ComponentModel.DataAnnotations.Schema;
     using System.Linq;
     using DevExpress.Mvvm.POCO;
+    using BaseModel.Helpers;
 
     [ConstraintAttributes("GUID_BASELINE, INTERNAL_NUM")]
     public partial class BASELINE_ITEM : EntityBase, ICanSync, IDeliverable, IEntityNumber, IHaveCreatedDate, IHaveDBProductivityOverride, IHaveDeliverableStatus, IOriginalGuidEntityKey, ISupportVariationRevision, IGuidEntityKey
@@ -341,7 +342,32 @@ namespace BluePrints.Data
         public decimal Total_Quantity => BUDGET_HOURS;
 
         [NotMapped]
-        public string EntityNumber { get => INTERNAL_NUM; set => INTERNAL_NUM = value; }
+        public string EntityNumber
+        {
+            get => INTERNAL_NUM;
+            set
+            {
+                INTERNAL_NUM = value; entitySortNumber = null;
+            }
+        }
+
+        long? entitySortNumber;
+        public long EntitySortNumber
+        {
+            get
+            {
+                if (entitySortNumber == null)
+                {
+                    long sortNumber = 0;
+                    int dummyFieldLength = 0;
+                    string dummyString;
+                    dummyString = StringFormatUtils.ParseStringIntoComponents(this.EntityNumber, out dummyFieldLength, out sortNumber);
+                    entitySortNumber = sortNumber;
+                }
+
+                return (long)entitySortNumber;
+            }
+        }
 
         public string EntityGroup => string.Empty;
 

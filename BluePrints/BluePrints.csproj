@@ -896,6 +896,7 @@
     <Compile Include="Common\View\PrimaveraAffinityReport.xaml.cs">
       <DependentUpon>PrimaveraAffinityReport.xaml</DependentUpon>
     </Compile>
+    <Compile Include="EntityFramework\Annotations\CONSTRUCTION_STAGE.cs" />
     <Compile Include="EntityFramework\Annotations\FORECAST_HISTORY.cs" />
     <Compile Include="EntityFramework\Annotations\PROGRESS_ETC.cs" />
     <Compile Include="EntityFramework\Annotations\REGISTER_CHANGE_ATTACHMENT.cs" />
@@ -977,6 +978,7 @@
     <Compile Include="EntityFramework\Annotations\WORKPACK.cs" />
     <Compile Include="EntityFramework\Annotations\X_JOB_TIMESHEETS.cs" />
     <Compile Include="EntityFramework\Annotations\X_JOB_TRANSACTIONS_DETAIL_SeqNo.cs" />
+    <Compile Include="EntityFramework\BluePrintsData\CONSTRUCTION_STAGE.cs" />
     <Compile Include="EntityFramework\BluePrintsData\FORECAST_HISTORY.cs" />
     <Compile Include="EntityFramework\BluePrintsData\PROGRESS_ETC.cs" />
     <Compile Include="EntityFramework\BluePrintsData\REGISTER_CLARIFICATION.cs" />
@@ -1110,6 +1112,7 @@
     <Compile Include="ViewModels\BASELINE_ITEM\BASELINE_ITEMRATECollectionViewModelWrapper.cs" />
     <Compile Include="ViewModels\BUDGET_ITEM\BUDGET_ITEMWorkpackSchedulingViewModelWrapper.cs" />
     <Compile Include="ViewModels\CLIENT\CLIENTCollectionViewModelWrapper.cs" />
+    <Compile Include="ViewModels\CONSTRUCTION_STAGE\CONSTRUCTION_STAGECollectionViewModelWrapper.cs" />
     <Compile Include="ViewModels\EXOSUBJOB\EXO_JobHistoryCollectionViewModelWrapper.cs" />
     <Compile Include="ViewModels\EXOSUBJOB\EXO_ConstructionSubjobCollectionViewModelWrapper.cs" />
     <Compile Include="ViewModels\EXOSUBJOB\EXO_ResourcesCollectionViewModelWrapper.cs" />
@@ -1185,6 +1188,9 @@
     </Compile>
     <Compile Include="Views\CLIENT\CLIENTCollectionView.xaml.cs">
       <DependentUpon>CLIENTCollectionView.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Views\CONSTRUCTION_STAGE\CONSTRUCTION_STAGECollectionView.xaml.cs">
+      <DependentUpon>CONSTRUCTION_STAGECollectionView.xaml</DependentUpon>
     </Compile>
     <Compile Include="Views\EXOSUBJOB\EXO_JobHistoryCollectionView.xaml.cs">
       <DependentUpon>EXO_JobHistoryCollectionView.xaml</DependentUpon>
@@ -2138,6 +2144,10 @@
       <SubType>Designer</SubType>
     </Page>
     <Page Include="Views\CLIENT\CLIENTCollectionView.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Views\CONSTRUCTION_STAGE\CONSTRUCTION_STAGECollectionView.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>
@@ -5326,6 +5336,7 @@
     <Content Include="Common\BluePrintsSQL.sql" />
     <Content Include="DatabaseScript.sql" />
   </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <Import Project="..\packages\Microsoft.VisualStudio.SlowCheetah.3.0.61\build\Microsoft.VisualStudio.SlowCheetah.targets" Condition="Exists('..\packages\Microsoft.VisualStudio.SlowCheetah.3.0.61\build\Microsoft.VisualStudio.SlowCheetah.targets')" />
   <Target Name="EnsureNuGetPackageBuildImports" BeforeTargets="PrepareForBuild">

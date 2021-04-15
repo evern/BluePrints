@@ -123,14 +123,14 @@ namespace BluePrints.ViewModels
         #endregion
 
         #region IEntityNumber
-        protected override string GetEntityNumberFieldName()
-        {
-            return BindableBase.GetPropertyName(() => new REGISTER_CHANGE().NUMBER);
-        }
-
-        protected override int DefaultNumericFieldLength()
+        protected override int? DefaultNumericFieldLength()
         {
             return Int32.Parse(BluePrintsResources.Default_Register_Numeric_Length);
+        }
+
+        protected override bool AllowReorderingOnDeletion()
+        {
+            return false;
         }
         #endregion
 

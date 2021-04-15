@@ -394,6 +394,15 @@ namespace BluePrints.Common.Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Project construction stage maintenance menu.
+        /// </summary>
+        internal static string Menu_Project_ConstructionStage {
+            get {
+                return ResourceManager.GetString("Menu_Project_ConstructionStage", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Project construction variation maintenance menu.
         /// </summary>
         internal static string Menu_Project_ConstructionVariation {

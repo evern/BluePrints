@@ -210,7 +210,6 @@ namespace BluePrints.Data
                 .HasMany(e => e.ESTIMATE_ITEM)
                 .WithOptional(e => e.COMMODITY_CODES)
                 .HasForeignKey(e => e.GUID_COMMODITY_CODE);
-
             modelBuilder.Entity<DELIVERABLES_STATUS>()
                 .Property(e => e.MAX_PERCENTAGE)
                 .HasPrecision(5, 2);
@@ -489,6 +488,12 @@ namespace BluePrints.Data
 
             modelBuilder.Entity<PROJECT>()
                 .HasMany(e => e.AREA)
+                .WithRequired(e => e.PROJECT)
+                .HasForeignKey(e => e.GUID_PROJECT)
+                .WillCascadeOnDelete(false);
+
+            modelBuilder.Entity<PROJECT>()
+                .HasMany(e => e.CONSTRUCTION_STAGE)
                 .WithRequired(e => e.PROJECT)
                 .HasForeignKey(e => e.GUID_PROJECT)
                 .WillCascadeOnDelete(false);

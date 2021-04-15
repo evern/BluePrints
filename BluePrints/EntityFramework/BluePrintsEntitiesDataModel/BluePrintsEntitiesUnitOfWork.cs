@@ -41,6 +41,11 @@ namespace BluePrints.BluePrintsEntitiesDataModel
             get { return GetRepository(x => x.Set<CONSTRUCTION_CONFIG>(), (CONSTRUCTION_CONFIG x) => x.GUID); }
         }
 
+        IRepository<CONSTRUCTION_STAGE, Guid> IBluePrintsEntitiesUnitOfWork.CONSTRUCTION_STAGES
+        {
+            get { return GetRepository(x => x.Set<CONSTRUCTION_STAGE>(), (CONSTRUCTION_STAGE x) => x.GUID); }
+        }
+
         IRepository<COMMODITY_CODE, Guid> IBluePrintsEntitiesUnitOfWork.COMMODITY_CODES
         {
             get { return GetRepository(x => x.Set<COMMODITY_CODE>(), (COMMODITY_CODE x) => x.GUID); }

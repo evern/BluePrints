@@ -25,6 +25,18 @@ namespace BluePrints.Common
         public static DateTime DefaultLastDay = new DateTime(2099, 1, 1);
     }
 
+    public enum ScoreCardDiscipline
+    {
+        [Display(Name = "Concrete")]
+        Concrete,
+        [Display(Name = "Mechanical")]
+        Mechanical,
+        [Display(Name = "Piping")]
+        Piping,
+        [Display(Name = "Structural")]
+        Structural
+    }
+
     public enum RowEditAction
     {
         [Display(Name = "Add")]

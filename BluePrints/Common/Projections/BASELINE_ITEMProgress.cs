@@ -302,6 +302,8 @@ namespace BluePrints.Common.Projections
 
         public string EntityNumber { get => Entity.Entity.INTERNAL_NUM; set => Entity.Entity.INTERNAL_NUM = value; }
 
+        public long EntitySortNumber => Entity.EntitySortNumber;
+
         public string EntityGroup => Entity.EntityGroup;
 
         public Guid? DeliverableStatusProgressGuid

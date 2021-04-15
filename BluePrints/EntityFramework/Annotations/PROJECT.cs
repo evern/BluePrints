@@ -23,6 +23,7 @@ namespace BluePrints.Data
             BASELINE = new HashSet<BASELINE>();
             BASELINE_ITEM_WORK = new HashSet<BASELINE_ITEM_WORK>();
             CLIENT_PROJECT = new HashSet<CLIENT_PROJECT>();
+            CONSTRUCTION_STAGE = new HashSet<CONSTRUCTION_STAGE>();
             DELIVERABLES_STATUS = new HashSet<DELIVERABLES_STATUS>();
             ESTIMATE = new HashSet<ESTIMATE>();
             FORECAST_JOB = new HashSet<FORECAST_JOB>();
