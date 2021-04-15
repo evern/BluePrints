@@ -684,7 +684,7 @@ namespace BluePrints.ViewModels
                 findFORECAST_PO.JOB_CODE = groupByCodesPOItem.JobCode;
                 findFORECAST_PO.DISCIPLINE_CODE = groupByCodesPOItem.DisciplineCode;
                 findFORECAST_PO.COMMODITY_CODE = groupByCodesPOItem.CommodityCode;
-                findFORECAST_PO.STOCK_CODE = groupByCodesPOItem.StockCode == null ? string.Empty : groupByCodesPOItem.StockCode;
+                findFORECAST_PO.STOCK_CODE = groupByCodesPOItem.StockCode == null ? "" : groupByCodesPOItem.StockCode;
                 findFORECAST_PO.VARIATION_CODE = groupByCodesPOItem.VariationCode;
                 findFORECAST_PO.FORECAST_DATE = new DateTime(forecastDate.Year, forecastDate.Month, forecastDate.Day);
                 if (viewCosts == null || ((decimal)viewCosts) == 0.00m)
