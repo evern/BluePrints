@@ -14,8 +14,6 @@ namespace BluePrints.Data
 
         public Guid GUID_ORIGINAL { get; set; }
 
-        public Guid? GUID_PARENT { get; set; }
-
         public Guid? GUID_PSUBJOB { get; set; }
 
         public Guid? GUID_SUBJOB { get; set; }
@@ -36,12 +34,10 @@ namespace BluePrints.Data
 
         public Guid? GUID_DISCIPLINE { get; set; }
 
-        public Guid? GUID_COMMODITY_CODE { get; set; }
-
-        public Guid? GUID_BUDGET_STOCK_CODE { get; set; }
-
         [Required]
         public int DISCIPLINE_NUM { get; set; }
+
+        public string UOM { get; set; }
 
         public bool BY_DURATION { get; set; }
 
@@ -63,9 +59,16 @@ namespace BluePrints.Data
         [StringLength(50)]
         public string COMMODITY_CODE { get; set; }
 
+        [StringLength(50)]
+        public string STOCK_CODE { get; set; }
+
         public decimal? BUDGET_QUANTITY { get; set; }
 
-        public decimal BUDGET_INSTALL_RATE { get; set; }
+        public decimal? BUDGET_INSTALL_RATE { get; set; }
+
+        public decimal? BUDGET_INSTALL_HOURS_PER_QTY { get; set; }
+
+        public decimal? BUDGET_HOURS { get; set; }
 
         public decimal? PRODUCTIVITY_OVERRIDE { get; set; }
 
@@ -96,8 +99,6 @@ namespace BluePrints.Data
         public virtual DISCIPLINE DISCIPLINE { get; set; }
 
         public virtual ESTIMATE ESTIMATE { get; set; }
-
-        public virtual COMMODITY_CODE COMMODITY_CODES { get; set; }
 
         public virtual VARIATION VARIATION { get; set; }
 

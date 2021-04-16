@@ -206,10 +206,6 @@ namespace BluePrints.Data
                 .HasForeignKey(e => e.GUID_CLIENT)
                 .WillCascadeOnDelete(false);
 
-            modelBuilder.Entity<COMMODITY_CODE>()
-                .HasMany(e => e.ESTIMATE_ITEM)
-                .WithOptional(e => e.COMMODITY_CODES)
-                .HasForeignKey(e => e.GUID_COMMODITY_CODE);
             modelBuilder.Entity<DELIVERABLES_STATUS>()
                 .Property(e => e.MAX_PERCENTAGE)
                 .HasPrecision(5, 2);

@@ -99,6 +99,17 @@ namespace BluePrints.Data
             }
         }
 
+        public IEnumerable<COMMODITY_CODE> StockCodeCollection
+        {
+            get
+            {
+                if (PhaseType == null || FullCOMMODITY_CODECollection == null || GUID_DISCIPLINE == null || (COMMODITY_CODE == null || COMMODITY_CODE == string.Empty))
+                    return null;
+
+                return FullCOMMODITY_CODECollection.Where(x => x.PHASE_TYPE == PhaseType && x.GUID_DISCIPLINE == GUID_DISCIPLINE).Where(x => x.CODE == COMMODITY_CODE).OrderBy(x => x.DEFAULT_STOCKCODE);
+            }
+        }
+
         [NotMapped]
         public IEnumerable<DISCIPLINE> DisciplineCollection
         {
@@ -197,12 +208,6 @@ namespace BluePrints.Data
             get
             {
                 return COMMODITY_CODE;
-                //if (COMMODITY_CODES != null)
-                //    return COMMODITY_CODES.CODE;
-                //else if (CachedCOMMODITY_CODE != null)
-                //    return CachedCOMMODITY_CODE.CODE;
-                //else
-                //    return string.Empty;
             }
         }
 
@@ -220,19 +225,10 @@ namespace BluePrints.Data
         {
             get
             {
-                //if (IsByDuration)
-                //    return BluePrintsConstants.DurationBasedTotalUnits;
-
-                //temporarily removed for forecast phase 1 implementation so that schedule hours can be visualized in schedule mapping
-                //if (STOCK_CODE == null)
-                //    return 0;
-
-                if (BUDGET_QUANTITY == null)
+                if (BUDGET_HOURS == null)
                     return 0;
 
-                //temporarily removed for forecast phase 1 implementation so that schedule hours can be visualized in schedule mapping
-                //return (decimal)BUDGET_QUANTITY * STOCK_CODE.HOURS_INSTALL;
-                return (decimal)BUDGET_QUANTITY;
+                return (decimal)BUDGET_HOURS;
             }
         }
 
@@ -252,7 +248,7 @@ namespace BluePrints.Data
         {
             get
             {
-                return Total_Units;
+                return 0;
             }
         }
 

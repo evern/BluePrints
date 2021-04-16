@@ -1,5 +1,6 @@
 namespace BluePrints.Data
 {
+    using BluePrints.Common;
     using System;
     using System.Collections.Generic;
     using System.ComponentModel.DataAnnotations;
@@ -35,6 +36,8 @@ namespace BluePrints.Data
         [Required]
         [StringLength(100)]
         public string NAME { get; set; }
+
+        public ScoreCardDiscipline? SCORE_CARD_DISCIPLINE { get; set; }
 
         public DateTime CREATED { get; set; }
 

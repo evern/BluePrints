@@ -21,13 +21,6 @@ namespace BluePrints.Common.Projections
         public bool IsStockCodeValid(Guid? commodityCodeGuid)
         {
             return true;
-            //if (commodityCodeGuid == null)
-            //    return false;
-
-            //if (StockCodeCollection == null)
-            //    return false;
-
-            //return StockCodeCollection.Any(x => x.GUID == commodityCodeGuid);
         }
 
         public RATE RATE { get; set; }
@@ -53,23 +46,7 @@ namespace BluePrints.Common.Projections
         public decimal Total_Units_IncludingByDuration => Budget_Units;
 
         public List<VariationAdjustment> ApprovedVariations => new List<VariationAdjustment>();
-        //temporarily removed for forecast phase 1 implementation so that schedule hours can be visualized in schedule mapping
-        //public decimal Budget_Units
-        //{
-        //    get
-        //    {
-        //        if (Entity.BUDGET_QUANTITY == null)
-        //            return 0;
 
-        //        if (Entity.STOCK_CODE != null)
-        //            return Entity.STOCK_CODE.HOURS_INSTALL * (decimal)Entity.BUDGET_QUANTITY;
-
-        //        if (BUDGET_STOCK_CODE != null)
-        //            return BUDGET_STOCK_CODE.HOURS_INSTALL * (decimal)Entity.BUDGET_QUANTITY;
-
-        //        return 0;
-        //    }
-        //}
         public string Budget_UOM => "pc";
 
         public decimal Budget_Units => Entity.Budget_Units;
@@ -80,7 +57,7 @@ namespace BluePrints.Common.Projections
 
         public void SetOriginalEntityKey(Guid newGuid) { }
 
-        public decimal Budget_ItemRate => Entity.BUDGET_INSTALL_RATE;
+        public decimal Budget_ItemRate => 0;
 
         public decimal Budget_Costs => Budget_Units * Budget_ItemRate;
 

@@ -81,6 +81,7 @@ namespace BluePrints.ViewModels
         }
 
         IPrimeroEntitiesUnitOfWork primeroUnitOfWork;
+        List<ExoTimeAuthorisation> exoLines;
         public void Interface_InitializeParameters(object parameter)
         {
             var receiveParameter = (TripleEntitiesParameter<Data.PROJECT, IAmBaseline, object>)parameter;
@@ -89,6 +90,7 @@ namespace BluePrints.ViewModels
 
             primeroUnitOfWork = PrimeroEntitiesUnitOfWorkSource.GetUnitOfWorkFactory(loadPROJECT.OfficeNameForExo == BluePrintsResources.OfficeMontreal).CreateUnitOfWork();
             bluePrintsUnitOfWork = BluePrintsEntitiesUnitOfWorkSource.GetUnitOfWorkFactory().CreateUnitOfWork();
+            exoLines = ExoQueries.GetProjectLines(primeroUnitOfWork, loadPROJECT.NUMBER);
             IsProcurementSubjobVisible = false;
             if (loadPROJECT != null)
                 isQueryForLiveStatus = true;
@@ -387,7 +389,6 @@ namespace BluePrints.ViewModels
 
             Common.LoadingScreenManager.ShowLoadingScreen(1);
             Common.LoadingScreenManager.SetMessage("Loading EXO jobs...");
-            List<ExoTimeAuthorisation> exoLines = ExoQueries.GetProjectLines(primeroUnitOfWork, loadPROJECT.NUMBER);
             P6_ASSIGNMENTCollectionViewModel.Refresh();
             Common.LoadingScreenManager.CloseLoadingScreen();
 
@@ -637,6 +638,25 @@ namespace BluePrints.ViewModels
         {
             if (MainViewModel != null && MainViewModel.Entities.Where(x => x.GUID != projection.GUID).Any(x => x.UniqueJobcode == projection.UniqueJobcode))
                 return "Duplicate entries";
+            else if(projection.Entity.Entity.VARIATION_CODE != null && projection.Entity.Entity.VARIATION_CODE != string.Empty)
+            {
+                if (!VariationCodeStringCollection.Any(x => x == projection.Entity.Entity.VARIATION_CODE))
+                    return "Invalid variation code";
+            }
+
+            return string.Empty;
+        }
+
+        public override string UnifiedValueValidation(ESTIMATE_ITEMProgress projection, string field_name, object new_value, bool isPaste)
+        {
+            if (field_name.Contains(BindableBase.GetPropertyName(() => new ESTIMATE_ITEMProgress().Entity.Entity.VARIATION_CODE)))
+            {
+                if(new_value != null && new_value.ToString() != string.Empty)
+                {
+                    if (!VariationCodeStringCollection.Any(x => x == new_value.ToString()))
+                        return "Invalid variation code";
+                }
+            }
 
             return string.Empty;
         }
@@ -665,27 +685,47 @@ namespace BluePrints.ViewModels
                 else
                     projection.Entity.Entity.CachedPHASE = null;
             }
+            else if (new_value != null && field_name.Contains(BindableBase.GetPropertyName(() => new ESTIMATE_ITEM().COMMODITY_CODE)))
+            {
+                if(projection.Entity.Entity.STOCK_CODE == null || projection.Entity.Entity.STOCK_CODE == string.Empty)
+                {
+                    COMMODITY_CODE findCOMMODITY_CODE = COMMODITY_CODECollection.FirstOrDefault(x => x.CODE == new_value.ToString());
+                    if(findCOMMODITY_CODE != null)
+                        projection.Entity.Entity.STOCK_CODE = findCOMMODITY_CODE.DEFAULT_STOCKCODE;
+                }
+                if (projection.Entity.Entity.UOM == null || projection.Entity.Entity.UOM == string.Empty)
+                {
+                    COMMODITY_CODE findCOMMODITY_CODE = COMMODITY_CODECollection.FirstOrDefault(x => x.CODE == new_value.ToString());
+                    if (findCOMMODITY_CODE != null)
+                        projection.Entity.Entity.UOM = findCOMMODITY_CODE.UOM;
+                }
+            }
+            else if (new_value != null && field_name.Contains(BindableBase.GetPropertyName(() => new ESTIMATE_ITEM().BUDGET_HOURS)))
+            {
+                if(new_value != null)
+                {
+                    projection.Entity.Entity.BUDGET_INSTALL_HOURS_PER_QTY = (decimal)new_value / projection.Entity.Entity.BUDGET_QUANTITY;
+                }
+            }
+            else if (new_value != null && field_name.Contains(BindableBase.GetPropertyName(() => new ESTIMATE_ITEM().BUDGET_INSTALL_HOURS_PER_QTY)))
+            {
+                if (new_value != null)
+                {
+                    projection.Entity.Entity.BUDGET_HOURS = projection.Entity.Entity.BUDGET_QUANTITY * (decimal)new_value;
+                }
+            }
 
             //update anyway for unique job code to show new value
             projection.Update();
             base.UnifiedCellValueChanged(field_name, old_value, new_value, projection, isNew);
         }
-        #endregion
 
-        public void Save(ESTIMATE_ITEMProgress progress_entity)
-        {
-            MainViewModel.Save(progress_entity);
-        }
-
+        //exposed for EXO SubJob collection
         public void BulkSave(IEnumerable<ESTIMATE_ITEMProgress> progress_entities)
         {
             MainViewModel.BaseBulkSave(progress_entities, true);
         }
-
-        public void Delete(ESTIMATE_ITEMProgress progress_entity)
-        {
-            MainViewModel.Delete(progress_entity);
-        }
+        #endregion
 
         public bool CanAutoPopulate(object button)
         {
@@ -693,61 +733,6 @@ namespace BluePrints.ViewModels
                 return false;
 
             return true;
-        }
-
-        public void AutoPopulate(object button)
-        {
-            //MainViewModel.isBackgroundEdit = true;
-            //PauseUndoRedo();
-            //var info = GridPopupMenuBase.GetGridMenuInfo((DependencyObject)button) as GridMenuInfo;
-            //if (info.Column == null)
-            //    return;
-
-            //List<ESTIMATE_ITEMProgress> entitiesToSave = new List<ESTIMATE_ITEMProgress>();
-            //if(info.Column.FieldName == "Entity.Entity.GUID_COMMODITY_CODE")
-            //{
-            //    foreach(var entity in SelectedEntities)
-            //    {
-            //        STOCK_CODE stockCode = null;
-            //        if (IsBudget)
-            //        {
-            //            if (entity.Entity.BUDGET_STOCK_CODE != null)
-            //                stockCode = entity.Entity.BUDGET_STOCK_CODE;
-            //        }
-            //        else
-            //        {
-            //            if (entity.Entity.ESTIMATE_STOCK_CODE != null)
-            //                stockCode = entity.Entity.ESTIMATE_STOCK_CODE;
-            //        }
-
-            //        if(stockCode != null)
-            //        {
-            //            COMMODITY_CODE findCOMMODITY_CODE = COMMODITY_CODECollection.FirstOrDefault(x => x.CODE == stockCode.CODE);
-            //            if (findCOMMODITY_CODE != null)
-            //                entity.Entity.Entity.GUID_COMMODITY_CODE = findCOMMODITY_CODE.GUID;
-            //            else
-            //            {
-            //                COMMODITY_CODE newCOMMODITY_CODE = new COMMODITY_CODE();
-            //                newCOMMODITY_CODE.GUID_PROJECT = loadPROJECT.GUID;
-            //                if (entity.Discipline_Guid != null)
-            //                    newCOMMODITY_CODE.GUID_DISCIPLINE = entity.Discipline_Guid;
-            //                newCOMMODITY_CODE.CODE = stockCode.CODE;
-            //                newCOMMODITY_CODE.DESCRIPTION = "Auto Populate";
-            //                newCOMMODITY_CODE.UOM = entity.Entity.BUDGET_STOCK_CODE.UOM;
-            //                newCOMMODITY_CODE.PHASE_TYPE = entity.Entity.Entity.PhaseType == null;
-            //                COMMODITY_CODECollectionViewModel.Save(newCOMMODITY_CODE);
-            //                entity.Entity.Entity.GUID_COMMODITY_CODE = newCOMMODITY_CODE.GUID;
-            //                entitiesToSave.Add(entity);
-            //            }
-            //        }
-            //    }
-            //}
-
-
-            //MainViewModel.BulkSave(entitiesToSave);
-            //MainViewModel.isBackgroundEdit = false;
-            //UnpauseUndoRedo();
-            //BackgroundRefresh();
         }
 
         public bool CanFindReplace(object button)
@@ -1022,6 +1007,17 @@ namespace BluePrints.ViewModels
             }
         }
 
+        public IEnumerable<string> VariationCodeStringCollection
+        {
+            get
+            {
+                if (exoLines == null || exoLines.Count() == 0)
+                    return new List<string>();
+
+                return exoLines.Select(x => x.VariationCode).OrderBy(x => x).Distinct();
+            }
+        }
+
         public Func<IEnumerable<ESTIMATE_ITEMProgress>> GetEditableAllEntitiesCallBack { get; set; }
 
         private bool IsBudget => loadESTIMATE.STATUS == BaselineStatus.Live;
@@ -1061,11 +1057,6 @@ namespace BluePrints.ViewModels
             string tabName = P6ForecastProject + " Mapping";
             DocumentInfo DocumentInfo = new DocumentInfo(tabName, new object[] { loadPROJECT, BaselineMappingSelectionType.Original, loadPROJECT, true }, viewName, tabName);
             DocumentManagerService.ShowExistingEntityDocumentWithLogging(DocumentInfo, this);
-        }
-
-        public override string UnifiedValueValidation(ESTIMATE_ITEMProgress projection, string field_name, object new_value, bool isPaste)
-        {
-            return string.Empty;
         }
 
         public bool InVariationMode { get; set; }
