@@ -412,6 +412,15 @@ namespace BluePrints.Common.Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Project construction progress maintenance menu.
+        /// </summary>
+        internal static string Menu_Project_ConstructProgress {
+            get {
+                return ResourceManager.GetString("Menu_Project_ConstructProgress", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Project dashboard menu.
         /// </summary>
         internal static string Menu_Project_Dashboard {

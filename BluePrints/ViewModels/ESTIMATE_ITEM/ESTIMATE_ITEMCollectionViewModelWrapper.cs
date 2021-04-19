@@ -248,13 +248,12 @@ namespace BluePrints.ViewModels
             return query => ESTIMATE_ITEMProjectionQueries.IDeliverable_Progress_Transformation(base_entity_query(query), loadPROJECT, loaderCollection.GetCollection<RATE>(), livePROGRESS, PROGRESS_ITEMCollection, false, null, false, null, false, COMMODITY_CODECollection);
         }
 
-        public Func<IRepositoryQuery<ESTIMATE_ITEM>, IQueryable<ESTIMATE_ITEM>> BaseEntityQueryCallBack { get; set; }
         private IQueryable<ESTIMATE_ITEM> base_entity_query(IRepositoryQuery<ESTIMATE_ITEM> query)
         {
-            if (BaseEntityQueryCallBack != null)
-                return BaseEntityQueryCallBack(query);
+            List<ESTIMATE_ITEM> ESTIMATE_ITEMS = query.Where(x => x.GUID_ESTIMATE == load_context_guid).ToList();
+            ESTIMATE_ITEMS.ForEach(x => x.ExoLines = exoLines);
 
-            return query.Where(x => x.GUID_ESTIMATE == load_context_guid);
+            return ESTIMATE_ITEMS.AsQueryable();
         }
 
         public Action<ESTIMATE_ITEMProgress, string, object, object, EntityMessageType> InterfaceAddUndoRedoCallBack { get; set; }
@@ -640,7 +639,7 @@ namespace BluePrints.ViewModels
         {
             if (MainViewModel != null && MainViewModel.Entities.Where(x => x.GUID != projection.GUID).Any(x => x.UniqueJobcode == projection.UniqueJobcode))
                 return "Duplicate entries";
-            else if(projection.Entity.Entity.VARIATION_CODE != null && projection.Entity.Entity.VARIATION_CODE != string.Empty)
+            else if (projection.Entity.Entity.VARIATION_CODE != null && projection.Entity.Entity.VARIATION_CODE != string.Empty)
             {
                 if (!VariationCodeStringCollection.Any(x => x == projection.Entity.Entity.VARIATION_CODE))
                     return "Invalid variation code";
@@ -653,7 +652,7 @@ namespace BluePrints.ViewModels
         {
             if (field_name.Contains(BindableBase.GetPropertyName(() => new ESTIMATE_ITEMProgress().Entity.Entity.VARIATION_CODE)))
             {
-                if(new_value != null && new_value.ToString() != string.Empty)
+                if (new_value != null && new_value.ToString() != string.Empty)
                 {
                     if (!VariationCodeStringCollection.Any(x => x == new_value.ToString()))
                         return "Invalid variation code";
@@ -673,7 +672,10 @@ namespace BluePrints.ViewModels
 
         public override void UnifiedNewRowInitializationFromView(ESTIMATE_ITEMProgress projection)
         {
+            projection.Entity.Entity.ExoLines = exoLines;
             projection.Entity.Entity.FullCOMMODITY_CODECollection = COMMODITY_CODECollection;
+            projection.Entity.Entity.NewItemRowSubAREACollection = SUBAREACollection;
+
             base.UnifiedNewRowInitializationFromView(projection);
         }
 

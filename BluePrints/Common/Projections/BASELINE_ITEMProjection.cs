@@ -207,41 +207,29 @@ namespace BluePrints.Common.Projections
 
     public static class BASELINE_ITEMProjectionQueries
     {
-        public static IQueryable<BASELINE_ITEMProjection> IDeliverable_Rates_Transformation(
+        public static IQueryable<BASELINE_ITEMProjection> BASELINE_ITEM_Rates_Transformation(
             IQueryable<BASELINE_ITEM> BASELINE_ITEMS,
             IEnumerable<RATE> RATES, bool showLoadingScreen = false)
         {
-            //List<VARIATION_ITEM> variation_items = VARIATIONS.SelectMany(x => x.VARIATION_ITEM).ToList();
-            //List<BASELINE_ITEM> baseline_items = BASELINE_ITEMS.ToList();
-
-            ////deliverable that should exists are those that are added through the deliverable's list
-            //var baselineItem = from baseline_item in baseline_items
-            //           join variation_item in variation_items
-            //           on baseline_item.GUID_ORIGINAL equals variation_item.GUID_ORIBASEITEM
-            //           into bv
-            //           from variation_defaultIfEmpty in bv.DefaultIfEmpty()
-            //           where baseline_item.GUID_VARIATION == null || (baseline_item.GUID_VARIATION != null && variation_defaultIfEmpty != null)
-            //           select baseline_item;
-
             //easier to debug doing it this way
-            IEnumerable<BASELINE_ITEM> baseline_items = BASELINE_ITEMS.ToArray();
-            List<BASELINE_ITEMProjection> returnBASELINE_ITEMProjection = new List<BASELINE_ITEMProjection>();
+            IEnumerable<BASELINE_ITEM> baseline_itemArr = BASELINE_ITEMS.ToArray();
+            List<BASELINE_ITEMProjection> returnProjections = new List<BASELINE_ITEMProjection>();
 
-            if(showLoadingScreen)
+            if (showLoadingScreen)
             {
-                LoadingScreenManager.ShowLoadingScreen(baseline_items.Count());
+                LoadingScreenManager.ShowLoadingScreen(baseline_itemArr.Count());
                 LoadingScreenManager.SetMessage("Loading Design Deliverables...");
             }
 
             IQueryable<DOCTYPE> DOCTYPES = BluePrintsEntitiesUnitOfWorkSource.GetUnitOfWorkFactory().CreateUnitOfWork().DOCTYPES;
-            foreach(BASELINE_ITEM baseline_item in baseline_items)
+            foreach (BASELINE_ITEM baseline_item in baseline_itemArr)
             {
                 BASELINE_ITEMProjection newBASELINE_ITEM = new BASELINE_ITEMProjection();
                 newBASELINE_ITEM.Entity = baseline_item;
 
                 DOCTYPE findDOCTYPE = DOCTYPES.FirstOrDefault(x => x.GUID == baseline_item.GUID_DOCTYPE);
                 string docTypeCode = findDOCTYPE == null ? string.Empty : findDOCTYPE.CODE;
-                if(baseline_item.PHASE.PHASE_TYPE != null)
+                if (baseline_item.PHASE.PHASE_TYPE != null)
                 {
                     RATE findRATE = BluePrintsDataUtils.CascadeRateSearch(baseline_item.GUID_AREA, baseline_item.GUID_SUBAREA, baseline_item.GUID_DISCIPLINE, baseline_item.GUID_DEPARTMENT, docTypeCode, string.Empty, RATES, CostType.Charge, (PhaseType)baseline_item.PHASE.PHASE_TYPE);
                     if (findRATE != null)
@@ -252,21 +240,12 @@ namespace BluePrints.Common.Projections
                         newBASELINE_ITEM.INTERNAL_RATE = findInternalRate;
                 }
 
-                returnBASELINE_ITEMProjection.Add(newBASELINE_ITEM);
+                returnProjections.Add(newBASELINE_ITEM);
 
                 LoadingScreenManager.Progress();
             }
 
-            return returnBASELINE_ITEMProjection.AsQueryable();
-
-            //return
-            //    BASELINE_ITEMS.ToArray()
-            //        .Select(x => new BASELINE_ITEMProjection()
-            //        {
-            //            GUID = x.GUID,
-            //            Entity = x,
-            //            RATE = RATES.FirstOrDefault(y => (y.PHASE_TYPE == x.Phase) && (y.CHARGE_TYPE == x.PHASE.CHARGE_TYPE) && (y.GUID_DEPARTMENT == x.GUID_DEPARTMENT || y.GUID_DEPARTMENT == null) && (y.GUID_DISCIPLINE == x.GUID_DISCIPLINE || y.GUID_DISCIPLINE == null) && (y.GUID_COMMODITY == x.GUID_DOCTYPE || y.GUID_COMMODITY == null))
-            //        }).AsQueryable();
+            return returnProjections.AsQueryable();
         }
     }
 }

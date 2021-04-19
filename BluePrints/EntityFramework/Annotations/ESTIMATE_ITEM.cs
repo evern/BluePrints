@@ -58,14 +58,21 @@ namespace BluePrints.Data
         }
 
         [NotMapped]
+        public IEnumerable<AREA> NewItemRowSubAREACollection { get; set; }
+
+        [NotMapped]
         public IEnumerable<AREA> SubAreaCollection
         {
             get
             {
-                if (AREA == null)
+                //when it's in read only mode we can use navigational properties to get sub areas
+                if (AREA != null)
+                    return AREA.AREA1;
+
+                if (GUID_AREA == null || NewItemRowSubAREACollection == null)
                     return null;
 
-                return AREA.AREA1;
+                return NewItemRowSubAREACollection.Where(x => x.GUID_PARENT == GUID_AREA);
             }
         }
 
@@ -85,6 +92,9 @@ namespace BluePrints.Data
 
         [NotMapped]
         public PhaseType? PhaseType =>  CachedPHASE != null ? CachedPHASE.PHASE_TYPE : PHASE != null ? PHASE.PHASE_TYPE : null;
+
+        [NotMapped]
+        public IEnumerable<ExoTimeAuthorisation> ExoLines { get; set; }
 
         [NotMapped]
         public IEnumerable<COMMODITY_CODE> FullCOMMODITY_CODECollection;

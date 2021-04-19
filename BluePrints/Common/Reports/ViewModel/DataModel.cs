@@ -14,7 +14,7 @@ using System.Linq.Expressions;
 
 namespace BluePrints.Common.ViewModel.Reporting
 {
-    public class ESTIMATE_ITEMProgress : BluePrintsProgressableByQuantityProjectionBase<ESTIMATE_ITEMProjection>, IHaveDBProductivityOverride, IHaveProcurementSubjob, IEstimateItem, IDXDataErrorInfo
+    public class ESTIMATE_ITEMProgress : BluePrintsProgressableByQuantityProjectionBase<ESTIMATE_ITEMProjection>, IHaveDBProductivityOverride, IHaveProcurementSubjob, IEstimateItem, IDXDataErrorInfo, IBookable
     {
         public ESTIMATE_ITEMProgress()
         {
@@ -39,8 +39,28 @@ namespace BluePrints.Common.ViewModel.Reporting
 
         public ESTIMATE_ITEMProgress ReadOnlyEstimate => this;
 
+        public bool CanBook { get; set; }
+
+        public override decimal MaxPercentage
+        {
+            get
+            {
+                if (Total_Units == 0)
+                    return 1;
+
+                return ((Total_Units - Earned_Units_AfterDataDate) / Total_Units);
+            }
+        }
+
         public void GetError(ErrorInfo info)
         {
+            if(Entity.Entity.ExoLines != null && (Entity.Subjob_Name != string.Empty) && (Entity.Discipline_Code != string.Empty) && (Entity.Commodity_Code != string.Empty))
+            {
+                if (!Entity.Entity.ExoLines.Any(x => x.SubJobCode == Entity.Subjob_Name && x.DisciplineCode == Entity.Discipline_Code && x.CommodityCode == Entity.Commodity_Code))
+                    info.ErrorText = Entity.Subjob_Name + " " + Entity.Discipline_Code + " " + Entity.Commodity_Code + " doesn't exist in EXO";
+                else
+                    info.ErrorText = string.Empty;
+            }
         }
 
         public void GetPropertyError(string propertyName, ErrorInfo info)
@@ -52,6 +72,11 @@ namespace BluePrints.Common.ViewModel.Reporting
             else if (propertyName.Contains(BindableBase.GetPropertyName(() => new ESTIMATE_ITEMProgress().Entity.Entity.GUID_DISCIPLINE)) && !Entity.Entity.IsDisciplineCodeValid)
             {
                 info.ErrorText = "Invalid discipline code, please check phase";
+            }
+            else if (propertyName.Contains(BindableBase.GetPropertyName(() => new ESTIMATE_ITEMProgress().Entity.Entity.VARIATION_CODE)))
+            {
+                if (Entity.Entity.ExoLines != null && !Entity.Entity.ExoLines.Any(x => x.VariationCode == Entity.Variation_Code))
+                    info.ErrorText = Entity.Variation_Code + " doesn't exist in EXO";
             }
         }
 

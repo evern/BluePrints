@@ -444,4 +444,7 @@
   <data name="Menu_Project_ConstructionStage" xml:space="preserve">
     <value>Project construction stage maintenance menu</value>
   </data>
+  <data name="Menu_Project_ConstructProgress" xml:space="preserve">
+    <value>Project construction progress maintenance menu</value>
+  </data>
 </root>

@@ -1755,7 +1755,7 @@ namespace BluePrints.Common.Base
 
                     if ((((GridSummaryItem)e.Item).FieldName) == BindableBase.GetPropertyName(() => new BASELINE_ITEMProgress().Total_Earned_Percentage))
                     {
-                        cumulative_current_units += ((BASELINE_ITEMProgress)e.Row).Earned_Units_ToDate;
+                        cumulative_current_units += ((IReportable)e.Row).Earned_Units_ToDate;
                         if (cumulative_total_units > 0)
                             e.TotalValue = cumulative_current_units / cumulative_total_units;
                     }

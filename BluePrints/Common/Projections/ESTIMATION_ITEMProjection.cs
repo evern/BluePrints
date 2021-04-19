@@ -3,6 +3,7 @@ using BaseModel.Data.Helpers;
 using BluePrints.Common.Base;
 using BluePrints.Common.Resources;
 using BluePrints.Common.ViewModel.Reporting;
+using BluePrints.Common.ViewModel.Utils;
 using BluePrints.Data;
 using System;
 using System.Collections.Generic;
@@ -24,6 +25,8 @@ namespace BluePrints.Common.Projections
         }
 
         public RATE RATE { get; set; }
+
+        public RATE INTERNAL_RATE { get; set; }
 
         //public string Deliverable_Name => BUDGET_STOCK_CODE == null ? string.Empty : BUDGET_STOCK_CODE.CODE;
         public string Deliverable_Name => Entity.Deliverable_Name;
@@ -146,13 +149,13 @@ namespace BluePrints.Common.Projections
     public static class ESTIMATE_ITEMProjectionQueries
     {
         public static IQueryable<ESTIMATE_ITEMProgress> IDeliverable_Progress_Transformation(
-            IQueryable<ESTIMATE_ITEM> ESTIMATE_ITEMS, PROJECT PROJECT, 
-            IEnumerable<RATE> RATES, PROGRESS PROGRESS, IEnumerable<PROGRESS_ITEM> PROGRESS_ITEMS, bool useReportDate, 
+            IQueryable<ESTIMATE_ITEM> ESTIMATE_ITEMS, PROJECT PROJECT,
+            IEnumerable<RATE> RATES, PROGRESS PROGRESS, IEnumerable<PROGRESS_ITEM> PROGRESS_ITEMS, bool useReportDate,
             IEnumerable<VARIATION> VARIATIONS = null, bool buildStats = false, IEnumerable<P6_ASSIGNMENT> P6_ASSIGNMENTS = null, bool showLoadingScreen = false, IEnumerable<COMMODITY_CODE> COMMODITY_CODES = null, bool forceRetrieveRemainingDataPoints = false)
         {
             var PROGRESS_ITEMSByOriginalGuid = PROGRESS_ITEMS.GroupBy(x => x.GUID_ORIBASEITEM).Select(group => new { OriginalGuid = group.Key, Progresses = group.ToList() });
             List<ESTIMATE_ITEM> estimate_items = ESTIMATE_ITEMS.ToList();
-            List<ESTIMATE_ITEMProjection> estimation_direct_item_rates = IDeliverable_Rates_Transformation(estimate_items.AsQueryable(), RATES, showLoadingScreen).ToList();
+            List<ESTIMATE_ITEMProjection> estimation_direct_item_rates = ESTIMATE_ITEM_Rates_Transformation(estimate_items.AsQueryable(), RATES, showLoadingScreen).ToList();
 
             List<VariationAdjustment> projectVariationAdjustments;
             //VARIATIONS are only necessary if front-end requires percentages
@@ -162,8 +165,6 @@ namespace BluePrints.Common.Projections
                 projectVariationAdjustments = new List<VariationAdjustment>();
 
             List<ESTIMATE_ITEMProgress> estimation_direct_item_progresses = new List<ESTIMATE_ITEMProgress>();
-            //LoadingScreenManager.ShowLoadingScreen(estimation_direct_item_rates.Count);
-            //LoadingScreenManager.SetMessage("Building budget stats");
             foreach (ESTIMATE_ITEMProjection estimation_direct_item_rate in estimation_direct_item_rates)
             {
                 ESTIMATE_ITEMProgress newEstimation_Direct_itemProgress = new ESTIMATE_ITEMProgress(PROJECT, PROGRESS, estimation_direct_item_rate, projectVariationAdjustments, forceRetrieveRemainingDataPoints);
@@ -174,7 +175,7 @@ namespace BluePrints.Common.Projections
                 DateTime reportDateToUse = useReportDate ? PROGRESS.REPORT_DATE != null ? (DateTime)PROGRESS.REPORT_DATE : PROGRESS.DATA_DATE : PROGRESS.DATA_DATE;
 
                 ProgressQueries.SetReportablePROGRESS_ITEM(newEstimation_Direct_itemProgress, PROGRESS_ITEMSByOriginalGuid);
-                if(PROGRESS != null)
+                if (PROGRESS != null)
                     newEstimation_Direct_itemProgress.SetReportingDataDate(reportDateToUse);
 
                 if (buildStats)
@@ -189,29 +190,43 @@ namespace BluePrints.Common.Projections
             return estimation_direct_item_progresses.AsQueryable();
         }
 
-        public static IQueryable<ESTIMATE_ITEMProjection> IDeliverable_Rates_Transformation(
-            IQueryable<ESTIMATE_ITEM> ESTIMATE_ITEMS, 
-            IEnumerable<RATE> RATES, bool showLoadingScreen = false)
+        public static IQueryable<ESTIMATE_ITEMProjection> ESTIMATE_ITEM_Rates_Transformation(
+        IQueryable<ESTIMATE_ITEM> ESTIMATE_ITEMS,
+        IEnumerable<RATE> RATES, bool showLoadingScreen = false)
         {
-            IEnumerable<RATE> INSTALL_RATES = RATES.Where(x => x.Phase_Type == PhaseType.Construct);
-            IEnumerable<RATE> FREIGHT_RATES = RATES.Where(x => x.Phase_Type == PhaseType.Procurement);
-            
-            List<ESTIMATE_ITEMProjection> estimate_items = new List<ESTIMATE_ITEMProjection>();
-            if(showLoadingScreen)
+            //easier to debug doing it this way
+            IEnumerable<ESTIMATE_ITEM> estimate_itemArr = ESTIMATE_ITEMS.ToArray();
+            List<ESTIMATE_ITEMProjection> returnProjections = new List<ESTIMATE_ITEMProjection>();
+
+            if (showLoadingScreen)
             {
-                LoadingScreenManager.ShowLoadingScreen(ESTIMATE_ITEMS.Count());
+                LoadingScreenManager.ShowLoadingScreen(estimate_itemArr.Count());
                 LoadingScreenManager.SetMessage("Loading Construction Deliverables...");
             }
 
-            foreach(ESTIMATE_ITEM estimate_item in ESTIMATE_ITEMS)
+            foreach (ESTIMATE_ITEM estimate_item in estimate_itemArr)
             {
-                ESTIMATE_ITEMProjection newEstimateItem = new ESTIMATE_ITEMProjection();
-                newEstimateItem.Entity = estimate_item;
-                estimate_items.Add(newEstimateItem);
+                ESTIMATE_ITEMProjection newESTIMATE_ITEM = new ESTIMATE_ITEMProjection();
+                newESTIMATE_ITEM.Entity = estimate_item;
+
+                if (estimate_item.PHASE.PHASE_TYPE != null)
+                {
+                    RATE findRATE = BluePrintsDataUtils.CascadeRateSearch(estimate_item.GUID_AREA, estimate_item.GUID_SUBAREA, estimate_item.GUID_DISCIPLINE, estimate_item.GUID_DEPARTMENT, estimate_item.Commodity_Code, string.Empty, RATES, CostType.Charge, (PhaseType)estimate_item.PHASE.PHASE_TYPE);
+                    if (findRATE != null)
+                        newESTIMATE_ITEM.RATE = findRATE;
+
+                    //Not available at this moment
+                    //RATE findInternalRate = BluePrintsDataUtils.CascadeRateSearch(estimate_item.GUID_AREA, estimate_item.GUID_SUBAREA, estimate_item.GUID_DISCIPLINE, estimate_item.GUID_DEPARTMENT, estimate_item.Commodity_Code, string.Empty, RATES, CostType.Cost, (PhaseType)estimate_item.PHASE.PHASE_TYPE);
+                    //if (findInternalRate != null)
+                    //    newESTIMATE_ITEM.INTERNAL_RATE = findInternalRate;
+                }
+
+                returnProjections.Add(newESTIMATE_ITEM);
+
                 LoadingScreenManager.Progress();
             }
 
-            return estimate_items.AsQueryable();
+            return returnProjections.AsQueryable();
         }
     }
 }
