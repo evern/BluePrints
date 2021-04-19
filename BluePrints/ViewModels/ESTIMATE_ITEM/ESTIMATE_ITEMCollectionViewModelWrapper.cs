@@ -583,6 +583,8 @@ namespace BluePrints.ViewModels
         protected override OperationInterceptMode OnBeforeProjectionSaveIsContinue(ESTIMATE_ITEMProgress projection, out bool isNew)
         {
             projection.Entity.Entity.GUID_ESTIMATE = load_context_guid;
+
+            BluePrintsDataUtils.OnBeforeSavedGenerateAndAssignSubjob(loadPROJECT, PHASECollection, AREACollection, SUBAREACollection, projection, bluePrintsUnitOfWork, PhaseType.Construct, ChargeType.Chargeable);
             BluePrintsDataUtils.OnBeforeSavedGenerateAndAssignWorkpack(projection, WORKPACKSCollectionViewModel, SUBJOBCollection, DISCIPLINECollection);
             return base.OnBeforeProjectionSaveIsContinue(projection, out isNew);
         }
@@ -687,22 +689,26 @@ namespace BluePrints.ViewModels
             }
             else if (new_value != null && field_name.Contains(BindableBase.GetPropertyName(() => new ESTIMATE_ITEM().COMMODITY_CODE)))
             {
-                if(projection.Entity.Entity.STOCK_CODE == null || projection.Entity.Entity.STOCK_CODE == string.Empty)
+                if (projection.Entity.Entity.STOCK_CODE == null || projection.Entity.Entity.STOCK_CODE == string.Empty)
                 {
                     COMMODITY_CODE findCOMMODITY_CODE = COMMODITY_CODECollection.FirstOrDefault(x => x.CODE == new_value.ToString());
-                    if(findCOMMODITY_CODE != null)
+                    if (findCOMMODITY_CODE != null)
                         projection.Entity.Entity.STOCK_CODE = findCOMMODITY_CODE.DEFAULT_STOCKCODE;
                 }
+
+            }
+            else if (new_value != null && field_name.Contains(BindableBase.GetPropertyName(() => new ESTIMATE_ITEM().STOCK_CODE)))
+            {
                 if (projection.Entity.Entity.UOM == null || projection.Entity.Entity.UOM == string.Empty)
                 {
-                    COMMODITY_CODE findCOMMODITY_CODE = COMMODITY_CODECollection.FirstOrDefault(x => x.CODE == new_value.ToString());
+                    COMMODITY_CODE findCOMMODITY_CODE = COMMODITY_CODECollection.FirstOrDefault(x => x.DEFAULT_STOCKCODE == new_value.ToString());
                     if (findCOMMODITY_CODE != null)
                         projection.Entity.Entity.UOM = findCOMMODITY_CODE.UOM;
                 }
             }
             else if (new_value != null && field_name.Contains(BindableBase.GetPropertyName(() => new ESTIMATE_ITEM().BUDGET_HOURS)))
             {
-                if(new_value != null)
+                if (new_value != null)
                 {
                     projection.Entity.Entity.BUDGET_INSTALL_HOURS_PER_QTY = (decimal)new_value / projection.Entity.Entity.BUDGET_QUANTITY;
                 }
@@ -872,7 +878,8 @@ namespace BluePrints.ViewModels
             {
                 var collection = GetEntities<COMMODITY_CODE>();
                 if (collection != null)
-                    collection = collection.OrderBy(x => x.CODE);
+                    collection = collection.Where(x => x.PHASE_TYPE == PhaseType.Construct).OrderBy(x => x.CODE);
+
                 return collection;
             }
         }

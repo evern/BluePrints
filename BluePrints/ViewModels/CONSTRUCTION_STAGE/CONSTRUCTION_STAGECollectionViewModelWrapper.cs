@@ -125,6 +125,9 @@ namespace BluePrints.ViewModels
         }
         public override string UnifiedRowValidation(CONSTRUCTION_STAGE projection)
         {
+            if (MainViewModel.Entities.Any(x => x.SCORE_CARD_DISCIPLINE == projection.SCORE_CARD_DISCIPLINE && x.SORT_ORDER == projection.SORT_ORDER))
+                return "ID of " + projection.SORT_ORDER.ToString() + " already exist for " + projection.SCORE_CARD_DISCIPLINE.ToString();
+
             return string.Empty;
         }
 

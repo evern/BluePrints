@@ -82,7 +82,7 @@
                                 <dxe:SpinEditSettings Increment="0.1" Mask="p0" MaskType="Numeric" MaskUseAsDisplayFormat="True" MaxValue="1" MinValue="0" />
                             </dxg:GridColumn.EditSettings>
                         </dxg:GridColumn>
-                        <dxg:GridColumn Header="Order" AllowBestFit="false" SortIndex="2"  Width="50" FieldName="SORT_ORDER" HeaderToolTip="Unique number" AllowMoving="false" />
+                        <dxg:GridColumn Header="ID" AllowBestFit="false" SortIndex="2"  Width="50" FieldName="SORT_ORDER" HeaderToolTip="Unique number" AllowMoving="false" />
                     </dxg:GridControl.Columns>
                     <dxg:GridControl.TotalSummary>
                         <dxg:GridSummaryItem dx:DXSerializer.Enabled="False" Alignment="Right" SummaryType="Count" />
