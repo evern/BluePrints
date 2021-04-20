@@ -7,9 +7,11 @@ using BluePrints.BluePrintsEntitiesDataModel;
 using BluePrints.Common;
 using BluePrints.Common.Base;
 using BluePrints.Common.Filtering;
+using BluePrints.Common.Helpers;
 using BluePrints.Common.Projections;
 using BluePrints.Common.Reports;
 using BluePrints.Common.Resources;
+using BluePrints.Common.ViewModel.Misc;
 using BluePrints.Common.ViewModel.Reporting;
 using BluePrints.Common.ViewModel.Utils;
 using BluePrints.Data;
@@ -27,6 +29,7 @@ using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
+using System.Data;
 using System.IO;
 using System.Linq;
 using System.Windows;
@@ -50,13 +53,25 @@ namespace BluePrints.ViewModels
         }
 
         #region Database Operation
+        private ScoreCardDiscipline scoreCardDiscipline;
         protected override void resolveParameters(object parameter)
         {
             skipExoDataLoading = true;
             is_load_p6_task = true;
             isUseReportDate = LoginCredentials.getPermissionStatus(DataUtils.GetNameOf(() => NavigationResources.Permission_DesignDeliverables_ProgressPreviousWeeksDate)) != LoginCredentials.PermissionStatus.None;
             canDateBackwardForward = LoginCredentials.getPermissionStatus(DataUtils.GetNameOf(() => NavigationResources.Permission_DesignDeliverables_CanDateBackwardForward)) != LoginCredentials.PermissionStatus.None;
-            base.resolveParameters(parameter);
+
+            delayedPROGRESSSavingDispatcher = new DispatcherTimer();
+            delayedPROGRESSSavingDispatcher.Interval = new TimeSpan(0, 0, 0, 1);
+            delayedPROGRESSSavingDispatcher.Tick += delayedPROGRESSSavingDispatcher_Tick;
+            var receiveParameter = (TripleEntitiesParameter<Data.PROJECT, PROGRESS, object>)parameter;
+            loadPROJECT = receiveParameter.GetFirstEntity();
+            loadPROGRESS = receiveParameter.GetSecondEntity();
+            scoreCardDiscipline = (ScoreCardDiscipline)receiveParameter.GetThirdEntity();
+
+            primeroUnitOfWork = PrimeroEntitiesUnitOfWorkSource.GetUnitOfWorkFactory(loadPROJECT.OfficeNameForExo == BluePrintsResources.OfficeMontreal).CreateUnitOfWork();
+            if (loadPROJECT != null)
+                isQueryForLiveStatus = true;
         }
 
         private ESTIMATE loadESTIMATE;
@@ -75,6 +90,7 @@ namespace BluePrints.ViewModels
             loaderCollection.AddLoaderDescription<DOCTYPE, DOCTYPE, Guid, IBluePrintsEntitiesUnitOfWork>(bluePrintsUnitOfWorkFactory, x => x.DOCTYPES);
             loaderCollection.AddLoaderDescription(bluePrintsUnitOfWorkFactory, x => x.COMMODITY_CODES, COMMODITY_CODEProjectionFunc);
             loaderCollection.AddLoaderDescription(bluePrintsUnitOfWorkFactory, x => x.PHASES, PHASEProjectionFunc);
+            loaderCollection.AddLoaderDescription(bluePrintsUnitOfWorkFactory, x => x.CONSTRUCTION_STAGES, CONSTRUCTION_STAGEProjectionFunc);
 
             base.addEntitiesLoader();
         }
@@ -93,6 +109,11 @@ namespace BluePrints.ViewModels
                 return query => query.Where(x => x.GUID == loadPROJECT.GUID);
             else
                 return query => query.Where(x => x.GUID == loadPROGRESS.GUID_PROJECT).OrderBy(x => x.NUMBER);
+        }
+
+        private Func<IRepositoryQuery<CONSTRUCTION_STAGE>, IQueryable<CONSTRUCTION_STAGE>> CONSTRUCTION_STAGEProjectionFunc()
+        {
+            return query => query.Where(x => x.GUID_PROJECT == loadPROJECT.GUID && x.SCORE_CARD_DISCIPLINE == scoreCardDiscipline);
         }
 
         private Func<IRepositoryQuery<COMMODITY_CODE>, IQueryable<COMMODITY_CODE>> COMMODITY_CODEProjectionFunc()
@@ -142,7 +163,7 @@ namespace BluePrints.ViewModels
         protected override Func<IRepositoryQuery<ESTIMATE_ITEM>, IQueryable<ESTIMATE_ITEMProgress>>
             specifyMainViewModelProjection()
         {
-            return query => ESTIMATE_ITEMProjectionQueries.IDeliverable_Progress_Transformation(query.Where(x => x.ESTIMATE.GUID_PROJECT == loadPROJECT.GUID && x.ESTIMATE.STATUS == BaselineStatus.Live), loadPROJECT, loaderCollection.GetCollection<RATE>(), loadPROGRESS, PROGRESS_ITEMCollection, false, null, false, null, false, COMMODITY_CODECollection);
+            return query => ESTIMATE_ITEMProjectionQueries.IDeliverable_Progress_Transformation(query.Where(x => x.ESTIMATE.GUID_PROJECT == loadPROJECT.GUID && x.ESTIMATE.STATUS == BaselineStatus.Live).Where(x => x.DISCIPLINE.SCORE_CARD_DISCIPLINE == scoreCardDiscipline), loadPROJECT, loaderCollection.GetCollection<RATE>(), loadPROGRESS, PROGRESS_ITEMCollection, false, null, false, null, false, COMMODITY_CODECollection);
         }
 
         protected override void AssignCallBacksAndRaisePropertyChange(IEnumerable<ESTIMATE_ITEMProgress> entities)
@@ -150,8 +171,15 @@ namespace BluePrints.ViewModels
             MainViewModel.ValidateFillDownCallBack = ValidateFillDownCallBack;
             base.AssignCallBacksAndRaisePropertyChange(entities);
         }
-        #region Collection Call Backs
 
+        protected override void OnAfterAssignedCallbackAndRaisePropertyChanged()
+        {
+            loadDataPointsTable();
+            skipExoDataLoading = true;
+            base.OnAfterAssignedCallbackAndRaisePropertyChanged();
+        }
+
+        #region Collection Call Backs
         public bool ValidateFillDownCallBack(ESTIMATE_ITEMProgress fillDownEntity, string fieldName, object fillValue)
         {
             if (fieldName == BindableBase.GetPropertyName(() => new ESTIMATE_ITEMProgress().Total_Earned_Percentage))
@@ -172,6 +200,184 @@ namespace BluePrints.ViewModels
                 return;
 
             ReloadEntitiesCollection();
+        }
+        #endregion
+
+        #region Grid Dependencies
+        DataTable dataPointsTable = null;
+        public DataTable DataPointsTable
+        {
+            get
+            {
+                return dataPointsTable;
+            }
+        }
+
+        DataRowView selectedDataRow { get; set; }
+        public DataRowView SelectedDataRow
+        {
+            get
+            {
+                return selectedDataRow;
+            }
+            set
+            {
+                if (dataPointsTable == null || value == null)
+                    return;
+
+                int rowIndex = dataPointsTable.Rows.IndexOf(value.Row);
+                if (rowIndex == -1)
+                    return;
+
+                DataRowView dataRowView = dataPointsTable.DefaultView[rowIndex];
+                selectedDataRow = dataRowView;
+            }
+        }
+
+        ObservableCollection<DataRowView> selectedDataRows { get; set; }
+        public ObservableCollection<DataRowView> SelectedDataRows
+        {
+            get
+            {
+                if (selectedDataRows == null)
+                    selectedDataRows = new ObservableCollection<DataRowView>();
+
+                return selectedDataRows;
+            }
+            set
+            {
+                selectedDataRows = value;
+            }
+        }
+
+        protected ObservableCollection<ColumnDescriptor> columnDescriptors;
+        public ObservableCollection<ColumnDescriptor> ColumnDescriptors
+        {
+            get
+            {
+                if (columnDescriptors == null)
+                {
+                    columnDescriptors = new ObservableCollection<ColumnDescriptor>();
+                }
+                return columnDescriptors;
+            }
+        }
+
+        protected ObservableCollection<SummaryDescriptor> summaryDescriptors;
+        public ObservableCollection<SummaryDescriptor> SummaryDescriptors
+        {
+            get
+            {
+                if (summaryDescriptors == null)
+                {
+                    summaryDescriptors = new ObservableCollection<SummaryDescriptor>();
+                }
+                return summaryDescriptors;
+            }
+        }
+
+        private void InitializeColumnSource(ObservableCollection<ColumnDescriptor> columns, ObservableCollection<SummaryDescriptor> summaries)
+        {
+            columns.Clear();
+            summaries.Clear();
+
+            columns.Add(new ColumnDescriptor() { FieldName = columnEntity + ".Entity.Entity.GUID_PHASE", ReadOnly = true, Header = "Phase", Fixed = FixedStyle.Left, Width = 50, DisplayMember = "INTERNAL_NUM", ValueMember = "GUID", ItemsSource = PHASECollection, Settings = SettingsType.Collection });
+            summaries.Add(new SummaryDescriptor() { FieldName = columnEntity + ".Entity.Entity.GUID_PHASE", DisplayFormat = "{0} Record(s)", Type = SummaryItemType.Count });
+            columns.Add(new ColumnDescriptor() { FieldName = columnEntity + ".Entity.Entity.GUID_AREA", ReadOnly = true, Header = "Area", Fixed = FixedStyle.Left, Width = 50, DisplayMember = "INTERNAL_NUM", ValueMember = "GUID", ItemsSource = AREACollection, Settings = SettingsType.Collection });
+            columns.Add(new ColumnDescriptor() { FieldName = columnEntity + ".Entity.Entity.SubAreaGuid", ReadOnly = true, Header = "Sub-Area", Fixed = FixedStyle.Left, Width = 50, DisplayMember = "INTERNAL_NUM", ValueMember = "GUID", ItemsSource = AREACollection, Settings = SettingsType.Collection });
+            columns.Add(new ColumnDescriptor() { FieldName = columnEntity + ".Entity.Entity.GUID_DISCIPLINE", ReadOnly = true, Header = "Discipline", Fixed = FixedStyle.Left, Width = 80, DisplayMember = "CODE", ValueMember = "GUID", ItemsSource = DISCIPLINECollection, Settings = SettingsType.Collection });
+            columns.Add(new ColumnDescriptor() { FieldName = columnEntity + ".Entity.Entity.DISCIPLINE_NUM", ReadOnly = true, Mask = "n0", Header = "Discipline Num", Fixed = FixedStyle.Left, Width = 50, Settings = SettingsType.Number });
+            columns.Add(new ColumnDescriptor() { FieldName = columnEntity + ".Entity.Entity.COMMODITY_CODE", ReadOnly = true, Header = "Commodity Code", Fixed = FixedStyle.Left, Width = 80, Settings = SettingsType.Default });
+            columns.Add(new ColumnDescriptor() { FieldName = columnEntity + ".Entity.Entity.STOCK_CODE", ReadOnly = true, Header = "Stock Code", Fixed = FixedStyle.Left, Width = 80, Settings = SettingsType.Default });
+            columns.Add(new ColumnDescriptor() { FieldName = columnEntity + ".Entity.Entity.VARIATION_CODE", ReadOnly = true, Header = "Variation Code", Fixed = FixedStyle.Left, Width = 100, Settings = SettingsType.Default });
+            columns.Add(new ColumnDescriptor() { FieldName = columnEntity + ".Entity.Entity.NAME", ReadOnly = true, Header = "Name", Fixed = FixedStyle.Left, Width = 150, Settings = SettingsType.Default });
+            columns.Add(new ColumnDescriptor() { FieldName = columnEntity + ".Entity.Entity.CLIENT_NAME", ReadOnly = true, Header = "Client Name", Fixed = FixedStyle.Left, Width = 150, Settings = SettingsType.Default });
+
+            foreach (CONSTRUCTION_STAGE CONSTRUCTION_STAGE in CONSTRUCTION_STAGECollection)
+            {
+                columns.Add(new ColumnDescriptor() { FieldName = CONSTRUCTION_STAGE.NAME + ".Percentage", Mask = "p0", Increment = 0.1m, Header = CONSTRUCTION_STAGE.NAME, Fixed = FixedStyle.Right, Width = 50, Settings = SettingsType.Number });
+            }
+        }
+        
+        private void loadDataPointsTable()
+        {
+            IsLoading = true;
+            this.RaisePropertyChanged(x => x.IsLoading);
+
+            dataPointsTable = null;
+
+            updateDataPointsTable();
+            this.RaisePropertyChanged(x => x.DataPointsTable);
+
+            IsLoading = false;
+            this.RaisePropertyChanged(x => x.IsLoading);
+            CommonMethods.AddSaveLayoutHandler(GridControlService.GetGridColumns());
+        }
+
+        string columnEntity = "Entity";
+        private void updateDataPointsTable()
+        {
+            GridControlService.BeginDataUpdate();
+            dataPointsTable = new DataTable();
+
+            InitializeColumnSource(ColumnDescriptors, SummaryDescriptors);
+            dataPointsTable.Columns.Add(columnEntity, typeof(ESTIMATE_ITEMProgress));
+            foreach (CONSTRUCTION_STAGE CONSTRUCTION_STAGE in CONSTRUCTION_STAGECollection)
+            {
+                dataPointsTable.Columns.Add(CONSTRUCTION_STAGE.NAME, typeof(CONSTRUCTION_STAGE));
+            }
+
+            foreach (ESTIMATE_ITEMProgress entity in Entities)
+            {
+                populateRow(entity, false);
+            }
+
+            GridControlService.EndDataUpdate();
+        }
+
+        private void populateRow(ESTIMATE_ITEMProgress entity, bool isUpdate)
+        {
+            if (dataPointsTable == null)
+                return;
+
+            DataRow newDataRow;
+            if (!isUpdate)
+                newDataRow = dataPointsTable.NewRow();
+            else
+            {
+                newDataRow = (from DataRow dr in dataPointsTable.Rows
+                              where ((BASELINE_ITEMProgress)dr[columnEntity]).GUID == entity.GUID
+                              select dr).FirstOrDefault();
+            }
+
+            if (newDataRow == null)
+                return;
+
+            newDataRow[columnEntity] = entity;
+
+            //create instance of construction stage for properties view to attach to
+            foreach (CONSTRUCTION_STAGE CONSTRUCTION_STAGE in CONSTRUCTION_STAGECollection)
+            {
+                CONSTRUCTION_STAGE newCONSTRUCTION_STAGE = new CONSTRUCTION_STAGE();
+                DataUtils.ShallowCopy(newCONSTRUCTION_STAGE, CONSTRUCTION_STAGE);
+
+                newDataRow[CONSTRUCTION_STAGE.NAME] = newCONSTRUCTION_STAGE;
+            }
+
+            IEnumerable<PROGRESS_ITEM> currentDeliverableProgresses = PROGRESS_ITEMCollection.Where(x => x.GUID_ORIBASEITEM == entity.Entity.Entity.GUID_ORIGINAL).Where(x => x.EARNED_DATE.Date == DataDate.Date);
+
+            if (currentDeliverableProgresses.Count() > 0)
+                foreach (PROGRESS_ITEM progress in currentDeliverableProgresses)
+                {
+                    if (dataPointsTable.Columns.Contains(progress.STAGE_NAME))
+                    {
+                        CONSTRUCTION_STAGE currentSTAGE = (CONSTRUCTION_STAGE)newDataRow[progress.STAGE_NAME];
+                        currentSTAGE.Percentage = progress.EARNED_PERCENTAGE;
+                    }
+                }
+
+            if (!isUpdate)
+                dataPointsTable.Rows.Add(newDataRow);
         }
         #endregion
 
@@ -245,6 +451,41 @@ namespace BluePrints.ViewModels
             }
         }
 
+        public IEnumerable<Data.PHASE> PHASECollection
+        {
+            get
+            {
+                var collection = GetEntities<Data.PHASE>();
+                if (collection != null)
+                    collection = collection.OrderBy(x => x.INTERNAL_NUM);
+                return collection;
+            }
+        }
+
+        public IEnumerable<COMMODITY_CODE> COMMODITY_CODECollection
+        {
+            get
+            {
+                var collection = GetEntities<COMMODITY_CODE>();
+                if (collection != null)
+                    collection = collection.Where(x => x.PHASE_TYPE == PhaseType.Construct).OrderBy(x => x.CODE);
+
+                return collection;
+            }
+        }
+
+        public IEnumerable<CONSTRUCTION_STAGE> CONSTRUCTION_STAGECollection
+        {
+            get
+            {
+                var collection = GetEntities<CONSTRUCTION_STAGE>();
+                if (collection != null)
+                    collection = collection.OrderBy(x => x.SORT_ORDER);
+
+                return collection;
+            }
+        }
+
         protected override CostGroup cost_group => CostGroup.Offsite;
 
         protected override IEnumerable<IReportable> ReportableCollection => MainViewModel == null || MainViewModel.Entities == null ? new ObservableCollection<ESTIMATE_ITEMProgress>() : MainViewModel.Entities;
@@ -309,72 +550,6 @@ namespace BluePrints.ViewModels
 
         public void ViewReport()
         {
-            //if (MessageBoxService.ShowMessage("Please make sure that you've already recalculated planned and remaining data for w/e " + DataDate.ToShortDateString() + "\n\nYou can do this by double clicking on the project title in the navigation bar on the left and press refresh", "Info", MessageButton.OKCancel) == MessageResult.Cancel)
-            //    return;
-
-            //LoadingScreenManager.ShowLoadingScreen(1);
-            //var progressReport = new XtraReportPROGRESS_ITEMS();
-            //var dbProjectReport = loaderCollection.GetObject<PROJECT_REPORT>();
-            //if (dbProjectReport != null)
-            //{
-            //    var reportString = dbProjectReport.REPORT.ToString();
-            //    using (var sw = new StreamWriter(new MemoryStream()))
-            //    {
-            //        sw.Write(reportString);
-            //        sw.Flush();
-            //        progressReport.LoadLayout(sw.BaseStream);
-            //    }
-            //}
-
-            ////LoadingScreenManager.ShowLoadingScreen(1);
-            ////await BluePrintsContextHelper.RefreshDeliverablesDataPointsByProject(loadPROJECT.NUMBER);
-            ////LoadingScreenManager.Progress();
-
-            //TimeSpan reportInterval = ChronologicalHelpers.ConvertProgressIntervalToPeriod(loadPROGRESS);
-            //DateTime firstAlignedDataDate = ChronologicalHelpers.GenerateFirstAlignedDataDate(loadPROGRESS);
-            //List<VariationAdjustment> projectVariationAdjustment = ProjectionHelpers.BuildProjectVariationAdjustments(VARIATIONCollection.AsQueryable(), ReportableCollection);
-
-            //DateTime reporting_data_date = DataDate;
-            //TimeSpan reporting_interval = ChronologicalHelpers.ConvertProgressIntervalToPeriod(loadPROGRESS);
-            //DateTime first_aligned_data_date = ChronologicalHelpers.GenerateFirstAlignedDataDate(loadPROGRESS);
-            //DeliverableSummaryStats projectSummary = new DeliverableSummaryStats(MainViewModel.Entities, reporting_data_date, reporting_interval, first_aligned_data_date, projectVariationAdjustment);
-            //FullStatsBuilder fullStatsBuilder = new FullStatsBuilder(loadPROJECT.NUMBER, loadPROJECT.CURRENCYCONVERSION, reporting_interval, first_aligned_data_date, SUBJOBCollection, reporting_data_date, primeroUnitOfWork);
-            //fullSummarizer = new FullSummarizer(projectSummary, fullStatsBuilder, loadPROJECT.NUMBER);
-            //fullSummarizer.BuildBurnedDataPoints(false, false, false, false, true);
-            //fullSummarizer.Build();
-
-            //progressReport.AssignProperties(projectSummary, DataDate, loadPROGRESS.PROJECT.NAME);
-            //var previewWindow = new DocumentPreviewWindow();
-            //previewWindow.PreviewControl.DocumentSource = progressReport;
-            //previewWindow.WindowStartupLocation = WindowStartupLocation.CenterScreen;
-            //previewWindow.WindowState = WindowState.Maximized;
-            //progressReport.RequestParameters = false;
-            //progressReport.CreateDocument(true);
-            //LoadingScreenManager.CloseLoadingScreen();
-            //previewWindow.Show();
-        }
-
-        public IEnumerable<Data.PHASE> PHASECollection
-        {
-            get
-            {
-                var collection = GetEntities<Data.PHASE>();
-                if (collection != null)
-                    collection = collection.OrderBy(x => x.INTERNAL_NUM);
-                return collection;
-            }
-        }
-
-        public IEnumerable<COMMODITY_CODE> COMMODITY_CODECollection
-        {
-            get
-            {
-                var collection = GetEntities<COMMODITY_CODE>();
-                if (collection != null)
-                    collection = collection.Where(x => x.PHASE_TYPE == PhaseType.Construct).OrderBy(x => x.CODE);
-
-                return collection;
-            }
         }
         #endregion
     }

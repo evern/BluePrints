@@ -367,6 +367,15 @@ namespace BluePrints.Common.Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Project construction progress maintenance menu.
+        /// </summary>
+        internal static string Menu_Project_ConcreteConstructProgress {
+            get {
+                return ResourceManager.GetString("Menu_Project_ConcreteConstructProgress", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Project construction direct cost rate maintenance.
         /// </summary>
         internal static string Menu_Project_ConstructionDirectCostRate {
@@ -408,15 +417,6 @@ namespace BluePrints.Common.Resources {
         internal static string Menu_Project_ConstructionVariation {
             get {
                 return ResourceManager.GetString("Menu_Project_ConstructionVariation", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Project construction progress maintenance menu.
-        /// </summary>
-        internal static string Menu_Project_ConstructProgress {
-            get {
-                return ResourceManager.GetString("Menu_Project_ConstructProgress", resourceCulture);
             }
         }
         

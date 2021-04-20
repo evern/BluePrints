@@ -13,6 +13,7 @@ namespace BluePrints.Data
     using System.ComponentModel.DataAnnotations.Schema;
     using System.Linq;
 
+    [ConstraintAttributes("SCORE_CARD_DISCIPLINE, NAME")]
     public partial class CONSTRUCTION_STAGE : EntityBase, IGuidEntityKey, IEntityNumber, ICanSync, IHaveCreatedDate, IDXDataErrorInfo
     {
         [NotMapped]
@@ -59,5 +60,8 @@ namespace BluePrints.Data
                 }
             }
         }
+
+        [NotMapped]
+        public decimal? Percentage { get; set; }
     }
 }

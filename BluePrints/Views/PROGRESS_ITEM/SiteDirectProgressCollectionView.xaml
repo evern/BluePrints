@@ -1,9 +1,60 @@
-﻿<UserControl x:Class="BluePrints.Views.SiteDirectProgressCollectionView" xmlns="http://schemas.microsoft.com/netfx/2009/xaml/presentation" xmlns:behavior="clr-namespace:BaseModel.View.Behaviors;assembly=BaseModel"  xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" xmlns:common="clr-namespace:BluePrints.Common" xmlns:custom="clr-namespace:BaseModel.Misc;assembly=BaseModel" xmlns:d="http://schemas.microsoft.com/expression/blend/2008" xmlns:dx="http://schemas.devexpress.com/winfx/2008/xaml/core" xmlns:dxb="http://schemas.devexpress.com/winfx/2008/xaml/bars" xmlns:dxc="http://schemas.devexpress.com/winfx/2008/xaml/core" xmlns:dxe="http://schemas.devexpress.com/winfx/2008/xaml/editors" xmlns:dxg="http://schemas.devexpress.com/winfx/2008/xaml/grid" xmlns:dxlc="http://schemas.devexpress.com/winfx/2008/xaml/layoutcontrol" xmlns:dxmvvm="http://schemas.devexpress.com/winfx/2008/xaml/mvvm" xmlns:dxr="http://schemas.devexpress.com/winfx/2008/xaml/ribbon" xmlns:dxrudex="http://schemas.devexpress.com/winfx/2008/xaml/reports/userdesignerextensions" xmlns:filter="clr-namespace:BluePrints.Common.Filtering" xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" xmlns:sys="clr-namespace:System;assembly=mscorlib" xmlns:view="clr-namespace:BluePrints.Views" xmlns:viewmodel="clr-namespace:BluePrints.ViewModels" x:Name="userControl" d:DesignHeight="400" d:DesignWidth="600" DataContext="{dxmvvm:ViewModelSource viewmodel:SiteDirectProgressCollectionViewModelWrapper}" mc:Ignorable="d">
+﻿<UserControl x:Class="BluePrints.Views.SiteDirectProgressCollectionView" xmlns="http://schemas.microsoft.com/netfx/2009/xaml/presentation" xmlns:dxci="http://schemas.devexpress.com/winfx/2008/xaml/core/internal" xmlns:view1="clr-namespace:BluePrints.Common.ViewModel.Misc" xmlns:behavior="clr-namespace:BaseModel.View.Behaviors;assembly=BaseModel"  xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" xmlns:common="clr-namespace:BluePrints.Common" xmlns:custom="clr-namespace:BaseModel.Misc;assembly=BaseModel" xmlns:d="http://schemas.microsoft.com/expression/blend/2008" xmlns:dx="http://schemas.devexpress.com/winfx/2008/xaml/core" xmlns:dxb="http://schemas.devexpress.com/winfx/2008/xaml/bars" xmlns:dxc="http://schemas.devexpress.com/winfx/2008/xaml/core" xmlns:dxe="http://schemas.devexpress.com/winfx/2008/xaml/editors" xmlns:dxg="http://schemas.devexpress.com/winfx/2008/xaml/grid" xmlns:dxlc="http://schemas.devexpress.com/winfx/2008/xaml/layoutcontrol" xmlns:dxmvvm="http://schemas.devexpress.com/winfx/2008/xaml/mvvm" xmlns:dxr="http://schemas.devexpress.com/winfx/2008/xaml/ribbon" xmlns:dxrudex="http://schemas.devexpress.com/winfx/2008/xaml/reports/userdesignerextensions" xmlns:filter="clr-namespace:BluePrints.Common.Filtering" xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" xmlns:sys="clr-namespace:System;assembly=mscorlib" xmlns:view="clr-namespace:BluePrints.Views" xmlns:viewmodel="clr-namespace:BluePrints.ViewModels" x:Name="userControl" d:DesignHeight="1080" d:DesignWidth="1920" DataContext="{dxmvvm:ViewModelSource viewmodel:SiteDirectProgressCollectionViewModelWrapper}" mc:Ignorable="d">
     <UserControl.Resources>
         <ResourceDictionary>
+            <view1:ColumnTemplateSelector x:Key="ColumnTemplateSelector"/>
+            <DataTemplate x:Key="DefaultColumnTemplate">
+                <ContentControl>
+                    <dxg:GridColumn AllowBestFit="False" FieldName="{Binding Path=(dxci:DependencyObjectExtensions.DataContext).FieldName, RelativeSource={RelativeSource Self}}" 
+                        Header="{Binding Path=(dxci:DependencyObjectExtensions.DataContext).Header, RelativeSource={RelativeSource Self}}" 
+                        Width="{Binding Path=(dxci:DependencyObjectExtensions.DataContext).Width, RelativeSource={RelativeSource Self}}"
+                        Fixed="{Binding Path=(dxci:DependencyObjectExtensions.DataContext).Fixed, RelativeSource={RelativeSource Self}}"
+                        ReadOnly="{Binding Path=(dxci:DependencyObjectExtensions.DataContext).ReadOnly, RelativeSource={RelativeSource Self}}"
+                        Visible="{Binding Path=(dxci:DependencyObjectExtensions.DataContext).Visible, RelativeSource={RelativeSource Self}, Mode=TwoWay}"
+                        HeaderToolTip="{Binding Path=(dxci:DependencyObjectExtensions.DataContext).HeaderToolTip, RelativeSource={RelativeSource Self}}"/>
+                </ContentControl>
+            </DataTemplate>
+            <DataTemplate x:Key="NumberColumnTemplate">
+                <ContentControl>
+                    <dxg:GridColumn AllowBestFit="False" ColumnFilterMode="Value" FieldName="{Binding Path=(dxci:DependencyObjectExtensions.DataContext).FieldName, RelativeSource={RelativeSource Self}}" 
+                        Header="{Binding Path=(dxci:DependencyObjectExtensions.DataContext).Header, RelativeSource={RelativeSource Self}}" 
+                        Width="{Binding Path=(dxci:DependencyObjectExtensions.DataContext).Width, RelativeSource={RelativeSource Self}}"
+                        Fixed="{Binding Path=(dxci:DependencyObjectExtensions.DataContext).Fixed, RelativeSource={RelativeSource Self}}"
+                        ReadOnly="{Binding Path=(dxci:DependencyObjectExtensions.DataContext).ReadOnly, RelativeSource={RelativeSource Self}}"
+                        Visible="{Binding Path=(dxci:DependencyObjectExtensions.DataContext).Visible, RelativeSource={RelativeSource Self}, Mode=TwoWay}"
+                        HeaderToolTip="{Binding Path=(dxci:DependencyObjectExtensions.DataContext).HeaderToolTip, RelativeSource={RelativeSource Self}}" >
+                        <dxg:GridColumn.EditSettings>
+                            <dxe:SpinEditSettings Mask="{Binding Mask}" MaskType="Numeric" Increment="{Binding Increment}" MaskUseAsDisplayFormat="True" />
+                        </dxg:GridColumn.EditSettings>
+                    </dxg:GridColumn>
+                </ContentControl>
+            </DataTemplate>
+            <DataTemplate x:Key="CollectionColumnTemplate">
+                <ContentControl>
+                    <dxg:GridColumn AllowBestFit="False" FieldName="{Binding Path=(dxci:DependencyObjectExtensions.DataContext).FieldName, RelativeSource={RelativeSource Self}}" 
+                        Header="{Binding Path=(dxci:DependencyObjectExtensions.DataContext).Header, RelativeSource={RelativeSource Self}}" 
+                        Width="{Binding Path=(dxci:DependencyObjectExtensions.DataContext).Width, RelativeSource={RelativeSource Self}}"
+                        Fixed="{Binding Path=(dxci:DependencyObjectExtensions.DataContext).Fixed, RelativeSource={RelativeSource Self}}"
+                        ReadOnly="{Binding Path=(dxci:DependencyObjectExtensions.DataContext).ReadOnly, RelativeSource={RelativeSource Self}}"
+                        Visible="{Binding Path=(dxci:DependencyObjectExtensions.DataContext).Visible, RelativeSource={RelativeSource Self}, Mode=TwoWay}"
+                        Tag="{Binding Path=(dxci:DependencyObjectExtensions.DataContext).Tag, RelativeSource={RelativeSource Self}}"
+                        HeaderToolTip="{Binding Path=(dxci:DependencyObjectExtensions.DataContext).HeaderToolTip, RelativeSource={RelativeSource Self}}" >
+                        <dxg:GridColumn.EditSettings>
+                            <dxe:ComboBoxEditSettings AutoComplete="True" IsTextEditable="True" ValueMember="{Binding Path=(dxci:DependencyObjectExtensions.DataContext).ValueMember, RelativeSource={RelativeSource Self}}" DisplayMember="{Binding Path=(dxci:DependencyObjectExtensions.DataContext).DisplayMember, RelativeSource={RelativeSource Self}}" ItemsSource="{Binding Path=(dxci:DependencyObjectExtensions.DataContext).ItemsSource, RelativeSource={RelativeSource Self}}" />
+                        </dxg:GridColumn.EditSettings>
+                    </dxg:GridColumn>
+                </ContentControl>
+            </DataTemplate>
+            <DataTemplate x:Key="SummaryTemplate">
+                <ContentControl>
+                    <dxg:GridSummaryItem FieldName="{Binding Path=(dxci:DependencyObjectExtensions.DataContext).FieldName, RelativeSource={RelativeSource Self}}"
+                                         SummaryType="{Binding Path=(dxci:DependencyObjectExtensions.DataContext).Type, RelativeSource={RelativeSource Self}}"
+                                         DisplayFormat="{Binding Path=(dxci:DependencyObjectExtensions.DataContext).DisplayFormat, RelativeSource={RelativeSource Self}}"/>
+                </ContentControl>
+            </DataTemplate>
             <ResourceDictionary.MergedDictionaries>
                 <ResourceDictionary Source="pack://application:,,,/Common/View/ResourceDictionaries/DefaultBluePrintsResourceDictionary.xaml" />
                 <ResourceDictionary Source="pack://application:,,,/BaseModel;component/View/ResourceDictionaries/DefaultControlResourceDictionary.xaml" />
+                <ResourceDictionary Source="pack://application:,,,/Common/View/ResourceDictionaries/CustomControlResourceDictionary.xaml" />
                 <ResourceDictionary Source="pack://application:,,,/Common/View/ResourceDictionaries/ConverterResourceDictionary.xaml" />
             </ResourceDictionary.MergedDictionaries>
         </ResourceDictionary>
@@ -91,442 +142,24 @@
                         </Grid>
                     </dxlc:LayoutGroup>
                 </dxlc:LayoutControl>
-                <custom:GridControlEx x:Name="GridControl" dxc:DXSerializer.SerializationID="GridControlSiteDirectProgress" dxc:DXSerializer.StoreLayoutMode="All" Style="{StaticResource DefaultGridControlTemplate}">
+                <dxg:GridControl x:Name="GridControl" TotalSummarySource="{Binding SummaryDescriptors}"
+                                    TotalSummaryGeneratorTemplate="{StaticResource SummaryTemplate}"
+                                    GroupSummarySource="{Binding SummaryDescriptors}"
+                                    GroupSummaryGeneratorTemplate="{StaticResource SummaryTemplate}"
+                                    ColumnGeneratorTemplateSelector="{StaticResource ColumnTemplateSelector}" ColumnsSource="{Binding ColumnDescriptors}" LayoutTransform="{Binding Zoom, Mode=OneWay}" AutoGenerateColumns="None" dxc:DXSerializer.SerializationID="GridControlOffsiteDirectDistribution" dxc:DXSerializer.StoreLayoutMode="All" ClipboardCopyMode="ExcludeHeader" CurrentItem="{Binding SelectedDataRow, Mode=TwoWay}" ItemsSource="{Binding DataPointsTable}" SelectedItems="{Binding SelectedDataRows, Mode=TwoWay}" SelectionMode="{Binding SelectMode}" ShowLoadingPanel="{Binding IsLoading}">
                     <dxmvvm:Interaction.Behaviors>
-                        <behavior:DetailGridSearchingBehavior/>
-                        <dxmvvm:EventToCommand Command="{Binding CustomSummaryCommand}" EventName="CustomSummary" PassEventArgsToCommand="True" />
+                        <dxmvvm:EventToCommand Command="{Binding Grid_MouseWheelCommand}" EventName="PreviewMouseWheel" PassEventArgsToCommand="True" />
                     </dxmvvm:Interaction.Behaviors>
-                    <dxg:GridControl.Bands>
-                        <dxg:GridControlBand Header="Properties (Read Only)">
-                            <dxg:GridColumn FieldName="Entity.Entity.GUID_PHASE" AllowBestFit="false" Width="50" Header="Phase" HeaderToolTip="Phase code to be concatenated with area and subarea to form job code" ReadOnly="True">
-                                <dxg:GridColumn.EditSettings>
-                                    <dxe:ComboBoxEditSettings AutoComplete="True" DisplayMember="INTERNAL_NUM" IsTextEditable="True" ItemsSource="{Binding PHASECollection}" ValueMember="GUID" />
-                                </dxg:GridColumn.EditSettings>
-                            </dxg:GridColumn>
-                            <dxg:GridColumn FieldName="Entity.Entity.GUID_AREA" Header="Area" AllowBestFit="false" Width="50" HeaderToolTip="Area code to be concatenated after phase code to form job code" ReadOnly="True">
-                                <dxg:GridColumn.EditSettings>
-                                    <dxe:ComboBoxEditSettings AutoComplete="True" DisplayMember="INTERNAL_NUM" IsTextEditable="True" ItemsSource="{Binding AREACollection}" ValueMember="GUID" />
-                                </dxg:GridColumn.EditSettings>
-                            </dxg:GridColumn>
-                            <dxg:GridColumn FieldName="Entity.Entity.SubAreaGuid" Header="Sub-Area" AllowBestFit="false" Width="50" HeaderToolTip="Sub area code to be concatenated after area code to form job code" ReadOnly="True">
-                                <dxg:GridColumn.CellTemplate>
-                                    <DataTemplate>
-                                        <dxe:ComboBoxEdit x:Name="PART_Editor" DisplayMember="INTERNAL_NUM" ImmediatePopup="True" IncrementalFiltering="True" ItemsSource="{Binding RowData.Row.Entity.Entity.SubAreaCollection}" NullValueButtonPlacement="Popup" ValidateOnEnterKeyPressed="True" ValidateOnTextInput="True" ValueMember="GUID" />
-                                    </DataTemplate>
-                                </dxg:GridColumn.CellTemplate>
-                                <!--  For Filtering  -->
-                                <dxg:GridColumn.EditSettings>
-                                    <dxe:ComboBoxEditSettings AutoComplete="True" DisplayMember="INTERNAL_NUM" IsTextEditable="True" ItemsSource="{Binding SUBAREACollection}" NullValueButtonPlacement="EditBox" ValueMember="GUID" />
-                                </dxg:GridColumn.EditSettings>
-                            </dxg:GridColumn>
-                            <dxg:GridColumn FieldName="Entity.Entity.GUID_DISCIPLINE" Header="Discipline" HeaderToolTip="Discipline code to be concatenated with discipline number to form discipline code" ReadOnly="True">
-                                <dxg:GridColumn.CellTemplate>
-                                    <DataTemplate>
-                                        <dxe:ComboBoxEdit Name="PART_Editor" AutoComplete="True" DisplayMember="CODE" IsTextEditable="true" IncrementalFiltering="True" ItemsSource="{Binding RowData.Row.Entity.Entity.DisciplineCollection}" NullValueButtonPlacement="Popup"  ValueMember="GUID" />
-                                    </DataTemplate>
-                                </dxg:GridColumn.CellTemplate>
-                                <!--  For Filtering  -->
-                                <dxg:GridColumn.EditSettings>
-                                    <dxe:ComboBoxEditSettings AutoComplete="True" DisplayMember="CODE" IsTextEditable="True" ItemsSource="{Binding DISCIPLINECollection}" ValueMember="GUID" />
-                                </dxg:GridColumn.EditSettings>
-                            </dxg:GridColumn>
-                            <dxg:GridColumn Header="Discipline Number" FieldName="Entity.Entity.DISCIPLINE_NUM" AllowBestFit="false" Width="60" HeaderToolTip="Number to concatenate after discipline to form discipline code" ReadOnly="True">
-                                <dxg:GridColumn.EditSettings>
-                                    <dxe:SpinEditSettings Increment="1" IsFloatValue="False" IsTextEditable="True" Mask="n0" MaskType="Numeric" MaskUseAsDisplayFormat="True" MaxValue="99" MinValue="1" />
-                                </dxg:GridColumn.EditSettings>
-                            </dxg:GridColumn>
-                            <dxg:GridColumn FieldName="Entity.Entity.COMMODITY_CODE" Header="Commodity Code" HeaderToolTip="Cost type, type in free text or select from combo box" ReadOnly="True">
-                                <dxg:GridColumn.CellTemplate>
-                                    <DataTemplate>
-                                        <custom:PopupBaseEditEx Name="PART_Editor" ValueMember="CODE" >
-                                            <custom:PopupBaseEditEx.PopupContentTemplate>
-                                                <ControlTemplate TargetType="ContentControl">
-                                                    <dxg:GridControl x:Name="PART_GridControl" MaxHeight="750" ItemsSource="{Binding RowData.Row.Entity.Entity.CommodityCodeCollection}" SelectionMode="Row" ShowBorder="False">
-                                                        <dxg:GridControl.Columns>
-                                                            <dxg:GridColumn Width="50" FieldName="CODE" Header="Code" ReadOnly="True" />
-                                                            <dxg:GridColumn Width="200" FieldName="NAME" AllowSearchPanel="False" Header="Description" ReadOnly="True" />
-                                                            <dxg:GridColumn Width="350" FieldName="DESCRIPTION" AllowSearchPanel="False" Header="Description" ReadOnly= "True" />
-                                                            <dxg:GridColumn Width="50" FieldName="UOM" AllowSearchPanel="False" Header="UOM" ReadOnly="True" />
-                                                        </dxg:GridControl.Columns>
-                                                        <dxg:GridControl.View>
-                                                            <dxg:TableView RowStyle="{StaticResource SelectionBackgroundStyle}" ShowSearchPanelMode="Always" ShowFilterPanelMode="ShowAlways" ShowFocusedRectangle="True" ShowGroupPanel="False" ShowSelectionRectangle="True" />
-                                                        </dxg:GridControl.View>
-                                                    </dxg:GridControl>
-                                                </ControlTemplate>
-                                            </custom:PopupBaseEditEx.PopupContentTemplate>
-                                        </custom:PopupBaseEditEx>
-                                    </DataTemplate>
-                                </dxg:GridColumn.CellTemplate>
-                                <!--  For Filtering  -->
-                                <dxg:GridColumn.EditSettings>
-                                    <dxe:ComboBoxEditSettings AutoComplete="True" DisplayMember="CODE" IsTextEditable="True" ItemsSource="{Binding COMMODITY_CODECollection}" NullValueButtonPlacement="EditBox" ValueMember="CODE" />
-                                </dxg:GridColumn.EditSettings>
-                            </dxg:GridColumn>
-                            <dxg:GridColumn FieldName="Entity.Entity.STOCK_CODE" Header="Stock Code" HeaderToolTip="Stock codee, type in free text or select from combo box" ReadOnly="True">
-                                <dxg:GridColumn.CellTemplate>
-                                    <DataTemplate>
-                                        <custom:PopupBaseEditEx Name="PART_Editor" ValueMember="DEFAULT_STOCKCODE" >
-                                            <custom:PopupBaseEditEx.PopupContentTemplate>
-                                                <ControlTemplate TargetType="ContentControl">
-                                                    <dxg:GridControl x:Name="PART_GridControl" MaxHeight="750" ItemsSource="{Binding RowData.Row.Entity.Entity.StockCodeCollection}" SelectionMode="Row" ShowBorder="False">
-                                                        <dxg:GridControl.Columns>
-                                                            <dxg:GridColumn Width="50" FieldName="CODE" Header="Code" ReadOnly="True" />
-                                                            <dxg:GridColumn Width="50" FieldName="DEFAULT_STOCKCODE" Header="Stock" ReadOnly="True" />
-                                                            <dxg:GridColumn Width="200" FieldName="NAME" AllowSearchPanel="False" Header="Description" ReadOnly="True" />
-                                                            <dxg:GridColumn Width="350" FieldName="DESCRIPTION" AllowSearchPanel="False" Header="Description" ReadOnly="True" />
-                                                            <dxg:GridColumn Width="50" FieldName="UOM" AllowSearchPanel="False" Header="UOM" ReadOnly="True" />
-                                                        </dxg:GridControl.Columns>
-                                                        <dxg:GridControl.View>
-                                                            <dxg:TableView RowStyle="{StaticResource SelectionBackgroundStyle}" ShowSearchPanelMode="Always" ShowFilterPanelMode="ShowAlways" ShowFocusedRectangle="True" ShowGroupPanel="False" ShowSelectionRectangle="True" />
-                                                        </dxg:GridControl.View>
-                                                    </dxg:GridControl>
-                                                </ControlTemplate>
-                                            </custom:PopupBaseEditEx.PopupContentTemplate>
-                                        </custom:PopupBaseEditEx>
-                                    </DataTemplate>
-                                </dxg:GridColumn.CellTemplate>
-                                <!--  For Filtering  -->
-                                <dxg:GridColumn.EditSettings>
-                                    <dxe:ComboBoxEditSettings AutoComplete="True" DisplayMember="DEFAULT_STOCKCODE" IsTextEditable="True" ItemsSource="{Binding COMMODITY_CODECollection}" NullValueButtonPlacement="EditBox" ValueMember="DEFAULT_STOCKCODE" />
-                                </dxg:GridColumn.EditSettings>
-                            </dxg:GridColumn>
-                            <dxg:GridColumn FieldName="Entity.Entity.VARIATION_CODE" Header="Variation Code" />
-                            <dxg:GridColumn FieldName="Entity.Entity.NAME" Header="Name" />
-                            <dxg:GridColumn FieldName="Entity.Entity.CLIENT_NAME" Header="Client Name" />
-                        </dxg:GridControlBand>
-                        <dxg:GridControlBand Header="Editable Properties">
-                            <dxg:GridColumn MinWidth="100" AllowEditing="True" AllowBestFit="false" Width="60" FieldName="Total_Earned_Percentage" Header="Current %" HeaderToolTip="Cumulative % earned since the start of the project. % as benchmarked against baseline + variation. Update this to earn units for this period">
-                                <dxg:GridColumn.HeaderStyle>
-                                    <Style TargetType="Control">
-                                        <Setter Property="Background" Value="LightCyan" />
-                                        <Setter Property="Foreground" Value="Black" />
-                                    </Style>
-                                </dxg:GridColumn.HeaderStyle>
-                                <dxg:GridColumn.CellTemplate>
-                                    <DataTemplate>
-                                        <Grid>
-                                            <Grid.ColumnDefinitions>
-                                                <ColumnDefinition Width="10" />
-                                                <ColumnDefinition Width="10" />
-                                                <ColumnDefinition Width="*" />
-                                            </Grid.ColumnDefinitions>
-                                            <Image Grid.Column="0" Source="{dx:DXImage Image=First_16x16.png}" ToolTip="Minimum Possible Progress">
-                                                <Image.Visibility>
-                                                    <MultiBinding Converter="{StaticResource NumericCompareToVisibilityConverter}" FallbackValue="Hidden">
-                                                        <MultiBinding.ConverterParameter>
-                                                            <sys:Boolean>False</sys:Boolean>
-                                                        </MultiBinding.ConverterParameter>
-                                                        <Binding ElementName="PART_Editor" Path="MinValue" />
-                                                        <Binding ElementName="PART_Editor" Path="EditValue" />
-                                                    </MultiBinding>
-                                                </Image.Visibility>
-                                            </Image>
-                                            <Image Grid.Column="1" Source="{dx:DXImage Image=Last_16x16.png}" ToolTip="Max % is 100% and is restricted by earned % in the future to avoid going beyond 100%">
-                                                <Image.Visibility>
-                                                    <MultiBinding Converter="{StaticResource NumericCompareToVisibilityConverter}" FallbackValue="Hidden">
-                                                        <MultiBinding.ConverterParameter>
-                                                            <sys:Boolean>False</sys:Boolean>
-                                                        </MultiBinding.ConverterParameter>
-                                                        <Binding ElementName="PART_Editor" Path="MaxValue" />
-                                                        <Binding ElementName="PART_Editor" Path="EditValue" />
-                                                    </MultiBinding>
-                                                </Image.Visibility>
-                                            </Image>
-                                            <dxe:SpinEdit Name="PART_Editor" Foreground="Black" Grid.Column="2" Increment="0.01" Mask="p0" MaskType="Numeric" MaskUseAsDisplayFormat="True" MaxValue="{Binding RowData.Row.MaxPercentage}" MinValue="{Binding RowData.Row.MinPercentage}">
-                                                <dxe:SpinEdit.ErrorToolTipContentTemplate>
-                                                    <DataTemplate>
-                                                        <dxe:TextEdit>
-                                                            <dxe:TextEdit.Text>
-                                                                <MultiBinding Converter="{StaticResource ValueOutOfRangeMessageConverter}">
-                                                                    <Binding Path="MaxValue" RelativeSource="{RelativeSource FindAncestor, AncestorType={x:Type dxe:SpinEdit}}" />
-                                                                    <Binding Path="MinValue" RelativeSource="{RelativeSource FindAncestor, AncestorType={x:Type dxe:SpinEdit}}" />
-                                                                    <Binding Path="EditValue" RelativeSource="{RelativeSource FindAncestor, AncestorType={x:Type dxe:SpinEdit}}" />
-                                                                    <Binding Path="Tag" RelativeSource="{RelativeSource FindAncestor, AncestorType={x:Type dxe:SpinEdit}}" />
-                                                                </MultiBinding>
-                                                            </dxe:TextEdit.Text>
-                                                        </dxe:TextEdit>
-                                                    </DataTemplate>
-                                                </dxe:SpinEdit.ErrorToolTipContentTemplate>
-                                            </dxe:SpinEdit>
-                                        </Grid>
-                                    </DataTemplate>
-                                </dxg:GridColumn.CellTemplate>
-                                <!--For Masking Filters-->
-                                <dxg:GridColumn.EditSettings>
-                                    <dxe:SpinEditSettings Mask="p" MaskType="Numeric" MaskUseAsDisplayFormat="True" />
-                                </dxg:GridColumn.EditSettings>
-                            </dxg:GridColumn>
-                        </dxg:GridControlBand>
-                        <dxg:GridControlBand Header="Budget (Read Only)">
-                            <dxg:GridColumn FieldName="Entity.Entity.BUDGET_QUANTITY" Header="Quantity">
-                                <dxg:GridColumn.EditSettings>
-                                    <dxe:SpinEditSettings Mask="n2" MaskType="Numeric" MaskUseAsDisplayFormat="True" />
-                                </dxg:GridColumn.EditSettings>
-                            </dxg:GridColumn>
-                            <dxg:GridColumn FieldName="Entity.Entity.UOM" Header="UOM"/>
-                            <dxg:GridColumn FieldName="Entity.Entity.BUDGET_INSTALL_HOURS_PER_QTY" Header="Hours Per Qty">
-                                <dxg:GridColumn.EditSettings>
-                                    <dxe:SpinEditSettings Mask="n2" MaskType="Numeric" MaskUseAsDisplayFormat="True" />
-                                </dxg:GridColumn.EditSettings>
-                            </dxg:GridColumn>
-                            <dxg:GridColumn FieldName="Total_Units" AllowBestFit="false" Width="70" Header="Total Hrs" HeaderToolTip="Budget Hours + Variation Hours" IsEnabled="False" ReadOnly="True">
-                                <dxg:GridColumn.EditSettings>
-                                    <dxe:SpinEditSettings Increment="1" Mask="n" MaskType="Numeric" MaskUseAsDisplayFormat="True" MinValue="0" />
-                                </dxg:GridColumn.EditSettings>
-                            </dxg:GridColumn>
-                            <dxg:GridColumn FieldName="Remaining_Units_ToDate" AllowBestFit="false" Width="70" Header="Remaining Hrs" HeaderToolTip="Total Hours - Earned Hours to Data Date" IsEnabled="False" ReadOnly="True">
-                                <dxg:GridColumn.EditSettings>
-                                    <dxe:SpinEditSettings Increment="1" Mask="n" MaskType="Numeric" MaskUseAsDisplayFormat="True" MinValue="0" />
-                                </dxg:GridColumn.EditSettings>
-                            </dxg:GridColumn>
-                            <dxg:GridColumn FieldName="ProgressETC" AllowBestFit="false" Width="70" Header="User Remaining Hrs" IsEnabled="False" >
-                                <dxg:GridColumn.EditSettings>
-                                    <dxe:SpinEditSettings Increment="1" Mask="n" MaskType="Numeric" MaskUseAsDisplayFormat="True" MinValue="0" />
-                                </dxg:GridColumn.EditSettings>
-                            </dxg:GridColumn>
-                            <dxg:GridColumn FieldName="Entity.Budget_ItemRate" AllowBestFit="false" Width="70" Header="Rate" HeaderToolTip="From rates table by deliverables discipline" IsEnabled="False" ReadOnly="True" Visible="False">
-                                <dxg:GridColumn.EditSettings>
-                                    <dxe:SpinEditSettings Increment="1" Mask="n" MaskType="Numeric" MaskUseAsDisplayFormat="True" MinValue="0" />
-                                </dxg:GridColumn.EditSettings>
-                            </dxg:GridColumn>
-                            <dxg:GridColumn AllowSearchPanel="False" FieldName="Total_Costs" AllowBestFit="false" Width="70" Header="Total Charge" HeaderToolTip="Charge Rate * (Budget Hours + Variation Hours). Rates are located in the rates table and assigned to deliverables by discipline" ReadOnly="True">
-                                <dxg:GridColumn.EditSettings>
-                                    <dxe:SpinEditSettings Mask="c" MaskType="Numeric" MaskUseAsDisplayFormat="True" />
-                                </dxg:GridColumn.EditSettings>
-                            </dxg:GridColumn>
-                        </dxg:GridControlBand>
-                        <dxg:GridControlBand Header="Cumulative To Date (Read Only)">
-                            <dxg:GridColumn FieldName="Baseline_Percentage" Header="Baseline %" AllowBestFit="false" Width="70" HeaderToolTip="% as benchmarked against budget. May exceed 100% if variation exists" IsEnabled="False" ReadOnly="True">
-                                <dxg:GridColumn.EditSettings>
-                                    <dxe:SpinEditSettings Mask="p" MaskType="Numeric" MaskUseAsDisplayFormat="True" />
-                                </dxg:GridColumn.EditSettings>
-                            </dxg:GridColumn>
-                            <dxg:GridColumn FieldName="Total_Percentage_ToDate" Header="Total %" AllowBestFit="false" Width="70" HeaderToolTip="% as benchmarked against budget + variation" IsEnabled="False" ReadOnly="True" Visible="False">
-                                <dxg:GridColumn.EditSettings>
-                                    <dxe:SpinEditSettings Mask="p" MaskType="Numeric" MaskUseAsDisplayFormat="True" />
-                                </dxg:GridColumn.EditSettings>
-                            </dxg:GridColumn>
-                            <dxg:GridColumn FieldName="SchedulePercentage" Header="Schedule %" AllowBestFit="false" Width="70" HeaderToolTip="Required % as obtained from P6 or subjob dates. % as benchmarked against budget. May exceed 100% if variation exists" IsEnabled="False" ReadOnly="True">
-                                <dxg:GridColumn.EditSettings>
-                                    <dxe:SpinEditSettings Mask="p" MaskType="Numeric" MaskUseAsDisplayFormat="True" />
-                                </dxg:GridColumn.EditSettings>
-                            </dxg:GridColumn>
-                            <dxg:GridColumn FieldName="StartDate" Header="Start Date" AllowBestFit="false" Width="80" HeaderToolTip="Date obtained from subjob or P6" IsEnabled="False" ReadOnly="True">
-                                <dxg:GridColumn.EditSettings>
-                                    <dxe:DateEditSettings />
-                                </dxg:GridColumn.EditSettings>
-                            </dxg:GridColumn>
-                            <dxg:GridColumn FieldName="DueDate" Header="Due Date" AllowBestFit="false" Width="80" HeaderToolTip="Date obtained from subjob or P6" IsEnabled="False" ReadOnly="True">
-                                <dxg:GridColumn.EditSettings>
-                                    <dxe:DateEditSettings />
-                                </dxg:GridColumn.EditSettings>
-                            </dxg:GridColumn>
-                            <dxg:GridColumn FieldName="ForecastDate" Header="Forecast Finish Date" AllowBestFit="false" Width="80" HeaderToolTip="Date obtained from subjob or P6. Calculated by 1.0 productivity by default and can be overridden by Override Productivity column" IsEnabled="False" ReadOnly="True">
-                                <dxg:GridColumn.EditSettings>
-                                    <dxe:DateEditSettings />
-                                </dxg:GridColumn.EditSettings>
-                            </dxg:GridColumn>
-                            <dxg:GridColumn FieldName="Entity.Entity.NEXT_RELEASE_DATE" AllowBestFit="false" Width="80" Header="Next Release Date" HeaderToolTip="Date for next status gate" IsEnabled="False">
-                                <dxg:GridColumn.EditSettings>
-                                    <dxe:DateEditSettings />
-                                </dxg:GridColumn.EditSettings>
-                            </dxg:GridColumn>
-                            <dxg:GridColumn FieldName="Earned_Units_ToDate" AllowBestFit="false" Width="70" Header="Total Earned Units" HeaderToolTip="Cumulative earned units" IsEnabled="False" ReadOnly="True">
-                                <dxg:GridColumn.EditSettings>
-                                    <dxe:SpinEditSettings Mask="n" MaskType="Numeric" MaskUseAsDisplayFormat="True" />
-                                </dxg:GridColumn.EditSettings>
-                            </dxg:GridColumn>
-                            <dxg:GridColumn FieldName="Earned_Costs_ToDate" AllowBestFit="false" Width="70" Header="Total Earned Costs" HeaderToolTip="Cumulative earned costs" IsEnabled="False" ReadOnly="True" Visible="False">
-                                <dxg:GridColumn.EditSettings>
-                                    <dxe:SpinEditSettings Mask="c" MaskType="Numeric" MaskUseAsDisplayFormat="True" />
-                                </dxg:GridColumn.EditSettings>
-                            </dxg:GridColumn>
-                        </dxg:GridControlBand>
-                        <dxg:GridControlBand Header="Cumulative Total (Read Only)">
-                            <dxg:GridColumn AllowSearchPanel="False" FieldName="FirstDataDate" AllowBestFit="false" Width="80" Header="First Earned Date" HeaderToolTip="Progress first earned date along the entire timeline" ReadOnly="True">
-                                <dxg:GridColumn.EditSettings>
-                                    <dxe:DateEditSettings DisplayFormat="dd-MMM-yyyy" />
-                                </dxg:GridColumn.EditSettings>
-                            </dxg:GridColumn>
-                            <dxg:GridColumn AllowSearchPanel="False" FieldName="LastDataDate" AllowBestFit="false" Width="80" Header="Last Earned Date" HeaderToolTip="Progress last earned date along the entire timeline" ReadOnly="True">
-                                <dxg:GridColumn.EditSettings>
-                                    <dxe:DateEditSettings DisplayFormat="dd-MMM-yyyy" />
-                                </dxg:GridColumn.EditSettings>
-                            </dxg:GridColumn>
-                            <dxg:GridColumn AllowSearchPanel="False" FieldName="Total_Percentage" AllowBestFit="false" Width="70" Header="Total %" HeaderToolTip="Progress total % along the entire timeline" ReadOnly="True">
-                                <dxg:GridColumn.EditSettings>
-                                    <dxe:SpinEditSettings Mask="p0" MaskType="Numeric" MaskUseAsDisplayFormat="True" />
-                                </dxg:GridColumn.EditSettings>
-                            </dxg:GridColumn>
-                            <dxg:GridColumn AllowSearchPanel="False" Visible="False" Header="All Progress" AllowBestFit="false" Width="70" HeaderToolTip="Progresses along the entire timeline" ReadOnly="True">
-                                <dxg:GridColumn.CellTemplate>
-                                    <DataTemplate>
-                                        <dxg:LookUpEdit Name="PART_Editor" AutoComplete="True" AutoPopulateColumns="False" IncrementalFiltering="True" IsTextEditable="False" ItemsSource="{Binding RowData.Row.EarnedPercentages}" NullText="Expand to View" NullValueButtonPlacement="None" PopupMinWidth="500" ShowNullTextForEmptyValue="True">
-                                            <dxg:LookUpEdit.StyleSettings>
-                                                <dxg:SearchLookUpEditStyleSettings />
-                                            </dxg:LookUpEdit.StyleSettings>
-                                            <dxg:LookUpEdit.PopupContentTemplate>
-                                                <ControlTemplate TargetType="ContentControl">
-                                                    <dxg:GridControl x:Name="PART_GridControl" SelectionMode="Row" ShowBorder="False">
-                                                        <dxg:GridControl.Columns>
-                                                            <dxg:GridColumn FieldName="EarnedPercentage" Header="Earned %" ReadOnly="True">
-                                                                <dxg:GridColumn.EditSettings>
-                                                                    <dxe:SpinEditSettings Mask="p0" MaskType="Numeric" MaskUseAsDisplayFormat="True" />
-                                                                </dxg:GridColumn.EditSettings>
-                                                            </dxg:GridColumn>
-                                                            <dxg:GridColumn FieldName="EarnedDate" Header="Earned Date" ReadOnly="True" SortIndex="1" SortOrder="Descending">
-                                                                <dxg:GridColumn.EditSettings>
-                                                                    <dxe:DateEditSettings DisplayFormat="dd-MMM-yyyy" />
-                                                                </dxg:GridColumn.EditSettings>
-                                                            </dxg:GridColumn>
-                                                        </dxg:GridControl.Columns>
-                                                    </dxg:GridControl>
-                                                </ControlTemplate>
-                                            </dxg:LookUpEdit.PopupContentTemplate>
-                                        </dxg:LookUpEdit>
-                                    </DataTemplate>
-                                </dxg:GridColumn.CellTemplate>
-                            </dxg:GridColumn>
-                            <dxg:GridColumn FieldName="BurnedUnits" AllowBestFit="false" Width="70" Header="Total Burned Units" HeaderToolTip="Cumulative burned units" IsEnabled="False" ReadOnly="True">
-                                <dxg:GridColumn.EditSettings>
-                                    <dxe:SpinEditSettings Mask="n" MaskType="Numeric" MaskUseAsDisplayFormat="True" />
-                                </dxg:GridColumn.EditSettings>
-                            </dxg:GridColumn>
-                        </dxg:GridControlBand>
-                        <dxg:GridControlBand Header="Period (Read Only)">
-                            <dxg:GridColumn FieldName="ScheduleCurrentPeriodPercentage" Header="Planned %" AllowBestFit="false" Width="70" HeaderToolTip="Required % for current period obtained from subjob or P6" IsEnabled="False" ReadOnly="True">
-                                <dxg:GridColumn.EditSettings>
-                                    <dxe:SpinEditSettings Mask="p" MaskType="Numeric" MaskUseAsDisplayFormat="True" />
-                                </dxg:GridColumn.EditSettings>
-                            </dxg:GridColumn>
-                            <dxg:GridColumn FieldName="Earned_Percentage_OnDataDate" Header="Earned %" AllowBestFit="false" Width="70" HeaderToolTip="% earned for this period" IsEnabled="False" ReadOnly="True">
-                                <dxg:GridColumn.EditSettings>
-                                    <dxe:SpinEditSettings Mask="p" MaskType="Numeric" MaskUseAsDisplayFormat="True" />
-                                </dxg:GridColumn.EditSettings>
-                            </dxg:GridColumn>
-                            <dxg:GridColumn FieldName="Earned_Units_OnDataDate" Header="Earned Units" AllowBestFit="false" Width="70" HeaderToolTip="Units earned on this period" IsEnabled="False" ReadOnly="True">
-                                <dxg:GridColumn.EditSettings>
-                                    <dxe:SpinEditSettings Mask="n" MaskType="Numeric" MaskUseAsDisplayFormat="True" />
-                                </dxg:GridColumn.EditSettings>
-                            </dxg:GridColumn>
-                            <dxg:GridColumn FieldName="Earned_Costs_OnDataDate" Header="Earned Costs" AllowBestFit="false" Width="70" HeaderToolTip="Costs earned on this period" IsEnabled="False" ReadOnly="True" Visible="False">
-                                <dxg:GridColumn.EditSettings>
-                                    <dxe:SpinEditSettings Mask="c" MaskType="Numeric" MaskUseAsDisplayFormat="True" />
-                                </dxg:GridColumn.EditSettings>
-                            </dxg:GridColumn>
-                        </dxg:GridControlBand>
-                        <dxg:GridControlBand Header="Productivity (Read Only)">
-                            <dxg:GridColumn FieldName="Current_Productivity" Header="Current Productivity" AllowBestFit="false" Width="70" HeaderToolTip="Productivity is calculated as [current earned hours / schedule planned hours]" IsEnabled="False" ReadOnly="True">
-                                <dxg:GridColumn.EditSettings>
-                                    <dxe:SpinEditSettings Mask="n" MaskType="Numeric" MaskUseAsDisplayFormat="True" />
-                                </dxg:GridColumn.EditSettings>
-                            </dxg:GridColumn>
-                            <dxg:GridColumn FieldName="Override_Productivity" Header="Override Productivity (Editable)" AllowBestFit="false" Width="70" HeaderToolTip="By default current productivity will be used to forecast end date for P6 schedule activity. Use 1 for planned productivity in case schedule is too pessimistic. After productivity is set it is necessary to push progress to P6 then press F9 on P6 to produce the new forecasted end date then Close and reopen this view to obtain the newly calculated forecast end date">
-                                <dxg:GridColumn.EditSettings>
-                                    <dxe:SpinEditSettings Increment="0.1" Mask="n" MaskType="Numeric" MaskUseAsDisplayFormat="True" NullValueButtonPlacement="EditBox" />
-                                </dxg:GridColumn.EditSettings>
-                            </dxg:GridColumn>
-                            <dxg:GridColumn FieldName="Remaining_Productivity" Header="Remaining Productivity" AllowBestFit="false" Width="70" HeaderToolTip="Productivity required to finish project on time. Only critical items will have a value" IsEnabled="False" ReadOnly="True">
-                                <dxg:GridColumn.EditSettings>
-                                    <dxe:SpinEditSettings Increment="0.1" Mask="n" MaskType="Numeric" MaskUseAsDisplayFormat="True" NullValueButtonPlacement="EditBox" />
-                                </dxg:GridColumn.EditSettings>
-                            </dxg:GridColumn>
-                            <!--<dxg:GridColumn FieldName="IAmCritical" Header="Critical" AllowBestFit="false" Width="60" HeaderToolTip="Deliverable is required to hit a milestone in the next interval. Expand this row to view required milestone" ReadOnly="True" />-->
-                            <dxg:GridColumn FieldName="IAmOverdue" Header="Overdue" AllowBestFit="false" Width="60" HeaderToolTip="Schedule % more than current %" ReadOnly="True" />
-                        </dxg:GridControlBand>
-                        <dxg:GridControlBand Header="Investigation (Read Only)">
-                            <dxg:GridColumn AllowSearchPanel="False" FieldName="Last_Created" AllowBestFit="false" Width="100" Header="Progress Created" HeaderToolTip="Progress first created date" ReadOnly="True">
-                                <dxg:GridColumn.EditSettings>
-                                    <dxe:DateEditSettings DisplayFormat="dd-MMM-yyyy HH:mm" />
-                                </dxg:GridColumn.EditSettings>
-                            </dxg:GridColumn>
-                            <dxg:GridColumn AllowSearchPanel="False" FieldName="Last_CreatedBy" Header="Created By" HeaderToolTip="Person where current progress is created by" ReadOnly="True" >
-                                <dxg:GridColumn.EditSettings>
-                                    <dxe:ComboBoxEditSettings AutoComplete="True" DisplayMember="NAME" IsTextEditable="True" ItemsSource="{Binding USERCollection}" ValueMember="GUID" />
-                                </dxg:GridColumn.EditSettings>
-                            </dxg:GridColumn>
-                            <dxg:GridColumn AllowSearchPanel="False" FieldName="Last_Updated" AllowBestFit="false" Width="100" Header="Progress Updated" HeaderToolTip="Progress last updated date" ReadOnly="True">
-                                <dxg:GridColumn.EditSettings>
-                                    <dxe:DateEditSettings DisplayFormat="dd-MMM-yyyy HH:mm" />
-                                </dxg:GridColumn.EditSettings>
-                            </dxg:GridColumn>
-                            <dxg:GridColumn AllowSearchPanel="False" FieldName="Last_UpdatedBy" Header="Updated By" HeaderToolTip="Person where current progress is updated by" ReadOnly="True" >
-                                <dxg:GridColumn.EditSettings>
-                                    <dxe:ComboBoxEditSettings AutoComplete="True" DisplayMember="NAME" IsTextEditable="True" ItemsSource="{Binding USERCollection}" ValueMember="GUID" />
-                                </dxg:GridColumn.EditSettings>
-                            </dxg:GridColumn>
-                        </dxg:GridControlBand>
-                    </dxg:GridControl.Bands>
-                    <dxg:GridControl.GroupSummary>
-                        <dxg:GridSummaryItem DisplayFormat="p" FieldName="Baseline_Percentage" SummaryType="Custom" />
-                        <dxg:GridSummaryItem DisplayFormat="p" FieldName="SchedulePercentage" SummaryType="Custom" />
-                        <dxg:GridSummaryItem DisplayFormat="p" FieldName="ScheduleCurrentPeriodPercentage" SummaryType="Custom" />
-                        <dxg:GridSummaryItem DisplayFormat="p" FieldName="Total_Earned_Percentage" SummaryType="Custom" />
-                        <dxg:GridSummaryItem DisplayFormat="p" FieldName="Earned_Percentage_OnDataDate" SummaryType="Custom" />
-                        <dxg:GridSummaryItem DisplayFormat="n" FieldName="BurnedUnits" SummaryType="Sum" />
-                        <dxg:GridSummaryItem DisplayFormat="n" FieldName="Earned_Units_OnDataDate" SummaryType="Sum" />
-                        <dxg:GridSummaryItem DisplayFormat="n" FieldName="Earned_Units_ToDate" SummaryType="Sum" />
-                        <dxg:GridSummaryItem DisplayFormat="n" FieldName="Remaining_Units_ToDate" SummaryType="Sum" />
-                        <dxg:GridSummaryItem DisplayFormat="n" FieldName="ProgressETC" SummaryType="Sum" />
-                        <dxg:GridSummaryItem DisplayFormat="n" FieldName="Total_Costs" SummaryType="Sum" />
-                        <dxg:GridSummaryItem DisplayFormat="p" FieldName="Stats.Budgeted.CurrentPeriodDataPoint.UnitsPercentage" SummaryType="Custom" />
-                        <dxg:GridSummaryItem DisplayFormat="c2" FieldName="DisplayPeriodEarnedCosts" SummaryType="Sum" />
-                        <dxg:GridSummaryItem DisplayFormat="n" FieldName="Entity.Entity.BUDGET_HOURS" SummaryType="Sum" />
-                        <dxg:GridSummaryItem DisplayFormat="n" FieldName="Variation_Units" SummaryType="Sum" />
-                        <dxg:GridSummaryItem DisplayFormat="n" FieldName="Budget_Units" SummaryType="Sum" />
-                        <dxg:GridSummaryItem DisplayFormat="n" FieldName="Total_Units" SummaryType="Sum" />  
-                        <dxg:GridSummaryItem DisplayFormat="n" FieldName="Earned_Costs_ToDate" SummaryType="Sum" />
-                        <dxg:GridSummaryItem DisplayFormat="n" FieldName="Earned_Costs_OnDataDate" SummaryType="Sum" />
-                        <dxg:GridSummaryItem DisplayFormat="n" FieldName="PROGRESS_ITEMcurrent.EARNED_UNITS" SummaryType="Sum" />
-                        <dxg:GridSummaryItem DisplayFormat="Total {0} Records" FieldName="Entity.Entity.INTERNAL_NUM" SummaryType="Count" />
-                    </dxg:GridControl.GroupSummary>
-                    <dxg:GridControl.TotalSummary>
-                        <dxg:GridSummaryItem DisplayFormat="p" FieldName="Baseline_Percentage" SummaryType="Custom" />
-                        <dxg:GridSummaryItem DisplayFormat="p" FieldName="SchedulePercentage" SummaryType="Custom" />
-                        <dxg:GridSummaryItem DisplayFormat="p" FieldName="ScheduleCurrentPeriodPercentage" SummaryType="Custom" />
-                        <dxg:GridSummaryItem DisplayFormat="p" FieldName="Total_Earned_Percentage" SummaryType="Custom" />
-                        <dxg:GridSummaryItem DisplayFormat="p" FieldName="Earned_Percentage_OnDataDate" SummaryType="Custom" />
-                        <dxg:GridSummaryItem DisplayFormat="n" FieldName="BurnedUnits" SummaryType="Sum" />
-                        <dxg:GridSummaryItem DisplayFormat="n" FieldName="Earned_Units_OnDataDate" SummaryType="Sum" />
-                        <dxg:GridSummaryItem DisplayFormat="n" FieldName="Earned_Units_ToDate" SummaryType="Sum" />
-                        <dxg:GridSummaryItem DisplayFormat="n" FieldName="Remaining_Units_ToDate" SummaryType="Sum" />
-                        <dxg:GridSummaryItem DisplayFormat="n" FieldName="ProgressETC" SummaryType="Sum" />
-                        <dxg:GridSummaryItem DisplayFormat="n" FieldName="Total_Costs" SummaryType="Sum" />
-                        <dxg:GridSummaryItem DisplayFormat="p" FieldName="Stats.Budgeted.CurrentPeriodDataPoint.UnitsPercentage" SummaryType="Custom" />
-                        <dxg:GridSummaryItem DisplayFormat="c2" FieldName="DisplayPeriodEarnedCosts" SummaryType="Sum" />
-                        <dxg:GridSummaryItem DisplayFormat="n" FieldName="Entity.Entity.BUDGET_HOURS" SummaryType="Sum" />
-                        <dxg:GridSummaryItem DisplayFormat="n" FieldName="Variation_Units" SummaryType="Sum" />
-                        <dxg:GridSummaryItem DisplayFormat="n" FieldName="Budget_Units" SummaryType="Sum" />
-                        <dxg:GridSummaryItem DisplayFormat="n" FieldName="Total_Units" SummaryType="Sum" />
-                        <dxg:GridSummaryItem DisplayFormat="n" FieldName="Earned_Costs_ToDate" SummaryType="Sum" />
-                        <dxg:GridSummaryItem DisplayFormat="n" FieldName="Earned_Costs_OnDataDate" SummaryType="Sum" />
-                        <dxg:GridSummaryItem DisplayFormat="n" FieldName="PROGRESS_ITEMcurrent.EARNED_UNITS" SummaryType="Sum" />
-                        <dxg:GridSummaryItem DisplayFormat="Total {0} Records" FieldName="Entity.Entity.INTERNAL_NUM" SummaryType="Count" />
-                    </dxg:GridControl.TotalSummary>
                     <dxg:GridControl.View>
-                        <dxg:TableView x:Name="tableView" IsDetailButtonVisibleBinding="{Binding Row.IHaveMilestones}" Style="{StaticResource DefaultTableViewTemplate}">
-                            <dxg:TableView.FormatConditions>
-                                <dxg:FormatCondition ApplyToRow="True" Expression="[IAmCritical] = 'True'" FieldName="IAmCritical">
-                                    <dxc:Format Background="LightBlue" />
-                                </dxg:FormatCondition>
-                                <dxg:FormatCondition ApplyToRow="True" Expression="[IAmOverdue] = 'True'" FieldName="IAmOverdue">
-                                    <dxc:Format Background="Salmon" />
-                                </dxg:FormatCondition>
-                                <dxg:ColorScaleFormatCondition FieldName="Total_Earned_Percentage" MaxValue="1" MinValue="0">
-                                    <dxc:ColorScaleFormat ColorMax="#FF63BE7B" ColorMiddle="#FFFFEB84" ColorMin="#FFF8696B" />
-                                </dxg:ColorScaleFormatCondition>
-                            </dxg:TableView.FormatConditions>
+                        <dxg:TableView x:Name="tableView" GroupSummaryDisplayMode="AlignByColumns" NewItemRowPosition="None" ShowTotalSummary="True" Style="{StaticResource DefaultMinimalTableViewTemplate}" ScrollBarAnnotationMode="None">
                             <dxg:TableView.RowCellMenuCustomizations>
-                                <dxb:BarButtonItem Command="{Binding BookTimeCommand}" Content="Book Time" Glyph="{dx:DXImageOffice2013 Image=AlignHorizontalTop_16x16.png}" ToolTip="Book time on deliverable" />
+                                <dxb:BarButtonItemLink BarItemName="biCopyWithHeader1" />
                                 <dxb:BarItemLinkSeparator />
-                                <dxb:BarLinkContainerItem ItemLinksSource="{StaticResource ContextMenuDefaultHeaderButtons}" />
-                                <dxb:BarItemLinkSeparator />
-                                <dxb:BarButtonItemLink BarItemName="biBulkDelete1" />
                                 <dxb:BarButtonItemLink BarItemName="biFullRefresh1" />
                             </dxg:TableView.RowCellMenuCustomizations>
                         </dxg:TableView>
                     </dxg:GridControl.View>
-                </custom:GridControlEx>
+                </dxg:GridControl>
             </DockPanel>
         </dxb:BarManager>
     </Grid>

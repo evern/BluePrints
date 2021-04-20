@@ -45,6 +45,9 @@ namespace BluePrints.Data
         public string NAME { get; set; }
 
         [StringLength(1000)]
+        public string CLIENT_NAME { get; set; }
+
+        [StringLength(1000)]
         public string COMMENTS { get; set; }
 
         [StringLength(1000)]
