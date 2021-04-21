@@ -3124,7 +3124,7 @@ namespace BluePrints.ViewModels
             }
         }
 
-        public override string ViewName => "PROJECTForecastView_v3";
+        public override string ViewName => "PROJECTForecastView_v4";
 
         public override void ShowNotification()
         {

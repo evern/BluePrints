@@ -298,7 +298,7 @@ namespace BluePrints.Common.Projections
         public IEnumerable<FORECAST_PO> CurrentPeriodForecastPOs => POAndIndirectForecastFloorDate != null ? FORECAST_POS.Where(x => x.FORECAST_DATE >= POAndIndirectForecastFloorDate && x.FORECAST_DATE <= CeilingDate).Where(x => x.FORECAST_VALUE != null) : new List<FORECAST_PO>();
         public IEnumerable<FORECAST_EAC> CurrentPeriodForecastEACs => FORECAST_EACS.Where(x => x.FORECAST_COSTS != null).Where(x => x.FORECAST_DATE >= ActualFloorDate && x.FORECAST_DATE <= CeilingDate);
         public IEnumerable<RemainingCost> CurrentPeriodIndirectCosts => POAndIndirectForecastFloorDate != null ? IndirectRemainingCosts.Where(x => x.ForecastDate.Date >= POAndIndirectForecastFloorDate && x.ForecastDate.Date <= CeilingDate) : new List<RemainingCost>();
-        public IEnumerable<Common.ViewModel.Reporting.DataPoint> CurrentPeriodP6DataPoints => P6RemainingFloorDate != null ? P6RemainingDataPoints.Where(x => x.ProgressDate.Date >= P6RemainingFloorDate && x.ProgressDate.Date <= CeilingDate) : new List<Common.ViewModel.Reporting.DataPoint>();
+        public IEnumerable<Common.ViewModel.Reporting.DataPoint> CurrentPeriodP6DataPoints => P6RemainingFloorDate != null ? P6RemainingDataPoints.Where(x => x.ProgressDate.Date >= POAndIndirectForecastFloorDate && x.ProgressDate.Date <= CeilingDate) : new List<Common.ViewModel.Reporting.DataPoint>();
 
         //relevant data points used to get unique stock item
         public IEnumerable<ExoDataPoint> RelevantActualDataPoints => ActualDataPoints.Where(x => x.ActualDate > firstViewDate);
