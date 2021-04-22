@@ -32,6 +32,7 @@ using System.ComponentModel;
 using System.Data;
 using System.IO;
 using System.Linq;
+using System.Text.RegularExpressions;
 using System.Windows;
 using System.Windows.Threading;
 
@@ -151,15 +152,7 @@ namespace BluePrints.ViewModels
         {
             CreateMainViewModel(bluePrintsUnitOfWorkFactory, x => x.ESTIMATE_ITEMS);
         }
-
-        public bool CanUpdateAllPercentagesByStatus()
-        {
-            if (IsLoading)
-                return false;
-
-            return LoginCredentials.getPermissionStatus(DataUtils.GetNameOf(() => NavigationResources.Permission_DesignDeliverables_UpdateProgressByStatus)) != LoginCredentials.PermissionStatus.None;
-        }
-
+        
         protected override Func<IRepositoryQuery<ESTIMATE_ITEM>, IQueryable<ESTIMATE_ITEMProgress>>
             specifyMainViewModelProjection()
         {
@@ -177,6 +170,27 @@ namespace BluePrints.ViewModels
             loadDataPointsTable();
             skipExoDataLoading = true;
             base.OnAfterAssignedCallbackAndRaisePropertyChanged();
+        }
+
+        public override void OnAfterAuxiliaryEntitiesChanged(object key, Type changedType, EntityMessageType messageType, object sender, Guid senderKey, bool isBulkRefresh)
+        {
+            if (changedType == typeof(ESTIMATE_ITEM))
+            {
+                ESTIMATE_ITEMProgress deliverable = Entities.FirstOrDefault(x => x.GUID.ToString() == key.ToString());
+                if (deliverable != null)
+                {
+                    IEnumerable<PROGRESS_ITEM> progressItems = PROGRESS_ITEMCollection.Where(x => x.GUID_ORIBASEITEM == deliverable.OriginalEntityKey);
+                    deliverable.SetProgressItems(progressItems.ToList());
+                    List<StatsCalculationType> calcTypes = new List<StatsCalculationType>();
+                    calcTypes.Add(StatsCalculationType.Earned);
+                    deliverable.BuildStats(1, calcTypes);
+                    populateRow(deliverable, true);
+                    deliverable.Update();
+                    mainThreadDispatcher.BeginInvoke(new Action(() => this.RaisePropertyChanged(x => x.DataPointsTable)));
+                }
+            }
+
+            base.OnAfterAuxiliaryEntitiesChanged(key, changedType, messageType, sender, senderKey, isBulkRefresh);
         }
 
         #region Collection Call Backs
@@ -276,6 +290,8 @@ namespace BluePrints.ViewModels
             }
         }
 
+        private string stageFieldNamePercentageAffix = "Percentage";
+        private string stageFieldNameQuantityAffix = "Quantity";
         private void InitializeColumnSource(ObservableCollection<ColumnDescriptor> columns, ObservableCollection<SummaryDescriptor> summaries)
         {
             columns.Clear();
@@ -295,7 +311,8 @@ namespace BluePrints.ViewModels
 
             foreach (CONSTRUCTION_STAGE CONSTRUCTION_STAGE in CONSTRUCTION_STAGECollection)
             {
-                columns.Add(new ColumnDescriptor() { FieldName = CONSTRUCTION_STAGE.NAME + ".Percentage", Mask = "p0", Increment = 0.1m, Header = CONSTRUCTION_STAGE.NAME, Fixed = FixedStyle.Right, Width = 50, Settings = SettingsType.Number });
+                columns.Add(new ColumnDescriptor() { FieldName = CONSTRUCTION_STAGE.SORT_ORDER.ToString() + stageFieldNameQuantityAffix, Mask = "n2", Increment = 1m, Header = CONSTRUCTION_STAGE.NAME + " By Quantity", Fixed = FixedStyle.Right, Width = 50, Settings = SettingsType.Number });
+                columns.Add(new ColumnDescriptor() { FieldName = CONSTRUCTION_STAGE.SORT_ORDER.ToString() + stageFieldNamePercentageAffix, Mask = "p0", Increment = 0.1m, Header = CONSTRUCTION_STAGE.NAME + " " + CONSTRUCTION_STAGE.WEIGHT_PERCENTAGE.ToString("P0"), MaxValue = 1, Fixed = FixedStyle.Right, Width = 50, Settings = SettingsType.Number });
             }
         }
         
@@ -324,7 +341,9 @@ namespace BluePrints.ViewModels
             dataPointsTable.Columns.Add(columnEntity, typeof(ESTIMATE_ITEMProgress));
             foreach (CONSTRUCTION_STAGE CONSTRUCTION_STAGE in CONSTRUCTION_STAGECollection)
             {
-                dataPointsTable.Columns.Add(CONSTRUCTION_STAGE.NAME, typeof(CONSTRUCTION_STAGE));
+                dataPointsTable.Columns.Add(CONSTRUCTION_STAGE.SORT_ORDER.ToString() + stageFieldNameQuantityAffix, typeof(decimal));
+                dataPointsTable.Columns.Add(CONSTRUCTION_STAGE.SORT_ORDER.ToString() + stageFieldNamePercentageAffix, typeof(decimal));
+
             }
 
             foreach (ESTIMATE_ITEMProgress entity in Entities)
@@ -346,7 +365,7 @@ namespace BluePrints.ViewModels
             else
             {
                 newDataRow = (from DataRow dr in dataPointsTable.Rows
-                              where ((BASELINE_ITEMProgress)dr[columnEntity]).GUID == entity.GUID
+                              where ((ESTIMATE_ITEMProgress)dr[columnEntity]).GUID == entity.GUID
                               select dr).FirstOrDefault();
             }
 
@@ -355,24 +374,27 @@ namespace BluePrints.ViewModels
 
             newDataRow[columnEntity] = entity;
 
-            //create instance of construction stage for properties view to attach to
-            foreach (CONSTRUCTION_STAGE CONSTRUCTION_STAGE in CONSTRUCTION_STAGECollection)
+            //set progress to zero
+            foreach(CONSTRUCTION_STAGE CONSTRUCTION_STAGE in CONSTRUCTION_STAGECollection)
             {
-                CONSTRUCTION_STAGE newCONSTRUCTION_STAGE = new CONSTRUCTION_STAGE();
-                DataUtils.ShallowCopy(newCONSTRUCTION_STAGE, CONSTRUCTION_STAGE);
-
-                newDataRow[CONSTRUCTION_STAGE.NAME] = newCONSTRUCTION_STAGE;
+                newDataRow[CONSTRUCTION_STAGE.SORT_ORDER.ToString() + stageFieldNameQuantityAffix] = 0;
+                newDataRow[CONSTRUCTION_STAGE.SORT_ORDER.ToString() + stageFieldNamePercentageAffix] = 0;
             }
 
-            IEnumerable<PROGRESS_ITEM> currentDeliverableProgresses = PROGRESS_ITEMCollection.Where(x => x.GUID_ORIBASEITEM == entity.Entity.Entity.GUID_ORIGINAL).Where(x => x.EARNED_DATE.Date == DataDate.Date);
+            IEnumerable<PROGRESS_ITEM> currentDeliverableProgresses = PROGRESS_ITEMCollection.Where(x => x.GUID_ORIBASEITEM == entity.Entity.Entity.GUID_ORIGINAL).Where(x => x.EARNED_DATE == DataDate);
 
             if (currentDeliverableProgresses.Count() > 0)
                 foreach (PROGRESS_ITEM progress in currentDeliverableProgresses)
                 {
-                    if (dataPointsTable.Columns.Contains(progress.STAGE_NAME))
+                    CONSTRUCTION_STAGE findCONSTRUCTION_STAGE = CONSTRUCTION_STAGECollection.FirstOrDefault(x => x.SORT_ORDER == progress.STAGE_ORDER);
+                    if(findCONSTRUCTION_STAGE != null)
                     {
-                        CONSTRUCTION_STAGE currentSTAGE = (CONSTRUCTION_STAGE)newDataRow[progress.STAGE_NAME];
-                        currentSTAGE.Percentage = progress.EARNED_PERCENTAGE;
+                        decimal stageMaxUnits = entity.Total_Units * findCONSTRUCTION_STAGE.WEIGHT_PERCENTAGE;
+                        decimal stageEarnedPercentage = progress.EARNED_UNITS / stageMaxUnits;
+                        decimal stageEarnedQuantity = progress.EARNED_UNITS * entity.UnitsPerQuantity;
+
+                        newDataRow[findCONSTRUCTION_STAGE.SORT_ORDER.ToString() + stageFieldNamePercentageAffix] = stageEarnedPercentage;
+                        newDataRow[findCONSTRUCTION_STAGE.SORT_ORDER.ToString() + stageFieldNameQuantityAffix] = stageEarnedQuantity;
                     }
                 }
 
@@ -381,6 +403,146 @@ namespace BluePrints.ViewModels
         }
         #endregion
 
+        #endregion
+
+        #region View Helpers
+        private void showErrorMessage(ErrorMessage errorMessage)
+        {
+            if (errorMessage == null)
+                return;
+
+            List<ErrorMessage> errorMessages = new List<ErrorMessage>();
+            errorMessages.Add(errorMessage);
+            MainViewModel.ShowErrorMessage("Error", errorMessages);
+        }
+
+        private void undoRedoPause()
+        {
+            PROGRESS_ITEMSCollectionViewModel.EntitiesUndoRedoManager.PauseActionId();
+            MainViewModel.EntitiesUndoRedoManager.PauseActionId();
+        }
+
+        private void undoRedoUnpause()
+        {
+            PROGRESS_ITEMSCollectionViewModel.EntitiesUndoRedoManager.UnpauseActionId();
+            MainViewModel.EntitiesUndoRedoManager.UnpauseActionId();
+        }
+
+        private void undoRedoClear()
+        {
+            PROGRESS_ITEMSCollectionViewModel.EntitiesUndoRedoManager.Clear();
+            MainViewModel.EntitiesUndoRedoManager.Clear();
+        }
+
+        #endregion
+
+        #region Data Entry
+        /// <summary>
+        /// Influence column(s) when changes happens in other column
+        /// </summary>
+        public void CellValueChangedProgressUpdate(DevExpress.Xpf.Grid.CellValueChangedEventArgs e)
+        {
+            if (e.RowHandle == GridControl.AutoFilterRowHandle)
+                return;
+
+            DataRowView dataRowView = (DataRowView)e.Row;
+            ESTIMATE_ITEMProgress entity = (ESTIMATE_ITEMProgress)dataRowView.Row[columnEntity];
+
+            if (e.Column.FieldName.Contains(stageFieldNamePercentageAffix) || e.Column.FieldName.Contains(stageFieldNameQuantityAffix))
+            {
+                //only clear undo redo before update percentage here because this is the only event called from grid
+                undoRedoClear();
+                undoRedoPause();
+                ErrorMessage errorMessage;
+                updatePercentage(entity, e.Column.FieldName, e.OldValue, e.Value, out errorMessage);
+                showErrorMessage(errorMessage);
+                undoRedoUnpause();
+            }
+
+            e.Handled = true;
+        }
+
+        private void updatePercentage(ESTIMATE_ITEMProgress entity, string fieldName, object oldValue, object newValue, out ErrorMessage errorMessage)
+        {
+            if (entity.Total_Units == 0)
+            {
+                errorMessage = new ErrorMessage(entity.Deliverable_Name, "Deliverable doesn't have any units to progress");
+                return;
+            }
+
+            errorMessage = null;
+            if(fieldName.Contains(stageFieldNamePercentageAffix) || fieldName.Contains(stageFieldNameQuantityAffix))
+            {
+                bool isPercentage = fieldName.Contains(stageFieldNamePercentageAffix);
+                string orderIdStr = Regex.Match(fieldName, @"\d+").Value;
+
+                CONSTRUCTION_STAGE constructionSTAGE = CONSTRUCTION_STAGECollection.FirstOrDefault(x => x.SORT_ORDER.ToString() == orderIdStr);
+                if (constructionSTAGE != null)
+                {
+                    string earnedUnitsFieldName = BindableBase.GetPropertyName(() => new PROGRESS_ITEM().EARNED_UNITS);
+                    List<PROGRESS_ITEM> progressToSave = new List<PROGRESS_ITEM>();
+
+                    decimal stageMaxUnits = constructionSTAGE.WEIGHT_PERCENTAGE * entity.Total_Units;
+
+                    //quantity or percentages conversion depending on field name
+                    decimal earnedQuantity = 0;
+                    decimal earnedPercentage = 0;
+                    if(isPercentage)
+                    {
+                        earnedPercentage = (decimal)newValue;
+                        earnedQuantity = earnedPercentage * stageMaxUnits;
+                    }
+                    else
+                    {
+                        earnedQuantity = (decimal)newValue;
+                        earnedPercentage = earnedQuantity / stageMaxUnits;
+                    }
+
+                    decimal earnedUnits = earnedPercentage * stageMaxUnits;
+                    PROGRESS_ITEM currentPeriodPROGRESS_ITEM = entity.PROGRESS_ITEMS.FirstOrDefault(x => x.STAGE_ORDER == constructionSTAGE.SORT_ORDER && x.EARNED_DATE == DataDate);
+
+                    //maximum and minimum is controlled here by the spinedit ability to set max as 100% and min as 0%, and that includes variation validatation, so there is no need to validate here
+                    if (currentPeriodPROGRESS_ITEM == null && earnedUnits > 0)
+                    {
+                        currentPeriodPROGRESS_ITEM = new PROGRESS_ITEM();
+                        currentPeriodPROGRESS_ITEM.GUID_ORIBASEITEM = entity.OriginalEntityKey;
+                        currentPeriodPROGRESS_ITEM.GUID_PROGRESS = loadPROGRESS.GUID;
+                        currentPeriodPROGRESS_ITEM.EARNED_DATE = DataDate;
+                        currentPeriodPROGRESS_ITEM.EARNED_UNITS = earnedUnits;
+                        currentPeriodPROGRESS_ITEM.CREATED = DateTime.Now;
+                        currentPeriodPROGRESS_ITEM.CREATEDBY = LoginCredentials.CurrentUserGuid;
+
+
+                        PROGRESS_ITEMSCollectionViewModel.EntitiesUndoRedoManager.AddUndo(currentPeriodPROGRESS_ITEM, null, null, null, EntityMessageType.Added);
+                    }
+                    else
+                    {
+                        PROGRESS_ITEMSCollectionViewModel.EntitiesUndoRedoManager.AddUndo(currentPeriodPROGRESS_ITEM, earnedUnitsFieldName, currentPeriodPROGRESS_ITEM.EARNED_UNITS, earnedUnits, EntityMessageType.Changed);
+                        currentPeriodPROGRESS_ITEM.EARNED_UNITS = earnedUnits;
+                        //use this to fix time issue
+                        currentPeriodPROGRESS_ITEM.EARNED_DATE = DataDate;
+                    }
+
+                    //audit history
+                    currentPeriodPROGRESS_ITEM.BUDGET_HOURS = entity.Total_Units;
+                    currentPeriodPROGRESS_ITEM.BUDGET_INSTALL_HOURS_PER_QTY = entity.UnitsPerQuantity;
+                    currentPeriodPROGRESS_ITEM.TOTAL_QUANTITY = entity.Total_Quantity;
+                    currentPeriodPROGRESS_ITEM.EARNED_QUANTITY = earnedQuantity;
+                    currentPeriodPROGRESS_ITEM.EARNED_PERCENTAGE = earnedPercentage;
+                    currentPeriodPROGRESS_ITEM.STAGE_NAME = constructionSTAGE.NAME;
+                    currentPeriodPROGRESS_ITEM.STAGE_ORDER = constructionSTAGE.SORT_ORDER;
+                    currentPeriodPROGRESS_ITEM.STAGE_WEIGHT = constructionSTAGE.WEIGHT_PERCENTAGE;
+
+                    PROGRESS_ITEMSCollectionViewModel.Save(currentPeriodPROGRESS_ITEM);
+
+                    //add a dummy undo so that during undo/redo operation a baseline item message will be sent
+                    MainViewModel.EntitiesUndoRedoManager.AddUndo(entity, BindableBase.GetPropertyName(() => new ESTIMATE_ITEM().GUID_ORIGINAL), entity.GUID, entity.GUID, EntityMessageType.Changed);
+
+                    //save baseline_item here so that auxiliary message can respond to progress item changes
+                    MainViewModel.Save(entity);
+                }
+            }
+        }
         #endregion
 
         #region View Properties
@@ -509,7 +671,7 @@ namespace BluePrints.ViewModels
 
         protected override PhaseType progress_type => PhaseType.Design;
 
-        protected override bool manuallySaveProgressOnAfterBaselineItemSaved => false;
+        protected override bool manuallySaveProgressOnAfterBaselineItemSaved => true;
         #endregion
 
         #region Reporting

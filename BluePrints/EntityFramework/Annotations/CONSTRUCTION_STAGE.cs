@@ -60,8 +60,5 @@ namespace BluePrints.Data
                 }
             }
         }
-
-        [NotMapped]
-        public decimal? Percentage { get; set; }
     }
 }
