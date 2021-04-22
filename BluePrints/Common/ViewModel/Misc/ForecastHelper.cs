@@ -85,10 +85,10 @@ namespace BluePrints.Common.ViewModel.Misc
             jobForecastSummary.DateCosts.Clear();
 
             DateTime firstViewDate = dates.First();
-            DateTime firstForecastDate = dates.Count() > 1 ? dates[1] : dates.First();
+            //DateTime firstForecastDate = dates.Count() > 1 ? dates[1] : dates.First();
             foreach (DateTime date in dates)
             {
-                jobForecastSummary.DateCosts.Add(new ForecastDateCost(date, firstViewDate, firstForecastDate, isWeeks));
+                jobForecastSummary.DateCosts.Add(new ForecastDateCost(date, firstViewDate, dataDate, isWeeks));
             }
 
             IEnumerable<SummaryStats> summaryStats;
