@@ -73,6 +73,7 @@ namespace BluePrints.ViewModels
         string columnDeliverableStatus = "Entity.DeliverableStatusProgressGuid";
         Timer focusLastColumnTimer = new Timer();
         BluePrintsNativeEntities nativeDataContext = new BluePrintsNativeEntities();
+        private DispatcherTimer gridRefreshDispatcherTimer;
         protected override void resolveParameters(object parameter)
         {
             defaultColumnFieldNames.Add(columnEntity);
@@ -88,6 +89,10 @@ namespace BluePrints.ViewModels
             focusLastColumnTimer.Interval = 1000;
             focusLastColumnTimer.Elapsed += FocusLastColumnTimer_Elapsed;
             GlobalMethods.SetAccordionExpandedState?.Invoke(false);
+
+            gridRefreshDispatcherTimer = new DispatcherTimer();
+            gridRefreshDispatcherTimer.Interval = new TimeSpan(0, 0, 0, 0, 1);
+
             base.resolveParameters(parameter);
         }
 
@@ -266,16 +271,28 @@ namespace BluePrints.ViewModels
                     deliverable.BuildStats(1, calcTypes);
                     BuildRowStats(deliverable, true);
                     deliverable.Update();
-                    mainThreadDispatcher.BeginInvoke(new Action(() => this.RaisePropertyChanged(x => x.DataPointsTable)));
+
+                    gridRefreshDispatcherTimer.Tick -= gridRefreshDispatcherTimer_Tick;
+                    gridRefreshDispatcherTimer.Tick += gridRefreshDispatcherTimer_Tick;
+                    gridRefreshDispatcherTimer.Start();
                 }
             }
 
             base.OnAfterAuxiliaryEntitiesChanged(key, changedType, messageType, sender, senderKey, isBulkRefresh);
         }
 
+        private void gridRefreshDispatcherTimer_Tick(object sender, EventArgs e)
+        {
+            gridRefreshDispatcherTimer.Stop();
+            GridControlService.RefreshData();
+        }
+
         public bool CanProgressUndo()
         {
             if (!IsCalculationCompleted)
+                return false;
+
+            if (PROGRESS_ITEMSCollectionViewModel == null || MainViewModel == null)
                 return false;
 
             return PROGRESS_ITEMSCollectionViewModel.EntitiesUndoRedoManager.CanUndo() || MainViewModel.EntitiesUndoRedoManager.CanUndo();
@@ -284,6 +301,9 @@ namespace BluePrints.ViewModels
         public bool CanProgressRedo()
         {
             if (!IsCalculationCompleted)
+                return false;
+
+            if (PROGRESS_ITEMSCollectionViewModel == null || MainViewModel == null)
                 return false;
 
             return PROGRESS_ITEMSCollectionViewModel.EntitiesUndoRedoManager.CanRedo() || MainViewModel.EntitiesUndoRedoManager.CanRedo();
@@ -717,7 +737,7 @@ namespace BluePrints.ViewModels
 
                 PROGRESS_ITEMSCollectionViewModel.BaseBulkSave(progressToSave);
                 //add a dummy undo so that during undo/redo operation a baseline item message will be sent
-                MainViewModel.EntitiesUndoRedoManager.AddUndo(entity, BindableBase.GetPropertyName(() => new BASELINE_ITEM().GUID_ORIGINAL), entity.GUID_ORIGINAL, entity.GUID_ORIGINAL, EntityMessageType.Changed);
+                MainViewModel.EntitiesUndoRedoManager.AddUndo(entity, BindableBase.GetPropertyName(() => new BASELINE_ITEM().GUID), entity.GUID, entity.GUID, EntityMessageType.Changed, true);
             }
 
             //save baseline_item here so that auxiliary message can respond to progress item changes

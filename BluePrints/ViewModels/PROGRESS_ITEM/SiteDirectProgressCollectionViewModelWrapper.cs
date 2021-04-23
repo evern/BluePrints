@@ -55,6 +55,7 @@ namespace BluePrints.ViewModels
 
         #region Database Operation
         private ScoreCardDiscipline scoreCardDiscipline;
+        private DispatcherTimer gridRefreshDispatcherTimer;
         protected override void resolveParameters(object parameter)
         {
             skipExoDataLoading = true;
@@ -71,6 +72,10 @@ namespace BluePrints.ViewModels
             scoreCardDiscipline = (ScoreCardDiscipline)receiveParameter.GetThirdEntity();
 
             primeroUnitOfWork = PrimeroEntitiesUnitOfWorkSource.GetUnitOfWorkFactory(loadPROJECT.OfficeNameForExo == BluePrintsResources.OfficeMontreal).CreateUnitOfWork();
+
+            gridRefreshDispatcherTimer = new DispatcherTimer();
+            gridRefreshDispatcherTimer.Interval = new TimeSpan(0, 0, 0, 0, 1);
+
             if (loadPROJECT != null)
                 isQueryForLiveStatus = true;
         }
@@ -186,11 +191,20 @@ namespace BluePrints.ViewModels
                     deliverable.BuildStats(1, calcTypes);
                     populateRow(deliverable, true);
                     deliverable.Update();
-                    mainThreadDispatcher.BeginInvoke(new Action(() => this.RaisePropertyChanged(x => x.DataPointsTable)));
+
+                    gridRefreshDispatcherTimer.Tick -= gridRefreshDispatcherTimer_Tick;
+                    gridRefreshDispatcherTimer.Tick += gridRefreshDispatcherTimer_Tick;
+                    gridRefreshDispatcherTimer.Start();
                 }
             }
 
             base.OnAfterAuxiliaryEntitiesChanged(key, changedType, messageType, sender, senderKey, isBulkRefresh);
+        }
+
+        private void gridRefreshDispatcherTimer_Tick(object sender, EventArgs e)
+        {
+            gridRefreshDispatcherTimer.Stop();
+            GridControlService.RefreshData();
         }
 
         #region Collection Call Backs
@@ -416,6 +430,45 @@ namespace BluePrints.ViewModels
             MainViewModel.ShowErrorMessage("Error", errorMessages);
         }
 
+        public override bool CanUndo()
+        {
+            if (!IsCalculationCompleted)
+                return false;
+
+            if (PROGRESS_ITEMSCollectionViewModel == null || MainViewModel == null)
+                return false;
+
+            return PROGRESS_ITEMSCollectionViewModel.EntitiesUndoRedoManager.CanUndo() || MainViewModel.EntitiesUndoRedoManager.CanUndo();
+        }
+
+        public override bool CanRedo()
+        {
+            if (!IsCalculationCompleted)
+                return false;
+
+            if (PROGRESS_ITEMSCollectionViewModel == null || MainViewModel == null)
+                return false;
+
+            return PROGRESS_ITEMSCollectionViewModel.EntitiesUndoRedoManager.CanRedo() || MainViewModel.EntitiesUndoRedoManager.CanRedo();
+        }
+
+
+        public override void Undo()
+        {
+            PROGRESS_ITEMSCollectionViewModel.EntitiesUndoRedoManager.Undo();
+
+            //mainviewmodel must be undone last so that auxiliary message event can handle progress_item changes
+            MainViewModel.EntitiesUndoRedoManager.Undo();
+        }
+
+        public override void Redo()
+        {
+            PROGRESS_ITEMSCollectionViewModel.EntitiesUndoRedoManager.Redo();
+
+            //mainviewmodel must be redone last so that auxiliary message event can handle progress_item changes
+            MainViewModel.EntitiesUndoRedoManager.Redo();
+        }
+
         private void undoRedoPause()
         {
             PROGRESS_ITEMSCollectionViewModel.EntitiesUndoRedoManager.PauseActionId();
@@ -479,7 +532,6 @@ namespace BluePrints.ViewModels
                 CONSTRUCTION_STAGE constructionSTAGE = CONSTRUCTION_STAGECollection.FirstOrDefault(x => x.SORT_ORDER.ToString() == orderIdStr);
                 if (constructionSTAGE != null)
                 {
-                    string earnedUnitsFieldName = BindableBase.GetPropertyName(() => new PROGRESS_ITEM().EARNED_UNITS);
                     List<PROGRESS_ITEM> progressToSave = new List<PROGRESS_ITEM>();
 
                     decimal stageMaxUnits = constructionSTAGE.WEIGHT_PERCENTAGE * entity.Total_Units;
@@ -517,17 +569,22 @@ namespace BluePrints.ViewModels
                     }
                     else
                     {
-                        PROGRESS_ITEMSCollectionViewModel.EntitiesUndoRedoManager.AddUndo(currentPeriodPROGRESS_ITEM, earnedUnitsFieldName, currentPeriodPROGRESS_ITEM.EARNED_UNITS, earnedUnits, EntityMessageType.Changed);
+                        PROGRESS_ITEMSCollectionViewModel.EntitiesUndoRedoManager.AddUndo(currentPeriodPROGRESS_ITEM, BindableBase.GetPropertyName(() => new PROGRESS_ITEM().EARNED_UNITS), currentPeriodPROGRESS_ITEM.EARNED_UNITS, earnedUnits, EntityMessageType.Changed);
                         currentPeriodPROGRESS_ITEM.EARNED_UNITS = earnedUnits;
                         //use this to fix time issue
                         currentPeriodPROGRESS_ITEM.EARNED_DATE = DataDate;
                     }
 
                     //audit history
+                    PROGRESS_ITEMSCollectionViewModel.EntitiesUndoRedoManager.AddUndo(currentPeriodPROGRESS_ITEM, BindableBase.GetPropertyName(() => new PROGRESS_ITEM().BUDGET_HOURS), currentPeriodPROGRESS_ITEM.BUDGET_HOURS, entity.Total_Units, EntityMessageType.Changed);
                     currentPeriodPROGRESS_ITEM.BUDGET_HOURS = entity.Total_Units;
+                    PROGRESS_ITEMSCollectionViewModel.EntitiesUndoRedoManager.AddUndo(currentPeriodPROGRESS_ITEM, BindableBase.GetPropertyName(() => new PROGRESS_ITEM().BUDGET_INSTALL_HOURS_PER_QTY), currentPeriodPROGRESS_ITEM.BUDGET_INSTALL_HOURS_PER_QTY, entity.UnitsPerQuantity, EntityMessageType.Changed);
                     currentPeriodPROGRESS_ITEM.BUDGET_INSTALL_HOURS_PER_QTY = entity.UnitsPerQuantity;
+                    PROGRESS_ITEMSCollectionViewModel.EntitiesUndoRedoManager.AddUndo(currentPeriodPROGRESS_ITEM, BindableBase.GetPropertyName(() => new PROGRESS_ITEM().TOTAL_QUANTITY), currentPeriodPROGRESS_ITEM.TOTAL_QUANTITY, entity.Total_Quantity, EntityMessageType.Changed);
                     currentPeriodPROGRESS_ITEM.TOTAL_QUANTITY = entity.Total_Quantity;
+                    PROGRESS_ITEMSCollectionViewModel.EntitiesUndoRedoManager.AddUndo(currentPeriodPROGRESS_ITEM, BindableBase.GetPropertyName(() => new PROGRESS_ITEM().EARNED_QUANTITY), currentPeriodPROGRESS_ITEM.EARNED_QUANTITY, earnedQuantity, EntityMessageType.Changed);
                     currentPeriodPROGRESS_ITEM.EARNED_QUANTITY = earnedQuantity;
+                    PROGRESS_ITEMSCollectionViewModel.EntitiesUndoRedoManager.AddUndo(currentPeriodPROGRESS_ITEM, BindableBase.GetPropertyName(() => new PROGRESS_ITEM().EARNED_PERCENTAGE), currentPeriodPROGRESS_ITEM.EARNED_PERCENTAGE, earnedPercentage, EntityMessageType.Changed);
                     currentPeriodPROGRESS_ITEM.EARNED_PERCENTAGE = earnedPercentage;
                     currentPeriodPROGRESS_ITEM.STAGE_NAME = constructionSTAGE.NAME;
                     currentPeriodPROGRESS_ITEM.STAGE_ORDER = constructionSTAGE.SORT_ORDER;
@@ -536,7 +593,7 @@ namespace BluePrints.ViewModels
                     PROGRESS_ITEMSCollectionViewModel.Save(currentPeriodPROGRESS_ITEM);
 
                     //add a dummy undo so that during undo/redo operation a baseline item message will be sent
-                    MainViewModel.EntitiesUndoRedoManager.AddUndo(entity, BindableBase.GetPropertyName(() => new ESTIMATE_ITEM().GUID_ORIGINAL), entity.GUID, entity.GUID, EntityMessageType.Changed);
+                    MainViewModel.EntitiesUndoRedoManager.AddUndo(entity, BindableBase.GetPropertyName(() => new ESTIMATE_ITEM().GUID), entity.GUID, entity.GUID, EntityMessageType.Changed, true);
 
                     //save baseline_item here so that auxiliary message can respond to progress item changes
                     MainViewModel.Save(entity);
