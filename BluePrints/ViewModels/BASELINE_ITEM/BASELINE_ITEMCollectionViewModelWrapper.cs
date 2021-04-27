@@ -284,6 +284,8 @@ namespace BluePrints.ViewModels
             if (loadBASELINE == null)
                 isQueryForLiveStatus = true;
 
+            allowSubJobDeletion = false;
+            allowWorkpackDeletion = false;
             Allow_Drag_Drop = false;
         }
 
@@ -1539,13 +1541,6 @@ namespace BluePrints.ViewModels
         {
             string cleanFieldName = DataUtils.FormatColumnFieldname(fieldName);
             return "Entity.Entity." + cleanFieldName;
-        }
-
-        protected override void onAfterRefresh()
-        {
-            allowSubJobDeletion = false;
-            allowWorkpackDeletion = false;
-            base.onAfterRefresh();
         }
 
         private string generateInternalNumber(BASELINE_ITEMProgress projectionEntity, out string errorMessage)

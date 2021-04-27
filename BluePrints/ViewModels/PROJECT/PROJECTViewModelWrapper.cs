@@ -289,6 +289,12 @@ namespace BluePrints.ViewModels
 
         private void summaryBackgroundWorker_DoWork(object sender, DoWorkEventArgs e)
         {
+            if (summaryBackgroundWorker.CancellationPending)
+            {
+                e.Cancel = true;
+                return;
+            }
+
             var argumentObject = (object[])e.Argument;
             var project = (PROJECT_Dashboard)argumentObject[0];
             
@@ -329,10 +335,16 @@ namespace BluePrints.ViewModels
         private void summaryBackgroundWorker_RunWorkerCompleted(object sender, RunWorkerCompletedEventArgs e)
         {
             //for raising can export to excel
-            mainThreadDispatcher.BeginInvoke(new Action(() => this.RaiseCanExecuteChanged(x => x.ExportToExcel())));
-            mainThreadDispatcher.BeginInvoke(new Action(() => onSummaryCalculateComplete()));
+            this.RaiseCanExecuteChanged(x => x.ExportToExcel());
+            onSummaryCalculateComplete();
             if (selectAllDispatcher != null)
                 selectAllDispatcher.Start();
+        }
+
+        protected override void OnClose(CancelEventArgs e)
+        {
+            summaryBackgroundWorker.CancelAsync();
+            base.OnClose(e);
         }
 
         protected virtual void onSummaryCalculateComplete()

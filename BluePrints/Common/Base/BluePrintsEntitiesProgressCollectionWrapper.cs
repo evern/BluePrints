@@ -64,7 +64,6 @@ namespace BluePrints.Common.Base
         protected IUnitOfWorkFactory<IP6EntitiesUnitOfWork> p6UnitOfWorkFactory = P6EntitiesUnitOfWorkSource.GetUnitOfWorkFactory();
         protected bool is_single_project_mode = true;
         protected bool is_load_p6_task = false;
-        protected bool isCompletelyLoaded = false;
         protected bool isUseReportDate = false;
         protected bool canDateBackwardForward = false;
         BackgroundWorker progressSaveBackgroundWorker;
@@ -239,8 +238,6 @@ namespace BluePrints.Common.Base
         protected bool skipExoDataLoading = false;
         protected override void OnAfterAssignedCallbackAndRaisePropertyChanged()
         {
-            //IsLoading = false;
-            //this.RaisePropertyChanged(x => x.IsLoading);
             if(!skipExoDataLoading)
                 Task.Run(() => loadExoData());
 
@@ -400,6 +397,9 @@ namespace BluePrints.Common.Base
                 InitializeSummarizer();
                 IsLoading = true;
                 this.RaisePropertyChanged(x => x.IsLoading);
+                IsCalculationCompleted = false;
+                this.RaisePropertyChanged(x => x.IsCalculationCompleted);
+
                 calculatePlannedBackgroundWorker.RunWorkerAsync();
             }
         }
@@ -424,7 +424,6 @@ namespace BluePrints.Common.Base
 
         protected void calculatePlannedBackgroundWorker_DoWork(object sender, DoWorkEventArgs e)
         {
-            isBusy = true;
             if (calculatePlannedBackgroundWorker.CancellationPending)
             {
                 e.Cancel = true;
@@ -446,14 +445,13 @@ namespace BluePrints.Common.Base
             }
         }
 
-        public bool isBusy { get; set; }
         public bool IsCalculationCompleted { get; set; }
         protected void CalculatePlannedBackgroundWorker_RunWorkerCompleted(object sender, RunWorkerCompletedEventArgs e)
         {
             IsLoading = false;
             this.RaisePropertyChanged(x => x.IsLoading);
-            isBusy = false;
             IsCalculationCompleted = true;
+            this.RaisePropertyChanged(x => x.IsCalculationCompleted);
             mainThreadDispatcher.BeginInvoke(new Action(() => BackgroundRefresh()));
         }
 
@@ -537,7 +535,7 @@ namespace BluePrints.Common.Base
 
         public override bool CanFullRefresh()
         {
-            if (!IsCalculationCompleted)
+            if (IsLoading)
                 return false;
 
             return base.CanFullRefresh();
@@ -545,8 +543,10 @@ namespace BluePrints.Common.Base
 
         public override void FullRefresh()
         {
+            calculatePlannedBackgroundWorker.CancelAsync();
             IsCalculationCompleted = false;
-            IsLoading = true;
+            this.RaisePropertyChanged(x => x.IsCalculationCompleted);
+
             base.FullRefresh();
         }
 
@@ -607,7 +607,7 @@ namespace BluePrints.Common.Base
 
         protected void DateChange(DateNavigationType navigationType)
         {
-            if (isBusy)
+            if (!IsCalculationCompleted)
                 return;
 
             if (BluePrintsUtils.ProgressDateChange(navigationType, loadPROGRESS, isUseReportDate))

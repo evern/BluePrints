@@ -75,6 +75,7 @@ namespace BluePrints.ViewModels
         BluePrintsNativeEntities nativeDataContext = new BluePrintsNativeEntities();
         protected override void resolveParameters(object parameter)
         {
+            IsLoading = true;
             defaultColumnFieldNames.Add(columnEntity);
 
             systemColumnFieldNames.Add(columnEntity);
@@ -182,7 +183,6 @@ namespace BluePrints.ViewModels
 
         protected override void OnAfterAssignedCallbackAndRaisePropertyChanged()
         {
-            loadDataPointsTable();
             skipExoDataLoading = true;
             base.OnAfterAssignedCallbackAndRaisePropertyChanged();
         }
@@ -221,35 +221,35 @@ namespace BluePrints.ViewModels
             alignedDataDateCollection = null;
             base.delayedPROGRESSSavingDispatcher_Tick(sender, e);
         }
-
-        public override void FullRefresh()
-        {
-            if (!CanFullRefresh())
-                return;
-
-            IsCalculationCompleted = false;
-
-            //set datapoints table to empty so user cannot edit anything whilst it's refreshing
-            refreshDataPointsTable();
-            this.RaisePropertyChanged(x => x.IsCalculationCompleted);
-            base.FullRefresh();
-        }
         #endregion
 
         #endregion
 
         #region View Properties
-        private void refreshDataPointsTable()
+        public override void FullRefresh()
         {
+            dataPointsTable = null;
+            this.RaisePropertyChanged(x => x.DataPointsTable);
+            base.FullRefresh();
+        }
+
+        protected override bool loadDataPointsTable()
+        {
+            IsLoading = true;
+            this.RaisePropertyChanged(x => x.IsLoading);
+
             alignedDataDateCollection = null;
             dataPointsTable = null;
-            loadDataPointsTable();
-        }
-        
-        protected override void onAfterRefresh()
-        {
-            refreshDataPointsTable();
-            base.onAfterRefresh();
+
+            updateDataPointsTable();
+            this.RaisePropertyChanged(x => x.DataPointsTable);
+
+            IsLoading = false;
+            this.RaisePropertyChanged(x => x.IsLoading);
+            TableViewService.ScrollToLast();
+            CommonMethods.AddSaveLayoutHandler(GridControlService.GetGridColumns());
+
+            return true;
         }
         
         public override void OnAfterAuxiliaryEntitiesChanged(object key, Type changedType, EntityMessageType messageType, object sender, Guid senderKey, bool isBulkRefresh)
@@ -275,7 +275,7 @@ namespace BluePrints.ViewModels
 
         public bool CanProgressUndo()
         {
-            if (!IsCalculationCompleted)
+            if (!IsCalculationCompleted || PROGRESS_ITEMSCollectionViewModel == null || MainViewModel == null)
                 return false;
 
             return PROGRESS_ITEMSCollectionViewModel.EntitiesUndoRedoManager.CanUndo() || MainViewModel.EntitiesUndoRedoManager.CanUndo();
@@ -283,7 +283,7 @@ namespace BluePrints.ViewModels
 
         public bool CanProgressRedo()
         {
-            if (!IsCalculationCompleted)
+            if (!IsCalculationCompleted || PROGRESS_ITEMSCollectionViewModel == null || MainViewModel == null)
                 return false;
 
             return PROGRESS_ITEMSCollectionViewModel.EntitiesUndoRedoManager.CanRedo() || MainViewModel.EntitiesUndoRedoManager.CanRedo();
@@ -891,23 +891,7 @@ namespace BluePrints.ViewModels
                 columns.Add(new ColumnDescriptor() { FieldName = columnFieldName, ReadOnly = false, Header = columnFieldName, Fixed = FixedStyle.None, Width = 100, Settings = SettingsType.Percent });
             }
         }
-
-        private void loadDataPointsTable()
-        {
-            IsLoading = true;
-            this.RaisePropertyChanged(x => x.IsLoading);
-
-            dataPointsTable = null;
-
-            updateDataPointsTable();
-            this.RaisePropertyChanged(x => x.DataPointsTable);
-
-            IsLoading = false;
-            this.RaisePropertyChanged(x => x.IsLoading);
-            TableViewService.ScrollToLast();
-            CommonMethods.AddSaveLayoutHandler(GridControlService.GetGridColumns());
-        }
-
+        
         private void updateDataPointsTable()
         {
             GridControlService.BeginDataUpdate();

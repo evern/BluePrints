@@ -70,6 +70,7 @@ namespace BluePrints.ViewModels
         BackgroundWorker createProjectBackgroundWorker;
         protected override void resolveParameters(object parameter)
         {
+            IsLoading = true;
             primeroUnitOfWork = PrimeroEntitiesUnitOfWorkSource.GetUnitOfWorkFactory().CreateUnitOfWork();
             bluePrintsUnitOfWorkFactory = BluePrintsEntitiesUnitOfWorkSource.GetUnitOfWorkFactory();
             _bluePrintsUnitOfWork = bluePrintsUnitOfWorkFactory.CreateUnitOfWork();
@@ -163,12 +164,6 @@ namespace BluePrints.ViewModels
             }
 
             return null;
-        }
-
-        protected override void OnAfterAssignedCallbackAndRaisePropertyChanged()
-        {
-            loadDataPointsTable();
-            base.OnAfterAssignedCallbackAndRaisePropertyChanged();
         }
         #endregion
 
@@ -706,10 +701,6 @@ namespace BluePrints.ViewModels
         #endregion
 
         #region Saving Behavior
-        private void onAfterEntitySaved(PROJECTTenderProfile projection, PROJECT entity, bool isNewEntity)
-        {
-        }
-
         //when new row is initiated a new instance of projection needs to be instantiated for cell update, if not cellvaluechanged won't have any values
         public void ParentInitNewRow(InitNewRowEventArgs e)
         {
@@ -1832,7 +1823,6 @@ namespace BluePrints.ViewModels
 
         protected override void AssignCallBacksAndRaisePropertyChange(IEnumerable<PROJECTTenderProfile> entities)
         {
-            MainViewModel.OnAfterProjectionSavedCallBack = onAfterEntitySaved;
             MainViewModel.SetParentViewModel(this);
             base.AssignCallBacksAndRaisePropertyChange(entities);
         }
@@ -1885,7 +1875,7 @@ namespace BluePrints.ViewModels
             }
         }
 
-        private void loadDataPointsTable()
+        protected override bool loadDataPointsTable()
         {
             IsLoading = true;
             this.RaisePropertyChanged(x => x.IsLoading);
@@ -1898,6 +1888,7 @@ namespace BluePrints.ViewModels
             IsLoading = false;
             this.RaisePropertyChanged(x => x.IsLoading);
             CommonMethods.AddSaveLayoutHandler(GridControlService.GetGridColumns());
+            return true;
         }
 
         private void updateDataPointsTable()
