@@ -84,6 +84,7 @@ namespace BluePrints.Common.Base
         protected IPrimeroEntitiesUnitOfWork primeroUnitOfWork;
         protected override void resolveParameters(object parameter)
         {
+            AlwaysSkipMessage = true;
             delayedPROGRESSSavingDispatcher = new DispatcherTimer();
             delayedPROGRESSSavingDispatcher.Interval = new TimeSpan(0, 0, 0, 1);
             delayedPROGRESSSavingDispatcher.Tick += delayedPROGRESSSavingDispatcher_Tick;
@@ -225,7 +226,7 @@ namespace BluePrints.Common.Base
             MainViewModel.OnMappingAdditionalChangedEntitiesProperties = OnMappingAdditionalChangedEntitiesProperties;
             MainViewModel.OnBeforeAssignRepositoryToExistingProjection = OnBeforeAssignRepositoryToExistingProjection;
             MainViewModel.DisablePasteRowLevel = true;
-            //MainViewModel.AlwaysSkipMessage = true;
+            MainViewModel.AlwaysSkipMessage = true;
             PROGRESS_ITEMSCollectionViewModel.SetParentViewModel(this);
 
             MainViewModel.SetParentViewModel(this);
@@ -324,7 +325,7 @@ namespace BluePrints.Common.Base
                 saveProgressItem(projectionEntity);
             }
 
-            if (projectionEntity.ShouldSaveProgressETC)
+            if (!manuallySaveProgressOnAfterBaselineItemSaved && projectionEntity.ShouldSaveProgressETC)
             {
                 saveProgressETC(projectionEntity);
             }

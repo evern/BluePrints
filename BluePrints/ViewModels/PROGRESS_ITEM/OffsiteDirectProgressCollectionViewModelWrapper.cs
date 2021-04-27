@@ -140,6 +140,13 @@ namespace BluePrints.ViewModels
             FullRefresh();
         }
 
+        protected override void OnAfterAssignedCallbackAndRaisePropertyChanged()
+        {
+            //progress items needs to get notified for view to reflect update
+            PROGRESS_ITEMSCollectionViewModel.AlwaysSkipMessage = false;
+            base.OnAfterAssignedCallbackAndRaisePropertyChanged();
+        }
+
         protected override Func<IRepositoryQuery<BASELINE_ITEM>, IQueryable<BASELINE_ITEMProgress>>
             specifyMainViewModelProjection()
         {
@@ -187,7 +194,7 @@ namespace BluePrints.ViewModels
         public override string ViewName
         {
             //get { return "OffsiteDirectProgressViewModelWrapper" + view_project_specific_affix; }
-            get { return "OffsiteDirectProgressViewModelWrapper_v5"; }
+            get { return "OffsiteDirectProgressViewModelWrapper_v6"; }
         }
 
         public bool IsDataDateChangeVisible => canDateBackwardForward;
