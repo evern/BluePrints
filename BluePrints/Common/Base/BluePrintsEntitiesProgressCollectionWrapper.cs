@@ -327,7 +327,7 @@ namespace BluePrints.Common.Base
                 saveProgressItem(projectionEntity);
             }
 
-            if (projectionEntity.ShouldSaveProgressETC)
+            if (!manuallySaveProgressOnAfterBaselineItemSaved && projectionEntity.ShouldSaveProgressETC)
             {
                 saveProgressETC(projectionEntity);
             }

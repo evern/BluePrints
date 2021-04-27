@@ -166,6 +166,8 @@ namespace BluePrints.ViewModels
 
         protected override void AssignCallBacksAndRaisePropertyChange(IEnumerable<ESTIMATE_ITEMProgress> entities)
         {
+            MainViewModel.DisableEntitiesPauseUnpause = true;
+            PROGRESS_ITEMSCollectionViewModel.DisableEntitiesPauseUnpause = true;
             MainViewModel.ValidateFillDownCallBack = ValidateFillDownCallBack;
             base.AssignCallBacksAndRaisePropertyChange(entities);
         }
@@ -205,6 +207,64 @@ namespace BluePrints.ViewModels
         {
             gridRefreshDispatcherTimer.Stop();
             GridControlService.RefreshData();
+        }
+
+        public override void PastingFromClipboard(PastingFromClipboardEventArgs e)
+        {
+            GridControl gridControl = (GridControl)e.Source;
+            TableView gridTableView = (TableView)gridControl.View;
+            string newValueString = Clipboard.GetText().ToString();
+
+            List<ErrorMessage> errorMessages = new List<ErrorMessage>();
+            //remove tab in front
+            if (newValueString != string.Empty)
+            {
+                if (newValueString.Substring(0, 1) == "\t")
+                {
+                    newValueString = newValueString.Substring(1, newValueString.Length - 1);
+                }
+
+                string[] RowData = DataUtils.ExcelSplit(newValueString).ToArray();
+                pasteCellData(gridControl, gridTableView, RowData, out errorMessages);
+
+                e.Handled = true;
+            }
+
+            ShowErrorMessage("Errors", errorMessages);
+        }
+
+        private void pasteCellData(GridControl gridControl, TableView gridTableView, string[] RowData, out List<ErrorMessage> errorMessages)
+        {
+            undoRedoClear();
+            undoRedoPause();
+            List<DataRow> editedRows = GridControlHelpers.PasteCellData(gridControl, gridTableView, RowData, basePasteData, out errorMessages, true);
+            LoadingScreenManager.CloseLoadingScreen();
+            undoRedoUnpause();
+        }
+
+        private bool basePasteData(DataRow newRow, ColumnBase copyColumn, string pasteData, bool isLastRow, out List<ErrorMessage> errorMessages)
+        {
+            errorMessages = new List<ErrorMessage>();
+            if (copyColumn.FieldType == typeof(decimal))
+            {
+                ESTIMATE_ITEMProgress entity = (ESTIMATE_ITEMProgress)newRow[columnEntity];
+                var rgx = new Regex(BluePrintsResources.Regex_NumbersOnly);
+                var cleanColumnString = rgx.Replace(pasteData, string.Empty);
+                decimal decimal_value;
+                if (decimal.TryParse(cleanColumnString, out decimal_value))
+                {
+                    decimal oldValue = (decimal)newRow[copyColumn.FieldName];
+                    ErrorMessage errorMessage;
+                    updatePercentage(entity, copyColumn.FieldName, oldValue, decimal_value, out errorMessage);
+                    if (errorMessage != null)
+                    {
+                        errorMessages.Add(errorMessage);
+                        return false;
+                    }
+                }
+            }
+
+            return true;
         }
 
         #region Collection Call Backs

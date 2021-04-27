@@ -159,6 +159,7 @@
                             </dxg:TableView.RowCellMenuCustomizations>
                             <dxmvvm:Interaction.Behaviors>
                                 <dxmvvm:EventToCommand Command="{Binding CellValueChangedProgressUpdateCommand}" EventName="CellValueChanged" PassEventArgsToCommand="True" />
+                                <dxmvvm:EventToCommand Command="{Binding PastingFromClipboardCommand}" EventName="PastingFromClipboard" PassEventArgsToCommand="True" />
                             </dxmvvm:Interaction.Behaviors>
                         </dxg:TableView>
                     </dxg:GridControl.View>
