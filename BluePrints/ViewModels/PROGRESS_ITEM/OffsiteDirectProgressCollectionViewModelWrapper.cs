@@ -145,7 +145,10 @@ namespace BluePrints.ViewModels
         {
             //progress items needs to get notified for view to reflect update
             PROGRESS_ITEMSCollectionViewModel.AlwaysSkipMessage = false;
-            PROJECT_REPORTCollectionViewModel.AlwaysSkipMessage = false;
+
+            if(PROJECT_REPORTCollectionViewModel != null)
+                PROJECT_REPORTCollectionViewModel.AlwaysSkipMessage = false;
+
             base.OnAfterAssignedCallbackAndRaisePropertyChanged();
         }
 
