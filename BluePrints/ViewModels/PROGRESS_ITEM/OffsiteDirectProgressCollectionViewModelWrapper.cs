@@ -52,6 +52,7 @@ namespace BluePrints.ViewModels
         #region Database Operation
         protected override void resolveParameters(object parameter)
         {
+            AlwaysSkipMessage = true;
             is_load_p6_task = true;
             isUseReportDate = LoginCredentials.getPermissionStatus(DataUtils.GetNameOf(() => NavigationResources.Permission_DesignDeliverables_ProgressPreviousWeeksDate)) != LoginCredentials.PermissionStatus.None;
             canDateBackwardForward = LoginCredentials.getPermissionStatus(DataUtils.GetNameOf(() => NavigationResources.Permission_DesignDeliverables_CanDateBackwardForward)) != LoginCredentials.PermissionStatus.None;
@@ -144,6 +145,7 @@ namespace BluePrints.ViewModels
         {
             //progress items needs to get notified for view to reflect update
             PROGRESS_ITEMSCollectionViewModel.AlwaysSkipMessage = false;
+            PROJECT_REPORTCollectionViewModel.AlwaysSkipMessage = false;
             base.OnAfterAssignedCallbackAndRaisePropertyChanged();
         }
 
@@ -289,9 +291,7 @@ namespace BluePrints.ViewModels
 
         public void EditReport()
         {
-            var reportDesigner = new UserReportDesigner(loadPROJECT,
-                (CollectionViewModel<PROJECT_REPORT, PROJECT_REPORT, Guid, IBluePrintsEntitiesUnitOfWork>)
-                loaderCollection.GetViewModel<PROJECT_REPORT>(), ReportType.Progress_Report);
+            var reportDesigner = new UserReportDesigner(loadPROJECT, PROJECT_REPORTCollectionViewModel, ReportType.Progress_Report);
             if (reportDesigner.ShowDialog() == System.Windows.Forms.DialogResult.OK)
                 reportDesigner.Dispose();
             else

@@ -97,7 +97,7 @@
                 <custom:GridControlEx x:Name="GridControl" dxc:DXSerializer.SerializationID="GridControlOffsiteDirectProgress" dxc:DXSerializer.StoreLayoutMode="All" Style="{StaticResource DefaultGridControlTemplate}">
                     <dxmvvm:Interaction.Behaviors>
                         <behavior:DetailGridSearchingBehavior/>
-                        <!--<dxmvvm:EventToCommand Command="{Binding CustomSummaryCommand}" EventName="CustomSummary" PassEventArgsToCommand="True" />-->
+                        <dxmvvm:EventToCommand Command="{Binding CustomSummaryCommand}" EventName="CustomSummary" PassEventArgsToCommand="True" />
                     </dxmvvm:Interaction.Behaviors>
                     <dxg:GridControl.Bands>
                         <dxg:GridControlBand Header="Properties (Read Only)">
@@ -526,41 +526,41 @@
                         </dxg:DataControlDetailDescriptor>
                     </dxg:GridControl.DetailDescriptor>-->
                     <dxg:GridControl.GroupSummary>
-                        <!--<dxg:GridSummaryItem DisplayFormat="p" FieldName="Baseline_Percentage" SummaryType="Custom" />
+                        <dxg:GridSummaryItem DisplayFormat="p" FieldName="Baseline_Percentage" SummaryType="Custom" />
                         <dxg:GridSummaryItem DisplayFormat="p" FieldName="SchedulePercentage" SummaryType="Custom" />
                         <dxg:GridSummaryItem DisplayFormat="p" FieldName="ScheduleCurrentPeriodPercentage" SummaryType="Custom" />
                         <dxg:GridSummaryItem DisplayFormat="p" FieldName="Total_Earned_Percentage" SummaryType="Custom" />
-                        <dxg:GridSummaryItem DisplayFormat="p" FieldName="Earned_Percentage_OnDataDate" SummaryType="Custom" />-->
+                        <dxg:GridSummaryItem DisplayFormat="p" FieldName="Earned_Percentage_OnDataDate" SummaryType="Custom" />
                         <dxg:GridSummaryItem DisplayFormat="n" FieldName="BurnedUnits" SummaryType="Sum" />
                         <dxg:GridSummaryItem DisplayFormat="n" FieldName="Earned_Units_OnDataDate" SummaryType="Sum" />
                         <dxg:GridSummaryItem DisplayFormat="n" FieldName="Earned_Units_ToDate" SummaryType="Sum" />
                         <dxg:GridSummaryItem DisplayFormat="n" FieldName="Remaining_Units_ToDate" SummaryType="Sum" />
                         <dxg:GridSummaryItem DisplayFormat="n" FieldName="ProgressETC" SummaryType="Sum" />
                         <dxg:GridSummaryItem DisplayFormat="n" FieldName="Total_Costs" SummaryType="Sum" />
-                        <!--<dxg:GridSummaryItem DisplayFormat="p" FieldName="Stats.Budgeted.CurrentPeriodDataPoint.UnitsPercentage" SummaryType="Custom" />-->
+                        <dxg:GridSummaryItem DisplayFormat="p" FieldName="Stats.Budgeted.CurrentPeriodDataPoint.UnitsPercentage" SummaryType="Custom" />
                         <dxg:GridSummaryItem DisplayFormat="c2" FieldName="DisplayPeriodEarnedCosts" SummaryType="Sum" />
                         <dxg:GridSummaryItem DisplayFormat="n" FieldName="Entity.Entity.BUDGET_HOURS" SummaryType="Sum" />
                         <dxg:GridSummaryItem DisplayFormat="n" FieldName="Variation_Units" SummaryType="Sum" />
                         <dxg:GridSummaryItem DisplayFormat="n" FieldName="Budget_Units" SummaryType="Sum" />
-                        <dxg:GridSummaryItem DisplayFormat="n" FieldName="Total_Units" SummaryType="Sum" />  
+                        <dxg:GridSummaryItem DisplayFormat="n" FieldName="Total_Units" SummaryType="Sum" />
                         <dxg:GridSummaryItem DisplayFormat="n" FieldName="Earned_Costs_ToDate" SummaryType="Sum" />
                         <dxg:GridSummaryItem DisplayFormat="n" FieldName="Earned_Costs_OnDataDate" SummaryType="Sum" />
                         <dxg:GridSummaryItem DisplayFormat="n" FieldName="PROGRESS_ITEMcurrent.EARNED_UNITS" SummaryType="Sum" />
                         <dxg:GridSummaryItem DisplayFormat="Total {0} Records" FieldName="Entity.Entity.INTERNAL_NUM" SummaryType="Count" />
                     </dxg:GridControl.GroupSummary>
                     <dxg:GridControl.TotalSummary>
-                        <!--<dxg:GridSummaryItem DisplayFormat="p" FieldName="Baseline_Percentage" SummaryType="Custom" />
+                        <dxg:GridSummaryItem DisplayFormat="p" FieldName="Baseline_Percentage" SummaryType="Custom" />
                         <dxg:GridSummaryItem DisplayFormat="p" FieldName="SchedulePercentage" SummaryType="Custom" />
                         <dxg:GridSummaryItem DisplayFormat="p" FieldName="ScheduleCurrentPeriodPercentage" SummaryType="Custom" />
                         <dxg:GridSummaryItem DisplayFormat="p" FieldName="Total_Earned_Percentage" SummaryType="Custom" />
-                        <dxg:GridSummaryItem DisplayFormat="p" FieldName="Earned_Percentage_OnDataDate" SummaryType="Custom" />-->
+                        <dxg:GridSummaryItem DisplayFormat="p" FieldName="Earned_Percentage_OnDataDate" SummaryType="Custom" />
                         <dxg:GridSummaryItem DisplayFormat="n" FieldName="BurnedUnits" SummaryType="Sum" />
                         <dxg:GridSummaryItem DisplayFormat="n" FieldName="Earned_Units_OnDataDate" SummaryType="Sum" />
                         <dxg:GridSummaryItem DisplayFormat="n" FieldName="Earned_Units_ToDate" SummaryType="Sum" />
                         <dxg:GridSummaryItem DisplayFormat="n" FieldName="Remaining_Units_ToDate" SummaryType="Sum" />
                         <dxg:GridSummaryItem DisplayFormat="n" FieldName="ProgressETC" SummaryType="Sum" />
                         <dxg:GridSummaryItem DisplayFormat="n" FieldName="Total_Costs" SummaryType="Sum" />
-                        <!--<dxg:GridSummaryItem DisplayFormat="p" FieldName="Stats.Budgeted.CurrentPeriodDataPoint.UnitsPercentage" SummaryType="Custom" />-->
+                        <dxg:GridSummaryItem DisplayFormat="p" FieldName="Stats.Budgeted.CurrentPeriodDataPoint.UnitsPercentage" SummaryType="Custom" />
                         <dxg:GridSummaryItem DisplayFormat="c2" FieldName="DisplayPeriodEarnedCosts" SummaryType="Sum" />
                         <dxg:GridSummaryItem DisplayFormat="n" FieldName="Entity.Entity.BUDGET_HOURS" SummaryType="Sum" />
                         <dxg:GridSummaryItem DisplayFormat="n" FieldName="Variation_Units" SummaryType="Sum" />

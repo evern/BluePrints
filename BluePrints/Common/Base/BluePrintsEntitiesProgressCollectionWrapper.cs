@@ -84,7 +84,6 @@ namespace BluePrints.Common.Base
         protected IPrimeroEntitiesUnitOfWork primeroUnitOfWork;
         protected override void resolveParameters(object parameter)
         {
-            AlwaysSkipMessage = true;
             delayedPROGRESSSavingDispatcher = new DispatcherTimer();
             delayedPROGRESSSavingDispatcher.Interval = new TimeSpan(0, 0, 0, 1);
             delayedPROGRESSSavingDispatcher.Tick += delayedPROGRESSSavingDispatcher_Tick;
@@ -1760,55 +1759,59 @@ namespace BluePrints.Common.Base
                         if (cumulative_total_units > 0)
                             e.TotalValue = cumulative_current_units / cumulative_total_units;
                     }
-                    else if ((((GridSummaryItem)e.Item).FieldName) == BindableBase.GetPropertyName(() => new BASELINE_ITEMProgress().Earned_Percentage_OnDataDate))
+
+                    if (!isFirstLoaded)
                     {
-                        cumulative_current_units += ((IReportable)e.Row).Earned_Units_OnDataDate;
-                        if (cumulative_total_units > 0)
-                            e.TotalValue = cumulative_current_units / cumulative_total_units;
-                    }
-                    else if ((((GridSummaryItem)e.Item).FieldName) == BindableBase.GetPropertyName(() => new BASELINE_ITEMProgress().SchedulePercentage))
-                    {
-                        IReportable reportable = ((IReportable)e.Row);
-                        if (reportable.Stats != null && reportable.Stats.Budgeted != null && reportable.Stats.Budgeted.CurrentPeriodCumulativeDataPoint != null)
+                        if ((((GridSummaryItem)e.Item).FieldName) == BindableBase.GetPropertyName(() => new BASELINE_ITEMProgress().Earned_Percentage_OnDataDate))
                         {
-                            cumulative_current_units += reportable.Stats.Budgeted.CurrentPeriodCumulativeDataPoint.Units;
+                            cumulative_current_units += ((IReportable)e.Row).Earned_Units_OnDataDate;
                             if (cumulative_total_units > 0)
                                 e.TotalValue = cumulative_current_units / cumulative_total_units;
                         }
-                    }
-                    else if ((((GridSummaryItem)e.Item).FieldName) == BindableBase.GetPropertyName(() => new BASELINE_ITEMProgress().ScheduleCurrentPeriodPercentage))
-                    {
-                        IReportable reportable = ((IReportable)e.Row);
-                        if (reportable.Stats != null && reportable.Stats.Budgeted != null && reportable.Stats.Budgeted.CurrentPeriodDataPoint != null)
-                        {
-                            cumulative_current_units += reportable.Stats.Budgeted.CurrentPeriodDataPoint.Units;
-                            if (cumulative_total_units > 0)
-                                e.TotalValue = cumulative_current_units / cumulative_total_units;
-                        }
-                    }
-                    else if ((((GridSummaryItem)e.Item).FieldName) == BindableBase.GetPropertyName(() => new BASELINE_ITEMProgress().Baseline_Percentage))
-                    {
-                        if (cumulative_baseline_units > 0)
+                        else if ((((GridSummaryItem)e.Item).FieldName) == BindableBase.GetPropertyName(() => new BASELINE_ITEMProgress().SchedulePercentage))
                         {
                             IReportable reportable = ((IReportable)e.Row);
-                            cumulative_current_units += reportable.Earned_Units_ToDate;
-                            if (cumulative_total_units > 0)
-                                e.TotalValue = cumulative_current_units / cumulative_baseline_units;
+                            if (reportable.Stats != null && reportable.Stats.Budgeted != null && reportable.Stats.Budgeted.CurrentPeriodCumulativeDataPoint != null)
+                            {
+                                cumulative_current_units += reportable.Stats.Budgeted.CurrentPeriodCumulativeDataPoint.Units;
+                                if (cumulative_total_units > 0)
+                                    e.TotalValue = cumulative_current_units / cumulative_total_units;
+                            }
                         }
-                    }
-                    else if ((((GridSummaryItem)e.Item).FieldName) == "Stats.Budgeted.CurrentPeriodDataPoint." + BindableBase.GetPropertyName(() => new BASELINE_ITEMProgress().Stats.Budgeted.CurrentPeriodDataPoint.UnitsPercentage))
-                    {
-                        IReportable reportable = ((IReportable)e.Row);
-                        if (reportable.Stats != null && reportable.Stats.Budgeted != null && reportable.Stats.Budgeted.CurrentPeriodDataPoint != null)
+                        else if ((((GridSummaryItem)e.Item).FieldName) == BindableBase.GetPropertyName(() => new BASELINE_ITEMProgress().ScheduleCurrentPeriodPercentage))
                         {
-                            cumulative_current_units += reportable.Stats.Budgeted.CurrentPeriodDataPoint.Units;
-                            if (cumulative_total_units > 0)
-                                e.TotalValue = cumulative_current_units / cumulative_total_units;
+                            IReportable reportable = ((IReportable)e.Row);
+                            if (reportable.Stats != null && reportable.Stats.Budgeted != null && reportable.Stats.Budgeted.CurrentPeriodDataPoint != null)
+                            {
+                                cumulative_current_units += reportable.Stats.Budgeted.CurrentPeriodDataPoint.Units;
+                                if (cumulative_total_units > 0)
+                                    e.TotalValue = cumulative_current_units / cumulative_total_units;
+                            }
                         }
-                    }
-                    else
-                    {
-                        e.TotalValue = 0;
+                        else if ((((GridSummaryItem)e.Item).FieldName) == BindableBase.GetPropertyName(() => new BASELINE_ITEMProgress().Baseline_Percentage))
+                        {
+                            if (cumulative_baseline_units > 0)
+                            {
+                                IReportable reportable = ((IReportable)e.Row);
+                                cumulative_current_units += reportable.Earned_Units_ToDate;
+                                if (cumulative_total_units > 0)
+                                    e.TotalValue = cumulative_current_units / cumulative_baseline_units;
+                            }
+                        }
+                        else if ((((GridSummaryItem)e.Item).FieldName) == "Stats.Budgeted.CurrentPeriodDataPoint." + BindableBase.GetPropertyName(() => new BASELINE_ITEMProgress().Stats.Budgeted.CurrentPeriodDataPoint.UnitsPercentage))
+                        {
+                            IReportable reportable = ((IReportable)e.Row);
+                            if (reportable.Stats != null && reportable.Stats.Budgeted != null && reportable.Stats.Budgeted.CurrentPeriodDataPoint != null)
+                            {
+                                cumulative_current_units += reportable.Stats.Budgeted.CurrentPeriodDataPoint.Units;
+                                if (cumulative_total_units > 0)
+                                    e.TotalValue = cumulative_current_units / cumulative_total_units;
+                            }
+                        }
+                        else
+                        {
+                            e.TotalValue = 0;
+                        }
                     }
                 }
             }
@@ -1874,6 +1877,18 @@ namespace BluePrints.Common.Base
                 return
                     (CollectionViewModel<PROGRESS_ETC, PROGRESS_ETC, Guid, IBluePrintsEntitiesUnitOfWork>)
                     loaderCollection.GetViewModel<PROGRESS_ETC>();
+            }
+        }
+
+        public CollectionViewModel<PROJECT_REPORT, PROJECT_REPORT, Guid, IBluePrintsEntitiesUnitOfWork> PROJECT_REPORTCollectionViewModel
+        {
+            get
+            {
+                if (MainViewModel == null)
+                    return null;
+
+                return
+                    (CollectionViewModel<PROJECT_REPORT, PROJECT_REPORT, Guid, IBluePrintsEntitiesUnitOfWork>)loaderCollection.GetViewModel<PROJECT_REPORT>();
             }
         }
 
