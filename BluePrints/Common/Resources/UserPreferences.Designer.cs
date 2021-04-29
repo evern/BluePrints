@@ -63,9 +63,9 @@ namespace BluePrints.Common.Resources {
         /// <summary>
         ///   Looks up a localized string similar to Allow summary to be calculated for every update.
         /// </summary>
-        internal static string DesignProgress_AllowSummaryCalculationOnProgressUpdate {
+        internal static string DesignProgress_AllowSummaryUpdate {
             get {
-                return ResourceManager.GetString("DesignProgress_AllowSummaryCalculationOnProgressUpdate", resourceCulture);
+                return ResourceManager.GetString("DesignProgress_AllowSummaryUpdate", resourceCulture);
             }
         }
         

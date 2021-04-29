@@ -117,7 +117,7 @@
   <resheader name="writer">
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
-  <data name="DesignProgress_AllowSummaryCalculationOnProgressUpdate" xml:space="preserve">
+  <data name="DesignProgress_AllowSummaryUpdate" xml:space="preserve">
     <value>Allow summary to be calculated for every update</value>
   </data>
   <data name="EXO_DesignTimeSheetOfficeIsForeign" xml:space="preserve">

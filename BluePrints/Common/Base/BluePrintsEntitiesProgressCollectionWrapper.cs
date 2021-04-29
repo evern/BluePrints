@@ -99,8 +99,8 @@ namespace BluePrints.Common.Base
             loadPROJECT = receiveParameter.GetFirstEntity();
             loadPROGRESS = receiveParameter.GetSecondEntity();
 
-            bool? allowSummaryCalculationOnUpdatePreference = LoginCredentials.GetUserPreferenceBool(DataUtils.GetNameOf(() => UserPreferences.DesignProgress_AllowSummaryCalculationOnProgressUpdate));
-            AllowSummaryCalculationOnUpdate = allowSummaryCalculationOnUpdatePreference == null ? true : (bool)allowSummaryCalculationOnUpdatePreference;
+            bool? allowSummaryCalculationOnUpdatePreference = LoginCredentials.GetUserPreferenceBool(DataUtils.GetNameOf(() => UserPreferences.DesignProgress_AllowSummaryUpdate));
+            allowSummaryCalculationOnUpdate = allowSummaryCalculationOnUpdatePreference == null ? true : (bool)allowSummaryCalculationOnUpdatePreference;
 
             primeroUnitOfWork = PrimeroEntitiesUnitOfWorkSource.GetUnitOfWorkFactory(loadPROJECT.OfficeNameForExo == BluePrintsResources.OfficeMontreal).CreateUnitOfWork();
             if (loadPROJECT != null)
@@ -1775,7 +1775,7 @@ namespace BluePrints.Common.Base
                 if (AllowSummaryCalculationOnUpdate)
                     GridControlService.RefreshSummary();
 
-                BluePrintsDataUtils.SaveUserPreference(DataUtils.GetNameOf(() => UserPreferences.DesignProgress_AllowSummaryCalculationOnProgressUpdate), value ? UserPreferences.PreferenceTrueValue : UserPreferences.PreferenceFalseValue);
+                BluePrintsDataUtils.SaveUserPreference(DataUtils.GetNameOf(() => UserPreferences.DesignProgress_AllowSummaryUpdate), value ? UserPreferences.PreferenceTrueValue : UserPreferences.PreferenceFalseValue);
             }
         }
 
