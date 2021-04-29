@@ -78,7 +78,8 @@ namespace BluePrints.ViewModels
             primeroUnitOfWorkFactory = PrimeroEntitiesUnitOfWorkSource.GetUnitOfWorkFactory(loadPROJECT.OfficeNameForExo == BluePrintsResources.OfficeMontreal);
             primeroUnitOfWork = primeroUnitOfWorkFactory.CreateUnitOfWork();
 
-            isFilterActuals = LoginCredentials.GetUserPreferenceBool(DataUtils.GetNameOf(() => UserPreferences.EXO_POUseFilter));
+            bool? filterActualsPreference = LoginCredentials.GetUserPreferenceBool(DataUtils.GetNameOf(() => UserPreferences.EXO_POUseFilter));
+            isFilterActuals = filterActualsPreference == null ? false : (bool)filterActualsPreference;
         }
 
         protected override void addEntitiesLoader()

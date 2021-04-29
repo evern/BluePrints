@@ -161,8 +161,11 @@ namespace BluePrints.ViewModels
             if (LoginCredentials.CurrentUser != null && LoginCredentials.CurrentUserGuid != Guid.Empty)
             {
                 if(LoginCredentials.getPermissionStatus(DataUtils.GetNameOf(() => NavigationResources.Menu_UserDeliverables)) == LoginCredentials.PermissionStatus.All)
-                    if (!LoginCredentials.GetUserPreferenceBool(DataUtils.GetNameOf(() => UserPreferences.Global_HideUserDeliverablesOnStartup)))
+                {
+                    bool? hideUserDeliverablesOnStartupPreference = LoginCredentials.GetUserPreferenceBool(DataUtils.GetNameOf(() => UserPreferences.Global_HideUserDeliverablesOnStartup));
+                    if (hideUserDeliverablesOnStartupPreference == null || hideUserDeliverablesOnStartupPreference == false)
                         NavigateCore(myDeliverablesDescription);
+                }
             }
 
             string lastChangeLogDisplayVersionStr = XMLHelpers.GetSettings_LastChangeLogDisplayVersion();

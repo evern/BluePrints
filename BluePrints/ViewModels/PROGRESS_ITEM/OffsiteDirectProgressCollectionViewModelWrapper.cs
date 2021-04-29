@@ -167,6 +167,26 @@ namespace BluePrints.ViewModels
         }
         #region Collection Call Backs
 
+        public override void UnifiedCellValueChanged(string field_name, object old_value, object new_value, BASELINE_ITEMProgress projection, bool isNew)
+        {
+            if (field_name == BindableBase.GetPropertyName(() => new BASELINE_ITEMProgress().DeliverableStatusProgressGuid))
+                projection.ShouldSave = true;
+
+            base.UnifiedCellValueChanged(field_name, old_value, new_value, projection, isNew);
+        }
+
+        protected override OperationInterceptMode OnBeforeProjectionSaveIsContinue(BASELINE_ITEMProgress projection, out bool isNew)
+        {
+            isNew = false;
+            if (projection.ShouldSave)
+            {
+                projection.ShouldSave = false;
+                return OperationInterceptMode.Continue;
+            }
+            else
+                return OperationInterceptMode.SkipOneAndAllDbSaves;
+        }
+
         public bool ValidateFillDownCallBack(BASELINE_ITEMProgress fillDownEntity, string fieldName, object fillValue)
         {
             if (fieldName == BindableBase.GetPropertyName(() => new BASELINE_ITEMProgress().Total_Earned_Percentage))
@@ -179,14 +199,6 @@ namespace BluePrints.ViewModels
             }
 
             return true;
-        }
-
-        public override void FullRefresh()
-        {
-            if (!CanFullRefresh())
-                return;
-
-            ReloadEntitiesCollection();
         }
         #endregion
 

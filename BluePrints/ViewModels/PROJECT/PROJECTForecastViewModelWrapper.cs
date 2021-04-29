@@ -93,7 +93,8 @@ namespace BluePrints.ViewModels
             projectSavingBackgroundWorker.DoWork += ProjectSavingBackgroundWorker_DoWork;
             projectSavingBackgroundWorker.WorkerSupportsCancellation = true;
 
-            isShowActualsHistory = LoginCredentials.GetUserPreferenceBool(DataUtils.GetNameOf(() => UserPreferences.Forecast_ShowActuals));
+            bool? isShowActualsHistoryPreference = LoginCredentials.GetUserPreferenceBool(DataUtils.GetNameOf(() => UserPreferences.Forecast_ShowActuals));
+            isShowActualsHistory = isShowActualsHistoryPreference == null ? false : (bool)isShowActualsHistoryPreference;
             canEditConstructionUncommitted = LoginCredentials.getPermissionStatus(DataUtils.GetNameOf(() => NavigationResources.Permission_ConstructionUncommitted)) == LoginCredentials.PermissionStatus.All;
         }
 

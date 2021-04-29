@@ -145,7 +145,9 @@ namespace BluePrints.Common.ViewModel.Reporting
                         }
                         else
                         {
-                            user_deliverable.BuildStats();
+                            List<StatsCalculationType> calculationTypes = new List<StatsCalculationType>();
+                            calculationTypes.Add(StatsCalculationType.Earned);
+                            user_deliverable.BuildStats(1, calculationTypes);
                         }
                     }
                 }

@@ -103,7 +103,7 @@ namespace BluePrints.Common.ViewModel.Reporting
         }
         
         public abstract int SetBudgetDataPointsProgress();
-        public abstract void SetBudgetDataPoints(decimal weightingPortion = 1, bool isForecast = false);
+        public abstract void SetBudgetDataPoints(decimal weightingPortion = 1, bool isForecast = false, bool buildLate = true);
 
         public abstract int SetCurrentDataPointsProgress();
         public abstract void SetCurrentDataPoints(decimal weightingPortion = 1);
@@ -134,10 +134,11 @@ namespace BluePrints.Common.ViewModel.Reporting
             this.projectNumber = projectNumber;
         }
 
-        public void BuildBudgeted(decimal weightingPortion = 1, decimal unitsPerQty = 1)
+        public void BuildBudgeted(decimal weightingPortion = 1, decimal unitsPerQty = 1, bool buildCurrent = true, bool buildLate = true)
         {
-            SetBudgetDataPoints(weightingPortion);
-            SetCurrentDataPoints(weightingPortion);
+            SetBudgetDataPoints(weightingPortion, false, buildLate);
+            if(buildCurrent)
+                SetCurrentDataPoints(weightingPortion);
         }
 
         public void BuildEarned(decimal weightingPortion = 1)
@@ -155,12 +156,14 @@ namespace BluePrints.Common.ViewModel.Reporting
             return ((SummaryStats)this.SummaryStats).Reportables.Count();
         }
 
-        public override void SetBudgetDataPoints(decimal weightingPortion = 1, bool isForecast = false)
+        public override void SetBudgetDataPoints(decimal weightingPortion = 1, bool isForecast = false, bool buildLate = true)
         {
             using (BluePrintsEntities bluePrintDataContext = new BluePrintsEntities())
             {
                 List<StoredProcedure_PlannedDataPoint> plannedDataPoints = bluePrintDataContext.QueryDeliverablePlannedDataPointsByProject(this.projectNumber, isForecast);
-                List<StoredProcedure_PlannedDataPoint> plannedLateDataPoints = bluePrintDataContext.QueryDeliverablePlannedLateDataPointsByProject(this.projectNumber);
+                List<StoredProcedure_PlannedDataPoint> plannedLateDataPoints = null;
+                if(buildLate)
+                    plannedLateDataPoints = bluePrintDataContext.QueryDeliverablePlannedLateDataPointsByProject(this.projectNumber);
 
                 foreach (IReportable reportableObject in ((SummaryStats)this.SummaryStats).Reportables)
                 {
@@ -240,29 +243,33 @@ namespace BluePrints.Common.ViewModel.Reporting
 
                         reportableObject.Stats.Budgeted.SetPlannedData(weightedPlannedDataPoints);
 
-                        List<StoredProcedure_PlannedDataPoint> weightedPlannedLateDataPoints = new List<StoredProcedure_PlannedDataPoint>();
-                        foreach (StoredProcedure_PlannedDataPoint plannedLateDataPoint in plannedLateDataPoints.Where(x => x.Original_Guid == reportableObject.OriginalEntityKey))
+                        if(buildLate)
                         {
-                            if (reportableObject.AssignedUsers.Count() > 0)
+                            List<StoredProcedure_PlannedDataPoint> weightedPlannedLateDataPoints = new List<StoredProcedure_PlannedDataPoint>();
+                            foreach (StoredProcedure_PlannedDataPoint plannedLateDataPoint in plannedLateDataPoints.Where(x => x.Original_Guid == reportableObject.OriginalEntityKey))
                             {
-                                foreach (User_Weight user in reportableObject.AssignedUsers)
+                                if (reportableObject.AssignedUsers.Count() > 0)
                                 {
-                                    StoredProcedure_PlannedDataPoint weightedPlannedLateDataPoint = new StoredProcedure_PlannedDataPoint();
-                                    DataUtils.ShallowCopy(weightedPlannedLateDataPoint, plannedLateDataPoint);
-                                    weightedPlannedLateDataPoint.PeriodPlannedUnits *= user.AggregateWeightDbl;
-                                    weightedPlannedLateDataPoint.PeriodPlannedPrice *= user.AggregateWeightDbl;
-                                    weightedPlannedLateDataPoint.PeriodPlannedQuantity = weightedPlannedLateDataPoint.PeriodPlannedUnits * qtyPerUnit;
-                                    weightedPlannedLateDataPoints.Add(weightedPlannedLateDataPoint);
+                                    foreach (User_Weight user in reportableObject.AssignedUsers)
+                                    {
+                                        StoredProcedure_PlannedDataPoint weightedPlannedLateDataPoint = new StoredProcedure_PlannedDataPoint();
+                                        DataUtils.ShallowCopy(weightedPlannedLateDataPoint, plannedLateDataPoint);
+                                        weightedPlannedLateDataPoint.PeriodPlannedUnits *= user.AggregateWeightDbl;
+                                        weightedPlannedLateDataPoint.PeriodPlannedPrice *= user.AggregateWeightDbl;
+                                        weightedPlannedLateDataPoint.PeriodPlannedQuantity = weightedPlannedLateDataPoint.PeriodPlannedUnits * qtyPerUnit;
+                                        weightedPlannedLateDataPoints.Add(weightedPlannedLateDataPoint);
+                                    }
+                                }
+                                else
+                                {
+                                    plannedLateDataPoint.PeriodPlannedQuantity = plannedLateDataPoint.PeriodPlannedUnits * qtyPerUnit;
+                                    weightedPlannedLateDataPoints.Add(plannedLateDataPoint);
                                 }
                             }
-                            else
-                            {
-                                plannedLateDataPoint.PeriodPlannedQuantity = plannedLateDataPoint.PeriodPlannedUnits * qtyPerUnit;
-                                weightedPlannedLateDataPoints.Add(plannedLateDataPoint);
-                            }
+
+                            reportableObject.Stats.BudgetedLate.SetPlannedData(weightedPlannedLateDataPoints);
                         }
 
-                        reportableObject.Stats.BudgetedLate.SetPlannedData(weightedPlannedLateDataPoints);
                         reportableObject.Update();
                     }
 
@@ -515,7 +522,7 @@ namespace BluePrints.Common.ViewModel.Reporting
             return 1;
         }
 
-        public override void SetBudgetDataPoints(decimal weightingPortion = 1, bool isForecast = false)
+        public override void SetBudgetDataPoints(decimal weightingPortion = 1, bool isForecast = false, bool buildLate = true)
         {
             PartialStatsBuilder.BuildPlannedDataPointsFromQuery(this.progressItem, weightingPortion, isForecast);
             LoadingScreenManager.Progress();
