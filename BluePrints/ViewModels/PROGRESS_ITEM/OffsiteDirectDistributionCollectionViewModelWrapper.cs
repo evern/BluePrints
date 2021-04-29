@@ -187,6 +187,26 @@ namespace BluePrints.ViewModels
             base.OnAfterAssignedCallbackAndRaisePropertyChanged();
         }
 
+        protected override void onCalculatePlannedBackgroundWorkerCompleted()
+        {
+            BackgroundRefresh();
+            base.onCalculatePlannedBackgroundWorkerCompleted();
+        }
+
+        protected override void BackgroundWorkerBuildStats()
+        {
+            if (fullSummarizer != null)
+            {
+                fullSummarizer.BuildEarned();
+            }
+        }
+
+        protected override void BackgroundRefresh()
+        {
+            if(IsCalculationCompleted)
+                base.BackgroundRefresh();
+        }
+
         private void applyBestFit()
         {
             if (TableViewService != null && !isBestFitApplied)
@@ -717,7 +737,7 @@ namespace BluePrints.ViewModels
 
                 PROGRESS_ITEMSCollectionViewModel.BaseBulkSave(progressToSave);
                 //add a dummy undo so that during undo/redo operation a baseline item message will be sent
-                MainViewModel.EntitiesUndoRedoManager.AddUndo(entity, BindableBase.GetPropertyName(() => new BASELINE_ITEM().GUID_ORIGINAL), entity.GUID_ORIGINAL, entity.GUID_ORIGINAL, EntityMessageType.Changed);
+                MainViewModel.EntitiesUndoRedoManager.AddUndo(entity, BindableBase.GetPropertyName(() => new BASELINE_ITEM().GUID_ORIGINAL), entity.GUID_ORIGINAL, entity.GUID_ORIGINAL, EntityMessageType.Changed, true);
             }
 
             //save baseline_item here so that auxiliary message can respond to progress item changes

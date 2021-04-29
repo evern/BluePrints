@@ -56,6 +56,7 @@ namespace BluePrints.Common.Base
         protected DispatcherTimer onMainViewModelFirstLoadedTimer;
         //calculates the planned values only for each deliverables
         protected BackgroundWorker calculatePlannedBackgroundWorker;
+        protected BackgroundWorker loadExoBackgroundWorker;
         //set current data date timer
         protected DispatcherTimer delayedPROGRESSSavingDispatcher;
         protected IUnitOfWorkFactory<IBluePrintsEntitiesUnitOfWork> bluePrintsUnitOfWorkFactory = BluePrintsEntitiesUnitOfWorkSource.GetUnitOfWorkFactory();
@@ -74,8 +75,15 @@ namespace BluePrints.Common.Base
             onMainViewModelFirstLoadedTimer.Tick += onMainViewModelFirstLoaded;
             calculatePlannedBackgroundWorker = new BackgroundWorker();
             calculatePlannedBackgroundWorker.DoWork += calculatePlannedBackgroundWorker_DoWork;
-            calculatePlannedBackgroundWorker.RunWorkerCompleted += CalculatePlannedBackgroundWorker_RunWorkerCompleted;
+            calculatePlannedBackgroundWorker.RunWorkerCompleted += calculatePlannedBackgroundWorker_RunWorkerCompleted;
             calculatePlannedBackgroundWorker.WorkerSupportsCancellation = true;
+
+
+            loadExoBackgroundWorker = new BackgroundWorker();
+            loadExoBackgroundWorker.DoWork += loadExoBackgroundWorker_DoWork;
+            loadExoBackgroundWorker.RunWorkerCompleted += loadExoBackgroundWorker_RunWorkerCompleted;
+            loadExoBackgroundWorker.WorkerSupportsCancellation = true;
+
             progressSaveBackgroundWorker = new BackgroundWorker();
             progressSaveBackgroundWorker.DoWork += ProgressSaveBackgroundWorker_DoWork;
             progressSaveBackgroundWorker.WorkerSupportsCancellation = true;
@@ -90,6 +98,9 @@ namespace BluePrints.Common.Base
             var receiveParameter = (DualEntitiesParameter<Data.PROJECT, PROGRESS>)parameter;
             loadPROJECT = receiveParameter.GetFirstEntity();
             loadPROGRESS = receiveParameter.GetSecondEntity();
+
+            bool? allowSummaryCalculationOnUpdatePreference = LoginCredentials.GetUserPreferenceBool(DataUtils.GetNameOf(() => UserPreferences.DesignProgress_AllowSummaryCalculationOnProgressUpdate));
+            AllowSummaryCalculationOnUpdate = allowSummaryCalculationOnUpdatePreference == null ? true : (bool)allowSummaryCalculationOnUpdatePreference;
 
             primeroUnitOfWork = PrimeroEntitiesUnitOfWorkSource.GetUnitOfWorkFactory(loadPROJECT.OfficeNameForExo == BluePrintsResources.OfficeMontreal).CreateUnitOfWork();
             if (loadPROJECT != null)
@@ -235,21 +246,22 @@ namespace BluePrints.Common.Base
             base.AssignCallBacksAndRaisePropertyChange(entities);
         }
 
-        protected bool skipExoDataLoading = false;
-        protected override void OnAfterAssignedCallbackAndRaisePropertyChanged()
+        private void loadExoBackgroundWorker_DoWork(object sender, DoWorkEventArgs e)
         {
-            if(!skipExoDataLoading)
-                Task.Run(() => loadExoData());
+            if (loadExoBackgroundWorker.CancellationPending)
+            {
+                e.Cancel = true;
+                return;
+            }
 
-            base.OnAfterAssignedCallbackAndRaisePropertyChanged();
-        }
-
-        private void loadExoData()
-        {
             if (MainViewModel == null)
                 return;
 
             BluePrintsUtils.LoadExoAuthorisation<TMainProjectionEntity>(Entities, ref exoAuthorisations, getProjectContexts(), getContextUserIds());
+        }
+
+        private void loadExoBackgroundWorker_RunWorkerCompleted(object sender, RunWorkerCompletedEventArgs e)
+        {
             this.RaisePropertyChanged(x => x.IsExoDataLoaded);
         }
 
@@ -365,6 +377,13 @@ namespace BluePrints.Common.Base
             repositoryProjection.Stats = existingProjection.Stats;
         }
 
+        public override void UnifiedCellValueChanged(string field_name, object old_value, object new_value, TMainProjectionEntity projection, bool isNew)
+        {
+            //set this to let the gridcontrol knows that the next custom summary calculation is due to value changes
+            isSummaryRecalculation = true;
+            base.UnifiedCellValueChanged(field_name, old_value, new_value, projection, isNew);
+        }
+
         public override string UnifiedValueValidation(TMainProjectionEntity projection, string field_name, object new_value, bool isPaste)
         {
             if (field_name == BindableBase.GetPropertyName(() => new BASELINE_ITEMProgress().Total_Earned_Percentage))
@@ -389,18 +408,22 @@ namespace BluePrints.Common.Base
         protected FullSummarizer fullSummarizer;
         protected ProjectSummaryStats projectSummary;
         protected bool statsCalculatedOnProjection = false;
+        protected bool skipExoDataLoading = false;
         protected virtual void onMainViewModelFirstLoaded(object sender, EventArgs e)
         {
             onMainViewModelFirstLoadedTimer.Stop();
             if (!statsCalculatedOnProjection)
             {
                 InitializeSummarizer();
-                IsLoading = true;
-                this.RaisePropertyChanged(x => x.IsLoading);
+                //IsLoading = true;
+                //this.RaisePropertyChanged(x => x.IsLoading);
                 IsCalculationCompleted = false;
                 this.RaisePropertyChanged(x => x.IsCalculationCompleted);
+                if (!skipExoDataLoading && !loadExoBackgroundWorker.IsBusy)
+                    loadExoBackgroundWorker.RunWorkerAsync();
 
-                calculatePlannedBackgroundWorker.RunWorkerAsync();
+                if(!calculatePlannedBackgroundWorker.IsBusy)
+                    calculatePlannedBackgroundWorker.RunWorkerAsync();
             }
         }
 
@@ -437,28 +460,30 @@ namespace BluePrints.Common.Base
         {
             if (fullSummarizer != null)
             {
-                fullSummarizer.BuildBudgeted();
-                fullSummarizer.BuildEarned();
-                fullSummarizer.BuildRemaining();
+                fullSummarizer.BuildBudgeted(1, 1, false, false);
+                //fullSummarizer.BuildEarned();
+                //fullSummarizer.BuildRemaining();
                 fullSummarizer.BuildBurnedDataPoints(false, false, false, false, true);
-                fullSummarizer.Summarize();
+                //fullSummarizer.Summarize();
+                //mainThreadDispatcher.BeginInvoke(new Action(() => BackgroundRefresh()));
+                foreach (var deliverable in Entities)
+                {
+                    deliverable.Update();
+                }
             }
         }
 
         public bool IsCalculationCompleted { get; set; }
-        protected void CalculatePlannedBackgroundWorker_RunWorkerCompleted(object sender, RunWorkerCompletedEventArgs e)
+        protected void calculatePlannedBackgroundWorker_RunWorkerCompleted(object sender, RunWorkerCompletedEventArgs e)
         {
-            IsLoading = false;
-            this.RaisePropertyChanged(x => x.IsLoading);
             IsCalculationCompleted = true;
+            onCalculatePlannedBackgroundWorkerCompleted();
             this.RaisePropertyChanged(x => x.IsCalculationCompleted);
-            mainThreadDispatcher.BeginInvoke(new Action(() => BackgroundRefresh()));
         }
 
-        protected override void BackgroundRefresh()
+        protected virtual void onCalculatePlannedBackgroundWorkerCompleted()
         {
-            if (IsCalculationCompleted)
-                base.BackgroundRefresh();
+
         }
         #endregion
 
@@ -535,7 +560,7 @@ namespace BluePrints.Common.Base
 
         public override bool CanFullRefresh()
         {
-            if (IsLoading)
+            if (IsLoading || !IsCalculationCompleted)
                 return false;
 
             return base.CanFullRefresh();
@@ -544,6 +569,8 @@ namespace BluePrints.Common.Base
         public override void FullRefresh()
         {
             calculatePlannedBackgroundWorker.CancelAsync();
+            progressSaveBackgroundWorker.CancelAsync();
+            loadExoBackgroundWorker.CancelAsync();
             IsCalculationCompleted = false;
             this.RaisePropertyChanged(x => x.IsCalculationCompleted);
 
@@ -554,7 +581,7 @@ namespace BluePrints.Common.Base
 
         public override bool CanKeyboardCopy()
         {
-            if (!IsCalculationCompleted)
+            if (IsLoading)
                 return false;
 
             return base.CanKeyboardCopy();
@@ -562,7 +589,7 @@ namespace BluePrints.Common.Base
 
         public override bool CanKeyboardPaste()
         {
-            if (!IsCalculationCompleted)
+            if (IsLoading)
                 return false;
 
             return base.CanKeyboardPaste();
@@ -570,7 +597,7 @@ namespace BluePrints.Common.Base
 
         public override bool CanSaveLayout()
         {
-            if (!IsCalculationCompleted)
+            if (IsLoading)
                 return false;
 
             return base.CanSaveLayout();
@@ -578,7 +605,7 @@ namespace BluePrints.Common.Base
 
         public bool CanDateBackward()
         {
-            if (!IsCalculationCompleted || IsLoading || MainViewModel == null)
+            if (!IsCalculationCompleted)
                 return false;
 
             if (loadPROGRESS.DATA_DATE > loadPROGRESS.PROGRESS_START)
@@ -589,7 +616,7 @@ namespace BluePrints.Common.Base
 
         public bool CanDateForward()
         {
-            if (!IsCalculationCompleted || IsLoading || MainViewModel == null)
+            if (!IsCalculationCompleted)
                 return false;
 
             return true;
@@ -1732,84 +1759,93 @@ namespace BluePrints.Common.Base
         #endregion
 
         #region Custom Summary
-        private decimal cumulative_total_units = 0;
-        private decimal cumulative_baseline_units = 0;
-        private decimal cumulative_current_units = 0;
+        bool allowSummaryCalculationOnUpdate;
+        public bool AllowSummaryCalculationOnUpdate
+        {
+            get => allowSummaryCalculationOnUpdate;
+            set
+            {
+                allowSummaryCalculationOnUpdate = value;
+                if (AllowSummaryCalculationOnUpdate)
+                    GridControlService.RefreshSummary();
+                else if(!IsLoading)
+                {
+                    MessageBoxService.ShowMessage("Please also note that closing other project's progress tab and My Deliverable's list can speed up progress updates too");
+                }
+
+                BluePrintsDataUtils.SaveUserPreference(DataUtils.GetNameOf(() => UserPreferences.DesignProgress_AllowSummaryCalculationOnProgressUpdate), value ? UserPreferences.PreferenceTrueValue : UserPreferences.PreferenceFalseValue);
+            }
+        }
+
+        bool isSummaryRecalculation = false;
+        private decimal totalUnits = 0;
+        private decimal budgetUnits = 0;
+
+        private string earnedPercentageFieldName => BindableBase.GetPropertyName(() => new BASELINE_ITEMProgress().Total_Earned_Percentage);
+        private decimal earnedPercentageTotalUnits = 0;
+
+        private string earnedPeriodPercentageFieldName => BindableBase.GetPropertyName(() => new BASELINE_ITEMProgress().Earned_Percentage_OnDataDate);
+        private decimal earnedPeriodPercentageTotalUnits = 0;
+
+        private string earnedBudgetPercentageFieldName => BindableBase.GetPropertyName(() => new BASELINE_ITEMProgress().Baseline_Percentage);
+        private decimal earnedBudgetPercentageTotalUnits = 0;
+
+        private string schedulePeriodPercentageFieldName => BindableBase.GetPropertyName(() => new BASELINE_ITEMProgress().ScheduleCurrentPeriodPercentage);
+        private decimal schedulePeriodPercentageTotalUnits = 0;
+
+        private string schedulePercentageFieldName => BindableBase.GetPropertyName(() => new BASELINE_ITEMProgress().SchedulePercentage);
+        private decimal schedulePercentageTotalUnits = 0;
         public void CustomSummary(CustomSummaryEventArgs e)
         {
-            if (e.IsTotalSummary || e.IsGroupSummary)
+            if (isSummaryRecalculation && !AllowSummaryCalculationOnUpdate)
+                return;
+
+            string fieldName = ((GridSummaryItem)e.Item).FieldName;
+            IReportable reportable = ((IReportable)e.Row);
+
+            if (e.SummaryProcess == CustomSummaryProcess.Start)
             {
-                if (e.SummaryProcess == CustomSummaryProcess.Start)
+                totalUnits = 0;
+                budgetUnits = 0;
+                earnedPercentageTotalUnits = 0;
+                earnedPeriodPercentageTotalUnits = 0;
+                earnedBudgetPercentageTotalUnits = 0;
+                schedulePeriodPercentageTotalUnits = 0;
+                schedulePercentageTotalUnits = 0;
+            }
+            if (e.SummaryProcess == CustomSummaryProcess.Calculate)
+            {
+                totalUnits += reportable.Total_Units;
+                budgetUnits += reportable.Budget_Units;
+
+                if (fieldName == earnedPercentageFieldName)
                 {
-                    cumulative_total_units = 0;
-                    cumulative_baseline_units = 0;
-                    cumulative_current_units = 0;
+                    earnedPercentageTotalUnits += reportable.Earned_Units_ToDate;
+                    e.TotalValue = totalUnits == 0 ? 0 : earnedPercentageTotalUnits / totalUnits;
                 }
-                if (e.SummaryProcess == CustomSummaryProcess.Calculate)
+                else if (fieldName == earnedPeriodPercentageFieldName)
                 {
-                    var total_units = ((IReportable)e.Row).Total_Units;
-                    var baseline_units = ((IReportable)e.Row).Budget_Units;
+                    earnedPeriodPercentageTotalUnits += reportable.Earned_Units_OnDataDate;
+                    e.TotalValue = totalUnits == 0 ? 0 : earnedPeriodPercentageTotalUnits / totalUnits;
+                }
+                else if (fieldName == earnedBudgetPercentageFieldName)
+                {
+                    earnedBudgetPercentageTotalUnits += reportable.Earned_Units_ToDate;
+                    e.TotalValue = budgetUnits == 0 ? 0 : earnedBudgetPercentageTotalUnits / budgetUnits;
+                }
+                else if (fieldName == schedulePeriodPercentageFieldName)
+                {
+                    if (reportable.Stats != null && reportable.Stats.Budgeted != null && reportable.Stats.Budgeted.CurrentPeriodDataPoint != null)
+                        schedulePeriodPercentageTotalUnits += reportable.Stats.Budgeted.CurrentPeriodDataPoint.Units;
 
-                    cumulative_total_units += total_units;
-                    cumulative_baseline_units += baseline_units;
+                    e.TotalValue = totalUnits == 0 ? 0 : schedulePeriodPercentageTotalUnits / totalUnits;
+                }
+                else if (fieldName == schedulePercentageFieldName)
+                {
+                    if (reportable.Stats != null && reportable.Stats.Budgeted != null && reportable.Stats.Budgeted.CurrentPeriodCumulativeDataPoint != null)
+                        schedulePercentageTotalUnits += reportable.Stats.Budgeted.CurrentPeriodCumulativeDataPoint.Units;
 
-                    if ((((GridSummaryItem)e.Item).FieldName) == BindableBase.GetPropertyName(() => new BASELINE_ITEMProgress().Total_Earned_Percentage))
-                    {
-                        cumulative_current_units += ((BASELINE_ITEMProgress)e.Row).Earned_Units_ToDate;
-                        if (cumulative_total_units > 0)
-                            e.TotalValue = cumulative_current_units / cumulative_total_units;
-                    }
-
-                    if ((((GridSummaryItem)e.Item).FieldName) == BindableBase.GetPropertyName(() => new BASELINE_ITEMProgress().Earned_Percentage_OnDataDate))
-                    {
-                        cumulative_current_units += ((IReportable)e.Row).Earned_Units_OnDataDate;
-                        if (cumulative_total_units > 0)
-                            e.TotalValue = cumulative_current_units / cumulative_total_units;
-                    }
-                    else if ((((GridSummaryItem)e.Item).FieldName) == BindableBase.GetPropertyName(() => new BASELINE_ITEMProgress().SchedulePercentage))
-                    {
-                        IReportable reportable = ((IReportable)e.Row);
-                        if (reportable.Stats != null && reportable.Stats.Budgeted != null && reportable.Stats.Budgeted.CurrentPeriodCumulativeDataPoint != null)
-                        {
-                            cumulative_current_units += reportable.Stats.Budgeted.CurrentPeriodCumulativeDataPoint.Units;
-                            if (cumulative_total_units > 0)
-                                e.TotalValue = cumulative_current_units / cumulative_total_units;
-                        }
-                    }
-                    else if ((((GridSummaryItem)e.Item).FieldName) == BindableBase.GetPropertyName(() => new BASELINE_ITEMProgress().ScheduleCurrentPeriodPercentage))
-                    {
-                        IReportable reportable = ((IReportable)e.Row);
-                        if (reportable.Stats != null && reportable.Stats.Budgeted != null && reportable.Stats.Budgeted.CurrentPeriodDataPoint != null)
-                        {
-                            cumulative_current_units += reportable.Stats.Budgeted.CurrentPeriodDataPoint.Units;
-                            if (cumulative_total_units > 0)
-                                e.TotalValue = cumulative_current_units / cumulative_total_units;
-                        }
-                    }
-                    else if ((((GridSummaryItem)e.Item).FieldName) == BindableBase.GetPropertyName(() => new BASELINE_ITEMProgress().Baseline_Percentage))
-                    {
-                        if (cumulative_baseline_units > 0)
-                        {
-                            IReportable reportable = ((IReportable)e.Row);
-                            cumulative_current_units += reportable.Earned_Units_ToDate;
-                            if (cumulative_total_units > 0)
-                                e.TotalValue = cumulative_current_units / cumulative_baseline_units;
-                        }
-                    }
-                    else if ((((GridSummaryItem)e.Item).FieldName) == "Stats.Budgeted.CurrentPeriodDataPoint." + BindableBase.GetPropertyName(() => new BASELINE_ITEMProgress().Stats.Budgeted.CurrentPeriodDataPoint.UnitsPercentage))
-                    {
-                        IReportable reportable = ((IReportable)e.Row);
-                        if (reportable.Stats != null && reportable.Stats.Budgeted != null && reportable.Stats.Budgeted.CurrentPeriodDataPoint != null)
-                        {
-                            cumulative_current_units += reportable.Stats.Budgeted.CurrentPeriodDataPoint.Units;
-                            if (cumulative_total_units > 0)
-                                e.TotalValue = cumulative_current_units / cumulative_total_units;
-                        }
-                    }
-                    else
-                    {
-                        e.TotalValue = 0;
-                    }
+                    e.TotalValue = totalUnits == 0 ? 0 : schedulePercentageTotalUnits / totalUnits;
                 }
             }
         }
@@ -1827,6 +1863,7 @@ namespace BluePrints.Common.Base
         {
             calculatePlannedBackgroundWorker.CancelAsync();
             progressSaveBackgroundWorker.CancelAsync();
+            loadExoBackgroundWorker.CancelAsync();
             //            if (loadPROJECT != null)
             //#pragma warning disable CS4014 // Because this call is not awaited, execution of the current method continues before the call is completed
             //                BluePrintsContextHelper.AsyncRefreshDeliverablesDataPointsByProject(loadPROJECT.NUMBER);

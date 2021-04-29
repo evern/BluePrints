@@ -238,8 +238,8 @@ namespace BluePrints.Common.Projections
                 newBASELINE_ITEM.Entity = baseline_item;
 
                 DOCTYPE findDOCTYPE = DOCTYPES.FirstOrDefault(x => x.GUID == baseline_item.GUID_DOCTYPE);
-                string docTypeCode = findDOCTYPE == null ? string.Empty : findDOCTYPE.CODE;
-                if(baseline_item.PHASE.PHASE_TYPE != null)
+                string docTypeCode = baseline_item.DOCTYPE != null ? baseline_item.DOCTYPE.CODE : findDOCTYPE != null ? findDOCTYPE.CODE : string.Empty;
+                if (baseline_item.PHASE.PHASE_TYPE != null)
                 {
                     RATE findRATE = BluePrintsDataUtils.CascadeRateSearch(baseline_item.GUID_AREA, baseline_item.GUID_SUBAREA, baseline_item.GUID_DISCIPLINE, baseline_item.GUID_DEPARTMENT, docTypeCode, string.Empty, RATES, CostType.Charge, (PhaseType)baseline_item.PHASE.PHASE_TYPE);
                     if (findRATE != null)

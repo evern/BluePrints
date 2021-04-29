@@ -404,7 +404,9 @@ namespace BluePrints.ViewModels
 
         private void initializeUnitOfWork()
         {
-            isRemoteEXODb = LoginCredentials.GetUserPreferenceBool(DataUtils.GetNameOf(() => UserPreferences.EXO_DesignTimeSheetOfficeIsForeign));
+            bool? isRemoteEXODbPreference = LoginCredentials.GetUserPreferenceBool(DataUtils.GetNameOf(() => UserPreferences.EXO_DesignTimeSheetOfficeIsForeign));
+            isRemoteEXODb = isRemoteEXODbPreference == null ? false : (bool)isRemoteEXODbPreference;
+
             primeroUnitOfWorkFactory = PrimeroEntitiesUnitOfWorkSource.GetUnitOfWorkFactory(IsRemoteEXODb);
             primeroEntitiesUnitOfWork = primeroUnitOfWorkFactory.CreateUnitOfWork();
 
