@@ -99,8 +99,8 @@ namespace BluePrints.Common.Base
             loadPROJECT = receiveParameter.GetFirstEntity();
             loadPROGRESS = receiveParameter.GetSecondEntity();
 
-            bool? allowSummaryCalculationOnUpdatePreference = LoginCredentials.GetUserPreferenceBool(DataUtils.GetNameOf(() => UserPreferences.DesignProgress_AllowSummaryCalculationOnProgressUpdate));
-            AllowSummaryCalculationOnUpdate = allowSummaryCalculationOnUpdatePreference == null ? true : (bool)allowSummaryCalculationOnUpdatePreference;
+            bool? allowSummaryCalculationOnUpdatePreference = LoginCredentials.GetUserPreferenceBool(DataUtils.GetNameOf(() => UserPreferences.DesignProgress_AllowSummaryUpdate));
+            allowSummaryCalculationOnUpdate = allowSummaryCalculationOnUpdatePreference == null ? true : (bool)allowSummaryCalculationOnUpdatePreference;
 
             primeroUnitOfWork = PrimeroEntitiesUnitOfWorkSource.GetUnitOfWorkFactory(loadPROJECT.OfficeNameForExo == BluePrintsResources.OfficeMontreal).CreateUnitOfWork();
             if (loadPROJECT != null)
@@ -1773,7 +1773,7 @@ namespace BluePrints.Common.Base
                     MessageBoxService.ShowMessage("Please also note that closing other project's progress tab and My Deliverable's list can speed up progress updates too");
                 }
 
-                BluePrintsDataUtils.SaveUserPreference(DataUtils.GetNameOf(() => UserPreferences.DesignProgress_AllowSummaryCalculationOnProgressUpdate), value ? UserPreferences.PreferenceTrueValue : UserPreferences.PreferenceFalseValue);
+                BluePrintsDataUtils.SaveUserPreference(DataUtils.GetNameOf(() => UserPreferences.DesignProgress_AllowSummaryUpdate), value ? UserPreferences.PreferenceTrueValue : UserPreferences.PreferenceFalseValue);
             }
         }
 
