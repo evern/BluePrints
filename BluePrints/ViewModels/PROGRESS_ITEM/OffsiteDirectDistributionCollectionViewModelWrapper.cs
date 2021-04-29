@@ -73,6 +73,7 @@ namespace BluePrints.ViewModels
         string columnDeliverableStatus = "Entity.DeliverableStatusProgressGuid";
         Timer focusLastColumnTimer = new Timer();
         BluePrintsNativeEntities nativeDataContext = new BluePrintsNativeEntities();
+        private DispatcherTimer gridRefreshDispatcherTimer;
         protected override void resolveParameters(object parameter)
         {
             IsLoading = true;
@@ -89,6 +90,10 @@ namespace BluePrints.ViewModels
             focusLastColumnTimer.Interval = 1000;
             focusLastColumnTimer.Elapsed += FocusLastColumnTimer_Elapsed;
             GlobalMethods.SetAccordionExpandedState?.Invoke(false);
+
+            gridRefreshDispatcherTimer = new DispatcherTimer();
+            gridRefreshDispatcherTimer.Interval = new TimeSpan(0, 0, 0, 1);
+
             base.resolveParameters(parameter);
         }
 
@@ -289,11 +294,19 @@ namespace BluePrints.ViewModels
                     deliverable.BuildStats(1, calcTypes);
                     BuildRowStats(deliverable, true);
                     deliverable.Update();
-                    GridControlService.RefreshData();
+                    gridRefreshDispatcherTimer.Tick -= gridRefreshTimer_Tick;
+                    gridRefreshDispatcherTimer.Tick += gridRefreshTimer_Tick;
+                    gridRefreshDispatcherTimer.Start();
                 }
             }
 
             base.OnAfterAuxiliaryEntitiesChanged(key, changedType, messageType, sender, senderKey, isBulkRefresh);
+        }
+
+        private void gridRefreshTimer_Tick(object sender, EventArgs e)
+        {
+            gridRefreshDispatcherTimer.Stop();
+            GridControlService.RefreshData();
         }
 
         public bool CanProgressUndo()
