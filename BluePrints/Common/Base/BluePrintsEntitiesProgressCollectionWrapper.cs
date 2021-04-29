@@ -466,10 +466,13 @@ namespace BluePrints.Common.Base
                 fullSummarizer.BuildBurnedDataPoints(false, false, false, false, true);
                 //fullSummarizer.Summarize();
                 //mainThreadDispatcher.BeginInvoke(new Action(() => BackgroundRefresh()));
-                foreach (var deliverable in Entities)
-                {
-                    deliverable.Update();
-                }
+
+                //when user closes the view before it gets the chance to update
+                if(Entities != null)
+                    foreach (var deliverable in Entities)
+                    {
+                        deliverable.Update();
+                    }
             }
         }
 
@@ -645,6 +648,9 @@ namespace BluePrints.Common.Base
         #region Refresh
         protected override bool IsSingleMainEntityRefreshIdentified(object key, Type changedType, EntityMessageType messageType, object sender, Guid senderKey, bool isBulkRefresh)
         {
+            if (senderKey != PROGRESS_ITEMSCollectionViewModel.Key)
+                return false;
+
             if (changedType == typeof(PROGRESS_ITEM))
             {
                 PROGRESS_ITEM newPROGRESSITEM = PROGRESS_ITEMCollection.FirstOrDefault(x => x.GUID == (Guid)key);
@@ -1768,10 +1774,6 @@ namespace BluePrints.Common.Base
                 allowSummaryCalculationOnUpdate = value;
                 if (AllowSummaryCalculationOnUpdate)
                     GridControlService.RefreshSummary();
-                else if(!IsLoading)
-                {
-                    MessageBoxService.ShowMessage("Please also note that closing other project's progress tab and My Deliverable's list can speed up progress updates too");
-                }
 
                 BluePrintsDataUtils.SaveUserPreference(DataUtils.GetNameOf(() => UserPreferences.DesignProgress_AllowSummaryCalculationOnProgressUpdate), value ? UserPreferences.PreferenceTrueValue : UserPreferences.PreferenceFalseValue);
             }

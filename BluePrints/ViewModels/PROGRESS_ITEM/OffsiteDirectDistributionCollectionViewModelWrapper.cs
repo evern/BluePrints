@@ -274,6 +274,9 @@ namespace BluePrints.ViewModels
         
         public override void OnAfterAuxiliaryEntitiesChanged(object key, Type changedType, EntityMessageType messageType, object sender, Guid senderKey, bool isBulkRefresh)
         {
+            if (senderKey != MainViewModel.Key)
+                return;
+
             if (changedType == typeof(BASELINE_ITEM))
             {
                 BASELINE_ITEMProgress deliverable = Entities.FirstOrDefault(x => x.GUID.ToString() == key.ToString());
@@ -286,7 +289,7 @@ namespace BluePrints.ViewModels
                     deliverable.BuildStats(1, calcTypes);
                     BuildRowStats(deliverable, true);
                     deliverable.Update();
-                    mainThreadDispatcher.BeginInvoke(new Action(() => this.RaisePropertyChanged(x => x.DataPointsTable)));
+                    GridControlService.RefreshData();
                 }
             }
 

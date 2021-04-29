@@ -9,6 +9,7 @@ using DevExpress.Mvvm;
 using DevExpress.XtraEditors.DXErrorProvider;
 using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.Linq;
 using System.Linq.Expressions;
 
@@ -819,16 +820,24 @@ namespace BluePrints.Common.ViewModel.Reporting
             reportingDataDate = dataDate;
         }
 
-        List<PROGRESS_ITEM> progress_items { get; set; }
+        ObservableCollection<PROGRESS_ITEM> progress_items { get; set; }
         public virtual List<PROGRESS_ITEM> PROGRESS_ITEMS
         {
             get
             {
                 if (progress_items == null)
-                    progress_items = new List<PROGRESS_ITEM>();
+                {
+                    progress_items = new ObservableCollection<PROGRESS_ITEM>();
+                    progress_items.CollectionChanged += Progress_items_CollectionChanged;
+                }
 
-                return progress_items;
+                return progress_items.ToList();
             }
+        }
+
+        private void Progress_items_CollectionChanged(object sender, System.Collections.Specialized.NotifyCollectionChangedEventArgs e)
+        {
+            
         }
 
         List<PROGRESS_ETC> progress_etcs { get; set; }
@@ -927,7 +936,7 @@ namespace BluePrints.Common.ViewModel.Reporting
 
         public void SetProgressItems(List<PROGRESS_ITEM> progresses)
         {
-            progress_items = progresses;
+            progress_items = new ObservableCollection<PROGRESS_ITEM>(progresses);
         }
 
         public void SetProgressETCs(List<PROGRESS_ETC> progressETCs)
