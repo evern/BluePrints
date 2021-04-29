@@ -820,24 +820,16 @@ namespace BluePrints.Common.ViewModel.Reporting
             reportingDataDate = dataDate;
         }
 
-        ObservableCollection<PROGRESS_ITEM> progress_items { get; set; }
+        List<PROGRESS_ITEM> progress_items { get; set; }
         public virtual List<PROGRESS_ITEM> PROGRESS_ITEMS
         {
             get
             {
                 if (progress_items == null)
-                {
-                    progress_items = new ObservableCollection<PROGRESS_ITEM>();
-                    progress_items.CollectionChanged += Progress_items_CollectionChanged;
-                }
+                    progress_items = new List<PROGRESS_ITEM>();
 
                 return progress_items.ToList();
             }
-        }
-
-        private void Progress_items_CollectionChanged(object sender, System.Collections.Specialized.NotifyCollectionChangedEventArgs e)
-        {
-            
         }
 
         List<PROGRESS_ETC> progress_etcs { get; set; }
@@ -936,7 +928,7 @@ namespace BluePrints.Common.ViewModel.Reporting
 
         public void SetProgressItems(List<PROGRESS_ITEM> progresses)
         {
-            progress_items = new ObservableCollection<PROGRESS_ITEM>(progresses);
+            progress_items = progresses;
         }
 
         public void SetProgressETCs(List<PROGRESS_ETC> progressETCs)
