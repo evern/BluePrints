@@ -828,7 +828,7 @@ namespace BluePrints.Common.ViewModel.Reporting
                 if (progress_items == null)
                     progress_items = new List<PROGRESS_ITEM>();
 
-                return progress_items.ToList();
+                return progress_items;
             }
         }
 
