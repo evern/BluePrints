@@ -178,10 +178,10 @@ namespace BluePrints.ViewModels
             MainViewModel.ValidateFillDownCallBack = ValidateFillDownCallBack;
             MainViewModel.IsPasteCellLevel = false;
             MainViewModel.AlwaysSkipMessage = false;
-            MainViewModel.RefreshOnSameSenderKey = true;
+            MainViewModel.RefreshOnlyOnSameSenderKey = true;
             MainViewModel.DisableEntitiesPauseUnpause = true;
             PROGRESS_ITEMSCollectionViewModel.AlwaysSkipMessage = false;
-            PROGRESS_ITEMSCollectionViewModel.RefreshOnSameSenderKey = true;
+            PROGRESS_ITEMSCollectionViewModel.RefreshOnlyOnSameSenderKey = true;
             PROGRESS_ITEMSCollectionViewModel.DisableEntitiesPauseUnpause = true;
             doNotApplyBestFit = true;
         }
