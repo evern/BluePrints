@@ -263,8 +263,8 @@ namespace BluePrints.ViewModels
                     PHASE findPHASE = PHASECollection.FirstOrDefault(x => x.GUID == projection.GUID_PHASE);
                     if(findPHASE != null)
                     {
-                        if (findPHASE.PHASE_TYPE != PhaseType.Design)
-                            return "Department is only applicable for design phase";
+                        if (findPHASE.PHASE_TYPE == PhaseType.Construct)
+                            return "Department is only applicable for design/indirect phase";
                     }
                 }
 
