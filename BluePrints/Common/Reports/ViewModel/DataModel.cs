@@ -548,9 +548,9 @@ namespace BluePrints.Common.ViewModel.Reporting
 
         public decimal Total_Percentage => Total_Units == 0 ? 0 : (Earned_Units_Total / Total_Units);
 
-        public DateTime? FirstDataDate => PROGRESS_ITEMS.Count() == 0 ? (DateTime?)null : PROGRESS_ITEMS.Min(x => x.EARNED_DATE);
+        public DateTime? FirstDataDate => PROGRESS_ITEMS.Where(x => x.EARNED_UNITS > 0).Count() == 0 ? (DateTime?)null : PROGRESS_ITEMS.Where(x => x.EARNED_UNITS > 0).Min(x => x.EARNED_DATE);
 
-        public DateTime? LastDataDate => PROGRESS_ITEMS.Count() == 0 ? (DateTime?)null : PROGRESS_ITEMS.Max(x => x.EARNED_DATE);
+        public DateTime? LastDataDate => PROGRESS_ITEMS.Where(x => x.EARNED_UNITS > 0).Count() == 0 ? (DateTime?)null : PROGRESS_ITEMS.Where(x => x.EARNED_UNITS > 0).Max(x => x.EARNED_DATE);
 
         public IEnumerable<DeliverableEarnedPercentages> EarnedPercentages => Stats == null || Stats.Earned == null || Stats.Earned.CumulativeDataPoints == null || Stats.Earned.CumulativeDataPoints.Count == 0 ? null : Stats.Earned.CumulativeDataPoints.Where(x => Stats.Earned.DataPoints.Any(z => z.ProgressDate == x.ProgressDate)).Select(x => new DeliverableEarnedPercentages() { EarnedDate = x.ProgressDate, EarnedPercentage = x.UnitsPercentage });
 

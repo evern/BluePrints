@@ -147,7 +147,7 @@ namespace BluePrints.ViewModels
             PROGRESS_ITEMSCollectionViewModel.AlwaysSkipMessage = false;
 
             //only respond to message from same key
-            PROGRESS_ITEMSCollectionViewModel.RefreshOnSameSenderKey = true;
+            PROGRESS_ITEMSCollectionViewModel.RefreshOnlyOnSameSenderKey = true;
 
             if (PROJECT_REPORTCollectionViewModel != null)
                 PROJECT_REPORTCollectionViewModel.AlwaysSkipMessage = false;
