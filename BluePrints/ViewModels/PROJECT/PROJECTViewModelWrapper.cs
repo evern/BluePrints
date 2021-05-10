@@ -1097,12 +1097,48 @@ namespace BluePrints.ViewModels
             }
         }
 
-        public async void Refresh_From_P6()
+        public void Refresh_From_P6()
         {
+            removeTenderDatesFromDeliverables();
+            AsyncRefresh_From_P6();
+        }
+
+        private async void AsyncRefresh_From_P6()
+        {
+            //when project is approved to active, tender dates should be removed
+            removeTenderDatesFromDeliverables();
             LoadingScreenManager.ShowLoadingScreen(1);
             await BluePrintsContextHelper.RefreshDeliverablesDataPointsByProject(LoadPROJECT.NUMBER);
             LoadingScreenManager.Progress();
             FullRefresh();
+        }
+
+        private void removeTenderDatesFromDeliverables()
+        {
+            if(LoadPROJECT.STATUS == ProjectStatus.Active)
+            {
+                if (bluePrintsUnitOfWork == null)
+                    bluePrintsUnitOfWork = bluePrintsUnitOfWorkFactory.CreateUnitOfWork();
+
+                BASELINE liveBASELINE = bluePrintsUnitOfWork.BASELINES.Where(x => x.GUID_PROJECT == LoadPROJECT.GUID && x.STATUS == BaselineStatus.Live).FirstOrDefault();
+                if(liveBASELINE != null)
+                {
+                    List<BASELINE_ITEM> deliverables = liveBASELINE.BASELINE_ITEM.ToList();
+                    if(deliverables.Any(x => x.TENDER_START_DATE != null || x.TENDER_START_DATE != null))
+                    {
+                        if(MessageBoxService.ShowMessage("There are deliverables with tender start/end dates but project is now in Active status, do you wish to remove tender dates and recalculate S-Curve based on P6/Deliverable/Subjob dates?", "Tender Dates Found", MessageButton.YesNo) == MessageResult.Yes)
+                        {
+                            foreach (BASELINE_ITEM deliverable in deliverables)
+                            {
+                                deliverable.TENDER_START_DATE = null;
+                                deliverable.TENDER_END_DATE = null;
+                            }
+
+                            bluePrintsUnitOfWork.SaveChanges();
+                        }
+                    }
+                }
+            }
         }
 
         public override string UnifiedRowValidation(PROJECT_Dashboard projection)
