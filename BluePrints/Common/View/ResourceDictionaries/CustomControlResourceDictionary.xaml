@@ -2,7 +2,7 @@
                     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
                     xmlns:custom="clr-namespace:BaseModel.Misc;assembly=BaseModel"
                     xmlns:dxg="http://schemas.devexpress.com/winfx/2008/xaml/grid"
-                    xmlns:dxsc="clr-namespace:DevExpress.Xpf.SpellChecker;assembly=DevExpress.Xpf.SpellChecker.v19.2"
+                    xmlns:dxsc="clr-namespace:DevExpress.Xpf.SpellChecker;assembly=DevExpress.Xpf.SpellChecker.v20.2"
                     xmlns:dxmvvm="http://schemas.devexpress.com/winfx/2008/xaml/mvvm"
                     xmlns:local="clr-namespace:BluePrints.Views">
     <Style x:Key="WBSBackgroundStyle" TargetType="{x:Type dxg:RowControl}">

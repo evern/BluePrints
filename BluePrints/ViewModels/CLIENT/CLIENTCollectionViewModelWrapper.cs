@@ -34,6 +34,7 @@ namespace BluePrints.ViewModels
         protected CLIENTCollectionViewModelWrapper(
             IUnitOfWorkFactory<IBluePrintsEntitiesUnitOfWork> unitOfWorkFactory = null)
         {
+            IsInstantFeedbackMode = true;
         }
 
         #region Database Operations

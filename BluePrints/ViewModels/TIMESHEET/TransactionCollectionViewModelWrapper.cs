@@ -77,6 +77,7 @@ namespace BluePrints.ViewModels
         bool isYearToDate = false;
         protected override void resolveParameters(object parameter)
         {
+            IsInstantFeedbackMode = true;
             var PROJECTParameter = (EntitiesParameter<Data.PROJECT>)parameter;
             loadPROJECT = PROJECTParameter.GetEntity();
             if (loadPROJECT == null)
@@ -126,6 +127,24 @@ namespace BluePrints.ViewModels
                 return query => query.Where(x => x.master_jobno == loadJOBCOST_HDR.JOBNO);
         }
 
+        public override void EditingAttachedBehavior_SaveChanges(GridColumnDataEventArgs e)
+        {
+            if (!IsInstantFeedbackMode)
+                return;
+
+            EditableColumn c = (EditableColumn)e.Column;
+            InstantFeedbackMainViewModel.Save(InstantFeedbackSelectedEntity, c.RealFieldName, e.Value);
+            InstantFeedbackMainViewModel.Refresh();
+            this.RaisePropertyChanged(x => x.InstantFeedbackEntities);
+        }
+
+        protected override OperationInterceptMode OnBeforeInstantFeedbackEntitySaveIsContinue(X_JOB_TRANSACTIONS_DETAIL_SeqNo entity, out bool isNew)
+        {
+            OnBeforeProjectionSaveIsContinue(entity, out isNew);
+            primeroUnitOfWork.SaveChanges();
+            return OperationInterceptMode.SkipOneAndAllDbSaves;
+        }
+
         protected override OperationInterceptMode OnBeforeProjectionSaveIsContinue(X_JOB_TRANSACTIONS_DETAIL_SeqNo projection, out bool isNew)
         {
             isNew = false;
@@ -140,6 +159,7 @@ namespace BluePrints.ViewModels
                 findJOB_TRANSACTION.DESCRIPTION = projection.description;
                 findJOB_TRANSACTION.STAFFNO = projection.accno;
                 findJOB_TRANSACTION.QUANTITY = projection.quantity;
+                findJOB_TRANSACTION.STOCKCODE = projection.stockcode;
 
                 if(projection.QtyEdited && CanEditQuantity)
                 {

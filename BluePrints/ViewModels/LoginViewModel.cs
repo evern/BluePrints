@@ -92,7 +92,7 @@ namespace BluePrints.ViewModels
         {
             string themeName = Properties.Settings.Default["ThemeName"] as string;
             if (themeName == "")
-                themeName = "Office2016Colorful";
+                themeName = "Win10Light";
             ApplicationThemeHelper.ApplicationThemeName = themeName;
             delayedConnectDispatcher.Start();
         }
@@ -181,8 +181,8 @@ namespace BluePrints.ViewModels
 
                 if (LoginCredentials.IsAdmin)
                 {
-                    LoginCredentials.CurrentUser = USERS.First(x => x.FIRST_NAME == "Su");
-                    //LoginCredentials.CurrentUser = new USER() { NAME = BluePrintsResources.Default_AdminUsername };
+                    //LoginCredentials.CurrentUser = USERS.First(x => x.FIRST_NAME == "Su");
+                    LoginCredentials.CurrentUser = new USER() { NAME = BluePrintsResources.Default_AdminUsername };
                     USER_PREFERENCE forecastActualPreference = new USER_PREFERENCE();
                     //forecastActualPreference.PREFERENCE_NAME = DataUtils.GetNameOf(() => UserPreferences.Forecast_ShowActuals);
                     //forecastActualPreference.PREFERENCE_VALUE = UserPreferences.PreferenceTrueValue;
