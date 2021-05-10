@@ -1099,21 +1099,21 @@ namespace BluePrints.ViewModels
 
         public void Refresh_From_P6()
         {
-            removeTenderDatesFromDeliverables();
-            AsyncRefresh_From_P6();
+            if(moveTenderDates())
+                AsyncRefresh_From_P6();
         }
 
         private async void AsyncRefresh_From_P6()
         {
             //when project is approved to active, tender dates should be removed
-            removeTenderDatesFromDeliverables();
+            moveTenderDates();
             LoadingScreenManager.ShowLoadingScreen(1);
             await BluePrintsContextHelper.RefreshDeliverablesDataPointsByProject(LoadPROJECT.NUMBER);
             LoadingScreenManager.Progress();
             FullRefresh();
         }
 
-        private void removeTenderDatesFromDeliverables()
+        private bool moveTenderDates()
         {
             if(LoadPROJECT.STATUS == ProjectStatus.Active)
             {
@@ -1126,19 +1126,26 @@ namespace BluePrints.ViewModels
                     List<BASELINE_ITEM> deliverables = liveBASELINE.BASELINE_ITEM.ToList();
                     if(deliverables.Any(x => x.TENDER_START_DATE != null || x.TENDER_START_DATE != null))
                     {
-                        if(MessageBoxService.ShowMessage("There are deliverables with tender start/end dates but project is now in Active status, do you wish to remove tender dates and recalculate S-Curve based on P6/Deliverable/Subjob dates?", "Tender Dates Found", MessageButton.YesNo) == MessageResult.Yes)
+                        if (MessageBoxService.ShowMessage("There are deliverables with Tender Start/End dates but project is now in Active status\n\nPlease note that Tender Start/End dates will be moved to Start/End dates in deliverables list", "Tender Dates Found", MessageButton.OK) == MessageResult.OK)
                         {
                             foreach (BASELINE_ITEM deliverable in deliverables)
                             {
+                                deliverable.START_DATE = deliverable.TENDER_START_DATE;
+                                deliverable.END_DATE = deliverable.TENDER_END_DATE;
                                 deliverable.TENDER_START_DATE = null;
                                 deliverable.TENDER_END_DATE = null;
+                                bluePrintsUnitOfWork.SaveChanges();
                             }
 
-                            bluePrintsUnitOfWork.SaveChanges();
+                            return true;
                         }
+                        else
+                            return false;
                     }
                 }
             }
+
+            return true;
         }
 
         public override string UnifiedRowValidation(PROJECT_Dashboard projection)
