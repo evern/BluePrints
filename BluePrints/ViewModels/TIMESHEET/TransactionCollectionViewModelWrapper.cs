@@ -221,12 +221,6 @@ namespace BluePrints.ViewModels
         }
         #endregion
 
-        public override void InstantFeedbackSaveChanges(string fieldName, object value)
-        {
-            //if(fieldName == (BindableBase.GetPropertyName(() => new X_JOB_TRANSACTIONS_DETAIL_SeqNo().jobno)))
-            base.InstantFeedbackSaveChanges(fieldName, value);
-        }
-
         public override void UnifiedCellValueChanged(string field_name, object old_value, object new_value, X_JOB_TRANSACTIONS_DETAIL_SeqNo projection, bool isNew)
         {
             if (field_name == BindableBase.GetPropertyName(() => new X_JOB_TRANSACTIONS_DETAIL_SeqNo().quantity))

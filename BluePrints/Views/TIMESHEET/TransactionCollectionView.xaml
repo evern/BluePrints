@@ -221,7 +221,7 @@
                                     <dxe:ComboBoxEditSettings AutoComplete="True" DisplayMember="SHORTCODE" IsTextEditable="True" ItemsSource="{Binding JOB_COSTGROUPSCollection}" ValueMember="SEQNO" />
                                 </dxg:GridColumn.EditSettings>
                             </custom:EditableColumn>
-                            <custom:EditableColumn FieldName="CostType" AllowBestFit="false" Width="50" Header="Commodity Code" UnboundExpression="[CostType]">
+                            <custom:EditableColumn RealFieldName="CostType" AllowBestFit="false" Width="50" Header="Commodity Code" UnboundType="Integer" UnboundExpression="[CostType]">
                                 <dxg:GridColumn.CellTemplate>
                                     <DataTemplate>
                                         <dxg:LookUpEdit Name="PART_Editor" AutoComplete="True" AutoPopulateColumns="False" DisplayMember="SHORTCODE" IncrementalFiltering="True" IsTextEditable="true" ItemsSource="{Binding View.DataContext.JOB_COSTTYPESCollection}" NullValueButtonPlacement="Popup" PopupWidth="500" ValueMember="SEQNO">

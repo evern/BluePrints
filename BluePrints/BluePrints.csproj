@@ -917,6 +917,7 @@
     <Compile Include="EntityFramework\Annotations\REGISTER_CLARIFICATION.cs" />
     <Compile Include="EntityFramework\Annotations\REGISTER_TQ.cs" />
     <Compile Include="EntityFramework\Annotations\REGISTER_TQ_ATTACHMENT.cs" />
+    <Compile Include="EntityFramework\Annotations\JOBCOST_HDR.cs" />
     <Compile Include="EntityFramework\Annotations\X_VARIATION_QUERY.cs" />
     <Compile Include="EntityFramework\Annotations\JOBCOST_LINES_AUDIT.cs" />
     <Compile Include="EntityFramework\Annotations\JOB_TIMESHEETS.cs" />
