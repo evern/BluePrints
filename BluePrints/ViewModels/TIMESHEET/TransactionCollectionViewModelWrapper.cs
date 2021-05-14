@@ -123,6 +123,11 @@ namespace BluePrints.ViewModels
             CreateMainViewModel(primeroUnitOfWorkFactory, x => x.X_JOB_TRANSACTIONS_DETAIL_SeqNos);
         }
 
+        protected override void OnAfterAssignedCallbackAndRaisePropertyChanged()
+        {
+            IsPasteCellLevel = true;
+        }
+
         protected override Func<IRepositoryQuery<X_JOB_TRANSACTIONS_DETAIL_SeqNo>, IQueryable<X_JOB_TRANSACTIONS_DETAIL_SeqNo>> specifyMainViewModelProjection()
         {
             if (isYearToDate)
@@ -131,16 +136,14 @@ namespace BluePrints.ViewModels
                 return query => query.Where(x => x.master_jobno == loadJOBCOST_HDR.MASTER_JOBNO);
         }
 
-        protected override OperationInterceptMode OnBeforeInstantFeedbackEntitySaveIsContinue(X_JOB_TRANSACTIONS_DETAIL_SeqNo entity, out bool isNew)
+        protected override void InstantFeedbackOtherUnitOfWorkSaveChanges()
         {
-            OnBeforeProjectionSaveIsContinue(entity, out isNew);
             primeroUnitOfWork.SaveChanges();
-            return OperationInterceptMode.SkipOneAndAllDbSaves;
+            base.InstantFeedbackOtherUnitOfWorkSaveChanges();
         }
 
-        protected override OperationInterceptMode OnBeforeProjectionSaveIsContinue(X_JOB_TRANSACTIONS_DETAIL_SeqNo projection, out bool isNew)
+        protected override void ApplyInstantFeedbackEntityPropertiesToOtherUnitOfWorkEntity(X_JOB_TRANSACTIONS_DETAIL_SeqNo projection)
         {
-            isNew = false;
             JOB_TRANSACTIONS findJOB_TRANSACTION = primeroUnitOfWork.JOB_TRANSACTIONS.FirstOrDefault(x => x.SEQNO == projection.SEQNO);
             if(findJOB_TRANSACTION != null)
             {
@@ -178,27 +181,12 @@ namespace BluePrints.ViewModels
             }
 
             projection.QtyEdited = false;
-            return OperationInterceptMode.SkipOneAndAllDbSaves;
         }
 
-        public override bool CanFullRefresh()
+        public override void FullRefresh()
         {
-            return true;
-        }
-
-        protected override void OnAfterProjectionsSave(IEnumerable<X_JOB_TRANSACTIONS_DETAIL_SeqNo> projections)
-        {
-            primeroUnitOfWork.SaveChanges();
-            base.OnAfterProjectionsSave(projections);
-        }
-
-        protected override void AssignCallBacksAndRaisePropertyChange(IEnumerable<X_JOB_TRANSACTIONS_DETAIL_SeqNo> entities)
-        {
-            MainViewModel.AlwaysSkipMessage = true;
-            MainViewModel.IsPasteCellLevel = true;
-            MainViewModel.IsPersistentView = true;
-            MainViewModel.SetParentViewModel(this);
-            base.AssignCallBacksAndRaisePropertyChange(entities);
+            List<X_JOB_TRANSACTIONS_DETAIL_SeqNo> entities = GetSelectedRows();
+            base.FullRefresh();
         }
 #endregion
 
@@ -269,6 +257,18 @@ namespace BluePrints.ViewModels
                     JOBCOST_HDRInstantFeedbackCollectionViewModel = InstantFeedbackCollectionViewModel<JOBCOST_HDR, int, IPrimeroEntitiesUnitOfWork>.CreateInstantFeedbackCollectionViewModel(primeroUnitOfWorkFactory, x => x.JOBCOST_HDR, JOBCOST_HDRProjection);
 
                 return JOBCOST_HDRInstantFeedbackCollectionViewModel.Entities;
+            }
+        }
+
+        private List<JOBCOST_HDR> JOBCOST_HDRList;
+        public List<JOBCOST_HDR> JOBCOST_HDRListCollection
+        {
+            get
+            {
+                if (JOBCOST_HDRList == null && primeroUnitOfWork != null)
+                    JOBCOST_HDRList = JOBCOST_HDRProjection(primeroUnitOfWork.JOBCOST_HDR).ToList();
+
+                return JOBCOST_HDRList;
             }
         }
 
