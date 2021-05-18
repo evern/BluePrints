@@ -239,6 +239,22 @@ namespace BluePrints.ViewModels
             return string.Empty;
         }
 
+        public override bool CanKeyboardPaste()
+        {
+            if (IsReadOnly)
+                return false;
+
+            return base.CanKeyboardPaste();
+        }
+
+        public override void PastingFromClipboard(PastingFromClipboardEventArgs e)
+        {
+            if (IsReadOnly)
+                return;
+
+            base.PastingFromClipboard(e);
+        }
+
         private InstantFeedbackCollectionViewModel<JOBCOST_HDR, int, IPrimeroEntitiesUnitOfWork> JOBCOST_HDRInstantFeedbackCollectionViewModel;
         public InstantFeedbackCollectionViewModel<JOBCOST_HDR, int, IPrimeroEntitiesUnitOfWork>.InstantFeedbackSourceViewModel JOBCOST_HDRCollection
         {
