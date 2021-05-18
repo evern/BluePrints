@@ -1,4 +1,4 @@
-﻿<UserControl x:Class="BluePrints.Views.CLIENTCollectionView" xmlns="http://schemas.microsoft.com/netfx/2009/xaml/presentation" xmlns:h="clr-namespace:BaseModel.Misc;assembly=BaseModel" xmlns:i1="http://schemas.devexpress.com/winfx/2008/xaml/mvvm" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" xmlns:custom="clr-namespace:BaseModel.Misc;assembly=BaseModel" xmlns:d="http://schemas.microsoft.com/expression/blend/2008" xmlns:dx="http://schemas.devexpress.com/winfx/2008/xaml/core" xmlns:dxb="http://schemas.devexpress.com/winfx/2008/xaml/bars" xmlns:dxe="http://schemas.devexpress.com/winfx/2008/xaml/editors" xmlns:dxg="http://schemas.devexpress.com/winfx/2008/xaml/grid" xmlns:dxlc="http://schemas.devexpress.com/winfx/2008/xaml/layoutcontrol" xmlns:dxmvvm="http://schemas.devexpress.com/winfx/2008/xaml/mvvm" xmlns:dxr="http://schemas.devexpress.com/winfx/2008/xaml/ribbon" xmlns:dxrudex="http://schemas.devexpress.com/winfx/2008/xaml/reports/userdesignerextensions" xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" xmlns:view="clr-namespace:BluePrints.Views" xmlns:viewmodel="clr-namespace:BluePrints.ViewModels" x:Name="userControl" d:DesignHeight="400" d:DesignWidth="600" DataContext="{dxmvvm:ViewModelSource viewmodel:CLIENTCollectionViewModelWrapper}" mc:Ignorable="d">
+﻿<UserControl x:Class="BluePrints.Views.CLIENTCollectionView" xmlns="http://schemas.microsoft.com/netfx/2009/xaml/presentation" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" xmlns:custom="clr-namespace:BaseModel.Misc;assembly=BaseModel" xmlns:d="http://schemas.microsoft.com/expression/blend/2008" xmlns:dx="http://schemas.devexpress.com/winfx/2008/xaml/core" xmlns:dxb="http://schemas.devexpress.com/winfx/2008/xaml/bars" xmlns:dxe="http://schemas.devexpress.com/winfx/2008/xaml/editors" xmlns:dxg="http://schemas.devexpress.com/winfx/2008/xaml/grid" xmlns:dxlc="http://schemas.devexpress.com/winfx/2008/xaml/layoutcontrol" xmlns:dxmvvm="http://schemas.devexpress.com/winfx/2008/xaml/mvvm" xmlns:dxr="http://schemas.devexpress.com/winfx/2008/xaml/ribbon" xmlns:dxrudex="http://schemas.devexpress.com/winfx/2008/xaml/reports/userdesignerextensions" xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" xmlns:view="clr-namespace:BluePrints.Views" xmlns:viewmodel="clr-namespace:BluePrints.ViewModels" x:Name="userControl" d:DesignHeight="400" d:DesignWidth="600" DataContext="{dxmvvm:ViewModelSource viewmodel:CLIENTCollectionViewModelWrapper}" mc:Ignorable="d">
     <UserControl.Resources>
         <ResourceDictionary>
             <ResourceDictionary.MergedDictionaries>
@@ -35,10 +35,9 @@
                         </dxr:RibbonPage>
                     </dxr:RibbonDefaultPageCategory>
                 </dxr:RibbonControl>
-                <custom:GridControlEx x:Name="GridControl" dx:DXSerializer.SerializationID="GridControlCLIENT" dx:DXSerializer.StoreLayoutMode="All" ItemsSource="{Binding InstantFeedbackEntities}" CurrentItem="{Binding InstantFeedbackSelectedEntity}">
+                <custom:GridControlEx x:Name="GridControl" dx:DXSerializer.SerializationID="GridControlCLIENT" dx:DXSerializer.StoreLayoutMode="All" Style="{StaticResource DefaultGridControlTemplate}">
                     <dxg:GridControl.Columns>
                         <dxg:GridColumn Header="Code" FieldName="CODE" />
-                        <h:EditableColumn RealFieldName="FIRST_NAME" Header="Unbound First Name" UnboundType="String"/>
                         <dxg:GridColumn Header="First Name" FieldName="FIRST_NAME" />
                         <dxg:GridColumn Header="Last Name" FieldName="LAST_NAME" />
                         <dxg:GridColumn Header="Projects" FieldName="Projects">
@@ -58,7 +57,7 @@
                         <dxg:GridSummaryItem dx:DXSerializer.Enabled="False" SummaryType="Count" />
                     </dxg:GridControl.GroupSummary>
                     <dxg:GridControl.View>
-                        <dxg:TableView x:Name="tableView" >
+                        <dxg:TableView x:Name="tableView" Style="{StaticResource DefaultTableViewTemplate}">
                             <dxg:TableView.RowCellMenuCustomizations>
                                 <dxb:BarLinkContainerItem ItemLinksSource="{StaticResource ContextMenuDefaultHeaderButtons}" />
                                 <dxb:BarItemLinkSeparator />
@@ -67,13 +66,6 @@
                             </dxg:TableView.RowCellMenuCustomizations>
                         </dxg:TableView>
                     </dxg:GridControl.View>
-                    <i1:Interaction.Behaviors>
-                        <h:EditingAttachedBehavior>
-                            <i1:Interaction.Behaviors>
-                                <dxmvvm:EventToCommand Command="{Binding EditingAttachedBehavior_SaveChangesCommand}" EventName="SaveChanges" PassEventArgsToCommand="True" />
-                            </i1:Interaction.Behaviors>
-                        </h:EditingAttachedBehavior>
-                    </i1:Interaction.Behaviors>
                 </custom:GridControlEx>
             </DockPanel>
         </dxb:BarManager>
