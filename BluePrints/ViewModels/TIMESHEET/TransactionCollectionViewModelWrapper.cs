@@ -105,8 +105,14 @@ namespace BluePrints.ViewModels
             loaderCollection.AddLoaderDescription<JOBCOST_RESOURCE, JOBCOST_RESOURCE, int, IPrimeroEntitiesUnitOfWork>(primeroUnitOfWorkFactory, x => x.JOBCOST_RESOURCE);
             loaderCollection.AddLoaderDescription<JOB_COSTGROUPS, JOB_COSTGROUPS, int, IPrimeroEntitiesUnitOfWork>(primeroUnitOfWorkFactory, x => x.JOB_COSTGROUPS);
             loaderCollection.AddLoaderDescription<JOB_COSTTYPES, JOB_COSTTYPES, int, IPrimeroEntitiesUnitOfWork>(primeroUnitOfWorkFactory, x => x.JOB_COSTTYPES);
+            loaderCollection.AddLoaderDescription(primeroUnitOfWorkFactory, x => x.STOCK_ITEMS, STOCK_ITEMSProjectionFunc);
             loaderCollection.AddLoaderDescription<GLACCS, GLACCS, int, IPrimeroEntitiesUnitOfWork>(primeroUnitOfWorkFactory, x => x.GLACCS);
             loaderCollection.AddLoaderDescription(primeroUnitOfWorkFactory, x => x.JOBCOST_HDR, JOBCOST_HDRProjectionFunc, x => loadJOBCOST_HDR = x);
+        }
+
+        private Func<IRepositoryQuery<STOCK_ITEMS>, IQueryable<STOCK_ITEMS>> STOCK_ITEMSProjectionFunc()
+        {
+            return query => query.Where(x => x.ISACTIVE == "Y");
         }
 
         private Func<IRepositoryQuery<JOBCOST_HDR>, IQueryable<JOBCOST_HDR>> JOBCOST_HDRProjectionFunc()
@@ -256,7 +262,7 @@ namespace BluePrints.ViewModels
         }
 
         private InstantFeedbackCollectionViewModel<JOBCOST_HDR, int, IPrimeroEntitiesUnitOfWork> JOBCOST_HDRInstantFeedbackCollectionViewModel;
-        public InstantFeedbackCollectionViewModel<JOBCOST_HDR, int, IPrimeroEntitiesUnitOfWork>.InstantFeedbackSourceViewModel JOBCOST_HDRCollection
+        public InstantFeedbackCollectionViewModel<JOBCOST_HDR, int, IPrimeroEntitiesUnitOfWork>.InstantFeedbackSourceViewModel JOBCOST_HDRInstantFeedbackCollection
         {
             get
             {
@@ -271,7 +277,7 @@ namespace BluePrints.ViewModels
         }
 
         private List<JOBCOST_HDR> JOBCOST_HDRList;
-        public List<JOBCOST_HDR> JOBCOST_HDRListCollection
+        public List<JOBCOST_HDR> JOBCOST_HDRCollection
         {
             get
             {
@@ -316,6 +322,16 @@ namespace BluePrints.ViewModels
                 var collection = GetEntities<JOB_COSTGROUPS>();
                 if (collection != null)
                     collection = collection.OrderBy(x => x.SHORTCODE);
+                return collection;
+            }
+        }
+        public IEnumerable<STOCK_ITEMS> STOCK_ITEMCollection
+        {
+            get
+            {
+                var collection = GetEntities<STOCK_ITEMS>();
+                if (collection != null)
+                    collection = collection.OrderBy(x => x.STOCKCODE);
                 return collection;
             }
         }
