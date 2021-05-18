@@ -243,7 +243,8 @@ namespace BluePrints.Common.ViewModel.Misc
         {
             ForecastJobData forecastProjection = ViewModelSource.Create(() => new ForecastJobData());
             forecastProjection.PopulateCommodityCodes(COMMODITY_CODECollection);
-            forecastProjection.IsBudgetReadOnly = LoginCredentials.getPermissionStatus(DataUtils.GetNameOf(() => NavigationResources.Permission_EXO_ChangeBudget)) == LoginCredentials.PermissionStatus.None;
+            //forecastProjection.IsBudgetReadOnly = LoginCredentials.getPermissionStatus(DataUtils.GetNameOf(() => NavigationResources.Permission_EXO_ChangeBudget)) == LoginCredentials.PermissionStatus.None;
+            forecastProjection.IsBudgetReadOnly = true;
             variationCode = NormalizeCode(variationCode);
             forecastProjection.Projection = new ExoSubJobProjection() { SubJobCode = subJobCode, SubJobTitle = subJobTitle, DisciplineCode = disciplineCode, DisciplineName = disciplineName, CommodityCode = commodityCode, CommodityName = commodityName, CommodityDescription = commodityDescription, CommodityUOM = commodityUOM, VariationCode = variationCode };
 
