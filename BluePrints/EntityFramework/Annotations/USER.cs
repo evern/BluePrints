@@ -120,5 +120,9 @@ namespace BluePrints.Data
         }
 
         public string Office => BluePrintsResources.GlobalOffice;
+
+        //making sure office is always queryable because newly added row won't have OFFICE navigational property and OFFICE cannot be set in ViewModel, because it'll give an error when saving
+        [NotMapped]
+        public string QueryOfficeName { get; set; }
     }
 }

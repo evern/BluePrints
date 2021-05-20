@@ -34,6 +34,7 @@ namespace BluePrints.ViewModels
         enum UserAuthenticationResult
         {
             UsernameNotAdded,
+            UsernameInactive,
             RoleNotAssigned,
             InvalidUsernameOrPassword,
             Authenticated,
@@ -217,13 +218,16 @@ namespace BluePrints.ViewModels
         {
             get
             {
-                var user = USERS.Where(x => x.LEAVE_DATE == null).FirstOrDefault(x => x.NAME.ToLower() == UserName.ToLower());
+                var user = USERS.FirstOrDefault(x => x.NAME.ToLower() == UserName.ToLower());
                 if (user == null)
                     return UserAuthenticationResult.UsernameNotAdded;
                 else
                 {
                     if (user.GUID_ROLE == Guid.Empty)
                         return UserAuthenticationResult.RoleNotAssigned;
+
+                    if (user.LEAVE_DATE != null)
+                        return UserAuthenticationResult.UsernameInactive;
 
                     if (UserName != null && UserPassword != null)
                     {
@@ -272,6 +276,11 @@ namespace BluePrints.ViewModels
             if(authenticationResult == UserAuthenticationResult.InvalidUsernameOrPassword.ToString())
             {
                 errorText = "Invalid username or password";
+                ShowError(true, errorText);
+            }
+            else if (authenticationResult == UserAuthenticationResult.UsernameInactive.ToString())
+            {
+                errorText = "User has left the company";
                 ShowError(true, errorText);
             }
             else if (authenticationResult == UserAuthenticationResult.RoleNotAssigned.ToString())

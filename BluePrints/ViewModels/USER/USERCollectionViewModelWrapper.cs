@@ -20,6 +20,7 @@ using DevExpress.Data.Filtering;
 using BaseModel.ViewModel.Base;
 using BaseModel.ViewModel.Dialogs;
 using BaseModel.Misc;
+using System.Threading.Tasks;
 
 namespace BluePrints.ViewModels
 {
@@ -94,19 +95,22 @@ namespace BluePrints.ViewModels
 
         public IQueryable<USER> USERCollectionPopulation(IQueryable<USER> USERS)
         {
-            List<USER> userList = USERS.ToList();
-            userList.ForEach(x => populateUserProperties(x, OFFICECollection));
-            userList.ForEach(x => populateUserAuthorisedProjects(x, PROJECTCollection));
+            HashSet<USER> users = new HashSet<USER>(USERS);
+            Parallel.ForEach(users, user =>
+            {
+                populateUserProperties(user, OFFICECollection);
+                populateUserAuthorisedProjects(user, PROJECTCollection);
+            });
 
-            return userList.AsQueryable();
+            return users.AsQueryable();
         }
 
         private void populateUserProperties(USER user, IEnumerable<OFFICE> OFFICECollection)
         {
-            if (user.OFFICE == null && user.GUID_OFFICE != null)
+            if (user.GUID_OFFICE != null)
             {
                 OFFICE office = OFFICECollection.FirstOrDefault(x => x.GUID == user.GUID_OFFICE);
-                user.GUID_OFFICE = office.GUID;
+                user.QueryOfficeName = office.NAME;
             }
 
             user.Update();
@@ -289,11 +293,66 @@ namespace BluePrints.ViewModels
             MainViewModel.BaseBulkSave(userToSave);
         }
 
+        public bool CanTrimUsers()
+        {
+            return !IsLoading;
+        }
+
+        public void TrimUsers()
+        {
+            List<ErrorMessage> errorMessages = new List<ErrorMessage>();
+            List<ErrorMessage> indeterminedUsersErrorMessage = new List<ErrorMessage>();
+            List<USER> bulkEditUsers = new List<USER>();
+            foreach(USER entity in Entities.Where(x => x.LEAVE_DATE == null))
+            {
+                if(entity.OFFICE != null)
+                {
+                    STAFF STAFF;
+                    if (entity.QueryOfficeName.ToUpper() == BluePrintsResources.OfficePerth)
+                        STAFF = PerthSTAFFCollection.FirstOrDefault(x => x.STAFFNO == entity.EXO_STAFF_ID);
+                    else
+                        STAFF = MontrealSTAFFCollection.FirstOrDefault(x => x.STAFFNO == entity.EXO_STAFF_ID_REMOTE);
+
+                    if (STAFF != null)
+                    {
+                        if (STAFF.ISACTIVE == "N")
+                        {
+                            bulkEditUsers.Add(entity);
+                            errorMessages.Add(new ErrorMessage(entity.NAME, "Is not active in exo"));
+                        }
+                    }
+                    else
+                    {
+                        indeterminedUsersErrorMessage.Add(new ErrorMessage(entity.NAME, "Cannot be determined because " + entity.QueryOfficeName + " EXO Id is empty"));
+                    }
+                }
+            }
+
+            if(indeterminedUsersErrorMessage.Count > 0)
+                ShowErrorMessage("System cannot determine whether these users are inactive", indeterminedUsersErrorMessage);
+
+            if (bulkEditUsers.Count > 0)
+            {
+                if (ShowErrorMessage("Do you wish to set these users as inactive?", errorMessages))
+                {
+                    bulkEditUsers.ForEach(x => x.LEAVE_DATE = DateTime.Now);
+                    MainViewModel.UnitOfWork.SaveChanges();
+                    bulkEditUsers.ForEach(x => x.Update());
+                    MessageBoxService.ShowMessage(bulkEditUsers.Count() + " user(s) has been set with a leave date of today");
+                }
+            }
+            else
+            {
+                MessageBoxService.ShowMessage("There aren't any users to set as inactive");
+            }
+        }
+
         public override void FullRefresh()
         {
             if (!CanFullRefresh())
                 return;
 
+            GridControlService.ClearFilterCriteria();
             authorisedPROJECTS = null;
             base.FullRefresh();
         }
@@ -316,7 +375,7 @@ namespace BluePrints.ViewModels
 
                 if (perthStaffCollection == null)
                 {
-                    perthStaffCollection = new List<STAFF>(primeroUnitOfWork.STAFF.Where(x => x.ISACTIVE == "Y").OrderBy(x => x.NAME));
+                    perthStaffCollection = new List<STAFF>(primeroUnitOfWork.STAFF.OrderBy(x => x.NAME));
                     perthStaffCollection.ForEach(x => x.Office = BluePrintsResources.OfficePerth);
                 }
 
@@ -334,7 +393,7 @@ namespace BluePrints.ViewModels
 
                 if(pgaStaffCollection == null)
                 {
-                    pgaStaffCollection = new List<STAFF>(pgaUnitOfWork.STAFF.Where(x => x.ISACTIVE == "Y").OrderBy(x => x.NAME));
+                    pgaStaffCollection = new List<STAFF>(pgaUnitOfWork.STAFF.OrderBy(x => x.NAME));
                     pgaStaffCollection.ForEach(x => x.Office = BluePrintsResources.OfficeMontreal);
                 }
 
