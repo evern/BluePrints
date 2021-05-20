@@ -289,10 +289,6 @@ namespace BluePrints.Common.Misc
                     if (summary.Current != null)
                         export_data.AddRange(buildExportDataByType(commodity_code_dashboard, StatsType.Current, summary.Current.DataPoints, null, DOCTYPECollection));
 
-                    //string s = string.Empty;
-                    //if (commodity_code_dashboard.Parent_Dashboard.Parent_Dashboard.Code == "14408-200-00-D1" && commodity_code_dashboard.Parent_Dashboard.Code == "EL91" && commodity_code_dashboard.Code == "SPC")
-                    //    s = string.Empty;
-
                     if (summary.Remaining != null)
                         export_data.AddRange(buildExportDataByType(commodity_code_dashboard, StatsType.Remaining, summary.Remaining.DataPoints, null, DOCTYPECollection));
 
@@ -325,7 +321,7 @@ namespace BluePrints.Common.Misc
                 {
                     DOCTYPE findDOCTYPE = DOCTYPECollection.FirstOrDefault(x => x.CODE == commodityCode);
                     if (findDOCTYPE != null)
-                        new_export_data.Department_Code = findDOCTYPE.CODE;
+                        new_export_data.Department_Code = findDOCTYPE.DEPARTMENT.CODE;
                 }
 
                 if (actual_data_points != null)
@@ -362,7 +358,7 @@ namespace BluePrints.Common.Misc
                 {
                     DOCTYPE findDOCTYPE = DOCTYPECollection.FirstOrDefault(x => x.CODE == commodity_code_dashboard.Code);
                     if (findDOCTYPE != null)
-                        new_export_data.Department_Code = findDOCTYPE.CODE;
+                        new_export_data.Department_Code = findDOCTYPE.DEPARTMENT.CODE;
                 }
 
                 new_export_data.Subjob_Name = commodity_code_dashboard.Parent_Dashboard.Parent_Dashboard.Code;
