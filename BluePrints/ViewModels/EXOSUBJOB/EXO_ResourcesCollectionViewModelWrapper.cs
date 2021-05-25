@@ -65,6 +65,7 @@ namespace BluePrints.ViewModels
             loaderCollection.AddLoaderDescription<GLACCS, GLACCS, int, IPrimeroEntitiesUnitOfWork>(primeroUnitOfWorkFactory, x => x.GLACCS);
             loaderCollection.AddLoaderDescription<JOB_COSTTYPES, JOB_COSTTYPES, int, IPrimeroEntitiesUnitOfWork>(primeroUnitOfWorkFactory, x => x.JOB_COSTTYPES);
             loaderCollection.AddLoaderDescription<JOB_COSTGROUPS, JOB_COSTGROUPS, int, IPrimeroEntitiesUnitOfWork>(primeroUnitOfWorkFactory, x => x.JOB_COSTGROUPS);
+            loaderCollection.AddLoaderDescription<X_DEPARTMENT, X_DEPARTMENT, int, IPrimeroEntitiesUnitOfWork>(primeroUnitOfWorkFactory, x => x.X_DEPARTMENTS);
             loaderCollection.AddLoaderDescription<PROFILE, PROFILE, int, IPrimeroEntitiesUnitOfWork>(primeroUnitOfWorkFactory, x => x.PROFILE);
         }
 #endregion
@@ -172,7 +173,7 @@ namespace BluePrints.ViewModels
             resource.SHORTCODE = addedResource.SHORTCODE;
             resource.RESOURCE_SEQNO = addedResource.SEQNO;
 
-            STOCK_ITEMS stockItem = ExoMethods.FindExistingOrAddStockItem(primeroUOW, resource.SHORTCODE, resource.RESOURCENAME, resource.SELLPRICE1, resource.SALES_GL_CODE, resource.PURCH_GL_CODE, resource.COS_GL_CODE, resource.STDCOST, resource.COSTGROUP, resource.COSTTYPE);
+            STOCK_ITEMS stockItem = ExoMethods.FindExistingOrAddStockItem(primeroUOW, resource.SHORTCODE, resource.RESOURCENAME, resource.SELLPRICE1, resource.SALES_GL_CODE, resource.PURCH_GL_CODE, resource.COS_GL_CODE, resource.STDCOST, resource.COSTGROUP, resource.COSTTYPE, resource.DEPARTMENT);
             primeroUOW.SaveChanges();
             resource.IsViewNewRow = false;
             resource.Update();
@@ -294,6 +295,18 @@ namespace BluePrints.ViewModels
                 var collection = GetEntities<JOB_COSTTYPES>();
                 if (collection != null)
                     collection = collection.OrderBy(x => x.COSTDESC);
+                return collection;
+            }
+        }
+
+        public IEnumerable<X_DEPARTMENT> X_DEPARTMENTCollection
+        {
+            get
+            {
+                var collection = GetEntities<X_DEPARTMENT>();
+                if (collection != null)
+                    collection = collection.OrderBy(x => x.X_Number);
+
                 return collection;
             }
         }

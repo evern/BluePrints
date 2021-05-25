@@ -1822,6 +1822,14 @@ namespace BluePrints.PrimeroData.PrimeroEntitiesDataModel
             get { return GetRepository(x => x.Set<WORKSORD_STATUS>(), (WORKSORD_STATUS x) => x.STATUSNO); }
         }
 
+        IRepository<X_DEPARTMENT, int> IPrimeroEntitiesUnitOfWork.X_DEPARTMENTS
+        {
+            get
+            {
+                return GetRepository(x => x.Set<X_DEPARTMENT>(), (X_DEPARTMENT x) => x.X_Number);
+            }
+        }
+
         IRepository<X_ER_REPORT, int> IPrimeroEntitiesUnitOfWork.X_ER_REPORT
         {
             get { return GetRepository(x => x.Set<X_ER_REPORT>(), (X_ER_REPORT x) => x.SEQNO); }

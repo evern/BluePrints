@@ -35,7 +35,7 @@ namespace BluePrints.PrimeroData
         [StringLength(1)]
         public string ISACTIVE { get; set; }
 
-        [StringLength(30)]
+        [StringLength(44)]
         public string APP_PASSWORD { get; set; }
 
         public int? MENU_NO { get; set; }

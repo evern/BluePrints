@@ -58,6 +58,8 @@ namespace BluePrints.Common.Projections
 
         public double? STDCOST { get; set; }
 
+        public string DEPARTMENT { get; set; }
+
         [Required]
         public int COSTTYPE { get; set; }
 

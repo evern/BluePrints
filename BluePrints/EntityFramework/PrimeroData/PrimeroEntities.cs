@@ -373,6 +373,7 @@ namespace BluePrints.PrimeroData
         public virtual DbSet<TAX_RETURN_ALLOC> TAX_RETURN_ALLOC { get; set; }
         public virtual DbSet<TAX_RETURN_CALC> TAX_RETURN_CALC { get; set; }
         public virtual DbSet<TAX_RETURN_TRANS> TAX_RETURN_TRANS { get; set; }
+        public virtual DbSet<X_DEPARTMENT> X_DEPARTMENT { get; set; }
         public virtual DbSet<X_JOB_TRANSACTIONS_DETAIL> X_JOB_TRANSACTIONS_DETAIL { get; set; }
         public virtual DbSet<X_JOB_TRANSACTIONS_DETAIL_SeqNo> X_JOB_TRANSACTIONS_DETAIL_SeqNo { get; set; }
         public virtual DbSet<X_JOB_TIMESHEETS> X_JOB_TIMESHEETS { get; set; }
