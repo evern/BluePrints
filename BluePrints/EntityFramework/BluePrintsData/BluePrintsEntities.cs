@@ -106,7 +106,7 @@ namespace BluePrints.Data
             Database.SetInitializer<BluePrintsNativeEntities>(null);
             Database.SetInitializer<BluePrintsEntities>(null);
             modelBuilder.Conventions.Add(new FunctionConvention<BluePrintsEntities>());
-            modelBuilder.AddComplexTypesFromAssembly(typeof(BluePrintsEntities).Assembly);
+           // modelBuilder.AddComplexTypesFromAssembly(typeof(BluePrintsEntities).Assembly);
             modelBuilder.Conventions.Remove<PluralizingTableNameConvention>();
             Database.CommandTimeout = 100000;
 
