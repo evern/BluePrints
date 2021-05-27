@@ -1126,6 +1126,7 @@
     <Compile Include="ViewModels\BASELINE_ITEM\BASELINE_ITEMRATECollectionViewModelWrapper.cs" />
     <Compile Include="ViewModels\BUDGET_ITEM\BUDGET_ITEMWorkpackSchedulingViewModelWrapper.cs" />
     <Compile Include="ViewModels\CLIENT\CLIENTCollectionViewModelWrapper.cs" />
+    <Compile Include="ViewModels\CONSTRUCTION_STAGE\CONSTRUCTION_STAGECollectionViewModelWrapper.cs" />
     <Compile Include="ViewModels\EXOSUBJOB\EXO_JobHistoryCollectionViewModelWrapper.cs" />
     <Compile Include="ViewModels\EXOSUBJOB\EXO_ConstructionSubjobCollectionViewModelWrapper.cs" />
     <Compile Include="ViewModels\EXOSUBJOB\EXO_ResourcesCollectionViewModelWrapper.cs" />
@@ -1145,6 +1146,7 @@
     <Compile Include="ViewModels\PROGRESS_ITEM\OffsiteDirectDistributionCollectionViewModelWrapper.cs" />
     <Compile Include="ViewModels\PROGRESS_ITEM\OffsiteDirectProgressCollectionViewModelWrapper.cs" />
     <Compile Include="ViewModels\EXOSUBJOB\EXO_POCollectionViewModelWrapper.cs" />
+    <Compile Include="ViewModels\PROGRESS_ITEM\SiteDirectProgressCollectionViewModelWrapper.cs" />
     <Compile Include="ViewModels\PROJECT\PROJECTForecastEACReportViewModelWrapper.cs" />
     <Compile Include="ViewModels\PROJECT\PROJECTPlanViewModelWrapper.cs" />
     <Compile Include="ViewModels\PROJECT\PROJECT_REVENUECollectionViewModelWrapper.cs" />
@@ -1202,6 +1204,9 @@
     <Compile Include="Views\CLIENT\CLIENTCollectionView.xaml.cs">
       <DependentUpon>CLIENTCollectionView.xaml</DependentUpon>
     </Compile>
+    <Compile Include="Views\CONSTRUCTION_STAGE\CONSTRUCTION_STAGECollectionView.xaml.cs">
+      <DependentUpon>CONSTRUCTION_STAGECollectionView.xaml</DependentUpon>
+    </Compile>
     <Compile Include="Views\EXOSUBJOB\EXO_JobHistoryCollectionView.xaml.cs">
       <DependentUpon>EXO_JobHistoryCollectionView.xaml</DependentUpon>
     </Compile>
@@ -1255,6 +1260,9 @@
     </Compile>
     <Compile Include="Views\PROGRESS_ITEM\OffsiteDirectDistributionCollectionView.xaml.cs">
       <DependentUpon>OffsiteDirectDistributionCollectionView.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Views\PROGRESS_ITEM\SiteDirectProgressCollectionView.xaml.cs">
+      <DependentUpon>SiteDirectProgressCollectionView.xaml</DependentUpon>
     </Compile>
     <Compile Include="Views\PROJECT\PROJECTForecastEACReportView.xaml.cs">
       <DependentUpon>PROJECTForecastEACReportView.xaml</DependentUpon>
@@ -2157,6 +2165,10 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>
+    <Page Include="Views\CONSTRUCTION_STAGE\CONSTRUCTION_STAGECollectionView.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
     <Page Include="Views\EXOSUBJOB\EXO_JobHistoryCollectionView.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
@@ -2226,6 +2238,10 @@
       <SubType>Designer</SubType>
     </Page>
     <Page Include="Views\PROGRESS_ITEM\OffsiteDirectDistributionCollectionView.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Views\PROGRESS_ITEM\SiteDirectProgressCollectionView.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>
@@ -2494,8 +2510,8 @@
       <SubType>Designer</SubType>
     </Page>
     <Page Include="Views\WORKPACK\WORKPACKCollectionView.xaml">
-      <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
+      <Generator>XamlIntelliSenseFileGenerator</Generator>
     </Page>
   </ItemGroup>
   <ItemGroup>

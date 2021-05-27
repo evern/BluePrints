@@ -14,7 +14,6 @@
             <dxb:BarManager.Items>
                 <dxb:BarSubItem ItemLinksSource="{StaticResource RibbonDefaultGridButtons}" />
                 <dxb:BarSubItem ItemLinksSource="{StaticResource ContextMenuDuplicateInsertButtons}" />
-                <dxb:BarButtonItem x:Name="biAutoOrder" Command="{Binding AutoOrderCommand}" Content="Auto Order" Glyph="{dx:DXImageOffice2013 Image=PictureShapeFillColor_16x16.png}" RibbonStyle="SmallWithText" ToolTip="Auto reorder selected stages" />
                 <dxb:BarSubItem x:Name="biDuplicateMulti" Content="Duplicate Multiple" Glyph="{dx:DXImageOffice2013 Image=Parameters_16x16.png}" ToolTip="Specify number of times to duplicate selected item">
                     <dxb:BarEditItem Name="contextMenuDuplicateMultiCount" EditValue="2" Content="Count">
                         <dxb:BarEditItem.EditSettings>
@@ -58,7 +57,6 @@
                                 <dxb:BarButtonItemLink BarItemName="biKeyboardCopy1"/>
                                 <dxb:BarButtonItemLink BarItemName="biKeyboardPaste1" />
                                 <dxb:BarCheckItemLink BarItemName="biCellSelection1" />
-                                <dxb:BarButtonItemLink BarItemName="biAutoOrder" />
                                 <dxb:BarButtonItemLink BarItemName="biSaveLayout1" />
                                 <dxb:BarButtonItemLink BarItemName="biResetLayout1" />
                                 <dxb:BarButtonItemLink BarItemName="biExpandAllGroups1" />
@@ -94,8 +92,6 @@
                         <dxg:TableView x:Name="tableView" Style="{StaticResource DefaultTableViewTemplate}">
                             <dxg:TableView.RowCellMenuCustomizations>
                                 <dxb:BarLinkContainerItem ItemLinksSource="{StaticResource ContextMenuDefaultHeaderButtons}" />
-                                <dxb:BarItemLinkSeparator />
-                                <dxb:BarButtonItemLink BarItemName="biAutoOrder" />
                                 <dxb:BarItemLinkSeparator />
                                 <dxb:BarButtonItemLink BarItemName="biDuplicate1" />
                                 <dxb:BarButtonItemLink BarItemName="biInsert1" />

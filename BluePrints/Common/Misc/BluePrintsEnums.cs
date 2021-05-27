@@ -29,6 +29,8 @@ namespace BluePrints.Common
     {
         [Display(Name = "Concrete")]
         Concrete,
+        [Display(Name = "Electrical")]
+        Electrical,
         [Display(Name = "Mechanical")]
         Mechanical,
         [Display(Name = "Piping")]

@@ -142,7 +142,7 @@ namespace BluePrints.ViewModels
             {
                 List<CONSTRUCTION_STAGE> unsavedEntities = new List<CONSTRUCTION_STAGE>();
                 projection.SCORE_CARD_DISCIPLINE = (ScoreCardDiscipline)new_value;
-                //projection.EntityNumber = StringFormatUtils.GetNewRegisterNumber(MainViewModel.Entities, unsavedEntities, MainViewModel.SelectedEntities, projection.EntityGroup);
+                updateProjectionEntityNumber(projection);
             }
 
             base.UnifiedCellValueChanging(field_name, old_value, new_value, projection, isNew);
@@ -156,12 +156,12 @@ namespace BluePrints.ViewModels
         #region IEntityNumber
         protected override int DefaultNumericFieldLength()
         {
-            return 0;
+            return 1;
         }
 
         protected override string GetEntityNumberFieldName()
         {
-            throw new NotImplementedException();
+            return GetPropertyName(() => new CONSTRUCTION_STAGE().SCORE_CARD_DISCIPLINE);
         }
         #endregion
         #endregion

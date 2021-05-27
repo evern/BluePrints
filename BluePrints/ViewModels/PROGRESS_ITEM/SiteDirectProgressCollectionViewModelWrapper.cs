@@ -390,7 +390,7 @@ namespace BluePrints.ViewModels
             }
         }
         
-        private void loadDataPointsTable()
+        protected override bool loadDataPointsTable()
         {
             IsLoading = true;
             this.RaisePropertyChanged(x => x.IsLoading);
@@ -403,6 +403,7 @@ namespace BluePrints.ViewModels
             IsLoading = false;
             this.RaisePropertyChanged(x => x.IsLoading);
             CommonMethods.AddSaveLayoutHandler(GridControlService.GetGridColumns());
+            return true;
         }
 
         string columnEntity = "Entity";
