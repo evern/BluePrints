@@ -267,19 +267,21 @@ namespace BluePrints.Common.Projections
         public readonly DateTime CeilingDate;
         private readonly DateTime firstViewDate;
         private readonly DateTime firstForecastDate;
-        public ForecastDateCost(DateTime date, DateTime firstViewDate, DateTime firstForecastDate, bool isWeeks)
+        public ForecastDateCost(DateTime date, DateTime firstViewDate, DateTime dataDate, bool isWeeks)
         {
             Date = date;
             this.firstViewDate = firstViewDate;
-            this.firstForecastDate = firstForecastDate;
+            this.firstForecastDate = dataDate;
 
             if (isWeeks)
             {
+                firstForecastDate = firstForecastDate.Date.AddDays(7);
                 FloorDate = date.Date.AddDays(-6);
                 CeilingDate = date.Date;
             }
             else
             {
+                firstForecastDate = new DateTime(dataDate.Date.Year, dataDate.Date.Month, 1).AddMonths(2).AddDays(-1);
                 FloorDate = new DateTime(date.Date.Year, date.Date.Month, 1);
                 CeilingDate = FloorDate.AddMonths(1).AddDays(-1);
             }
@@ -311,7 +313,7 @@ namespace BluePrints.Common.Projections
         //only show po forecast after actuals date without it summing up from beginning of time on first date
         private DateTime? POAndIndirectForecastFloorDate => FloorDate > firstViewDate ? FloorDate : (DateTime?)null;
         //only show p6 remaining after actuals date and have it summing up from beginning of time on first date
-        private DateTime? P6RemainingFloorDate => FloorDate > firstViewDate ? CeilingDate == firstForecastDate ? new DateTime(2010, 1, 1) : FloorDate : (DateTime?)null;
+        private DateTime? P6RemainingFloorDate => CeilingDate >= firstForecastDate ? CeilingDate == firstForecastDate ? new DateTime(2010, 1, 1) : FloorDate : (DateTime?)null;
 
         public DateTime Date { get; set; }
 

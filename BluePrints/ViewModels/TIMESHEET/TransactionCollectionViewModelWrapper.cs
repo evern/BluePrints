@@ -75,12 +75,17 @@ namespace BluePrints.ViewModels
         private IPrimeroEntitiesUnitOfWork primeroUnitOfWork;
         JOBCOST_HDR loadJOBCOST_HDR;
         bool isYearToDate = false;
+        public bool IsYearToDate => isYearToDate;
         protected override void resolveParameters(object parameter)
         {
+            IsInstantFeedbackMode = true;
             var PROJECTParameter = (EntitiesParameter<Data.PROJECT>)parameter;
             loadPROJECT = PROJECTParameter.GetEntity();
             if (loadPROJECT == null)
+            {
+                IsReadOnly = true;
                 isYearToDate = true;
+            }
 
             if(loadPROJECT == null)
 #if PERTH
@@ -100,8 +105,14 @@ namespace BluePrints.ViewModels
             loaderCollection.AddLoaderDescription<JOBCOST_RESOURCE, JOBCOST_RESOURCE, int, IPrimeroEntitiesUnitOfWork>(primeroUnitOfWorkFactory, x => x.JOBCOST_RESOURCE);
             loaderCollection.AddLoaderDescription<JOB_COSTGROUPS, JOB_COSTGROUPS, int, IPrimeroEntitiesUnitOfWork>(primeroUnitOfWorkFactory, x => x.JOB_COSTGROUPS);
             loaderCollection.AddLoaderDescription<JOB_COSTTYPES, JOB_COSTTYPES, int, IPrimeroEntitiesUnitOfWork>(primeroUnitOfWorkFactory, x => x.JOB_COSTTYPES);
+            loaderCollection.AddLoaderDescription(primeroUnitOfWorkFactory, x => x.STOCK_ITEMS, STOCK_ITEMSProjectionFunc);
             loaderCollection.AddLoaderDescription<GLACCS, GLACCS, int, IPrimeroEntitiesUnitOfWork>(primeroUnitOfWorkFactory, x => x.GLACCS);
             loaderCollection.AddLoaderDescription(primeroUnitOfWorkFactory, x => x.JOBCOST_HDR, JOBCOST_HDRProjectionFunc, x => loadJOBCOST_HDR = x);
+        }
+
+        private Func<IRepositoryQuery<STOCK_ITEMS>, IQueryable<STOCK_ITEMS>> STOCK_ITEMSProjectionFunc()
+        {
+            return query => query.Where(x => x.ISACTIVE == "Y");
         }
 
         private Func<IRepositoryQuery<JOBCOST_HDR>, IQueryable<JOBCOST_HDR>> JOBCOST_HDRProjectionFunc()
@@ -109,7 +120,7 @@ namespace BluePrints.ViewModels
             if (isYearToDate)
                 return query => query;
             else
-                return query => query.Where(x => x.JOBCODE.Contains(loadPROJECT.NUMBER.ToString()));
+                return query => query.Where(x => x.JOBCODE == loadPROJECT.NUMBER.ToString());
         }
 
         public ObservableCollection<JOB_TRANSACTIONS> JOB_TRANSACTIONS = new ObservableCollection<JOB_TRANSACTIONS>();
@@ -118,17 +129,27 @@ namespace BluePrints.ViewModels
             CreateMainViewModel(primeroUnitOfWorkFactory, x => x.X_JOB_TRANSACTIONS_DETAIL_SeqNos);
         }
 
+        protected override void OnAfterAssignedCallbackAndRaisePropertyChanged()
+        {
+            IsPasteCellLevel = true;
+        }
+
         protected override Func<IRepositoryQuery<X_JOB_TRANSACTIONS_DETAIL_SeqNo>, IQueryable<X_JOB_TRANSACTIONS_DETAIL_SeqNo>> specifyMainViewModelProjection()
         {
             if (isYearToDate)
-                return query => query.Where(x => x.transdate != null).Where(x => ((DateTime)x.transdate).Year == DateTime.Now.Year);
+                return query => query.Where(x => x.transdate != null);
             else
-                return query => query.Where(x => x.master_jobno == loadJOBCOST_HDR.JOBNO);
+                return query => query.Where(x => x.master_jobno == loadJOBCOST_HDR.MASTER_JOBNO);
         }
 
-        protected override OperationInterceptMode OnBeforeProjectionSaveIsContinue(X_JOB_TRANSACTIONS_DETAIL_SeqNo projection, out bool isNew)
+        protected override void InstantFeedbackOtherUnitOfWorkSaveChanges()
         {
-            isNew = false;
+            primeroUnitOfWork.SaveChanges();
+            base.InstantFeedbackOtherUnitOfWorkSaveChanges();
+        }
+
+        protected override void ApplyInstantFeedbackEntityPropertiesToOtherUnitOfWorkEntity(X_JOB_TRANSACTIONS_DETAIL_SeqNo projection)
+        {
             JOB_TRANSACTIONS findJOB_TRANSACTION = primeroUnitOfWork.JOB_TRANSACTIONS.FirstOrDefault(x => x.SEQNO == projection.SEQNO);
             if(findJOB_TRANSACTION != null)
             {
@@ -140,6 +161,7 @@ namespace BluePrints.ViewModels
                 findJOB_TRANSACTION.DESCRIPTION = projection.description;
                 findJOB_TRANSACTION.STAFFNO = projection.accno;
                 findJOB_TRANSACTION.QUANTITY = projection.quantity;
+                findJOB_TRANSACTION.STOCKCODE = projection.stockcode;
 
                 if(projection.QtyEdited && CanEditQuantity)
                 {
@@ -165,22 +187,12 @@ namespace BluePrints.ViewModels
             }
 
             projection.QtyEdited = false;
-            return OperationInterceptMode.SkipOneAndAllDbSaves;
-        }
-        
-        protected override void OnAfterProjectionsSave(IEnumerable<X_JOB_TRANSACTIONS_DETAIL_SeqNo> projections)
-        {
-            primeroUnitOfWork.SaveChanges();
-            base.OnAfterProjectionsSave(projections);
         }
 
-        protected override void AssignCallBacksAndRaisePropertyChange(IEnumerable<X_JOB_TRANSACTIONS_DETAIL_SeqNo> entities)
+        public override void FullRefresh()
         {
-            MainViewModel.AlwaysSkipMessage = true;
-            MainViewModel.IsPasteCellLevel = true;
-            MainViewModel.IsPersistentView = true;
-            MainViewModel.SetParentViewModel(this);
-            base.AssignCallBacksAndRaisePropertyChange(entities);
+            List<X_JOB_TRANSACTIONS_DETAIL_SeqNo> entities = GetSelectedRows();
+            base.FullRefresh();
         }
 #endregion
 
@@ -213,7 +225,7 @@ namespace BluePrints.ViewModels
                 return loadPROJECT.GUID.ToString();
             }
         }
-#endregion
+        #endregion
 
         public override void UnifiedCellValueChanged(string field_name, object old_value, object new_value, X_JOB_TRANSACTIONS_DETAIL_SeqNo projection, bool isNew)
         {
@@ -233,15 +245,55 @@ namespace BluePrints.ViewModels
             return string.Empty;
         }
 
-        public IEnumerable<JOBCOST_HDR> JOBCOST_HDRCollection
+        public override bool CanKeyboardPaste()
+        {
+            if (IsReadOnly)
+                return false;
+
+            return base.CanKeyboardPaste();
+        }
+
+        public override void PastingFromClipboard(PastingFromClipboardEventArgs e)
+        {
+            if (IsReadOnly)
+                return;
+
+            base.PastingFromClipboard(e);
+        }
+
+        private InstantFeedbackCollectionViewModel<JOBCOST_HDR, int, IPrimeroEntitiesUnitOfWork> JOBCOST_HDRInstantFeedbackCollectionViewModel;
+        public InstantFeedbackCollectionViewModel<JOBCOST_HDR, int, IPrimeroEntitiesUnitOfWork>.InstantFeedbackSourceViewModel JOBCOST_HDRInstantFeedbackCollection
         {
             get
             {
-                var collection = GetEntities<JOBCOST_HDR>();
-                if (collection != null)
-                    collection = collection.OrderBy(x => x.JOBCODE);
-                return collection;
+                if (!isYearToDate && loadJOBCOST_HDR == null)
+                    return null;
+
+                if(JOBCOST_HDRInstantFeedbackCollectionViewModel == null)
+                    JOBCOST_HDRInstantFeedbackCollectionViewModel = InstantFeedbackCollectionViewModel<JOBCOST_HDR, int, IPrimeroEntitiesUnitOfWork>.CreateInstantFeedbackCollectionViewModel(primeroUnitOfWorkFactory, x => x.JOBCOST_HDR, JOBCOST_HDRProjection);
+
+                return JOBCOST_HDRInstantFeedbackCollectionViewModel.Entities;
             }
+        }
+
+        private List<JOBCOST_HDR> JOBCOST_HDRList;
+        public List<JOBCOST_HDR> JOBCOST_HDRCollection
+        {
+            get
+            {
+                if (JOBCOST_HDRList == null && primeroUnitOfWork != null)
+                    JOBCOST_HDRList = JOBCOST_HDRProjection(primeroUnitOfWork.JOBCOST_HDR).ToList();
+
+                return JOBCOST_HDRList;
+            }
+        }
+
+        protected IQueryable<JOBCOST_HDR> JOBCOST_HDRProjection(IRepositoryQuery<JOBCOST_HDR> query)
+        {
+            if (isYearToDate)
+                return query;
+            else
+                return query.Where(x => x.MASTER_JOBNO == loadJOBCOST_HDR.MASTER_JOBNO);
         }
 
         public IEnumerable<GLACCS> GLACCSCollection
@@ -273,6 +325,16 @@ namespace BluePrints.ViewModels
                 return collection;
             }
         }
+        public IEnumerable<STOCK_ITEMS> STOCK_ITEMCollection
+        {
+            get
+            {
+                var collection = GetEntities<STOCK_ITEMS>();
+                if (collection != null)
+                    collection = collection.OrderBy(x => x.STOCKCODE);
+                return collection;
+            }
+        }
 
         public IEnumerable<X_JOB_TRANSACTIONS_DETAIL_SeqNo> X_JOB_TRANSACTIONS_DETAILCollection
         {
@@ -291,6 +353,12 @@ namespace BluePrints.ViewModels
                     collection = collection.OrderBy(x => x.SHORTCODE);
                 return collection;
             }
+        }
+
+        public override void CleanUpEntitiesLoader()
+        {
+            JOBCOST_HDRInstantFeedbackCollectionViewModel?.Dispose();
+            base.CleanUpEntitiesLoader();
         }
     }
 }

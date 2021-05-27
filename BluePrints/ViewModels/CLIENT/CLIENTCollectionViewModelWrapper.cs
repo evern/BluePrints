@@ -86,7 +86,7 @@ namespace BluePrints.ViewModels
 
         private void save_project_assignments(CLIENT entity)
         {
-            if(entity.Project_Assignments != null)
+            if (entity.Project_Assignments != null)
             {
                 List<CLIENT_PROJECT> remove_projects = new List<CLIENT_PROJECT>();
                 foreach (CLIENT_PROJECT assignment in CLIENT_PROJECTCollection.Where(x => x.GUID_CLIENT == entity.GUID))

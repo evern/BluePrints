@@ -161,8 +161,11 @@ namespace BluePrints.ViewModels
             if (LoginCredentials.CurrentUser != null && LoginCredentials.CurrentUserGuid != Guid.Empty)
             {
                 if(LoginCredentials.getPermissionStatus(DataUtils.GetNameOf(() => NavigationResources.Menu_UserDeliverables)) == LoginCredentials.PermissionStatus.All)
-                    if (!LoginCredentials.GetUserPreferenceBool(DataUtils.GetNameOf(() => UserPreferences.Global_HideUserDeliverablesOnStartup)))
+                {
+                    bool? hideUserDeliverablesOnStartupPreference = LoginCredentials.GetUserPreferenceBool(DataUtils.GetNameOf(() => UserPreferences.Global_HideUserDeliverablesOnStartup));
+                    if (hideUserDeliverablesOnStartupPreference == null || hideUserDeliverablesOnStartupPreference == false)
                         NavigateCore(myDeliverablesDescription);
+                }
             }
 
             string lastChangeLogDisplayVersionStr = XMLHelpers.GetSettings_LastChangeLogDisplayVersion();
@@ -433,7 +436,7 @@ namespace BluePrints.ViewModels
             moduleAdder(dataCategoryDescription, new BluePrintsEntitiesModuleDescription(DataUtils.GetNameOf(() => NavigationResources.Menu_Project_Pipelines), string.Empty, dataCategoryDescription.NavigationId, "Design Resource Planning", "PROJECTPlanView", null, null, null, false, false, @"Business Objects\BOSaleItem_16x16.png"), isSample);
             moduleAdder(dataCategoryDescription, new BluePrintsEntitiesModuleDescription(DataUtils.GetNameOf(() => NavigationResources.Menu_Roles), string.Empty, dataCategoryDescription.NavigationId, "Roles", "ROLECollectionView", null, null, null, false, false, @"Business Objects\BORole_16x16.png"), isSample);
             moduleAdder(dataCategoryDescription, new BluePrintsEntitiesModuleDescription(DataUtils.GetNameOf(() => NavigationResources.Menu_TenderProfiles), string.Empty, dataCategoryDescription.NavigationId, "Tender Profiles", "TENDER_PROFILECollectionView", null, null, null, false, false, @"Dashboards\PieLabelsDataLabels2_16x16.png"), isSample);
-            moduleAdder(dataCategoryDescription, new BluePrintsEntitiesModuleDescription(DataUtils.GetNameOf(() => NavigationResources.Menu_TransactionsYearToDate), string.Empty, dataCategoryDescription.NavigationId, "Transactions Year to Date", "TransactionCollectionView", new EntitiesParameter<PROJECT>(null), null, "Transactions Year to Date", false, false, @"Function Library\Compatibility_16x16.png"), isSample);
+            moduleAdder(dataCategoryDescription, new BluePrintsEntitiesModuleDescription(DataUtils.GetNameOf(() => NavigationResources.Menu_TransactionsYearToDate), string.Empty, dataCategoryDescription.NavigationId, "All Transactions", "TransactionCollectionView", new EntitiesParameter<PROJECT>(null), null, "All Transactions", false, false, @"Function Library\Compatibility_16x16.png"), isSample);
             moduleAdder(dataCategoryDescription, new BluePrintsEntitiesModuleDescription(DataUtils.GetNameOf(() => NavigationResources.Menu_UOMs), string.Empty, dataCategoryDescription.NavigationId, "Unit of Measures", "UOMCollectionView", null, null, null, false, false, @"RichEdit\RulerHorizontal_16x16.png"), isSample);
             moduleAdder(dataCategoryDescription, new BluePrintsEntitiesModuleDescription(DataUtils.GetNameOf(() => NavigationResources.Menu_Users), string.Empty, dataCategoryDescription.NavigationId, "Users", "USERCollectionView", null, null, null, false, false, @"Business Objects\BOPerson_16x16.png"), isSample);
             return dataModules;  

@@ -1043,7 +1043,7 @@ namespace BluePrints.Common.Base
             IEnumerable<TASK> actual_tasks = P6_PROJECT.TASK.Where(x => TASK_Source.Any(task => task.task_code == x.task_code)).AsEnumerable();
             foreach (TASK Task in actual_tasks)
             {
-                TASKRSRC primaryTASKRSRC = P6_PROJECT.TASKRSRC.FirstOrDefault(x => x.task_id == Task.task_id);
+                TASKRSRC primaryTASKRSRC = P6_PROJECT.TASKRSRC.Where(x => x.delete_session_id == null).FirstOrDefault(x => x.task_id == Task.task_id);
                 if(primaryTASKRSRC != null)
                 {
                     primaryTASKRSRC.remain_qty = 0;
@@ -1083,7 +1083,8 @@ namespace BluePrints.Common.Base
                             //{
                             //    ExistingTaskResource.Add(task_resource);
                             //}
-                            TASKRSRC actual_context_taskrsrc = P6_PROJECT.TASKRSRC.FirstOrDefault(x => x.task_id == actual_context_task.task_id);
+
+                            TASKRSRC actual_context_taskrsrc = P6_PROJECT.TASKRSRC.Where(x => x.delete_session_id == null).FirstOrDefault(x => x.task_id == actual_context_task.task_id);
                             if(actual_context_taskrsrc != null)
                             {
                                 actual_context_taskrsrc.remain_qty += p6_assignment.UNITS;

@@ -284,6 +284,8 @@ namespace BluePrints.ViewModels
             if (loadBASELINE == null)
                 isQueryForLiveStatus = true;
 
+            allowSubJobDeletion = false;
+            allowWorkpackDeletion = false;
             Allow_Drag_Drop = false;
         }
 
@@ -663,12 +665,12 @@ namespace BluePrints.ViewModels
         #region Collection Call Backs
         public override void OnAfterAuxiliaryEntitiesChanged(object key, Type changedType, EntityMessageType messageType, object sender, Guid senderKey, bool isBulkRefresh)
         {
-            if (changedType == typeof(PROGRESS_ITEM))
-            {
-                FullRefreshWithoutClearingUndoRedo();
-                return;
-            }
-            else if(changedType == typeof(BASELINE_ITEM))
+            //if (changedType == typeof(PROGRESS_ITEM))
+            //{
+            //    FullRefreshWithoutClearingUndoRedo();
+            //    return;
+            //}
+            if(changedType == typeof(BASELINE_ITEM))
             {
                 this.RaisePropertyChanged(x => x.FreeUnits);
                 //Need to raise property change to stimulate converter to calculate maxValue for each deliverable

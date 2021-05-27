@@ -178,11 +178,75 @@ namespace BluePrints.ViewModels
             this.RaisePropertiesChanged();
         }
 
-        protected override void OnAfterAssignedCallbackAndRaisePropertyChanged()
+        protected override void BackgroundRefresh()
         {
+            if (isJobsLoaded)
+                base.BackgroundRefresh();
+            //wait for exo data to load before refreshing data table
+        }
+
+        bool isJobsLoaded = false;
+        BackgroundWorker jobsLoadingBackgroundWorker;
+        protected override void AssignCallBacksAndRaisePropertyChange(IEnumerable<FORECAST_JOB> entities)
+        {
+            isJobsLoaded = false;
+            jobsLoadingBackgroundWorker = new BackgroundWorker();
+            jobsLoadingBackgroundWorker.DoWork += JobsLoadingBackgroundWorker_DoWork;
+            jobsLoadingBackgroundWorker.RunWorkerCompleted += JobsLoadingBackgroundWorker_RunWorkerCompleted;
+            jobsLoadingBackgroundWorker.WorkerSupportsCancellation = true;
+            jobsLoadingBackgroundWorker.RunWorkerAsync();
+
+            MainViewModel.SetParentViewModel(this);
+            MainViewModel.IsPasteCellLevel = false;
+            base.AssignCallBacksAndRaisePropertyChange(entities);
+        }
+
+        public override void FullRefresh()
+        {
+            EntitiesUndoRedoManager.Clear();
+            dataPointsTable = null;
+            this.RaisePropertyChanged(x => x.DataPointsTable);
+            base.FullRefresh();
+        }
+
+        private void JobsLoadingBackgroundWorker_DoWork(object sender, DoWorkEventArgs e)
+        {
+            if (jobsLoadingBackgroundWorker.CancellationPending)
+            {
+                e.Cancel = true;
+                return;
+            }
+
             refreshJobs();
-            loadDataPointsTable();
-            base.OnAfterAssignedCallbackAndRaisePropertyChanged();
+        }
+
+        protected override void OnClose(CancelEventArgs e)
+        {
+            jobsLoadingBackgroundWorker.CancelAsync();
+            GlobalMethods.SetAccordionExpandedState?.Invoke(true);
+            base.OnClose(e);
+        }
+
+        private void JobsLoadingBackgroundWorker_RunWorkerCompleted(object sender, RunWorkerCompletedEventArgs e)
+        {
+            isJobsLoaded = true;
+            BackgroundRefresh();
+        }
+
+        protected override bool loadDataPointsTable()
+        {
+            IsLoading = true;
+            //get immutable data
+            alignedDataDateCollection = generateDates();
+            this.RaisePropertyChanged(x => x.IsLoading);
+            dataPointsTable = null;
+            updateDataPointsTable();
+            this.RaisePropertyChanged(x => x.DataPointsTable);
+            IsLoading = false;
+            this.RaisePropertyChanged(x => x.IsLoading);
+            CommonMethods.AddSaveLayoutHandler(GridControlService.GetGridColumns());
+
+            return true;
         }
 
         private void refreshJobs()
@@ -228,21 +292,7 @@ namespace BluePrints.ViewModels
                 return dataPointsTable;
             }
         }
-
-        private void loadDataPointsTable()
-        {
-            IsLoading = true;
-            //get immutable data
-            alignedDataDateCollection = generateDates();
-            this.RaisePropertyChanged(x => x.IsLoading);
-            dataPointsTable = null;
-            updateDataPointsTable();
-            this.RaisePropertyChanged(x => x.DataPointsTable);
-            IsLoading = false;
-            this.RaisePropertyChanged(x => x.IsLoading);
-            CommonMethods.AddSaveLayoutHandler(GridControlService.GetGridColumns());
-        }
-
+        
         private void updateDataPointsTable()
         {
             GridControlService.GridControl.BeginDataUpdate();
@@ -519,18 +569,6 @@ namespace BluePrints.ViewModels
             }
 
             MainEntityUnitOfWork.SaveChanges();
-        }
-
-        public override bool CanFullRefresh()
-        {
-            return !IsLoading;
-        }
-
-        public override void FullRefresh()
-        {
-            EntitiesUndoRedoManager.Clear();
-            //refreshJobs();
-            base.FullRefresh();
         }
 
         public bool CanUpdateFloatingRates()
@@ -1123,13 +1161,6 @@ namespace BluePrints.ViewModels
             return string.Empty;
         }
 
-        protected override void AssignCallBacksAndRaisePropertyChange(IEnumerable<FORECAST_JOB> entities)
-        {
-            MainViewModel.SetParentViewModel(this);
-            MainViewModel.IsPasteCellLevel = false;
-            base.AssignCallBacksAndRaisePropertyChange(entities);
-        }
-
         /// <summary>
         /// The view name to be used when saving layout for IDocumentContent
         /// </summary>
@@ -1579,12 +1610,6 @@ namespace BluePrints.ViewModels
             {
                 return GetEntities<FORECAST_EAC>();
             }
-        }
-
-        protected override void OnClose(CancelEventArgs e)
-        {
-            GlobalMethods.SetAccordionExpandedState?.Invoke(true);
-            base.OnClose(e);
         }
         #endregion
     }

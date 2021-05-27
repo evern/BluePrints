@@ -82,7 +82,6 @@ namespace BluePrints.ViewModels
         string columnUniqueCode = "UniqueCode";
         string columnDuplicate = "Duplicate";
         string valueNotFoundError = "Value not found";
-        public bool IsTimesheetLoaded { get; set; }
 
         public DateTime DateFrom { get; set; }
         public DateTime DateTo { get; set; }
@@ -119,6 +118,7 @@ namespace BluePrints.ViewModels
             SelectedDataRows = new ObservableCollection<DataRowView>();
             focusNewlyAddedProjectionTimer = new DispatcherTimer();
             focusNewlyAddedProjectionTimer.Interval = new TimeSpan(0, 0, 0, 0, 100);
+            IsLoading = true;
         }
 
         public FilterTreeViewModel<BASELINE_ITEMProgress, Guid> FilterTreeViewModel { get; set; }
@@ -145,8 +145,6 @@ namespace BluePrints.ViewModels
             preloadedExoLinesWithCostInfo = ExoQueries.GetProjectLines(primeroUnitOfWork, loadPROJECT.NUMBER);
             VariationCodes = new ObservableCollection<string>(preloadedExoLines.Select(x => x.VariationCode).Distinct().OrderBy(x => x));
             CreateMainViewModel(bluePrintsUnitOfWorkFactory, x => x.BASELINE_ITEMS);
-            IsTimesheetLoaded = true;
-            this.RaisePropertyChanged(x => x.IsTimesheetLoaded);
         }
 
         protected override Func<IRepositoryQuery<BASELINE_ITEM>, IQueryable<BASELINE_ITEM>> specifyMainViewModelProjection()
@@ -167,19 +165,10 @@ namespace BluePrints.ViewModels
         }
 
         #region Collection Call Backs
-        protected override void OnAfterAssignedCallbackAndRaisePropertyChanged()
-        {
-            loadDataPointsTable();
-            base.OnAfterAssignedCallbackAndRaisePropertyChanged();
-        }
-
         public override void FullRefresh()
         {
-            if (!CanFullRefresh())
-                return;
-
+            IsLoading = true;
             isReadingFromExo = true;
-            IsTimesheetLoaded = false;
             base.FullRefresh();
         }
         #endregion
@@ -236,10 +225,25 @@ namespace BluePrints.ViewModels
             }
         }
 
-        private void refreshDataPointsTable()
+        protected override bool loadDataPointsTable()
         {
+            IsLoading = true;
+            this.RaisePropertyChanged(x => x.IsLoading);
+
             dataPointsTable = null;
-            mainThreadDispatcher.BeginInvoke(new Action(() => loadDataPointsTable()));
+
+            updateDataPointsTable();
+            this.RaisePropertyChanged(x => x.DataPointsTable);
+
+            doNotPrompt = true;
+            ReadFromExo();
+            doNotPrompt = false;
+
+            IsLoading = false;
+            this.RaisePropertyChanged(x => x.IsLoading);
+            TableViewService.ScrollToLast();
+            CommonMethods.AddSaveLayoutHandler(GridControlService.GetGridColumns());
+            return true;
         }
 
         public override void OnAfterAuxiliaryEntitiesChanged(object key, Type changedType, EntityMessageType messageType, object sender, Guid senderKey, bool isBulkRefresh)
@@ -316,26 +320,6 @@ namespace BluePrints.ViewModels
                 this.RaisePropertyChanged(x => x.SelectedDataRows);
                 this.RaisePropertyChanged(x => x.SelectedDataRow);
             }
-        }
-
-        private void loadDataPointsTable()
-        {
-            IsLoading = true;
-            this.RaisePropertyChanged(x => x.IsLoading);
-
-            dataPointsTable = null;
-
-            updateDataPointsTable();
-            this.RaisePropertyChanged(x => x.DataPointsTable);
-
-            doNotPrompt = true;
-            ReadFromExo();
-            doNotPrompt = false;
-
-            IsLoading = false;
-            this.RaisePropertyChanged(x => x.IsLoading);
-            TableViewService.ScrollToLast();
-            CommonMethods.AddSaveLayoutHandler(GridControlService.GetGridColumns());
         }
 
         private void updateDataPointsTable()
@@ -539,7 +523,7 @@ namespace BluePrints.ViewModels
 
         public bool CanCommitToExo()
         {
-            return IsTimesheetLoaded && DataPointsTable != null && DataPointsTable.Rows.Count > 0;
+            return !IsLoading && DataPointsTable != null && DataPointsTable.Rows.Count > 0;
         }
 
         public void CommitToExo()
@@ -1299,37 +1283,37 @@ namespace BluePrints.ViewModels
 
         public bool CanShowValidJobLines()
         {
-            return IsTimesheetLoaded && DataPointsTable != null && !isReadingFromExo;
+            return !IsLoading && DataPointsTable != null && !isReadingFromExo;
         }
 
         public override bool CanKeyboardCopy()
         {
-            return IsTimesheetLoaded && DataPointsTable != null && !isReadingFromExo;
+            return !IsLoading && DataPointsTable != null && !isReadingFromExo;
         }
 
         public override bool CanKeyboardPaste()
         {
-            return IsTimesheetLoaded && DataPointsTable != null && !isReadingFromExo;
+            return !IsLoading && DataPointsTable != null && !isReadingFromExo;
         }
 
         public override bool CanCopyWithHeader()
         {
-            return IsTimesheetLoaded && DataPointsTable != null && !isReadingFromExo;
+            return !IsLoading && DataPointsTable != null && !isReadingFromExo;
         }
 
         public override bool CanFullRefresh()
         {
-            return IsTimesheetLoaded && DataPointsTable != null && !isReadingFromExo;
+            return !IsLoading && DataPointsTable != null && !isReadingFromExo;
         }
 
         public override bool CanBulkDelete()
         {
-            return IsTimesheetLoaded && DataPointsTable != null && !isReadingFromExo;
+            return !IsLoading && DataPointsTable != null && !isReadingFromExo;
         }
 
         public override bool CanSaveLayout()
         {
-            if (!IsTimesheetLoaded || DataPointsTable == null || isReadingFromExo)
+            if (!!IsLoading || DataPointsTable == null || isReadingFromExo)
                 return false;
 
             return base.CanSaveLayout();
@@ -1337,7 +1321,7 @@ namespace BluePrints.ViewModels
 
         public override bool CanUndo()
         {
-            if (EntitiesUndoRedoManager == null || DataPointsTable == null || !IsTimesheetLoaded || isReadingFromExo)
+            if (EntitiesUndoRedoManager == null || DataPointsTable == null || !!IsLoading || isReadingFromExo)
                 return false;
 
             return EntitiesUndoRedoManager.CanUndo();
@@ -1345,7 +1329,7 @@ namespace BluePrints.ViewModels
 
         public override bool CanRedo()
         {
-            if (EntitiesUndoRedoManager == null || DataPointsTable == null || !IsTimesheetLoaded || isReadingFromExo)
+            if (EntitiesUndoRedoManager == null || DataPointsTable == null || !!IsLoading || isReadingFromExo)
                 return false;
 
             return EntitiesUndoRedoManager.CanRedo();

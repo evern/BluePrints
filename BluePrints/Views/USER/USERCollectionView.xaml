@@ -26,6 +26,7 @@
                 <dxb:BarButtonItem x:Name="biImport" Command="{Binding ImportCommand}" Content="Import" Glyph="{dx:DXImage Image=Download_16x16.png}" LargeGlyph="{dx:DXImage Image=Download_32x32.png}" />
                 <dxb:BarButtonItem x:Name="biUpdateUser" Command="{Binding Update_UserCommand}" Content="Update User(s)" ToolTip="Get user department, discipline and description from active directory" Glyph="{dx:DXImage Image=BODetails_16x16.png}" LargeGlyph="{dx:DXImage Image=BODetails_32x32.png}" />
                 <dxb:BarButtonItem x:Name="biMatchExoStaffId" Command="{Binding MatchExoStaffIdCommand}" Content="Update EXO Name" ToolTip="Auto populate user's EXO name" Glyph="{dx:DXImage Image=Merge_16x16.png}" LargeGlyph="{dx:DXImage Image=Merge_32x32.png}" />
+                <dxb:BarButtonItem x:Name="biTrim" Command="{Binding TrimUsersCommand}" Content="Trim Inactive Users" ToolTip="Set a leave date as today for inactive users in EXO" Glyph="{dx:DXImage SvgImages/Business Objects/BO_User.svg}" LargeGlyph="{dx:DXImage SvgImages/Business Objects/BO_User.svg}" />
                 <dxb:BarCheckItem x:Name="bcHideUser" Content="Hide User" Glyph="{dx:DXImage Image=User_16x16.png}" IsChecked="{Binding HideLeave}" LargeGlyph="{dx:DXImage Image=User_32x32.png}" />
                 <dxb:BarButtonItem x:Name="biImpersonate" Command="{Binding ImpersonateCommand}" IsVisible="{Binding IsImpersonateVisible}" Content="Impersonate" ToolTip="Impersonate selected user" Glyph="{dx:DXImage Images/Business Objects/BORole_16x16.png}" LargeGlyph="{dx:DXImage Images/Business Objects/BORole_32x32.png}" />
             </dxb:BarManager.Items>
@@ -52,6 +53,7 @@
                                 <dxb:BarButtonItemLink BarItemName="biImport" />
                                 <dxb:BarButtonItemLink BarItemName="biUpdateUser" />
                                 <dxb:BarButtonItemLink BarItemName="biMatchExoStaffId" />
+                                <dxb:BarButtonItemLink BarItemName="biTrim" />
                                 <dxb:BarCheckItemLink BarItemName="bcHideUser" />
                                 <dxb:BarButtonItemLink BarItemName="biImpersonate" />
                             </dxr:RibbonPageGroup>

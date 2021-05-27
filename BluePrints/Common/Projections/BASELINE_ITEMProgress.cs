@@ -306,6 +306,8 @@ namespace BluePrints.Common.Projections
 
         public string EntityGroup => Entity.EntityGroup;
 
+        public bool ShouldSave { get; set; }
+
         public Guid? DeliverableStatusProgressGuid
         {
             get

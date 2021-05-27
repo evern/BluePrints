@@ -85,10 +85,10 @@ namespace BluePrints.Common.ViewModel.Misc
             jobForecastSummary.DateCosts.Clear();
 
             DateTime firstViewDate = dates.First();
-            DateTime firstForecastDate = dates.Count() > 1 ? dates[1] : dates.First();
+            //DateTime firstForecastDate = dates.Count() > 1 ? dates[1] : dates.First();
             foreach (DateTime date in dates)
             {
-                jobForecastSummary.DateCosts.Add(new ForecastDateCost(date, firstViewDate, firstForecastDate, isWeeks));
+                jobForecastSummary.DateCosts.Add(new ForecastDateCost(date, firstViewDate, dataDate, isWeeks));
             }
 
             IEnumerable<SummaryStats> summaryStats;
@@ -243,7 +243,8 @@ namespace BluePrints.Common.ViewModel.Misc
         {
             ForecastJobData forecastProjection = ViewModelSource.Create(() => new ForecastJobData());
             forecastProjection.PopulateCommodityCodes(COMMODITY_CODECollection);
-            forecastProjection.IsBudgetReadOnly = LoginCredentials.getPermissionStatus(DataUtils.GetNameOf(() => NavigationResources.Permission_EXO_ChangeBudget)) == LoginCredentials.PermissionStatus.None;
+            //forecastProjection.IsBudgetReadOnly = LoginCredentials.getPermissionStatus(DataUtils.GetNameOf(() => NavigationResources.Permission_EXO_ChangeBudget)) == LoginCredentials.PermissionStatus.None;
+            forecastProjection.IsBudgetReadOnly = true;
             variationCode = NormalizeCode(variationCode);
             forecastProjection.Projection = new ExoSubJobProjection() { SubJobCode = subJobCode, SubJobTitle = subJobTitle, DisciplineCode = disciplineCode, DisciplineName = disciplineName, CommodityCode = commodityCode, CommodityName = commodityName, CommodityDescription = commodityDescription, CommodityUOM = commodityUOM, VariationCode = variationCode };
 

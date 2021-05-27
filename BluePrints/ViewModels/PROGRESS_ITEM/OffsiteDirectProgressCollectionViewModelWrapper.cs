@@ -52,6 +52,7 @@ namespace BluePrints.ViewModels
         #region Database Operation
         protected override void resolveParameters(object parameter)
         {
+            AlwaysSkipMessage = true;
             is_load_p6_task = true;
             isUseReportDate = LoginCredentials.getPermissionStatus(DataUtils.GetNameOf(() => NavigationResources.Permission_DesignDeliverables_ProgressPreviousWeeksDate)) != LoginCredentials.PermissionStatus.None;
             canDateBackwardForward = LoginCredentials.getPermissionStatus(DataUtils.GetNameOf(() => NavigationResources.Permission_DesignDeliverables_CanDateBackwardForward)) != LoginCredentials.PermissionStatus.None;
@@ -140,6 +141,20 @@ namespace BluePrints.ViewModels
             FullRefresh();
         }
 
+        protected override void OnAfterAssignedCallbackAndRaisePropertyChanged()
+        {
+            //progress items needs to get notified for view to reflect update
+            PROGRESS_ITEMSCollectionViewModel.AlwaysSkipMessage = false;
+
+            //only respond to message from same key
+            PROGRESS_ITEMSCollectionViewModel.RefreshOnlyOnSameSenderKey = true;
+
+            if (PROJECT_REPORTCollectionViewModel != null)
+                PROJECT_REPORTCollectionViewModel.AlwaysSkipMessage = false;
+
+            base.OnAfterAssignedCallbackAndRaisePropertyChanged();
+        }
+
         protected override Func<IRepositoryQuery<BASELINE_ITEM>, IQueryable<BASELINE_ITEMProgress>>
             specifyMainViewModelProjection()
         {
@@ -155,6 +170,26 @@ namespace BluePrints.ViewModels
         }
         #region Collection Call Backs
 
+        public override void UnifiedCellValueChanged(string field_name, object old_value, object new_value, BASELINE_ITEMProgress projection, bool isNew)
+        {
+            if (field_name == BindableBase.GetPropertyName(() => new BASELINE_ITEMProgress().DeliverableStatusProgressGuid))
+                projection.ShouldSave = true;
+
+            base.UnifiedCellValueChanged(field_name, old_value, new_value, projection, isNew);
+        }
+
+        protected override OperationInterceptMode OnBeforeProjectionSaveIsContinue(BASELINE_ITEMProgress projection, out bool isNew)
+        {
+            isNew = false;
+            if (projection.ShouldSave)
+            {
+                projection.ShouldSave = false;
+                return OperationInterceptMode.Continue;
+            }
+            else
+                return OperationInterceptMode.SkipOneAndAllDbSaves;
+        }
+
         public bool ValidateFillDownCallBack(BASELINE_ITEMProgress fillDownEntity, string fieldName, object fillValue)
         {
             if (fieldName == BindableBase.GetPropertyName(() => new BASELINE_ITEMProgress().Total_Earned_Percentage))
@@ -168,14 +203,6 @@ namespace BluePrints.ViewModels
 
             return true;
         }
-
-        public override void FullRefresh()
-        {
-            if (!CanFullRefresh())
-                return;
-
-            ReloadEntitiesCollection();
-        }
         #endregion
 
         #endregion
@@ -187,7 +214,7 @@ namespace BluePrints.ViewModels
         public override string ViewName
         {
             //get { return "OffsiteDirectProgressViewModelWrapper" + view_project_specific_affix; }
-            get { return "OffsiteDirectProgressViewModelWrapper_v5"; }
+            get { return "OffsiteDirectProgressViewModelWrapper_v6"; }
         }
 
         public bool IsDataDateChangeVisible => canDateBackwardForward;
@@ -282,9 +309,7 @@ namespace BluePrints.ViewModels
 
         public void EditReport()
         {
-            var reportDesigner = new UserReportDesigner(loadPROJECT,
-                (CollectionViewModel<PROJECT_REPORT, PROJECT_REPORT, Guid, IBluePrintsEntitiesUnitOfWork>)
-                loaderCollection.GetViewModel<PROJECT_REPORT>(), ReportType.Progress_Report);
+            var reportDesigner = new UserReportDesigner(loadPROJECT, PROJECT_REPORTCollectionViewModel, ReportType.Progress_Report);
             if (reportDesigner.ShowDialog() == System.Windows.Forms.DialogResult.OK)
                 reportDesigner.Dispose();
             else

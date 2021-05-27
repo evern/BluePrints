@@ -76,6 +76,7 @@ namespace BluePrints.ViewModels
         private DispatcherTimer gridRefreshDispatcherTimer;
         protected override void resolveParameters(object parameter)
         {
+            IsLoading = true;
             defaultColumnFieldNames.Add(columnEntity);
 
             systemColumnFieldNames.Add(columnEntity);
@@ -91,7 +92,7 @@ namespace BluePrints.ViewModels
             GlobalMethods.SetAccordionExpandedState?.Invoke(false);
 
             gridRefreshDispatcherTimer = new DispatcherTimer();
-            gridRefreshDispatcherTimer.Interval = new TimeSpan(0, 0, 0, 0, 1);
+            gridRefreshDispatcherTimer.Interval = new TimeSpan(0, 0, 0, 1);
 
             base.resolveParameters(parameter);
         }
@@ -177,17 +178,38 @@ namespace BluePrints.ViewModels
             MainViewModel.ValidateFillDownCallBack = ValidateFillDownCallBack;
             MainViewModel.IsPasteCellLevel = false;
             MainViewModel.AlwaysSkipMessage = false;
+            MainViewModel.RefreshOnlyOnSameSenderKey = true;
             MainViewModel.DisableEntitiesPauseUnpause = true;
             PROGRESS_ITEMSCollectionViewModel.AlwaysSkipMessage = false;
+            PROGRESS_ITEMSCollectionViewModel.RefreshOnlyOnSameSenderKey = true;
             PROGRESS_ITEMSCollectionViewModel.DisableEntitiesPauseUnpause = true;
             doNotApplyBestFit = true;
         }
 
         protected override void OnAfterAssignedCallbackAndRaisePropertyChanged()
         {
-            loadDataPointsTable();
             skipExoDataLoading = true;
             base.OnAfterAssignedCallbackAndRaisePropertyChanged();
+        }
+
+        protected override void onCalculatePlannedBackgroundWorkerCompleted()
+        {
+            BackgroundRefresh();
+            base.onCalculatePlannedBackgroundWorkerCompleted();
+        }
+
+        protected override void BackgroundWorkerBuildStats()
+        {
+            if (fullSummarizer != null)
+            {
+                fullSummarizer.BuildEarned();
+            }
+        }
+
+        protected override void BackgroundRefresh()
+        {
+            if(IsCalculationCompleted)
+                base.BackgroundRefresh();
         }
 
         private void applyBestFit()
@@ -224,33 +246,42 @@ namespace BluePrints.ViewModels
             alignedDataDateCollection = null;
             base.delayedPROGRESSSavingDispatcher_Tick(sender, e);
         }
-
-        public override void FullRefresh()
-        {
-            if (!CanFullRefresh())
-                return;
-
-            IsCalculationCompleted = false;
-
-            //set datapoints table to empty so user cannot edit anything whilst it's refreshing
-            refreshDataPointsTable();
-            this.RaisePropertyChanged(x => x.IsCalculationCompleted);
-            base.FullRefresh();
-        }
         #endregion
 
         #endregion
 
         #region View Properties
-        private void refreshDataPointsTable()
+        public override void FullRefresh()
         {
+            dataPointsTable = null;
+            this.RaisePropertyChanged(x => x.DataPointsTable);
+            base.FullRefresh();
+        }
+
+        protected override bool loadDataPointsTable()
+        {
+            IsLoading = true;
+            this.RaisePropertyChanged(x => x.IsLoading);
+
             alignedDataDateCollection = null;
             dataPointsTable = null;
-            loadDataPointsTable();
+
+            updateDataPointsTable();
+            this.RaisePropertyChanged(x => x.DataPointsTable);
+
+            IsLoading = false;
+            this.RaisePropertyChanged(x => x.IsLoading);
+            TableViewService.ScrollToLast();
+            CommonMethods.AddSaveLayoutHandler(GridControlService.GetGridColumns());
+
+            return true;
         }
         
         public override void OnAfterAuxiliaryEntitiesChanged(object key, Type changedType, EntityMessageType messageType, object sender, Guid senderKey, bool isBulkRefresh)
         {
+            if (senderKey != MainViewModel.Key)
+                return;
+
             if (changedType == typeof(BASELINE_ITEM))
             {
                 BASELINE_ITEMProgress deliverable = Entities.FirstOrDefault(x => x.GUID.ToString() == key.ToString());
@@ -263,9 +294,8 @@ namespace BluePrints.ViewModels
                     deliverable.BuildStats(1, calcTypes);
                     BuildRowStats(deliverable, true);
                     deliverable.Update();
-
-                    gridRefreshDispatcherTimer.Tick -= gridRefreshDispatcherTimer_Tick;
-                    gridRefreshDispatcherTimer.Tick += gridRefreshDispatcherTimer_Tick;
+                    gridRefreshDispatcherTimer.Tick -= gridRefreshTimer_Tick;
+                    gridRefreshDispatcherTimer.Tick += gridRefreshTimer_Tick;
                     gridRefreshDispatcherTimer.Start();
                 }
             }
@@ -273,7 +303,7 @@ namespace BluePrints.ViewModels
             base.OnAfterAuxiliaryEntitiesChanged(key, changedType, messageType, sender, senderKey, isBulkRefresh);
         }
 
-        private void gridRefreshDispatcherTimer_Tick(object sender, EventArgs e)
+        private void gridRefreshTimer_Tick(object sender, EventArgs e)
         {
             gridRefreshDispatcherTimer.Stop();
             GridControlService.RefreshData();
@@ -281,10 +311,7 @@ namespace BluePrints.ViewModels
 
         public bool CanProgressUndo()
         {
-            if (!IsCalculationCompleted)
-                return false;
-
-            if (PROGRESS_ITEMSCollectionViewModel == null || MainViewModel == null)
+            if (!IsCalculationCompleted || PROGRESS_ITEMSCollectionViewModel == null || MainViewModel == null)
                 return false;
 
             return PROGRESS_ITEMSCollectionViewModel.EntitiesUndoRedoManager.CanUndo() || MainViewModel.EntitiesUndoRedoManager.CanUndo();
@@ -292,10 +319,7 @@ namespace BluePrints.ViewModels
 
         public bool CanProgressRedo()
         {
-            if (!IsCalculationCompleted)
-                return false;
-
-            if (PROGRESS_ITEMSCollectionViewModel == null || MainViewModel == null)
+            if (!IsCalculationCompleted || PROGRESS_ITEMSCollectionViewModel == null || MainViewModel == null)
                 return false;
 
             return PROGRESS_ITEMSCollectionViewModel.EntitiesUndoRedoManager.CanRedo() || MainViewModel.EntitiesUndoRedoManager.CanRedo();
@@ -729,7 +753,7 @@ namespace BluePrints.ViewModels
 
                 PROGRESS_ITEMSCollectionViewModel.BaseBulkSave(progressToSave);
                 //add a dummy undo so that during undo/redo operation a baseline item message will be sent
-                MainViewModel.EntitiesUndoRedoManager.AddUndo(entity, BindableBase.GetPropertyName(() => new BASELINE_ITEM().GUID), entity.GUID, entity.GUID, EntityMessageType.Changed, true);
+                MainViewModel.EntitiesUndoRedoManager.AddUndo(entity, BindableBase.GetPropertyName(() => new BASELINE_ITEM().GUID_ORIGINAL), entity.GUID_ORIGINAL, entity.GUID_ORIGINAL, EntityMessageType.Changed, true);
             }
 
             //save baseline_item here so that auxiliary message can respond to progress item changes
@@ -903,23 +927,7 @@ namespace BluePrints.ViewModels
                 columns.Add(new ColumnDescriptor() { FieldName = columnFieldName, ReadOnly = false, Header = columnFieldName, Fixed = FixedStyle.None, Width = 100, Settings = SettingsType.Percent });
             }
         }
-
-        private void loadDataPointsTable()
-        {
-            IsLoading = true;
-            this.RaisePropertyChanged(x => x.IsLoading);
-
-            dataPointsTable = null;
-
-            updateDataPointsTable();
-            this.RaisePropertyChanged(x => x.DataPointsTable);
-
-            IsLoading = false;
-            this.RaisePropertyChanged(x => x.IsLoading);
-            TableViewService.ScrollToLast();
-            CommonMethods.AddSaveLayoutHandler(GridControlService.GetGridColumns());
-        }
-
+        
         private void updateDataPointsTable()
         {
             GridControlService.BeginDataUpdate();

@@ -46,6 +46,11 @@
                 <dxb:BarButtonItem x:Name="biUpdateAll" Command="{Binding UpdateAllPercentagesByStatusCommand}" Content="Update % by Gates" Glyph="{dx:DXImage Image=ClearFormatting_16x16.png}" LargeGlyph="{dx:DXImage Image=ClearFormatting_32x32.png}" ToolTip="Bulk update all deliverables progress by it's gate. Deliverables without gates will be ignored. When deliverables status % is lower than current %, previous progresses will be reduced starting from previous interval." />
                 <dxb:BarButtonItem x:Name="biPushToP6" Command="{Binding PushToP6OriginalCommand}" Content="Progress To P6" Glyph="{dx:DXImage Image=DoubleNext_16x16.png}" LargeGlyph="{dx:DXImage Image=DoubleNext_32x32.png}" ToolTip="Update P6 earned units to current deliverables earned units." />
                 <dxb:BarButtonItem x:Name="biUpdateTargetDates" Command="{Binding UpdateTargetDatesCommand}" Content="Update Target Dates" Glyph="{dxc:DXImage Images/RichEdit/UpdateTableOfContents_32x32.png}" LargeGlyph="{dx:DXImage Images/RichEdit/UpdateTableOfContents_16x16.png}" RibbonStyle="SmallWithText" ToolTip="Update target dates with start date and due date" />
+                <dxb:BarEditItem x:Name="biAllowSummary" EditValue="{Binding AllowSummaryCalculationOnUpdate}" IsEnabled="{Binding IsLoading, Converter={StaticResource BooleanNegationConverter}}" Content="Allow Summary Calculation" ToolTip="Allow summary to be recalculated on update, unchecking this will speed up progress updates" LargeGlyph="{dxc:DXImage Images/Spreadsheet/PivotTableCalculationsFieldsItemsSetsGroup_32x32.png}" Glyph="{dxc:DXImage Images/Spreadsheet/PivotTableCalculationsFieldsItemsSetsGroup_16x16.png}">
+                    <dxb:BarEditItem.EditSettings>
+                        <dxe:CheckEditSettings />
+                    </dxb:BarEditItem.EditSettings>
+                </dxb:BarEditItem>
             </dxb:BarManager.Items>
              <DockPanel>
                 <dxr:RibbonControl Style="{StaticResource DefaultRibbonControlStyle}">
@@ -77,6 +82,7 @@
                                 <dxb:BarButtonItemLink BarItemName="biUpdateAll" />
                                 <dxb:BarButtonItemLink BarItemName="biPushToP6" />
                                 <dxb:BarButtonItemLink BarItemName="biUpdateTargetDates" />
+                                <dxb:BarEditItemLink BarItemName="biAllowSummary" />
                             </dxr:RibbonPageGroup>
                         </dxr:RibbonPage>
                     </dxr:RibbonDefaultPageCategory>
@@ -537,12 +543,11 @@
                         <dxg:GridSummaryItem DisplayFormat="n" FieldName="Remaining_Units_ToDate" SummaryType="Sum" />
                         <dxg:GridSummaryItem DisplayFormat="n" FieldName="ProgressETC" SummaryType="Sum" />
                         <dxg:GridSummaryItem DisplayFormat="n" FieldName="Total_Costs" SummaryType="Sum" />
-                        <dxg:GridSummaryItem DisplayFormat="p" FieldName="Stats.Budgeted.CurrentPeriodDataPoint.UnitsPercentage" SummaryType="Custom" />
                         <dxg:GridSummaryItem DisplayFormat="c2" FieldName="DisplayPeriodEarnedCosts" SummaryType="Sum" />
                         <dxg:GridSummaryItem DisplayFormat="n" FieldName="Entity.Entity.BUDGET_HOURS" SummaryType="Sum" />
                         <dxg:GridSummaryItem DisplayFormat="n" FieldName="Variation_Units" SummaryType="Sum" />
                         <dxg:GridSummaryItem DisplayFormat="n" FieldName="Budget_Units" SummaryType="Sum" />
-                        <dxg:GridSummaryItem DisplayFormat="n" FieldName="Total_Units" SummaryType="Sum" />  
+                        <dxg:GridSummaryItem DisplayFormat="n" FieldName="Total_Units" SummaryType="Sum" />
                         <dxg:GridSummaryItem DisplayFormat="n" FieldName="Earned_Costs_ToDate" SummaryType="Sum" />
                         <dxg:GridSummaryItem DisplayFormat="n" FieldName="Earned_Costs_OnDataDate" SummaryType="Sum" />
                         <dxg:GridSummaryItem DisplayFormat="n" FieldName="PROGRESS_ITEMcurrent.EARNED_UNITS" SummaryType="Sum" />
@@ -560,7 +565,6 @@
                         <dxg:GridSummaryItem DisplayFormat="n" FieldName="Remaining_Units_ToDate" SummaryType="Sum" />
                         <dxg:GridSummaryItem DisplayFormat="n" FieldName="ProgressETC" SummaryType="Sum" />
                         <dxg:GridSummaryItem DisplayFormat="n" FieldName="Total_Costs" SummaryType="Sum" />
-                        <dxg:GridSummaryItem DisplayFormat="p" FieldName="Stats.Budgeted.CurrentPeriodDataPoint.UnitsPercentage" SummaryType="Custom" />
                         <dxg:GridSummaryItem DisplayFormat="c2" FieldName="DisplayPeriodEarnedCosts" SummaryType="Sum" />
                         <dxg:GridSummaryItem DisplayFormat="n" FieldName="Entity.Entity.BUDGET_HOURS" SummaryType="Sum" />
                         <dxg:GridSummaryItem DisplayFormat="n" FieldName="Variation_Units" SummaryType="Sum" />

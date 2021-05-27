@@ -35,7 +35,8 @@ namespace BluePrints.ViewModels
             p6UOW = P6EntitiesUnitOfWorkSource.GetUnitOfWorkFactory().CreateUnitOfWork();
             firstLoadProjectStatsSummarizers = new List<FullSummarizer>();
 
-            isHideOnStartup = LoginCredentials.GetUserPreferenceBool(DataUtils.GetNameOf(() => UserPreferences.Global_HideUserDeliverablesOnStartup));
+            bool? isHideOnStartupPreference = LoginCredentials.GetUserPreferenceBool(DataUtils.GetNameOf(() => UserPreferences.Global_HideUserDeliverablesOnStartup));
+            isHideOnStartup = isHideOnStartupPreference == null ? false : (bool)isHideOnStartupPreference;
         }
 
         bool isHideOnStartup;

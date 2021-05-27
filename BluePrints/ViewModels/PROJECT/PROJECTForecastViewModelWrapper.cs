@@ -93,7 +93,8 @@ namespace BluePrints.ViewModels
             projectSavingBackgroundWorker.DoWork += ProjectSavingBackgroundWorker_DoWork;
             projectSavingBackgroundWorker.WorkerSupportsCancellation = true;
 
-            isShowActualsHistory = LoginCredentials.GetUserPreferenceBool(DataUtils.GetNameOf(() => UserPreferences.Forecast_ShowActuals));
+            bool? isShowActualsHistoryPreference = LoginCredentials.GetUserPreferenceBool(DataUtils.GetNameOf(() => UserPreferences.Forecast_ShowActuals));
+            isShowActualsHistory = isShowActualsHistoryPreference == null ? false : (bool)isShowActualsHistoryPreference;
             canEditConstructionUncommitted = LoginCredentials.getPermissionStatus(DataUtils.GetNameOf(() => NavigationResources.Permission_ConstructionUncommitted)) == LoginCredentials.PermissionStatus.All;
         }
 
@@ -312,27 +313,10 @@ namespace BluePrints.ViewModels
             }
         }
 
-        public Action<DataTable> OnDataTableLoaded { get; set; }
-        private void loadDataPointsTable()
-        {
-            IsLoading = true;
-            this.RaisePropertyChanged(x => x.IsLoading);
-
-            dataPointsTable = null;
-            commodityJobs = null;
-
-            updateDataPointsTable();
-            OnDataTableLoaded?.Invoke(DataPointsTable);
-            this.RaisePropertyChanged(x => x.DataPointsTable);
-
-            IsLoading = false;
-            this.RaisePropertyChanged(x => x.IsLoading);
-            CommonMethods.AddSaveLayoutHandler(GridControlService.GetGridColumns());
-        }
-
         public bool FullScreenView = true;
         bool canEditConstructionUncommitted = false;
         protected IPrimeroEntitiesUnitOfWork primeroEntitiesUnitOfWork;
+        BackgroundWorker exoLoadingBackgroundWorker = new BackgroundWorker();
         protected override void resolveParameters(object parameter)
         {
             base.resolveParameters(parameter);
@@ -362,6 +346,9 @@ namespace BluePrints.ViewModels
                 GlobalMethods.SetAccordionExpandedState?.Invoke(false);
 
             bluePrintsUnitOfWork = bluePrintsUnitOfWorkFactory.CreateUnitOfWork();
+            exoLoadingBackgroundWorker.DoWork += exoLoadingBackgroundWorker_DoWork;
+            exoLoadingBackgroundWorker.RunWorkerCompleted += exoLoadingBackgroundWorker_RunWorkerCompleted;
+            exoLoadingBackgroundWorker.WorkerSupportsCancellation = true;
             this.RaisePropertiesChanged();
         }
 
@@ -553,19 +540,22 @@ namespace BluePrints.ViewModels
             FullRefresh();
         }
 
-        protected override bool OnMainViewModelLoaded(IEnumerable<PROJECT_Dashboard> entities)
+        protected override void AssignCallBacksAndRaisePropertyChange(IEnumerable<PROJECT_Dashboard> entities)
         {
-            BackgroundWorker exoLoadingBackgroundWorker = new BackgroundWorker();
-            exoLoadingBackgroundWorker.DoWork += ExoLoadingBackgroundWorker_DoWork; ;
-            exoLoadingBackgroundWorker.RunWorkerCompleted += ExoLoadingBackgroundWorker_RunWorkerCompleted;
-            exoLoadingBackgroundWorker.WorkerSupportsCancellation = true;
             exoLoadingBackgroundWorker.RunWorkerAsync();
             LoadingScreenManager.CloseLoadingScreen();
-            return base.OnMainViewModelLoaded(entities);
+
+            base.AssignCallBacksAndRaisePropertyChange(entities);
         }
 
-        private void ExoLoadingBackgroundWorker_DoWork(object sender, DoWorkEventArgs e)
+        private void exoLoadingBackgroundWorker_DoWork(object sender, DoWorkEventArgs e)
         {
+            if (exoLoadingBackgroundWorker.CancellationPending)
+            {
+                e.Cancel = true;
+                return;
+            }
+
             List<Task> TaskList = new List<Task>();
             Task loadExoTask = new Task(loadExoMethodsData);
             Task loadSummaryTask = new Task(loadSummaryStats);
@@ -579,9 +569,8 @@ namespace BluePrints.ViewModels
         }
 
         bool isLoadingExo = true;
-        private void ExoLoadingBackgroundWorker_RunWorkerCompleted(object sender, RunWorkerCompletedEventArgs e)
+        private void exoLoadingBackgroundWorker_RunWorkerCompleted(object sender, RunWorkerCompletedEventArgs e)
         {
-            isLoadingExo = false;
             isLoadingExo = false;
             backgroundProcessCompleted();
         }
@@ -604,15 +593,45 @@ namespace BluePrints.ViewModels
             this.RaisePropertyChanged(x => x.IsManualRevisedVariationRevenue);
 
             backgroundProcessCompleted();
-
             base.onSummaryCalculateComplete();
+        }
+
+        protected override void OnClose(CancelEventArgs e)
+        {
+            exoLoadingBackgroundWorker.CancelAsync();
+            GlobalMethods.SetAccordionExpandedState?.Invoke(true);
+            base.OnClose(e);
+        }
+
+        public Action<DataTable> OnDataTableLoaded { get; set; }
+        protected override bool loadDataPointsTable()
+        {
+            IsLoading = true;
+            this.RaisePropertyChanged(x => x.IsLoading);
+
+            dataPointsTable = null;
+            commodityJobs = null;
+
+            updateDataPointsTable();
+            OnDataTableLoaded?.Invoke(DataPointsTable);
+            this.RaisePropertyChanged(x => x.DataPointsTable);
+
+            IsLoading = false;
+            this.RaisePropertyChanged(x => x.IsLoading);
+            CommonMethods.AddSaveLayoutHandler(GridControlService.GetGridColumns());
+            return true;
+        }
+
+        protected override void BackgroundRefresh()
+        {
+            if (!isLoadingExo && !IsLoadingForecast)
+                base.BackgroundRefresh();
         }
 
         private void backgroundProcessCompleted()
         {
             if(!isLoadingExo && !IsLoadingForecast)
             {
-                mainThreadDispatcher.BeginInvoke(new Action(() => loadDataPointsTable()));
                 LoadingScreenManager.DisableLoadingScreen = false;
                 if(ShowLoadingScreen)
                 {
@@ -620,7 +639,8 @@ namespace BluePrints.ViewModels
                     LoadingScreenManager.SetMessage("Applying Columns Best Fit...");
                 }
 
-                onGridRowsLoaded();
+                BackgroundRefresh();
+                //onGridRowsLoaded();
             }
         }
 
@@ -629,11 +649,6 @@ namespace BluePrints.ViewModels
             PROJECTCollectionViewModel.AlwaysSkipMessage = true;
             base.OnAfterAssignedCallbackAndRaisePropertyChanged();
             LoadingScreenManager.CloseLoadingScreen();
-        }
-
-        public override bool CanFullRefresh()
-        {
-            return !IsLoading;
         }
 
         public override void FullRefresh()
@@ -2888,12 +2903,6 @@ namespace BluePrints.ViewModels
         }
         #endregion
 
-        protected override void OnClose(CancelEventArgs e)
-        {
-            GlobalMethods.SetAccordionExpandedState?.Invoke(true);
-            base.OnClose(e);
-        }
-
         #region Entity Wrapper Properties
         public IEnumerable<PROJWBS> P6PROJECTSCollection
         {
@@ -3124,7 +3133,7 @@ namespace BluePrints.ViewModels
             }
         }
 
-        public override string ViewName => "PROJECTForecastView_v3";
+        public override string ViewName => "PROJECTForecastView_v4";
 
         public override void ShowNotification()
         {

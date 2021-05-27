@@ -9,8 +9,6 @@
     public partial class X_JOB_TRANSACTIONS_DETAIL_SeqNo
     {
         [Key]
-        [Column(Order = 0)]
-        [DatabaseGenerated(DatabaseGeneratedOption.None)]
         public int SEQNO { get; set; }
 
         public int? jobno { get; set; }
@@ -50,32 +48,17 @@
 
         public double? LINECOST { get; set; }
 
-        [Key]
-        [Column(Order = 1)]
-        [DatabaseGenerated(DatabaseGeneratedOption.None)]
         public int linecharge { get; set; }
 
-        [Key]
-        [Column(Order = 2)]
-        [DatabaseGenerated(DatabaseGeneratedOption.None)]
         public int LINETOTAL { get; set; }
 
-        [Key]
-        [Column(Order = 3)]
-        [DatabaseGenerated(DatabaseGeneratedOption.None)]
         public int LINETOTAL_INCTAX { get; set; }
 
-        [Key]
-        [Column(Order = 4)]
-        [DatabaseGenerated(DatabaseGeneratedOption.None)]
         public int LINETOTAL_TAX { get; set; }
 
         [StringLength(30)]
         public string LINE_STATUS { get; set; }
 
-        [Key]
-        [Column(Order = 5)]
-        [DatabaseGenerated(DatabaseGeneratedOption.None)]
         public int CostType { get; set; }
 
         [StringLength(50)]
@@ -97,21 +80,12 @@
         [StringLength(10)]
         public string LINE_SOURCE { get; set; }
 
-        [Key]
-        [Column(Order = 6)]
-        [DatabaseGenerated(DatabaseGeneratedOption.None)]
         public int SOURCE_SEQNO { get; set; }
 
-        [Key]
-        [Column(Order = 7)]
-        [DatabaseGenerated(DatabaseGeneratedOption.None)]
         public int PO_LINESEQNO { get; set; }
 
         public int? POno { get; set; }
 
-        [Key]
-        [Column(Order = 8)]
-        [DatabaseGenerated(DatabaseGeneratedOption.None)]
         public int invseqno { get; set; }
 
         [StringLength(30)]
@@ -129,8 +103,6 @@
 
         public int? accno { get; set; }
 
-        [Key]
-        [Column(Order = 9)]
         public double INVOICED { get; set; }
 
         public DateTime? INVOICEDATE { get; set; }

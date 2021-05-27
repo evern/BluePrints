@@ -368,12 +368,22 @@
                             </dxg:GridColumn>
                         </dxg:GridControlBand>
                         <dxg:GridControlBand Header="Dates">
-                            <dxg:GridColumn FieldName="Entity.Entity.START_DATE" Visible="{Binding IsTender}" AllowBestFit="false" Width="80" Header="Start" FilterPopupMode="DateAlt" HeaderToolTip="Planned date when the deliverable is going to start, this will override subjob start date, only affects planned S-Curve">
+                            <dxg:GridColumn FieldName="Entity.Entity.TENDER_START_DATE" Visible="{Binding IsTender}" AllowBestFit="false" Width="80" Header="Tender Start" FilterPopupMode="DateAlt" HeaderToolTip="Tender date when the deliverable is going to start, this will override deliverable start date, only affects planned S-Curve">
                                 <dxg:GridColumn.EditSettings>
                                     <dxe:DateEditSettings NullValueButtonPlacement="Popup" />
                                 </dxg:GridColumn.EditSettings>
                             </dxg:GridColumn>
-                            <dxg:GridColumn FieldName="Entity.Entity.END_DATE" Visible="{Binding IsTender}" AllowBestFit="false" Width="80" Header="End" FilterPopupMode="DateAlt" HeaderToolTip="Planned date when the deliverable is going to end, this will override subjob end date, only affects planned S-Curve">
+                            <dxg:GridColumn FieldName="Entity.Entity.TENDER_END_DATE" Visible="{Binding IsTender}" AllowBestFit="false" Width="80" Header="Tender End" FilterPopupMode="DateAlt" HeaderToolTip="Tender date when the deliverable is going to end, this will override deliverable end date, only affects planned S-Curve">
+                                <dxg:GridColumn.EditSettings>
+                                    <dxe:DateEditSettings NullValueButtonPlacement="Popup" />
+                                </dxg:GridColumn.EditSettings>
+                            </dxg:GridColumn>
+                            <dxg:GridColumn FieldName="Entity.Entity.START_DATE" AllowBestFit="false" Width="80" Header="Start" FilterPopupMode="DateAlt" HeaderToolTip="Planned date when the deliverable is going to start, this will override subjob start date, only affects planned S-Curve">
+                                <dxg:GridColumn.EditSettings>
+                                    <dxe:DateEditSettings NullValueButtonPlacement="Popup" />
+                                </dxg:GridColumn.EditSettings>
+                            </dxg:GridColumn>
+                            <dxg:GridColumn FieldName="Entity.Entity.END_DATE" AllowBestFit="false" Width="80" Header="End" FilterPopupMode="DateAlt" HeaderToolTip="Planned date when the deliverable is going to end, this will override subjob end date, only affects planned S-Curve">
                                 <dxg:GridColumn.EditSettings>
                                     <dxe:DateEditSettings NullValueButtonPlacement="Popup" />
                                 </dxg:GridColumn.EditSettings>

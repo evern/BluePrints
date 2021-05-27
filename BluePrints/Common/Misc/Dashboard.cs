@@ -278,26 +278,22 @@ namespace BluePrints.Common.Misc
                 {
                     SummaryStats summary = (SummaryStats)commodity_code_dashboard.Stats;
                     if (summary.Budgeted != null)
-                        export_data.AddRange(buildExportDataByType(commodity_code_dashboard, StatsType.Planned, summary.Budgeted.DataPoints));
+                        export_data.AddRange(buildExportDataByType(commodity_code_dashboard, StatsType.Planned, summary.Budgeted.DataPoints, null, DOCTYPECollection));
 
                     if (summary.BudgetedLate != null)
-                        export_data.AddRange(buildExportDataByType(commodity_code_dashboard, StatsType.PlannedLate, summary.BudgetedLate.DataPoints));
+                        export_data.AddRange(buildExportDataByType(commodity_code_dashboard, StatsType.PlannedLate, summary.BudgetedLate.DataPoints, null, DOCTYPECollection));
 
                     if (summary.Earned != null)
-                        export_data.AddRange(buildExportDataByType(commodity_code_dashboard, StatsType.Earned, summary.Earned.DataPoints));
+                        export_data.AddRange(buildExportDataByType(commodity_code_dashboard, StatsType.Earned, summary.Earned.DataPoints, null, DOCTYPECollection));
 
                     if (summary.Current != null)
-                        export_data.AddRange(buildExportDataByType(commodity_code_dashboard, StatsType.Current, summary.Current.DataPoints));
-
-                    //string s = string.Empty;
-                    //if (commodity_code_dashboard.Parent_Dashboard.Parent_Dashboard.Code == "14408-200-00-D1" && commodity_code_dashboard.Parent_Dashboard.Code == "EL91" && commodity_code_dashboard.Code == "SPC")
-                    //    s = string.Empty;
+                        export_data.AddRange(buildExportDataByType(commodity_code_dashboard, StatsType.Current, summary.Current.DataPoints, null, DOCTYPECollection));
 
                     if (summary.Remaining != null)
-                        export_data.AddRange(buildExportDataByType(commodity_code_dashboard, StatsType.Remaining, summary.Remaining.DataPoints));
+                        export_data.AddRange(buildExportDataByType(commodity_code_dashboard, StatsType.Remaining, summary.Remaining.DataPoints, null, DOCTYPECollection));
 
                     if (summary.RemainingActual != null)
-                        export_data.AddRange(buildExportDataByType(commodity_code_dashboard, StatsType.RemainingActual, summary.RemainingActual.DataPoints));
+                        export_data.AddRange(buildExportDataByType(commodity_code_dashboard, StatsType.RemainingActual, summary.RemainingActual.DataPoints, null, DOCTYPECollection));
                 }
             }
 
@@ -325,7 +321,7 @@ namespace BluePrints.Common.Misc
                 {
                     DOCTYPE findDOCTYPE = DOCTYPECollection.FirstOrDefault(x => x.CODE == commodityCode);
                     if (findDOCTYPE != null)
-                        new_export_data.Department_Code = findDOCTYPE.CODE;
+                        new_export_data.Department_Code = findDOCTYPE.DEPARTMENT.CODE;
                 }
 
                 if (actual_data_points != null)
@@ -341,7 +337,7 @@ namespace BluePrints.Common.Misc
             return export_data_by_type;
         }
 
-        private static List<Dashboard_Export_Data_Point> buildExportDataByType(DashboardTreeStructure commodity_code_dashboard, StatsType stats_type, IEnumerable<ViewModel.Reporting.DataPoint> data_points, IEnumerable<ViewModel.Reporting.DataPoint> actual_data_points = null)
+        private static List<Dashboard_Export_Data_Point> buildExportDataByType(DashboardTreeStructure commodity_code_dashboard, StatsType stats_type, IEnumerable<ViewModel.Reporting.DataPoint> data_points, IEnumerable<ViewModel.Reporting.DataPoint> actual_data_points = null, IEnumerable<DOCTYPE> DOCTYPECollection = null)
         {
             List<Dashboard_Export_Data_Point> export_data_by_type = new List<Dashboard_Export_Data_Point>();
             if (data_points == null)
@@ -357,7 +353,14 @@ namespace BluePrints.Common.Misc
                 new_export_data.Costs = data_point.Costs;
                 new_export_data.Commodity_Code = commodity_code_dashboard.Code;
                 new_export_data.Discipline_Name = commodity_code_dashboard.Parent_Dashboard.Code;
-                //new_export_data.Department_Name = commodity_code_dashboard.Parent_Dashboard.Parent_Dashboard.Code;
+
+                if (DOCTYPECollection != null)
+                {
+                    DOCTYPE findDOCTYPE = DOCTYPECollection.FirstOrDefault(x => x.CODE == commodity_code_dashboard.Code);
+                    if (findDOCTYPE != null)
+                        new_export_data.Department_Code = findDOCTYPE.DEPARTMENT.CODE;
+                }
+
                 new_export_data.Subjob_Name = commodity_code_dashboard.Parent_Dashboard.Parent_Dashboard.Code;
 
                 if (actual_data_points != null)
@@ -373,7 +376,7 @@ namespace BluePrints.Common.Misc
             return export_data_by_type;
         }
 
-        private static List<Dashboard_Export_Data_Point> buildExportDataByType(BASELINE_ITEMProgress deliverable, StatsType stats_type, IEnumerable<ViewModel.Reporting.DataPoint> data_points, IEnumerable<ViewModel.Reporting.DataPoint> actual_data_points = null)
+        private static List<Dashboard_Export_Data_Point> buildExportDataByType(BASELINE_ITEMProgress deliverable, StatsType stats_type, IEnumerable<ViewModel.Reporting.DataPoint> data_points, IEnumerable<ViewModel.Reporting.DataPoint> actual_data_points = null, IEnumerable<DOCTYPE> DOCTYPECollection = null)
         {
             List<Dashboard_Export_Data_Point> export_data_by_type = new List<Dashboard_Export_Data_Point>();
             if (data_points == null)
@@ -388,7 +391,7 @@ namespace BluePrints.Common.Misc
                 new_export_data.Costs = data_point.Costs;
                 new_export_data.Commodity_Code = deliverable.Entity.Entity.INTERNAL_NUM;
                 new_export_data.Discipline_Name = deliverable.Discipline_Code;
-                //new_export_data.Department_Name = deliverable.Department_Code;
+
                 new_export_data.Subjob_Name = deliverable.Subjob_Name;
                 new_export_data.User = deliverable.User_Name;
                 new_export_data.Role = deliverable.User_Role;

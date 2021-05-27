@@ -103,20 +103,65 @@ namespace BluePrints.ViewModels
             bluePrintsUnitOfWork = bluePrintsUnitOfWorkFactory.CreateUnitOfWork();
             GlobalMethods.SetAccordionExpandedState?.Invoke(false);
 
-            exoLoadingBackgroundWorker.DoWork += ExoLoadingBackgroundWorker_DoWork;
+            exoLoadingBackgroundWorker.DoWork += exoLoadingBackgroundWorker_DoWork;
+            exoLoadingBackgroundWorker.RunWorkerCompleted += ExoLoadingBackgroundWorker_RunWorkerCompleted;
             exoLoadingBackgroundWorker.WorkerSupportsCancellation = true;
             IsLoading = true;
             isHandleLoadedGridRows = true;
             this.RaisePropertyChanged(x => x.IsLoading);
         }
 
-        private void ExoLoadingBackgroundWorker_DoWork(object sender, DoWorkEventArgs e)
+        protected override bool loadDataPointsTable()
         {
+            IsLoading = true;
+            this.RaisePropertyChanged(x => x.IsLoading);
+
+            dataPointsTable = null;
+
+            updateDataPointsTable();
+            this.RaisePropertyChanged(x => x.DataPointsTable);
+
+            IsLoading = false;
+            this.RaisePropertyChanged(x => x.IsLoading);
+            this.RaisePropertyChanged(x => x.PODetails);
+            CommonMethods.AddSaveLayoutHandler(GridControlService.GetGridColumns());
+            return true;
+        }
+
+        private void ExoLoadingBackgroundWorker_RunWorkerCompleted(object sender, RunWorkerCompletedEventArgs e)
+        {
+            isExoDataLoaded = true;
+            BackgroundRefresh();
+        }
+
+        protected override void OnClose(CancelEventArgs e)
+        {
+            exoLoadingBackgroundWorker.CancelAsync();
+            GlobalMethods.SetAccordionExpandedState?.Invoke(true);
+            base.OnClose(e);
+        }
+
+        private void exoLoadingBackgroundWorker_DoWork(object sender, DoWorkEventArgs e)
+        {
+            if (exoLoadingBackgroundWorker.CancellationPending)
+            {
+                e.Cancel = true;
+                return;
+            }
+
             loadExoData(primeroUnitOfWork);
         }
 
+        protected override void BackgroundRefresh()
+        {
+            if(isExoDataLoaded)
+                base.BackgroundRefresh();
+        }
+
+        bool isExoDataLoaded = false;
         private void loadExoData(IPrimeroEntitiesUnitOfWork primeroUOW)
         {
+            isExoDataLoaded = false;
             //cannot put in assigncallback mainviewmodel because it can take too long and mainviewmodel will be null
             allExoPos = BluePrintsDataUtils.GetEXOPO(primeroUOW, loadPROJECT.NUMBER, ActualsCutOffDate, null, true);
             allExoActuals = BluePrintsDataUtils.GetMaterials(primeroUOW, loadPROJECT.NUMBER, ActualsCutOffDate, null, 1, true);
@@ -129,7 +174,7 @@ namespace BluePrints.ViewModels
             //}
 
             generateAlignedDataDates();
-            mainThreadDispatcher.BeginInvoke(new Action(() => loadDataPointsTable()));
+            isExoDataLoaded = true;
         }
 
         private void CloseEditorDispatcher_Tick(object sender, EventArgs e)
@@ -442,22 +487,6 @@ namespace BluePrints.ViewModels
             }
         }
 
-        private void loadDataPointsTable()
-        {
-            IsLoading = true;
-            this.RaisePropertyChanged(x => x.IsLoading);
-
-            dataPointsTable = null;
-
-            updateDataPointsTable();
-            this.RaisePropertyChanged(x => x.DataPointsTable);
-
-            IsLoading = false;
-            this.RaisePropertyChanged(x => x.IsLoading);
-            this.RaisePropertyChanged(x => x.PODetails);
-            CommonMethods.AddSaveLayoutHandler(GridControlService.GetGridColumns());
-        }
-
         private void updateDataPointsTable()
         {
             GridControlService.BeginDataUpdate();
@@ -681,7 +710,7 @@ namespace BluePrints.ViewModels
                 findFORECAST_PO.JOB_CODE = groupByCodesPOItem.JobCode;
                 findFORECAST_PO.DISCIPLINE_CODE = groupByCodesPOItem.DisciplineCode;
                 findFORECAST_PO.COMMODITY_CODE = groupByCodesPOItem.CommodityCode;
-                findFORECAST_PO.STOCK_CODE = groupByCodesPOItem.StockCode;
+                findFORECAST_PO.STOCK_CODE = groupByCodesPOItem.StockCode == null ? "" : groupByCodesPOItem.StockCode;
                 findFORECAST_PO.VARIATION_CODE = groupByCodesPOItem.VariationCode;
                 findFORECAST_PO.FORECAST_DATE = new DateTime(forecastDate.Year, forecastDate.Month, forecastDate.Day);
                 if (viewCosts == null || ((decimal)viewCosts) == 0.00m)
@@ -1001,12 +1030,7 @@ namespace BluePrints.ViewModels
                     where ((POForecastProjection)dr[columnEntity]).PONO == PONumber && ((POForecastProjection)dr[columnEntity]).VariationCode == variationCode
                     select dr).FirstOrDefault();
         }
-
-        public override bool CanFullRefresh()
-        {
-            return !IsLoading;
-        }
-
+        
         public override void FullRefresh()
         {
             if (!CanFullRefresh())
@@ -1427,12 +1451,6 @@ namespace BluePrints.ViewModels
         public override string ViewName
         {
             get { return "PROJECTPOForecastViewModelWrapper_v2"; }
-        }
-
-        protected override void OnClose(CancelEventArgs e)
-        {
-            GlobalMethods.SetAccordionExpandedState?.Invoke(true);
-            base.OnClose(e);
         }
         #endregion
 

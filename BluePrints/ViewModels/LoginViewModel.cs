@@ -34,6 +34,7 @@ namespace BluePrints.ViewModels
         enum UserAuthenticationResult
         {
             UsernameNotAdded,
+            UsernameInactive,
             RoleNotAssigned,
             InvalidUsernameOrPassword,
             Authenticated,
@@ -92,7 +93,7 @@ namespace BluePrints.ViewModels
         {
             string themeName = Properties.Settings.Default["ThemeName"] as string;
             if (themeName == "")
-                themeName = "Office2016Colorful";
+                themeName = "Win10Light";
             ApplicationThemeHelper.ApplicationThemeName = themeName;
             delayedConnectDispatcher.Start();
         }
@@ -181,7 +182,7 @@ namespace BluePrints.ViewModels
 
                 if (LoginCredentials.IsAdmin)
                 {
-                    //LoginCredentials.CurrentUser = USERS.FirstOrDefault(x => x.NAME.ToUpper() == "ESME.WILMOT");
+                    //LoginCredentials.CurrentUser = USERS.First(x => x.FIRST_NAME == "Su");
                     LoginCredentials.CurrentUser = new USER() { NAME = BluePrintsResources.Default_AdminUsername };
                     USER_PREFERENCE forecastActualPreference = new USER_PREFERENCE();
                     //forecastActualPreference.PREFERENCE_NAME = DataUtils.GetNameOf(() => UserPreferences.Forecast_ShowActuals);
@@ -217,13 +218,16 @@ namespace BluePrints.ViewModels
         {
             get
             {
-                var user = USERS.Where(x => x.LEAVE_DATE == null).FirstOrDefault(x => x.NAME.ToLower() == UserName.ToLower());
+                var user = USERS.FirstOrDefault(x => x.NAME.ToLower() == UserName.ToLower());
                 if (user == null)
                     return UserAuthenticationResult.UsernameNotAdded;
                 else
                 {
                     if (user.GUID_ROLE == Guid.Empty)
                         return UserAuthenticationResult.RoleNotAssigned;
+
+                    if (user.LEAVE_DATE != null)
+                        return UserAuthenticationResult.UsernameInactive;
 
                     if (UserName != null && UserPassword != null)
                     {
@@ -272,6 +276,11 @@ namespace BluePrints.ViewModels
             if(authenticationResult == UserAuthenticationResult.InvalidUsernameOrPassword.ToString())
             {
                 errorText = "Invalid username or password";
+                ShowError(true, errorText);
+            }
+            else if (authenticationResult == UserAuthenticationResult.UsernameInactive.ToString())
+            {
+                errorText = "User has left the company";
                 ShowError(true, errorText);
             }
             else if (authenticationResult == UserAuthenticationResult.RoleNotAssigned.ToString())

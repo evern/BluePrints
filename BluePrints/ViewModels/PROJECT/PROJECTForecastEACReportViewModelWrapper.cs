@@ -53,14 +53,13 @@ namespace BluePrints.ViewModels
 
         private IUnitOfWorkFactory<IBluePrintsEntitiesUnitOfWork> bluePrintsUnitOfWorkFactory = BluePrintsEntitiesUnitOfWorkSource.GetUnitOfWorkFactory();
         protected IUnitOfWorkFactory<IPrimeroEntitiesUnitOfWork> primeroUnitOfWorkFactory = PrimeroEntitiesUnitOfWorkSource.GetUnitOfWorkFactory();
-        public bool IsLoadingForecast { get; set; }
         private PROJECT loadPROJECT;
         List<ExoTimeAuthorisation> exoLines;
         private static string notAvailableStr = "Doesn't Exists in Exo";
         protected override void resolveParameters(object parameter)
         {
-            IsLoadingForecast = true;
-            this.RaisePropertyChanged(x => x.IsLoadingForecast);
+            IsLoading = true;
+            this.RaisePropertyChanged(x => x.IsLoading);
             var PROJECTParameter = (EntitiesParameter<PROJECT>)parameter;
             loadPROJECT = PROJECTParameter.GetEntity();
         }
@@ -75,14 +74,15 @@ namespace BluePrints.ViewModels
             CreateMainViewModel(bluePrintsUnitOfWorkFactory, x => x.FORECAST_EACS);
         }
 
-        private void loadDataPointsTable()
+        protected override bool loadDataPointsTable()
         {
             dataPointsTable = null;
-
             updateDataPointsTable();
             this.RaisePropertyChanged(x => x.DataPointsTable);
-            this.RaisePropertyChanged(x => x.IsLoadingForecast);
             CommonMethods.AddSaveLayoutHandler(GridControlService.GetGridColumns());
+            IsLoading = false;
+            this.RaisePropertyChanged(x => x.IsLoading);
+            return true;
         }
 
         DataTable dataPointsTable = null;
@@ -150,7 +150,6 @@ namespace BluePrints.ViewModels
 
             GridControlService.GridControl.EndDataUpdate();
             LoadingScreenManager.CloseLoadingScreen();
-            IsLoadingForecast = false;
         }
 
         private void updateDataTable(ForecastEACProjection job)
@@ -248,12 +247,6 @@ namespace BluePrints.ViewModels
             base.AssignCallBacksAndRaisePropertyChange(entities);
         }
 
-        protected override void OnAfterAssignedCallbackAndRaisePropertyChanged()
-        {
-            loadDataPointsTable();
-            base.OnAfterAssignedCallbackAndRaisePropertyChanged();
-        }
-
         public override string UnifiedValueValidation(FORECAST_EAC projection, string field_name, object new_value, bool isPaste)
         {
             return string.Empty;
@@ -264,15 +257,21 @@ namespace BluePrints.ViewModels
             return string.Empty;
         }
 
+        public override bool CanFullRefresh()
+        {
+            if (dataPointsTable == null)
+                return false;
+
+            return base.CanFullRefresh();
+        }
+
         public override void FullRefresh()
         {
-            if (!CanFullRefresh())
-                return;
-
-            IsLoadingForecast = true;
-            this.RaisePropertyChanged(x => x.IsLoadingForecast);
+            IsLoading = true;
+            this.RaisePropertyChanged(x => x.IsLoading);
             alignedDataDateCollection.Clear();
             dataPointsTable = null;
+            this.RaisePropertyChanged(x => x.DataPointsTable);
             base.FullRefresh();
         }
         #endregion

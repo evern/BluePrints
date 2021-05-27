@@ -64,14 +64,14 @@ namespace BluePrints.Common
                 return PermissionStatus.All;
         }
 
-        public static bool GetUserPreferenceBool(string preferenceName)
+        public static bool? GetUserPreferenceBool(string preferenceName)
         {
             if (currentUser == null || currentUser.UserPreferences.Count() == 0)
-                return false;
+                return null;
 
             USER_PREFERENCE findUSER_PREFERENCE = currentUser.UserPreferences.FirstOrDefault(x => x.PREFERENCE_NAME == preferenceName);
             if (findUSER_PREFERENCE == null)
-                return false;
+                return null;
             else
             {
                 if (findUSER_PREFERENCE.PREFERENCE_VALUE == UserPreferences.PreferenceTrueValue)
