@@ -1541,13 +1541,6 @@ namespace BluePrints.ViewModels
             return "Entity.Entity." + cleanFieldName;
         }
 
-        protected override void onAfterRefresh()
-        {
-            allowSubJobDeletion = false;
-            allowWorkpackDeletion = false;
-            base.onAfterRefresh();
-        }
-
         private string generateInternalNumber(BASELINE_ITEMProgress projectionEntity, out string errorMessage)
         {
             if (projectionEntity.Entity.Entity.INTERNAL_NUM != null && projectionEntity.Entity.Entity.INTERNAL_NUM != string.Empty)

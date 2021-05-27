@@ -171,15 +171,6 @@ namespace BluePrints.ViewModels
         #endregion
 
         #region IEntityNumber
-        protected override int? DefaultNumericFieldLength()
-        {
-            return Int32.Parse(BluePrintsResources.Default_Register_Numeric_Length);
-        }
-
-        protected override bool AllowReorderingOnDeletion()
-        {
-            return false;
-        }
         #endregion
 
         #region View Properties
@@ -216,6 +207,16 @@ namespace BluePrints.ViewModels
         public override string UnifiedValueValidation(REGISTER_RISK projection, string field_name, object new_value, bool isPaste)
         {
             return string.Empty;
+        }
+
+        protected override string GetEntityNumberFieldName()
+        {
+            throw new NotImplementedException();
+        }
+
+        protected override int DefaultNumericFieldLength()
+        {
+            throw new NotImplementedException();
         }
 
         public IEnumerable<AREA> AREACollection

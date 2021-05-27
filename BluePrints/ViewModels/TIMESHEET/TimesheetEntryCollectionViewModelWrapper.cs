@@ -242,12 +242,6 @@ namespace BluePrints.ViewModels
             mainThreadDispatcher.BeginInvoke(new Action(() => loadDataPointsTable()));
         }
 
-        protected override void onAfterRefresh()
-        {
-            base.onAfterRefresh();
-            refreshDataPointsTable();
-        }
-
         public override void OnAfterAuxiliaryEntitiesChanged(object key, Type changedType, EntityMessageType messageType, object sender, Guid senderKey, bool isBulkRefresh)
         {
             base.OnAfterAuxiliaryEntitiesChanged(key, changedType, messageType, sender, senderKey, isBulkRefresh);

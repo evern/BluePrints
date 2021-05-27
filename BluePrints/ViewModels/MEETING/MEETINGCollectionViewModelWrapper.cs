@@ -143,14 +143,9 @@ namespace BluePrints.ViewModels
         #endregion
 
         #region IEntityNumber
-        protected override int? DefaultNumericFieldLength()
+        protected override int DefaultNumericFieldLength()
         {
             return Int32.Parse(BluePrintsResources.Default_Register_Numeric_Length);
-        }
-
-        protected override bool AllowReorderingOnDeletion()
-        {
-            return false;
         }
         #endregion
 
@@ -383,6 +378,11 @@ namespace BluePrints.ViewModels
                     "[" + SelectedEntity.EntityNumber + "] Agenda");
 
             DocumentManagerService.ShowExistingEntityDocumentWithLogging(DocumentInfo, this);
+        }
+
+        protected override string GetEntityNumberFieldName()
+        {
+            throw new NotImplementedException();
         }
         #endregion
     }

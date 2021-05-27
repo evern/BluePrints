@@ -228,14 +228,9 @@ namespace BluePrints.ViewModels
         #endregion
 
         #region IEntityNumber
-        protected override int? DefaultNumericFieldLength()
+        protected override int DefaultNumericFieldLength()
         {
             return Int32.Parse(BluePrintsResources.Default_Register_Numeric_Length);
-        }
-
-        protected override bool AllowReorderingOnDeletion()
-        {
-            return false;
         }
         #endregion
 
@@ -522,6 +517,11 @@ namespace BluePrints.ViewModels
                 MainViewModel.Save(SelectedEntity);
                 TableViewService.CommitEditing();
             }
+        }
+
+        protected override string GetEntityNumberFieldName()
+        {
+            throw new NotImplementedException();
         }
 
         public IEnumerable<AREA> AREACollection

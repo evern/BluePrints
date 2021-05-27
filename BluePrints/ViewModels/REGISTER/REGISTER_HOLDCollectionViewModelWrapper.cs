@@ -182,14 +182,9 @@ namespace BluePrints.ViewModels
         #endregion
 
         #region IEntityNumber
-        protected override int? DefaultNumericFieldLength()
+        protected override int DefaultNumericFieldLength()
         {
             return Int32.Parse(BluePrintsResources.Default_Register_Numeric_Length);
-        }
-        
-        protected override bool AllowReorderingOnDeletion()
-        {
-            return false;
         }
         #endregion
 
@@ -219,6 +214,10 @@ namespace BluePrints.ViewModels
             return loadPROJECT.NUMBER + "_Register_Hold";
         }
 
+        protected override string GetEntityNumberFieldName()
+        {
+            throw new NotImplementedException();
+        }
 
         public CollectionViewModel<REGISTER_HOLD_REF, REGISTER_HOLD_REF, Guid, IBluePrintsEntitiesUnitOfWork> REGISTER_HOLD_REFCollectionViewModel
         {

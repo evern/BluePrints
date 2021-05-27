@@ -103,12 +103,6 @@ namespace BluePrints.ViewModels
                 stage.Update();
             }
         }
-
-        protected override void newProjectionPropertyOverride(CONSTRUCTION_STAGE projection)
-        {
-            projection.WEIGHT_PERCENTAGE = 0;
-            base.newProjectionPropertyOverride(projection);
-        }
         #endregion
 
         #region Saving Behavior
@@ -117,7 +111,7 @@ namespace BluePrints.ViewModels
             if(projection.SORT_ORDER == 0)
             {
                 List<CONSTRUCTION_STAGE> unsavedEntities = new List<CONSTRUCTION_STAGE>();
-                projection.EntityNumber = StringFormatUtils.GetNewRegisterNumber(MainViewModel.Entities, unsavedEntities, MainViewModel.SelectedEntities, projection.EntityGroup);
+                //projection.EntityNumber = StringFormatUtils.GetNewRegisterNumber(MainViewModel.Entities, unsavedEntities, MainViewModel.SelectedEntities, projection.EntityGroup);
             }
 
             projection.GUID_PROJECT = contextPROJECT.GUID;
@@ -148,7 +142,7 @@ namespace BluePrints.ViewModels
             {
                 List<CONSTRUCTION_STAGE> unsavedEntities = new List<CONSTRUCTION_STAGE>();
                 projection.SCORE_CARD_DISCIPLINE = (ScoreCardDiscipline)new_value;
-                projection.EntityNumber = StringFormatUtils.GetNewRegisterNumber(MainViewModel.Entities, unsavedEntities, MainViewModel.SelectedEntities, projection.EntityGroup);
+                //projection.EntityNumber = StringFormatUtils.GetNewRegisterNumber(MainViewModel.Entities, unsavedEntities, MainViewModel.SelectedEntities, projection.EntityGroup);
             }
 
             base.UnifiedCellValueChanging(field_name, old_value, new_value, projection, isNew);
@@ -160,14 +154,14 @@ namespace BluePrints.ViewModels
         }
 
         #region IEntityNumber
-        protected override int? DefaultNumericFieldLength()
+        protected override int DefaultNumericFieldLength()
         {
-            return null;
+            return 0;
         }
 
-        protected override bool AllowReorderingOnDeletion()
+        protected override string GetEntityNumberFieldName()
         {
-            return true;
+            throw new NotImplementedException();
         }
         #endregion
         #endregion
