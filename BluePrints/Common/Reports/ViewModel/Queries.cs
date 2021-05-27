@@ -192,7 +192,7 @@ namespace BluePrints.Common.ViewModel.Reporting
             if (PROGRESS == null)
                 baseline_item_queryable = new List<BASELINE_ITEMProjection>().AsQueryable();
             else
-                baseline_item_queryable = BASELINE_ITEMProjectionQueries.BASELINE_ITEM_Rates_Transformation(BASELINE_ITEMS, RATES, showLoadingScreen);
+                baseline_item_queryable = BASELINE_ITEMProjectionQueries.IDeliverable_Rates_Transformation(BASELINE_ITEMS, RATES, showLoadingScreen);
 
             //commented out because multiple resources and weighting isn't used
             //need to cast to list if not AssignUserObject won't stick
