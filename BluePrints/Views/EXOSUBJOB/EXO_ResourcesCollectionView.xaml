@@ -151,6 +151,11 @@
                                         </DataTemplate>
                                     </dxg:GridColumn.CellTemplate>
                                 </dxg:GridColumn>
+                                <dxg:GridColumn FieldName="IsExistInBP" Header="Is BP User" >
+                                    <dxg:GridColumn.EditSettings>
+                                        <dxe:CheckEditSettings />
+                                    </dxg:GridColumn.EditSettings>
+                                </dxg:GridColumn>
                             </dxg:GridControl.Columns>
                             <dxg:GridControl.TotalSummary>
                                 <dxg:GridSummaryItem dxc:DXSerializer.Enabled="False" SummaryType="Count" />

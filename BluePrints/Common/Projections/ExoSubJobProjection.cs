@@ -2273,7 +2273,7 @@ namespace BluePrints.Common.Projections
             return timesheetLineNarratives.Select(x => x.Narrative).Distinct().OrderBy(x => x).ToList();
         }
 
-        public static IQueryable<ExoResourceProjection> GetResources(IPrimeroEntitiesUnitOfWork primeroUnitOfWork)
+        public static IQueryable<ExoResourceProjection> GetResources(IPrimeroEntitiesUnitOfWork primeroUnitOfWork, IEnumerable<USER> USERCollection)
         {
             var resources = from JOBCOST_RESOURCE in primeroUnitOfWork.JOBCOST_RESOURCE
                                      join STAFF in primeroUnitOfWork.STAFF
@@ -2283,8 +2283,14 @@ namespace BluePrints.Common.Projections
                                      where JOBCOST_RESOURCE.ISACTIVE == "Y"
                             select new { JOBCOST_RESOURCE.SEQNO, STAFF.STAFFNO, STAFF.PAYROLL_ID, JOBCOST_STAFFNO = JOBCOST_RESOURCE.STAFFNO, JOBCOST_RESOURCE.RESOURCENAME, JOBCOST_RESOURCE.TITLE, JOBCOST_RESOURCE.DEFAULT_STOCKCODE, JOBCOST_RESOURCE.SHORTCODE, STAFF.SECURITYPROFILEID, STAFF.USERPROFILEID, STAFF.REPORTS_TO_STAFFNO, STOCK_ITEMS.SELLPRICE1, STOCK_ITEMS.STDCOST, STOCK_ITEMS.SALES_GL_CODE, STOCK_ITEMS.PURCH_GL_CODE, STOCK_ITEMS.COS_GL_CODE, STOCK_ITEMS.COSTTYPE, STOCK_ITEMS.COSTGROUP, STOCK_ITEMS.X_DEPARTMENT };
 
-            //EntityKey is used to prevent duplicate error message
-            return resources.ToList().Select(x => ViewModelSource.Create(() => new ExoResourceProjection() { GUID = Guid.NewGuid(), STAFFNO = x.STAFFNO, PAYROLL_ID = x.PAYROLL_ID, RESOURCE_SEQNO = x.SEQNO, RESOURCENAME = x.RESOURCENAME, TITLE = x.TITLE, DEFAULT_STOCKCODE = x.DEFAULT_STOCKCODE, SECURITYPROFILEID = x.SECURITYPROFILEID, USERPROFILEID = x.USERPROFILEID, REPORTS_TO_STAFFNO = x.REPORTS_TO_STAFFNO, SHORTCODE = x.SHORTCODE, IsViewNewRow = false, STDCOST = x.STDCOST, SELLPRICE1 = x.SELLPRICE1, SALES_GL_CODE = x.SALES_GL_CODE, PURCH_GL_CODE = x.PURCH_GL_CODE, COS_GL_CODE = x.COS_GL_CODE, COSTGROUP = x.COSTGROUP, COSTTYPE = x.COSTTYPE, DEPARTMENT = x.X_DEPARTMENT })).AsQueryable();
+            List<ExoResourceProjection> exoResources = resources.ToList().Select(x => ViewModelSource.Create(() => new ExoResourceProjection() { GUID = Guid.NewGuid(), STAFFNO = x.STAFFNO, PAYROLL_ID = x.PAYROLL_ID, RESOURCE_SEQNO = x.SEQNO, RESOURCENAME = x.RESOURCENAME, TITLE = x.TITLE, DEFAULT_STOCKCODE = x.DEFAULT_STOCKCODE, SECURITYPROFILEID = x.SECURITYPROFILEID, USERPROFILEID = x.USERPROFILEID, REPORTS_TO_STAFFNO = x.REPORTS_TO_STAFFNO, SHORTCODE = x.SHORTCODE, IsViewNewRow = false, STDCOST = x.STDCOST, SELLPRICE1 = x.SELLPRICE1, SALES_GL_CODE = x.SALES_GL_CODE, PURCH_GL_CODE = x.PURCH_GL_CODE, COS_GL_CODE = x.COS_GL_CODE, COSTGROUP = x.COSTGROUP, COSTTYPE = x.COSTTYPE, DEPARTMENT = x.X_DEPARTMENT})).ToList();
+            foreach(ExoResourceProjection exoResource in exoResources)
+            {
+                if (USERCollection.Any(x => x.EXO_STAFF_ID == exoResource.STAFFNO))
+                    exoResource.IsExistInBP = true;
+            }
+            
+            return exoResources.AsQueryable();
         }
 
         public static IEnumerable<JOBCOST_HDR> GetSlaveExoLines(IPrimeroEntitiesUnitOfWork primeroUnitOfWork, int masterJobNo)
