@@ -246,6 +246,7 @@ namespace BluePrints.ViewModels
                             newUSER.LAST_NAME = activeDirectoryUSER.LAST_NAME;
                             newUSER.DESCRIPTION = activeDirectoryUSER.DESCRIPTION;
                             newUSER.TITLE = activeDirectoryUSER.TITLE;
+                            newUSER.START_DATE = DateTime.Now;
 
                             DEPARTMENT findDEPARTMENT = DEPARTMENTCollection.FirstOrDefault(x => x.NAME.ToUpper() == activeDirectoryUSER.DEPARTMENT.ToUpper());
                             if (findDEPARTMENT == null)
@@ -273,7 +274,7 @@ namespace BluePrints.ViewModels
                                 }
                             }
 
-                            var bulkEditRoleViewModel = BulkEditEnumsViewModel.Create(restrictedROLECollection, "NAME");
+                            var bulkEditRoleViewModel = BulkEditEnumsViewModel.Create(RestrictedROLECollection, "NAME");
                             if (BulkColumnEditDialogService.ShowDialog(MessageButton.OKCancel, "Please Select Role",
                                     "BulkEditEnums", bulkEditRoleViewModel) == MessageResult.OK)
                             {
@@ -304,33 +305,33 @@ namespace BluePrints.ViewModels
             if (!projection.IsViewNewRow && (IsChangingValueFromBackgroundEvents && !MainViewModel.EntitiesUndoRedoManager.IsInUndoRedoOperation || CellValueChangingFieldName != null))
             {
                 string validateFieldName = field_name;
-                if (!IsChangingValueFromBackgroundEvents && CellValueChangingFieldName != null)
-                    validateFieldName = CellValueChangingFieldName;
-
-                if (validateFieldName == BindableBase.GetPropertyName(() => new ExoResourceProjection().SHORTCODE) || validateFieldName == BindableBase.GetPropertyName(() => new ExoResourceProjection().DEFAULT_STOCKCODE))
+                if (!IsChangingValueFromBackgroundEvents && CellValueChangingFieldName != null && CellValueChangingFieldName == validateFieldName)
                 {
-                    if (MessageBoxService.ShowMessage("Are you sure you want to change " + field_name + " for " + projection.RESOURCENAME + "?", "Warning", MessageButton.OKCancel, MessageIcon.Warning) == MessageResult.Cancel)
-                        return "Operation cancelled";
-                }
-                else if (validateFieldName == BindableBase.GetPropertyName(() => new ExoResourceProjection().IsExistInBP))
-                {
-                    if (((bool)new_value))
+                    if (validateFieldName == BindableBase.GetPropertyName(() => new ExoResourceProjection().SHORTCODE) || validateFieldName == BindableBase.GetPropertyName(() => new ExoResourceProjection().DEFAULT_STOCKCODE))
                     {
-                        USER newUSER = USERCollection.FirstOrDefault(x => x.EXO_STAFF_ID == projection.STAFFNO);
-                        if (newUSER == null)
-                        {
-                            USER activeDirectoryUSER = getActiveDirectoryUser(projection.RESOURCENAME);
-                            if (activeDirectoryUSER == null)
-                                return "Cannot add user because user doesn't exist in active directory";
-                        }
-
-                        if (MessageBoxService.ShowMessage("Are you sure you add " + projection.RESOURCENAME + " to BluePrints?", "Confirmation", MessageButton.OKCancel, MessageIcon.Warning) == MessageResult.Cancel)
+                        if (MessageBoxService.ShowMessage("Are you sure you want to change " + field_name + " for " + projection.RESOURCENAME + "?", "Warning", MessageButton.OKCancel, MessageIcon.Warning) == MessageResult.Cancel)
                             return "Operation cancelled";
                     }
-                    else
+                    else if (validateFieldName == BindableBase.GetPropertyName(() => new ExoResourceProjection().IsExistInBP))
                     {
-                        MessageBoxService.ShowMessage("Please remove user from User maintenance in BluePrints", "Confirmation", MessageButton.OK, MessageIcon.Warning);
-                        return "Operation cancelled";
+                        if (((bool)new_value))
+                        {
+                            USER newUSER = USERCollection.FirstOrDefault(x => x.EXO_STAFF_ID == projection.STAFFNO);
+                            if (newUSER == null)
+                            {
+                                USER activeDirectoryUSER = getActiveDirectoryUser(projection.RESOURCENAME);
+                                if (activeDirectoryUSER == null)
+                                    return "Cannot add user because user doesn't exist in active directory";
+                            }
+
+                            if (MessageBoxService.ShowMessage("Are you sure you add " + projection.RESOURCENAME + " to BluePrints?", "Confirmation", MessageButton.OKCancel, MessageIcon.Warning) == MessageResult.Cancel)
+                                return "Operation cancelled";
+                        }
+                        else
+                        {
+                            MessageBoxService.ShowMessage("Please remove user from User maintenance in BluePrints", "Confirmation", MessageButton.OK, MessageIcon.Warning);
+                            return "Operation cancelled";
+                        }
                     }
                 }
             }

@@ -214,9 +214,6 @@ namespace BluePrints.ViewModels
 
         private static int? getExoStaffId(USER bluePrintsUser, IEnumerable<STAFF> officeSpecificStaffCollection)
         {
-            if (bluePrintsUser.GUID_OFFICE == null)
-                return null;
-
             string exoGuessUserName = bluePrintsUser.FIRST_NAME.ToUpper() + " " + bluePrintsUser.LAST_NAME.ToUpper();
             STAFF exoSTAFF = officeSpecificStaffCollection.FirstOrDefault(x => x.NAME.Contains(exoGuessUserName));
             if (exoSTAFF != null)
