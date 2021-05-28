@@ -122,14 +122,14 @@ namespace BluePrints.ViewModels
             user.Update();
         }
 
-        public IEnumerable<Guid> ChildrenRoles(Guid roleGuid)
+        public static IEnumerable<Guid> ChildrenRoles(Guid roleGuid, IEnumerable<ROLE> ROLECollection)
         {
             foreach (var role in ROLECollection)
                 if (role.PARENTGUID == roleGuid)
                 {
                     yield return role.GUID;
 
-                    foreach (var entityChild in ChildrenRoles(role.GUID))
+                    foreach (var entityChild in ChildrenRoles(role.GUID, ROLECollection))
                         yield return entityChild;
                 }
         }
@@ -212,16 +212,12 @@ namespace BluePrints.ViewModels
 
         #region View Properties
 
-        private int? getExoStaffId(USER bluePrintsUser, IEnumerable<STAFF> officeSpecificStaffCollection)
+        private static int? getExoStaffId(USER bluePrintsUser, IEnumerable<STAFF> officeSpecificStaffCollection)
         {
             if (bluePrintsUser.GUID_OFFICE == null)
                 return null;
 
             string exoGuessUserName = bluePrintsUser.FIRST_NAME.ToUpper() + " " + bluePrintsUser.LAST_NAME.ToUpper();
-            OFFICE findOffice = OFFICECollection.FirstOrDefault(x => x.GUID == bluePrintsUser.GUID_OFFICE);
-            if (findOffice == null)
-                return null;
-
             STAFF exoSTAFF = officeSpecificStaffCollection.FirstOrDefault(x => x.NAME.Contains(exoGuessUserName));
             if (exoSTAFF != null)
             {
@@ -260,37 +256,34 @@ namespace BluePrints.ViewModels
                 return;
             }
 
-            bool showErrorMessage = false;
             List<USER> userToSave = new List<USER>();
             foreach(USER entity in SelectedEntities)
             {
-                if (entity.GUID_OFFICE == null)
-                {
-                    showErrorMessage = true;
-                    continue;
-                }
-
-                int? exoPerthId = getExoStaffId(entity, PerthSTAFFCollection);
-                if(exoPerthId != null)
-                {
-                    entity.EXO_STAFF_ID = exoPerthId;
+                if(PopulateUserStaffIds(entity, PerthSTAFFCollection, MontrealSTAFFCollection))
                     userToSave.Add(entity);
-                }
-
-                int? exoMontrealId = getExoStaffId(entity, MontrealSTAFFCollection);
-                if (exoMontrealId != null)
-                {
-                    entity.EXO_STAFF_ID_REMOTE = exoMontrealId;
-                    userToSave.Add(entity);
-                }
-            }
-
-            if (showErrorMessage)
-            {
-                MessageBoxService.ShowMessage("Cannot assign Exo user because office isn't populated, please populate office then try again", "Error", MessageButton.OK, MessageIcon.Information);
             }
 
             MainViewModel.BaseBulkSave(userToSave);
+        }
+
+        public static bool PopulateUserStaffIds(USER entity, IEnumerable<STAFF> PerthSTAFFCollection, IEnumerable<STAFF> MontrealSTAFFCollection)
+        {
+            int? exoPerthId = getExoStaffId(entity, PerthSTAFFCollection);
+            bool shouldSave = false;
+            if (exoPerthId != null)
+            {
+                entity.EXO_STAFF_ID = exoPerthId;
+                shouldSave = true;
+            }
+
+            int? exoMontrealId = getExoStaffId(entity, MontrealSTAFFCollection);
+            if (exoMontrealId != null)
+            {
+                entity.EXO_STAFF_ID_REMOTE = exoMontrealId;
+                shouldSave = true;
+            }
+
+            return shouldSave;
         }
 
         public bool CanTrimUsers()
@@ -412,23 +405,30 @@ namespace BluePrints.ViewModels
             }
         }
 
+        List<ROLE> restrictedROLECollection;
         public IEnumerable<ROLE> RestrictedROLECollection
         {
             get
             {
                 var collection = GetEntities<ROLE>();
-                if (collection != null)
-                {
-                    if (LoginCredentials.IsAdmin)
-                        collection = collection.OrderBy(x => x.NAME);
-                    else if (LoginCredentials.CurrentUser.GUID_ROLE == null)
-                        collection = collection.Where(x => x.GUID == Guid.Empty);
-                    else
-                        collection = collection.Where(x => x.GUID == LoginCredentials.CurrentUser.GUID_ROLE || ChildrenRoles((Guid)LoginCredentials.CurrentUser.GUID_ROLE).Contains((Guid)x.GUID)).OrderBy(x => x.NAME);
-                }
+                if (restrictedROLECollection == null)
+                    restrictedROLECollection = GetRestrictedRoleCollection(collection);
 
-                return collection;
+                return restrictedROLECollection;
             }
+        }
+
+        public static List<ROLE> GetRestrictedRoleCollection(IEnumerable<ROLE> ROLECollection)
+        {
+            List<ROLE> returnRoleCollection;
+            if (LoginCredentials.IsAdmin)
+                returnRoleCollection = ROLECollection.OrderBy(x => x.NAME).ToList();
+            else if (LoginCredentials.CurrentUser.GUID_ROLE == null)
+                returnRoleCollection = ROLECollection.Where(x => x.GUID == Guid.Empty).ToList();
+            else
+                returnRoleCollection = ROLECollection.Where(x => x.GUID == LoginCredentials.CurrentUser.GUID_ROLE || ChildrenRoles((Guid)LoginCredentials.CurrentUser.GUID_ROLE, ROLECollection).Contains((Guid)x.GUID)).OrderBy(x => x.NAME).ToList();
+
+            return returnRoleCollection;
         }
 
         public IEnumerable<DEPARTMENT> DEPARTMENTCollection

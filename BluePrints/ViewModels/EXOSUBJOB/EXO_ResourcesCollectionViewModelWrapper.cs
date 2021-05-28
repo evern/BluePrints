@@ -1,6 +1,8 @@
 ﻿using BaseModel.Data.Helpers;
 using BaseModel.DataModel;
 using BaseModel.Misc;
+using BaseModel.ViewModel.Base;
+using BaseModel.ViewModel.Dialogs;
 using BluePrints.BluePrintsEntitiesDataModel;
 using BluePrints.Common;
 using BluePrints.Common.Base;
@@ -54,7 +56,8 @@ namespace BluePrints.ViewModels
 
         private readonly IPrimeroEntitiesUnitOfWork primeroUnitOfWork = PrimeroEntitiesUnitOfWorkSource.GetUnitOfWorkFactory().CreateUnitOfWork();
         private readonly IPrimeroEntitiesUnitOfWork pgaUnitOfWork = PrimeroEntitiesUnitOfWorkSource.GetUnitOfWorkFactory(true).CreateUnitOfWork();
-
+        private readonly IUnitOfWorkFactory<IBluePrintsEntitiesUnitOfWork> bluePrintsUnitOfWorkFactory = BluePrintsEntitiesUnitOfWorkSource.GetUnitOfWorkFactory();
+        List<USER> activeDirectoryUSERS;
         protected override void resolveParameters(object parameter)
         {
             AlwaysSkipMessage = true;
@@ -66,6 +69,10 @@ namespace BluePrints.ViewModels
             loaderCollection.AddLoaderDescription<JOB_COSTTYPES, JOB_COSTTYPES, int, IPrimeroEntitiesUnitOfWork>(primeroUnitOfWorkFactory, x => x.JOB_COSTTYPES);
             loaderCollection.AddLoaderDescription<JOB_COSTGROUPS, JOB_COSTGROUPS, int, IPrimeroEntitiesUnitOfWork>(primeroUnitOfWorkFactory, x => x.JOB_COSTGROUPS);
             loaderCollection.AddLoaderDescription<PROFILE, PROFILE, int, IPrimeroEntitiesUnitOfWork>(primeroUnitOfWorkFactory, x => x.PROFILE);
+            loaderCollection.AddLoaderDescription<USER, USER, Guid, IBluePrintsEntitiesUnitOfWork>(bluePrintsUnitOfWorkFactory, x => x.USERS);
+            loaderCollection.AddLoaderDescription<DEPARTMENT, DEPARTMENT, Guid, IBluePrintsEntitiesUnitOfWork>(bluePrintsUnitOfWorkFactory, x => x.DEPARTMENTS);
+            loaderCollection.AddLoaderDescription<DISCIPLINE, DISCIPLINE, Guid, IBluePrintsEntitiesUnitOfWork>(bluePrintsUnitOfWorkFactory, x => x.DISCIPLINES);
+            loaderCollection.AddLoaderDescription<ROLE, ROLE, Guid, IBluePrintsEntitiesUnitOfWork>(bluePrintsUnitOfWorkFactory, x => x.ROLES);
         }
 #endregion
 
@@ -76,7 +83,7 @@ namespace BluePrints.ViewModels
 
         protected override Func<IRepositoryQuery<JOBCOST_RESOURCE>, IQueryable<ExoResourceProjection>> specifyMainViewModelProjection()
         {
-            return query => ExoQueries.GetResources(primeroUnitOfWork);
+            return query => ExoQueries.GetResources(primeroUnitOfWork, USERCollection);
         }
 
         protected override void AssignCallBacksAndRaisePropertyChange(IEnumerable<ExoResourceProjection> entities)
@@ -219,6 +226,72 @@ namespace BluePrints.ViewModels
             return string.Empty;
         }
 
+        public override void UnifiedCellValueChanged(string field_name, object old_value, object new_value, ExoResourceProjection projection, bool isNew)
+        {
+            if (field_name == BindableBase.GetPropertyName(() => new ExoResourceProjection().IsExistInBP))
+            {
+                if((bool)new_value)
+                {
+                    USER newUSER = USERCollection.FirstOrDefault(x => x.EXO_STAFF_ID == projection.STAFFNO);
+                    if (newUSER == null)
+                    {
+                        USER activeDirectoryUSER = getActiveDirectoryUser(projection.RESOURCENAME);
+                        if (activeDirectoryUSER != null)
+                        {
+                            newUSER = new USER();
+                            newUSER.NAME = activeDirectoryUSER.NAME;
+                            newUSER.GUID_OFFICE = LoginCredentials.CurrentUser.GUID_OFFICE;
+                            newUSER.FIRST_NAME = activeDirectoryUSER.FIRST_NAME;
+                            newUSER.LAST_NAME = activeDirectoryUSER.LAST_NAME;
+                            newUSER.DESCRIPTION = activeDirectoryUSER.DESCRIPTION;
+                            newUSER.TITLE = activeDirectoryUSER.TITLE;
+
+                            DEPARTMENT findDEPARTMENT = DEPARTMENTCollection.FirstOrDefault(x => x.NAME.ToUpper() == activeDirectoryUSER.DEPARTMENT.ToUpper());
+                            if (findDEPARTMENT == null)
+                            {
+                                var bulkEditDepartmentViewModel = BulkEditEnumsViewModel.Create(DEPARTMENTCollection, "NAME");
+                                if (BulkColumnEditDialogService.ShowDialog(MessageButton.OKCancel, "Please Select Department",
+                                        "BulkEditEnums", bulkEditDepartmentViewModel) == MessageResult.OK)
+                                {
+                                    if (bulkEditDepartmentViewModel.SelectedItem != null)
+                                    {
+                                        newUSER.GUID_DEPARTMENT = ((DEPARTMENT)bulkEditDepartmentViewModel.SelectedItem).GUID;
+                                    }
+                                }
+                            }
+                            else
+                                newUSER.GUID_DEPARTMENT = findDEPARTMENT.GUID;
+
+                            var bulkEditDisciplineViewModel = BulkEditEnumsViewModel.Create(DISCIPLINECollection, "NAME");
+                            if (BulkColumnEditDialogService.ShowDialog(MessageButton.OKCancel, "Please Select DISCIPLINE",
+                                    "BulkEditEnums", bulkEditDisciplineViewModel) == MessageResult.OK)
+                            {
+                                if (bulkEditDisciplineViewModel.SelectedItem != null)
+                                {
+                                    newUSER.GUID_DISCIPLINE = ((DISCIPLINE)bulkEditDisciplineViewModel.SelectedItem).GUID;
+                                }
+                            }
+
+                            var bulkEditRoleViewModel = BulkEditEnumsViewModel.Create(restrictedROLECollection, "NAME");
+                            if (BulkColumnEditDialogService.ShowDialog(MessageButton.OKCancel, "Please Select Role",
+                                    "BulkEditEnums", bulkEditRoleViewModel) == MessageResult.OK)
+                            {
+                                if (bulkEditRoleViewModel.SelectedItem != null)
+                                {
+                                    newUSER.GUID_ROLE = ((ROLE)bulkEditRoleViewModel.SelectedItem).GUID;
+                                }
+                            }
+
+                            USERCollectionViewModelWrapper.PopulateUserStaffIds(newUSER, primeroUnitOfWork.STAFF, pgaUnitOfWork.STAFF);
+                            USERViewModel.Save(newUSER);
+                        }
+                    }
+                }
+            }
+
+            base.UnifiedCellValueChanged(field_name, old_value, new_value, projection, isNew);
+        }
+
         public override string UnifiedValueValidation(ExoResourceProjection projection, string field_name, object new_value, bool isPaste)
         {
             if (field_name == BindableBase.GetPropertyName(() => new ExoResourceProjection().RESOURCENAME))
@@ -236,11 +309,42 @@ namespace BluePrints.ViewModels
                 if (validateFieldName == BindableBase.GetPropertyName(() => new ExoResourceProjection().SHORTCODE) || validateFieldName == BindableBase.GetPropertyName(() => new ExoResourceProjection().DEFAULT_STOCKCODE))
                 {
                     if (MessageBoxService.ShowMessage("Are you sure you change " + field_name + " for " + projection.RESOURCENAME + "?", "Warning", MessageButton.OKCancel, MessageIcon.Warning) == MessageResult.Cancel)
-                        return "User cancel";
+                        return "Operation cancelled";
+                }
+            }
+
+            if(field_name == BindableBase.GetPropertyName(() => new ExoResourceProjection().IsExistInBP))
+            {
+                if(((bool)new_value))
+                {
+                    USER newUSER = USERCollection.FirstOrDefault(x => x.EXO_STAFF_ID == projection.STAFFNO);
+                    if (newUSER == null)
+                    {
+                        USER activeDirectoryUSER = getActiveDirectoryUser(projection.RESOURCENAME);
+                        if (activeDirectoryUSER == null)
+                            return "Cannot add user because user doesn't exist in active directory";
+                    }
+
+                    if (MessageBoxService.ShowMessage("Are you sure you add " + projection.RESOURCENAME + " to BluePrints?", "Confirmation", MessageButton.OKCancel, MessageIcon.Warning) == MessageResult.Cancel)
+                        return "Operation cancelled";
+                }
+                else
+                {
+                    if (MessageBoxService.ShowMessage("Are you sure you remove " + projection.RESOURCENAME + " from BluePrints?", "Confirmation", MessageButton.OKCancel, MessageIcon.Warning) == MessageResult.Cancel)
+                        return "Operation cancelled";
                 }
             }
 
             return string.Empty;
+        }
+
+        private USER getActiveDirectoryUser(string resourceName)
+        {
+            if (activeDirectoryUSERS == null)
+                activeDirectoryUSERS = EmailServices.GetUSERS();
+
+            string activeDirectorySearchName = resourceName.Replace(" ", ".").ToUpper();
+            return activeDirectoryUSERS.FirstOrDefault(x => x.NAME.ToUpper() == activeDirectorySearchName);
         }
 
         public IEnumerable<PROFILE> SecurityPROFILECollection
@@ -287,6 +391,43 @@ namespace BluePrints.ViewModels
             }
         }
 
+        public IEnumerable<DEPARTMENT> DEPARTMENTCollection
+        {
+            get
+            {
+                return GetEntities<DEPARTMENT>();
+            }
+        }
+
+        public IEnumerable<DISCIPLINE> DISCIPLINECollection
+        {
+            get
+            {
+                return GetEntities<DISCIPLINE>();
+            }
+        }
+
+        public IEnumerable<USER> USERCollection
+        {
+            get
+            {
+                return GetEntities<USER>();
+            }
+        }
+
+        public CollectionViewModel<USER, USER, Guid, IBluePrintsEntitiesUnitOfWork> USERViewModel
+        {
+            get
+            {
+                if (loaderCollection == null)
+                    return null;
+
+                return
+                    (CollectionViewModel<USER, USER, Guid, IBluePrintsEntitiesUnitOfWork>)
+                    loaderCollection.GetViewModel<USER>();
+            }
+        }
+
         public IEnumerable<JOB_COSTTYPES> JOB_COSTTYPESCollection
         {
             get
@@ -295,6 +436,20 @@ namespace BluePrints.ViewModels
                 if (collection != null)
                     collection = collection.OrderBy(x => x.COSTDESC);
                 return collection;
+            }
+        }
+
+
+        List<ROLE> restrictedROLECollection;
+        public IEnumerable<ROLE> RestrictedROLECollection
+        {
+            get
+            {
+                var collection = GetEntities<ROLE>();
+                if (restrictedROLECollection == null)
+                    restrictedROLECollection = USERCollectionViewModelWrapper.GetRestrictedRoleCollection(collection);
+
+                return restrictedROLECollection;
             }
         }
     }
