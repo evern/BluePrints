@@ -309,30 +309,29 @@ namespace BluePrints.ViewModels
 
                 if (validateFieldName == BindableBase.GetPropertyName(() => new ExoResourceProjection().SHORTCODE) || validateFieldName == BindableBase.GetPropertyName(() => new ExoResourceProjection().DEFAULT_STOCKCODE))
                 {
-                    if (MessageBoxService.ShowMessage("Are you sure you change " + field_name + " for " + projection.RESOURCENAME + "?", "Warning", MessageButton.OKCancel, MessageIcon.Warning) == MessageResult.Cancel)
+                    if (MessageBoxService.ShowMessage("Are you sure you want to change " + field_name + " for " + projection.RESOURCENAME + "?", "Warning", MessageButton.OKCancel, MessageIcon.Warning) == MessageResult.Cancel)
                         return "Operation cancelled";
                 }
-            }
-
-            if(field_name == BindableBase.GetPropertyName(() => new ExoResourceProjection().IsExistInBP))
-            {
-                if(((bool)new_value))
+                else if (validateFieldName == BindableBase.GetPropertyName(() => new ExoResourceProjection().IsExistInBP))
                 {
-                    USER newUSER = USERCollection.FirstOrDefault(x => x.EXO_STAFF_ID == projection.STAFFNO);
-                    if (newUSER == null)
+                    if (((bool)new_value))
                     {
-                        USER activeDirectoryUSER = getActiveDirectoryUser(projection.RESOURCENAME);
-                        if (activeDirectoryUSER == null)
-                            return "Cannot add user because user doesn't exist in active directory";
-                    }
+                        USER newUSER = USERCollection.FirstOrDefault(x => x.EXO_STAFF_ID == projection.STAFFNO);
+                        if (newUSER == null)
+                        {
+                            USER activeDirectoryUSER = getActiveDirectoryUser(projection.RESOURCENAME);
+                            if (activeDirectoryUSER == null)
+                                return "Cannot add user because user doesn't exist in active directory";
+                        }
 
-                    if (MessageBoxService.ShowMessage("Are you sure you add " + projection.RESOURCENAME + " to BluePrints?", "Confirmation", MessageButton.OKCancel, MessageIcon.Warning) == MessageResult.Cancel)
+                        if (MessageBoxService.ShowMessage("Are you sure you add " + projection.RESOURCENAME + " to BluePrints?", "Confirmation", MessageButton.OKCancel, MessageIcon.Warning) == MessageResult.Cancel)
+                            return "Operation cancelled";
+                    }
+                    else
+                    {
+                        MessageBoxService.ShowMessage("Please remove user from User maintenance in BluePrints", "Confirmation", MessageButton.OK, MessageIcon.Warning);
                         return "Operation cancelled";
-                }
-                else
-                {
-                    if (MessageBoxService.ShowMessage("Are you sure you remove " + projection.RESOURCENAME + " from BluePrints?", "Confirmation", MessageButton.OKCancel, MessageIcon.Warning) == MessageResult.Cancel)
-                        return "Operation cancelled";
+                    }
                 }
             }
 
