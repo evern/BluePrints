@@ -220,16 +220,16 @@ namespace BluePrints.Common
             qt.Add(createThread<MEETING_ACTION>(4));
             qt.Add(createThread<RA_GUIDE_PROMPT>(4));
             qt.Add(createThread<RA_STUDY>(5));
-            qt.Add(createThread<FORECAST>(5));
-            qt.Add(createThread<FORECAST_JOB>(6));
-            qt.Add(createThread<FORECAST_PO>(6));
-            qt.Add(createThread<FORECAST_EAC>(6));
+            //qt.Add(createThread<FORECAST>(5));
+            //qt.Add(createThread<FORECAST_JOB>(6));
+            //qt.Add(createThread<FORECAST_PO>(6));
+            //qt.Add(createThread<FORECAST_EAC>(6));
             qt.Add(createThread<BASELINE>(6));
             qt.Add(createThread<DELIVERABLES_STATUS>(6));
-            qt.Add(createThread<DOCTYPE>(6));
-            qt.Add(createThread<FORECAST_JOB_HOUR>(7));
-            qt.Add(createThread<FORECAST_JOB_SETTING>(7));
-            qt.Add(createThread<FORECAST_PO_SETTING>(7));
+            //qt.Add(createThread<DOCTYPE>(6));
+            //qt.Add(createThread<FORECAST_JOB_HOUR>(7));
+            //qt.Add(createThread<FORECAST_JOB_SETTING>(7));
+            //qt.Add(createThread<FORECAST_PO_SETTING>(7));
             qt.Add(createThread<PHASE>(7));
             qt.Add(createThread<SUBJOB>(7));
             qt.Add(createThread<USER>(7));
@@ -237,38 +237,38 @@ namespace BluePrints.Common
             qt.Add(createThread<WORKPACK>(8));
             qt.Add(createThread<CLIENT>(8));
             qt.Add(createThread<ESTIMATE>(9));
-            qt.Add(createThread<STOCK_CODE>(9));
-            qt.Add(createThread<STOCK_GROUP>(9));
-            qt.Add(createThread<HSE>(10));
+            //qt.Add(createThread<STOCK_CODE>(9));
+            //qt.Add(createThread<STOCK_GROUP>(9));
+            //qt.Add(createThread<HSE>(10));
             qt.Add(createThread<MEETING>(10));
-            qt.Add(createThread<MINUTE_AGENDA>(10));
-            qt.Add(createThread<MINUTE_TITLE>(11));
+            //qt.Add(createThread<MINUTE_AGENDA>(10));
+            //qt.Add(createThread<MINUTE_TITLE>(11));
             qt.Add(createThread<PROGRESS>(11));
             qt.Add(createThread<RA_GUIDE_SUBPROMPT>(11));
-            qt.Add(createThread<RA_STUDY_NODE>(12));
-            qt.Add(createThread<RA_STUDY_DRAWING>(12));
+            //qt.Add(createThread<RA_STUDY_NODE>(12));
+            //qt.Add(createThread<RA_STUDY_DRAWING>(12));
             qt.Add(createThread<BASELINE_ITEM>(12));
             qt.Add(createThread<REGISTER_HOLD>(13));
             qt.Add(createThread<ROLE>(13));
             qt.Add(createThread<BASELINE_ITEM_WORK>(14));
             qt.Add(createThread<CLIENT_PROJECT>(14));
-            qt.Add(createThread<DAYWORK>(14));
-            qt.Add(createThread<DAYWORK_EQUIPMENT>(15));
-            qt.Add(createThread<DAYWORK_LABOUR>(15));
-            qt.Add(createThread<DAYWORK_MATERIAL>(15));
-            qt.Add(createThread<DAYWORK_STAFF_ROLE>(16));
-            qt.Add(createThread<DSTATUS_DOCTYPE>(16));
+            //qt.Add(createThread<DAYWORK>(14));
+            //qt.Add(createThread<DAYWORK_EQUIPMENT>(15));
+            //qt.Add(createThread<DAYWORK_LABOUR>(15));
+            //qt.Add(createThread<DAYWORK_MATERIAL>(15));
+            //qt.Add(createThread<DAYWORK_STAFF_ROLE>(16));
+            qt.Add(createThread<DSTATUS_DOCTYPE>(15));
             qt.Add(createThread<ESTIMATE_ITEM>(16));
             qt.Add(createThread<HOLIDAY>(17));
-            qt.Add(createThread<HSE_INCIDENT>(17));
-            qt.Add(createThread<HSE_INJURY>(17));
-            qt.Add(createThread<MEETING_USER>(18));
+            //qt.Add(createThread<HSE_INCIDENT>(17));
+            //qt.Add(createThread<HSE_INJURY>(17));
+            //qt.Add(createThread<MEETING_USER>(18));
             qt.Add(createThread<P6_ASSIGNMENT>(18));
             qt.Add(createThread<PROGRESS_ITEM>(18));
             qt.Add(createThread<PROJECT_DISCIPLINE>(19));
             qt.Add(createThread<PROJECT_REPORT>(19));
-            qt.Add(createThread<RA_STUDY_DATA>(19));
-            qt.Add(createThread<RA_STUDY_TEAM>(20));
+            //qt.Add(createThread<RA_STUDY_DATA>(19));
+            //qt.Add(createThread<RA_STUDY_TEAM>(20));
             qt.Add(createThread<RATE>(20));
             qt.Add(createThread<REGISTER>(20));
             qt.Add(createThread<REGISTER_CHANGE>(21));
@@ -352,133 +352,51 @@ namespace BluePrints.Common
                 }
                 else
                 {
-                    setupLocalAction(typeName, localTotalCount);
-                    //List<T> localDbItems = localDbSet.ToList();
-                    //List<T> remoteDbItems = remoteDbSet.ToList();
-                    Dictionary<string, T> addRemoteEntries = new Dictionary<string, T>();
-                    foreach (var localData in localDbSet)
+                    if(localCount > 500)
                     {
-                        bool? syncRemote = null;
-                        DateTime localCreated = localData.CREATED;
-                        DateTime? localUpdated = localData.UPDATED;
-                        DateTime? localDeleted = localData.DELETED;
-                        //bool isDataLocal = localData.Office.ToUpper().Contains("PERTH");
-                        bool isDataLocal = false;
-                        bool isDataGlobal = true;
-                        //bool isDataGlobal = localData.Office.ToUpper().Contains(BluePrintsResources.GlobalOffice.ToUpper());
+                        setupLocalAction(typeName, localCount);
+                        DateTime earliestDate = localDbSet.Min(x => x.CREATED);
+                        DateTime latestDate = localDbSet.Max(x => x.CREATED);
 
-                        T remoteData = remoteDbSet.FirstOrDefault(x => x.GUID == localData.GUID);
-                        if (remoteData != null)
+                        DateTime loopDate = earliestDate;
+                        for(loopDate = earliestDate;loopDate < latestDate;loopDate = loopDate.AddMonths(1))
                         {
-                            DateTime remoteCreated = remoteData.CREATED;
-                            DateTime? remoteUpdated = remoteData.UPDATED;
-                            DateTime? remoteDeleted = remoteData.DELETED;
+                            localDataContext = new BluePrintsNativeEntities("name=BluePrintsPerthEntities");
+                            localDbSet = localDataContext.Set<T>();
+                            DateTime loopNextMonthDate = loopDate.AddMonths(1);
+                            ProcessLocalDbSet<T>(typeName, localDbSet, remoteDbSet, query => query.Where(x => x.CREATED >= loopDate && x.CREATED < loopNextMonthDate), finishAction, progressLocalAction);
 
-                            if(isDataGlobal)
+                            try
                             {
-                                //Delete
-                                if (remoteDeleted != null && localDeleted != null)
-                                {
-                                    if (remoteDeleted > localDeleted)
-                                        syncRemote = true;
-                                    else if (remoteDeleted < localDeleted)
-                                        syncRemote = false;
-                                }
-                                else if (remoteDeleted != null && localDeleted == null)
-                                {
-                                    syncRemote = true;
-                                }
-                                else if (remoteDeleted == null && localDeleted != null)
-                                {
-                                    syncRemote = false;
-                                }
-
-                                //Update
-                                else if (remoteUpdated != null && localUpdated != null)
-                                {
-                                    if (remoteUpdated > localUpdated)
-                                        syncRemote = true;
-                                    else if (remoteUpdated < localUpdated)
-                                        syncRemote = false;
-                                }
-                                else if (remoteUpdated != null && localUpdated == null)
-                                {
-                                    syncRemote = true;
-                                }
-                                else if (remoteUpdated == null && localUpdated != null)
-                                {
-                                    syncRemote = false;
-                                }
-
-                                //Created
-                                if (remoteCreated > localCreated)
-                                    syncRemote = true;
-                                else if (remoteCreated < localCreated)
-                                    syncRemote = false;
+                                localDataContext.SaveChanges();
+                                remoteDataContext.SaveChanges();
                             }
-                            else
+                            catch
                             {
-                                if(remoteData.CREATED != localData.CREATED || remoteData.UPDATED != localData.UPDATED || remoteData.DELETED != localData.DELETED)
-                                    syncRemote = !isDataLocal;
+
                             }
 
-                            if (syncRemote == true)
-                            {
-                                finishAction(new SyncReport() { Action = "Update", Destination = "Local", Project = localData.Office, Properties = DataUtils.ShallowCopyDiffTracking(localData, remoteData), TableName = typeName });
-                            }
-                            else if (syncRemote == false)
-                            {
-                                finishAction(new SyncReport() { Action = "Update", Destination = "Remote", Project = localData.Office, Properties = DataUtils.ShallowCopyDiffTracking(remoteData, localData), TableName = typeName });
-                            }
+                            localDataContext.Dispose();
+                            GC.Collect();
                         }
-                        else
+                    }
+                    else
+                    {
+                        setupLocalAction(typeName, localTotalCount);
+                        ProcessLocalDbSet<T>(typeName, localDbSet, remoteDbSet, query => query.Where(x => x.CREATED <= DateTime.Now), finishAction, progressLocalAction);
+
+                        try
                         {
-                            T remoteNewData = new T();
-                            string action = "Add";
-                            //mark local data as deleted if its a remote data and doesn't exists in remote
-                            if (!isDataLocal && !isDataGlobal)
-                            {
-                                localData.DELETED = DateTime.Now;
-                                action = "Add as Deleted";
-                            }
+                            localDataContext.SaveChanges();
+                            remoteDataContext.SaveChanges();
+                        }
+                        catch
+                        {
 
-                            DataUtils.ShallowCopy(remoteNewData, localData);
-                            //addEntryAction(remoteDbSet, remoteNewData);
-                            //addRemoteEntries.Add(remoteNewData.GUID.ToString(), remoteNewData);
-                            remoteDbSet.Add(remoteNewData);
-
-                            finishAction(new SyncReport() { Action = action, Destination = "Remote", Project = localData.Office, Properties = string.Empty, TableName = typeName });
                         }
 
-                        progressLocalAction(typeName, 1);
-                        //processedCount += 1;
-                        //if(processedCount >= 1000)
-                        //{
-                        //    processedCount = 0;
-                        //    //remoteDbSet.AddRange(addRemoteEntries.Select(x => x.Value));
-                        //    try
-                        //    {
-                        //        localDataContext.SaveChanges();
-                        //        remoteDataContext.SaveChanges();
-                        //    }
-                        //    catch
-                        //    {
-
-                        //    }
-                        //    //addRemoteEntries.Clear();
-                        //}
+                        progressLocalAction(typeName, localDataContextCount);
                     }
-
-                    try
-                    {
-                        localDataContext.SaveChanges();
-                        remoteDataContext.SaveChanges();
-                    }
-                    catch
-                    {
-
-                    }
-                    progressLocalAction(typeName, localDataContextCount);
                 }
             }
             else
@@ -490,72 +408,196 @@ namespace BluePrints.Common
                 }
                 else
                 {
-                    setupRemoteAction(typeName, remoteTotalCount);
-                    //List<T> remoteDbItems = remoteDbSet.ToList();
-                    //List<T> localDbItems = localDbSet.ToList();
-                    Dictionary<string, T> addLocalEntries = new Dictionary<string, T>();
-                    foreach (var remoteData in remoteDbSet)
-                    {
-                        //bool isDataRemote = remoteData.Office.ToUpper().Contains("MONTREAL");
-                        bool isDataRemote = false;
-                        //bool isDataGlobal = remoteData.Office.ToUpper().Contains(BluePrintsResources.GlobalOffice.ToUpper());
-                        bool isDataGlobal = true;
+                    setupRemoteAction(typeName, remoteCount);
+                    localDataContext = new BluePrintsNativeEntities("name=BluePrintsPerthEntities");
+                    localDbSet = localDataContext.Set<T>();
 
-                        T localData = localDbSet.FirstOrDefault(x => x.GUID == remoteData.GUID);
-                        if (localData == null)
+                    if (remoteCount > 500)
+                    {
+                        DateTime earliestDate = remoteDbSet.Min(x => x.CREATED);
+                        DateTime latestDate = remoteDbSet.Max(x => x.CREATED);
+
+                        DateTime loopDate = earliestDate;
+                        for (loopDate = earliestDate; loopDate < latestDate; loopDate = loopDate.AddMonths(1))
                         {
-                            T localNewData = new T();
-                            string action = "Add";
-                            //mark remote data as deleted if it doesn't exists in local
-                            if (!isDataRemote && !isDataGlobal)
+                            remoteDataContext = new BluePrintsNativeEntities("name=BluePrintsMontrealEntities");
+                            remoteDbSet = remoteDataContext.Set<T>();
+                            DateTime loopNextMonthDate = loopDate.AddMonths(1);
+                            ProcessRemoteDbSet<T>(typeName, remoteDbSet, localDbSet, query => query.Where(x => x.CREATED >= loopDate && x.CREATED < loopNextMonthDate), finishAction, progressRemoteAction);
+
+                            try
                             {
-                                remoteData.DELETED = DateTime.Now;
-                                action = "Add as Deleted";
+                                localDataContext.SaveChanges();
+                                remoteDataContext.SaveChanges();
+                            }
+                            catch
+                            {
+
                             }
 
-                            DataUtils.ShallowCopy(localNewData, remoteData);
-                            localDbSet.Add(localNewData);
-                            //addEntryAction(localDbSet, localNewData);
-                            //addLocalEntries.Add(localNewData.GUID.ToString(), localNewData);
-                            finishAction(new SyncReport() { Action = action, Destination = "Local", Project = remoteData.Office, Properties = string.Empty, TableName = typeName });
+                            remoteDataContext.Dispose();
+                            GC.Collect();
+                        }
+                    }
+                    else
+                    {
+                        setupRemoteAction(typeName, remoteTotalCount);
+                        ProcessRemoteDbSet<T>(typeName, remoteDbSet, localDbSet, query => query.Where(x => x.CREATED <= DateTime.Now), finishAction, progressRemoteAction);
+
+                        try
+                        {
+                            localDataContext.SaveChanges();
+                            remoteDataContext.SaveChanges();
+                        }
+                        catch
+                        {
+
                         }
 
-                        progressRemoteAction(typeName, 1);
-                        //processedCount += 1;
-                        //if(processedCount >= 1000)
-                        //{
-                        //    processedCount = 0;
-                        //    //localDbSet.AddRange(addLocalEntries.Select(x => x.Value));
-                        //    try
-                        //    {
-                        //        localDataContext.SaveChanges();
-                        //        remoteDataContext.SaveChanges();
-                        //    }
-                        //    catch
-                        //    {
-
-                        //    }
-                        //    //addLocalEntries.Clear();
-                        //}
+                        progressRemoteAction(typeName, remoteDataContextCount);
                     }
-
-                    try
-                    {
-                        localDataContext.SaveChanges();
-                        remoteDataContext.SaveChanges();
-                    }
-                    catch
-                    {
-
-                    }
-
-                    progressRemoteAction(typeName, remoteDataContextCount);
                 }
             }
 
             localDataContext.Dispose();
             remoteDataContext.Dispose();
             updateQueue();
+        }
+
+        public void ProcessLocalDbSet<T>(string typeName, DbSet<T> localDbSet, DbSet<T> remoteDbSet, Func<DbSet<T>, IQueryable<T>> projection, Action<SyncReport> finishAction, Action<string, decimal> progressLocalAction)
+            where T : class, ICanSync, new()
+        {
+            List<T> localDataSet = projection(localDbSet).ToList();
+            foreach (T localData in localDataSet)
+            {
+                bool? syncRemote = null;
+                DateTime localCreated = localData.CREATED;
+                DateTime? localUpdated = localData.UPDATED;
+                DateTime? localDeleted = localData.DELETED;
+                //bool isDataLocal = localData.Office.ToUpper().Contains("PERTH");
+                bool isDataLocal = false;
+                bool isDataGlobal = true;
+                //bool isDataGlobal = localData.Office.ToUpper().Contains(BluePrintsResources.GlobalOffice.ToUpper());
+
+                T remoteData = remoteDbSet.FirstOrDefault(x => x.GUID == localData.GUID);
+                if (remoteData != null)
+                {
+                    DateTime remoteCreated = remoteData.CREATED;
+                    DateTime? remoteUpdated = remoteData.UPDATED;
+                    DateTime? remoteDeleted = remoteData.DELETED;
+
+                    if (isDataGlobal)
+                    {
+                        //Delete
+                        if (remoteDeleted != null && localDeleted != null)
+                        {
+                            if (remoteDeleted > localDeleted)
+                                syncRemote = true;
+                            else if (remoteDeleted < localDeleted)
+                                syncRemote = false;
+                        }
+                        else if (remoteDeleted != null && localDeleted == null)
+                        {
+                            syncRemote = true;
+                        }
+                        else if (remoteDeleted == null && localDeleted != null)
+                        {
+                            syncRemote = false;
+                        }
+
+                        //Update
+                        else if (remoteUpdated != null && localUpdated != null)
+                        {
+                            if (remoteUpdated > localUpdated)
+                                syncRemote = true;
+                            else if (remoteUpdated < localUpdated)
+                                syncRemote = false;
+                        }
+                        else if (remoteUpdated != null && localUpdated == null)
+                        {
+                            syncRemote = true;
+                        }
+                        else if (remoteUpdated == null && localUpdated != null)
+                        {
+                            syncRemote = false;
+                        }
+
+                        //Created
+                        if (remoteCreated > localCreated)
+                            syncRemote = true;
+                        else if (remoteCreated < localCreated)
+                            syncRemote = false;
+                    }
+                    else
+                    {
+                        if (remoteData.CREATED != localData.CREATED || remoteData.UPDATED != localData.UPDATED || remoteData.DELETED != localData.DELETED)
+                            syncRemote = !isDataLocal;
+                    }
+
+                    if (syncRemote == true)
+                    {
+                        finishAction(new SyncReport() { Action = "Update", Destination = "Local", Project = localData.Office, Properties = DataUtils.ShallowCopyDiffTracking(localData, remoteData), TableName = typeName });
+                    }
+                    else if (syncRemote == false)
+                    {
+                        finishAction(new SyncReport() { Action = "Update", Destination = "Remote", Project = localData.Office, Properties = DataUtils.ShallowCopyDiffTracking(remoteData, localData), TableName = typeName });
+                    }
+                }
+                else
+                {
+                    T remoteNewData = new T();
+                    string action = "Add";
+                    //mark local data as deleted if its a remote data and doesn't exists in remote
+                    if (!isDataLocal && !isDataGlobal)
+                    {
+                        localData.DELETED = DateTime.Now;
+                        action = "Add as Deleted";
+                    }
+
+                    DataUtils.ShallowCopy(remoteNewData, localData);
+                    //addEntryAction(remoteDbSet, remoteNewData);
+                    //addRemoteEntries.Add(remoteNewData.GUID.ToString(), remoteNewData);
+                    remoteDbSet.Add(remoteNewData);
+
+                    finishAction(new SyncReport() { Action = action, Destination = "Remote", Project = localData.Office, Properties = string.Empty, TableName = typeName });
+                }
+
+                progressLocalAction(typeName, 1);
+            }
+        }
+
+        public void ProcessRemoteDbSet<T>(string typeName, DbSet<T> remoteDbSet, DbSet<T> localDbSet, Func<DbSet<T>, IQueryable<T>> projection, Action<SyncReport> finishAction, Action<string, decimal> progressRemoteAction)
+            where T : class, ICanSync, new()
+        {
+            List<T> remoteDataSet = projection(remoteDbSet).ToList();
+            foreach(T remoteData in remoteDataSet)
+            {
+                //bool isDataRemote = remoteData.Office.ToUpper().Contains("MONTREAL");
+                bool isDataRemote = false;
+                //bool isDataGlobal = remoteData.Office.ToUpper().Contains(BluePrintsResources.GlobalOffice.ToUpper());
+                bool isDataGlobal = true;
+
+                T localData = localDbSet.FirstOrDefault(x => x.GUID == remoteData.GUID);
+                if (localData == null)
+                {
+                    T localNewData = new T();
+                    string action = "Add";
+                    //mark remote data as deleted if it doesn't exists in local
+                    if (!isDataRemote && !isDataGlobal)
+                    {
+                        remoteData.DELETED = DateTime.Now;
+                        action = "Add as Deleted";
+                    }
+
+                    DataUtils.ShallowCopy(localNewData, remoteData);
+                    localDbSet.Add(localNewData);
+                    //addEntryAction(localDbSet, localNewData);
+                    //addLocalEntries.Add(localNewData.GUID.ToString(), localNewData);
+                    finishAction(new SyncReport() { Action = action, Destination = "Local", Project = remoteData.Office, Properties = string.Empty, TableName = typeName });
+                }
+
+                progressRemoteAction(typeName, 1);
+            }
         }
     }
 
