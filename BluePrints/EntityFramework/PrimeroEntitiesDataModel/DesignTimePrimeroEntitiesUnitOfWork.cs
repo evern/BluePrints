@@ -1721,6 +1721,11 @@ namespace BluePrints.PrimeroData.PrimeroEntitiesDataModel
             get { return GetRepository((X_ER_SETUP x) => x.SEQNO); }
         }
 
+        IRepository<X_DEPARTMENT, int> IPrimeroEntitiesUnitOfWork.X_DEPARTMENTS
+        {
+            get { return GetRepository((X_DEPARTMENT x) => x.X_Number); }
+        }
+
         IRepository<X_HBIZ_NOTIFICATIONS, int> IPrimeroEntitiesUnitOfWork.X_HBIZ_NOTIFICATIONS
         {
             get { return GetRepository((X_HBIZ_NOTIFICATIONS x) => x.ID); }

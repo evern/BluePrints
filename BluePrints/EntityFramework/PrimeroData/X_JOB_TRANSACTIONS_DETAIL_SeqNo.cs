@@ -37,6 +37,8 @@
         [StringLength(23)]
         public string stockcode { get; set; }
 
+        public string DepartmentName { get; set; }
+
         [StringLength(60)]
         public string description { get; set; }
 

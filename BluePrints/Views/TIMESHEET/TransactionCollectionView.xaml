@@ -51,7 +51,7 @@
                             <dxg:GridColumn FieldName="master_jobno" AllowBestFit="false" Width="110" Visible="{Binding IsYearToDate}" ShowInColumnChooser="{Binding IsYearToDate}" Header="Job">
                                 <dxg:GridColumn.CellTemplate>
                                     <DataTemplate>
-                                        <dxg:LookUpEdit Name="PART_Editor" AutoComplete="True" AutoPopulateColumns="False" DisplayMember="JOBCODE" IncrementalFiltering="True" IsTextEditable="true" ItemsSource="{Binding View.DataContext.JOBCOST_HDRInstantFeedbackCollection}" NullValueButtonPlacement="None" PopupWidth="500" ValueMember="JOBNO">
+                                        <dxg:LookUpEdit Name="PART_Editor" AutoComplete="True" AutoPopulateColumns="False" DisplayMember="JOBCODE" IncrementalFiltering="True" IsTextEditable="true" ItemsSource="{Binding View.DataContext.JOBCOST_HDRCollection}" NullValueButtonPlacement="None" PopupWidth="500" ValueMember="JOBNO">
                                             <dxg:LookUpEdit.StyleSettings>
                                                 <dxg:SearchLookUpEditStyleSettings />
                                             </dxg:LookUpEdit.StyleSettings>
@@ -73,7 +73,7 @@
                                 </dxg:GridColumn.CellTemplate>
                                 <!--For Filtering-->
                                 <dxg:GridColumn.EditSettings>
-                                    <dxe:ComboBoxEditSettings AutoComplete="True" DisplayMember="JOBCODE" IsTextEditable="True" ItemsSource="{Binding JOBCOST_HDRInstantFeedbackCollection}" ValueMember="JOBNO" />
+                                    <dxe:ComboBoxEditSettings AutoComplete="True" DisplayMember="JOBCODE" IsTextEditable="True" ItemsSource="{Binding JOBCOST_HDRCollection}" ValueMember="JOBNO" />
                                 </dxg:GridColumn.EditSettings>
                             </dxg:GridColumn>
                             <dxg:GridColumn FieldName="jobno" AllowBestFit="false" Width="110" Header="Sub Job">
@@ -102,6 +102,34 @@
                                 <!--For Filtering-->
                                 <dxg:GridColumn.EditSettings>
                                     <dxe:ComboBoxEditSettings AutoComplete="True" DisplayMember="JOBCODE" IsTextEditable="True" ItemsSource="{Binding JOBCOST_HDRCollection}" ValueMember="JOBNO" />
+                                </dxg:GridColumn.EditSettings>
+                            </dxg:GridColumn>
+                            <dxg:GridColumn FieldName="stockcode" Header="Stock Code" >
+                                <dxg:GridColumn.CellTemplate>
+                                    <DataTemplate>
+                                        <dxg:LookUpEdit Name="PART_Editor" AutoComplete="True" AutoPopulateColumns="False" DisplayMember="STOCKCODE" IncrementalFiltering="True" IsTextEditable="true" ItemsSource="{Binding View.DataContext.STOCK_ITEMCollection}" NullValueButtonPlacement="Popup" PopupWidth="500" ValueMember="STOCKCODE">
+                                            <dxg:LookUpEdit.StyleSettings>
+                                                <dxg:SearchLookUpEditStyleSettings />
+                                            </dxg:LookUpEdit.StyleSettings>
+                                            <dxg:LookUpEdit.PopupContentTemplate>
+                                                <ControlTemplate TargetType="ContentControl">
+                                                    <dxg:GridControl x:Name="PART_GridControl" SelectionMode="Row" ShowBorder="False">
+                                                        <dxg:GridControl.Columns>
+                                                            <dxg:GridColumn FieldName="STOCKCODE" Header="Code" ReadOnly="True" />
+                                                            <dxg:GridColumn FieldName="DESCRIPTION" AllowBestFit="false" Width="*" Header="Description" ReadOnly="True" />
+                                                        </dxg:GridControl.Columns>
+                                                        <dxg:GridControl.View>
+                                                            <dxg:TableView RowStyle="{StaticResource SelectionBackgroundStyle}" ShowFilterPanelMode="ShowAlways" ShowFocusedRectangle="True" ShowGroupPanel="False" ShowSelectionRectangle="True" />
+                                                        </dxg:GridControl.View>
+                                                    </dxg:GridControl>
+                                                </ControlTemplate>
+                                            </dxg:LookUpEdit.PopupContentTemplate>
+                                        </dxg:LookUpEdit>
+                                    </DataTemplate>
+                                </dxg:GridColumn.CellTemplate>
+                                <!--  For Filtering  -->
+                                <dxg:GridColumn.EditSettings>
+                                    <dxe:ComboBoxEditSettings AutoComplete="True" DisplayMember="STOCKCODE" IsTextEditable="True" ItemsSource="{Binding STOCK_ITEMCollection}" NullValueButtonPlacement="EditBox" ValueMember="STOCKCODE" />
                                 </dxg:GridColumn.EditSettings>
                             </dxg:GridColumn>
                             <dxg:GridColumn FieldName="COST_GROUP" AllowBestFit="false" Header="Discipline Code" Width="50">
@@ -308,6 +336,7 @@
                             <custom:EditableColumn RealFieldName="description" Width="300" AllowBestFit="false" Header="Description" UnboundType="String" UnboundExpression="[description]" />
                         </dxg:GridControlBand>
                         <dxg:GridControlBand Header="Read Only" >
+                            <dxg:GridColumn FieldName="DepartmentName" Width="100" AllowBestFit="false" Header="Department" ReadOnly="True" />
                             <dxg:GridColumn FieldName="CostTypeDesc" AllowBestFit="false" Width="100" Header="Commodity Code Desc" ReadOnly="True" />
                             <dxg:GridColumn FieldName="accno" Header="Resource" AllowBestFit="false" Width="150" ReadOnly="true" >
                                 <dxg:GridColumn.EditSettings>
