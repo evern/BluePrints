@@ -179,7 +179,7 @@ namespace BluePrints.ViewModels
             resource.SHORTCODE = addedResource.SHORTCODE;
             resource.RESOURCE_SEQNO = addedResource.SEQNO;
 
-            STOCK_ITEMS stockItem = ExoMethods.FindExistingOrAddStockItem(primeroUOW, resource.SHORTCODE, resource.RESOURCENAME, resource.SELLPRICE1, resource.SALES_GL_CODE, resource.PURCH_GL_CODE, resource.COS_GL_CODE, resource.STDCOST, resource.COSTGROUP, resource.COSTTYPE);
+            STOCK_ITEMS stockItem = ExoMethods.FindExistingOrAddStockItem(primeroUOW, resource.SHORTCODE, resource.RESOURCENAME, resource.SELLPRICE1, resource.SALES_GL_CODE, resource.PURCH_GL_CODE, resource.COS_GL_CODE, resource.STDCOST, resource.COSTGROUP, resource.COSTTYPE, resource.DEPARTMENT);
             primeroUOW.SaveChanges();
             resource.IsViewNewRow = false;
             resource.Update();
@@ -450,6 +450,18 @@ namespace BluePrints.ViewModels
                     restrictedROLECollection = USERCollectionViewModelWrapper.GetRestrictedRoleCollection(collection);
 
                 return restrictedROLECollection;
+            }
+        }
+        
+        public IEnumerable<X_DEPARTMENT> X_DEPARTMENTCollection
+        {
+            get
+            {
+                var collection = GetEntities<X_DEPARTMENT>();
+                if (collection != null)
+                    collection = collection.OrderBy(x => x.X_Number);
+
+                return collection;
             }
         }
     }
