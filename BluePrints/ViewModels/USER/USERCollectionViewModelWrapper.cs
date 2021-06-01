@@ -408,7 +408,7 @@ namespace BluePrints.ViewModels
             get
             {
                 var collection = GetEntities<ROLE>();
-                if (restrictedROLECollection == null)
+                if (restrictedROLECollection == null && !IsLoading)
                     restrictedROLECollection = GetRestrictedRoleCollection(collection);
 
                 return restrictedROLECollection;
