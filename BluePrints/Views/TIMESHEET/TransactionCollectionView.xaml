@@ -1,6 +1,12 @@
 ﻿<UserControl x:Class="BluePrints.Views.TransactionCollectionView" xmlns="http://schemas.microsoft.com/netfx/2009/xaml/presentation" xmlns:dxmvvm="http://schemas.devexpress.com/winfx/2008/xaml/mvvm" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" xmlns:behavior="clr-namespace:BaseModel.View.Behaviors;assembly=BaseModel" xmlns:converter="clr-namespace:BluePrints.Common.ViewModel.Converters" xmlns:custom="clr-namespace:BaseModel.Misc;assembly=BaseModel" xmlns:d="http://schemas.microsoft.com/expression/blend/2008" xmlns:dx="http://schemas.devexpress.com/winfx/2008/xaml/core" xmlns:dxb="http://schemas.devexpress.com/winfx/2008/xaml/bars" xmlns:dxc="http://schemas.devexpress.com/winfx/2008/xaml/core" xmlns:dxdo="http://schemas.devexpress.com/winfx/2008/xaml/docking" xmlns:dxe="http://schemas.devexpress.com/winfx/2008/xaml/editors" xmlns:dxg="http://schemas.devexpress.com/winfx/2008/xaml/grid" xmlns:dxlc="http://schemas.devexpress.com/winfx/2008/xaml/layoutcontrol" xmlns:dxr="http://schemas.devexpress.com/winfx/2008/xaml/ribbon" xmlns:dxrudex="http://schemas.devexpress.com/winfx/2008/xaml/reports/userdesignerextensions" xmlns:filter="clr-namespace:BluePrints.Common.Filtering" xmlns:i="http://schemas.microsoft.com/expression/2010/interactivity" xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" xmlns:services="clr-namespace:BaseModel.ViewModel.Services;assembly=BaseModel" xmlns:sys="clr-namespace:System;assembly=mscorlib" xmlns:view="clr-namespace:BluePrints.Views" xmlns:viewmodel="clr-namespace:BluePrints.ViewModels" x:Name="userControl" d:DesignHeight="400" d:DesignWidth="600" DataContext="{dxmvvm:ViewModelSource viewmodel:TransactionCollectionViewModelWrapper}" mc:Ignorable="d">
     <UserControl.Resources>
         <ResourceDictionary>
+            <Style x:Key="GridDefaultStyle" TargetType="dxg:GridControl" BasedOn="{StaticResource SwitchableDefaultGridControlTemplate}"/>
+            <Style x:Key="GridInstantFeedbackStyle" TargetType="dxg:GridControl" BasedOn="{StaticResource InstantFeedbackGridControlTemplate}"/>
+            <custom:ConditionToStyleConverter x:Key="GridConditionToStyleConverter" DefaultStyle="{StaticResource GridDefaultStyle}" InstantFeedbackStyle="{StaticResource GridInstantFeedbackStyle}" />
+            <Style x:Key="ViewDefaultStyle" TargetType="dxg:GridControl" BasedOn="{StaticResource DefaultTableViewTemplate}"/>
+            <Style x:Key="ViewInstantFeedbackStyle" TargetType="dxg:GridControl" BasedOn="{StaticResource InstantFeedbackTableViewTemplate}"/>
+            <custom:ConditionToStyleConverter x:Key="ViewConditionToStyleConverter" DefaultStyle="{StaticResource DefaultTableViewTemplate}" InstantFeedbackStyle="{StaticResource InstantFeedbackTableViewTemplate}" />
             <converter:DataPointsTableFieldNameConverter x:Key="DataPointsTableFieldNameConverter" />
             <ResourceDictionary.MergedDictionaries>
                 <ResourceDictionary Source="pack://application:,,,/Common/View/ResourceDictionaries/DefaultBluePrintsResourceDictionary.xaml" />
@@ -24,6 +30,7 @@
         <dxb:BarManager>
             <dxb:BarManager.Items>
                 <dxb:BarSubItem ItemLinksSource="{StaticResource RibbonDefaultGridButtons}" />
+                <dxb:BarCheckItem x:Name="bcPreloadMode" Content="Download Data" IsChecked="{Binding IsUsePreloadMode}" LargeGlyph="{dxc:DXImage SvgImages/Actions/Open2.svg}" ToolTip="Download data for faster editing operation but will slow down initial load up speed" Glyph="{dxc:DXImage SvgImages/Actions/Open2.svg}" IsVisible="{Binding IsYearToDate, Converter={dxmvvm:BooleanNegationConverter}}"/>
             </dxb:BarManager.Items>
         <DockPanel>
                 <dxr:RibbonControl Style="{StaticResource DefaultRibbonControlStyle}">
@@ -41,14 +48,15 @@
                                 <dxb:BarButtonItemLink BarItemName="biCollapseAllGroups1" />
                                 <dxb:BarButtonItemLink BarItemName="biExportToExcel1" />
                                 <dxb:BarButtonItemLink BarItemName="biExportToPDF1" />
+                                <dxb:BarCheckItemLink BarItemName="bcPreloadMode" />
                             </dxr:RibbonPageGroup>
                         </dxr:RibbonPage>
                     </dxr:RibbonDefaultPageCategory>
                 </dxr:RibbonControl>
-                <custom:GridControlEx x:Name="GridControl" IsInstantFeedbackMode="True" dxc:DXSerializer.SerializationID="GridControlTransaction" dxc:DXSerializer.StoreLayoutMode="All" ItemsSource="{Binding InstantFeedbackEntities}" CurrentItem="{Binding InstantFeedbackCurrentEntity}" SelectionMode="{Binding SelectMode}" ClipboardCopyMode="ExcludeHeader">
+                <custom:GridControlEx IsInstantFeedbackMode="{Binding IsInstantFeedbackMode}" x:Name="GridControl" dxc:DXSerializer.SerializationID="GridControlTransaction" dxc:DXSerializer.StoreLayoutMode="All" Style="{Binding IsInstantFeedbackMode, Converter={StaticResource GridConditionToStyleConverter}}">
                     <dxg:GridControl.Bands>
-                        <dxg:GridControlBand Header="WBS" Visible="{Binding IsReadOnly}">
-                            <dxg:GridColumn FieldName="master_jobno" AllowBestFit="false" Width="110" Visible="{Binding IsYearToDate}" ShowInColumnChooser="{Binding IsYearToDate}" Header="Job">
+                        <dxg:GridControlBand Header="{Binding BandHeaderName}" Visible="{Binding IsShowDefaultColumns}">
+                            <dxg:GridColumn FieldName="master_jobno" AllowBestFit="false" Width="110" Visible="{Binding IsYearToDate}" ShowInColumnChooser="{Binding IsYearToDate}" ReadOnly="{Binding IsReadOnly}" Header="Job">
                                 <dxg:GridColumn.CellTemplate>
                                     <DataTemplate>
                                         <dxg:LookUpEdit Name="PART_Editor" AutoComplete="True" AutoPopulateColumns="False" DisplayMember="JOBCODE" IncrementalFiltering="True" IsTextEditable="true" ItemsSource="{Binding View.DataContext.JOBCOST_HDRCollection}" NullValueButtonPlacement="None" PopupWidth="500" ValueMember="JOBNO">
@@ -76,7 +84,7 @@
                                     <dxe:ComboBoxEditSettings AutoComplete="True" DisplayMember="JOBCODE" IsTextEditable="True" ItemsSource="{Binding JOBCOST_HDRCollection}" ValueMember="JOBNO" />
                                 </dxg:GridColumn.EditSettings>
                             </dxg:GridColumn>
-                            <dxg:GridColumn FieldName="jobno" AllowBestFit="false" Width="110" Header="Sub Job">
+                            <dxg:GridColumn FieldName="jobno" AllowBestFit="false" Width="110" Header="Sub Job" ReadOnly="{Binding IsReadOnly}" >
                                 <dxg:GridColumn.CellTemplate>
                                     <DataTemplate>
                                         <dxg:LookUpEdit Name="PART_Editor" AutoComplete="True" AutoPopulateColumns="False" DisplayMember="JOBCODE" IncrementalFiltering="True" IsTextEditable="true" ItemsSource="{Binding View.DataContext.JOBCOST_HDRCollection}" NullValueButtonPlacement="None" PopupWidth="500" ValueMember="JOBNO">
@@ -104,7 +112,7 @@
                                     <dxe:ComboBoxEditSettings AutoComplete="True" DisplayMember="JOBCODE" IsTextEditable="True" ItemsSource="{Binding JOBCOST_HDRCollection}" ValueMember="JOBNO" />
                                 </dxg:GridColumn.EditSettings>
                             </dxg:GridColumn>
-                            <dxg:GridColumn FieldName="stockcode" Header="Stock Code" >
+                            <dxg:GridColumn FieldName="stockcode" Header="Stock Code" ReadOnly="{Binding IsReadOnly}" >
                                 <dxg:GridColumn.CellTemplate>
                                     <DataTemplate>
                                         <dxg:LookUpEdit Name="PART_Editor" AutoComplete="True" AutoPopulateColumns="False" DisplayMember="STOCKCODE" IncrementalFiltering="True" IsTextEditable="true" ItemsSource="{Binding View.DataContext.STOCK_ITEMCollection}" NullValueButtonPlacement="Popup" PopupWidth="500" ValueMember="STOCKCODE">
@@ -127,12 +135,12 @@
                                         </dxg:LookUpEdit>
                                     </DataTemplate>
                                 </dxg:GridColumn.CellTemplate>
-                                <!--  For Filtering  -->
+                                <!--For Filtering-->
                                 <dxg:GridColumn.EditSettings>
                                     <dxe:ComboBoxEditSettings AutoComplete="True" DisplayMember="STOCKCODE" IsTextEditable="True" ItemsSource="{Binding STOCK_ITEMCollection}" NullValueButtonPlacement="EditBox" ValueMember="STOCKCODE" />
                                 </dxg:GridColumn.EditSettings>
                             </dxg:GridColumn>
-                            <dxg:GridColumn FieldName="COST_GROUP" AllowBestFit="false" Header="Discipline Code" Width="50">
+                            <dxg:GridColumn FieldName="COST_GROUP" AllowBestFit="false" Header="Discipline Code" Width="50" ReadOnly="{Binding IsReadOnly}" >
                                 <dxg:GridColumn.CellTemplate>
                                     <DataTemplate>
                                         <dxg:LookUpEdit Name="PART_Editor" AutoComplete="True" AutoPopulateColumns="False" DisplayMember="SHORTCODE" IncrementalFiltering="True" IsTextEditable="true" ItemsSource="{Binding View.DataContext.JOB_COSTGROUPSCollection}" NullValueButtonPlacement="None" PopupWidth="500" ValueMember="SEQNO">
@@ -160,7 +168,7 @@
                                     <dxe:ComboBoxEditSettings AutoComplete="True" DisplayMember="SHORTCODE" IsTextEditable="True" ItemsSource="{Binding JOB_COSTGROUPSCollection}" ValueMember="SEQNO" />
                                 </dxg:GridColumn.EditSettings>
                             </dxg:GridColumn>
-                            <dxg:GridColumn FieldName="CostType" AllowBestFit="false" Width="50" Header="Commodity Code">
+                            <dxg:GridColumn FieldName="CostType" AllowBestFit="false" Width="50" Header="Commodity Code" ReadOnly="{Binding IsReadOnly}" >
                                 <dxg:GridColumn.CellTemplate>
                                     <DataTemplate>
                                         <dxg:LookUpEdit Name="PART_Editor" AutoComplete="True" AutoPopulateColumns="False" DisplayMember="SHORTCODE" IncrementalFiltering="True" IsTextEditable="true" ItemsSource="{Binding View.DataContext.JOB_COSTTYPESCollection}" NullValueButtonPlacement="Popup" PopupWidth="500" ValueMember="SEQNO">
@@ -183,12 +191,12 @@
                                         </dxg:LookUpEdit>
                                     </DataTemplate>
                                 </dxg:GridColumn.CellTemplate>
-                                <!--  For Filtering  -->
+                                <!--For Filtering-->
                                 <dxg:GridColumn.EditSettings>
                                     <dxe:ComboBoxEditSettings AutoComplete="True" DisplayMember="SHORTCODE" IsTextEditable="True" ItemsSource="{Binding JOB_COSTTYPESCollection}" NullValueButtonPlacement="EditBox" ValueMember="SEQNO" />
                                 </dxg:GridColumn.EditSettings>
                             </dxg:GridColumn>
-                            <dxg:GridColumn FieldName="stockcode" Header="Stock Code" >
+                            <dxg:GridColumn FieldName="stockcode" Header="Stock Code" ReadOnly="{Binding IsReadOnly}" >
                                 <dxg:GridColumn.CellTemplate>
                                     <DataTemplate>
                                         <dxg:LookUpEdit Name="PART_Editor" AutoComplete="True" AutoPopulateColumns="False" DisplayMember="STOCKCODE" IncrementalFiltering="True" IsTextEditable="true" ItemsSource="{Binding View.DataContext.STOCK_ITEMCollection}" NullValueButtonPlacement="Popup" PopupWidth="500" ValueMember="STOCKCODE">
@@ -211,15 +219,15 @@
                                         </dxg:LookUpEdit>
                                     </DataTemplate>
                                 </dxg:GridColumn.CellTemplate>
-                                <!--  For Filtering  -->
+                                <!--For Filtering-->
                                 <dxg:GridColumn.EditSettings>
                                     <dxe:ComboBoxEditSettings AutoComplete="True" DisplayMember="STOCKCODE" IsTextEditable="True" ItemsSource="{Binding STOCK_ITEMCollection}" NullValueButtonPlacement="EditBox" ValueMember="STOCKCODE" />
                                 </dxg:GridColumn.EditSettings>
                             </dxg:GridColumn>
-                            <dxg:GridColumn FieldName="X_VARIATIONCODE" AllowBestFit="false" Width="150" Header="Variation Code" />
-                            <dxg:GridColumn FieldName="description" Width="300" AllowBestFit="false" Header="Description" />
+                            <dxg:GridColumn FieldName="X_VARIATIONCODE" AllowBestFit="false" Width="150" Header="Variation Code" ReadOnly="{Binding IsReadOnly}" />
+                            <dxg:GridColumn FieldName="description" Width="300" AllowBestFit="false" Header="Description" ReadOnly="{Binding IsReadOnly}" />
                         </dxg:GridControlBand>
-                        <dxg:GridControlBand Header="Editable" Visible="{Binding IsReadOnly, Converter={dxmvvm:BooleanNegationConverter}}">
+                        <dxg:GridControlBand Header="{Binding BandHeaderName}" Visible="{Binding IsShowDefaultColumns, Converter={dxmvvm:BooleanNegationConverter}}">
                             <custom:EditableColumn RealFieldName="jobno" AllowBestFit="false" Width="110" Header="Sub Job" UnboundType="Integer" UnboundExpression="[jobno]">
                                 <dxg:GridColumn.CellTemplate>
                                     <DataTemplate>
@@ -299,7 +307,7 @@
                                         </dxg:LookUpEdit>
                                     </DataTemplate>
                                 </dxg:GridColumn.CellTemplate>
-                                <!--  For Filtering  -->
+                                <!--For Filtering-->
                                 <dxg:GridColumn.EditSettings>
                                     <dxe:ComboBoxEditSettings AutoComplete="True" DisplayMember="SHORTCODE" IsTextEditable="True" ItemsSource="{Binding JOB_COSTTYPESCollection}" NullValueButtonPlacement="EditBox" ValueMember="SEQNO" />
                                 </dxg:GridColumn.EditSettings>
@@ -327,7 +335,7 @@
                                         </dxg:LookUpEdit>
                                     </DataTemplate>
                                 </dxg:GridColumn.CellTemplate>
-                                <!--  For Filtering  -->
+                                <!--For Filtering-->
                                 <dxg:GridColumn.EditSettings>
                                     <dxe:ComboBoxEditSettings AutoComplete="True" DisplayMember="STOCKCODE" IsTextEditable="True" ItemsSource="{Binding STOCK_ITEMCollection}" NullValueButtonPlacement="EditBox" ValueMember="STOCKCODE" />
                                 </dxg:GridColumn.EditSettings>
@@ -392,7 +400,7 @@
                         <dxg:GridSummaryItem dxc:DXSerializer.Enabled="False" FieldName="CostActual" DisplayFormat="c0" SummaryType="Sum" />
                     </dxg:GridControl.TotalSummary>
                     <dxg:GridControl.View>
-                        <custom:InstantFeedbackTableView x:Name="tableView" NewItemRowPosition="None" ShowTotalSummary="True" ShowFixedTotalSummary="True" GroupSummaryDisplayMode="AlignByColumns" ShowGroupedColumns="True">
+                        <custom:InstantFeedbackTableView x:Name="tableView" NewItemRowPosition="None" Style="{Binding IsInstantFeedbackMode, Converter={StaticResource ViewConditionToStyleConverter}}">
                             <dxg:TableView.RowCellMenuCustomizations>
                                 <dxb:BarLinkContainerItem ItemLinksSource="{StaticResource ContextMenuDefaultHeaderButtons}" />
                                 <dxb:BarItemLinkSeparator />
@@ -401,7 +409,6 @@
                         </custom:InstantFeedbackTableView>
                     </dxg:GridControl.View>
                     <dxmvvm:Interaction.Behaviors>
-                        <dxmvvm:EventToCommand Command="{Binding PastingFromClipboardCommand}" EventName="PastingFromClipboard" PassEventArgsToCommand="True" />
                         <custom:EditingAttachedBehavior>
                             <dxmvvm:Interaction.Behaviors>
                                 <dxmvvm:EventToCommand Command="{Binding EditingAttachedBehavior_SaveChangesCommand}" EventName="SaveChanges" PassEventArgsToCommand="True" />
