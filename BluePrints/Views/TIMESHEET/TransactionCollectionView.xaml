@@ -112,34 +112,6 @@
                                     <dxe:ComboBoxEditSettings AutoComplete="True" DisplayMember="JOBCODE" IsTextEditable="True" ItemsSource="{Binding JOBCOST_HDRCollection}" ValueMember="JOBNO" />
                                 </dxg:GridColumn.EditSettings>
                             </dxg:GridColumn>
-                            <dxg:GridColumn FieldName="stockcode" Header="Stock Code" ReadOnly="{Binding IsReadOnly}" >
-                                <dxg:GridColumn.CellTemplate>
-                                    <DataTemplate>
-                                        <dxg:LookUpEdit Name="PART_Editor" AutoComplete="True" AutoPopulateColumns="False" DisplayMember="STOCKCODE" IncrementalFiltering="True" IsTextEditable="true" ItemsSource="{Binding View.DataContext.STOCK_ITEMCollection}" NullValueButtonPlacement="Popup" PopupWidth="500" ValueMember="STOCKCODE">
-                                            <dxg:LookUpEdit.StyleSettings>
-                                                <dxg:SearchLookUpEditStyleSettings />
-                                            </dxg:LookUpEdit.StyleSettings>
-                                            <dxg:LookUpEdit.PopupContentTemplate>
-                                                <ControlTemplate TargetType="ContentControl">
-                                                    <dxg:GridControl x:Name="PART_GridControl" SelectionMode="Row" ShowBorder="False">
-                                                        <dxg:GridControl.Columns>
-                                                            <dxg:GridColumn FieldName="STOCKCODE" Header="Code" ReadOnly="True" />
-                                                            <dxg:GridColumn FieldName="DESCRIPTION" AllowBestFit="false" Width="*" Header="Description" ReadOnly="True" />
-                                                        </dxg:GridControl.Columns>
-                                                        <dxg:GridControl.View>
-                                                            <dxg:TableView RowStyle="{StaticResource SelectionBackgroundStyle}" ShowFilterPanelMode="ShowAlways" ShowFocusedRectangle="True" ShowGroupPanel="False" ShowSelectionRectangle="True" />
-                                                        </dxg:GridControl.View>
-                                                    </dxg:GridControl>
-                                                </ControlTemplate>
-                                            </dxg:LookUpEdit.PopupContentTemplate>
-                                        </dxg:LookUpEdit>
-                                    </DataTemplate>
-                                </dxg:GridColumn.CellTemplate>
-                                <!--For Filtering-->
-                                <dxg:GridColumn.EditSettings>
-                                    <dxe:ComboBoxEditSettings AutoComplete="True" DisplayMember="STOCKCODE" IsTextEditable="True" ItemsSource="{Binding STOCK_ITEMCollection}" NullValueButtonPlacement="EditBox" ValueMember="STOCKCODE" />
-                                </dxg:GridColumn.EditSettings>
-                            </dxg:GridColumn>
                             <dxg:GridColumn FieldName="COST_GROUP" AllowBestFit="false" Header="Discipline Code" Width="50" ReadOnly="{Binding IsReadOnly}" >
                                 <dxg:GridColumn.CellTemplate>
                                     <DataTemplate>
@@ -399,22 +371,6 @@
                         <dxg:GridSummaryItem dxc:DXSerializer.Enabled="False" FieldName="quantity" DisplayFormat="n0" SummaryType="Sum" />
                         <dxg:GridSummaryItem dxc:DXSerializer.Enabled="False" FieldName="CostActual" DisplayFormat="c0" SummaryType="Sum" />
                     </dxg:GridControl.TotalSummary>
-                    <dxg:GridControl.View>
-                        <custom:InstantFeedbackTableView x:Name="tableView" NewItemRowPosition="None" ShowFixedTotalSummary="True" Style="{Binding IsInstantFeedbackMode, Converter={StaticResource ViewConditionToStyleConverter}}">
-                            <dxg:TableView.RowCellMenuCustomizations>
-                                <dxb:BarLinkContainerItem ItemLinksSource="{StaticResource ContextMenuDefaultHeaderButtons}" />
-                                <dxb:BarItemLinkSeparator />
-                                <dxb:BarButtonItemLink BarItemName="biFullRefresh1" />
-                            </dxg:TableView.RowCellMenuCustomizations>
-                        </custom:InstantFeedbackTableView>
-                    </dxg:GridControl.View>
-                    <dxmvvm:Interaction.Behaviors>
-                        <custom:EditingAttachedBehavior>
-                            <dxmvvm:Interaction.Behaviors>
-                                <dxmvvm:EventToCommand Command="{Binding EditingAttachedBehavior_SaveChangesCommand}" EventName="SaveChanges" PassEventArgsToCommand="True" />
-                            </dxmvvm:Interaction.Behaviors>
-                        </custom:EditingAttachedBehavior>
-                    </dxmvvm:Interaction.Behaviors>
                 </custom:GridControlEx>
             </DockPanel>
         </dxb:BarManager>
