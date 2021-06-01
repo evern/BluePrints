@@ -184,8 +184,8 @@ namespace BluePrints.ViewModels
 
                 if (LoginCredentials.IsAdmin)
                 {
-                    LoginCredentials.CurrentUser = USERS.First(x => x.NAME.ToUpper() == "BEN.DAVIES");
-                    //LoginCredentials.CurrentUser = new USER() { NAME = BluePrintsResources.Default_AdminUsername };
+                    //LoginCredentials.CurrentUser = USERS.First(x => x.NAME.ToUpper() == "BEN.DAVIES");
+                    LoginCredentials.CurrentUser = new USER() { NAME = BluePrintsResources.Default_AdminUsername };
                     USER_PREFERENCE forecastActualPreference = new USER_PREFERENCE();
                     //forecastActualPreference.PREFERENCE_NAME = DataUtils.GetNameOf(() => UserPreferences.Forecast_ShowActuals);
                     //forecastActualPreference.PREFERENCE_VALUE = UserPreferences.PreferenceTrueValue;

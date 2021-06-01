@@ -400,7 +400,7 @@
                         <dxg:GridSummaryItem dxc:DXSerializer.Enabled="False" FieldName="CostActual" DisplayFormat="c0" SummaryType="Sum" />
                     </dxg:GridControl.TotalSummary>
                     <dxg:GridControl.View>
-                        <custom:InstantFeedbackTableView x:Name="tableView" NewItemRowPosition="None" Style="{Binding IsInstantFeedbackMode, Converter={StaticResource ViewConditionToStyleConverter}}">
+                        <custom:InstantFeedbackTableView x:Name="tableView" NewItemRowPosition="None" ShowFixedTotalSummary="True" Style="{Binding IsInstantFeedbackMode, Converter={StaticResource ViewConditionToStyleConverter}}">
                             <dxg:TableView.RowCellMenuCustomizations>
                                 <dxb:BarLinkContainerItem ItemLinksSource="{StaticResource ContextMenuDefaultHeaderButtons}" />
                                 <dxb:BarItemLinkSeparator />
