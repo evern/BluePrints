@@ -98,6 +98,8 @@ namespace BluePrints.ViewModels
 
         public IQueryable<USER> USERCollectionPopulation(IQueryable<USER> USERS)
         {
+            //DbContext cannot support parallel operation, load it up first in cache
+            PROJECT_PERMISSIONCollection.ToList();
             HashSet<USER> users = new HashSet<USER>(USERS);
             Parallel.ForEach(users, user =>
             {
@@ -121,7 +123,7 @@ namespace BluePrints.ViewModels
 
         private void populateUserAuthorisedProjects(USER user, IEnumerable<PROJECT> PROJECTCollection)
         {
-            user.Projects = PROJECTCollection.Where(project => bluePrintsUnitOfWork.PROJECT_PERMISSIONS.Any(permission => permission.GUID_USER == user.GUID && permission.GUID_PROJECT == project.GUID)).ToList();
+            user.Projects = PROJECTCollection.Where(project => PROJECT_PERMISSIONCollection.Any(permission => permission.GUID_USER == user.GUID && permission.GUID_PROJECT == project.GUID)).ToList();
             user.Update();
         }
 
@@ -173,6 +175,7 @@ namespace BluePrints.ViewModels
             }
 
             saveProjectAssignments(entity);
+            resetProjectPermision();
             base.OnAfterProjectionSave(projection, entity, isNew);
         }
         #endregion
@@ -192,13 +195,8 @@ namespace BluePrints.ViewModels
                 List<PROJECT_PERMISSION> add_projects = new List<PROJECT_PERMISSION>();
                 foreach (PROJECT project in entity.Project_Assignments)
                 {
-                    if (!add_projects.Any(x => x.GUID_PROJECT == project.GUID))
-                        add_projects.Add(new PROJECT_PERMISSION() { GUID_PROJECT = project.GUID, GUID_USER = entity.GUID });
-                }
-
-                foreach(PROJECT_PERMISSION addProject in add_projects)
-                {
-                    bluePrintsUnitOfWork.PROJECT_PERMISSIONS.Add(addProject);
+                    if (!bluePrintsUnitOfWork.PROJECT_PERMISSIONS.Where(x => x.GUID_USER == entity.GUID).Any(x => x.GUID_PROJECT == project.GUID))
+                        bluePrintsUnitOfWork.PROJECT_PERMISSIONS.Add(new PROJECT_PERMISSION() { GUID_PROJECT = project.GUID, GUID_USER = entity.GUID });
                 }
             }
             else
@@ -499,6 +497,25 @@ namespace BluePrints.ViewModels
 
                 return collection;
             }
+        }
+
+        List<PROJECT_PERMISSION> projectPermissionCollection;
+        public List<PROJECT_PERMISSION> PROJECT_PERMISSIONCollection
+        {
+            get
+            {
+                if(bluePrintsUnitOfWork != null && projectPermissionCollection == null)
+                {
+                    projectPermissionCollection = bluePrintsUnitOfWork.PROJECT_PERMISSIONS.ToList();
+                }
+
+                return projectPermissionCollection;
+            }
+        }
+
+        private void resetProjectPermision()
+        {
+            projectPermissionCollection = null;
         }
         #endregion
 
