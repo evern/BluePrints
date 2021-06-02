@@ -289,18 +289,23 @@ namespace BluePrints.ViewModels
                                         userAdditionViewModel.PopulateUSERStaffId();
                                         if (USERAddDialogService.ShowDialog(MessageButton.OKCancel, "New User", "USERAdditionView", userAdditionViewModel) == MessageResult.Cancel)
                                         {
+                                            CellValueChangingFieldName = null;
                                             userAdditionViewModel = null;
                                             return "Operation cancelled";
                                         }
                                     }
                                     else
+                                    {
+                                        CellValueChangingFieldName = null;
                                         return "Operation cancelled";
+                                    }
                                 }
                             }
                         }
                         else
                         {
                             MessageBoxService.ShowMessage("Please remove user from User maintenance in BluePrints", "Confirmation", MessageButton.OK, MessageIcon.Warning);
+                            CellValueChangingFieldName = null;
                             return "Operation cancelled";
                         }
                     }
