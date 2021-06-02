@@ -69,7 +69,6 @@ namespace BluePrints.ViewModels
             CanEditQuantity = !IsReadOnly && LoginCredentials.getPermissionStatus(DataUtils.GetNameOf(() => NavigationResources.Permission_EXO_Transactions_ChangeQuantity)) == LoginCredentials.PermissionStatus.All;
 
             bool? isUsePreloadModePreference = LoginCredentials.GetUserPreferenceBool(DataUtils.GetNameOf(() => UserPreferences.EXO_PreloadTransactions));
-
             isUsePreloadMode = isUsePreloadModePreference == null ? false : (bool)isUsePreloadModePreference;
             IsInstantFeedbackMode = !IsUsePreloadMode;
         }
@@ -86,6 +85,7 @@ namespace BluePrints.ViewModels
                 isUsePreloadMode = value;
                 BluePrintsDataUtils.SaveUserPreference(DataUtils.GetNameOf(() => UserPreferences.EXO_PreloadTransactions), value ? UserPreferences.PreferenceTrueValue : UserPreferences.PreferenceFalseValue);
                 string uniqueNavKeyFormat = DataUtils.FormatNavigationKey(loadPROJECT.GUID.ToString());
+
                 Messenger.Default.Send(new NavigateMessage(DataUtils.GetNameOf(() => NavigationResources.Menu_Project_EXO_Transactions) + uniqueNavKeyFormat));
             }
         }

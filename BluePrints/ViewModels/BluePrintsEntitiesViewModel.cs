@@ -447,7 +447,11 @@ namespace BluePrints.ViewModels
             if (module == null || DocumentManagerService == null)
                 return null;
 
-            DocumentInfo documentInfo = new DocumentInfo(module.NavigationId, module.DocumentParameter, module.DocumentType, module.ModuleTitle);
+            string viewName = module.DocumentType;
+            if (module.PreferredDocumentType != null)
+                viewName = module.PreferredDocumentType();
+
+            DocumentInfo documentInfo = new DocumentInfo(module.NavigationId, module.DocumentParameter, viewName, module.ModuleTitle);
             var document = DocumentManagerService.ShowExistingEntityDocumentWithLogging(documentInfo, this);
 
             return document;
@@ -580,7 +584,7 @@ namespace BluePrints.ViewModels
             moduleAdder(construct_category_description, new BluePrintsEntitiesModuleDescription(DataUtils.GetNameOf(() => NavigationResources.Menu_Project_ConstructionResourceAllocation), projectSpecificKey, construct_category_description.NavigationId, childTitlePrefix + "Resource Allocation", "EXO_ConstructionSubjobCollectionView", new EntitiesParameter<PROJECT>(entity), null, "Resource Allocation", false, false, @"Business Objects\BOUser_16x16.png"), isSecurityModule);
             moduleAdder(design_category_description, new BluePrintsEntitiesModuleDescription(DataUtils.GetNameOf(() => NavigationResources.Menu_Project_DesignResourceAllocation), projectSpecificKey, design_category_description.NavigationId, childTitlePrefix + "Design Jobs", "EXO_DesignSubjobCollectionView", new EntitiesParameter<PROJECT>(entity), null, "Job Permissions", false, false, @"Business Objects\BOUser_16x16.png"), isSecurityModule);
 
-            moduleAdder(exo_category_description, new BluePrintsEntitiesModuleDescription(DataUtils.GetNameOf(() => NavigationResources.Menu_Project_EXO_Transactions), projectSpecificKey, exo_category_description.NavigationId, childTitlePrefix + "Transactions", "TransactionCollectionView", new EntitiesParameter<PROJECT>(entity), null, "Transactions", false, false, @"Function Library\Compatibility_16x16.png"), isSecurityModule);
+            moduleAdder(exo_category_description, new BluePrintsEntitiesModuleDescription(DataUtils.GetNameOf(() => NavigationResources.Menu_Project_EXO_Transactions), projectSpecificKey, exo_category_description.NavigationId, childTitlePrefix + "Transactions", null, new EntitiesParameter<PROJECT>(entity), null, "Transactions", false, false, @"Function Library\Compatibility_16x16.png", null, null, false, () => BluePrintsDataUtils.GetPreferredDocumentTypeName(DataUtils.GetNameOf(() => UserPreferences.EXO_PreloadTransactions))), isSecurityModule);
             moduleAdder(exo_category_description, new BluePrintsEntitiesModuleDescription(DataUtils.GetNameOf(() => NavigationResources.Menu_Project_EXO_Timesheets), projectSpecificKey, exo_category_description.NavigationId, childTitlePrefix + "Timesheets", "TimesheetEntryCollectionView", new EntitiesParameter<PROJECT>(entity), null, "Timesheets", false, false, @"Function Library\Date&Time_16x16.png"), isSecurityModule);
             moduleAdder(exo_category_description, new BluePrintsEntitiesModuleDescription(DataUtils.GetNameOf(() => NavigationResources.Menu_Project_EXO_Timesheets_Query), projectSpecificKey, exo_category_description.NavigationId, childTitlePrefix + "Timesheets Query", "TimesheetQueryCollectionView", new EntitiesParameter<PROJECT>(entity), null, "Timesheets Query", false, false, @"Data\SelectData_16x16.png"), isSecurityModule);
             moduleAdder(exo_category_description, new BluePrintsEntitiesModuleDescription(DataUtils.GetNameOf(() => NavigationResources.Menu_Project_EXO_Jobs), projectSpecificKey, exo_category_description.NavigationId, childTitlePrefix + "Budget Input", "EXO_SubJobCollectionView", new EntitiesParameter<PROJECT>(entity), null, "Budget Input", false, false, @"Function Library\MoreFunctions_16x16.png"), isSecurityModule);
@@ -701,8 +705,8 @@ namespace BluePrints.Common.ViewModel
         List<BluePrintsEntitiesModuleDescription> menuItems;
         Action<object> navigateAction;
         public bool Animate { get; set; }
-        public BluePrintsEntitiesModuleDescription(string id, string projectSpecificKey, string parentId, string title, string documentType = null, object documentParameter = null, ImageSource image = null, string navigationTitle = null, bool treeViewIsExpanded = true, bool showInCollapseMode = false, string imagePath = "", List<BluePrintsEntitiesModuleDescription> menuItems = null, Action<object> navigateAction = null, bool showAnimation = false)
-            : base(id, projectSpecificKey, parentId, title, documentType, documentParameter, image, navigationTitle, treeViewIsExpanded, showInCollapseMode)
+        public BluePrintsEntitiesModuleDescription(string id, string projectSpecificKey, string parentId, string title, string documentType = null, object documentParameter = null, ImageSource image = null, string navigationTitle = null, bool treeViewIsExpanded = true, bool showInCollapseMode = false, string imagePath = "", List<BluePrintsEntitiesModuleDescription> menuItems = null, Action<object> navigateAction = null, bool showAnimation = false, Func<string> preferredDocumentType = null)
+            : base(id, projectSpecificKey, parentId, title, documentType, documentParameter, image, navigationTitle, treeViewIsExpanded, showInCollapseMode, preferredDocumentType)
         {
             this.menuItems = menuItems;
             this.navigateAction = navigateAction;

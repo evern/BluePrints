@@ -1940,6 +1940,9 @@
     <Compile Include="Views\TIMESHEET\TimesheetQueryCollectionView.xaml.cs">
       <DependentUpon>TimesheetQueryCollectionView.xaml</DependentUpon>
     </Compile>
+    <Compile Include="Views\TIMESHEET\TransactionCollectionInstantFeedbackView.xaml.cs">
+      <DependentUpon>TransactionCollectionInstantFeedbackView.xaml</DependentUpon>
+    </Compile>
     <Compile Include="Views\TIMESHEET\TransactionCollectionView.xaml.cs">
       <DependentUpon>TransactionCollectionView.xaml</DependentUpon>
     </Compile>
@@ -2399,6 +2402,10 @@
       <SubType>Designer</SubType>
     </Page>
     <Page Include="Views\TIMESHEET\TimesheetQueryCollectionView.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Views\TIMESHEET\TransactionCollectionInstantFeedbackView.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>

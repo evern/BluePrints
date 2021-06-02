@@ -1926,5 +1926,19 @@ namespace BluePrints.Common.ViewModel.Utils
             ChangedStartDataDate = saveDateTime;
             LoadDataDate = saveDateTime;
         }
+
+        public static string GetPreferredDocumentTypeName(string preferenceName)
+        {
+            string viewName = string.Empty;
+            if(preferenceName == DataUtils.GetNameOf(() => UserPreferences.EXO_PreloadTransactions))
+            {
+                viewName = "TransactionCollectionInstantFeedbackView";
+                bool? isUsePreloadModePreference = LoginCredentials.GetUserPreferenceBool(preferenceName);
+                if (isUsePreloadModePreference != null && (bool)isUsePreloadModePreference)
+                    viewName = "TransactionCollectionView";
+            }
+
+            return viewName;
+        }
     }
 }
