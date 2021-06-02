@@ -54,12 +54,15 @@ namespace BluePrints.ViewModels
         private IUnitOfWorkFactory<IPrimeroEntitiesUnitOfWork> pgaUnitOfWorkFactory = PrimeroEntitiesUnitOfWorkSource.GetUnitOfWorkFactory(true);
         IPrimeroEntitiesUnitOfWork primeroUnitOfWork;
         IPrimeroEntitiesUnitOfWork pgaUnitOfWork;
+        IBluePrintsEntitiesUnitOfWork bluePrintsUnitOfWork;
         //timer to scan serial port
         protected override void resolveParameters(object parameter)
         {
+            bluePrintsUnitOfWork = bluePrintsUnitOfWorkFactory.CreateUnitOfWork();
             primeroUnitOfWork = primeroUnitOfWorkFactory.CreateUnitOfWork();
             pgaUnitOfWork = pgaUnitOfWorkFactory.CreateUnitOfWork();
         }
+
         protected override void addEntitiesLoader()
         {
             loaderCollection.AddLoaderDescription<ROLE, ROLE, Guid, IBluePrintsEntitiesUnitOfWork>(bluePrintsUnitOfWorkFactory, x => x.ROLES);
@@ -118,7 +121,7 @@ namespace BluePrints.ViewModels
 
         private void populateUserAuthorisedProjects(USER user, IEnumerable<PROJECT> PROJECTCollection)
         {
-            user.Projects = PROJECTCollection.Where(project => PROJECT_PERMISSIONCollection.Any(permission => permission.GUID_USER == user.GUID && permission.GUID_PROJECT == project.GUID)).ToList();
+            user.Projects = PROJECTCollection.Where(project => bluePrintsUnitOfWork.PROJECT_PERMISSIONS.Any(permission => permission.GUID_USER == user.GUID && permission.GUID_PROJECT == project.GUID)).ToList();
             user.Update();
         }
 
@@ -180,13 +183,11 @@ namespace BluePrints.ViewModels
             if (entity.Project_Assignments != null)
             {
                 List<PROJECT_PERMISSION> remove_projects = new List<PROJECT_PERMISSION>();
-                foreach (PROJECT_PERMISSION assignment in PROJECT_PERMISSIONCollection.Where(x => x.GUID_USER == entity.GUID))
+                foreach (PROJECT_PERMISSION assignment in bluePrintsUnitOfWork.PROJECT_PERMISSIONS.Where(x => x.GUID_USER == entity.GUID))
                 {
                     if (!entity.Project_Assignments.Any(x => x.GUID == assignment.GUID_PROJECT))
-                        remove_projects.Add(assignment);
+                        bluePrintsUnitOfWork.PROJECT_PERMISSIONS.Remove(assignment);
                 }
-
-                PROJECT_PERMISSIONCollectionViewModel.BaseBulkDelete(remove_projects);
 
                 List<PROJECT_PERMISSION> add_projects = new List<PROJECT_PERMISSION>();
                 foreach (PROJECT project in entity.Project_Assignments)
@@ -195,18 +196,21 @@ namespace BluePrints.ViewModels
                         add_projects.Add(new PROJECT_PERMISSION() { GUID_PROJECT = project.GUID, GUID_USER = entity.GUID });
                 }
 
-                PROJECT_PERMISSIONCollectionViewModel.BaseBulkSave(add_projects);
+                foreach(PROJECT_PERMISSION addProject in add_projects)
+                {
+                    bluePrintsUnitOfWork.PROJECT_PERMISSIONS.Add(addProject);
+                }
             }
             else
             {
                 List<PROJECT_PERMISSION> remove_projects = new List<PROJECT_PERMISSION>();
-                foreach (PROJECT_PERMISSION assignment in PROJECT_PERMISSIONCollection.Where(x => x.GUID_USER == entity.GUID))
+                foreach (PROJECT_PERMISSION assignment in bluePrintsUnitOfWork.PROJECT_PERMISSIONS.Where(x => x.GUID_USER == entity.GUID))
                 {
-                    remove_projects.Add(assignment);
+                    bluePrintsUnitOfWork.PROJECT_PERMISSIONS.Remove(assignment);
                 }
-
-                PROJECT_PERMISSIONCollectionViewModel.BaseBulkDelete(remove_projects);
             }
+
+            bluePrintsUnitOfWork.SaveChanges();
         }
         #endregion
 
@@ -480,27 +484,6 @@ namespace BluePrints.ViewModels
                 if (collection != null)
                     collection = collection.OrderBy(x => x.NAME);
                 return collection;
-            }
-        }
-
-        public IEnumerable<PROJECT_PERMISSION> PROJECT_PERMISSIONCollection
-        {
-            get
-            {
-                return GetEntities<PROJECT_PERMISSION>();
-            }
-        }
-
-        public CollectionViewModel<PROJECT_PERMISSION, PROJECT_PERMISSION, Guid, IBluePrintsEntitiesUnitOfWork> PROJECT_PERMISSIONCollectionViewModel
-        {
-            get
-            {
-                if (MainViewModel == null)
-                    return null;
-
-                return
-                    (CollectionViewModel<PROJECT_PERMISSION, PROJECT_PERMISSION, Guid, IBluePrintsEntitiesUnitOfWork>)
-                    loaderCollection.GetViewModel<PROJECT_PERMISSION>();
             }
         }
 
