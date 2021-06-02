@@ -74,6 +74,7 @@ namespace BluePrints.ViewModels
             loaderCollection.AddLoaderDescription<DISCIPLINE, DISCIPLINE, Guid, IBluePrintsEntitiesUnitOfWork>(bluePrintsUnitOfWorkFactory, x => x.DISCIPLINES);
             loaderCollection.AddLoaderDescription<ROLE, ROLE, Guid, IBluePrintsEntitiesUnitOfWork>(bluePrintsUnitOfWorkFactory, x => x.ROLES);
             loaderCollection.AddLoaderDescription<X_DEPARTMENT, X_DEPARTMENT, int, IPrimeroEntitiesUnitOfWork>(primeroUnitOfWorkFactory, x => x.X_DEPARTMENTS);
+            loaderCollection.AddLoaderDescription<OFFICE, OFFICE, Guid, IBluePrintsEntitiesUnitOfWork>(bluePrintsUnitOfWorkFactory, x => x.OFFICES);
         }
 #endregion
 
@@ -207,6 +208,11 @@ namespace BluePrints.ViewModels
             primeroUOW.SaveChanges();
         }
 
+        private IDialogService USERAddDialogService
+        {
+            get { return this.GetRequiredService<IDialogService>("USERAddDialogService"); }
+        }
+
         /// <summary>
         /// The view name to be used when saving layout for IDocumentContent
         /// </summary>
@@ -234,59 +240,10 @@ namespace BluePrints.ViewModels
                 if((bool)new_value)
                 {
                     USER newUSER = USERCollection.FirstOrDefault(x => x.EXO_STAFF_ID == projection.STAFFNO);
-                    if (newUSER == null)
+                    if (newUSER == null && userAdditionViewModel != null)
                     {
-                        USER activeDirectoryUSER = getActiveDirectoryUser(projection.RESOURCENAME);
-                        if (activeDirectoryUSER != null)
-                        {
-                            newUSER = new USER();
-                            newUSER.NAME = activeDirectoryUSER.NAME;
-                            newUSER.GUID_OFFICE = LoginCredentials.CurrentUser.GUID_OFFICE;
-                            newUSER.FIRST_NAME = activeDirectoryUSER.FIRST_NAME;
-                            newUSER.LAST_NAME = activeDirectoryUSER.LAST_NAME;
-                            newUSER.DESCRIPTION = activeDirectoryUSER.DESCRIPTION;
-                            newUSER.TITLE = activeDirectoryUSER.TITLE;
-                            newUSER.START_DATE = DateTime.Now;
-
-                            DEPARTMENT findDEPARTMENT = DEPARTMENTCollection.FirstOrDefault(x => x.NAME.ToUpper() == activeDirectoryUSER.DEPARTMENT.ToUpper());
-                            if (findDEPARTMENT == null)
-                            {
-                                var bulkEditDepartmentViewModel = BulkEditEnumsViewModel.Create(DEPARTMENTCollection, "NAME");
-                                if (BulkColumnEditDialogService.ShowDialog(MessageButton.OKCancel, "Please Select Department",
-                                        "BulkEditEnums", bulkEditDepartmentViewModel) == MessageResult.OK)
-                                {
-                                    if (bulkEditDepartmentViewModel.SelectedItem != null)
-                                    {
-                                        newUSER.GUID_DEPARTMENT = ((DEPARTMENT)bulkEditDepartmentViewModel.SelectedItem).GUID;
-                                    }
-                                }
-                            }
-                            else
-                                newUSER.GUID_DEPARTMENT = findDEPARTMENT.GUID;
-
-                            var bulkEditDisciplineViewModel = BulkEditEnumsViewModel.Create(DISCIPLINECollection, "NAME");
-                            if (BulkColumnEditDialogService.ShowDialog(MessageButton.OKCancel, "Please Select DISCIPLINE",
-                                    "BulkEditEnums", bulkEditDisciplineViewModel) == MessageResult.OK)
-                            {
-                                if (bulkEditDisciplineViewModel.SelectedItem != null)
-                                {
-                                    newUSER.GUID_DISCIPLINE = ((DISCIPLINE)bulkEditDisciplineViewModel.SelectedItem).GUID;
-                                }
-                            }
-
-                            var bulkEditRoleViewModel = BulkEditEnumsViewModel.Create(RestrictedROLECollection, "NAME");
-                            if (BulkColumnEditDialogService.ShowDialog(MessageButton.OKCancel, "Please Select Role",
-                                    "BulkEditEnums", bulkEditRoleViewModel) == MessageResult.OK)
-                            {
-                                if (bulkEditRoleViewModel.SelectedItem != null)
-                                {
-                                    newUSER.GUID_ROLE = ((ROLE)bulkEditRoleViewModel.SelectedItem).GUID;
-                                }
-                            }
-
-                            USERCollectionViewModelWrapper.PopulateUserStaffIds(newUSER, primeroUnitOfWork.STAFF, pgaUnitOfWork.STAFF);
-                            USERViewModel.Save(newUSER);
-                        }
+                        newUSER = userAdditionViewModel.GetNewUser();
+                        USERViewModel.Save(newUSER);
                     }
                 }
             }
@@ -294,6 +251,7 @@ namespace BluePrints.ViewModels
             base.UnifiedCellValueChanged(field_name, old_value, new_value, projection, isNew);
         }
 
+        USERAdditionViewModel userAdditionViewModel;
         public override string UnifiedValueValidation(ExoResourceProjection projection, string field_name, object new_value, bool isPaste)
         {
             if (field_name == BindableBase.GetPropertyName(() => new ExoResourceProjection().RESOURCENAME))
@@ -322,10 +280,18 @@ namespace BluePrints.ViewModels
                                 USER activeDirectoryUSER = getActiveDirectoryUser(projection.RESOURCENAME);
                                 if (activeDirectoryUSER == null)
                                     return "Cannot add user because user doesn't exist in active directory";
+                                else
+                                {
+                                    if (MessageBoxService.ShowMessage("Are you sure you add " + projection.RESOURCENAME + " to BluePrints?", "Confirmation", MessageButton.OKCancel, MessageIcon.Warning) == MessageResult.OK)
+                                    {
+                                        userAdditionViewModel = USERAdditionViewModel.Create(DEPARTMENTCollection, DISCIPLINECollection, USERCollection, OFFICECollection, activeDirectoryUSER.TITLE, activeDirectoryUSER.DESCRIPTION, primeroUnitOfWork.STAFF, pgaUnitOfWork.STAFF);
+                                        if (USERAddDialogService.ShowDialog(MessageButton.OKCancel, "New User", "USERAdditionView", userAdditionViewModel) == MessageResult.Cancel)
+                                            return "Operation cancelled";
+                                    }
+                                    else
+                                        return "Operation cancelled";
+                                }
                             }
-
-                            if (MessageBoxService.ShowMessage("Are you sure you add " + projection.RESOURCENAME + " to BluePrints?", "Confirmation", MessageButton.OKCancel, MessageIcon.Warning) == MessageResult.Cancel)
-                                return "Operation cancelled";
                         }
                         else
                         {
@@ -413,6 +379,14 @@ namespace BluePrints.ViewModels
             get
             {
                 return GetEntities<USER>();
+            }
+        }
+
+        public IEnumerable<OFFICE> OFFICECollection
+        {
+            get
+            {
+                return GetEntities<OFFICE>();
             }
         }
 
