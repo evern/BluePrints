@@ -5,9 +5,9 @@ namespace BluePrints.Views
     /// <summary>
     /// Interaction logic for USERSelectionView.xaml
     /// </summary>
-    public partial class USERSelectionView : UserControl
+    public partial class USERAdditionView : UserControl
     {
-        public USERSelectionView()
+        public USERAdditionView()
         {
             InitializeComponent();
         }

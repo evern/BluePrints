@@ -1,4 +1,5 @@
-﻿using BluePrints.Common.ViewModel.Misc;
+﻿using BaseModel.View;
+using BluePrints.Common.ViewModel.Misc;
 using BluePrints.Data;
 using BluePrints.PrimeroData;
 using BluePrints.ViewModels;
@@ -11,9 +12,9 @@ namespace BaseModel.ViewModel.Dialogs
 {
     public class USERAdditionViewModel
     {
-        public static USERAdditionViewModel Create(IEnumerable<DEPARTMENT> departments, IEnumerable<DISCIPLINE> disciplines, IEnumerable<USER> users, IEnumerable<OFFICE> offices, string title, string description, IEnumerable<STAFF> localSTAFF, IEnumerable<STAFF> remoteSTAFF)
+        public static USERAdditionViewModel Create(USER activeDirectoryUSER, IEnumerable<DEPARTMENT> departments, IEnumerable<DISCIPLINE> disciplines, IEnumerable<USER> users, IEnumerable<OFFICE> offices, string title, string description, IEnumerable<STAFF> localSTAFF, IEnumerable<STAFF> remoteSTAFF)
         {
-            return ViewModelSource.Create(() => new USERAdditionViewModel(departments, disciplines, users, offices, title, description, localSTAFF, remoteSTAFF));
+            return ViewModelSource.Create(() => new USERAdditionViewModel(activeDirectoryUSER, departments.OrderBy(x => x.NAME), disciplines.OrderBy(x => x.NAME), users.OrderBy(x => x.NAME), offices.OrderBy(x => x.NAME), title, description, localSTAFF, remoteSTAFF));
         }
 
         public USER USER { get; set; }
@@ -46,7 +47,14 @@ namespace BaseModel.ViewModel.Dialogs
             if (department != null)
                 USER.GUID_DEPARTMENT = department.GUID;
 
+        }
+
+        public void PopulateUSERStaffId()
+        {
+            LoadingScreenManager.ShowLoadingScreen(1);
+            LoadingScreenManager.SetMessage("Looking up user's EXO id...");
             USERCollectionViewModelWrapper.PopulateUserStaffIds(USER, LocalSTAFFCollection, RemoteSTAFFCollection);
+            LoadingScreenManager.CloseLoadingScreen();
         }
 
         public USER GetNewUser()

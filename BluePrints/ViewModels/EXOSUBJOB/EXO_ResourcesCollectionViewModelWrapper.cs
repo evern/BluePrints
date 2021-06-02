@@ -244,6 +244,7 @@ namespace BluePrints.ViewModels
                     {
                         newUSER = userAdditionViewModel.GetNewUser();
                         USERViewModel.Save(newUSER);
+                        userAdditionViewModel = null;
                     }
                 }
             }
@@ -284,9 +285,13 @@ namespace BluePrints.ViewModels
                                 {
                                     if (MessageBoxService.ShowMessage("Are you sure you add " + projection.RESOURCENAME + " to BluePrints?", "Confirmation", MessageButton.OKCancel, MessageIcon.Warning) == MessageResult.OK)
                                     {
-                                        userAdditionViewModel = USERAdditionViewModel.Create(DEPARTMENTCollection, DISCIPLINECollection, USERCollection, OFFICECollection, activeDirectoryUSER.TITLE, activeDirectoryUSER.DESCRIPTION, primeroUnitOfWork.STAFF, pgaUnitOfWork.STAFF);
+                                        userAdditionViewModel = USERAdditionViewModel.Create(activeDirectoryUSER, DEPARTMENTCollection, DISCIPLINECollection, USERCollection, OFFICECollection, activeDirectoryUSER.TITLE, activeDirectoryUSER.DESCRIPTION, primeroUnitOfWork.STAFF, pgaUnitOfWork.STAFF);
+                                        userAdditionViewModel.PopulateUSERStaffId();
                                         if (USERAddDialogService.ShowDialog(MessageButton.OKCancel, "New User", "USERAdditionView", userAdditionViewModel) == MessageResult.Cancel)
+                                        {
+                                            userAdditionViewModel = null;
                                             return "Operation cancelled";
+                                        }
                                     }
                                     else
                                         return "Operation cancelled";
