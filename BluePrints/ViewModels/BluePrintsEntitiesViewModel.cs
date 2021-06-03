@@ -729,8 +729,6 @@ namespace BluePrints.Common.ViewModel
             }
         }
 
-        public RangeObservableCollection<BluePrintsEntitiesModuleDescription> ChildModules { get; set; }
-
         public string Caption => this.NavigationTitle;
 
         public override string ToString()

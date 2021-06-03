@@ -117,6 +117,12 @@ namespace BluePrints.Common.Projections
 
         public List<VariationAdjustment> ApprovedVariations => Deliverables == null ? new List<VariationAdjustment>() : Deliverables.Count == 0 ? new List<VariationAdjustment>() : Deliverables.SelectMany(x => x.ApprovedVariations).ToList();
 
+        public decimal UnitsPerQuantity => 1;
+
+        public string UOM => "h";
+
+        public decimal Variation_Quantity => Variation_Units / UnitsPerQuantity;
+
         public void SetOriginalEntityKey(Guid newGuid)
         {
         }

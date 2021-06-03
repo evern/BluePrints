@@ -367,8 +367,10 @@ namespace BluePrints.Data
             }
         }
 
-        public decimal Variation_Quantity => throw new NotImplementedException();
+        public decimal Variation_Quantity => Variation_Units / UnitsPerQuantity;
 
         public decimal Unadjusted_Budget_Units => Budget_Units;
+
+        public decimal UnitsPerQuantity => Total_Units / Total_Quantity;
     }
 }

@@ -181,23 +181,28 @@ namespace BluePrints.ViewModels
 
         public override void OnAfterAuxiliaryEntitiesChanged(object key, Type changedType, EntityMessageType messageType, object sender, Guid senderKey, bool isBulkRefresh)
         {
-            if (changedType == typeof(ESTIMATE_ITEM))
+            if (changedType == typeof(PROGRESS_ITEM))
             {
-                ESTIMATE_ITEMProgress deliverable = Entities.FirstOrDefault(x => x.GUID.ToString() == key.ToString());
-                if (deliverable != null)
+                PROGRESS_ITEM progressItem = PROGRESS_ITEMCollection.FirstOrDefault(x => x.GUID.ToString() == key.ToString());
+                if(progressItem != null)
                 {
-                    IEnumerable<PROGRESS_ITEM> progressItems = PROGRESS_ITEMCollection.Where(x => x.GUID_ORIBASEITEM == deliverable.OriginalEntityKey);
-                    deliverable.SetProgressItems(progressItems.ToList());
-                    List<StatsCalculationType> calcTypes = new List<StatsCalculationType>();
-                    calcTypes.Add(StatsCalculationType.Earned);
-                    deliverable.BuildStats(1, calcTypes);
-                    populateRow(deliverable, true);
-                    deliverable.Update();
+                    ESTIMATE_ITEMProgress deliverable = Entities.FirstOrDefault(x => x.OriginalEntityKey.ToString() == progressItem.GUID_ORIBASEITEM.ToString());
+                    if (deliverable != null)
+                    {
+                        IEnumerable<PROGRESS_ITEM> progressItems = PROGRESS_ITEMCollection.Where(x => x.GUID_ORIBASEITEM == progressItem.GUID_ORIBASEITEM);
+                        deliverable.SetProgressItems(progressItems.ToList());
+                        List<StatsCalculationType> calcTypes = new List<StatsCalculationType>();
+                        calcTypes.Add(StatsCalculationType.Earned);
+                        deliverable.BuildStats(1, calcTypes);
+                        populateRow(deliverable, true);
+                        deliverable.Update();
 
-                    gridRefreshDispatcherTimer.Tick -= gridRefreshDispatcherTimer_Tick;
-                    gridRefreshDispatcherTimer.Tick += gridRefreshDispatcherTimer_Tick;
-                    gridRefreshDispatcherTimer.Start();
+                        gridRefreshDispatcherTimer.Tick -= gridRefreshDispatcherTimer_Tick;
+                        gridRefreshDispatcherTimer.Tick += gridRefreshDispatcherTimer_Tick;
+                        gridRefreshDispatcherTimer.Start();
+                    }
                 }
+
             }
 
             base.OnAfterAuxiliaryEntitiesChanged(key, changedType, messageType, sender, senderKey, isBulkRefresh);
@@ -464,9 +469,9 @@ namespace BluePrints.ViewModels
                     CONSTRUCTION_STAGE findCONSTRUCTION_STAGE = CONSTRUCTION_STAGECollection.FirstOrDefault(x => x.SORT_ORDER == progress.STAGE_ORDER);
                     if(findCONSTRUCTION_STAGE != null)
                     {
-                        decimal stageMaxUnits = entity.Total_Units * findCONSTRUCTION_STAGE.WEIGHT_PERCENTAGE;
-                        decimal stageEarnedPercentage = progress.EARNED_UNITS / stageMaxUnits;
-                        decimal stageEarnedQuantity = progress.EARNED_UNITS * entity.UnitsPerQuantity;
+                        decimal stageMaxQty = entity.Total_Quantity * findCONSTRUCTION_STAGE.WEIGHT_PERCENTAGE;
+                        decimal stageEarnedPercentage = progress.EARNED_UNITS / stageMaxQty;
+                        decimal stageEarnedQuantity = progress.EARNED_UNITS;
 
                         newDataRow[findCONSTRUCTION_STAGE.SORT_ORDER.ToString() + stageFieldNamePercentageAffix] = stageEarnedPercentage;
                         newDataRow[findCONSTRUCTION_STAGE.SORT_ORDER.ToString() + stageFieldNameQuantityAffix] = stageEarnedQuantity;
@@ -611,17 +616,16 @@ namespace BluePrints.ViewModels
                         earnedPercentage = earnedQuantity / stageMaxUnits;
                     }
 
-                    decimal earnedUnits = earnedPercentage * stageMaxUnits;
                     PROGRESS_ITEM currentPeriodPROGRESS_ITEM = entity.PROGRESS_ITEMS.FirstOrDefault(x => x.STAGE_ORDER == constructionSTAGE.SORT_ORDER && x.EARNED_DATE == DataDate);
 
                     //maximum and minimum is controlled here by the spinedit ability to set max as 100% and min as 0%, and that includes variation validatation, so there is no need to validate here
-                    if (currentPeriodPROGRESS_ITEM == null && earnedUnits > 0)
+                    if (currentPeriodPROGRESS_ITEM == null)
                     {
                         currentPeriodPROGRESS_ITEM = new PROGRESS_ITEM();
                         currentPeriodPROGRESS_ITEM.GUID_ORIBASEITEM = entity.OriginalEntityKey;
                         currentPeriodPROGRESS_ITEM.GUID_PROGRESS = loadPROGRESS.GUID;
                         currentPeriodPROGRESS_ITEM.EARNED_DATE = DataDate;
-                        currentPeriodPROGRESS_ITEM.EARNED_UNITS = earnedUnits;
+                        currentPeriodPROGRESS_ITEM.EARNED_UNITS = earnedQuantity;
                         currentPeriodPROGRESS_ITEM.CREATED = DateTime.Now;
                         currentPeriodPROGRESS_ITEM.CREATEDBY = LoginCredentials.CurrentUserGuid;
 
@@ -630,8 +634,8 @@ namespace BluePrints.ViewModels
                     }
                     else
                     {
-                        PROGRESS_ITEMSCollectionViewModel.EntitiesUndoRedoManager.AddUndo(currentPeriodPROGRESS_ITEM, BindableBase.GetPropertyName(() => new PROGRESS_ITEM().EARNED_UNITS), currentPeriodPROGRESS_ITEM.EARNED_UNITS, earnedUnits, EntityMessageType.Changed);
-                        currentPeriodPROGRESS_ITEM.EARNED_UNITS = earnedUnits;
+                        PROGRESS_ITEMSCollectionViewModel.EntitiesUndoRedoManager.AddUndo(currentPeriodPROGRESS_ITEM, BindableBase.GetPropertyName(() => new PROGRESS_ITEM().EARNED_UNITS), currentPeriodPROGRESS_ITEM.EARNED_UNITS, earnedQuantity, EntityMessageType.Changed);
+                        currentPeriodPROGRESS_ITEM.EARNED_UNITS = earnedQuantity;
                         //use this to fix time issue
                         currentPeriodPROGRESS_ITEM.EARNED_DATE = DataDate;
                     }

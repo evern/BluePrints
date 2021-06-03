@@ -138,7 +138,7 @@ namespace BluePrints.ViewModels
 
         public override void UnifiedCellValueChanging(string field_name, object old_value, object new_value, CONSTRUCTION_STAGE projection, bool isNew)
         {
-            if (isNew && field_name == GetPropertyName(() => new CONSTRUCTION_STAGE().SCORE_CARD_DISCIPLINE))
+            if (field_name == GetPropertyName(() => new CONSTRUCTION_STAGE().SCORE_CARD_DISCIPLINE))
             {
                 List<CONSTRUCTION_STAGE> unsavedEntities = new List<CONSTRUCTION_STAGE>();
                 projection.SCORE_CARD_DISCIPLINE = (ScoreCardDiscipline)new_value;

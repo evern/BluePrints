@@ -15,7 +15,7 @@ using System.Linq.Expressions;
 
 namespace BluePrints.Common.ViewModel.Reporting
 {
-    public class ESTIMATE_ITEMProgress : BluePrintsProgressableByQuantityProjectionBase<ESTIMATE_ITEMProjection>, IHaveDBProductivityOverride, IHaveProcurementSubjob, IEstimateItem, IDXDataErrorInfo, IBookable
+    public class ESTIMATE_ITEMProgress : BluePrintsProgressableProjectionBase<ESTIMATE_ITEMProjection>, IHaveDBProductivityOverride, IHaveProcurementSubjob, IEstimateItem, IDXDataErrorInfo, IBookable
     {
         public ESTIMATE_ITEMProgress()
         {
@@ -84,158 +84,6 @@ namespace BluePrints.Common.ViewModel.Reporting
         public override string ToString()
         {
             return UniqueJobcode;
-        }
-    }
-
-
-    public abstract class BluePrintsProgressableByQuantityProjectionBase<TEntity> : BluePrintsProgressableProjectionBase<TEntity>, IReportable_Quantity, ICanAssignP6
-        where TEntity : class, IDeliverable_Rates, IHaveCosts, IHaveCreatedDate, IHaveQuantity, new()
-    {
-        public BluePrintsProgressableByQuantityProjectionBase()
-        {
-
-        }
-
-        public BluePrintsProgressableByQuantityProjectionBase(PROJECT PROJECT, PROGRESS LivePROGRESS, IDeliverable_Rates entity, IEnumerable<VariationAdjustment> projectVariationAdjustments, bool forceRetrieveRemainingDataPoints)
-            : base(PROJECT, LivePROGRESS, entity, projectVariationAdjustments, false, null, forceRetrieveRemainingDataPoints)
-        {
-            
-        }
-
-        public string Budget_UOM => Entity.Budget_UOM;
-
-        public virtual decimal QuantityPerUnit
-        {
-            get
-            {
-                if (Total_Units == 0)
-                    return 0;
-
-                return Total_Quantity / Total_Units;
-            }
-        }
-
-        public virtual decimal UnitsPerQuantity
-        {
-            get
-            {
-                if (Total_Quantity == 0)
-                    return 0;
-
-                return Total_Units / Total_Quantity;
-            }
-        }
-
-        public virtual decimal Remaining_Hours_To_Completion
-        {
-            get
-            {
-                return (Total_Quantity - AbsoluteTotalInstalledQuantity) * UnitsPerQuantity;
-            }
-        }
-
-        public virtual decimal Schedule_Estimated_Quantity
-        {
-            get
-            {
-                return SchedulePercentage * Budget_Quantity;
-            }
-        }
-
-        public virtual decimal Schedule_Estimated_Current_Period_Quantity
-        {
-            get
-            {
-                return ScheduleCurrentPeriodPercentage * Budget_Quantity;
-            }
-        }
-
-        protected decimal? set_current_period_quantity { get; set; }
-        public virtual decimal CurrentPeriodInstalledQuantity
-        {
-            get
-            {
-                if (set_current_period_quantity == null)
-                    set_current_period_quantity = get_actual_earned_quantity();
-
-                return (decimal)set_current_period_quantity;
-            }
-            set => set_current_period_quantity = value;
-        }
-
-        public override void Update()
-        {
-            set_current_period_quantity = null;
-            base.Update();
-        }
-
-        public override bool ShouldSaveProgress => get_actual_earned_quantity() != set_current_period_quantity;
-
-        
-        public virtual decimal get_actual_earned_quantity()
-        {
-            return Earned_Units_OnDataDate * QuantityPerUnit;
-        }
-
-        public decimal PastInstalledQuantity
-        {
-            get
-            {
-                if (PROGRESS_ITEM_BeforeDataDate.Count() == 0 || QuantityPerUnit == 0)
-                    return 0;
-
-                decimal earnedUnits = PROGRESS_ITEM_BeforeDataDate.Sum(x => x.EARNED_UNITS) * QuantityPerUnit;
-
-                return earnedUnits;
-            }
-        }
-
-        public virtual decimal AbsoluteTotalInstalledQuantity => PastInstalledQuantity + CurrentPeriodInstalledQuantity + FutureInstalledQuantity;
-
-        public decimal MinEstimateQuantity => (AbsoluteTotalInstalledQuantity - Entity.Variation_Quantity) < 0 ? 0 : AbsoluteTotalInstalledQuantity - Entity.Variation_Quantity;
-
-        public decimal TotalInstalledQuantity => PastInstalledQuantity + CurrentPeriodInstalledQuantity;
-
-        public decimal FutureInstalledQuantity
-        {
-            get
-            {
-                if (PROGRESS_ITEM_AfterDataDate.Count() == 0 || QuantityPerUnit == 0)
-                    return 0;
-
-                return PROGRESS_ITEM_AfterDataDate.Sum(x => x.EARNED_UNITS) * QuantityPerUnit;
-            }
-        }
-
-        public virtual decimal MaxCurrentQuantity => Math.Round(Total_Quantity - PastInstalledQuantity - FutureInstalledQuantity, 2);
-
-        public decimal Total_Install_Hours => QuantityPerUnit == 0 ? 0 : AbsoluteTotalInstalledQuantity / QuantityPerUnit;
-
-        public decimal Variation_Quantity => Entity.Variation_Quantity;
-
-        public virtual decimal Earned_Install_Costs_OnDataDate => Earned_Units_OnDataDate * Budget_ItemRate;
-
-        public override decimal P6_Assignment_Total_Quantity => Entity.Total_Quantity;
-
-        public decimal Budget_Install_Hours => Entity.Budget_Install_Hours;
-
-        public decimal Budget_Install_Cost => Entity.Budget_Install_Cost;
-
-        public decimal Total_Budget_Install_Cost => Entity.Total_Budget_Install_Cost;
-
-        public decimal Total_Budget_Cost => Entity.Total_Budget_Cost;
-
-        protected override decimal getNewPercentage()
-        {
-            if (Total_Quantity == 0)
-                return 0;
-
-            return set_current_period_quantity == null ? 0 : (decimal)set_current_period_quantity / Total_Quantity;
-        }
-
-        public override decimal getCurrentPeriodEarnedUnits(decimal newPercentage)
-        {
-            return newPercentage * Total_Units;
         }
     }
 
@@ -983,6 +831,12 @@ namespace BluePrints.Common.ViewModel.Reporting
         public decimal Total_Quantity => Entity.Total_Quantity;
 
         public string Project_Number => Entity.Project_Number;
+
+        public decimal UnitsPerQuantity => Entity.UnitsPerQuantity;
+
+        public string UOM => Entity.UOM;
+
+        public decimal Variation_Quantity => Entity.Variation_Quantity;
     }
 
     public class DeliverableEarnedPercentages

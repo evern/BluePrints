@@ -12,7 +12,7 @@ using System.Linq;
 
 namespace BluePrints.Common.Projections
 {
-    public class ESTIMATE_ITEMProjection : BluePrintsProjectionBase<ESTIMATE_ITEM>, IDeliverable_Quantity, IHaveDBProductivityOverride, IHaveProcurementSubjob
+    public class ESTIMATE_ITEMProjection : BluePrintsProjectionBase<ESTIMATE_ITEM>, IDeliverable_Rates, IHaveDBProductivityOverride, IHaveProcurementSubjob
     {
         public ESTIMATE_ITEMProjection()
             : base()
@@ -50,7 +50,7 @@ namespace BluePrints.Common.Projections
 
         public List<VariationAdjustment> ApprovedVariations => new List<VariationAdjustment>();
 
-        public string Budget_UOM => "pc";
+        public string UOM => "pc";
 
         public decimal Budget_Units => Entity.Budget_Units;
 
@@ -144,6 +144,8 @@ namespace BluePrints.Common.Projections
         public decimal Total_InternalCosts => Budget_InternalCost + Variation_InternalCosts;
 
         public decimal Unadjusted_Budget_Units => Budget_Units;
+
+        public decimal UnitsPerQuantity => Total_Units / Total_Quantity;
     }
 
     public static class ESTIMATE_ITEMProjectionQueries

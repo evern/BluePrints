@@ -27,10 +27,6 @@ namespace BluePrints.Common.ViewModel.Reporting
         decimal Variation_Install_Hours { get; }
     }
 
-    public interface IReportable_Quantity : IReportable, IHaveQuantity, ICanProgressByQuantity
-    {
-    }
-
     public interface IReportable_Group : IReportable
     {
         IEnumerable<IReportable> Reportables { get; }
@@ -52,16 +48,6 @@ namespace BluePrints.Common.ViewModel.Reporting
     public interface IEstimateItem
     {
         ESTIMATE_ITEMProgress ReadOnlyEstimate { get; }
-    }
-
-    public interface IDeliverable_Quantity_Group : IDeliverable_Quantity
-    {
-        IEnumerable<IDeliverable_Quantity> Deliverables { get; }
-    }
-
-    public interface IDeliverable_Quantity : IDeliverable_Rates, IHaveQuantity
-    {
-        
     }
 
     public interface IDeliverable_Rates_Group : IReportable
@@ -101,19 +87,6 @@ namespace BluePrints.Common.ViewModel.Reporting
     }
 
     #region Ability Specification Interfaces
-    public interface ICanProgressByQuantity : IHaveQuantity
-    {
-        decimal QuantityPerUnit { get; }
-        decimal UnitsPerQuantity { get; }
-        decimal PastInstalledQuantity { get; }
-        decimal FutureInstalledQuantity { get; }
-        decimal CurrentPeriodInstalledQuantity { get; set; }
-        decimal MaxCurrentQuantity { get; }
-        decimal TotalInstalledQuantity { get; }
-        decimal AbsoluteTotalInstalledQuantity { get; }
-        decimal getCurrentPeriodEarnedUnits(decimal newPercentage);
-    }
-
     public interface ICanAssignP6 : ICanUpdate, IGuidEntityKey, IOriginalGuidEntityKey, IHaveHours, IHaveVariation
     {
         List<P6_ASSIGNMENT> P6_Assignments { get; }
@@ -220,7 +193,7 @@ namespace BluePrints.Common.ViewModel.Reporting
 
     public interface ISupportVariationDuplicate
     {
-        //used by variation to remember which id was it duplicate from because duplicate() is called from BaselineItemProgress and doesn't have the variation informatin
+        //used by variation to remember which id was it duplicate from because duplicate() is called from BaselineItemProgress and doesn't have the variation information
         Guid? DuplicateFromGuid { get; set; }
     }
 
@@ -247,11 +220,13 @@ namespace BluePrints.Common.ViewModel.Reporting
     {
         string Variation_Code { get; }
         decimal Variation_Units { get; }
+        decimal Variation_Quantity { get; }
         decimal Budget_Adjustment_Units { get; }
         decimal Budget_Adjustment_Costs { get; }
         decimal Variation_Costs { get; }
         decimal Variation_InternalCosts { get; }
         decimal Total_Units { get; }
+        decimal Total_Quantity { get; }
         decimal Total_Costs { get; }
         decimal Total_InternalCosts { get; }
         List<VariationAdjustment> ApprovedVariations { get; }
@@ -277,20 +252,11 @@ namespace BluePrints.Common.ViewModel.Reporting
 
     public interface IHaveHours
     {
+        decimal UnitsPerQuantity { get; }
         decimal Budget_Units { get; }
         decimal Budget_Quantity { get; }
-        decimal Total_Quantity { get; }
         decimal Unadjusted_Budget_Units { get; }
-    }
-
-    public interface IHaveQuantity
-    {
-        decimal Variation_Quantity { get; }
-        decimal Budget_Install_Hours { get; }
-        decimal Budget_Install_Cost { get; }
-        decimal Total_Budget_Install_Cost { get; }
-        decimal Total_Budget_Cost { get; }
-        string Budget_UOM { get; }
+        string UOM { get; }
     }
 
     public interface IHaveProgresses

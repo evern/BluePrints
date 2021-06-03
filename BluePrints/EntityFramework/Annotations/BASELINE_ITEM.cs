@@ -384,6 +384,10 @@ namespace BluePrints.Data
 
         public decimal Unadjusted_Budget_Units => Budget_Units;
 
+        public decimal UnitsPerQuantity => 1;
+
+        public string UOM => "h";
+
         public void SetOriginalEntityKey(Guid newGuid)
         {
             GUID_ORIGINAL = newGuid;
