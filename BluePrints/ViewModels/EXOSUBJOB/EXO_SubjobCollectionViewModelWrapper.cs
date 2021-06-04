@@ -281,6 +281,12 @@ namespace BluePrints.ViewModels
                 return "Duplicate Subjob: " + formatCodeError(projection.SubJobCode) + " Discipline: " + formatCodeError(projection.DisciplineCode) + " Commodity: " + formatCodeError(projection.CommodityCode) + " Variation: " + formatCodeError(projection.VariationCode);
             }
 
+            if (!projection.IsCommodityCodeValid)
+                return "Invalid commodity code. Validity can be maintained in Data -> Commodity Codes";
+
+            if(!projection.IsStockCodeValid)
+                return "Invalid stock code. Validity can be maintained in Data -> Commodity Codes";
+
             return string.Empty;
         }
 
