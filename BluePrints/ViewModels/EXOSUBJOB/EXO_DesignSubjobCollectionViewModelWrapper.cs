@@ -156,7 +156,7 @@ namespace BluePrints.ViewModels
 
         protected override Func<IRepositoryQuery<BASELINE_ITEM>, IQueryable<ExoSubJobProjection>> specifyMainViewModelProjection()
         {
-            return query => ExoQueries.GetExoDesignSubJobProjection(query.Where(x => x.GUID_BASELINE == liveBASELINE.GUID), WORKPACKCollection, loadPROJECT, livePROGRESS, RATECollection, PROGRESS_ITEMCollection, VARIATIONCollection, localPrimeroUnitOfWork, USERCollection, COMMODITY_CODECollection, DOCTYPECollection);
+            return query => ExoQueries.GetExoDesignSubJobProjection(query.Where(x => x.GUID_BASELINE == liveBASELINE.GUID), WORKPACKCollection, loadPROJECT, livePROGRESS, RATECollection, VARIATIONCollection, localPrimeroUnitOfWork, USERCollection, COMMODITY_CODECollection, DOCTYPECollection);
         }
 
         protected override void AssignCallBacksAndRaisePropertyChange(IEnumerable<ExoSubJobProjection> entities)

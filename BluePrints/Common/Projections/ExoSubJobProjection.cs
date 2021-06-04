@@ -1548,10 +1548,9 @@ namespace BluePrints.Common.Projections
             IEnumerable<WORKPACK> WORKPACKS,
             Data.PROJECT PROJECT,
             PROGRESS PROGRESS,
-            IEnumerable<RATE> RATES,
-            IEnumerable<PROGRESS_ITEM> PROGRESS_ITEMS, IEnumerable<VARIATION> VARIATIONS, IPrimeroEntitiesUnitOfWork primeroUnitOfWork, IEnumerable<USER> userCollection, IEnumerable<COMMODITY_CODE> COMMODITY_CODECollection, IEnumerable<DOCTYPE> DOCTYPECollection)
+            IEnumerable<RATE> RATES, IEnumerable<VARIATION> VARIATIONS, IPrimeroEntitiesUnitOfWork primeroUnitOfWork, IEnumerable<USER> userCollection, IEnumerable<COMMODITY_CODE> COMMODITY_CODECollection, IEnumerable<DOCTYPE> DOCTYPECollection)
         {
-            List<BASELINE_ITEMProgress> baseline_item_progresses = ProgressQueries.OffsiteDirectProgressItemTransformation(BASELINE_ITEMS, PROJECT, PROGRESS, RATES, PROGRESS_ITEMS, VARIATIONS, false, null).ToList();
+            List<BASELINE_ITEMProgress> baseline_item_progresses = ProgressQueries.OffsiteDirectProgressItemTransformation(BASELINE_ITEMS, PROJECT, PROGRESS, RATES, null, VARIATIONS, false, null).ToList();
             List<ExoSubJobProjection> exoSubJobs = GetProactiveExoSubJobs(baseline_item_progresses, primeroUnitOfWork, PROJECT, COMMODITY_CODECollection, userCollection, null, false);
 
             foreach(ExoSubJobProjection exoSubJob in exoSubJobs)

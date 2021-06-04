@@ -105,7 +105,7 @@ namespace BluePrints.ViewModels
 
         protected override Func<IRepositoryQuery<BASELINE_ITEM>, IQueryable<BASELINE_ITEMProjection>> specifyMainViewModelProjection()
         {
-            return query => BASELINE_ITEMProjectionQueries.IDeliverable_Rates_Transformation(query.Where(x => x.BASELINE.STATUS == BaselineStatus.Live && x.BASELINE.GUID_PROJECT == loadPROJECT.GUID), RATECollection);
+            return query => BASELINE_ITEMProjectionQueries.IDeliverable_Rates_Transformation(query.Where(x => x.BASELINE.STATUS == BaselineStatus.Live && x.BASELINE.GUID_PROJECT == loadPROJECT.GUID), RATECollection, DOCTYPECollection);
         }
 
         protected override void OnAfterAssignedCallbackAndRaisePropertyChanged()
@@ -238,7 +238,7 @@ namespace BluePrints.ViewModels
             get { return "BASELINE_ITEMRATECollectionViewModelWrapper_v2"; }
         }
 
-        public IEnumerable<DOCTYPE> BASELINE_ITEMCollection
+        public IEnumerable<DOCTYPE> DOCTYPECollection
         {
             get
             {
