@@ -45,19 +45,24 @@ namespace BluePrints.Common.Projections
         {
             get
             {
-                if (commodityCode == null || ValidCommodityCodes.Count() == 0 || commodityCode.Length < 2)
-                    return false;
-
-                if (PhaseType == Common.PhaseType.Tender)
-                {
-                    if (commodityCode.Substring(0, 2) == BluePrintsResources.Default_TenderCommodityCode)
-                        return true;
-                    else
-                        return false;
-                }
-
-                return ValidCommodityCodes.Any(x => x.CODE == commodityCode);
+                return IsValidCommodityCode(commodityCode);
             }
+        }
+
+        public bool IsValidCommodityCode(string commodityCode)
+        {
+            if (commodityCode == null || ValidCommodityCodes.Count() == 0 || commodityCode.Length < 2)
+                return false;
+
+            if (PhaseType == Common.PhaseType.Tender)
+            {
+                if (commodityCode.Substring(0, 2) == BluePrintsResources.Default_TenderCommodityCode)
+                    return true;
+                else
+                    return false;
+            }
+
+            return ValidCommodityCodes.Any(x => x.CODE == commodityCode);
         }
 
         protected List<COMMODITY_CODE> validCommodityCodes = null;
@@ -158,23 +163,28 @@ namespace BluePrints.Common.Projections
             }
         }
 
+        public bool IsValidStockCode(string stockCode)
+        {
+            if (commodityCode == null || ValidStockCodes.Count() == 0)
+                return false;
+
+            string stockCodeForSearching = stockCode == null || stockCode == string.Empty ? commodityCode : stockCode;
+            if (PhaseType == Common.PhaseType.Tender)
+            {
+                if (stockCodeForSearching == BluePrintsResources.Default_TenderStockCode)
+                    return true;
+                else
+                    return false;
+            }
+
+            return ValidStockCodes.Any(x => x == stockCodeForSearching);
+        }
+
         public bool IsStockCodeValid
         {
             get
             {
-                if (commodityCode == null || ValidStockCodes.Count() == 0)
-                    return false;
-
-                string stockCodeForSearching = stockCode == null || stockCode == string.Empty ? commodityCode : stockCode;
-                if (PhaseType == Common.PhaseType.Tender)
-                {
-                    if (stockCodeForSearching == BluePrintsResources.Default_TenderStockCode)
-                        return true;
-                    else
-                        return false;
-                }
-
-                return ValidStockCodes.Any(x => x == stockCodeForSearching);
+                return IsValidStockCode(stockCode);
             }
         }
 

@@ -1729,11 +1729,11 @@ namespace BluePrints.Common.ViewModel.Utils
             else
             {
                 IEnumerable<COMMODITY_CODE> phaseCommodityCodes;
-                if (phaseType == Common.PhaseType.Design)
-                    //because design deliverable's have indirect components also
-                    phaseCommodityCodes = COMMODITY_CODES.Where(x => x.PHASE_TYPE == Common.PhaseType.Design || x.PHASE_TYPE == Common.PhaseType.Indirect);
-                else
-                    phaseCommodityCodes = COMMODITY_CODES.Where(x => x.PHASE_TYPE == phaseType);
+                //if (phaseType == Common.PhaseType.Design)
+                //    //because design deliverable's have indirect components also
+                //    phaseCommodityCodes = COMMODITY_CODES.Where(x => x.PHASE_TYPE == Common.PhaseType.Design || x.PHASE_TYPE == Common.PhaseType.Indirect);
+                //else
+                phaseCommodityCodes = COMMODITY_CODES.Where(x => x.PHASE_TYPE == phaseType);
 
                 validCommodityCodes = phaseCommodityCodes.Where(x => (x.DISCIPLINE == null || (x.DISCIPLINE.CODE.Length >= 2 && x.DISCIPLINE.CODE.Substring(0, 2) == disciplineCode))).OrderBy(x => x.CODE).ToList();
             }

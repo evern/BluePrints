@@ -72,7 +72,7 @@
                                     <dxe:TextEditSettings />
                                 </dxg:GridColumn.EditSettings>
                             </dxg:GridColumn>
-                            <dxg:GridColumn FieldName="Entity.IS_STANDARD" Header="Is Standard" AllowBestFit="false" Width="60">
+                            <dxg:GridColumn FieldName="Entity.IS_STANDARD" Header="Is Standard" AllowBestFit="false" Width="60" HeaderToolTip="Standard codes will be added to new project on creation">
                                 <dxg:GridColumn.EditSettings>
                                     <dxe:CheckEditSettings />
                                 </dxg:GridColumn.EditSettings>
