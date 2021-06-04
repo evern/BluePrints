@@ -179,7 +179,7 @@ namespace BluePrints.ViewModels
 
         protected override Func<IRepositoryQuery<BASELINE_ITEM>, IQueryable<ExoSubJobProjection>> specifyMainViewModelProjection()
         {
-            return query => ExoQueries.GetExoConstructionSubJobProjection(ESTIMATE_ITEMCollection.AsQueryable(), loadPROJECT, RATECollection, livePROGRESS, PROGRESS_ITEMCollection, false, STOCK_CODECollection, localPrimeroUnitOfWork, COMMODITY_CODECollection, exoSTAFFS);
+            return query => ExoQueries.GetExoConstructionSubJobProjection(ESTIMATE_ITEMCollection.AsQueryable(), loadPROJECT, RATECollection, livePROGRESS, PROGRESS_ITEMCollection, false, STOCK_CODECollection, localPrimeroUnitOfWork, COMMODITY_CODECollection, exoSTAFFS, loadPROJECT.OfficeNameForExo);
         }
 
         protected override void AssignCallBacksAndRaisePropertyChange(IEnumerable<ExoSubJobProjection> entities)

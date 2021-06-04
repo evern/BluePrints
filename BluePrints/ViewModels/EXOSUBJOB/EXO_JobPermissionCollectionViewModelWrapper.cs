@@ -99,7 +99,23 @@ namespace BluePrints.ViewModels
         {
             return query => ExoQueries.GetExoSubJob(localPrimeroUnitOfWork, loadPROJECT, exoSTAFFS, loadPROJECT.OfficeNameForExo, COMMODITY_CODECollection, STOCK_ITEMSCollection);
         }
-       
+
+        protected override bool OnMainViewModelLoaded(IEnumerable<ExoSubJobProjection> entities)
+        {
+            MainViewModel.OnBeforeRowSaveIsContinue = onBeforeRowSaveIsContinue;
+            return base.OnMainViewModelLoaded(entities);
+        }
+
+        private bool onBeforeRowSaveIsContinue(CellValueChangedEventArgs e, ExoSubJobProjection projection)
+        {
+            if (e.Column.FieldName == BindableBase.GetPropertyName(() => new ExoSubJobProjection().IsLineExistsInExo))
+            {
+                return false;
+            }
+
+            return true;
+        }
+
         protected override void OnSelectedEntitiesChanged()
         {
             if(delayedPermissionRefreshDispatcher != null)
@@ -119,7 +135,10 @@ namespace BluePrints.ViewModels
             if(MainViewModel != null)
             {
                 if (e.Column.FieldName == BindableBase.GetPropertyName(() => new ExoSubJobProjection().IsLineExistsInExo))
+                {
                     MainViewModel.ValidateCell(e);
+                    e.Handled = true;
+                }
             }
         }
 
@@ -163,14 +182,15 @@ namespace BluePrints.ViewModels
                     else
                     {
                         projection.IsLineExistsInExo = true;
-                        this.RaisePropertyChanged(x => x.IsPermissionGridEnabled);
+                        ExoSubJobProjection sameSubJobProjection = Entities.Where(x => x.IsLineExistsInExo).FirstOrDefault(x => x.SubJobCode != null && x.SubJobId == projection.SubJobId);
+                        if (sameSubJobProjection != null && sameSubJobProjection.AuthUsers != null)
+                            projection.AuthUsers = new ObservableCollection<ExoSubJobAuth>(sameSubJobProjection.AuthUsers);
+
+                        delayedPermissionRefreshDispatcher.Start();
                     }
                 }
                 else if (!newValue && projection.IsLineExistsInExo)
                 {
-                    if (MessageBoxService.ShowMessage("Are you sure you want to remove this line from exo?", "Confirmation", MessageButton.OKCancel) == MessageResult.Cancel)
-                        return "Action Cancelled";
-
                     JOBCOST_LINES line = localPrimeroUnitOfWork.JOBCOST_LINES.First(x => x.SEQNO == projection.LineId);
                     if (line != null)
                     {
@@ -183,7 +203,8 @@ namespace BluePrints.ViewModels
                     projection.SubJobTitle = string.Empty;
                     projection.LineId = null;
                     projection.IsLineExistsInExo = false;
-                    this.RaisePropertyChanged(x => x.IsPermissionGridEnabled);
+
+                    delayedPermissionRefreshDispatcher.Start();
                 }
 
                 projection.Update();
@@ -214,7 +235,6 @@ namespace BluePrints.ViewModels
                         continue;
 
                     ExoMethods.findExistingOrAddResourceAllocation(localPrimeroUnitOfWork, (int)selectedEntity.SubJobId, (int)editingSubJobAuth.User.ProjectLocaleExoId);
-                    editingSubJobAuth.IsAssigned = true;
                     selectedEntity.AuthUsers.Add(editingSubJobAuth);
 
                     foreach (ExoSubJobProjection sameSubJobEntity in Entities.Where(x => x.SubJobCode != null && x.SubJobId == selectedEntity.SubJobId))
@@ -279,8 +299,9 @@ namespace BluePrints.ViewModels
             }
         }
 
-        protected void refreshPermissions()
+        protected virtual void refreshPermissions()
         {
+            this.RaisePropertyChanged(x => x.IsPermissionGridEnabled);
             this.RaisePropertyChanged(x => x.Users);
             this.RaisePropertyChanged(x => x.BluePrintsUsers);
         }
@@ -320,10 +341,6 @@ namespace BluePrints.ViewModels
                             newUser = new USER();
                             newUser.ProjectLocale = loadPROJECT.OfficeNameForExo;
                         }
-                        else
-                        {
-                            string s = string.Empty;
-                        }
                         
                         if (!orderedAuthUsers.Any(x => x.User.ProjectLocaleExoId == staff.STAFFNO))
                         {
@@ -349,7 +366,6 @@ namespace BluePrints.ViewModels
 
                     authorisation.ShouldAssign = false;
                 }
-
 
                 isPermissionLoading = false;
                 this.RaisePropertyChanged(x => x.IsPermissionLoading);

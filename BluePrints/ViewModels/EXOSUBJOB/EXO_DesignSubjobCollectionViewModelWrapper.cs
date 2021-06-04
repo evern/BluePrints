@@ -156,12 +156,11 @@ namespace BluePrints.ViewModels
 
         protected override Func<IRepositoryQuery<BASELINE_ITEM>, IQueryable<ExoSubJobProjection>> specifyMainViewModelProjection()
         {
-            return query => ExoQueries.GetExoDesignSubJobProjection(query.Where(x => x.GUID_BASELINE == liveBASELINE.GUID), WORKPACKCollection, loadPROJECT, livePROGRESS, RATECollection, VARIATIONCollection, localPrimeroUnitOfWork, USERCollection, COMMODITY_CODECollection, DOCTYPECollection);
+            return query => ExoQueries.GetExoDesignSubJobProjection(query.Where(x => x.GUID_BASELINE == liveBASELINE.GUID), WORKPACKCollection, loadPROJECT, livePROGRESS, RATECollection, VARIATIONCollection, localPrimeroUnitOfWork, USERCollection, COMMODITY_CODECollection, DOCTYPECollection, loadPROJECT.OfficeNameForExo);
         }
 
         protected override void AssignCallBacksAndRaisePropertyChange(IEnumerable<ExoSubJobProjection> entities)
         {
-            MainViewModel.OnSelectedEntityChangedCallBack = resetBluePrintsUsers;
             MainViewModel.SetParentViewModel(this);
             base.AssignCallBacksAndRaisePropertyChange(entities);
         }
@@ -233,9 +232,10 @@ namespace BluePrints.ViewModels
         #endregion
 
         #region View Properties
-        public void resetBluePrintsUsers(ExoSubJobProjection projection)
+        protected override void refreshPermissions()
         {
             permissions = null;
+            base.refreshPermissions();
         }
 
         List<ExoSubJobAuth> permissions;

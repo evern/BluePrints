@@ -139,9 +139,9 @@ namespace BluePrints.ViewModels
         }
 
         #region Collection Call Backs
-        private void onAfterEntitySaved(REGISTER_CHANGE entity, REGISTER_CHANGE projection, bool isNewEntity)
+        private void onAfterEntitySaved(REGISTER_CHANGE projection, REGISTER_CHANGE entity, bool isNewEntity)
         {
-            saveCHANGEDocument(entity);
+            saveCHANGEDocument(projection);
         }
 
         private void saveCHANGEDocument(REGISTER_CHANGE entity)

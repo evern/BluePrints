@@ -155,12 +155,12 @@ namespace BluePrints.ViewModels
         #endregion
 
         #region Saving Behavior
-        private void onAfterEntitySaved(MEETING entity, MEETING projection, bool isNewEntity)
+        private void onAfterEntitySaved(MEETING projection, MEETING entity, bool isNewEntity)
         {
-            save_meeting_users(entity, MeetingUserSection.Attendees);
-            save_meeting_users(entity, MeetingUserSection.Apologies);
-            save_meeting_users(entity, MeetingUserSection.Distribution);
-            save_meeting_users(entity, MeetingUserSection.SignOff);
+            save_meeting_users(projection, MeetingUserSection.Attendees);
+            save_meeting_users(projection, MeetingUserSection.Apologies);
+            save_meeting_users(projection, MeetingUserSection.Distribution);
+            save_meeting_users(projection, MeetingUserSection.SignOff);
         }
 
         private void save_meeting_users(MEETING entity, MeetingUserSection section)

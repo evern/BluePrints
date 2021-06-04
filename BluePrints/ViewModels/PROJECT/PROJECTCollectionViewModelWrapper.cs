@@ -160,10 +160,11 @@ namespace BluePrints.ViewModels
             }
         }
 
-        private void onAfterEntitySaved(PROJECT entity, PROJECT projection, bool isNewEntity)
+        private void onAfterEntitySaved(PROJECT projection, PROJECT entity, bool isNewEntity)
         {
-            saveProjectDiscipline(entity);
-            PostSave(entity, projection, isNewEntity);
+            saveProjectDiscipline(projection);
+            if(entity != null)
+                PostSave(projection, entity, isNewEntity);
         }
 
         /// <summary>

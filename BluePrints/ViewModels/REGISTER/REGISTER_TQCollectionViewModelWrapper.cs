@@ -145,9 +145,9 @@ namespace BluePrints.ViewModels
         }
 
         #region Collection Call Backs
-        private void onAfterEntitySaved(REGISTER_TQ entity, REGISTER_TQ projection, bool isNewEntity)
+        private void onAfterEntitySaved(REGISTER_TQ projection, REGISTER_TQ entity, bool isNewEntity)
         {
-            saveTQDocument(entity);
+            saveTQDocument(projection);
         }
 
         private void saveTQDocument(REGISTER_TQ entity)
