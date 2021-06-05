@@ -521,7 +521,7 @@ namespace BluePrints.ViewModels
         public IEnumerable<ExoSubJobProjection> CommitToExo(IEnumerable<ExoSubJobProjection> projections, bool updateBudgetIfExist = false)
         {
             List<ErrorMessage> errorMessages;
-            IEnumerable<ExoSubJobProjection> addedProjections = ExoMethods.CommitToExo(projections, MessageBoxService, masterJob, copyLine, loadPROJECT, USERCollection, localPrimeroUnitOfWork, bluePrintsEntitiesUnitOfWork, BulkColumnEditDialogService, out errorMessages, Entities, updateBudgetIfExist, IgnoreCostGroupCostType);
+            IEnumerable<ExoSubJobProjection> addedProjections = ExoMethods.CommitToExo(projections, MessageBoxService, masterJob, copyLine, loadPROJECT, USERCollection, localPrimeroUnitOfWork, bluePrintsEntitiesUnitOfWork, BulkColumnEditDialogService, out errorMessages, updateBudgetIfExist, IgnoreCostGroupCostType);
 
             ShowErrorMessage("Errors", errorMessages);
             if (addedProjections.Count() > 0)
@@ -530,7 +530,6 @@ namespace BluePrints.ViewModels
                 {
                     addedProjection.PopulateCommodityCodes(COMMODITY_CODECollection);
                     addedProjection.PopulateStockItems(STOCK_ITEMSCollection);
-                    addedProjection.PopulateLineAuthUsers(Entities);
                     addedProjection.IsLineExistsInExo = true;
                 }
 

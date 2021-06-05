@@ -62,7 +62,7 @@ namespace BluePrints.Common.Projections
     {
         public ExoSubJobProjection()
         {
-            AuthUsers = new ObservableCollection<ExoSubJobAuth>();
+            AuthUsers = new List<USER>();
             this.VariationCode = string.Empty;
         }
         
@@ -112,7 +112,7 @@ namespace BluePrints.Common.Projections
         public bool IgnoreExoBudgetError { get; set; }
         public decimal Rate { get; set; }
 
-        public ObservableCollection<ExoSubJobAuth> AuthUsers { get; set; }
+        public List<USER> AuthUsers { get; set; }
 
         #region Summary in EXO_SubJobCollectionView
         public decimal SubJobActualCostSummary { get; set; }
@@ -138,20 +138,6 @@ namespace BluePrints.Common.Projections
         
         public bool HasBudget { get; set; }
         public string NullText => IsLineExistsInExo ? "Double click this cell to change title" : "Title can only be changed when job is bookable";
-        
-        public void PopulateLineAuthUsers(IEnumerable<ExoSubJobProjection> projections)
-        {
-            ExoSubJobProjection existingSameSubJobLine = projections.FirstOrDefault(x => x.SubJobCode == this.SubJobCode);
-            if (existingSameSubJobLine != null)
-            {
-                foreach (ExoSubJobAuth authUser in existingSameSubJobLine.AuthUsers)
-                {
-                    ExoSubJobAuth newUser = new ExoSubJobAuth();
-                    DataUtils.ShallowCopy(newUser, authUser);
-                    this.AuthUsers.Add(newUser);
-                }
-            }
-        }
 
         //Used so that class can be used in view model
         #region View Model Compatibility Members
@@ -375,7 +361,7 @@ namespace BluePrints.Common.Projections
             return false;
         }
 
-        public static IEnumerable<ExoSubJobProjection> CommitToExo(IEnumerable<ExoSubJobProjection> projections, IMessageBoxService MessageBoxService, JOBCOST_HDR masterJob, JOBCOST_LINES copyLine, PROJECT loadPROJECT, IEnumerable<USER> USERCollection, IPrimeroEntitiesUnitOfWork localPrimeroUnitOfWork, IBluePrintsEntitiesUnitOfWork bluePrintsEntitiesUnitOfWork, IDialogService BulkColumnEditDialogService, out List<ErrorMessage> errorMessages, ObservableCollection<ExoSubJobProjection> DisplayEntities = null, bool updateBudgetIfExist = false, bool ignoreCostGroupCostType = false)
+        public static IEnumerable<ExoSubJobProjection> CommitToExo(IEnumerable<ExoSubJobProjection> projections, IMessageBoxService MessageBoxService, JOBCOST_HDR masterJob, JOBCOST_LINES copyLine, PROJECT loadPROJECT, IEnumerable<USER> USERCollection, IPrimeroEntitiesUnitOfWork localPrimeroUnitOfWork, IBluePrintsEntitiesUnitOfWork bluePrintsEntitiesUnitOfWork, IDialogService BulkColumnEditDialogService, out List<ErrorMessage> errorMessages, bool updateBudgetIfExist = false, bool ignoreCostGroupCostType = false)
         {
             errorMessages = new List<ErrorMessage>();
             List<ExoSubJobProjection> addedProjections = new List<ExoSubJobProjection>();
@@ -488,20 +474,6 @@ namespace BluePrints.Common.Projections
                                     if (projection.LineId != null)
                                     {
                                         projection.IsLineExistsInExo = true;
-                                        if (DisplayEntities != null)
-                                        {
-                                            ExoSubJobProjection existingSameSubJobLine = DisplayEntities.FirstOrDefault(x => x.GUID != Guid.Empty && x.SubJobId == projection.SubJobId);
-                                            if (existingSameSubJobLine != null)
-                                            {
-                                                foreach (ExoSubJobAuth authUser in existingSameSubJobLine.AuthUsers)
-                                                {
-                                                    ExoSubJobAuth newUser = new ExoSubJobAuth();
-                                                    DataUtils.ShallowCopy(newUser, authUser);
-                                                    projection.AuthUsers.Add(newUser);
-                                                }
-                                            }
-                                        }
-
                                         addedProjections.Add(projection);
                                         updatedLineCount += 1;
                                     }
@@ -1356,7 +1328,7 @@ namespace BluePrints.Common.Projections
                 newSubJobProjection.CommodityName = exoLine.CommodityName;
                 newSubJobProjection.StockCode = exoLine.StockCode;
                 newSubJobProjection.VariationCode = exoLine.VariationCode;
-                newSubJobProjection.AuthUsers = new ObservableCollection<ExoSubJobAuth>();
+                newSubJobProjection.AuthUsers = new List<USER>();
 
                 exoSubJobs.Add(newSubJobProjection);
             }
@@ -1382,10 +1354,15 @@ namespace BluePrints.Common.Projections
                 projection.PopulateStockItems(STOCK_ITEMSCollection);
 
                 List<ExoTimeAuthorisation> authorisations = exoAuthorisations.Where(x => x.SubJobNo == exoLine.SubJobNo).ToList();
+                projection.AuthUsers = new List<USER>();
                 if (authorisations.Count > 0)
-                    projection.AuthUsers = new ObservableCollection<ExoSubJobAuth>(authorisations.Select(x => x.Auth));
-                else
-                    projection.AuthUsers = new ObservableCollection<ExoSubJobAuth>();
+                {
+                    var groupedAuths = authorisations.GroupBy(x => new { UserId = x.User.ProjectLocaleExoId }).Select(group => new { group.Key, Auth = group.First() });
+                    foreach(var groupedAuth in groupedAuths)
+                    {
+                        projection.AuthUsers.Add(groupedAuth.Auth.User);
+                    }
+                }
 
                 exoSubJobs.Add(projection);
             }
@@ -1424,95 +1401,6 @@ namespace BluePrints.Common.Projections
             }
 
             return exoSubJobs.OrderBy(x => x.SubJobCode).AsQueryable();
-        }
-
-        private static List<ExoSubJobAuth> getEXOStaffsByJobNo(List<ExoTimeAuthorisation> exoAuthorisations, ExoTimeAuthorisation exoLine, IEnumerable<STAFF> ExoSTAFFS, string officeName)
-        {
-            List<ExoSubJobAuth> exoSTAFFS = new List<ExoSubJobAuth>();
-
-            if (ExoSTAFFS != null)
-            {
-                IEnumerable<ExoTimeAuthorisation> exoAuths = exoAuthorisations.Where(x => x.SubJobNo == exoLine.SubJobNo);
-                foreach (ExoTimeAuthorisation exoAuth in exoAuths)
-                {
-                    STAFF findSTAFF = ExoSTAFFS.FirstOrDefault(x => x.STAFFNO == exoAuth.ResourceStaffId);
-                    if (findSTAFF != null)
-                    {
-                        ExoSubJobAuth newAuth = new ExoSubJobAuth();
-                        USER newUser = new USER();
-                        newUser.ProjectLocale = officeName;
-                        newUser.NAME = findSTAFF.NAME;
-                        newUser.ProjectLocaleExoId = findSTAFF.STAFFNO;
-                        newAuth.User = newUser;
-                        newAuth.ShouldAssign = false;
-                        newAuth.IsAssigned = true;
-                        exoSTAFFS.Add(newAuth);
-                    }
-                }
-            }
-
-            return exoSTAFFS;
-        }
-
-        private static List<ExoSubJobAuth> getEXOStaffs(List<ExoTimeAuthorisation> exoAuthorisations, ExoTimeAuthorisation exoLine, IEnumerable<STAFF> ExoSTAFFS, string officeName)
-        {
-            List<ExoSubJobAuth> exoSTAFFS = new List<ExoSubJobAuth>();
-
-            if (ExoSTAFFS != null)
-            {
-                IEnumerable<ExoTimeAuthorisation> exoAuths;
-                if(exoLine.VariationCode == null || exoLine.VariationCode == string.Empty)
-                    exoAuths = exoAuthorisations.Where(x => x.SubJobCode == exoLine.SubJobCode && x.DisciplineCode == exoLine.DisciplineCode && x.CommodityCode == exoLine.CommodityCode && (x.VariationCode == string.Empty || x.VariationCode == null));
-                else
-                    exoAuths = exoAuthorisations.Where(x => x.SubJobCode == exoLine.SubJobCode && x.DisciplineCode == exoLine.DisciplineCode && x.CommodityCode == exoLine.CommodityCode && x.VariationCode == exoLine.VariationCode);
-
-                foreach (ExoTimeAuthorisation exoAuth in exoAuths)
-                {
-                    STAFF findSTAFF = ExoSTAFFS.FirstOrDefault(x => x.STAFFNO == exoAuth.ResourceStaffId);
-                    if (findSTAFF != null)
-                    {
-                        ExoSubJobAuth newAuth = new ExoSubJobAuth();
-                        USER newUser = new USER();
-                        newUser.ProjectLocale = officeName;
-                        newUser.NAME = findSTAFF.NAME;
-                        newUser.ProjectLocaleExoId = findSTAFF.STAFFNO;
-                        newAuth.User = newUser;
-                        newAuth.ShouldAssign = false;
-                        newAuth.IsAssigned = true;
-                        exoSTAFFS.Add(newAuth);
-                    }
-                }
-            }
-
-            return exoSTAFFS;
-        }
-
-        private static List<ExoSubJobAuth> getBluePrintsUsers(List<ExoTimeAuthorisation> exoAuthorisations, ExoTimeAuthorisation exoLine, IEnumerable<USER> USERCollection, string officeName)
-        {
-            List<ExoSubJobAuth> bluePrintsUsers = new List<ExoSubJobAuth>();
-            if(USERCollection != null)
-            {
-                IEnumerable<ExoTimeAuthorisation> exoAuths = exoAuthorisations.Where(x => x.SubJobCode == exoLine.SubJobCode && x.DisciplineCode == exoLine.DisciplineCode && x.CommodityCode == exoLine.CommodityCode && x.VariationCode == exoLine.VariationCode);
-                foreach (ExoTimeAuthorisation exoUserAuth in exoAuths)
-                {
-                    USER findUSER;
-                    if(officeName == BluePrintsResources.OfficePerth)
-                        findUSER = USERCollection.FirstOrDefault(x => x.EXO_STAFF_ID == exoUserAuth.ResourceStaffId);
-                    else
-                        findUSER = USERCollection.FirstOrDefault(x => x.EXO_STAFF_ID_REMOTE == exoUserAuth.ResourceStaffId);
-
-                    if (findUSER != null && findUSER.ROLE != null)
-                    {
-                        ExoSubJobAuth newAuth = new ExoSubJobAuth();
-                        newAuth.User = findUSER;
-                        newAuth.ShouldAssign = findUSER.ROLE.ROLE_COMMODITY.Where(x => x.DOCTYPE != null).Any(x => x.DOCTYPE.CODE == exoUserAuth.CommodityCode);
-                        newAuth.IsAssigned = true;
-                        bluePrintsUsers.Add(newAuth);
-                    }
-                }
-            }
-
-            return bluePrintsUsers;
         }
 
         public static IQueryable<ExoSubJobProjection> GetExoConstructionSubJobProjection(
@@ -1569,7 +1457,7 @@ namespace BluePrints.Common.Projections
                 if(groupedDeliverable.ApprovedVariations.Count() == 0 || baseTotalUnits != variationTotalUnits)
                     exoSubJobs.Add(getProactiveSubJob(project.NUMBER, groupedDeliverable.SubJob, groupedDeliverable.DisciplineCode, groupedDeliverable.CommodityCode, string.Empty, groupedDeliverable.BudgetInternalCosts, groupedDeliverable.ChargeType, ignoreExoBudgetError, exoLines, primeroUnitOfWork, COMMODITY_CODECollection, exoAuthorisations));
 
-                if(groupedDeliverable.ApprovedVariations.Count() > 0)
+                if (groupedDeliverable.ApprovedVariations.Count() > 0)
                 {
                     var groupedVariations = groupedDeliverable.ApprovedVariations.GroupBy(x => x.VariationName).Select(group => new { VariationName = group.Key, VariationTotalCosts = group.Sum(x => x.AdjustmentInternalCosts) });
                     foreach (var groupedVariation in groupedVariations)
@@ -1639,7 +1527,7 @@ namespace BluePrints.Common.Projections
 
             newSubJobProjection.VariationCode = variationCode;
             newSubJobProjection.PopulateCommodityCodes(COMMODITY_CODECollection);
-            newSubJobProjection.AuthUsers = new ObservableCollection<ExoSubJobAuth>();
+            newSubJobProjection.AuthUsers = new List<USER>();
             ExoTimeAuthorisation exoLine;
             if(variationCode == string.Empty || variationCode == null)
                 exoLine = exoLines.FirstOrDefault(x => x.SubJobCode == subJobCode && x.DisciplineCode == disciplineCode && x.CommodityCode == commodityCode && (x.VariationCode == string.Empty || x.VariationCode == null));
@@ -1650,14 +1538,14 @@ namespace BluePrints.Common.Projections
             if (exoLine != null)
             {
                 newSubJobProjection.LineId = exoLine.LineSeqNo;
-                string s;
-                List<ExoTimeAuthorisation> exoAuth = exoAuthorisations.Where(x => x.VariationCode == "Lube Dispensing Hose Size Change").ToList();
-                    s = string.Empty;
                 List<ExoTimeAuthorisation> currentJobExoAuthorisations = exoAuthorisations.Where(x => x.SubJobCode == subJobCode && x.DisciplineCode == disciplineCode && x.CommodityCode == commodityCode && x.VariationCode == variationCode).ToList();
                 if (currentJobExoAuthorisations.Count > 0)
-                    newSubJobProjection.AuthUsers = new ObservableCollection<ExoSubJobAuth>(currentJobExoAuthorisations.Select(x => x.Auth));
+                {
+                    List<USER> authorisedUsers = currentJobExoAuthorisations.Where(x => x.User != null).Select(x => x.User).ToList();
+                    newSubJobProjection.AuthUsers = new List<USER>(authorisedUsers);
+                }
                 else
-                    newSubJobProjection.AuthUsers = new ObservableCollection<ExoSubJobAuth>();
+                    newSubJobProjection.AuthUsers = new List<USER>();
             }
 
             return newSubJobProjection;
@@ -2215,46 +2103,38 @@ namespace BluePrints.Common.Projections
 
             List<ExoTimeAuthorisation> exoTimes = availableLinesByStaffNo.ToList().Select(x => populateExoTimeAuth(x)).ToList();
             List<ExoTimeAuthorisation> returnExoAuthorisation = new List<ExoTimeAuthorisation>();
+
+            if(USERCollection == null && STAFFCollection != null)
+            {
+                HashSet<USER> projectionUSERS = new HashSet<USER>();
+                Parallel.ForEach(STAFFCollection, staff =>
+                {
+                    USER newUser = new USER();
+                    newUser.ProjectLocale = officeName;
+                    newUser.NAME = staff.NAME;
+                    newUser.ProjectLocaleExoId = staff.STAFFNO;
+                    projectionUSERS.Add(newUser);
+                });
+
+                USERCollection = projectionUSERS.ToList();
+            }
+
             if (USERCollection != null)
             {
-                foreach (ExoTimeAuthorisation exoTime in exoTimes)
+                foreach(ExoTimeAuthorisation exoTime in exoTimes)
                 {
                     USER user = USERCollection.FirstOrDefault(x => x.ProjectLocaleExoId == exoTime.ResourceStaffId);
                     if (user != null)
                     {
-                        ExoSubJobAuth newAuth = new ExoSubJobAuth();
-                        newAuth.User = user;
-                        newAuth.ShouldAssign = user.ROLE.ROLE_COMMODITY.Where(x => x.DOCTYPE != null).Any(x => x.DOCTYPE.CODE == exoTime.CommodityCode);
-                        newAuth.IsAssigned = true;
-                        exoTime.Auth = newAuth;
-                        returnExoAuthorisation.Add(exoTime);
-                    }
-                }
-            }
-            else if (STAFFCollection != null)
-            {
-                foreach (ExoTimeAuthorisation exoTime in exoTimes)
-                {
-                    STAFF staff = STAFFCollection.FirstOrDefault(x => x.STAFFNO == exoTime.ResourceStaffId);
-                    if (staff != null)
-                    {
-                        ExoSubJobAuth newAuth = new ExoSubJobAuth();
-                        USER newUser = new USER();
-                        newUser.ProjectLocale = officeName;
-                        newUser.NAME = staff.NAME;
-                        newUser.ProjectLocaleExoId = staff.STAFFNO;
-                        newAuth.User = newUser;
-                        newAuth.ShouldAssign = false;
-                        newAuth.IsAssigned = true;
-                        exoTime.Auth = newAuth;
+                        exoTime.User = user;
                         returnExoAuthorisation.Add(exoTime);
                     }
                 }
             }
             else
-                returnExoAuthorisation = exoTimes;
+                returnExoAuthorisation = new List<ExoTimeAuthorisation>(exoTimes);
 
-            return returnExoAuthorisation;
+            return returnExoAuthorisation.ToList();
         }
 
         public static List<string> GetJobNarratives(IPrimeroEntitiesUnitOfWork primeroUnitOfWork, string projectNumber)
@@ -2406,7 +2286,7 @@ namespace BluePrints.Common.Projections
         public decimal BudgetCosts => BudgetQty * BudgetRate;
         public string OfficeName { get; set; }
 
-        public ExoSubJobAuth Auth { get; set; }
+        public USER User { get; set; }
 
         public string AreaCode
         {
