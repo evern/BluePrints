@@ -183,8 +183,8 @@ namespace BluePrints.ViewModels
                     {
                         projection.IsLineExistsInExo = true;
                         ExoSubJobProjection sameSubJobProjection = Entities.Where(x => x.IsLineExistsInExo).FirstOrDefault(x => x.SubJobCode != null && x.SubJobId == projection.SubJobId);
-                        if (sameSubJobProjection != null && sameSubJobProjection.AuthUsers != null)
-                            projection.AuthUsers = new List<USER>(sameSubJobProjection.AuthUsers);
+                        if (sameSubJobProjection != null && sameSubJobProjection.AuthUserIds != null)
+                            projection.AuthUserIds = new List<int>(sameSubJobProjection.AuthUserIds);
 
                         delayedPermissionRefreshDispatcher.Start();
                     }
@@ -239,10 +239,9 @@ namespace BluePrints.ViewModels
                     //add authorised user to all entities with same subjob id
                     foreach (ExoSubJobProjection sameSubJobEntity in Entities.Where(x => x.SubJobCode != null && x.SubJobId == selectedEntity.SubJobId))
                     {
-                        USER findUSER = sameSubJobEntity.AuthUsers.FirstOrDefault(x => x.ProjectLocaleExoId == editingSubJobAuth.User.ProjectLocaleExoId);
-                        if (findUSER == null)
+                        if (editingSubJobAuth.User.ProjectLocaleExoId != null && !sameSubJobEntity.AuthUserIds.Any(x => x == editingSubJobAuth.User.ProjectLocaleExoId))
                         {
-                            sameSubJobEntity.AuthUsers.Add(editingSubJobAuth.User);
+                            sameSubJobEntity.AuthUserIds.Add((int)editingSubJobAuth.User.ProjectLocaleExoId);
                         }
                     }
                 }
@@ -253,16 +252,14 @@ namespace BluePrints.ViewModels
             {
                 foreach (ExoSubJobProjection selectedEntity in SelectedEntities.Where(x => x.IsLineExistsInExo && x.SubJobCode != null && x.SubJobId != null))
                 {
-                    USER findUSER = selectedEntity.AuthUsers.FirstOrDefault(x => x.ProjectLocaleExoId == editingSubJobAuth.User.ProjectLocaleExoId);
-                    if (findUSER != null)
+                    if (editingSubJobAuth.User.ProjectLocaleExoId != null)
                         ExoMethods.deleteResourceAllocation(localPrimeroUnitOfWork, (int)selectedEntity.SubJobId, (int)editingSubJobAuth.User.ProjectLocaleExoId);
 
                     //remove authorised user to all entities with same subjob id
                     foreach (ExoSubJobProjection sameSubJobEntity in Entities.Where(x => x.SubJobCode != null && x.SubJobId == selectedEntity.SubJobId))
                     {
-                        findUSER = sameSubJobEntity.AuthUsers.FirstOrDefault(x => x.ProjectLocaleExoId == editingSubJobAuth.User.ProjectLocaleExoId);
-                        if (findUSER != null)
-                            sameSubJobEntity.AuthUsers.Remove(findUSER);
+                        if (editingSubJobAuth.User.ProjectLocaleExoId != null && sameSubJobEntity.AuthUserIds.Any(x => x == editingSubJobAuth.User.ProjectLocaleExoId))
+                            sameSubJobEntity.AuthUserIds.Remove((int)editingSubJobAuth.User.ProjectLocaleExoId);
                     }
                 }
             }
@@ -351,9 +348,9 @@ namespace BluePrints.ViewModels
 
                 foreach (ExoSubJobAuth authorisation in orderedAuthUsers)
                 {
-                    if (SelectedEntities.All(x => x.AuthUsers.Any(y => y.ProjectLocaleExoId == authorisation.User.ProjectLocaleExoId)))
+                    if (SelectedEntities.All(x => x.AuthUserIds.Any(y => y == authorisation.User.ProjectLocaleExoId)))
                         authorisation.IsAssigned = true;
-                    else if (SelectedEntities.Any(x => x.AuthUsers.Any(y => y.ProjectLocaleExoId == authorisation.User.ProjectLocaleExoId)))
+                    else if (SelectedEntities.Any(x => x.AuthUserIds.Any(y => y == authorisation.User.ProjectLocaleExoId)))
                         authorisation.IsAssigned = null;
                     else
                         authorisation.IsAssigned = false;

@@ -220,9 +220,9 @@ namespace BluePrints.ViewModels
                     {
                         ExoSubJobAuth newAuth = new ExoSubJobAuth();
                         newAuth.User = user;
-                        if (SelectedEntities.All(x => x.AuthUsers.Any(y => y.ProjectLocaleExoId == user.ProjectLocaleExoId)))
+                        if (SelectedEntities.All(x => x.AuthUserIds.Any(y => y == user.ProjectLocaleExoId)))
                             newAuth.IsAssigned = true;
-                        else if (SelectedEntities.Any(x => x.AuthUsers.Any(y => y.ProjectLocaleExoId == user.ProjectLocaleExoId)))
+                        else if (SelectedEntities.Any(x => x.AuthUserIds.Any(y => y == user.ProjectLocaleExoId)))
                             newAuth.IsAssigned = null;
                         else
                             newAuth.IsAssigned = false;
