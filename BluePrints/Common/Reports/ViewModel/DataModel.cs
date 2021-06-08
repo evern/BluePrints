@@ -25,7 +25,6 @@ namespace BluePrints.Common.ViewModel.Reporting
         public ESTIMATE_ITEMProgress(PROJECT PROJECT, PROGRESS LivePROGRESS, IDeliverable_Rates entity, IEnumerable<VariationAdjustment> projectVariationAdjustments, bool forceRetrieveRemainingDataPoints)
             : base(PROJECT, LivePROGRESS, entity, projectVariationAdjustments, forceRetrieveRemainingDataPoints)
         {
-
         }
 
         public string UniqueJobcode => Entity.Deliverable_Name + " " + Entity.Variation_Code;
@@ -95,6 +94,7 @@ namespace BluePrints.Common.ViewModel.Reporting
         public SingleObjectSummarizer StatSummarizer => statsSummarizer;
         public ProgressStats Stats { get; set; }
         public List<VariationAdjustment> ApprovedVariations { get; set; }
+
         public BluePrintsProgressableProjectionBase()
         {
             //Initialization without stats

@@ -50,7 +50,7 @@ namespace BluePrints.Common.Projections
 
         public List<VariationAdjustment> ApprovedVariations => new List<VariationAdjustment>();
 
-        public string UOM => "pc";
+        public string UOM => Entity.UOM;
 
         public decimal Budget_Units => Entity.Budget_Units;
 

@@ -387,10 +387,12 @@ namespace BluePrints.ViewModels
             columns.Add(new ColumnDescriptor() { FieldName = columnEntity + ".Entity.Entity.VARIATION_CODE", ReadOnly = true, Header = "Variation Code", Fixed = FixedStyle.Left, Width = 100, Settings = SettingsType.Default });
             columns.Add(new ColumnDescriptor() { FieldName = columnEntity + ".Entity.Entity.NAME", ReadOnly = true, Header = "Name", Fixed = FixedStyle.Left, Width = 150, Settings = SettingsType.Default });
             columns.Add(new ColumnDescriptor() { FieldName = columnEntity + ".Entity.Entity.CLIENT_NAME", ReadOnly = true, Header = "Client Name", Fixed = FixedStyle.Left, Width = 150, Settings = SettingsType.Default });
+            columns.Add(new ColumnDescriptor() { FieldName = columnEntity + ".Entity.Total_Quantity", ReadOnly = true, Header = "Total Quantity", Fixed = FixedStyle.Left, Width = 75, Settings = SettingsType.Number, Mask = "n0" });
+            columns.Add(new ColumnDescriptor() { FieldName = columnEntity + ".Entity.UOM", ReadOnly = true, Header = "UOM", Fixed = FixedStyle.Left, Width = 50, Settings = SettingsType.Default });
 
             foreach (CONSTRUCTION_STAGE CONSTRUCTION_STAGE in CONSTRUCTION_STAGECollection)
             {
-                columns.Add(new ColumnDescriptor() { FieldName = CONSTRUCTION_STAGE.SORT_ORDER.ToString() + stageFieldNameQuantityAffix, Mask = "n2", Increment = 1m, Header = CONSTRUCTION_STAGE.NAME + " By Quantity", Fixed = FixedStyle.Right, Width = 50, Settings = SettingsType.Number });
+                columns.Add(new ColumnDescriptor() { FieldName = CONSTRUCTION_STAGE.SORT_ORDER.ToString() + stageFieldNameQuantityAffix, Mask = "n2", Increment = 1m, Header = CONSTRUCTION_STAGE.NAME + " By Quantity", Fixed = FixedStyle.Right, Width = 50, Settings = SettingsType.Custom1 });
                 columns.Add(new ColumnDescriptor() { FieldName = CONSTRUCTION_STAGE.SORT_ORDER.ToString() + stageFieldNamePercentageAffix, Mask = "p0", Increment = 0.1m, Header = CONSTRUCTION_STAGE.NAME + " " + CONSTRUCTION_STAGE.WEIGHT_PERCENTAGE.ToString("P0"), MaxValue = 1, Fixed = FixedStyle.Right, Width = 50, Settings = SettingsType.Number });
             }
         }
@@ -469,8 +471,8 @@ namespace BluePrints.ViewModels
                     CONSTRUCTION_STAGE findCONSTRUCTION_STAGE = CONSTRUCTION_STAGECollection.FirstOrDefault(x => x.SORT_ORDER == progress.STAGE_ORDER);
                     if(findCONSTRUCTION_STAGE != null)
                     {
-                        decimal stageMaxQty = entity.Total_Quantity * findCONSTRUCTION_STAGE.WEIGHT_PERCENTAGE;
-                        decimal stageEarnedPercentage = progress.EARNED_UNITS / stageMaxQty;
+                        //EARNED_UNITS is quantity in construction context
+                        decimal stageEarnedPercentage = progress.EARNED_UNITS / entity.Total_Quantity;
                         decimal stageEarnedQuantity = progress.EARNED_UNITS;
 
                         newDataRow[findCONSTRUCTION_STAGE.SORT_ORDER.ToString() + stageFieldNamePercentageAffix] = stageEarnedPercentage;
@@ -600,20 +602,18 @@ namespace BluePrints.ViewModels
                 {
                     List<PROGRESS_ITEM> progressToSave = new List<PROGRESS_ITEM>();
 
-                    decimal stageMaxUnits = constructionSTAGE.WEIGHT_PERCENTAGE * entity.Total_Units;
-
                     //quantity or percentages conversion depending on field name
                     decimal earnedQuantity = 0;
                     decimal earnedPercentage = 0;
                     if(isPercentage)
                     {
                         earnedPercentage = (decimal)newValue;
-                        earnedQuantity = earnedPercentage * stageMaxUnits;
+                        earnedQuantity = earnedPercentage * entity.Total_Units;
                     }
                     else
                     {
                         earnedQuantity = (decimal)newValue;
-                        earnedPercentage = earnedQuantity / stageMaxUnits;
+                        earnedPercentage = earnedQuantity / entity.Total_Units;
                     }
 
                     PROGRESS_ITEM currentPeriodPROGRESS_ITEM = entity.PROGRESS_ITEMS.FirstOrDefault(x => x.STAGE_ORDER == constructionSTAGE.SORT_ORDER && x.EARNED_DATE == DataDate);
