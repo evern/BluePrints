@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?>
+﻿<?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="12.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
   <PropertyGroup>
@@ -628,6 +628,7 @@
     <Compile Include="Common\Projections\MINUTE_AGENDAReportingProjection.cs" />
     <Compile Include="Common\Projections\MINUTE_AGENDAMasterDetailProjection.cs" />
     <Compile Include="Common\Projections\COMMODITY_CODEProjection.cs" />
+    <Compile Include="Common\Projections\POFlatForecastProjection.cs" />
     <Compile Include="Common\Projections\POForecastProjection.cs" />
     <Compile Include="Common\Projections\ProjectSummaryProjection.cs" />
     <Compile Include="Common\Projections\PROJECTTenderProfiles.cs" />
@@ -1153,6 +1154,7 @@
     <Compile Include="ViewModels\EXOSUBJOB\EXO_POCollectionViewModelWrapper.cs" />
     <Compile Include="ViewModels\PROJECT\PROJECTForecastEACReportViewModelWrapper.cs" />
     <Compile Include="ViewModels\PROJECT\PROJECTPlanViewModelWrapper.cs" />
+    <Compile Include="ViewModels\PROJECT\PROJECTFlatPOForecastViewModelWrapper.cs" />
     <Compile Include="ViewModels\PROJECT\PROJECT_REVENUECollectionViewModelWrapper.cs" />
     <Compile Include="ViewModels\PROJECT\PROJECTIndirectForecastViewModelWrapper.cs" />
     <Compile Include="ViewModels\PROJECT\POSpreadViewModel.cs" />
@@ -1273,6 +1275,9 @@
     </Compile>
     <Compile Include="Views\PROJECT\PROJECTPlanView.xaml.cs">
       <DependentUpon>PROJECTPlanView.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Views\PROJECT\PROJECTFlatPOForecastView.xaml.cs">
+      <DependentUpon>PROJECTFlatPOForecastView.xaml</DependentUpon>
     </Compile>
     <Compile Include="Views\PROJECT\PROJECT_REVENUECollectionView.xaml.cs">
       <DependentUpon>PROJECT_REVENUECollectionView.xaml</DependentUpon>
@@ -2262,6 +2267,10 @@
       <SubType>Designer</SubType>
     </Page>
     <Page Include="Views\PROJECT\PROJECTPlanView.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Views\PROJECT\PROJECTFlatPOForecastView.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>

@@ -36,24 +36,24 @@ using System.Windows.Threading;
 
 namespace BluePrints.ViewModels
 {
-    public class PROJECTPOForecastViewModelWrapper : BluePrintsEntitiesCollectionWrapper<FORECAST_PO, FORECAST_PO, Guid, IBluePrintsEntitiesUnitOfWork>
+    public class PROJECTFlatPOForecastViewModelWrapper : BluePrintsEntitiesCollectionWrapper<FORECAST_PO, FORECAST_PO, Guid, IBluePrintsEntitiesUnitOfWork>
     {
         /// <summary>
-        /// Creates a new instance of PROJECTPOForecastViewModelWrapper as a POCO view model.
+        /// Creates a new instance of PROJECTFlatPOForecastViewModelWrapper as a POCO view model.
         /// </summary>
         /// <param name="unitOfWorkFactory">A factory used to create a unit of work instance.</param>
-        public static PROJECTPOForecastViewModelWrapper Create(
+        public static PROJECTFlatPOForecastViewModelWrapper Create(
             IUnitOfWorkFactory<IBluePrintsEntitiesUnitOfWork> unitOfWorkFactory = null)
         {
-            return ViewModelSource.Create(() => new PROJECTPOForecastViewModelWrapper(unitOfWorkFactory));
+            return ViewModelSource.Create(() => new PROJECTFlatPOForecastViewModelWrapper(unitOfWorkFactory));
         }
 
         /// <summary>
-        /// Initializes a new instance of the PROJECTPOForecastViewModelWrapper class.
-        /// This constructor is declared protected to avoid undesired instantiation of the PROJECTPOForecastViewModelWrapper type without the POCO proxy factory.
+        /// Initializes a new instance of the PROJECTFlatPOForecastViewModelWrapper class.
+        /// This constructor is declared protected to avoid undesired instantiation of the PROJECTFlatPOForecastViewModelWrapper type without the POCO proxy factory.
         /// </summary>
         /// <param name="unitOfWorkFactory">A factory used to create a unit of work instance.</param>
-        protected PROJECTPOForecastViewModelWrapper(
+        protected PROJECTFlatPOForecastViewModelWrapper(
             IUnitOfWorkFactory<IBluePrintsEntitiesUnitOfWork> unitOfWorkFactory = null)
         {
         }
@@ -363,7 +363,7 @@ namespace BluePrints.ViewModels
                     return false;
                 }
             }
-            else if(copyColumn.FieldName.Contains(BindableBase.GetPropertyName(() => new POForecastProjection().Comments)))
+            else if(copyColumn.FieldName.Contains(BindableBase.GetPropertyName(() => new POFlatForecastProjection().Comments)))
             {
                 if (pasteData != null)
                     findExistingOrAddNewFORECAST_JOB_SETTING(newRow, pasteData);
@@ -420,7 +420,7 @@ namespace BluePrints.ViewModels
 
                     findExistingOrAddNewFORECAST_PO(entityProperty.ChangedEntity, parseDateTime, oldValueDecimal);
                 }
-                else if (entityProperty.PropertyName.Contains(BindableBase.GetPropertyName(() => new POForecastProjection().Comments)))
+                else if (entityProperty.PropertyName.Contains(BindableBase.GetPropertyName(() => new POFlatForecastProjection().Comments)))
                 {
                     string oldValueString = entityProperty.OldValue == null ? string.Empty : entityProperty.OldValue.ToString();
                     findExistingOrAddNewFORECAST_JOB_SETTING(entityProperty.ChangedEntity, oldValueString);
@@ -449,7 +449,7 @@ namespace BluePrints.ViewModels
 
                     findExistingOrAddNewFORECAST_PO(entityProperty.ChangedEntity, parseDateTime, newValueDecimal);
                 }
-                else if (entityProperty.PropertyName.Contains(BindableBase.GetPropertyName(() => new POForecastProjection().Comments)))
+                else if (entityProperty.PropertyName.Contains(BindableBase.GetPropertyName(() => new POFlatForecastProjection().Comments)))
                 {
                     string newValueString = entityProperty.NewValue == null ? string.Empty : entityProperty.NewValue.ToString();
                     findExistingOrAddNewFORECAST_JOB_SETTING(entityProperty.ChangedEntity, newValueString);
@@ -500,7 +500,7 @@ namespace BluePrints.ViewModels
 
             //initialize datatable schema
             dataPointsTable = new DataTable();
-            dataPointsTable.Columns.Add(columnEntity, typeof(POForecastProjection));
+            dataPointsTable.Columns.Add(columnEntity, typeof(POFlatForecastProjection));
 
             foreach (DateTime alignedDataDate in alignedDataDateCollection)
             {
@@ -509,29 +509,30 @@ namespace BluePrints.ViewModels
             }
 
             //construction projection from grouped po lines
-            List<POLine> poLines = getPOLines();
-            List<POForecastProjection> projections = new List<POForecastProjection>();
-            foreach (var poLine in poLines.OrderBy(x => x.PONumber))
+            List<POFlatLine> POFlatLines = getPOFlatLines();
+            List<POFlatForecastProjection> projections = new List<POFlatForecastProjection>();
+            foreach (POFlatLine POFlatLine in POFlatLines.OrderBy(x => x.PONumber))
             {
-                POForecastProjection newForecast = ViewModelSource.Create(() => new POForecastProjection());
-                newForecast.PONO = poLine.PONumber;
+                POFlatForecastProjection newFlatForecastProjection = ViewModelSource.Create(() => new POFlatForecastProjection());
+                newFlatForecastProjection.PONO = POFlatLine.PONumber;
                 //since it's a group it'll always contain at least a single element
-                ExoDataPoint dataPoint = poLine.DataPoints.First();
-                newForecast.Description = dataPoint.Description;
-                newForecast.Supplier = dataPoint.Supplier;
-                newForecast.ExoPOs = poLine.DataPoints;
-                newForecast.VariationCode = poLine.VariationCode;
+                ExoDataPoint dataPoint = POFlatLine.DataPoints.First();
+                newFlatForecastProjection.StockCode = POFlatLine.StockCode;
+                newFlatForecastProjection.ExoPOs = POFlatLine.DataPoints;
+                newFlatForecastProjection.VariationCode = POFlatLine.VariationCode;
+                newFlatForecastProjection.Description = dataPoint.Description;
+                newFlatForecastProjection.Supplier = dataPoint.Supplier;
 
                 //populate comment
-                FORECAST_PO_SETTING forecastPOSetting = FORECAST_PO_SETTINGCollection.FirstOrDefault(x => x.PONO == poLine.PONumber && x.VARIATION_CODE == poLine.VariationCode && x.STOCK_CODE == null);
+                FORECAST_PO_SETTING forecastPOSetting = FORECAST_PO_SETTINGCollection.FirstOrDefault(x => x.PONO == POFlatLine.PONumber && x.VARIATION_CODE == POFlatLine.VariationCode && x.STOCK_CODE == POFlatLine.StockCode);
                 if (forecastPOSetting != null)
-                    newForecast.Comments = forecastPOSetting.PO_COMMENTS;
+                    newFlatForecastProjection.Comments = forecastPOSetting.PO_COMMENTS;
 
-                projections.Add(newForecast);
+                projections.Add(newFlatForecastProjection);
             }
 
             //gets the forecasted data into dates bucket in the row and adds to datatable
-            foreach (POForecastProjection projection in projections)
+            foreach (POFlatForecastProjection projection in projections)
             {
                 DataRow newRow = DataPointsTable.NewRow();
                 newRow[columnEntity] = projection;
@@ -562,8 +563,11 @@ namespace BluePrints.ViewModels
             summaries.Add(new SummaryDescriptor() { FieldName = "Entity.PONO", DisplayFormat = "{0} Record(s)", Type = SummaryItemType.Count });
             columns.Add(new ColumnDescriptor() { FieldName = "Entity.VariationCode", Header = "Variation", ReadOnly = true, Fixed = FixedStyle.Left, Width = 70, Settings = SettingsType.Default });
             columns.Add(new ColumnDescriptor() { FieldName = "Entity.Supplier", Header = "Supplier", ReadOnly = true, Fixed = FixedStyle.Left, Width = 70, Settings = SettingsType.Default });
+            columns.Add(new ColumnDescriptor() { FieldName = "Entity.STOCK_CODE", Header = "Variation", ReadOnly = true, Fixed = FixedStyle.Left, Width = 70, Settings = SettingsType.Default });
+            columns.Add(new ColumnDescriptor() { FieldName = "Entity.Description", Header = "Description", ReadOnly = true, Fixed = FixedStyle.Left, Width = 70, Settings = SettingsType.Default });
             columns.Add(new ColumnDescriptor() { FieldName = "Entity.FirstActualDate", Header = "First Raised", ReadOnly = true, Fixed = FixedStyle.Left, Width = 70, Settings = SettingsType.Date });
             //columns.Add(new ColumnDescriptor() { FieldName = "Entity.FirstInvoiceDate", Header = "First Invoiced", ReadOnly = true, Fixed = FixedStyle.Left, Width = 70, Settings = SettingsType.Date });
+            columns.Add(new ColumnDescriptor() { FieldName = "Entity.PO_Quantity", Header = "Qty", Mask = "n", ReadOnly = true, Fixed = FixedStyle.Left, Width = 70, Settings = SettingsType.Number });
             columns.Add(new ColumnDescriptor() { FieldName = "Entity.PO_TotalPrice", Header = "Total", Mask = "c", ReadOnly = true, Fixed = FixedStyle.Left, Width = 70, Settings = SettingsType.Number });
             columns.Add(new ColumnDescriptor() { FieldName = "Entity.PO_Invoiced", Header = "Cut Off Invoiced", Mask = "c", ReadOnly = true, Fixed = FixedStyle.Left, Width = 70, Settings = SettingsType.Number });
             columns.Add(new ColumnDescriptor() { FieldName = "Entity.PO_RemainingPrice", Header = "Cut Off Outstanding", Mask = "c", ReadOnly = true, Fixed = FixedStyle.Left, Width = 70, Settings = SettingsType.Number });
@@ -582,7 +586,7 @@ namespace BluePrints.ViewModels
 
         private void findExistingOrAddNewFORECAST_JOB_SETTING(DataRow updateRow, string comments)
         {
-            POForecastProjection forecast = ((POForecastProjection)updateRow[columnEntity]);    
+            POFlatForecastProjection forecast = ((POFlatForecastProjection)updateRow[columnEntity]);    
             FORECAST_PO_SETTING relevantFORECAST_PO_SETTING = FORECAST_PO_SETTINGCollection.FirstOrDefault(x => x.PONO == forecast.PONO && x.VARIATION_CODE == forecast.VariationCode);
             if (relevantFORECAST_PO_SETTING == null)
             {
@@ -620,17 +624,17 @@ namespace BluePrints.ViewModels
             return true;
         }
 
-        private POLine getPOLine(string poNo)
+        private POFlatLine getPOFlatLine(string poNo)
         {
-            return getPOLines().FirstOrDefault(x => x.PONumber == poNo);
+            return getPOFlatLines().FirstOrDefault(x => x.PONumber == poNo);
         }
 
-        private List<POLine> getPOLines()
+        private List<POFlatLine> getPOFlatLines()
         {
             if (allExoPos == null)
-                return new List<POLine>();
+                return new List<POFlatLine>();
 
-            return allExoPos.GroupBy(x => new { x.PONumber, x.Variation_Code }).Select(group => new POLine { PONumber = group.Key.PONumber, VariationCode = group.Key.Variation_Code, DataPoints = group.ToList() }).ToList();
+            return allExoPos.GroupBy(x => new { x.PONumber, x.Variation_Code, x.StockCode }).Select(group => new POFlatLine { PONumber = group.Key.PONumber, VariationCode = group.Key.Variation_Code, StockCode = group.Key.StockCode, DataPoints = group.ToList() }).ToList();
         }
 
         public void AutoGeneratingColumns(AutoGeneratingColumnEventArgs e)
@@ -668,7 +672,7 @@ namespace BluePrints.ViewModels
                 updateRowPOForecast(alignedDataDateCollection, Entities, allExoActuals, ActualsCutOffDate, string.Empty, string.Empty, dataRowView.Row);
                 addUndo(dataRowView.Row, e.Column.FieldName, e.OldValue, newValue, EntityMessageType.Changed);
             }
-            else if (e.Column.FieldName.Contains(BindableBase.GetPropertyName(() => new POForecastProjection().Comments)))
+            else if (e.Column.FieldName.Contains(BindableBase.GetPropertyName(() => new POFlatForecastProjection().Comments)))
             {
                 DataRowView dataRowView = (DataRowView)e.Row;
                 string commeentsValue = e.Value == null ? string.Empty : e.Value.ToString();
@@ -684,7 +688,7 @@ namespace BluePrints.ViewModels
 
         private void findExistingOrAddNewFORECAST_PO(DataRow dataRow, DateTime forecastDate, decimal? viewCosts, bool skipUpdating = false)
         {
-            POForecastProjection entity = (POForecastProjection)dataRow[columnEntity];
+            POFlatForecastProjection entity = (POFlatForecastProjection)dataRow[columnEntity];
 
             //each PO have multiple items, so we need to store the pro-rated value per PO items in the database
             decimal proRateOnPOItem = 1;
@@ -831,7 +835,7 @@ namespace BluePrints.ViewModels
 
                         DataRowView editing_row_view = (DataRowView)rowObject;
                         DataRow editing_row = editing_row_view.Row;
-                        POForecastProjection projection = (POForecastProjection)editing_row[columnEntity];
+                        POFlatForecastProjection projection = (POFlatForecastProjection)editing_row[columnEntity];
                         clearPOForecast(projection.PONO, projection.VariationCode);
                         decimal costPerPeriod = projection.PO_RemainingPrice / (decimal)spreadPeriod;
 
@@ -903,7 +907,7 @@ namespace BluePrints.ViewModels
 
             if (PORow != null)
             {
-                POForecastProjection forecast = (POForecastProjection)PORow[columnEntity];
+                POFlatForecastProjection forecast = (POFlatForecastProjection)PORow[columnEntity];
                 forecast.UpdateForecastPayments(FORECAST_POCollection, cutOffActuals, cutOffDate);
 
                 //reset datarow dates
@@ -937,15 +941,15 @@ namespace BluePrints.ViewModels
         public void AlignPOsWithActuals()
         {
             EntitiesUndoRedoManager.Clear();
-            IEnumerable<POForecastProjection> projections = from DataRow dr in dataPointsTable.Rows
-                                                            select (POForecastProjection)dr[columnEntity];
+            IEnumerable<POFlatForecastProjection> projections = from DataRow dr in dataPointsTable.Rows
+                                                            select (POFlatForecastProjection)dr[columnEntity];
 
             List<FORECAST_PO> saveFORECAST_POs = new List<FORECAST_PO>();
             //fix codes mis-alignment
             LoadingScreenManager.ShowLoadingScreen(projections.Count());
             LoadingScreenManager.SetMessage("Aligning Actuals...");
             //fix dates mis-alignment
-            foreach (POForecastProjection projection in projections)
+            foreach (POFlatForecastProjection projection in projections)
             {
                 LoadingScreenManager.Progress();
                 DataRow editing_row = findPORow(projection.PONO, projection.VariationCode);
@@ -1027,7 +1031,7 @@ namespace BluePrints.ViewModels
         private DataRow findPORow(string PONumber, string variationCode)
         {
             return (from DataRow dr in dataPointsTable.Rows
-                    where ((POForecastProjection)dr[columnEntity]).PONO == PONumber && ((POForecastProjection)dr[columnEntity]).VariationCode == variationCode
+                    where ((POFlatForecastProjection)dr[columnEntity]).PONO == PONumber && ((POFlatForecastProjection)dr[columnEntity]).VariationCode == variationCode
                     select dr).FirstOrDefault();
         }
         
@@ -1207,17 +1211,17 @@ namespace BluePrints.ViewModels
 
             if (gridColumn.FieldName.ToUpper().Contains("PO_REMAININGPRICE"))
             {
-                POForecastProjection entity = (POForecastProjection)dataRowView[columnEntity];
+                POFlatForecastProjection entity = (POFlatForecastProjection)dataRowView[columnEntity];
                 FilterCriteria = CriteriaOperator.Parse("[PONumber] = '" + entity.PONO + "' AND [Variation_Code] = '" + entity.VariationCode + "' And [IsPO] = 'True'");
             }
             else if (gridColumn.FieldName.ToUpper().Contains("PO_TOTALPRICE"))
             {
-                POForecastProjection entity = (POForecastProjection)dataRowView[columnEntity];
+                POFlatForecastProjection entity = (POFlatForecastProjection)dataRowView[columnEntity];
                 FilterCriteria = CriteriaOperator.Parse("[PONumber] = '" + entity.PONO + "' AND [Variation_Code] = '" + entity.VariationCode + "'");
             }
             else if (gridColumn.FieldName.ToUpper().Contains("PO_INVOICED"))
             {
-                POForecastProjection entity = (POForecastProjection)dataRowView[columnEntity];
+                POFlatForecastProjection entity = (POFlatForecastProjection)dataRowView[columnEntity];
                 FilterCriteria = CriteriaOperator.Parse("[PONumber] = '" + entity.PONO + "' AND [Variation_Code] = '" + entity.VariationCode + "' And [IsPO] = 'False'");
             }
 
@@ -1450,20 +1454,8 @@ namespace BluePrints.ViewModels
         /// </summary>
         public override string ViewName
         {
-            get { return "PROJECTPOForecastViewModelWrapper_v2"; }
+            get { return "PROJECTFlatPOForecastViewModelWrapper_v2"; }
         }
         #endregion
-    }
-
-    public class POFlatLine : POLine
-    {
-        public string StockCode { get; set; }
-    }
-
-    public class POLine
-    {
-        public string PONumber { get; set; }
-        public string VariationCode { get; set; }
-        public List<ExoDataPoint> DataPoints { get; set; }
     }
 }

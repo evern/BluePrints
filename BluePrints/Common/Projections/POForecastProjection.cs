@@ -63,8 +63,8 @@ namespace BluePrints.Common.Projections
             ExoActuals.Clear();
             FORECAST_POs.Clear();
             ResetPaymentDates();
-            IEnumerable<FORECAST_PO> currentPOForecasts = allFORECAST_POs.Where(x => x.PONO == this.PONO && x.VARIATION_CODE == this.VariationCode);
-            IEnumerable<ExoDataPoint> currentActuals = allActuals.Where(x => x.PONumber == this.PONO && x.Variation_Code == this.VariationCode);
+            IEnumerable<FORECAST_PO> currentPOForecasts = getPOForecasts(allFORECAST_POs);
+            IEnumerable<ExoDataPoint> currentActuals = getCurrentActuals(allActuals);
             foreach(FORECAST_PO currentPOForecast in currentPOForecasts)
             {
                 //because forecast can sometimes store outdated job code, cost group and cost type, validation is required before adding, else forecast PO can show that it's forecasted but forecast module will pick it up on the wrong code
@@ -78,6 +78,16 @@ namespace BluePrints.Common.Projections
             }
 
             this.RaisePropertiesChanged();
+        }
+
+        protected virtual List<FORECAST_PO> getPOForecasts(IEnumerable<FORECAST_PO> allFORECAST_POs)
+        {
+            return allFORECAST_POs.Where(x => x.PONO == this.PONO && x.VARIATION_CODE == this.VariationCode).ToList();
+        }
+
+        protected virtual List<ExoDataPoint> getCurrentActuals(IEnumerable<ExoDataPoint> allActuals)
+        {
+            return allActuals.Where(x => x.PONumber == this.PONO && x.Variation_Code == this.VariationCode).ToList();
         }
 
         List<ExoDataPoint> forecastPayments { get; set; }
@@ -138,6 +148,11 @@ namespace BluePrints.Common.Projections
         public void ResetPaymentDates()
         {
             forecastPayments = null;
+        }
+
+        public decimal PO_Quantity
+        {
+            get => ExoPOs.Sum(x => x.Quantity);
         }
 
         public decimal PO_RemainingPrice
