@@ -162,7 +162,7 @@ namespace BluePrints.ViewModels
             if (isYearToDate)
                 return query => query.Where(x => x.transdate != null && x.LINE_STATUS != "x");
             else
-                return query => query.Where(x => x.master_jobno == loadJOBCOST_HDR.MASTER_JOBNO);
+                return query => query.Where(x => x.master_jobno == loadJOBCOST_HDR.MASTER_JOBNO && x.LINE_STATUS != "x");
         }
 
         protected override void InstantFeedbackOtherUnitOfWorkSaveChanges()
