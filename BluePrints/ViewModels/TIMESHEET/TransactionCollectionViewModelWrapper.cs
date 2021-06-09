@@ -160,7 +160,7 @@ namespace BluePrints.ViewModels
         protected override Func<IRepositoryQuery<X_JOB_TRANSACTIONS_DETAIL_SeqNo>, IQueryable<X_JOB_TRANSACTIONS_DETAIL_SeqNo>> specifyMainViewModelProjection()
         {
             if (isYearToDate)
-                return query => query.Where(x => x.transdate != null);
+                return query => query.Where(x => x.transdate != null && x.LINE_STATUS != "x");
             else
                 return query => query.Where(x => x.master_jobno == loadJOBCOST_HDR.MASTER_JOBNO);
         }
