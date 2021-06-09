@@ -196,7 +196,7 @@ namespace BluePrints.Common.Projections
         {
             get
             {
-                if (Stats == null || Stats.Budgeted == null || Stats.Remaining.CumulativeDataPoints == null || Stats.Remaining.CumulativeDataPoints.Count == 0 || Stats.Remaining.CumulativeDataPoints.Where(x => x.Units > 0).Count() == 0)
+                if (Stats == null || Stats.Remaining == null || Stats.Remaining.CumulativeDataPoints == null || Stats.Remaining.CumulativeDataPoints.Count == 0 || Stats.Remaining.CumulativeDataPoints.Where(x => x.Units > 0).Count() == 0)
                     return null;
 
                 return Stats.Remaining.CumulativeDataPoints.Where(x => x.Units > 0).Max(x => x.ProgressDate);

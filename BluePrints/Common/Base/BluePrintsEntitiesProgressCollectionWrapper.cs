@@ -462,7 +462,7 @@ namespace BluePrints.Common.Base
             {
                 fullSummarizer.BuildBudgeted(1, 1, false, false);
                 //fullSummarizer.BuildEarned();
-                //fullSummarizer.BuildRemaining();
+                fullSummarizer.BuildRemaining();
                 fullSummarizer.BuildBurnedDataPoints(false, false, false, false, true);
                 //fullSummarizer.Summarize();
                 //mainThreadDispatcher.BeginInvoke(new Action(() => BackgroundRefresh()));
