@@ -165,10 +165,10 @@ namespace BluePrints.ViewModels
         {
             if (isYearToDate)
             {
-                if(is2020Onwards)
+                if(Is2020Onwards)
                 {
                     DateTime date2020FirstDay = new DateTime(2020, 1, 1);
-                    return query => query.Where(x => x.transdate != null && ((DateTime)x.transdate) > date2020FirstDay && x.LINE_STATUS != "x");
+                    return query => query.Where(x => x.transdate != null && ((DateTime)x.transdate) >= date2020FirstDay && x.LINE_STATUS != "x");
                 }
                 else
                     return query => query.Where(x => x.transdate != null && x.LINE_STATUS != "x");

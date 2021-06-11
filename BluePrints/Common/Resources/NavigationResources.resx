@@ -441,4 +441,7 @@
   <data name="Menu_Project_Register_Clarification" xml:space="preserve">
     <value>Project Clarification Register</value>
   </data>
+  <data name="Menu_Transactions2020ToDate" xml:space="preserve">
+    <value>Show all EXO transactions from 2020 onwards</value>
+  </data>
 </root>
