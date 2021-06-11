@@ -14,6 +14,7 @@
         <dxb:BarManager>
             <dxb:BarManager.Items>
                 <dxb:BarSubItem ItemLinksSource="{StaticResource RibbonDefaultGridButtons}" />
+                <dxb:BarButtonItem x:Name="contextMenuBulkEdit" Command="{Binding BulkColumnEditCommand}" CommandParameter="{Binding RelativeSource={RelativeSource Self}}" Content="Bulk Edit" Glyph="{dx:DXImageOffice2013 Image=CustomizeGrid_16x16.png}" RibbonStyle="SmallWithText" ToolTip="Change column values for selected rows" />
                 <dxb:BarCheckItem x:Name="bcPreloadMode" Content="Download Data" IsChecked="{Binding IsUsePreloadMode}" LargeGlyph="{dxc:DXImage SvgImages/Actions/Open2.svg}" ToolTip="Download data for faster editing operation but will slow down initial load up speed" Glyph="{dxc:DXImage SvgImages/Actions/Open2.svg}" IsVisible="{Binding IsYearToDate, Converter={dxmvvm:BooleanNegationConverter}}"/>
             </dxb:BarManager.Items>
         <DockPanel>
@@ -245,6 +246,7 @@
                                 <dxb:BarButtonItemLink BarItemName="biCopyWithHeader2" />
                                 <dxb:BarButtonItemLink BarItemName="biKeyboardCopy2" />
                                 <dxb:BarButtonItemLink BarItemName="biKeyboardPaste2" />
+                                <dxb:BarButtonItemLink BarItemName="contextMenuBulkEdit" />
                                 <dxb:BarButtonItemLink BarItemName="biFillUp2" />
                                 <dxb:BarButtonItemLink BarItemName="biFillDown2" />
                                 <dxb:BarButtonItemLink BarItemName="biFullRefresh1" />

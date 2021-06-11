@@ -70,6 +70,7 @@ namespace BluePrints.ViewModels
 
             bool? isUsePreloadModePreference = LoginCredentials.GetUserPreferenceBool(DataUtils.GetNameOf(() => UserPreferences.EXO_PreloadTransactions));
             isUsePreloadMode = isUsePreloadModePreference == null ? false : (bool)isUsePreloadModePreference;
+            isUsePreloadMode = true;
             IsInstantFeedbackMode = !IsUsePreloadMode;
         }
 
