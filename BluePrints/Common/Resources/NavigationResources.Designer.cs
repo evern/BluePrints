@@ -19,7 +19,7 @@ namespace BluePrints.Common.Resources {
     // class via a tool like ResGen or Visual Studio.
     // To add or remove a member, edit your .ResX file then rerun ResGen
     // with the /str option, or rebuild your VS project.
-    [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Resources.Tools.StronglyTypedResourceBuilder", "15.0.0.0")]
+    [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Resources.Tools.StronglyTypedResourceBuilder", "16.0.0.0")]
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
     [global::System.Runtime.CompilerServices.CompilerGeneratedAttribute()]
     internal class NavigationResources {
@@ -831,6 +831,15 @@ namespace BluePrints.Common.Resources {
         internal static string Menu_TenderProfiles {
             get {
                 return ResourceManager.GetString("Menu_TenderProfiles", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Show all EXO transactions from 2020 onwards.
+        /// </summary>
+        internal static string Menu_Transactions2020ToDate {
+            get {
+                return ResourceManager.GetString("Menu_Transactions2020ToDate", resourceCulture);
             }
         }
         
