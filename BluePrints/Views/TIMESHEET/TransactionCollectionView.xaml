@@ -243,12 +243,12 @@
                     <dxg:GridControl.View>
                         <dxg:TableView x:Name="tableView" NewItemRowPosition="None" ShowFixedTotalSummary="True" Style="{StaticResource DefaultTableViewTemplate}">
                             <dxg:TableView.RowCellMenuCustomizations>
-                                <dxb:BarButtonItemLink BarItemName="biCopyWithHeader2" />
-                                <dxb:BarButtonItemLink BarItemName="biKeyboardCopy2" />
-                                <dxb:BarButtonItemLink BarItemName="biKeyboardPaste2" />
+                                <dxb:BarButtonItem x:Name="biCopyWithHeader2" Command="{Binding View.DataContext.CopyWithHeaderCommand}" Content="Copy With Headers" Glyph="{dx:DXImageOffice2013 Image=AlignHorizontalTop_16x16.png}" RibbonStyle="SmallWithText" ToolTip="Copy selected rows along with header" />
+                                <dxb:BarButtonItem x:Name="biKeyboardCopy2" Command="{Binding View.DataContext.KeyboardCopyCommand}" Content="Copy" Glyph="{dx:DXImage Image=Copy_16x16.png}" LargeGlyph="{dx:DXImage Image=Copy_32x32.png}" RibbonStyle="SmallWithText" ToolTip="Ctrl + C" />
+                                <dxb:BarButtonItem x:Name="biKeyboardPaste2" Command="{Binding View.DataContext.KeyboardPasteCommand}" Content="Paste" Glyph="{dx:DXImage Image=Paste_16x16.png}" LargeGlyph="{dx:DXImage Image=Paste_32x32.png}" RibbonStyle="SmallWithText" ToolTip="Ctrl + V" />
                                 <dxb:BarButtonItemLink BarItemName="contextMenuBulkEdit" />
-                                <dxb:BarButtonItemLink BarItemName="biFillUp2" />
-                                <dxb:BarButtonItemLink BarItemName="biFillDown2" />
+                                <dxb:BarButtonItem x:Name="biFillUp2" Command="{Binding View.DataContext.FillUpCommand}" CommandParameter="{Binding RelativeSource={RelativeSource Self}}" Content="Fill Up" Glyph="{dx:DXImageOffice2013 Image=MoveUp_16x16.png}" RibbonStyle="SmallWithText" ToolTip="Replicate column values for selected rows starting from last selection" />
+                                <dxb:BarButtonItem x:Name="biFillDown2" Command="{Binding View.DataContext.FillDownCommand}" CommandParameter="{Binding RelativeSource={RelativeSource Self}}" Content="Fill Down" Glyph="{dx:DXImageOffice2013 Image=MoveDown_16x16.png}" RibbonStyle="SmallWithText" ToolTip="Replicate column values for selected rows starting from first selection" />
                                 <dxb:BarButtonItemLink BarItemName="biFullRefresh1" />
                             </dxg:TableView.RowCellMenuCustomizations>
                         </dxg:TableView>
