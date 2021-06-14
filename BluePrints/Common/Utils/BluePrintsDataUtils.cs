@@ -955,7 +955,7 @@ namespace BluePrints.Common.ViewModel.Utils
             return burnedDataPoints;
         }
 
-        public static List<ExoDataPoint> GetMaterials(IPrimeroEntitiesUnitOfWork primeroUOW, string projectNumber, DateTime dataDate, List<DateTime> alignedDataDates = null, decimal currencyConversion = 1, bool showLoadingScreen = false)
+        public static List<ExoDataPoint> GetMaterials(IPrimeroEntitiesUnitOfWork primeroUOW, string projectNumber, DateTime dataDate, List<DateTime> alignedDataDates = null, decimal currencyConversion = 1, bool showLoadingScreen = false, ExoQueryType materialQueryType = ExoQueryType.All)
         {
             List<ExoDataPoint> materialDataPoints = new List<ExoDataPoint>();
             primeroUOW.AutoDetectChangesEnabled(false);
@@ -985,7 +985,9 @@ namespace BluePrints.Common.ViewModel.Utils
                     LoadingScreenManager.SetMessage("Loading Materials...");
                 }
 
-                var jobMaterialsList = jobMaterials.ToList();
+                string equipmentHireStockCodeInitials = BluePrintsResources.EquipmentHireStockCodeInitials;
+                var jobMaterialsList = materialQueryType == ExoQueryType.All ? jobMaterials.ToList() : materialQueryType == ExoQueryType.EquipmentHireOnly ? jobMaterials.Where(x => x.stockcode.StartsWith(equipmentHireStockCodeInitials)).ToList() : jobMaterials.Where(x => !x.stockcode.StartsWith(equipmentHireStockCodeInitials)).ToList();
+
                 foreach (var jobMaterial in jobMaterialsList)
                 {
                     if (jobMaterial.CostGroupDesc != null && ((!jobMaterial.GroupShortcode.Contains("G99") && !jobMaterial.GroupShortcode.Contains("010"))))
@@ -1059,7 +1061,7 @@ namespace BluePrints.Common.ViewModel.Utils
             return variationCode;
         }
 
-        public static List<ExoDataPoint> GetEXOPO(IPrimeroEntitiesUnitOfWork primeroUOW, string projectNumber, DateTime queryDate, List<DateTime> alignedDataDates = null, bool showLoadingScreen = false)
+        public static List<ExoDataPoint> GetEXOPO(IPrimeroEntitiesUnitOfWork primeroUOW, string projectNumber, DateTime queryDate, List<DateTime> alignedDataDates = null, bool showLoadingScreen = false, ExoQueryType exoQueryType = ExoQueryType.All)
         {
             List<ExoDataPoint> poDataPoints = new List<ExoDataPoint>();
 
@@ -1089,8 +1091,9 @@ namespace BluePrints.Common.ViewModel.Utils
                       where JOBCOST_HDR2.JOBCODE == projectNumber && PURCHORD_HDR.ORDERDATE < poCutOffDate
                       select new { PURCHORD_HDR.EXCHRATE, PURCHORD_LINES.POLINEID, PURCHORD_LINES.STOCKCODE, PURCHORD_LINES.DESCRIPTION, PONarrate.NARRATIVE, PURCHORD_HDR.SEQNO, PURCHORD_LINES.LINETOTAL, CR_ACCS.NAME, JOBCOST_HDR.JOBCODE, JOBCOST_HDR.TITLE, COSTTYPEDESC = JOB_COSTTYPES.COSTDESC, COSTGROUPDESC = JOB_COSTGROUPS.COSTDESC, GROUPSHORTCODE = JOB_COSTGROUPS.SHORTCODE, PURCHORD_LINES.ORD_QUANT, PURCHORD_LINES.SUP_QUANT, PURCHORD_LINES.UNITPRICE, PURCHORD_HDR.STATUS, PURCHORD_HDR.DUEDATE, PURCHORD_HDR.ORDERDATE, PURCHORD_HDR.LAST_UPDATED, PURCHORD_LINES.X_VARIATIONCODE, JOB_COSTTYPES.SHORTCODE };
 
-            var poList = pos.ToList();
-
+            string equipmentHireStockCodeInitials = BluePrintsResources.EquipmentHireStockCodeInitials;
+            var poList = exoQueryType == ExoQueryType.All ? pos.ToList() : exoQueryType == ExoQueryType.EquipmentHireOnly ? pos.Where(x => x.STOCKCODE.StartsWith(equipmentHireStockCodeInitials)).ToList() : pos.Where(x => !x.STOCKCODE.StartsWith(equipmentHireStockCodeInitials)).ToList();
+            //var poList = pos.ToList();
             IQueryable<INWARDS_GOODS_LINES> inwardGoods = from INWARDS_GOODS_LINES in primeroUOW.INWARDS_GOODS_LINES
                                                           join PURCHORD_LINES in primeroUOW.PURCHORD_LINES
                                                           on INWARDS_GOODS_LINES.PO_LINE_NUM equals PURCHORD_LINES.POLINEID

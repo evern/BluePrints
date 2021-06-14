@@ -25,6 +25,13 @@ namespace BluePrints.Common
         public static DateTime DefaultLastDay = new DateTime(2099, 1, 1);
     }
 
+    public enum ExoQueryType
+    {
+        EquipmentHireOnly = 0,
+        ExcludeEquipmentHire = 1,
+        All = 3
+    }
+
     public enum RowEditAction
     {
         [Display(Name = "Add")]
