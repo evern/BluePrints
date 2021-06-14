@@ -155,7 +155,7 @@
                             <custom:EditableColumn RealFieldName="X_VARIATIONCODE" AllowBestFit="false" Width="150" Header="Variation Code" UnboundType="String" UnboundExpression="[X_VARIATIONCODE]" />
                             <custom:EditableColumn RealFieldName="description" Width="300" AllowBestFit="false" Header="Description" UnboundType="String" UnboundExpression="[description]" />
                         </dxg:GridControlBand>
-                        <dxg:GridControlBand Header="Read Only" >
+                        <dxg:GridControlBand Header="Read Only (Any changes will be updated on refresh)" >
                             <dxg:GridColumn FieldName="DepartmentName" Width="100" AllowBestFit="false" Header="Department" ReadOnly="True" />
                             <dxg:GridColumn FieldName="CostTypeDesc" AllowBestFit="false" Width="100" Header="Commodity Code Desc" ReadOnly="True" />
                             <dxg:GridColumn FieldName="accno" Header="Resource" AllowBestFit="false" Width="150" ReadOnly="true" >
