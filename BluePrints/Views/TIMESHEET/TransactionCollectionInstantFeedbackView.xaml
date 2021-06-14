@@ -214,9 +214,8 @@
                     <dxg:GridControl.View>
                         <custom:InstantFeedbackTableView x:Name="tableView" NewItemRowPosition="None" ShowFixedTotalSummary="True" Style="{StaticResource InstantFeedbackTableViewTemplate}">
                             <dxg:TableView.RowCellMenuCustomizations>
-                                <dxb:BarButtonItemLink BarItemName="biCopyWithHeader2" />
-                                <dxb:BarButtonItemLink BarItemName="biKeyboardCopy2" />
-                                <dxb:BarButtonItemLink BarItemName="biKeyboardPaste2" />
+                                <dxb:BarLinkContainerItem ItemLinksSource="{StaticResource ContextMenuInstantFeedbackDefaultHeaderButtons}" />
+                                <dxb:BarItemLinkSeparator />
                                 <dxb:BarButtonItemLink BarItemName="biFullRefresh1" />
                             </dxg:TableView.RowCellMenuCustomizations>
                         </custom:InstantFeedbackTableView>
