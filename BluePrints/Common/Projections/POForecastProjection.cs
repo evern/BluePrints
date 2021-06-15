@@ -150,6 +150,16 @@ namespace BluePrints.Common.Projections
             forecastPayments = null;
         }
 
+        public decimal PO_SuppliedQty
+        {
+            get => PO_OrderQuantity - PO_Quantity;
+        }
+
+        public decimal PO_OrderQuantity
+        {
+            get => ExoPOs.Sum(x => x.POOrderQty);
+        }
+
         public decimal PO_Quantity
         {
             get => ExoPOs.Sum(x => x.Quantity);

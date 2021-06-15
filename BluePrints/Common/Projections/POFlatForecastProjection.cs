@@ -15,6 +15,8 @@ namespace BluePrints.Common.Projections
     public class POFlatForecastProjection : POForecastProjection
     {
         public string StockCode { get; set; }
+        public string Narrative { get; set; }
+        public DateTime? LastUpdated { get; set; }
 
         protected override List<FORECAST_PO> getPOForecasts(IEnumerable<FORECAST_PO> allFORECAST_POs)
         {
