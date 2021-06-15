@@ -523,7 +523,7 @@ namespace BluePrints.ViewModels
                 newForecast.VariationCode = poLine.VariationCode;
 
                 //populate comment
-                FORECAST_PO_SETTING forecastPOSetting = FORECAST_PO_SETTINGCollection.FirstOrDefault(x => x.PONO == poLine.PONumber && x.VARIATION_CODE == poLine.VariationCode && x.STOCK_CODE == null);
+                FORECAST_PO_SETTING forecastPOSetting = FORECAST_PO_SETTINGCollection.FirstOrDefault(x => x.PONO == poLine.PONumber && x.VARIATION_CODE == poLine.VariationCode && (x.STOCK_CODE == null || x.STOCK_CODE == string.Empty));
                 if (forecastPOSetting != null)
                     newForecast.Comments = forecastPOSetting.PO_COMMENTS;
 
