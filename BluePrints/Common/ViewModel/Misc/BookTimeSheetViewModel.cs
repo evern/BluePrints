@@ -189,11 +189,11 @@ namespace BaseModel.ViewModel.Dialogs
         {
             get
             {
-                if (selectedSubJob == null ||  selectedDiscipline == null || Selected_CommodityCode == null || Selected_CommodityCode == string.Empty || Selected_Resource == null)
+                if (selectedSubJob == null || selectedDiscipline == null || Selected_CommodityCode == null || Selected_CommodityCode == string.Empty || Selected_Resource == null)
                     return new List<PrimeroCommodity>();
 
                 List<PrimeroCommodity> authorised_commodities = pCommodityCollection.Where(x => x.SubJobNo == selectedSubJob.Id && x.DisciplineId == selectedDiscipline.Id && x.Code == Selected_CommodityCode && x.ResourceSeqNo == Selected_Resource.SeqNo).ToList();
-                if(selectedCommodity == null && authorised_commodities.Count() == 1)
+                if (selectedCommodity == null && authorised_commodities.Count() == 1)
                     Selected_Commodity = authorised_commodities.First();
 
                 return authorised_commodities;
@@ -212,7 +212,7 @@ namespace BaseModel.ViewModel.Dialogs
                 IEnumerable<string> authorisedVariationCodes = exoAuthorisations.Where(x => x.SubJobNo == selectedSubJob.Id).Select(x => x.VariationCode).Distinct().ToList();
                 List<string> authorised_variations = new List<string>();
 
-                foreach(string authorisedVariationCode in authorisedVariationCodes)
+                foreach (string authorisedVariationCode in authorisedVariationCodes)
                 {
                     //when null is detected we can book as empty variation code
                     if (authorisedVariationCode == null)
@@ -250,53 +250,102 @@ namespace BaseModel.ViewModel.Dialogs
             this.Selected_Narrative = defaultNarrative;
             this.currentUserExoId = currentUserExoId;
 
-            foreach (var availableLine in exoAuthorisations)
+            var linesByResources = exoAuthorisations.GroupBy(x => new { ResourceId = x.ResourceStaffId }).Select(g => new { g.Key.ResourceId, Authorisation = g.First() }).ToList();
+            foreach (var linesByResource in linesByResources)
             {
-                if (!pResourceCollection.Any(x => x.Id == availableLine.ResourceStaffId))
-                {
-                    PrimeroResource newResource = new PrimeroResource();
-                    newResource.Id = availableLine.ResourceStaffId;
-                    newResource.SeqNo = availableLine.ResourceSeqNo;
-                    newResource.Name = availableLine.ResourceName;
-                    newResource.StockCode = availableLine.ResourceStockCode;
-                    pResourceCollection.Add(newResource);
-                }
-
-                if (!pSubJobCollection.Any(x => x.Id == availableLine.SubJobNo && x.ResourceSeqNo == availableLine.ResourceSeqNo))
-                {
-                    PrimeroSubJob newSubJob = new PrimeroSubJob();
-                    newSubJob.Id = availableLine.SubJobNo;
-                    newSubJob.ResourceSeqNo = availableLine.ResourceSeqNo;
-                    newSubJob.Code = availableLine.SubJobCode;
-                    newSubJob.Title = availableLine.SubJobTitle;
-                    newSubJob.JobStatus = availableLine.JobStatus;
-                    pSubJobCollection.Add(newSubJob);
-                }
-
-                if(!pDisciplineCollection.Any(x => x.Id == availableLine.DisciplineId && x.SubjobId == availableLine.SubJobNo && x.ResourceSeqNo == availableLine.ResourceSeqNo))
-                {
-                    PrimeroDiscipline newDiscipline = new PrimeroDiscipline();
-                    newDiscipline.Id = availableLine.DisciplineId;
-                    newDiscipline.SubjobId = availableLine.SubJobNo;
-                    newDiscipline.ResourceSeqNo = availableLine.ResourceSeqNo;
-                    newDiscipline.Code = availableLine.DisciplineCode;
-                    newDiscipline.Name = availableLine.DisciplineName;
-                    pDisciplineCollection.Add(newDiscipline);
-                }
-
-                if(!pCommodityCollection.Any(x => x.Id == availableLine.CommodityId && x.DisciplineId == availableLine.DisciplineId && x.SubJobNo == availableLine.SubJobNo && x.StockCode == availableLine.StockCode && x.ResourceSeqNo == availableLine.ResourceSeqNo))
-                {
-                    PrimeroCommodity newCommodity = new PrimeroCommodity();
-                    newCommodity.Id = availableLine.CommodityId;
-                    newCommodity.DisciplineId = availableLine.DisciplineId;
-                    newCommodity.ResourceSeqNo = availableLine.ResourceSeqNo;
-                    newCommodity.Code = availableLine.CommodityCode;
-                    newCommodity.SubJobNo = availableLine.SubJobNo;
-                    newCommodity.StockCode = availableLine.StockCode;
-                    newCommodity.StockDescription = availableLine.StockName;
-                    pCommodityCollection.Add(newCommodity);
-                }
+                PrimeroResource newResource = new PrimeroResource();
+                newResource.Id = linesByResource.ResourceId;
+                newResource.SeqNo = linesByResource.Authorisation.ResourceSeqNo;
+                newResource.Name = linesByResource.Authorisation.ResourceName;
+                newResource.StockCode = linesByResource.Authorisation.ResourceStockCode;
+                pResourceCollection.Add(newResource);
             }
+
+            var linesBySubJobResources = exoAuthorisations.GroupBy(x => new { SubJobNo = x.SubJobNo, ResourceNo = x.ResourceSeqNo }).Select(g => new { g.Key.SubJobNo, g.Key.ResourceNo, Authorisation = g.First() }).ToList();
+            foreach (var linesBySubJobResource in linesBySubJobResources)
+            {
+                PrimeroSubJob newSubJob = new PrimeroSubJob();
+                newSubJob.Id = linesBySubJobResource.SubJobNo;
+                newSubJob.ResourceSeqNo = linesBySubJobResource.ResourceNo;
+                newSubJob.Code = linesBySubJobResource.Authorisation.SubJobCode;
+                newSubJob.Title = linesBySubJobResource.Authorisation.SubJobTitle;
+                newSubJob.JobStatus = linesBySubJobResource.Authorisation.JobStatus;
+                pSubJobCollection.Add(newSubJob);
+            }
+
+            var linesByDisciplineSubjobResources = exoAuthorisations.GroupBy(x => new { DisciplineId = x.DisciplineId, SubJobNo = x.SubJobNo, ResourceNo = x.ResourceSeqNo }).Select(g => new { g.Key.DisciplineId, g.Key.SubJobNo, g.Key.ResourceNo, Authorisation = g.First() }).ToList();
+            foreach (var linesByDisciplineSubjobResource in linesByDisciplineSubjobResources)
+            {
+                PrimeroDiscipline newDiscipline = new PrimeroDiscipline();
+                newDiscipline.Id = linesByDisciplineSubjobResource.DisciplineId;
+                newDiscipline.SubjobId = linesByDisciplineSubjobResource.SubJobNo;
+                newDiscipline.ResourceSeqNo = linesByDisciplineSubjobResource.ResourceNo;
+                newDiscipline.Code = linesByDisciplineSubjobResource.Authorisation.DisciplineCode;
+                newDiscipline.Name = linesByDisciplineSubjobResource.Authorisation.DisciplineName;
+                pDisciplineCollection.Add(newDiscipline);
+            }
+
+            var linesByCommodityDisciplineSubjobStockCodeResources = exoAuthorisations.GroupBy(x => new { CommodityId = x.CommodityId, DisciplineId = x.DisciplineId, SubJobNo = x.SubJobNo, StockCode = x.StockCode, ResourceNo = x.ResourceSeqNo }).Select(g => new { g.Key.CommodityId, g.Key.DisciplineId, g.Key.SubJobNo, g.Key.StockCode, g.Key.ResourceNo, Authorisation = g.First() }).ToList();
+            foreach (var linesByCommodityDisciplineSubjobStockCodeResource in linesByCommodityDisciplineSubjobStockCodeResources)
+            {
+                PrimeroCommodity newCommodity = new PrimeroCommodity();
+                newCommodity.Id = linesByCommodityDisciplineSubjobStockCodeResource.CommodityId;
+                newCommodity.DisciplineId = linesByCommodityDisciplineSubjobStockCodeResource.DisciplineId;
+                newCommodity.ResourceSeqNo = linesByCommodityDisciplineSubjobStockCodeResource.ResourceNo;
+                newCommodity.Code = linesByCommodityDisciplineSubjobStockCodeResource.Authorisation.CommodityCode;
+                newCommodity.SubJobNo = linesByCommodityDisciplineSubjobStockCodeResource.Authorisation.SubJobNo;
+                newCommodity.StockCode = linesByCommodityDisciplineSubjobStockCodeResource.Authorisation.StockCode;
+                newCommodity.StockDescription = linesByCommodityDisciplineSubjobStockCodeResource.Authorisation.StockName;
+                pCommodityCollection.Add(newCommodity);
+            }
+
+            //foreach (var availableLine in exoAuthorisations)
+            //{
+            //    if (!pResourceCollection.Any(x => x.Id == availableLine.ResourceStaffId))
+            //    {
+            //        PrimeroResource newResource = new PrimeroResource();
+            //        newResource.Id = availableLine.ResourceStaffId;
+            //        newResource.SeqNo = availableLine.ResourceSeqNo;
+            //        newResource.Name = availableLine.ResourceName;
+            //        newResource.StockCode = availableLine.ResourceStockCode;
+            //        pResourceCollection.Add(newResource);
+            //    }
+
+            //    if (!pSubJobCollection.Any(x => x.Id == availableLine.SubJobNo && x.ResourceSeqNo == availableLine.ResourceSeqNo))
+            //    {
+            //        PrimeroSubJob newSubJob = new PrimeroSubJob();
+            //        newSubJob.Id = availableLine.SubJobNo;
+            //        newSubJob.ResourceSeqNo = availableLine.ResourceSeqNo;
+            //        newSubJob.Code = availableLine.SubJobCode;
+            //        newSubJob.Title = availableLine.SubJobTitle;
+            //        newSubJob.JobStatus = availableLine.JobStatus;
+            //        pSubJobCollection.Add(newSubJob);
+            //    }
+
+            //    if(!pDisciplineCollection.Any(x => x.Id == availableLine.DisciplineId && x.SubjobId == availableLine.SubJobNo && x.ResourceSeqNo == availableLine.ResourceSeqNo))
+            //    {
+            //        PrimeroDiscipline newDiscipline = new PrimeroDiscipline();
+            //        newDiscipline.Id = availableLine.DisciplineId;
+            //        newDiscipline.SubjobId = availableLine.SubJobNo;
+            //        newDiscipline.ResourceSeqNo = availableLine.ResourceSeqNo;
+            //        newDiscipline.Code = availableLine.DisciplineCode;
+            //        newDiscipline.Name = availableLine.DisciplineName;
+            //        pDisciplineCollection.Add(newDiscipline);
+            //    }
+
+            //    if(!pCommodityCollection.Any(x => x.Id == availableLine.CommodityId && x.DisciplineId == availableLine.DisciplineId && x.SubJobNo == availableLine.SubJobNo && x.StockCode == availableLine.StockCode && x.ResourceSeqNo == availableLine.ResourceSeqNo))
+            //    {
+            //        PrimeroCommodity newCommodity = new PrimeroCommodity();
+            //        newCommodity.Id = availableLine.CommodityId;
+            //        newCommodity.DisciplineId = availableLine.DisciplineId;
+            //        newCommodity.ResourceSeqNo = availableLine.ResourceSeqNo;
+            //        newCommodity.Code = availableLine.CommodityCode;
+            //        newCommodity.SubJobNo = availableLine.SubJobNo;
+            //        newCommodity.StockCode = availableLine.StockCode;
+            //        newCommodity.StockDescription = availableLine.StockName;
+            //        pCommodityCollection.Add(newCommodity);
+            //    }
+            //}
 
             pDisciplineCollection = pDisciplineCollection.OrderBy(x => x.Code).ToList();
             pCommodityCollection = pCommodityCollection.OrderBy(x => x.Code).ToList();
@@ -323,7 +372,7 @@ namespace BaseModel.ViewModel.Dialogs
 
         private void setDefaultSubJob(IDeliverable deliverable)
         {
-            if(Selected_Resource != null)
+            if (Selected_Resource != null)
                 Selected_SubJob = pSubJobCollection.FirstOrDefault(x => x.Code == deliverable.Subjob_Name && x.ResourceSeqNo == Selected_Resource.SeqNo);
         }
 
@@ -355,7 +404,7 @@ namespace BaseModel.ViewModel.Dialogs
             string narrative = GetNarratives();
             decimal bookTime = BookHours;
 
-            if(bookResource != null && subJob != null && bookCostType != null && bookCostGroup != null)
+            if (bookResource != null && subJob != null && bookCostType != null && bookCostGroup != null)
             {
                 JOB_TIMESHEETS timesheet = BluePrintsUtils.FindJOB_TIMESHEETS(primeroUnitOfWork, bookResource.SeqNo, subJob.Id, bookResource.StockCode, bookCostGroup.Id, bookCostType.Id, variationCode, bookDate.WeekStartDate, narrative);
                 Existing_TimeSheet = timesheet;
@@ -457,5 +506,5 @@ namespace BaseModel.ViewModel.Dialogs
             return dt.AddDays(-1 * diff).Date;
         }
     }
-    
+
 }
