@@ -577,6 +577,16 @@ namespace BluePrints.ViewModels
             }
         }
 
+        public void AddToExo()
+        {
+            CreateVARIATION_ITEMSViewModelWrapper<BASELINE_ITEMProgress>(SelectedEntity.Entity, OnVariationAddToExo, null, false);
+        }
+
+        public void RemoveFromExo()
+        {
+            CreateVARIATION_ITEMSViewModelWrapper<BASELINE_ITEMProgress>(SelectedEntity.Entity, OnVariationRemoveFromExo, null, false);
+        }
+
         public bool CanUpdateVariationBudget()
         {
             return !isSubmitting && !isApproving && !IsBusy;
@@ -652,6 +662,18 @@ namespace BluePrints.ViewModels
         {
             IBluePrintsEntitiesUnitOfWork bluePrintsUOW = bluePrintsUnitOfWorkFactory.CreateUnitOfWork();
             mainThreadDispatcher.BeginInvoke(new Action(() => ReviseBASELINE(deliverables, LiveBASELINE, BASELINEViewModel, bluePrintsUOW, bluePrintsUOW.BASELINE_ITEMS, VariationStages.Update)));
+        }
+
+        private void OnVariationAddToExo(IEnumerable<BASELINE_ITEMProgress> deliverables, object parameter)
+        {
+            IBluePrintsEntitiesUnitOfWork bluePrintsUOW = bluePrintsUnitOfWorkFactory.CreateUnitOfWork();
+            mainThreadDispatcher.BeginInvoke(new Action(() => ReviseBASELINE(deliverables, LiveBASELINE, BASELINEViewModel, bluePrintsUOW, bluePrintsUOW.BASELINE_ITEMS, VariationStages.AddToExo)));
+        }
+
+        private void OnVariationRemoveFromExo(IEnumerable<BASELINE_ITEMProgress> deliverables, object parameter)
+        {
+            IBluePrintsEntitiesUnitOfWork bluePrintsUOW = bluePrintsUnitOfWorkFactory.CreateUnitOfWork();
+            mainThreadDispatcher.BeginInvoke(new Action(() => ReviseBASELINE(deliverables, LiveBASELINE, BASELINEViewModel, bluePrintsUOW, bluePrintsUOW.BASELINE_ITEMS, VariationStages.RemoveFromExo)));
         }
 
         public bool CanCalculateVariationSummary()
@@ -1182,21 +1204,61 @@ namespace BluePrints.ViewModels
 
             string message = string.Empty;
             if (exoInteraction == VariationStages.Submit || exoInteraction == VariationStages.Approve)
-                message = "Push OK to commit the following variation jobs to EXO, or push cancel and revise added deliverables if the codes are incorrect";
-            else if(exoInteraction == VariationStages.Update)
+            {
+                if(isAnyVariationJobsExists)
+                {
+                    SubmitSelectedEntity();
+                    return;
+                }
+                else
+                    message = "Push OK to commit the following variation jobs to EXO, or push cancel and revise added deliverables if the codes are incorrect";
+            }
+            else if (exoInteraction == VariationStages.AddToExo)
+            {
+                if (isAnyVariationJobsExists)
+                {
+                    MessageBoxService.ShowMessage("Variation already exist in EXO");
+                    return;
+                }
+                else
+                    message = "Push OK to commit the following variation jobs to EXO";
+
+            }
+            else if (exoInteraction == VariationStages.Update)
                 message = "Push OK to update the following variation jobs to EXO with budget";
-            else
-                message = "Push OK to remove the following variation jobs from EXO";
+            else if (exoInteraction == VariationStages.Unsubmit)
+            {
+                if (!isAnyVariationJobsExists)
+                {
+                    UnsubmitSelectedEntity();
+                    return;
+                }
+                else
+                    message = "Push OK to remove the following variation jobs from EXO";
+            }
+            else if (exoInteraction == VariationStages.RemoveFromExo)
+            {
+                if (!isAnyVariationJobsExists)
+                {
+                    MessageBoxService.ShowMessage("Variation already removed from EXO");
+                    return;
+                }
+                else
+                    message = "Push OK to remove the following variation jobs from EXO";
+
+            }
 
             DialogCollectionViewModel<ExoSubJobProjection> viewModel = DialogCollectionViewModel<ExoSubJobProjection>.Create(exoVariationJobs, message);
             if (ConfirmationDialogService.ShowDialog(MessageButton.OKCancel, string.Empty, "ExoVariationConfirmation", viewModel) == MessageResult.OK)
             {
-                if(exoInteraction == VariationStages.Submit)
+                if(exoInteraction == VariationStages.Submit || exoInteraction == VariationStages.AddToExo)
                 {
                     IEnumerable<ExoSubJobProjection> newlyAddedProjections = exoJobCollectionViewModel.CommitToExo(exoVariationJobs);
                     if (newlyAddedProjections.Count() > 0)
                     {
-                        SubmitSelectedEntity();
+                        if(exoInteraction == VariationStages.Submit)
+                            SubmitSelectedEntity();
+
                         MessageBoxService.ShowMessage("Variation code(s) pushed to exo");
                     }
                     else
@@ -1210,7 +1272,7 @@ namespace BluePrints.ViewModels
                     else
                         MessageBoxService.ShowMessage("Pushed to exo failed, variation(s) are not submitted");
                 }
-                else
+                else if(exoInteraction == VariationStages.Unsubmit || exoInteraction == VariationStages.RemoveFromExo)
                 {
                     bool hasRemoved = false;
                     foreach (var exoVariationJob in exoVariationJobs)
@@ -1228,8 +1290,9 @@ namespace BluePrints.ViewModels
                         primeroUnitOfWork.SaveChanges();
                         MessageBoxService.ShowMessage("Variation code(s) removed from exo");
                     }
-
-                    UnsubmitSelectedEntity();
+                    
+                    if(exoInteraction == VariationStages.Unsubmit)
+                        UnsubmitSelectedEntity();
                 }
             }
 
@@ -1282,7 +1345,9 @@ namespace BluePrints.ViewModels
             Unapprove,
             Submit,
             Unsubmit,
-            Update
+            Update,
+            AddToExo,
+            RemoveFromExo
         }
 
         public class BASELINE_ITEM_VARIATIONContainer
