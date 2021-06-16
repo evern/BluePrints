@@ -145,6 +145,11 @@ namespace BluePrints.Common.Projections
             }
         }
 
+        public decimal InvoicedLastMonth
+        {
+            get => ExoActuals.Where(x => x.ActualDate.Year == ActualCutOffDate.Year && x.ActualDate.Month == ActualCutOffDate.Month).Sum(x => x.Costs);
+        }
+
         public void ResetPaymentDates()
         {
             forecastPayments = null;

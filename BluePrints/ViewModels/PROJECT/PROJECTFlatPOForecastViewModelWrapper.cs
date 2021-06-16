@@ -148,6 +148,7 @@ namespace BluePrints.ViewModels
             columns.Add(new ColumnDescriptor() { FieldName = "Entity.Description", Header = "Description", ReadOnly = true, Fixed = FixedStyle.Left, Width = 200, Settings = SettingsType.Default });
             columns.Add(new ColumnDescriptor() { FieldName = "Entity.Narrative", Header = "Narrative", ReadOnly = true, Fixed = FixedStyle.Left, Width = 200, Settings = SettingsType.Default });
             columns.Add(new ColumnDescriptor() { FieldName = "Entity.Supplier", Header = "Supplier", ReadOnly = true, Fixed = FixedStyle.Left, Width = 150, Settings = SettingsType.Default });
+            columns.Add(new ColumnDescriptor() { FieldName = "Entity.InvoicedLastMonth", Header = "Invoiced Prior Month", HeaderToolTip = "Invoice amount of month before cut off", Mask = "c", ReadOnly = true, Fixed = FixedStyle.Left, Width = 70, Settings = SettingsType.Number });
             columns.Add(new ColumnDescriptor() { FieldName = "Entity.FirstActualDate", Header = "First Raised", ReadOnly = true, Fixed = FixedStyle.Left, Width = 70, Settings = SettingsType.Date });
             columns.Add(new ColumnDescriptor() { FieldName = "Entity.LastUpdated", Header = "PO Hdr Last Updated", ReadOnly = true, Fixed = FixedStyle.Left, Width = 70, Settings = SettingsType.Date });
             //columns.Add(new ColumnDescriptor() { FieldName = "Entity.FirstInvoiceDate", Header = "First Invoiced", ReadOnly = true, Fixed = FixedStyle.Left, Width = 70, Settings = SettingsType.Date });
