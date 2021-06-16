@@ -59,7 +59,6 @@
                                 <dxb:BarCheckItemLink BarItemName="biClientApprove" />
                                 <dxb:BarButtonItemLink BarItemName="biUpdateBudget" />
                                 <dxb:BarButtonItemLink BarItemName="biAddToExo" />
-                                <dxb:BarButtonItemLink BarItemName="biRemoveFromExo" />
                             </dxr:RibbonPageGroup>
                         </dxr:RibbonPage>
                     </dxr:RibbonDefaultPageCategory>
@@ -151,7 +150,6 @@
                                 <dxb:BarButtonItemLink BarItemName="biUpdateBudget" />
                                 <dxb:BarItemLinkSeparator />
                                 <dxb:BarButtonItemLink BarItemName="biAddToExo" />
-                                <dxb:BarButtonItemLink BarItemName="biRemoveFromExo" />
                                 <dxb:BarItemLinkSeparator />
                                 <dxb:BarButtonItemLink BarItemName="biBulkDelete1" />
                                 <dxb:BarButtonItemLink BarItemName="biFullRefresh1" />
