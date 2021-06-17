@@ -174,6 +174,8 @@ namespace BluePrints.ViewModels
         {
             if (field_name == BindableBase.GetPropertyName(() => new BASELINE_ITEMProgress().DeliverableStatusProgressGuid))
                 projection.ShouldSave = true;
+            if (field_name.Contains(BindableBase.GetPropertyName(() => new BASELINE_ITEMProgress().Entity.Entity.DISCIPLINE_NUM)))
+                projection.ShouldSave = true;
 
             base.UnifiedCellValueChanged(field_name, old_value, new_value, projection, isNew);
         }
