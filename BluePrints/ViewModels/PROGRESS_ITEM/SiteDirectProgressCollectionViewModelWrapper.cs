@@ -459,26 +459,23 @@ namespace BluePrints.ViewModels
             //set progress to zero
             foreach(CONSTRUCTION_STAGE CONSTRUCTION_STAGE in CONSTRUCTION_STAGECollection)
             {
-                newDataRow[CONSTRUCTION_STAGE.SORT_ORDER.ToString() + stageFieldNameQuantityAffix] = 0;
-                newDataRow[CONSTRUCTION_STAGE.SORT_ORDER.ToString() + stageFieldNamePercentageAffix] = 0;
-            }
+                IEnumerable<PROGRESS_ITEM> currentDataDateDeliverableProgresses = PROGRESS_ITEMCollection.Where(x => x.GUID_ORIBASEITEM == entity.Entity.Entity.GUID_ORIGINAL).Where(x => x.STAGE_ORDER == CONSTRUCTION_STAGE.SORT_ORDER && x.EARNED_DATE <= DataDate);
 
-            IEnumerable<PROGRESS_ITEM> currentDeliverableProgresses = PROGRESS_ITEMCollection.Where(x => x.GUID_ORIBASEITEM == entity.Entity.Entity.GUID_ORIGINAL).Where(x => x.EARNED_DATE == DataDate);
-
-            if (currentDeliverableProgresses.Count() > 0)
-                foreach (PROGRESS_ITEM progress in currentDeliverableProgresses)
+                if(currentDataDateDeliverableProgresses.Count() == 0)
                 {
-                    CONSTRUCTION_STAGE findCONSTRUCTION_STAGE = CONSTRUCTION_STAGECollection.FirstOrDefault(x => x.SORT_ORDER == progress.STAGE_ORDER);
-                    if(findCONSTRUCTION_STAGE != null)
-                    {
-                        //EARNED_UNITS is quantity in construction context
-                        decimal stageEarnedPercentage = progress.EARNED_UNITS / entity.Total_Quantity;
-                        decimal stageEarnedQuantity = progress.EARNED_UNITS;
-
-                        newDataRow[findCONSTRUCTION_STAGE.SORT_ORDER.ToString() + stageFieldNamePercentageAffix] = stageEarnedPercentage;
-                        newDataRow[findCONSTRUCTION_STAGE.SORT_ORDER.ToString() + stageFieldNameQuantityAffix] = stageEarnedQuantity;
-                    }
+                    newDataRow[CONSTRUCTION_STAGE.SORT_ORDER.ToString() + stageFieldNameQuantityAffix] = 0;
+                    newDataRow[CONSTRUCTION_STAGE.SORT_ORDER.ToString() + stageFieldNamePercentageAffix] = 0;
                 }
+                else
+                {
+                    decimal totalEarnedQuantitiesToDate = currentDataDateDeliverableProgresses.Sum(x => x.EARNED_UNITS);
+                    decimal stageEarnedPercentage = totalEarnedQuantitiesToDate / entity.Total_Quantity;
+                    decimal stageEarnedQuantity = totalEarnedQuantitiesToDate;
+                    newDataRow[CONSTRUCTION_STAGE.SORT_ORDER.ToString() + stageFieldNamePercentageAffix] = stageEarnedPercentage;
+                    newDataRow[CONSTRUCTION_STAGE.SORT_ORDER.ToString() + stageFieldNameQuantityAffix] = stageEarnedQuantity;
+
+                }
+            }
 
             if (!isUpdate)
                 dataPointsTable.Rows.Add(newDataRow);
@@ -603,29 +600,32 @@ namespace BluePrints.ViewModels
                     List<PROGRESS_ITEM> progressToSave = new List<PROGRESS_ITEM>();
 
                     //quantity or percentages conversion depending on field name
-                    decimal earnedQuantity = 0;
-                    decimal earnedPercentage = 0;
+                    decimal cumulativeEarnedQuantity = 0;
+                    decimal cumulativeEarnedPercentage = 0;
                     if(isPercentage)
                     {
-                        earnedPercentage = (decimal)newValue;
-                        earnedQuantity = earnedPercentage * entity.Total_Units;
+                        cumulativeEarnedPercentage = (decimal)newValue;
+                        cumulativeEarnedQuantity = cumulativeEarnedPercentage * entity.Total_Units;
                     }
                     else
                     {
-                        earnedQuantity = (decimal)newValue;
-                        earnedPercentage = earnedQuantity / entity.Total_Units;
+                        cumulativeEarnedQuantity = (decimal)newValue;
+                        cumulativeEarnedPercentage = cumulativeEarnedQuantity / entity.Total_Units;
                     }
 
                     PROGRESS_ITEM currentPeriodPROGRESS_ITEM = entity.PROGRESS_ITEMS.FirstOrDefault(x => x.STAGE_ORDER == constructionSTAGE.SORT_ORDER && x.EARNED_DATE == DataDate);
 
+
+                    IEnumerable<PROGRESS_ITEM> PROGRESS_ITEMToDate = entity.PROGRESS_ITEMS.Where(x => x.STAGE_ORDER == constructionSTAGE.SORT_ORDER && x.EARNED_DATE < DataDate);
+                    decimal dbCumulativeEarnedQuantity = PROGRESS_ITEMToDate.Sum(x => x.EARNED_UNITS);
+                    decimal currentPeriodEarnedQuantity = cumulativeEarnedQuantity - dbCumulativeEarnedQuantity;
+                    decimal currentPeriodEarnedPercentage = currentPeriodEarnedQuantity / entity.Total_Units;
                     //maximum and minimum is controlled here by the spinedit ability to set max as 100% and min as 0%, and that includes variation validatation, so there is no need to validate here
                     if (currentPeriodPROGRESS_ITEM == null)
                     {
                         currentPeriodPROGRESS_ITEM = new PROGRESS_ITEM();
                         currentPeriodPROGRESS_ITEM.GUID_ORIBASEITEM = entity.OriginalEntityKey;
                         currentPeriodPROGRESS_ITEM.GUID_PROGRESS = loadPROGRESS.GUID;
-                        currentPeriodPROGRESS_ITEM.EARNED_DATE = DataDate;
-                        currentPeriodPROGRESS_ITEM.EARNED_UNITS = earnedQuantity;
                         currentPeriodPROGRESS_ITEM.CREATED = DateTime.Now;
                         currentPeriodPROGRESS_ITEM.CREATEDBY = LoginCredentials.CurrentUserGuid;
 
@@ -634,11 +634,11 @@ namespace BluePrints.ViewModels
                     }
                     else
                     {
-                        PROGRESS_ITEMSCollectionViewModel.EntitiesUndoRedoManager.AddUndo(currentPeriodPROGRESS_ITEM, BindableBase.GetPropertyName(() => new PROGRESS_ITEM().EARNED_UNITS), currentPeriodPROGRESS_ITEM.EARNED_UNITS, earnedQuantity, EntityMessageType.Changed);
-                        currentPeriodPROGRESS_ITEM.EARNED_UNITS = earnedQuantity;
-                        //use this to fix time issue
-                        currentPeriodPROGRESS_ITEM.EARNED_DATE = DataDate;
+                        PROGRESS_ITEMSCollectionViewModel.EntitiesUndoRedoManager.AddUndo(currentPeriodPROGRESS_ITEM, BindableBase.GetPropertyName(() => new PROGRESS_ITEM().EARNED_UNITS), currentPeriodPROGRESS_ITEM.EARNED_UNITS, cumulativeEarnedQuantity, EntityMessageType.Changed);
                     }
+
+                    currentPeriodPROGRESS_ITEM.EARNED_UNITS = currentPeriodEarnedQuantity;
+                    currentPeriodPROGRESS_ITEM.EARNED_DATE = DataDate;
 
                     //audit history
                     PROGRESS_ITEMSCollectionViewModel.EntitiesUndoRedoManager.AddUndo(currentPeriodPROGRESS_ITEM, BindableBase.GetPropertyName(() => new PROGRESS_ITEM().BUDGET_HOURS), currentPeriodPROGRESS_ITEM.BUDGET_HOURS, entity.Total_Units, EntityMessageType.Changed);
@@ -647,10 +647,10 @@ namespace BluePrints.ViewModels
                     currentPeriodPROGRESS_ITEM.BUDGET_INSTALL_HOURS_PER_QTY = entity.UnitsPerQuantity;
                     PROGRESS_ITEMSCollectionViewModel.EntitiesUndoRedoManager.AddUndo(currentPeriodPROGRESS_ITEM, BindableBase.GetPropertyName(() => new PROGRESS_ITEM().TOTAL_QUANTITY), currentPeriodPROGRESS_ITEM.TOTAL_QUANTITY, entity.Total_Quantity, EntityMessageType.Changed);
                     currentPeriodPROGRESS_ITEM.TOTAL_QUANTITY = entity.Total_Quantity;
-                    PROGRESS_ITEMSCollectionViewModel.EntitiesUndoRedoManager.AddUndo(currentPeriodPROGRESS_ITEM, BindableBase.GetPropertyName(() => new PROGRESS_ITEM().EARNED_QUANTITY), currentPeriodPROGRESS_ITEM.EARNED_QUANTITY, earnedQuantity, EntityMessageType.Changed);
-                    currentPeriodPROGRESS_ITEM.EARNED_QUANTITY = earnedQuantity;
-                    PROGRESS_ITEMSCollectionViewModel.EntitiesUndoRedoManager.AddUndo(currentPeriodPROGRESS_ITEM, BindableBase.GetPropertyName(() => new PROGRESS_ITEM().EARNED_PERCENTAGE), currentPeriodPROGRESS_ITEM.EARNED_PERCENTAGE, earnedPercentage, EntityMessageType.Changed);
-                    currentPeriodPROGRESS_ITEM.EARNED_PERCENTAGE = earnedPercentage;
+                    PROGRESS_ITEMSCollectionViewModel.EntitiesUndoRedoManager.AddUndo(currentPeriodPROGRESS_ITEM, BindableBase.GetPropertyName(() => new PROGRESS_ITEM().EARNED_QUANTITY), currentPeriodPROGRESS_ITEM.EARNED_QUANTITY, cumulativeEarnedQuantity, EntityMessageType.Changed);
+                    currentPeriodPROGRESS_ITEM.EARNED_QUANTITY = currentPeriodEarnedQuantity;
+                    PROGRESS_ITEMSCollectionViewModel.EntitiesUndoRedoManager.AddUndo(currentPeriodPROGRESS_ITEM, BindableBase.GetPropertyName(() => new PROGRESS_ITEM().EARNED_PERCENTAGE), currentPeriodPROGRESS_ITEM.EARNED_PERCENTAGE, cumulativeEarnedPercentage, EntityMessageType.Changed);
+                    currentPeriodPROGRESS_ITEM.EARNED_PERCENTAGE = currentPeriodEarnedPercentage;
                     currentPeriodPROGRESS_ITEM.STAGE_NAME = constructionSTAGE.NAME;
                     currentPeriodPROGRESS_ITEM.STAGE_ORDER = constructionSTAGE.SORT_ORDER;
                     currentPeriodPROGRESS_ITEM.STAGE_WEIGHT = constructionSTAGE.WEIGHT_PERCENTAGE;
