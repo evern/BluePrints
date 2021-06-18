@@ -216,7 +216,7 @@ namespace BluePrints.ViewModels
         public override string ViewName
         {
             //get { return "OffsiteDirectProgressViewModelWrapper" + view_project_specific_affix; }
-            get { return "OffsiteDirectProgressViewModelWrapper_v6"; }
+            get { return "OffsiteDirectProgressViewModelWrapper_v7"; }
         }
 
         public bool IsDataDateChangeVisible => canDateBackwardForward;
