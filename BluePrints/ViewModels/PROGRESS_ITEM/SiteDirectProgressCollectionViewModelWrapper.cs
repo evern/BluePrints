@@ -161,7 +161,7 @@ namespace BluePrints.ViewModels
         protected override Func<IRepositoryQuery<ESTIMATE_ITEM>, IQueryable<ESTIMATE_ITEMProgress>>
             specifyMainViewModelProjection()
         {
-            return query => ESTIMATE_ITEMProjectionQueries.IDeliverable_Progress_Transformation(query.Where(x => x.ESTIMATE.GUID_PROJECT == loadPROJECT.GUID && x.ESTIMATE.STATUS == BaselineStatus.Live).Where(x => x.DISCIPLINE.SCORE_CARD_DISCIPLINE == scoreCardDiscipline), loadPROJECT, loaderCollection.GetCollection<RATE>(), loadPROGRESS, PROGRESS_ITEMCollection, false, null, false, null, false, COMMODITY_CODECollection);
+            return query => ESTIMATE_ITEMProjectionQueries.IDeliverable_Progress_Transformation(query.Where(x => x.ESTIMATE.GUID_PROJECT == loadPROJECT.GUID && x.ESTIMATE.STATUS == BaselineStatus.Live).Where(x => x.DISCIPLINE.SCORE_CARD_DISCIPLINE == scoreCardDiscipline), loadPROJECT, loaderCollection.GetCollection<RATE>(), loadPROGRESS, PROGRESS_ITEMCollection, false, null, false, P6_ASSIGNMENTCollection, false, COMMODITY_CODECollection, false, CONSTRUCTION_STAGECollection);
         }
 
         protected override void AssignCallBacksAndRaisePropertyChange(IEnumerable<ESTIMATE_ITEMProgress> entities)
@@ -371,8 +371,10 @@ namespace BluePrints.ViewModels
 
         private string stageFieldNamePercentageAffix = "Percentage";
         private string stageFieldNameQuantityAffix = "Quantity";
-        private string stageFieldNameCurrentPeriodPercentage = "CurrentPeriodPercentage";
-        private string stageFieldNameCumulativePercentage = "TotalPercentage";
+        private string currentPeriodPercentage = "CurrentPeriodPercentage";
+        private string cumulativePercentage = "TotalPercentage";
+        private string cumulativeEarnedUnits = "TotalUnits";
+        private string currentPeriodEarnedUnits = "CurrentPeriodUnits";
         private void InitializeColumnSource(ObservableCollection<ColumnDescriptor> columns, ObservableCollection<SummaryDescriptor> summaries)
         {
             columns.Clear();
@@ -393,8 +395,10 @@ namespace BluePrints.ViewModels
             columns.Add(new ColumnDescriptor() { FieldName = columnEntity + ".Entity.UOM", ReadOnly = true, Header = "UOM", Fixed = FixedStyle.Left, Width = 50, Settings = SettingsType.Default });
 
             //unbound columns
-            columns.Add(new ColumnDescriptor() { FieldName = stageFieldNameCurrentPeriodPercentage, ReadOnly = true, Header = "Period Progress", HeaderToolTip = "Current period progress", Fixed = FixedStyle.Left, Width = 50, Mask = "p2", Settings = SettingsType.Number });
-            columns.Add(new ColumnDescriptor() { FieldName = stageFieldNameCumulativePercentage, ReadOnly = true, Header = "Progress", HeaderToolTip = "Cumulative progress", Fixed = FixedStyle.Left, Width = 50, Mask = "p2", Settings = SettingsType.Number });
+            columns.Add(new ColumnDescriptor() { FieldName = currentPeriodPercentage, ReadOnly = true, Header = "Period Progress", HeaderToolTip = "Current period progress", Fixed = FixedStyle.Left, Width = 60, Mask = "p2", Settings = SettingsType.Number });
+            columns.Add(new ColumnDescriptor() { FieldName = cumulativePercentage, ReadOnly = true, Header = "Progress", HeaderToolTip = "Cumulative progress", Fixed = FixedStyle.Left, Width = 60, Mask = "p2", Settings = SettingsType.Number });
+            columns.Add(new ColumnDescriptor() { FieldName = currentPeriodEarnedUnits, ReadOnly = true, Header = "Total Earned Hrs", HeaderToolTip = "Cumulative progress", Fixed = FixedStyle.Left, Width = 60, Mask = "n2", Settings = SettingsType.Number });
+            columns.Add(new ColumnDescriptor() { FieldName = cumulativeEarnedUnits, ReadOnly = true, Header = "Period Earned Hrs", HeaderToolTip = "Current period progress", Fixed = FixedStyle.Left, Width = 60, Mask = "n2", Settings = SettingsType.Number });
 
             foreach (CONSTRUCTION_STAGE CONSTRUCTION_STAGE in CONSTRUCTION_STAGECollection)
             {
@@ -434,8 +438,10 @@ namespace BluePrints.ViewModels
 
             }
 
-            dataPointsTable.Columns.Add(stageFieldNameCurrentPeriodPercentage, typeof(decimal));
-            dataPointsTable.Columns.Add(stageFieldNameCumulativePercentage, typeof(decimal));
+            dataPointsTable.Columns.Add(currentPeriodPercentage, typeof(decimal));
+            dataPointsTable.Columns.Add(cumulativePercentage, typeof(decimal));
+            dataPointsTable.Columns.Add(currentPeriodEarnedUnits, typeof(decimal));
+            dataPointsTable.Columns.Add(cumulativeEarnedUnits, typeof(decimal));
 
             foreach (ESTIMATE_ITEMProgress entity in Entities)
             {
@@ -492,8 +498,12 @@ namespace BluePrints.ViewModels
                 }
             }
 
-            newDataRow[stageFieldNameCumulativePercentage] = cumulativeProgress;
-            newDataRow[stageFieldNameCurrentPeriodPercentage] = currentPeriodProgress;
+            newDataRow[cumulativePercentage] = cumulativeProgress;
+            newDataRow[currentPeriodPercentage] = currentPeriodProgress;
+
+            entity.resetEarnedUnits();
+            newDataRow[currentPeriodEarnedUnits] = entity.Earned_Units_OnDataDate;
+            newDataRow[cumulativeEarnedUnits] = entity.Earned_Units_ToDate;
 
             if (!isUpdate)
                 dataPointsTable.Rows.Add(newDataRow);
