@@ -371,6 +371,8 @@ namespace BluePrints.ViewModels
 
         private string stageFieldNamePercentageAffix = "Percentage";
         private string stageFieldNameQuantityAffix = "Quantity";
+        private string stageFieldNameCurrentPeriodPercentage = "CurrentPeriodPercentage";
+        private string stageFieldNameCumulativePercentage = "TotalPercentage";
         private void InitializeColumnSource(ObservableCollection<ColumnDescriptor> columns, ObservableCollection<SummaryDescriptor> summaries)
         {
             columns.Clear();
@@ -387,13 +389,17 @@ namespace BluePrints.ViewModels
             columns.Add(new ColumnDescriptor() { FieldName = columnEntity + ".Entity.Entity.VARIATION_CODE", ReadOnly = true, Header = "Variation Code", Fixed = FixedStyle.Left, Width = 100, Settings = SettingsType.Default });
             columns.Add(new ColumnDescriptor() { FieldName = columnEntity + ".Entity.Entity.NAME", ReadOnly = true, Header = "Name", Fixed = FixedStyle.Left, Width = 150, Settings = SettingsType.Default });
             columns.Add(new ColumnDescriptor() { FieldName = columnEntity + ".Entity.Entity.CLIENT_NAME", ReadOnly = true, Header = "Client Name", Fixed = FixedStyle.Left, Width = 150, Settings = SettingsType.Default });
-            columns.Add(new ColumnDescriptor() { FieldName = columnEntity + ".Entity.Total_Quantity", ReadOnly = true, Header = "Total Quantity", Fixed = FixedStyle.Left, Width = 75, Settings = SettingsType.Number, Mask = "n0" });
+            columns.Add(new ColumnDescriptor() { FieldName = columnEntity + ".Entity.Total_Quantity", ReadOnly = true, Header = "Total Quantity", Fixed = FixedStyle.Left, Width = 75, MinValue = 0, Settings = SettingsType.Number, Mask = "n0" });
             columns.Add(new ColumnDescriptor() { FieldName = columnEntity + ".Entity.UOM", ReadOnly = true, Header = "UOM", Fixed = FixedStyle.Left, Width = 50, Settings = SettingsType.Default });
+
+            //unbound columns
+            columns.Add(new ColumnDescriptor() { FieldName = stageFieldNameCurrentPeriodPercentage, ReadOnly = true, Header = "Period Progress", HeaderToolTip = "Current period progress", Fixed = FixedStyle.Left, Width = 50, Mask = "p2", Settings = SettingsType.Number });
+            columns.Add(new ColumnDescriptor() { FieldName = stageFieldNameCumulativePercentage, ReadOnly = true, Header = "Progress", HeaderToolTip = "Cumulative progress", Fixed = FixedStyle.Left, Width = 50, Mask = "p2", Settings = SettingsType.Number });
 
             foreach (CONSTRUCTION_STAGE CONSTRUCTION_STAGE in CONSTRUCTION_STAGECollection)
             {
                 columns.Add(new ColumnDescriptor() { FieldName = CONSTRUCTION_STAGE.SORT_ORDER.ToString() + stageFieldNameQuantityAffix, Mask = "n2", Increment = 1m, Header = CONSTRUCTION_STAGE.NAME + " By Quantity", Fixed = FixedStyle.Right, Width = 50, Settings = SettingsType.Custom1 });
-                columns.Add(new ColumnDescriptor() { FieldName = CONSTRUCTION_STAGE.SORT_ORDER.ToString() + stageFieldNamePercentageAffix, Mask = "p0", Increment = 0.1m, Header = CONSTRUCTION_STAGE.NAME + " " + CONSTRUCTION_STAGE.WEIGHT_PERCENTAGE.ToString("P0"), MaxValue = 1, Fixed = FixedStyle.Right, Width = 50, Settings = SettingsType.Number });
+                columns.Add(new ColumnDescriptor() { FieldName = CONSTRUCTION_STAGE.SORT_ORDER.ToString() + stageFieldNamePercentageAffix, Mask = "p2", Increment = 0.1m, Header = CONSTRUCTION_STAGE.NAME + " " + CONSTRUCTION_STAGE.WEIGHT_PERCENTAGE.ToString("P0"), MaxValue = 1, Fixed = FixedStyle.Right, Width = 50, Settings = SettingsType.Number });
             }
         }
         
@@ -428,6 +434,9 @@ namespace BluePrints.ViewModels
 
             }
 
+            dataPointsTable.Columns.Add(stageFieldNameCurrentPeriodPercentage, typeof(decimal));
+            dataPointsTable.Columns.Add(stageFieldNameCumulativePercentage, typeof(decimal));
+
             foreach (ESTIMATE_ITEMProgress entity in Entities)
             {
                 populateRow(entity, false);
@@ -456,26 +465,35 @@ namespace BluePrints.ViewModels
 
             newDataRow[columnEntity] = entity;
 
+            decimal cumulativeProgress = 0;
+            decimal currentPeriodProgress = 0;
             //set progress to zero
             foreach(CONSTRUCTION_STAGE CONSTRUCTION_STAGE in CONSTRUCTION_STAGECollection)
             {
-                IEnumerable<PROGRESS_ITEM> currentDataDateDeliverableProgresses = PROGRESS_ITEMCollection.Where(x => x.GUID_ORIBASEITEM == entity.Entity.Entity.GUID_ORIGINAL).Where(x => x.STAGE_ORDER == CONSTRUCTION_STAGE.SORT_ORDER && x.EARNED_DATE <= DataDate);
-
-                if(currentDataDateDeliverableProgresses.Count() == 0)
+                IEnumerable<PROGRESS_ITEM> cumulativeDeliverableProgressesToDate = PROGRESS_ITEMCollection.Where(x => x.GUID_ORIBASEITEM == entity.Entity.Entity.GUID_ORIGINAL).Where(x => x.STAGE_ORDER == CONSTRUCTION_STAGE.SORT_ORDER && x.EARNED_DATE <= DataDate);
+                IEnumerable<PROGRESS_ITEM> currentPeriodDeliverableProgresses = PROGRESS_ITEMCollection.Where(x => x.GUID_ORIBASEITEM == entity.Entity.Entity.GUID_ORIGINAL).Where(x => x.STAGE_ORDER == CONSTRUCTION_STAGE.SORT_ORDER && x.EARNED_DATE == DataDate);
+                if (cumulativeDeliverableProgressesToDate.Count() == 0 || entity.Total_Quantity == 0)
                 {
                     newDataRow[CONSTRUCTION_STAGE.SORT_ORDER.ToString() + stageFieldNameQuantityAffix] = 0;
                     newDataRow[CONSTRUCTION_STAGE.SORT_ORDER.ToString() + stageFieldNamePercentageAffix] = 0;
                 }
                 else
                 {
-                    decimal totalEarnedQuantitiesToDate = currentDataDateDeliverableProgresses.Sum(x => x.EARNED_UNITS);
-                    decimal stageEarnedPercentage = totalEarnedQuantitiesToDate / entity.Total_Quantity;
-                    decimal stageEarnedQuantity = totalEarnedQuantitiesToDate;
-                    newDataRow[CONSTRUCTION_STAGE.SORT_ORDER.ToString() + stageFieldNamePercentageAffix] = stageEarnedPercentage;
+                    decimal cumulativeEarnedQuantitiesToDate = cumulativeDeliverableProgressesToDate.Sum(x => x.EARNED_UNITS);
+                    decimal stageEarnedPercentage = cumulativeEarnedQuantitiesToDate / entity.Total_Quantity;
+                    decimal stageEarnedQuantity = cumulativeEarnedQuantitiesToDate;
                     newDataRow[CONSTRUCTION_STAGE.SORT_ORDER.ToString() + stageFieldNameQuantityAffix] = stageEarnedQuantity;
+                    newDataRow[CONSTRUCTION_STAGE.SORT_ORDER.ToString() + stageFieldNamePercentageAffix] = stageEarnedPercentage;
+                    decimal cumulativeStageProgress = CONSTRUCTION_STAGE.WEIGHT_PERCENTAGE * stageEarnedPercentage;
 
+                    decimal currentPeriodEarnedQuantity = currentPeriodDeliverableProgresses.Sum(x => x.EARNED_UNITS);
+                    currentPeriodProgress += CONSTRUCTION_STAGE.WEIGHT_PERCENTAGE * (currentPeriodEarnedQuantity / entity.Total_Quantity);
+                    cumulativeProgress += cumulativeStageProgress;
                 }
             }
+
+            newDataRow[stageFieldNameCumulativePercentage] = cumulativeProgress;
+            newDataRow[stageFieldNameCurrentPeriodPercentage] = currentPeriodProgress;
 
             if (!isUpdate)
                 dataPointsTable.Rows.Add(newDataRow);
