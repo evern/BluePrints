@@ -39,6 +39,8 @@ namespace BluePrints.Common.ViewModel.Reporting
 
         public ESTIMATE_ITEMProgress ReadOnlyEstimate => this;
 
+        public override string P6_Assignment_UOM => Entity.UOM;
+
         public bool CanBook { get; set; }
 
         public override decimal MaxPercentage

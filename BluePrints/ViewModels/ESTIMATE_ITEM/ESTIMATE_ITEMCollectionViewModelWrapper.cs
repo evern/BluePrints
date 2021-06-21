@@ -722,6 +722,13 @@ namespace BluePrints.ViewModels
                     projection.Entity.Entity.BUDGET_HOURS = projection.Entity.Entity.BUDGET_QUANTITY * (decimal)new_value;
                 }
             }
+            else if (new_value != null && field_name.Contains(BindableBase.GetPropertyName(() => new ESTIMATE_ITEM().BUDGET_QUANTITY)))
+            {
+                if (new_value != null)
+                {
+                    projection.Entity.Entity.BUDGET_HOURS = projection.Entity.Entity.BUDGET_INSTALL_HOURS_PER_QTY * (decimal)new_value;
+                }
+            }
 
             //update anyway for unique job code to show new value
             projection.Update();
