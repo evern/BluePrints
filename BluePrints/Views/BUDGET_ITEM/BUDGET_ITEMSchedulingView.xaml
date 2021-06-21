@@ -130,7 +130,7 @@
                                         </dxg:GridColumn>
                                         <dxg:GridColumn FieldName="Assigned_Units" Header="Assigned" IsSmart="True">
                                             <dxg:GridColumn.EditSettings>
-                                                <dxe:TextEditSettings DisplayFormat="n" MaskUseAsDisplayFormat="True" />
+                                                <dxe:TextEditSettings Mask="###,##0 hrs" MaskType="Numeric" MaskUseAsDisplayFormat="True" />
                                             </dxg:GridColumn.EditSettings>
                                         </dxg:GridColumn>
                                         <!--<dxg:GridColumn Binding="{Binding}" CellTemplate="{StaticResource GanttTemplate}" Header="Chart" />-->
@@ -200,9 +200,9 @@
                                     </dxlc:LayoutItem>
                                 </dxlc:LayoutGroup>
                                 <dxlc:LayoutGroup Orientation="Horizontal">
-                                    <!--<dxlc:LayoutItem Label="{Binding Assignment_UOM}" Visibility="{Binding QuantityAssignmentVisibility}">
-                                    <dxe:SpinEdit EditValue="{Binding Assignment_Quantity, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" Increment="1" Mask="n2" MaskType="Numeric" MaskUseAsDisplayFormat="True" MaxValue="{Binding Remaining_Quantity}" MinValue="0" />
-                                </dxlc:LayoutItem>-->
+                                    <dxlc:LayoutItem Label="{Binding Assignment_UOM}" Visibility="{Binding QuantityAssignmentVisibility}">
+                                        <dxe:SpinEdit EditValue="{Binding Assignment_Quantity, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" Increment="1" Mask="n2" MaskType="Numeric" MaskUseAsDisplayFormat="True" MaxValue="{Binding Remaining_Quantity}" MinValue="0" />
+                                    </dxlc:LayoutItem>
                                     <dxlc:LayoutItem IsRequired="True" Label="Percentage:">
                                         <dxe:SpinEdit EditValue="{Binding Assignment_Value, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" Increment="0.1" Mask="p2" MaskType="Numeric" MaskUseAsDisplayFormat="True" MaxValue="{Binding Assignment_MaxValue}" MinValue="{Binding Assignment_MinValue}" />
                                     </dxlc:LayoutItem>
@@ -301,6 +301,22 @@
                                 </dxg:GridColumn>
                                 <dxg:GridColumn FieldName="Entity.Entity.VARIATION_CODE" Header="Variation Code" ReadOnly="True"/>
                                 <dxg:GridColumn Header="Name" Width="150" FieldName="Entity.Entity.Deliverable_Name" ReadOnly="True" />
+                                <dxg:GridColumn FieldName="Entity.Entity.BUDGET_QUANTITY" Header="Quantity">
+                                    <dxg:GridColumn.EditSettings>
+                                        <dxe:SpinEditSettings Mask="n2" MaskType="Numeric" MaskUseAsDisplayFormat="True" />
+                                    </dxg:GridColumn.EditSettings>
+                                </dxg:GridColumn>
+                                <dxg:GridColumn FieldName="Entity.Entity.UOM" Header="UOM"/>
+                                <dxg:GridColumn FieldName="Entity.Entity.BUDGET_INSTALL_HOURS_PER_QTY" Header="Hours Per Qty">
+                                    <dxg:GridColumn.EditSettings>
+                                        <dxe:SpinEditSettings Mask="n2" MaskType="Numeric" MaskUseAsDisplayFormat="True" />
+                                    </dxg:GridColumn.EditSettings>
+                                </dxg:GridColumn>
+                                <dxg:GridColumn FieldName="Entity.Entity.BUDGET_HOURS" Header="Hours">
+                                    <dxg:GridColumn.EditSettings>
+                                        <dxe:SpinEditSettings Mask="n2" MaskType="Numeric" MaskUseAsDisplayFormat="True" />
+                                    </dxg:GridColumn.EditSettings>
+                                </dxg:GridColumn>
                                 <dxg:GridColumn AllowEditing="False" FieldName="Assigned_Percentage" Header="Assigned %" ReadOnly="True">
                                     <dxg:GridColumn.EditSettings>
                                         <dxe:SpinEditSettings Mask="p" MaskType="Numeric" MaskUseAsDisplayFormat="True" />

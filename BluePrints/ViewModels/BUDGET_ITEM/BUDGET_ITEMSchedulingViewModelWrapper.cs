@@ -107,7 +107,7 @@ namespace BluePrints.ViewModels
 
         protected override void OnAfterAssignedCallbackAndRaisePropertyChanged()
         {
-            disableMultipleDeliverablesToOneActivityAssignment = true;
+            disableMultipleDeliverablesToOneActivityAssignment = false;
             MainViewModel.AlwaysSkipMessage = true;
             P6_ASSIGNMENTSCollectionViewModel.AlwaysSkipMessage = false;
             base.OnAfterAssignedCallbackAndRaisePropertyChanged();
@@ -231,7 +231,7 @@ namespace BluePrints.ViewModels
 
         public override IEnumerable<ICanAssignP6> Deliverables_Source => Entities;
 
-        public override bool HasHoursOnDeliverables => false;
+        public override bool HasHoursOnDeliverables => true;
         #endregion
     }
 }
