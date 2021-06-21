@@ -239,9 +239,19 @@ namespace BluePrints.ViewModels
         {
             string viewName;
             if (loadPROJECT.USE_WORKPACKS)
-                viewName = "BASELINE_ITEMWorkpackSchedulingView";
+            {
+                if (SelectedEntity.TYPE == PhaseType.Construct)
+                    viewName = "BUDGET_ITEMWorkpackSchedulingView";
+                else
+                    viewName = "BASELINE_ITEMWorkpackSchedulingView";
+            }
             else
-                viewName = "BASELINE_ITEMSchedulingView";
+            {
+                if (SelectedEntity.TYPE == PhaseType.Construct)
+                    viewName = "BUDGET_ITEMSchedulingView";
+                else
+                    viewName = "BASELINE_ITEMSchedulingView";
+            }
 
             string tabName = SelectedEntity.NAME + " - " + SelectedEntity.P6PROGRESS_NAME + " Mapping";
             DocumentInfo DocumentInfo = new DocumentInfo(tabName, new object[] { SelectedEntity, BaselineMappingSelectionType.Original, loadPROJECT, false }, viewName, tabName);
