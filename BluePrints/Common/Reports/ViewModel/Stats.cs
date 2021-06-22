@@ -422,23 +422,23 @@ namespace BluePrints.Common.ViewModel.Reporting
             }
         }
 
-        public DateTime StartDate
+        public DateTime? StartDate
         {
             get
             {
-                if (DataPoints == null)
-                    return new DateTime();
+                if (DataPoints == null || DataPoints.Where(x => x.Units > 0).Count() == 0)
+                    return null;
 
-                return DataPoints.Min(x => x.ProgressDate);
+                return DataPoints.Where(x => x.Units > 0).Min(x => x.ProgressDate);
             }
         }
 
-        public DateTime EndDate
+        public DateTime? EndDate
         {
             get
             {
                 if (DataPoints == null || DataPoints.Count == 0)
-                    return DateTime.Now;
+                    return null;
 
                 return DataPoints.Max(x => x.ProgressDate);
             }
