@@ -692,17 +692,15 @@ namespace BluePrints.ViewModels
                         {
                             totalUnitsDifferences = -1 * currentPeriodPROGRESS_ITEM.EARNED_UNITS;
                             postEditUnits = 0;
-                            errorMessage = new ErrorMessage(entity.Deliverable_Name, "Cannot go below currently assigned units, hence current % is set to lowest possible %. Please check past progress to reduce % further");
+                            //errorMessage = new ErrorMessage(entity.Deliverable_Name, "Cannot go below currently assigned units, hence current % is set to lowest possible %. Please check past progress to reduce % further");
                         }
-                        else
-                        {
-                            decimal oldProgressValue = currentPeriodPROGRESS_ITEM.EARNED_UNITS;
-                            currentPeriodPROGRESS_ITEM.EARNED_UNITS = postEditUnits;
-                            //use this to fix time issue
-                            currentPeriodPROGRESS_ITEM.EARNED_DATE = currentProgressDate;
-                            PROGRESS_ITEMSCollectionViewModel.EntitiesUndoRedoManager.AddUndo(currentPeriodPROGRESS_ITEM, earnedUnitsFieldName, oldProgressValue, postEditUnits, EntityMessageType.Changed);
-                            progressToSave.Add(currentPeriodPROGRESS_ITEM);
-                        }
+
+                        decimal oldProgressValue = currentPeriodPROGRESS_ITEM.EARNED_UNITS;
+                        currentPeriodPROGRESS_ITEM.EARNED_UNITS = postEditUnits;
+                        //use this to fix time issue
+                        currentPeriodPROGRESS_ITEM.EARNED_DATE = currentProgressDate;
+                        PROGRESS_ITEMSCollectionViewModel.EntitiesUndoRedoManager.AddUndo(currentPeriodPROGRESS_ITEM, earnedUnitsFieldName, oldProgressValue, postEditUnits, EntityMessageType.Changed);
+                        progressToSave.Add(currentPeriodPROGRESS_ITEM);
                     }
                     else
                     {
