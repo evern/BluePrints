@@ -19,7 +19,7 @@ namespace BluePrints.Common.Resources {
     // class via a tool like ResGen or Visual Studio.
     // To add or remove a member, edit your .ResX file then rerun ResGen
     // with the /str option, or rebuild your VS project.
-    [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Resources.Tools.StronglyTypedResourceBuilder", "15.0.0.0")]
+    [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Resources.Tools.StronglyTypedResourceBuilder", "16.0.0.0")]
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
     [global::System.Runtime.CompilerServices.CompilerGeneratedAttribute()]
     internal class NavigationResources {
@@ -93,6 +93,15 @@ namespace BluePrints.Common.Resources {
         internal static string Category_Project_Construct {
             get {
                 return ResourceManager.GetString("Category_Project_Construct", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Construction progress category.
+        /// </summary>
+        internal static string Category_Project_Construct_Progress {
+            get {
+                return ResourceManager.GetString("Category_Project_Construct_Progress", resourceCulture);
             }
         }
         
@@ -367,7 +376,7 @@ namespace BluePrints.Common.Resources {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Project construction progress maintenance menu.
+        ///   Looks up a localized string similar to Project concrete construction progress maintenance menu.
         /// </summary>
         internal static string Menu_Project_ConcreteConstructProgress {
             get {
@@ -529,6 +538,15 @@ namespace BluePrints.Common.Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Project electrical construction progress maintenance menu.
+        /// </summary>
+        internal static string Menu_Project_ElectricalConstructProgress {
+            get {
+                return ResourceManager.GetString("Menu_Project_ElectricalConstructProgress", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Project POs maintenance menu read/write.
         /// </summary>
         internal static string Menu_Project_EXO_AllPO {
@@ -664,6 +682,15 @@ namespace BluePrints.Common.Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Project mechanical construction progress maintenance menu.
+        /// </summary>
+        internal static string Menu_Project_MechanicalConstructProgress {
+            get {
+                return ResourceManager.GetString("Menu_Project_MechanicalConstructProgress", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Project meetings maintenance.
         /// </summary>
         internal static string Menu_Project_Meetings {
@@ -687,6 +714,15 @@ namespace BluePrints.Common.Resources {
         internal static string Menu_Project_Pipelines {
             get {
                 return ResourceManager.GetString("Menu_Project_Pipelines", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Project piping construction progress maintenance menu.
+        /// </summary>
+        internal static string Menu_Project_PipingConstructProgress {
+            get {
+                return ResourceManager.GetString("Menu_Project_PipingConstructProgress", resourceCulture);
             }
         }
         
@@ -759,6 +795,15 @@ namespace BluePrints.Common.Resources {
         internal static string Menu_Project_Register_TQ {
             get {
                 return ResourceManager.GetString("Menu_Project_Register_TQ", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Project structural construction progress maintenance menu.
+        /// </summary>
+        internal static string Menu_Project_StructuralConstructProgress {
+            get {
+                return ResourceManager.GetString("Menu_Project_StructuralConstructProgress", resourceCulture);
             }
         }
         

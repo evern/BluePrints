@@ -352,7 +352,7 @@ namespace BluePrints.ViewModels
                             if (backwardDate == null || forwardDate == null)
                                 return "Some earned dates cannot be readjusted";
 
-                            EarnedDataDateRealignModel earnedDataDateRealignModel = new EarnedDataDateRealignModel() { Guid = progress_item.GUID, EarnedUnits = progress_item.EARNED_UNITS, CurrentEarnedDate = progress_item.EARNED_DATE, BackwardEarnedDate = (DateTime)backwardDate, ForwardEarnedDate = (DateTime)forwardDate };
+                            EarnedDataDateRealignModel earnedDataDateRealignModel = new EarnedDataDateRealignModel() { Guid = progress_item.GUID, EarnedUnits = progress_item.EarnedUnits, CurrentEarnedDate = progress_item.EARNED_DATE, BackwardEarnedDate = (DateTime)backwardDate, ForwardEarnedDate = (DateTime)forwardDate };
                             earnedDataDateRealignModels.Add(earnedDataDateRealignModel);
                         }
 

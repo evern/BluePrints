@@ -549,7 +549,7 @@ namespace BluePrints.ViewModels
                 if (progressOnSameDate.Count > 1)
                 {
                     bool firstSelected = false;
-                    bool deleteAll = progressOnSameDate.Sum(x => x.EARNED_UNITS) == 0;
+                    bool deleteAll = progressOnSameDate.Sum(x => x.EarnedUnits) == 0;
                     foreach (PROGRESS_ITEM progressItem in progressOnSameDate)
                     {
                         if (deleteAll)
@@ -561,7 +561,7 @@ namespace BluePrints.ViewModels
                             progressItemToDelete.Add(progressItem);
                         else
                         {
-                            progressItem.EARNED_UNITS = progressOnSameDate.Sum(x => x.EARNED_UNITS);
+                            progressItem.EarnedUnits = progressOnSameDate.Sum(x => x.EarnedUnits);
                             firstSelected = true;
                         }
 
@@ -640,7 +640,7 @@ namespace BluePrints.ViewModels
             DateTime columnDate;
             if (DateTime.TryParse(fieldName, out columnDate))
             {
-                string earnedUnitsFieldName = BindableBase.GetPropertyName(() => new PROGRESS_ITEM().EARNED_UNITS);
+                string earnedUnitsFieldName = BindableBase.GetPropertyName(() => new PROGRESS_ITEM().EarnedUnits);
                 DateTime currentProgressDate = columnDate.AddDays(1).AddSeconds(-1);
 
                 List<PROGRESS_ITEM> progressToSave = new List<PROGRESS_ITEM>();
@@ -679,7 +679,7 @@ namespace BluePrints.ViewModels
                         newPROGRESS_ITEM.GUID_ORIBASEITEM = entity.OriginalEntityKey;
                         newPROGRESS_ITEM.GUID_PROGRESS = loadPROGRESS.GUID;
                         newPROGRESS_ITEM.EARNED_DATE = currentProgressDate;
-                        newPROGRESS_ITEM.EARNED_UNITS = totalUnitsDifferences;
+                        newPROGRESS_ITEM.EarnedUnits = totalUnitsDifferences;
                         newPROGRESS_ITEM.CREATED = DateTime.Now;
                         newPROGRESS_ITEM.CREATEDBY = LoginCredentials.CurrentUserGuid;
                         PROGRESS_ITEMSCollectionViewModel.EntitiesUndoRedoManager.AddUndo(newPROGRESS_ITEM, null, null, null, EntityMessageType.Added);
@@ -687,17 +687,17 @@ namespace BluePrints.ViewModels
                     }
                     else if (currentPeriodPROGRESS_ITEM != null)
                     {
-                        decimal postEditUnits = currentPeriodPROGRESS_ITEM.EARNED_UNITS + totalUnitsDifferences;
+                        decimal postEditUnits = currentPeriodPROGRESS_ITEM.EarnedUnits + totalUnitsDifferences;
                         if (postEditUnits < 0)
                         {
-                            totalUnitsDifferences = -1 * currentPeriodPROGRESS_ITEM.EARNED_UNITS;
+                            totalUnitsDifferences = -1 * currentPeriodPROGRESS_ITEM.EarnedUnits;
                             postEditUnits = 0;
                             errorMessage = new ErrorMessage(entity.Deliverable_Name, "Cannot go below currently assigned units, hence current % is set to lowest possible %. Please check past progress to reduce % further");
                         }
                         else
                         {
-                            decimal oldProgressValue = currentPeriodPROGRESS_ITEM.EARNED_UNITS;
-                            currentPeriodPROGRESS_ITEM.EARNED_UNITS = postEditUnits;
+                            decimal oldProgressValue = currentPeriodPROGRESS_ITEM.EarnedUnits;
+                            currentPeriodPROGRESS_ITEM.EarnedUnits = postEditUnits;
                             //use this to fix time issue
                             currentPeriodPROGRESS_ITEM.EARNED_DATE = currentProgressDate;
                             PROGRESS_ITEMSCollectionViewModel.EntitiesUndoRedoManager.AddUndo(currentPeriodPROGRESS_ITEM, earnedUnitsFieldName, oldProgressValue, postEditUnits, EntityMessageType.Changed);
@@ -724,16 +724,16 @@ namespace BluePrints.ViewModels
                             break;
 
                         PROGRESS_ITEM progress = futureProgressToEdit[i];
-                        if (progress.EARNED_UNITS == 0 && totalUnitsDifferences < 0)
+                        if (progress.EarnedUnits == 0 && totalUnitsDifferences < 0)
                             continue;
 
-                        decimal oldProgressValue = progress.EARNED_UNITS;
-                        decimal postEditEarnUnits = progress.EARNED_UNITS + totalUnitsDifferences;
-                        decimal remainingUnitsToIncrease = currentProgressMaximumUnits - (entity.PROGRESS_ITEMS.Sum(x => x.EARNED_UNITS) - progress.EARNED_UNITS);
+                        decimal oldProgressValue = progress.EarnedUnits;
+                        decimal postEditEarnUnits = progress.EarnedUnits + totalUnitsDifferences;
+                        decimal remainingUnitsToIncrease = currentProgressMaximumUnits - (entity.PROGRESS_ITEMS.Sum(x => x.EarnedUnits) - progress.EarnedUnits);
                         if (postEditEarnUnits < 0)
                         {
                             postEditEarnUnits = 0;
-                            totalUnitsDifferences -= progress.EARNED_UNITS;
+                            totalUnitsDifferences -= progress.EarnedUnits;
                         }
                         else if (postEditEarnUnits > remainingUnitsToIncrease)
                         {
@@ -745,7 +745,7 @@ namespace BluePrints.ViewModels
                             totalUnitsDifferences = 0;
                         }
 
-                        progress.EARNED_UNITS = postEditEarnUnits;
+                        progress.EarnedUnits = postEditEarnUnits;
                         PROGRESS_ITEMSCollectionViewModel.EntitiesUndoRedoManager.AddUndo(progress, earnedUnitsFieldName, oldProgressValue, postEditEarnUnits, EntityMessageType.Changed);
                         progressToSave.Add(progress);
                     }
