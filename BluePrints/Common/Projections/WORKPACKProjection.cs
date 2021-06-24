@@ -117,6 +117,12 @@ namespace BluePrints.Common.Projections
 
         public List<VariationAdjustment> ApprovedVariations => Deliverables == null ? new List<VariationAdjustment>() : Deliverables.Count == 0 ? new List<VariationAdjustment>() : Deliverables.SelectMany(x => x.ApprovedVariations).ToList();
 
+        public decimal UnitsPerQuantity => 1;
+
+        public string UOM => "h";
+
+        public decimal Variation_Quantity => Variation_Units / UnitsPerQuantity;
+
         public void SetOriginalEntityKey(Guid newGuid)
         {
         }
@@ -142,8 +148,6 @@ namespace BluePrints.Common.Projections
             IEnumerable<P6_ASSIGNMENT> P6_ASSIGNMENTS,
             IEnumerable<RATE> RATES,
             IEnumerable<VARIATION> VARIATIONS, 
-            IEnumerable<STOCK_GROUP> STOCK_GROUPS,
-            IEnumerable<STOCK_CODE> STOCK_CODES,
             IEnumerable<PROGRESS> PROGRESSES, 
             IEnumerable<TASK> P6TASKS,
             Data.PROJECT PROJECT
@@ -158,7 +162,7 @@ namespace BluePrints.Common.Projections
                 baseline_item_progresses = ProgressQueries.OffsiteDirectProgressItemTransformation(BASELINE_ITEMS.AsQueryable(), PROJECT, designPROGRESS, RATES, designPROGRESS.PROGRESS_ITEM, VARIATIONS, true, null).ToList();
 
             if(constructPROGRESS != null)
-                estimation_direct_item_progresses = ESTIMATE_ITEMProjectionQueries.IDeliverable_Progress_Transformation(ESTIMATE_ITEMS.AsQueryable(), PROJECT, RATES, constructPROGRESS, constructPROGRESS.PROGRESS_ITEM.ToList(), false, STOCK_CODES, STOCK_GROUPS).ToList();
+                estimation_direct_item_progresses = ESTIMATE_ITEMProjectionQueries.IDeliverable_Progress_Transformation(ESTIMATE_ITEMS.AsQueryable(), PROJECT, RATES, constructPROGRESS, constructPROGRESS.PROGRESS_ITEM.ToList(), false).ToList();
 
             List<WORKPACKProjection> workpacks = new List<WORKPACKProjection>();
             foreach (WORKPACK workpack in WORKPACKS)
@@ -225,11 +229,9 @@ namespace BluePrints.Common.Projections
             PROGRESS PROGRESS,
             IEnumerable<RATE> RATES,
             IEnumerable<PROGRESS_ITEM> PROGRESS_ITEMS,
-            IEnumerable<STOCK_GROUP> STOCK_GROUPS,
-            IEnumerable<STOCK_CODE> STOCK_CODES,
             IEnumerable<VARIATION> VARIATIONS = null, bool buildStats = false, IEnumerable<P6_ASSIGNMENT> P6_ASSIGNMENTS = null, bool isInternalNumberAlwaysEditable = false)
         {
-            IEnumerable<ESTIMATE_ITEMProgress> estimation_direct_item_progresses = ESTIMATE_ITEMProjectionQueries.IDeliverable_Progress_Transformation(ESTIMATE_ITEMS, PROJECT, RATES, PROGRESS, PROGRESS_ITEMS, false, STOCK_CODES, STOCK_GROUPS).AsEnumerable();
+            IEnumerable<ESTIMATE_ITEMProgress> estimation_direct_item_progresses = ESTIMATE_ITEMProjectionQueries.IDeliverable_Progress_Transformation(ESTIMATE_ITEMS, PROJECT, RATES, PROGRESS, PROGRESS_ITEMS, false).AsEnumerable();
 
             List<WORKPACKProjection> workpacks = new List<WORKPACKProjection>();
             var progress_item_by_subjobs = estimation_direct_item_progresses.GroupBy(x => x.Workpack_Guid).Select(group => new { SubjobName = group.Key, Progresses = group.ToList() });

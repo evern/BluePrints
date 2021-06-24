@@ -373,7 +373,11 @@ namespace BluePrints.Common.Base
         }
 
         private P6_Activity selected_activity;
-        public P6_Activity Selected_Activity { get => selected_activity; set { selected_activity = value; this.RaisePropertyChanged(x => x.Selected_Activity); } }
+        public P6_Activity Selected_Activity 
+        {
+            get => selected_activity; 
+            set { selected_activity = value; this.RaisePropertyChanged(x => x.Selected_Activity); } 
+        }
 
         public abstract IEnumerable<ICanAssignP6> Deliverables_Source { get; }
 

@@ -77,8 +77,6 @@ namespace BluePrints.ViewModels
             loaderCollection.AddLoaderDescription<DOCTYPE, DOCTYPE, Guid, IBluePrintsEntitiesUnitOfWork>(bluePrintsUnitOfWorkFactory, x => x.DOCTYPES);
             loaderCollection.AddLoaderDescription(bluePrintsUnitOfWorkFactory, x => x.DELIVERABLES_STATUSES, DELIVERABLES_STATUSProjectionFunc);
             loaderCollection.AddLoaderDescription<USER, USER, Guid, IBluePrintsEntitiesUnitOfWork>(bluePrintsUnitOfWorkFactory, x => x.USERS);
-            loaderCollection.AddLoaderDescription(bluePrintsUnitOfWorkFactory, x => x.STOCK_GROUPS, STOCK_GROUPProjectionFunc);
-            loaderCollection.AddLoaderDescription(bluePrintsUnitOfWorkFactory, x => x.STOCK_CODES, STOCK_CODEProjectionFunc);
             loaderCollection.AddLoaderDescription(bluePrintsUnitOfWorkFactory, x => x.VARIATIONS, VARIATIONProjectionFunc);
 
             base.addEntitiesLoader();
@@ -144,16 +142,6 @@ namespace BluePrints.ViewModels
             return query => query.Where(x => x.GUID_PROJECT == loadPROJECT.GUID && x.REPORT_TYPE == ReportType.Baseline_Report.ToString());
         }
 
-        private Func<IRepositoryQuery<STOCK_GROUP>, IQueryable<STOCK_GROUP>> STOCK_GROUPProjectionFunc()
-        {
-            return query => query.Where(x => (x.GUID_PROJECT == loadPROJECT.GUID));
-        }
-
-        private Func<IRepositoryQuery<STOCK_CODE>, IQueryable<STOCK_CODE>> STOCK_CODEProjectionFunc()
-        {
-            return query => query.Include(x => x.PROJECT);
-        }
-
         protected Func<IRepositoryQuery<VARIATION>, IQueryable<VARIATION>> VARIATIONProjectionFunc()
         {
             return query => query.Where(x => x.APPROVED != null && x.GUID_PROJECT == loadPROJECT.GUID);
@@ -168,7 +156,7 @@ namespace BluePrints.ViewModels
             specifyMainViewModelProjection()
         {
             IEnumerable<P6_ASSIGNMENT> P6_ASSIGNMENTS = GetEntities<P6_ASSIGNMENT>();
-            return query => WORKPACKQueries.WORKPACKProjectionSiteTransormation(query.Where(x => x.GUID_ESTIMATE == loadESTIMATE.GUID), WORKPACKCollection, loadPROJECT, live_PROGRESS, RATECollection, PROGRESS_ITEMCollection, STOCK_GROUPCollection, STOCK_CODECollection, null, true, P6_ASSIGNMENTS);
+            return query => WORKPACKQueries.WORKPACKProjectionSiteTransormation(query.Where(x => x.GUID_ESTIMATE == loadESTIMATE.GUID), WORKPACKCollection, loadPROJECT, live_PROGRESS, RATECollection, PROGRESS_ITEMCollection, null, true, P6_ASSIGNMENTS);
         }
 
         protected override void AssignCallBacksAndRaisePropertyChange(IEnumerable<WORKPACKProjection> entities)
@@ -266,28 +254,6 @@ namespace BluePrints.ViewModels
             get
             {
                 var collection = GetEntities<DOCTYPE>();
-                if (collection != null)
-                    collection = collection.OrderBy(x => x.CODE);
-                return collection;
-            }
-        }
-
-        public IEnumerable<STOCK_GROUP> STOCK_GROUPCollection
-        {
-            get
-            {
-                var collection = GetEntities<STOCK_GROUP>();
-                if (collection != null)
-                    collection = collection.OrderBy(x => x.CODE);
-                return collection;
-            }
-        }
-
-        public IEnumerable<STOCK_CODE> STOCK_CODECollection
-        {
-            get
-            {
-                var collection = GetEntities<STOCK_CODE>();
                 if (collection != null)
                     collection = collection.OrderBy(x => x.CODE);
                 return collection;

@@ -441,7 +441,10 @@
   <data name="Menu_Project_Register_Clarification" xml:space="preserve">
     <value>Project Clarification Register</value>
   </data>
-  <data name="Menu_Project_Forecast_Flat_PO" xml:space="preserve">
-    <value>Project equipment hire PO forecast maintenance menu</value>
+  <data name="Menu_Project_ConstructionStage" xml:space="preserve">
+    <value>Project construction stage maintenance menu</value>
+  </data>
+  <data name="Menu_Project_ConcreteConstructProgress" xml:space="preserve">
+    <value>Project construction progress maintenance menu</value>
   </data>
 </root>

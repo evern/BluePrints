@@ -161,8 +161,25 @@ namespace BluePrints.Common.ViewModel.Utils
 
             if (navigationType == DateNavigationType.Current)
             {
+                if(loadPROGRESS.INTERVAL_TYPE == ProgressIntervalType.Daily)
+                {
+                    bool shouldSave = false;
+                    if (isReportDate && !loadPROGRESS.DISABLE_AUTO_REPORT_DATE)
+                    {
+                        loadPROGRESS.REPORT_DATE = endOfDayToday;
+                        shouldSave = true;
+                    }
+
+                    if (loadPROGRESS.DATA_DATE != endOfDayToday)
+                    {
+                        loadPROGRESS.DATA_DATE = endOfDayToday;
+                        shouldSave = true;
+                    }
+
+                    return shouldSave;
+                }
                 //for users that always uses report date
-                if(isReportDate && !loadPROGRESS.DISABLE_AUTO_REPORT_DATE)
+                else if(isReportDate && !loadPROGRESS.DISABLE_AUTO_REPORT_DATE)
                 {
                     //rewind the data one week when progress is updated for the current week but reporting is done on the previous week
                     //will be saved when data date is saved

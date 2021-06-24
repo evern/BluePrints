@@ -637,9 +637,6 @@ namespace BluePrints.Common.Base
 
         protected void DateChange(DateNavigationType navigationType)
         {
-            if (!IsCalculationCompleted)
-                return;
-
             if (BluePrintsUtils.ProgressDateChange(navigationType, loadPROGRESS, isUseReportDate))
                 delayedPROGRESSSavingDispatcher.Start();
         }

@@ -15,170 +15,18 @@ using System.Linq.Expressions;
 
 namespace BluePrints.Common.ViewModel.Reporting
 {
-    public class STOCK_GROUPProgress : BluePrintsProgressableByQuantityProjectionBase<STOCK_GROUPProjection>, IReportable_Quantity_Group
-    {
-        public IEnumerable<IReportable_Quantity> Reportables { get; set; }
-
-        public override PROGRESS_ITEM PROGRESS_ITEM_Current
-        {
-            get
-            {
-                PROGRESS_ITEM newPROGRESS_ITEM = new PROGRESS_ITEM();
-                decimal totalCurrentUnits = Reportables.Where(x => x.PROGRESS_ITEM_Current != null).Sum(x => x.PROGRESS_ITEM_Current.EARNED_UNITS);
-                newPROGRESS_ITEM.EARNED_UNITS = totalCurrentUnits;
-                newPROGRESS_ITEM.EARNED_DATE = ReportingDataDate;
-                return newPROGRESS_ITEM;
-            }
-        }
-
-        public override IEnumerable<PROGRESS_ITEM> PROGRESS_ITEM_BeforeDataDate
-        {
-            get
-            {
-                return Reportables.SelectMany(x => x.PROGRESS_ITEM_BeforeDataDate);
-            }
-        }
-
-        public override IEnumerable<PROGRESS_ITEM> PROGRESS_ITEM_AfterDataDate
-        {
-            get
-            {
-                return Reportables.SelectMany(x => x.PROGRESS_ITEM_AfterDataDate);
-            }
-        }
-
-        public override IEnumerable<PROGRESS_ITEM> PROGRESS_ITEM_UpToCurrentDataDate
-        {
-            get
-            {
-                return Reportables.SelectMany(x => x.PROGRESS_ITEM_UpToCurrentDataDate);
-            }
-        }
-
-        public override List<PROGRESS_ITEM> PROGRESS_ITEMS
-        {
-            get { return Reportables.SelectMany(x => x.PROGRESS_ITEMS).ToList(); }
-        }
-
-        protected override decimal getNewPercentage()
-        {
-            decimal aggregate_total_quantity = Reportables.Where(x => x.Progress_Type == EstimateProgressType.Trackable).Sum(x => x.Total_Quantity);
-            if (aggregate_total_quantity == 0)
-                return 0;
-
-            return set_current_period_quantity == null ? 0 : (decimal)set_current_period_quantity / aggregate_total_quantity;
-        }
-
-        private IEnumerable<IReportable_Quantity> trackable_reportables => Reportables.Where(x => x.Progress_Type == EstimateProgressType.Trackable);
-
-        public decimal Trackable_Total_Units => trackable_reportables.Sum(x => x.Total_Units);
-
-        public decimal Trackable_Total_Quantity => trackable_reportables.Sum(x => x.Total_Quantity);
-
-        public override decimal Trackable_Installed_Quantity => trackable_reportables.Sum(x => x.AbsoluteTotalInstalledQuantity);
-
-        public override decimal AbsoluteTotalInstalledQuantity => Reportables.Sum(x => x.AbsoluteTotalInstalledQuantity);
-
-        public override decimal MaxCurrentQuantity => trackable_reportables.Sum(x => x.MaxCurrentQuantity);
-
-        public override decimal Earned_Costs_Total => trackable_reportables.Sum(x => x.Earned_Costs_Total);
-
-        public override decimal Remaining_Hours_To_Completion => Reportables.Sum(x => x.Remaining_Hours_To_Completion);
-
-        public override decimal QuantityPerUnit
-        {
-            get
-            {
-                decimal totalUnits = Reportables.Sum(x => x.Total_Units);
-                if (totalUnits == 0)
-                    return 0;
-
-                decimal totalQuantity = Reportables.Sum(x => x.Total_Quantity);
-                if (totalQuantity == 0)
-                    return 0;
-
-                return totalQuantity / totalUnits;
-            }
-        }
-
-        public override decimal UnitsPerQuantity => Reportables.Sum(x => x.UnitsPerQuantity);
-
-        public override decimal Earned_Install_Costs_OnDataDate => Reportables.Sum(x => x.Earned_Install_Costs_OnDataDate);
-
-        public override decimal Earned_Supply_Costs_OnDataDate => Reportables.Sum(x => x.Earned_Supply_Costs_OnDataDate);
-
-        public decimal Trackable_QuantityPerUnit
-        {
-            get
-            {
-                if (Trackable_Total_Units == 0)
-                    return 0;
-
-                return Trackable_Total_Quantity / Trackable_Total_Units;
-            }
-        }
-
-        public override decimal get_actual_earned_quantity()
-        {
-            decimal trackable_earned_units_ondatadate = trackable_reportables.Sum(x => x.Earned_Units_OnDataDate);
-            return trackable_earned_units_ondatadate * Trackable_QuantityPerUnit;
-        }
-
-        public override IEnumerable<PROGRESS_ITEM> GetExistingOrNewEditedProgresses(Func<Expression<Func<PROGRESS_ITEM, bool>>, PROGRESS_ITEM> repository_find_actual_func)
-        {
-            List<PROGRESS_ITEM> editPROGRESS_ITEMS = new List<PROGRESS_ITEM>();
-            decimal newPercentage = getNewPercentage();
-            foreach (IReportable_Quantity quantityReportable in Reportables)
-            {
-                IEnumerable<PROGRESS_ITEM> savePROGRESS_ITEMS = quantityReportable.GetExistingOrNewEditedProgresses(repository_find_actual_func);
-                if(savePROGRESS_ITEMS.Count() > 0)
-                {
-                    PROGRESS_ITEM savePROGRESS_ITEM = savePROGRESS_ITEMS.First();
-                    savePROGRESS_ITEM.EARNED_UNITS = quantityReportable.getCurrentPeriodEarnedUnits(newPercentage);
-                    editPROGRESS_ITEMS.Add(savePROGRESS_ITEM);
-                }
-            }
-
-            return editPROGRESS_ITEMS;
-        }
-
-        public override decimal? Override_Productivity
-        {
-            get
-            {
-                if (set_override_productivity == null)
-                {
-                    //Group won't have DBProductivityOverride because it's value is derived from childrens
-                    //IHaveDBProductivityOverride dbProductivityOverride = Entity as IHaveDBProductivityOverride;
-                    set_override_productivity = Reportables.Count() == 0 ? 0 : Reportables.Max(x => x.Override_Productivity);
-                }
-
-                return set_override_productivity;
-            }
-            set
-            {
-                foreach(IReportable_Quantity reportable in Reportables)
-                {
-                    reportable.Override_Productivity = value;
-                    reportable.Update();
-                }
-
-                set_override_productivity = value;
-            }
-        }
-    }
-
-    public class ESTIMATE_ITEMProgress : BluePrintsProgressableByQuantityProjectionBase<ESTIMATE_ITEMProjection>, IHaveDBProductivityOverride, IHaveProcurementSubjob, IEstimateItem, IDXDataErrorInfo
+    public class ESTIMATE_ITEMProgress : BluePrintsProgressableProjectionBase<ESTIMATE_ITEMProjection>, IHaveDBProductivityOverride, IHaveProcurementSubjob, IEstimateItem, IDXDataErrorInfo, IBookable
     {
         public ESTIMATE_ITEMProgress()
         {
             Entity.Entity.VARIATION_CODE = string.Empty;
         }
 
-        public ESTIMATE_ITEMProgress(PROJECT PROJECT, PROGRESS LivePROGRESS, IDeliverable_Rates entity, IEnumerable<VariationAdjustment> projectVariationAdjustments, bool forceRetrieveRemainingDataPoints)
+        IEnumerable<CONSTRUCTION_STAGE> constructionStages = null;
+        public ESTIMATE_ITEMProgress(PROJECT PROJECT, PROGRESS LivePROGRESS, IDeliverable_Rates entity, IEnumerable<VariationAdjustment> projectVariationAdjustments, bool forceRetrieveRemainingDataPoints, IEnumerable<CONSTRUCTION_STAGE> constructionStages = null)
             : base(PROJECT, LivePROGRESS, entity, projectVariationAdjustments, forceRetrieveRemainingDataPoints)
         {
-
+            this.constructionStages = constructionStages;
         }
 
         public string UniqueJobcode => Entity.Deliverable_Name + " " + Entity.Variation_Code;
@@ -189,32 +37,92 @@ namespace BluePrints.Common.ViewModel.Reporting
 
         public Guid? GUID_VARIATION { get => Entity.Variation_Guid; set => Entity.Variation_Guid = value; }
 
-        public decimal Estimated_Value { get => Entity.Estimated_Value; set => Entity.Estimated_Value = value; }
-
-        public decimal DC_Value { get => Entity.DC_Value; set => Entity.DC_Value = value; }
-
         public Guid? Procurement_Subjob_Guid { get => Entity.Procurement_Subjob_Guid; set => Entity.Procurement_Subjob_Guid = value; }
-
-        public decimal Variance_Quantity => Budget_Quantity - Estimate_Quantity;
-
-        public decimal Variance_Stock_Code_Install_Hours => Budget_Stock_Code_Install_Hours - Estimate_Stock_Code_Install_Hours;
-
-        public decimal Variance_Stock_Code_Supply_Rate => Budget_Stock_Code_Supply_Rate - Estimate_Stock_Code_Supply_Rate;
-
-        public decimal Variance_Supply_Cost => Budget_Supply_Cost - Estimate_Supply_Cost;
-
-        public decimal Variance_Install_Cost => Budget_Install_Cost - Estimate_Install_Cost;
-
-        public decimal Variance_Install_Hours => Budget_Install_Hours - Estimate_Install_Hours;
-
-        public decimal Variance_FreightRate => Budget_FreightRate - Estimate_FreightRate;
-
-        public decimal Variance_Freight_Cost => Budget_Freight_Cost - Estimate_Freight_Cost;
 
         public ESTIMATE_ITEMProgress ReadOnlyEstimate => this;
 
+        public override string P6_Assignment_UOM => Entity.UOM;
+
+        public bool CanBook { get; set; }
+
+        private IEnumerable<PROGRESS_ITEM> PROGRESS_ITEMSCurrent => PROGRESS_ITEMS.Where(y => y.EARNED_DATE.Date == ReportingDataDate.Date);
+
+        public void resetEarnedUnits()
+        {
+            earned_units_ondatadate = null;
+            earned_units_beforedatadate = null;
+        }
+
+        decimal? earned_units_ondatadate = null;
+        public override decimal Earned_Units_OnDataDate
+        {
+            get
+            {
+                if (constructionStages == null)
+                    throw new NotImplementedException();
+
+                if(earned_units_ondatadate == null)
+                    earned_units_ondatadate = getEarnedUnits(PROGRESS_ITEMSCurrent);
+
+                return (decimal)earned_units_ondatadate;
+            }
+        }
+
+        public override decimal Earned_Units_BeforeDataDate
+        {
+            get
+            {
+
+                if (earned_units_beforedatadate == null)
+                {
+                    if (PROGRESS_ITEM_BeforeDataDate == null)
+                        earned_units_beforedatadate = 0;
+                    else
+                        earned_units_beforedatadate = getEarnedUnits(PROGRESS_ITEM_BeforeDataDate);
+                }
+
+                return (decimal)earned_units_beforedatadate;
+            }
+        }
+
+        private decimal getEarnedUnits(IEnumerable<PROGRESS_ITEM> progresses)
+        {
+            if (constructionStages == null)
+                throw new NotImplementedException();
+
+            decimal earnedUnits = 0;
+            foreach (PROGRESS_ITEM progress in progresses)
+            {
+                CONSTRUCTION_STAGE findCONSTRUCTION_STAGE = constructionStages.FirstOrDefault(x => x.SORT_ORDER == progress.STAGE_ORDER);
+                if (Entity.Entity.BUDGET_INSTALL_HOURS_PER_QTY != null && findCONSTRUCTION_STAGE != null)
+                {
+                    earnedUnits += progress.EARNED_UNITS * findCONSTRUCTION_STAGE.WEIGHT_PERCENTAGE * (decimal)Entity.Entity.BUDGET_INSTALL_HOURS_PER_QTY;
+                }
+            }
+
+            return earnedUnits;
+        }
+
+        public override decimal MaxPercentage
+        {
+            get
+            {
+                if (Total_Units == 0)
+                    return 1;
+
+                return ((Total_Units - Earned_Units_AfterDataDate) / Total_Units);
+            }
+        }
+
         public void GetError(ErrorInfo info)
         {
+            if(Entity.Entity.ExoLines != null && (Entity.Subjob_Name != string.Empty) && (Entity.Discipline_Code != string.Empty) && (Entity.Commodity_Code != string.Empty))
+            {
+                if (!Entity.Entity.ExoLines.Any(x => x.SubJobCode == Entity.Subjob_Name && x.DisciplineCode == Entity.Discipline_Code && x.CommodityCode == Entity.Commodity_Code))
+                    info.ErrorText = Entity.Subjob_Name + " " + Entity.Discipline_Code + " " + Entity.Commodity_Code + " doesn't exist in EXO";
+                else
+                    info.ErrorText = string.Empty;
+            }
         }
 
         public void GetPropertyError(string propertyName, ErrorInfo info)
@@ -227,231 +135,16 @@ namespace BluePrints.Common.ViewModel.Reporting
             {
                 info.ErrorText = "Invalid discipline code, please check phase";
             }
+            else if (propertyName.Contains(BindableBase.GetPropertyName(() => new ESTIMATE_ITEMProgress().Entity.Entity.VARIATION_CODE)))
+            {
+                if (Entity.Entity.ExoLines != null && !Entity.Entity.ExoLines.Any(x => x.VariationCode == Entity.Variation_Code))
+                    info.ErrorText = Entity.Variation_Code + " doesn't exist in EXO";
+            }
         }
 
         public override string ToString()
         {
             return UniqueJobcode;
-        }
-    }
-
-
-    public abstract class BluePrintsProgressableByQuantityProjectionBase<TEntity> : BluePrintsProgressableProjectionBase<TEntity>, IReportable_Quantity, ICanAssignP6
-        where TEntity : class, IDeliverable_Rates, IHaveCosts, IHaveCreatedDate, IHaveStock_Group, IHaveQuantity, new()
-    {
-        public BluePrintsProgressableByQuantityProjectionBase()
-        {
-
-        }
-
-        public BluePrintsProgressableByQuantityProjectionBase(PROJECT PROJECT, PROGRESS LivePROGRESS, IDeliverable_Rates entity, IEnumerable<VariationAdjustment> projectVariationAdjustments, bool forceRetrieveRemainingDataPoints)
-            : base(PROJECT, LivePROGRESS, entity, projectVariationAdjustments, false, null, forceRetrieveRemainingDataPoints)
-        {
-            
-        }
-
-        public string Estimate_UOM => Entity.Estimate_UOM;
-
-        public string Budget_UOM => Entity.Budget_UOM;
-
-        public virtual decimal QuantityPerUnit
-        {
-            get
-            {
-                if (Total_Units == 0)
-                    return 0;
-
-                return Total_Quantity / Total_Units;
-            }
-        }
-
-        public virtual decimal UnitsPerQuantity
-        {
-            get
-            {
-                if (Total_Quantity == 0)
-                    return 0;
-
-                return Total_Units / Total_Quantity;
-            }
-        }
-
-        public virtual decimal Remaining_Hours_To_Completion
-        {
-            get
-            {
-                return (Total_Quantity - AbsoluteTotalInstalledQuantity) * UnitsPerQuantity;
-            }
-        }
-
-        public virtual decimal Schedule_Estimated_Quantity
-        {
-            get
-            {
-                return SchedulePercentage * Budget_Quantity;
-            }
-        }
-
-        public virtual decimal Schedule_Estimated_Current_Period_Quantity
-        {
-            get
-            {
-                return ScheduleCurrentPeriodPercentage * Budget_Quantity;
-            }
-        }
-
-        protected decimal? set_current_period_quantity { get; set; }
-        public virtual decimal CurrentPeriodInstalledQuantity
-        {
-            get
-            {
-                if (set_current_period_quantity == null)
-                    set_current_period_quantity = get_actual_earned_quantity();
-
-                return (decimal)set_current_period_quantity;
-            }
-            set => set_current_period_quantity = value;
-        }
-
-        public override void Update()
-        {
-            set_current_period_quantity = null;
-            base.Update();
-        }
-
-        public override bool ShouldSaveProgress => get_actual_earned_quantity() != set_current_period_quantity;
-
-        
-        public virtual decimal get_actual_earned_quantity()
-        {
-            return Earned_Units_OnDataDate * QuantityPerUnit;
-        }
-
-        public decimal PastInstalledQuantity
-        {
-            get
-            {
-                if (PROGRESS_ITEM_BeforeDataDate.Count() == 0 || QuantityPerUnit == 0)
-                    return 0;
-
-                decimal earnedUnits = PROGRESS_ITEM_BeforeDataDate.Sum(x => x.EARNED_UNITS) * QuantityPerUnit;
-
-                return earnedUnits;
-            }
-        }
-
-        public virtual decimal AbsoluteTotalInstalledQuantity => PastInstalledQuantity + CurrentPeriodInstalledQuantity + FutureInstalledQuantity;
-
-        public decimal MinEstimateQuantity => (AbsoluteTotalInstalledQuantity - Entity.Variation_Quantity) < 0 ? 0 : AbsoluteTotalInstalledQuantity - Entity.Variation_Quantity;
-
-        public decimal TotalInstalledQuantity => PastInstalledQuantity + CurrentPeriodInstalledQuantity;
-
-        public virtual decimal Trackable_Installed_Quantity => this.Progress_Type == EstimateProgressType.Trackable ? TotalInstalledQuantity : 0;
-
-        public decimal FutureInstalledQuantity
-        {
-            get
-            {
-                if (PROGRESS_ITEM_AfterDataDate.Count() == 0 || QuantityPerUnit == 0)
-                    return 0;
-
-                return PROGRESS_ITEM_AfterDataDate.Sum(x => x.EARNED_UNITS) * QuantityPerUnit;
-            }
-        }
-
-        public virtual decimal MaxCurrentQuantity => Math.Round(Total_Quantity - PastInstalledQuantity - FutureInstalledQuantity, 2);
-
-        public EstimateProgressType Progress_Type
-        {
-            get
-            {
-                ICanTrack trackableEntity = Entity as ICanTrack;
-                if (trackableEntity != null)
-                    return trackableEntity.Progress_Type;
-
-                return EstimateProgressType.Standalone;
-            }
-        }
-
-        public decimal Total_Install_Hours => QuantityPerUnit == 0 ? 0 : AbsoluteTotalInstalledQuantity / QuantityPerUnit;
-
-        public decimal Total_Estimate_Cost => Estimate_Install_Cost + Estimate_Freight_Cost + Estimate_Supply_Cost;
-
-        public decimal Estimate_Stock_Code_Install_Hours => Entity.Estimate_Stock_Code_Install_Hours;
-
-        public decimal Budget_Stock_Code_Install_Hours => Entity.Budget_Stock_Code_Install_Hours;
-
-        public decimal Estimate_Stock_Code_Supply_Rate => Entity.Estimate_Stock_Code_Supply_Rate;
-
-        public decimal Budget_Stock_Code_Supply_Rate => Entity.Budget_Stock_Code_Supply_Rate;
-
-        public decimal Variation_Quantity => Entity.Variation_Quantity;
-
-        public virtual decimal Earned_Install_Costs_OnDataDate => Earned_Units_OnDataDate * Budget_ItemRate;
-
-        public decimal Estimate_ItemRate => Entity.Estimate_ItemRate;
-
-        public virtual decimal Earned_Supply_Costs_OnDataDate => Earned_Units_OnDataDate * Entity.Estimate_Stock_Code_Supply_Rate;
-
-        public decimal Earned_Total_Costs_OnDataDate => Earned_Install_Costs_OnDataDate + Earned_Supply_Costs_OnDataDate;
-
-        public Guid? Stock_Group_Guid => Entity.Stock_Group_Guid;
-
-        public decimal Budget_FreightRate => Entity.Budget_FreightRate;
-
-        public decimal Estimate_Install_Cost => Entity.Estimate_Install_Cost;
-
-        public decimal Variation_Install_Cost => Entity.Variation_Install_Cost;
-
-        public decimal Estimate_Freight_Cost => Entity.Estimate_Freight_Cost;
-
-        public decimal Variation_Freight_Cost => Entity.Variation_Freight_Cost;
-
-        public decimal Estimate_Install_Hours => Entity.Estimate_Install_Hours;
-
-        public decimal Variation_Install_Hours => Entity.Variation_Install_Hours;
-
-        public decimal Estimate_Supply_Cost => Entity.Estimate_Supply_Cost;
-
-        public decimal Budget_Supply_Cost => Entity.Budget_Supply_Cost;
-
-        public decimal Variation_Supply_Cost => Entity.Variation_Supply_Cost;
-
-        public override decimal P6_Assignment_Total_Quantity => Entity.Total_Quantity;
-
-        public override string P6_Assignment_UOM => Entity.Estimate_UOM;
-
-        public decimal Estimate_Quantity => Entity.Estimate_Quantity;
-
-        public decimal Budget_Install_Hours => Entity.Budget_Install_Hours;
-
-        public decimal Budget_Install_Cost => Entity.Budget_Install_Cost;
-
-        public decimal Total_Budget_Install_Cost => Entity.Total_Budget_Install_Cost;
-
-        public decimal Total_Budget_Freight_Cost => Entity.Total_Budget_Freight_Cost;
-
-        public decimal Total_Budget_Supply_Cost => Entity.Total_Budget_Supply_Cost;
-
-        public decimal Total_Budget_Cost => Entity.Total_Budget_Cost;
-
-        public decimal Budget_Freight_Cost => Entity.Budget_Freight_Cost;
-
-        public decimal Estimate_Units => Entity.Estimate_Units;
-
-        public decimal Estimate_FreightRate => Entity.Estimate_FreightRate;
-
-        protected override decimal getNewPercentage()
-        {
-            if (Total_Quantity == 0)
-                return 0;
-
-            return set_current_period_quantity == null ? 0 : (decimal)set_current_period_quantity / Total_Quantity;
-        }
-
-        public override decimal getCurrentPeriodEarnedUnits(decimal newPercentage)
-        {
-            return newPercentage * Total_Units;
         }
     }
 
@@ -463,6 +156,7 @@ namespace BluePrints.Common.ViewModel.Reporting
         public SingleObjectSummarizer StatSummarizer => statsSummarizer;
         public ProgressStats Stats { get; set; }
         public List<VariationAdjustment> ApprovedVariations { get; set; }
+
         public BluePrintsProgressableProjectionBase()
         {
             //Initialization without stats
@@ -765,8 +459,8 @@ namespace BluePrints.Common.ViewModel.Reporting
 
         public virtual decimal MaxPercentage => Total_Units == 0 ? 1 : ((Total_Units - Earned_Units_AfterDataDate) / Total_Units);
 
-        private decimal? earned_units_beforedatadate;
-        public decimal Earned_Units_BeforeDataDate
+        protected decimal? earned_units_beforedatadate;
+        public virtual decimal Earned_Units_BeforeDataDate
         {
             get
             {
@@ -1199,6 +893,12 @@ namespace BluePrints.Common.ViewModel.Reporting
         public decimal Total_Quantity => Entity.Total_Quantity;
 
         public string Project_Number => Entity.Project_Number;
+
+        public decimal UnitsPerQuantity => Entity.UnitsPerQuantity;
+
+        public string UOM => Entity.UOM;
+
+        public decimal Variation_Quantity => Entity.Variation_Quantity;
     }
 
     public class DeliverableEarnedPercentages

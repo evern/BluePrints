@@ -100,7 +100,7 @@ namespace BluePrints.Common.Projections
     public static class DashboardQueries
     {
         public static PROJECT_Dashboard Single_Project_DashboardTransformation(PROJECT PROJECT, BASELINE BASELINE, ESTIMATE ESTIMATE, IEnumerable<PROGRESS> PROGRESS, IEnumerable<PROGRESS_ITEM> PROGRESS_ITEMS, IEnumerable<RATE> RATES,
-            IEnumerable<VARIATION> VARIATIONS = null, bool buildStats = false, IEnumerable<USER> USERCollection = null, IEnumerable<BASELINE_ITEM_WORK> BASELINE_ITEM_WORKCollection = null, IEnumerable<STOCK_CODE> STOCKCODECollection = null, DateTime? fixedStartDate = null, DateTime? fixedDataDate = null, bool forceRetrieveRemainingDataPoints = false, bool showLoadingScreen = true)
+            IEnumerable<VARIATION> VARIATIONS = null, bool buildStats = false, IEnumerable<USER> USERCollection = null, IEnumerable<BASELINE_ITEM_WORK> BASELINE_ITEM_WORKCollection = null, DateTime? fixedStartDate = null, DateTime? fixedDataDate = null, bool forceRetrieveRemainingDataPoints = false, bool showLoadingScreen = true)
         {
             List<PROJECT> PROJECTS = new List<PROJECT>();
             List<BASELINE> BASELINES = new List<BASELINE>();
@@ -113,7 +113,7 @@ namespace BluePrints.Common.Projections
             if (ESTIMATE != null)
                 ESTIMATES.Add(ESTIMATE);
 
-            var project_dashboard = DashboardQueries.Multiple_Project_DashboardTransformation(PROJECTS.AsQueryable(), BASELINES, ESTIMATES, PROGRESS, PROGRESS_ITEMS, RATES, VARIATIONS, PROJECT.GUID, buildStats, USERCollection, BASELINE_ITEM_WORKCollection, STOCKCODECollection, fixedStartDate, fixedDataDate, showLoadingScreen, forceRetrieveRemainingDataPoints);
+            var project_dashboard = DashboardQueries.Multiple_Project_DashboardTransformation(PROJECTS.AsQueryable(), BASELINES, ESTIMATES, PROGRESS, PROGRESS_ITEMS, RATES, VARIATIONS, PROJECT.GUID, buildStats, USERCollection, BASELINE_ITEM_WORKCollection, fixedStartDate, fixedDataDate, showLoadingScreen, forceRetrieveRemainingDataPoints);
 
             if (project_dashboard.Count() == 0)
                 return null;
@@ -125,7 +125,7 @@ namespace BluePrints.Common.Projections
             IEnumerable<BASELINE> BASELINES, IEnumerable<ESTIMATE> ESTIMATES, IEnumerable<PROGRESS> PROGRESSES,
             IEnumerable<PROGRESS_ITEM> PROGRESS_ITEMS, IEnumerable<RATE> RATES, 
             IEnumerable<VARIATION> VARIATIONS = null,
-            Guid? project_guid = null, bool buildStats = false, IEnumerable<USER> USERCollection = null, IEnumerable<BASELINE_ITEM_WORK> BASELINE_ITEM_WORKCollection = null, IEnumerable<STOCK_CODE> STOCKCODECollection = null, DateTime? fixedStartDate = null, DateTime? fixedDataDate = null, bool showLoadingScreen = false, bool forceRetrieveRemainingDataPoints = false)
+            Guid? project_guid = null, bool buildStats = false, IEnumerable<USER> USERCollection = null, IEnumerable<BASELINE_ITEM_WORK> BASELINE_ITEM_WORKCollection = null, DateTime? fixedStartDate = null, DateTime? fixedDataDate = null, bool showLoadingScreen = false, bool forceRetrieveRemainingDataPoints = false)
         {
             IQueryable<PROJECT> project_single_or_active_selection;
             if (project_guid != null)
@@ -194,7 +194,7 @@ namespace BluePrints.Common.Projections
                     }
 
                     IEnumerable<ESTIMATE_ITEMProgress> project_estimation_direct_item_progresses =
-                    ESTIMATE_ITEMProjectionQueries.IDeliverable_Progress_Transformation(live_estimation_direct_items.AsQueryable(), current_project, project_rates, live_estimation_direct_progress, live_estimation_direct_progresses, true, STOCKCODECollection, null, approved_project_variations, false, null, showLoadingScreen, null, forceRetrieveRemainingDataPoints);
+                    ESTIMATE_ITEMProjectionQueries.IDeliverable_Progress_Transformation(live_estimation_direct_items.AsQueryable(), current_project, project_rates, live_estimation_direct_progress, live_estimation_direct_progresses, true, approved_project_variations, false, null, showLoadingScreen, null, forceRetrieveRemainingDataPoints);
                     reportables.AddRange(project_estimation_direct_item_progresses);
                     current_project_progresses.Add(live_estimation_direct_progress);
                 }
