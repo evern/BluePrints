@@ -35,7 +35,7 @@ namespace BluePrints.Common.ViewModel.Reporting
             if (calcTypes == null)
                 calcTypes = BluePrintsDataUtils.AllCalcTypes;
 
-            if (calcTypes.Contains(StatsCalculationType.Planned))
+            if(calcTypes.Contains(StatsCalculationType.Planned))
             {
                 if (showLoadingScreen)
                     LoadingScreenManager.SetMessage("Retrieving Planned Data...");
@@ -44,7 +44,7 @@ namespace BluePrints.Common.ViewModel.Reporting
                 SetCurrentDataPoints(weightingPortion);
             }
 
-            if (calcTypes.Contains(StatsCalculationType.Earned))
+            if(calcTypes.Contains(StatsCalculationType.Earned))
             {
                 if (showLoadingScreen)
                     LoadingScreenManager.SetMessage("Retrieving Earned Data...");

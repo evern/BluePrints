@@ -1,5 +1,4 @@
-﻿using BaseModel.Data.Helpers;
-using BluePrints.Common.ViewModel.Utils;
+﻿using BluePrints.Common.ViewModel.Utils;
 using BluePrints.Data;
 using System;
 using System.Collections.Generic;
@@ -27,36 +26,17 @@ namespace BluePrints.Common.ViewModel.Reporting
 
         public static DateTime? GetReportLastDataDate(IEnumerable<PROGRESS> PROGRESSES)
         {
-            DateTime? latestDataDate = null;
-
-            //when there's no design progress use Sunday as end of week
-            int endOfWeek = 7;
-            PROGRESS designPROGRESS = PROGRESSES.FirstOrDefault(x => x.TYPE == PhaseType.Design);
-            if(designPROGRESS != null)
-                endOfWeek = BluePrintsUtils.GetTrueDayOfWeek((int)getProgressDataDate(designPROGRESS).DayOfWeek);
-
+            DateTime? latest_data_date = null;
             //when construction progress have an earlier data date it'll skew the day of week of the weekly progress thats responsible of retrieving period data point, so always use the weekly one and make sure all weekly falls on the same day of week
-            foreach (PROGRESS PROGRESS in PROGRESSES)
+            foreach (PROGRESS PROGRESS in PROGRESSES.Where(x => x.INTERVAL_TYPE == ProgressIntervalType.Weekly))
             {
-                if (latestDataDate == null)
-                    latestDataDate = getProgressDataDate(PROGRESS);
-                else if (latestDataDate < PROGRESS.DATA_DATE)
-                    latestDataDate = getProgressDataDate(PROGRESS);
+                if (latest_data_date == null)
+                    latest_data_date = PROGRESS.REPORT_DATE != null ? PROGRESS.REPORT_DATE : PROGRESS.DATA_DATE;
+                else if (latest_data_date < PROGRESS.DATA_DATE)
+                    latest_data_date = PROGRESS.REPORT_DATE != null ? PROGRESS.REPORT_DATE : PROGRESS.DATA_DATE;
             }
 
-            if(latestDataDate != null)
-            {
-                int dataDateDayOfWeek = BluePrintsUtils.GetTrueDayOfWeek((int)((DateTime)latestDataDate).DayOfWeek);
-                DateTime endOfLatestDataDateWeek = DateTime.Today.Date.AddDays(endOfWeek - dataDateDayOfWeek).AddDays(1).AddSeconds(-1);
-                latestDataDate = endOfLatestDataDateWeek;
-            }
-
-            return latestDataDate;
-        }
-
-        public static DateTime getProgressDataDate(PROGRESS progress)
-        {
-            return progress.REPORT_DATE != null ? (DateTime)progress.REPORT_DATE : progress.DATA_DATE;
+            return latest_data_date;
         }
 
         public static TimeSpan GetDefaultIntervalTimeSpan()

@@ -161,7 +161,7 @@ namespace BluePrints.ViewModels
         protected override Func<IRepositoryQuery<ESTIMATE_ITEM>, IQueryable<ESTIMATE_ITEMProgress>>
             specifyMainViewModelProjection()
         {
-            return query => ESTIMATE_ITEMProjectionQueries.IDeliverable_Progress_Transformation(query.Where(x => x.ESTIMATE.GUID_PROJECT == loadPROJECT.GUID && x.ESTIMATE.STATUS == BaselineStatus.Live).Where(x => x.DISCIPLINE.SCORE_CARD_DISCIPLINE == scoreCardDiscipline), loadPROJECT, loaderCollection.GetCollection<RATE>(), loadPROGRESS, PROGRESS_ITEMCollection, isUseReportDate, null, false, P6_ASSIGNMENTCollection, false, COMMODITY_CODECollection, false);
+            return query => ESTIMATE_ITEMProjectionQueries.IDeliverable_Progress_Transformation(query.Where(x => x.ESTIMATE.GUID_PROJECT == loadPROJECT.GUID && x.ESTIMATE.STATUS == BaselineStatus.Live).Where(x => x.DISCIPLINE.SCORE_CARD_DISCIPLINE == scoreCardDiscipline), loadPROJECT, loaderCollection.GetCollection<RATE>(), loadPROGRESS, PROGRESS_ITEMCollection, false, null, false, P6_ASSIGNMENTCollection, false, COMMODITY_CODECollection, false, CONSTRUCTION_STAGECollection);
         }
 
         protected override void AssignCallBacksAndRaisePropertyChange(IEnumerable<ESTIMATE_ITEMProgress> entities)
@@ -397,8 +397,8 @@ namespace BluePrints.ViewModels
             //unbound columns
             columns.Add(new ColumnDescriptor() { FieldName = currentPeriodPercentage, ReadOnly = true, Header = "Period Progress", HeaderToolTip = "Current period progress", Fixed = FixedStyle.Left, Width = 60, Mask = "p2", Settings = SettingsType.Number });
             columns.Add(new ColumnDescriptor() { FieldName = cumulativePercentage, ReadOnly = true, Header = "Progress", HeaderToolTip = "Cumulative progress", Fixed = FixedStyle.Left, Width = 60, Mask = "p2", Settings = SettingsType.Number });
-            columns.Add(new ColumnDescriptor() { FieldName = currentPeriodEarnedUnits, ReadOnly = true, Header = "Period Earned Hrs", HeaderToolTip = "Current periodprogress", Fixed = FixedStyle.Left, Width = 60, Mask = "n2", Settings = SettingsType.Number });
-            columns.Add(new ColumnDescriptor() { FieldName = cumulativeEarnedUnits, ReadOnly = true, Header = "Total Earned Hrs", HeaderToolTip = "Cumulative progress", Fixed = FixedStyle.Left, Width = 60, Mask = "n2", Settings = SettingsType.Number });
+            columns.Add(new ColumnDescriptor() { FieldName = currentPeriodEarnedUnits, ReadOnly = true, Header = "Total Earned Hrs", HeaderToolTip = "Cumulative progress", Fixed = FixedStyle.Left, Width = 60, Mask = "n2", Settings = SettingsType.Number });
+            columns.Add(new ColumnDescriptor() { FieldName = cumulativeEarnedUnits, ReadOnly = true, Header = "Period Earned Hrs", HeaderToolTip = "Current period progress", Fixed = FixedStyle.Left, Width = 60, Mask = "n2", Settings = SettingsType.Number });
 
             foreach (CONSTRUCTION_STAGE CONSTRUCTION_STAGE in CONSTRUCTION_STAGECollection)
             {
@@ -643,6 +643,7 @@ namespace BluePrints.ViewModels
 
                     PROGRESS_ITEM currentPeriodPROGRESS_ITEM = entity.PROGRESS_ITEMS.FirstOrDefault(x => x.STAGE_ORDER == constructionSTAGE.SORT_ORDER && x.EARNED_DATE == DataDate);
 
+
                     IEnumerable<PROGRESS_ITEM> PROGRESS_ITEMToDate = entity.PROGRESS_ITEMS.Where(x => x.STAGE_ORDER == constructionSTAGE.SORT_ORDER && x.EARNED_DATE < DataDate);
                     decimal dbCumulativeEarnedQuantity = PROGRESS_ITEMToDate.Sum(x => x.EARNED_UNITS);
                     decimal currentPeriodEarnedQuantity = cumulativeEarnedQuantity - dbCumulativeEarnedQuantity;
@@ -661,7 +662,7 @@ namespace BluePrints.ViewModels
                     }
                     else
                     {
-                        PROGRESS_ITEMSCollectionViewModel.EntitiesUndoRedoManager.AddUndo(currentPeriodPROGRESS_ITEM, BindableBase.GetPropertyName(() => new PROGRESS_ITEM().EarnedUnits), currentPeriodPROGRESS_ITEM.EarnedUnits, cumulativeEarnedQuantity, EntityMessageType.Changed);
+                        PROGRESS_ITEMSCollectionViewModel.EntitiesUndoRedoManager.AddUndo(currentPeriodPROGRESS_ITEM, BindableBase.GetPropertyName(() => new PROGRESS_ITEM().EARNED_UNITS), currentPeriodPROGRESS_ITEM.EARNED_UNITS, cumulativeEarnedQuantity, EntityMessageType.Changed);
                     }
 
                     currentPeriodPROGRESS_ITEM.EARNED_UNITS = currentPeriodEarnedQuantity;

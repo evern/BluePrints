@@ -22,9 +22,11 @@ namespace BluePrints.Common.ViewModel.Reporting
             Entity.Entity.VARIATION_CODE = string.Empty;
         }
 
-        public ESTIMATE_ITEMProgress(PROJECT PROJECT, PROGRESS LivePROGRESS, IDeliverable_Rates entity, IEnumerable<VariationAdjustment> projectVariationAdjustments, bool forceRetrieveRemainingDataPoints)
+        IEnumerable<CONSTRUCTION_STAGE> constructionStages = null;
+        public ESTIMATE_ITEMProgress(PROJECT PROJECT, PROGRESS LivePROGRESS, IDeliverable_Rates entity, IEnumerable<VariationAdjustment> projectVariationAdjustments, bool forceRetrieveRemainingDataPoints, IEnumerable<CONSTRUCTION_STAGE> constructionStages = null)
             : base(PROJECT, LivePROGRESS, entity, projectVariationAdjustments, forceRetrieveRemainingDataPoints)
         {
+            this.constructionStages = constructionStages;
         }
 
         public string UniqueJobcode => Entity.Deliverable_Name + " " + Entity.Variation_Code;
@@ -39,8 +41,6 @@ namespace BluePrints.Common.ViewModel.Reporting
 
         public ESTIMATE_ITEMProgress ReadOnlyEstimate => this;
 
-        public override decimal Earned_Units_OnDataDate => PROGRESS_ITEMSCurrent.Sum(x => x.EarnedUnits);
-
         public override string P6_Assignment_UOM => Entity.UOM;
 
         public bool CanBook { get; set; }
@@ -49,7 +49,58 @@ namespace BluePrints.Common.ViewModel.Reporting
 
         public void resetEarnedUnits()
         {
+            earned_units_ondatadate = null;
             earned_units_beforedatadate = null;
+        }
+
+        decimal? earned_units_ondatadate = null;
+        public override decimal Earned_Units_OnDataDate
+        {
+            get
+            {
+                if (constructionStages == null)
+                    throw new NotImplementedException();
+
+                if(earned_units_ondatadate == null)
+                    earned_units_ondatadate = getEarnedUnits(PROGRESS_ITEMSCurrent);
+
+                return (decimal)earned_units_ondatadate;
+            }
+        }
+
+        public override decimal Earned_Units_BeforeDataDate
+        {
+            get
+            {
+
+                if (earned_units_beforedatadate == null)
+                {
+                    if (PROGRESS_ITEM_BeforeDataDate == null)
+                        earned_units_beforedatadate = 0;
+                    else
+                        earned_units_beforedatadate = getEarnedUnits(PROGRESS_ITEM_BeforeDataDate);
+                }
+
+                return (decimal)earned_units_beforedatadate;
+            }
+        }
+
+        private decimal getEarnedUnits(IEnumerable<PROGRESS_ITEM> progresses)
+        {
+            if (constructionStages == null)
+                throw new NotImplementedException();
+
+            decimal earnedUnits = 0;
+            foreach (PROGRESS_ITEM progress in progresses)
+            {
+                CONSTRUCTION_STAGE findCONSTRUCTION_STAGE = constructionStages.FirstOrDefault(x => x.SORT_ORDER == progress.STAGE_ORDER);
+                if (Entity.Entity.BUDGET_INSTALL_HOURS_PER_QTY != null && findCONSTRUCTION_STAGE != null)
+                {
+                    earnedUnits += progress.EARNED_UNITS * findCONSTRUCTION_STAGE.WEIGHT_PERCENTAGE * (decimal)Entity.Entity.BUDGET_INSTALL_HOURS_PER_QTY;
+                }
+            }
+
+            return earnedUnits;
         }
 
         public override decimal MaxPercentage
@@ -191,9 +242,9 @@ namespace BluePrints.Common.ViewModel.Reporting
 
         public decimal Total_Percentage => Total_Units == 0 ? 0 : (Earned_Units_Total / Total_Units);
 
-        public DateTime? FirstDataDate => PROGRESS_ITEMS.Where(x => x.EarnedUnits > 0).Count() == 0 ? (DateTime?)null : PROGRESS_ITEMS.Where(x => x.EarnedUnits > 0).Min(x => x.EARNED_DATE);
+        public DateTime? FirstDataDate => PROGRESS_ITEMS.Where(x => x.EARNED_UNITS > 0).Count() == 0 ? (DateTime?)null : PROGRESS_ITEMS.Where(x => x.EARNED_UNITS > 0).Min(x => x.EARNED_DATE);
 
-        public DateTime? LastDataDate => PROGRESS_ITEMS.Where(x => x.EarnedUnits > 0).Count() == 0 ? (DateTime?)null : PROGRESS_ITEMS.Where(x => x.EarnedUnits > 0).Max(x => x.EARNED_DATE);
+        public DateTime? LastDataDate => PROGRESS_ITEMS.Where(x => x.EARNED_UNITS > 0).Count() == 0 ? (DateTime?)null : PROGRESS_ITEMS.Where(x => x.EARNED_UNITS > 0).Max(x => x.EARNED_DATE);
 
         public IEnumerable<DeliverableEarnedPercentages> EarnedPercentages => Stats == null || Stats.Earned == null || Stats.Earned.CumulativeDataPoints == null || Stats.Earned.CumulativeDataPoints.Count == 0 ? null : Stats.Earned.CumulativeDataPoints.Where(x => Stats.Earned.DataPoints.Any(z => z.ProgressDate == x.ProgressDate)).Select(x => new DeliverableEarnedPercentages() { EarnedDate = x.ProgressDate, EarnedPercentage = x.UnitsPercentage });
 
@@ -417,7 +468,7 @@ namespace BluePrints.Common.ViewModel.Reporting
                     if (PROGRESS_ITEM_BeforeDataDate == null)
                         earned_units_beforedatadate = 0;
                     else
-                        earned_units_beforedatadate = PROGRESS_ITEM_BeforeDataDate.Sum(progress => progress.EarnedUnits);
+                        earned_units_beforedatadate = PROGRESS_ITEM_BeforeDataDate.Sum(progress => progress.EARNED_UNITS);
 
                 return (decimal)earned_units_beforedatadate;
             }
@@ -432,7 +483,7 @@ namespace BluePrints.Common.ViewModel.Reporting
                     if (PROGRESS_ITEM_AfterDataDate == null)
                         earned_units_afterdatadate = 0;
                     else
-                        earned_units_afterdatadate = PROGRESS_ITEM_AfterDataDate.Sum(x => x.EarnedUnits);
+                        earned_units_afterdatadate = PROGRESS_ITEM_AfterDataDate.Sum(x => x.EARNED_UNITS);
 
                 return (decimal)earned_units_afterdatadate;
             }
@@ -440,7 +491,7 @@ namespace BluePrints.Common.ViewModel.Reporting
 
         public decimal Earned_Percentage_OnDataDate => Total_Units == 0 ? 0 : (Earned_Units_OnDataDate / Total_Units);
 
-        public virtual decimal Earned_Units_OnDataDate => PROGRESS_ITEM_Current == null ? 0 : PROGRESS_ITEM_Current.EarnedUnits;
+        public virtual decimal Earned_Units_OnDataDate => PROGRESS_ITEM_Current == null ? 0 : PROGRESS_ITEM_Current.EARNED_UNITS;
 
         public virtual decimal Earned_Costs_OnDataDate => Earned_Units_OnDataDate * Entity.Budget_ItemRate;
 
@@ -598,7 +649,7 @@ namespace BluePrints.Common.ViewModel.Reporting
                 edit_PROGRESS_ITEM = createNewProgress(repository_find_actual_func);
 
 
-            edit_PROGRESS_ITEM.EarnedUnits = getCurrentPeriodEarnedUnits(getNewPercentage());
+            edit_PROGRESS_ITEM.EARNED_UNITS = getCurrentPeriodEarnedUnits(getNewPercentage());
 
             //use list because overriding member will be a group
             List<PROGRESS_ITEM> editPROGRESS_ITEMS = new List<PROGRESS_ITEM>();

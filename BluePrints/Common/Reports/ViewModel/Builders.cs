@@ -134,9 +134,9 @@ namespace BluePrints.Common.ViewModel.Reporting
                 TotalCosts = reportable.Stats.TotalCosts * CurrencyConversion,
                 BudgetedUnits = reportable.Stats.BudgetedUnits,
                 BudgetedCosts = reportable.Stats.BudgetedCosts * CurrencyConversion,
-                Units = x.EarnedUnits,
-                Quantity = x.EarnedUnits * qtyPerUnit,
-                Costs = x.EarnedUnits * reportable.Budget_ItemRate * CurrencyConversion,
+                Units = x.EARNED_UNITS,
+                Quantity = x.EARNED_UNITS * qtyPerUnit,
+                Costs = x.EARNED_UNITS * reportable.Budget_ItemRate * CurrencyConversion,
                 ProgressDate = x.EARNED_DATE,
             }).ToArray();
 

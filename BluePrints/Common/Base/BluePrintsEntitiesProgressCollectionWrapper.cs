@@ -854,7 +854,7 @@ namespace BluePrints.Common.Base
 
                 if (allAssignmentTasks.All(x => x.act_work_qty == 0))
                 {
-                    decimal allEarnedUnits = deliverable.Progresses.Sum(x => x.EarnedUnits);
+                    decimal allEarnedUnits = deliverable.Progresses.Sum(x => x.EARNED_UNITS);
                     allEarnedUnits *= -1;
                     removeOrReduceDataPointsForTasks(deliverable, allEarnedUnits);
                     bluePrintsUOW.SaveChanges();
@@ -882,7 +882,7 @@ namespace BluePrints.Common.Base
 
                                 decimal totalSupposedUnits = supposedUnitsForPreviousAssignment + proRateUnitsForCurrentAssignment;
 
-                                decimal totalUnitsEarned = deliverable.Progresses.Sum(x => x.EarnedUnits);
+                                decimal totalUnitsEarned = deliverable.Progresses.Sum(x => x.EARNED_UNITS);
                                 decimal unitsParity = totalSupposedUnits - totalUnitsEarned;
 
                                 //Add units for previous task assignments
@@ -972,14 +972,14 @@ namespace BluePrints.Common.Base
                 PROGRESS_ITEM currentDateProgress = bluePrintsUOW.PROGRESS_ITEMS.FirstOrDefault(x => x.GUID == progress.GUID);
                 if (reduceUnits > 0)
                 {
-                    if (currentDateProgress.EarnedUnits < reduceUnits)
+                    if (currentDateProgress.EARNED_UNITS < reduceUnits)
                     {
-                        reduceUnits -= currentDateProgress.EarnedUnits;
-                        currentDateProgress.EarnedUnits = 0;
+                        reduceUnits -= currentDateProgress.EARNED_UNITS;
+                        currentDateProgress.EARNED_UNITS = 0;
                     }
-                    else if (currentDateProgress.EarnedUnits >= reduceUnits)
+                    else if (currentDateProgress.EARNED_UNITS >= reduceUnits)
                     {
-                        currentDateProgress.EarnedUnits -= reduceUnits;
+                        currentDateProgress.EARNED_UNITS -= reduceUnits;
                         reduceUnits = 0;
                     }
                 }
@@ -1033,7 +1033,7 @@ namespace BluePrints.Common.Base
                         if (repositoryProgress.Count() == 0)
                             earnedUnits = 0;
                         else
-                            repositoryProgress.Sum(x => x.EarnedUnits);
+                            repositoryProgress.Sum(x => x.EARNED_UNITS);
 
                         if (earnedUnits >= supposedUnitsForAssignments)
                             continue;
@@ -1052,11 +1052,11 @@ namespace BluePrints.Common.Base
                             DateTime interpolationDateFormat = interpolatedDate.Date.AddDays(1).AddSeconds(-1);
                             PROGRESS_ITEM currentDateProgress = bluePrintsUOW.PROGRESS_ITEMS.FirstOrDefault(x => x.PROGRESS.STATUS == ProgressStatus.Live && x.GUID_ORIBASEITEM == deliverable.OriginalEntityKey && x.EARNED_DATE == interpolationDateFormat);
                             if (currentDateProgress != null)
-                                currentDateProgress.EarnedUnits += totalUnitsToAddPerPeriod;
+                                currentDateProgress.EARNED_UNITS += totalUnitsToAddPerPeriod;
                             else
                             {
                                 PROGRESS_ITEM newPROGRESS_ITEM = new PROGRESS_ITEM();
-                                newPROGRESS_ITEM.EarnedUnits = totalUnitsToAddPerPeriod;
+                                newPROGRESS_ITEM.EARNED_UNITS = totalUnitsToAddPerPeriod;
                                 newPROGRESS_ITEM.EARNED_DATE = interpolationDateFormat;
                                 newPROGRESS_ITEM.GUID_ORIBASEITEM = deliverable.OriginalEntityKey;
                                 newPROGRESS_ITEM.GUID_PROGRESS = loadPROGRESS.GUID;
@@ -1211,13 +1211,13 @@ namespace BluePrints.Common.Base
                         PROGRESS_ITEM currentDateProgress = bluePrintsUOW.PROGRESS_ITEMS.FirstOrDefault(x => x.GUID_PROGRESS == loadPROGRESS.GUID && x.GUID_ORIBASEITEM == simulation.DeliverableOriginalEntityKey && x.EARNED_DATE == interpolationDateFormat);
                         if (currentDateProgress != null)
                         {
-                            currentDateProgress.EarnedUnits += proratedParityPerPeriod;
+                            currentDateProgress.EARNED_UNITS += proratedParityPerPeriod;
                             //simulation.PostPushUnits += proratedParityPerPeriod;
                         }
                         else
                         {
                             PROGRESS_ITEM newPROGRESS_ITEM = new PROGRESS_ITEM();
-                            newPROGRESS_ITEM.EarnedUnits = proratedParityPerPeriod;
+                            newPROGRESS_ITEM.EARNED_UNITS = proratedParityPerPeriod;
                             newPROGRESS_ITEM.EARNED_DATE = interpolationDateFormat;
                             newPROGRESS_ITEM.GUID_ORIBASEITEM = simulation.DeliverableOriginalEntityKey;
                             newPROGRESS_ITEM.GUID_PROGRESS = loadPROGRESS.GUID;
@@ -1239,14 +1239,14 @@ namespace BluePrints.Common.Base
             {
                 if (reduceUnits > 0)
                 {
-                    if (progress.EarnedUnits < reduceUnits)
+                    if (progress.EARNED_UNITS < reduceUnits)
                     {
-                        reduceUnits -= progress.EarnedUnits;
-                        progress.EarnedUnits = 0;
+                        reduceUnits -= progress.EARNED_UNITS;
+                        progress.EARNED_UNITS = 0;
                     }
-                    else if (progress.EarnedUnits >= reduceUnits)
+                    else if (progress.EARNED_UNITS >= reduceUnits)
                     {
-                        progress.EarnedUnits -= reduceUnits;
+                        progress.EARNED_UNITS -= reduceUnits;
                         reduceUnits = 0;
                     }
                 }
@@ -1325,11 +1325,11 @@ namespace BluePrints.Common.Base
 
                 bool isNullProgress = false;
                 //comment this off because duration needs to be calculated even if deliverable is not progressed
-                if (current_progress_deliverable.PROGRESS_ITEM_UpToCurrentDataDate == null || current_progress_deliverable.PROGRESS_ITEM_UpToCurrentDataDate.Where(x => x.EarnedUnits > 0).Count() == 0)
+                if (current_progress_deliverable.PROGRESS_ITEM_UpToCurrentDataDate == null || current_progress_deliverable.PROGRESS_ITEM_UpToCurrentDataDate.Where(x => x.EARNED_UNITS > 0).Count() == 0)
                     isNullProgress = true;
 
-                DateTime? first_progress_date = isNullProgress ? (DateTime?)null : current_progress_deliverable.PROGRESS_ITEM_UpToCurrentDataDate.Where(x => x.EarnedUnits > 0).Min(x => x.EARNED_DATE);
-                DateTime? last_progress_date = isNullProgress ? (DateTime?)null : current_progress_deliverable.PROGRESS_ITEM_UpToCurrentDataDate.Where(x => x.EarnedUnits > 0).Max(x => x.EARNED_DATE);
+                DateTime? first_progress_date = isNullProgress ? (DateTime?)null : current_progress_deliverable.PROGRESS_ITEM_UpToCurrentDataDate.Where(x => x.EARNED_UNITS > 0).Min(x => x.EARNED_DATE);
+                DateTime? last_progress_date = isNullProgress ? (DateTime?)null : current_progress_deliverable.PROGRESS_ITEM_UpToCurrentDataDate.Where(x => x.EARNED_UNITS > 0).Max(x => x.EARNED_DATE);
 
                 decimal total_percentage_to_date;
 
@@ -1568,11 +1568,11 @@ namespace BluePrints.Common.Base
                         {
                             foreach (PROGRESS_ITEM progressItem in current_progress_deliverable.PROGRESS_ITEM_UpToCurrentDataDate)
                             {
-                                assignedUnits += progressItem.EarnedUnits;
+                                assignedUnits += progressItem.EARNED_UNITS;
                                 decimal currentPercentage = assignedUnits / deliverable.Total_Units;
 
                                 if (currentPercentage > p6_assignment.LOW_VALUE && currentPercentage <= p6_assignment.HIGH_VALUE)
-                                    errorMessages.Add(new P6ErrorMessage("Task not found", p6_assignment.P6_ACTIVITYID, current_progress_deliverable.Deliverable_Name, progressItem.EarnedUnits, progressItem.EARNED_DATE));
+                                    errorMessages.Add(new P6ErrorMessage("Task not found", p6_assignment.P6_ACTIVITYID, current_progress_deliverable.Deliverable_Name, progressItem.EARNED_UNITS, progressItem.EARNED_DATE));
                             }
                         }
 
