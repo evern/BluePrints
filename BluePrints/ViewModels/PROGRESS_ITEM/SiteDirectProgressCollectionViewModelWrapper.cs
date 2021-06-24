@@ -74,7 +74,7 @@ namespace BluePrints.ViewModels
             primeroUnitOfWork = PrimeroEntitiesUnitOfWorkSource.GetUnitOfWorkFactory(loadPROJECT.OfficeNameForExo == BluePrintsResources.OfficeMontreal).CreateUnitOfWork();
 
             gridRefreshDispatcherTimer = new DispatcherTimer();
-            gridRefreshDispatcherTimer.Interval = new TimeSpan(0, 0, 0, 0, 1);
+            gridRefreshDispatcherTimer.Interval = new TimeSpan(0, 0, 0, 0, 100);
 
             if (loadPROJECT != null)
                 isQueryForLiveStatus = true;
@@ -211,7 +211,7 @@ namespace BluePrints.ViewModels
         private void gridRefreshDispatcherTimer_Tick(object sender, EventArgs e)
         {
             gridRefreshDispatcherTimer.Stop();
-            GridControlService.RefreshData();
+            GridControlService.RefreshData();   
         }
 
         public override void PastingFromClipboard(PastingFromClipboardEventArgs e)
@@ -633,12 +633,12 @@ namespace BluePrints.ViewModels
                     if(isPercentage)
                     {
                         cumulativeEarnedPercentage = (decimal)newValue;
-                        cumulativeEarnedQuantity = cumulativeEarnedPercentage * entity.Total_Units;
+                        cumulativeEarnedQuantity = cumulativeEarnedPercentage * entity.Total_Quantity;
                     }
                     else
                     {
                         cumulativeEarnedQuantity = (decimal)newValue;
-                        cumulativeEarnedPercentage = cumulativeEarnedQuantity / entity.Total_Units;
+                        cumulativeEarnedPercentage = cumulativeEarnedQuantity / entity.Total_Quantity;
                     }
 
                     PROGRESS_ITEM currentPeriodPROGRESS_ITEM = entity.PROGRESS_ITEMS.FirstOrDefault(x => x.STAGE_ORDER == constructionSTAGE.SORT_ORDER && x.EARNED_DATE == DataDate);

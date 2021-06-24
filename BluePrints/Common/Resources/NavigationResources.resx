@@ -444,7 +444,25 @@
   <data name="Menu_Project_ConstructionStage" xml:space="preserve">
     <value>Project construction stage maintenance menu</value>
   </data>
-  <data name="Menu_Project_ConcreteConstructProgress" xml:space="preserve">
+  <data name="Menu_Project_ConstructProgress_Concrete" xml:space="preserve">
     <value>Project construction progress maintenance menu</value>
+  </data>
+  <data name="Menu_Project_ConstructProgress_Electrical" xml:space="preserve">
+    <value>Project electrical construction progress maintenance menu</value>
+  </data>
+  <data name="Menu_Project_ConstructProgress_Mechanical" xml:space="preserve">
+    <value>Project mechanical construction progress maintenance menu</value>
+  </data>
+  <data name="Menu_Project_ConstructProgress_Piping" xml:space="preserve">
+    <value>Project piping construction progress maintenance menu</value>
+  </data>
+  <data name="Menu_Project_ConstructProgress_Structural" xml:space="preserve">
+    <value>Project structural construction progress maintenance menu</value>
+  </data>
+  <data name="Category_Project_Construct_Progress" xml:space="preserve">
+    <value>Construction progress category</value>
+  </data>
+  <data name="Menu_Project_Forecast_Flat_PO" xml:space="preserve">
+    <value>Project equipment hire PO forecast maintenance menu</value>
   </data>
 </root>

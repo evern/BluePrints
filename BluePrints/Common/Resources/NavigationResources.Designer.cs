@@ -97,6 +97,15 @@ namespace BluePrints.Common.Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Construction progress category.
+        /// </summary>
+        internal static string Category_Project_Construct_Progress {
+            get {
+                return ResourceManager.GetString("Category_Project_Construct_Progress", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Project design category.
         /// </summary>
         internal static string Category_Project_Design {
@@ -367,15 +376,6 @@ namespace BluePrints.Common.Resources {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Project construction progress maintenance menu.
-        /// </summary>
-        internal static string Menu_Project_ConcreteConstructProgress {
-            get {
-                return ResourceManager.GetString("Menu_Project_ConcreteConstructProgress", resourceCulture);
-            }
-        }
-        
-        /// <summary>
         ///   Looks up a localized string similar to Project construction direct cost rate maintenance.
         /// </summary>
         internal static string Menu_Project_ConstructionDirectCostRate {
@@ -417,6 +417,51 @@ namespace BluePrints.Common.Resources {
         internal static string Menu_Project_ConstructionVariation {
             get {
                 return ResourceManager.GetString("Menu_Project_ConstructionVariation", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Project construction progress maintenance menu.
+        /// </summary>
+        internal static string Menu_Project_ConstructProgress_Concrete {
+            get {
+                return ResourceManager.GetString("Menu_Project_ConstructProgress_Concrete", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Project electrical construction progress maintenance menu.
+        /// </summary>
+        internal static string Menu_Project_ConstructProgress_Electrical {
+            get {
+                return ResourceManager.GetString("Menu_Project_ConstructProgress_Electrical", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Project mechanical construction progress maintenance menu.
+        /// </summary>
+        internal static string Menu_Project_ConstructProgress_Mechanical {
+            get {
+                return ResourceManager.GetString("Menu_Project_ConstructProgress_Mechanical", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Project piping construction progress maintenance menu.
+        /// </summary>
+        internal static string Menu_Project_ConstructProgress_Piping {
+            get {
+                return ResourceManager.GetString("Menu_Project_ConstructProgress_Piping", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Project structural construction progress maintenance menu.
+        /// </summary>
+        internal static string Menu_Project_ConstructProgress_Structural {
+            get {
+                return ResourceManager.GetString("Menu_Project_ConstructProgress_Structural", resourceCulture);
             }
         }
         

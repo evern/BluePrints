@@ -1854,12 +1854,12 @@ namespace BluePrints.Common.ViewModel.Utils
                         List<PROGRESS_ITEM> progressesByDate = deliverable.PROGRESS_ITEMS.OrderBy(x => x.EARNED_DATE).ToList();
                         foreach (PROGRESS_ITEM progressByDate in progressesByDate)
                         {
-                            decimal postProgressEarnedUnit = (iterateEarnedUnits + progressByDate.EARNED_UNITS);
-                            decimal oldProgressEarnUnit = progressByDate.EARNED_UNITS;
+                            decimal postProgressEarnedUnit = (iterateEarnedUnits + progressByDate.EarnedUnits);
+                            decimal oldProgressEarnUnit = progressByDate.EarnedUnits;
                             if (postProgressEarnedUnit > maxAllowableEarnedUnit)
                             {
                                 decimal newProgressEarnUnit = (maxAllowableEarnedUnit - iterateEarnedUnits);
-                                progressByDate.EARNED_UNITS = newProgressEarnUnit < 0 ? 0 : newProgressEarnUnit;
+                                progressByDate.EarnedUnits = newProgressEarnUnit < 0 ? 0 : newProgressEarnUnit;
                                 updateProgress.Add(progressByDate);
                             }
 
