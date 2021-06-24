@@ -11,6 +11,17 @@
             </ResourceDictionary.MergedDictionaries>
         </ResourceDictionary>
     </UserControl.Resources>
+    <dxmvvm:Interaction.Behaviors>
+        <dx:DialogService x:Name="USERAddDialogService">
+            <dx:DialogService.DialogStyle>
+                <Style TargetType="dx:DXDialogWindow">
+                    <Setter Property="SizeToContent" Value="Width" />
+                    <Setter Property="MinWidth" Value="500" />
+                    <Setter Property="MinHeight" Value="400" />
+                </Style>
+            </dx:DialogService.DialogStyle>
+        </dx:DialogService>
+    </dxmvvm:Interaction.Behaviors>
     <Grid Style="{StaticResource CollectionView.RootContainer}">
         <dxb:BarManager>
             <dxb:BarManager.Items>
@@ -42,14 +53,14 @@
                     <dxlc:LayoutGroup Name="LayoutGroupGrid" dxlc:LayoutControl.AllowHorizontalSizing="True" Orientation="Horizontal" View="Group">
                         <custom:GridControlEx x:Name="GridControl" dxc:DXSerializer.SerializationID="GridControlEXOResources" dxc:DXSerializer.StoreLayoutMode="All" Style="{StaticResource DefaultGridControlTemplate}">
                             <dxg:GridControl.Columns>
-                                <dxg:GridColumn FieldName="RESOURCENAME" Header="Name" />
-                                <dxg:GridColumn FieldName="TITLE" Header="Title" />
-                                <dxg:GridColumn FieldName="SECURITYPROFILEID" Header="Security Profile" >
+                                <dxg:GridColumn FieldName="RESOURCENAME" Header="Name" AllowBestFit="False" Width="200"/>
+                                <dxg:GridColumn FieldName="TITLE" Header="Title" AllowBestFit="False" Width="200" />
+                                <dxg:GridColumn FieldName="SECURITYPROFILEID" Header="Security Profile" AllowBestFit="False" Width="150">
                                     <dxg:GridColumn.EditSettings>
                                         <dxe:ComboBoxEditSettings AutoComplete="True" DisplayMember="PROFILENAME" IsTextEditable="True" ItemsSource="{Binding SecurityPROFILECollection}" ValueMember="ID" />
                                     </dxg:GridColumn.EditSettings>
                                 </dxg:GridColumn>
-                                <dxg:GridColumn FieldName="USERPROFILEID" Header="User Profile" >
+                                <dxg:GridColumn FieldName="USERPROFILEID" Header="User Profile" AllowBestFit="False" Width="150">
                                     <dxg:GridColumn.EditSettings>
                                         <dxe:ComboBoxEditSettings AutoComplete="True" DisplayMember="PROFILENAME" IsTextEditable="True" ItemsSource="{Binding UserPROFILECollection}" ValueMember="ID" />
                                     </dxg:GridColumn.EditSettings>
@@ -62,6 +73,11 @@
                                 <dxg:GridColumn FieldName="SELLPRICE1" Header="Sell Price" HeaderToolTip="Charge out rate for this resource">
                                     <dxg:GridColumn.EditSettings>
                                         <dxe:SpinEditSettings Increment="1" IsFloatValue="False" IsTextEditable="True" Mask="c2" MaskType="Numeric" MaskUseAsDisplayFormat="True" MinValue="0" />
+                                    </dxg:GridColumn.EditSettings>
+                                </dxg:GridColumn>
+                                <dxg:GridColumn FieldName="DEPARTMENT" Header="Department" AllowBestFit="False" Width="150">
+                                    <dxg:GridColumn.EditSettings>
+                                        <dxe:ComboBoxEditSettings AutoComplete="True" DisplayMember="X_Name" IsTextEditable="True" ItemsSource="{Binding X_DEPARTMENTCollection}" ValueMember="X_Number_Str" />
                                     </dxg:GridColumn.EditSettings>
                                 </dxg:GridColumn>
                                 <dxg:GridColumn FieldName="COSTGROUP" Header="Discipline Code" >
@@ -90,7 +106,7 @@
                                     </dxg:GridColumn.EditSettings>
                                 </dxg:GridColumn>
                                 <dxg:GridColumn FieldName="PAYROLL_ID" Header="Payroll Id" />
-                                <dxg:GridColumn FieldName="REPORTS_TO_STAFFNO" Header="Report To" >
+                                <dxg:GridColumn FieldName="REPORTS_TO_STAFFNO" Header="Report To" AllowBestFit="False" Width="150">
                                     <dxg:GridColumn.EditSettings>
                                         <dxg:LookUpEditSettings AutoComplete="True" DisplayMember="RESOURCENAME" AutoPopulateColumns="False" IsTextEditable="True" ItemsSource="{Binding DisplayEntities}" ValueMember="REPORTS_TO_STAFFNO" NullText="Leave empty to autogenerate" >
                                             <dxg:LookUpEditSettings.StyleSettings>
@@ -111,7 +127,7 @@
                                         </dxg:LookUpEditSettings>
                                     </dxg:GridColumn.EditSettings>
                                 </dxg:GridColumn>
-                                <dxg:GridColumn FieldName="STAFFNO" Header="Linked to Staff" Visible="False" HeaderToolTip="Cannot be changed once entered, please double check" >
+                                <dxg:GridColumn FieldName="STAFFNO" Header="Linked to Staff" Visible="False" HeaderToolTip="Cannot be changed once entered, please double check" AllowBestFit="False" Width="150">
                                     <dxg:GridColumn.HeaderStyle>
                                         <Style TargetType="Control">
                                             <Setter Property="Background" Value="Salmon" />
@@ -145,6 +161,11 @@
                                             <dxe:TextEdit IsReadOnly="{Binding RowData.Row.IsNewRow, Converter={StaticResource BooleanNegationConverter}}" Name="PART_Editor" NullText="Leave empty to autogenerate"/>
                                         </DataTemplate>
                                     </dxg:GridColumn.CellTemplate>
+                                </dxg:GridColumn>
+                                <dxg:GridColumn FieldName="IsExistInBP" Header="Is BP User" >
+                                    <dxg:GridColumn.EditSettings>
+                                        <dxe:CheckEditSettings />
+                                    </dxg:GridColumn.EditSettings>
                                 </dxg:GridColumn>
                             </dxg:GridControl.Columns>
                             <dxg:GridControl.TotalSummary>

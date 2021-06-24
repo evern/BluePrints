@@ -62,7 +62,7 @@
                 </dxr:RibbonControl>
                 <custom:GridControlEx x:Name="GridControl" dx:DXSerializer.SerializationID="GridControlUSER" dx:DXSerializer.StoreLayoutMode="All" Style="{StaticResource DefaultGridControlTemplate}">
                     <dxg:GridControl.Columns>
-                        <dxg:GridColumn FieldName="NAME" Header="Login Name" HeaderToolTip="Name used to login into system" />
+                        <dxg:GridColumn FieldName="NAME" Header="Login Name" HeaderToolTip="Name used to login into system" AllowBestFit="False" Width="200"/>
                         <dxg:GridColumn FieldName="FIRST_NAME" Header="First Name" />
                         <dxg:GridColumn FieldName="LAST_NAME" Header="Last Name" />
                         <dxg:GridColumn FieldName="GUID_DEPARTMENT" Header="Department">
@@ -75,8 +75,8 @@
                                 <dxe:ComboBoxEditSettings AutoComplete="True" DisplayMember="NAME" IsTextEditable="True" ItemsSource="{Binding DISCIPLINECollection}" NullValueButtonPlacement="Popup" ValueMember="GUID" />
                             </dxg:GridColumn.EditSettings>
                         </dxg:GridColumn>
-                        <dxg:GridColumn FieldName="TITLE" Header="Title" />
-                        <dxg:GridColumn FieldName="DESCRIPTION" Header="Description" />
+                        <dxg:GridColumn FieldName="TITLE" Header="Title" AllowBestFit="False" Width="150" />
+                        <dxg:GridColumn FieldName="DESCRIPTION" Header="Description" AllowBestFit="False" Width="150" />
                         <dxg:GridColumn FieldName="GUID_ROLE" Header="Role" HeaderToolTip="Role assigned will determine authorisation level within system. View role from navigation menu to view role authorisation">
                             <dxg:GridColumn.EditSettings>
                                 <dxe:ComboBoxEditSettings AutoComplete="True" DisplayMember="NAME" IsTextEditable="True" ItemsSource="{Binding RestrictedROLECollection}" NullValueButtonPlacement="Popup" ValueMember="GUID" />

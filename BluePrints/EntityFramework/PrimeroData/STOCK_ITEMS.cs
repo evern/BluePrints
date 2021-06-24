@@ -193,6 +193,9 @@ namespace BluePrints.PrimeroData
 
         public int? X_COLOURID { get; set; }
 
+        [StringLength(50)]
+        public string X_DEPARTMENT { get; set; }
+
         [Required]
         [StringLength(1)]
         public string VARIABLECOST { get; set; }

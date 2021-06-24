@@ -760,7 +760,9 @@ namespace BluePrints.ViewModels
             }
 
             #endregion
-            projectionEntity.Entity.Entity.GUID_ORIGINAL = entity.GUID_ORIGINAL;
+            if(entity != null)
+                projectionEntity.Entity.Entity.GUID_ORIGINAL = entity.GUID_ORIGINAL;
+
             if (isNewEntity)
                 OnAfterDuplicateCallBack?.Invoke(projectionEntity);
             //save_deliverable_users(projectionEntity);

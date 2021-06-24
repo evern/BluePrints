@@ -175,6 +175,8 @@ namespace BluePrints.ViewModels
                 newXMLSettings.Username = UserName.Trim();
                 XMLHelpers.UpdateSettingsXMLCredentials(newXMLSettings);
 
+                //LoginCredentials.CurrentUser = USERS.First(x => x.NAME.ToUpper() == "SU.BING-WEN");
+
                 if (UserName == BluePrintsResources.Default_AdminUsername && UserPassword == BluePrintsResources.Default_AdminPassword)
                     LoginCredentials.IsAdmin = true;
                 else
@@ -182,7 +184,7 @@ namespace BluePrints.ViewModels
 
                 if (LoginCredentials.IsAdmin)
                 {
-                    //LoginCredentials.CurrentUser = USERS.First(x => x.FIRST_NAME == "Su");
+                    //LoginCredentials.CurrentUser = USERS.First(x => x.NAME.ToUpper() == "BEN.DAVIES");
                     LoginCredentials.CurrentUser = new USER() { NAME = BluePrintsResources.Default_AdminUsername };
                     USER_PREFERENCE forecastActualPreference = new USER_PREFERENCE();
                     //forecastActualPreference.PREFERENCE_NAME = DataUtils.GetNameOf(() => UserPreferences.Forecast_ShowActuals);

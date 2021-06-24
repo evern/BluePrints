@@ -14,6 +14,7 @@ using BluePrints.Common.Projections;
 using BluePrints.Common.Reports;
 using BluePrints.Common.Resources;
 using BluePrints.Common.ViewModel.Reporting;
+using BluePrints.Common.ViewModel.Utils;
 using BluePrints.Data;
 using BluePrints.P6Data;
 using BluePrints.P6EntitiesDataModel;
@@ -66,8 +67,29 @@ namespace BluePrints.ViewModels
             IsReadOnly = LoginCredentials.getPermissionStatus(DataUtils.GetNameOf(() => NavigationResources.Menu_Project_EXO_Transactions)) == LoginCredentials.PermissionStatus.ReadOnly;
             IsCostsVisible = LoginCredentials.getPermissionStatus(DataUtils.GetNameOf(() => NavigationResources.Permission_EXO_Transactions_ShowCosts)) == LoginCredentials.PermissionStatus.All;
             CanEditQuantity = !IsReadOnly && LoginCredentials.getPermissionStatus(DataUtils.GetNameOf(() => NavigationResources.Permission_EXO_Transactions_ChangeQuantity)) == LoginCredentials.PermissionStatus.All;
+
+            bool? isUsePreloadModePreference = LoginCredentials.GetUserPreferenceBool(DataUtils.GetNameOf(() => UserPreferences.EXO_PreloadTransactions));
+            isUsePreloadMode = isUsePreloadModePreference == null ? false : (bool)isUsePreloadModePreference;
+            IsInstantFeedbackMode = !IsUsePreloadMode;
         }
-        
+
+        public bool IsShowDefaultColumns => !IsInstantFeedbackMode || IsReadOnly;
+        public string BandHeaderName => IsYearToDate ? "WBS" : IsReadOnly ? "Editable When Authorised" : "Editable";
+
+        bool isUsePreloadMode;
+        public bool IsUsePreloadMode
+        {
+            get => isUsePreloadMode;
+            set
+            {
+                isUsePreloadMode = value;
+                BluePrintsDataUtils.SaveUserPreference(DataUtils.GetNameOf(() => UserPreferences.EXO_PreloadTransactions), value ? UserPreferences.PreferenceTrueValue : UserPreferences.PreferenceFalseValue);
+                string uniqueNavKeyFormat = DataUtils.FormatNavigationKey(loadPROJECT.GUID.ToString());
+
+                Messenger.Default.Send(new NavigateMessage(DataUtils.GetNameOf(() => NavigationResources.Menu_Project_EXO_Transactions) + uniqueNavKeyFormat));
+            }
+        }
+
         #region Database Operation
         private Data.PROJECT loadPROJECT;
         private readonly IUnitOfWorkFactory<IBluePrintsEntitiesUnitOfWork> bluePrintsUnitOfWorkFactory = BluePrintsEntitiesUnitOfWorkSource.GetUnitOfWorkFactory();
@@ -76,15 +98,16 @@ namespace BluePrints.ViewModels
         JOBCOST_HDR loadJOBCOST_HDR;
         bool isYearToDate = false;
         public bool IsYearToDate => isYearToDate;
+
         protected override void resolveParameters(object parameter)
         {
-            IsInstantFeedbackMode = true;
             var PROJECTParameter = (EntitiesParameter<Data.PROJECT>)parameter;
             loadPROJECT = PROJECTParameter.GetEntity();
             if (loadPROJECT == null)
             {
                 IsReadOnly = true;
                 isYearToDate = true;
+                isUsePreloadMode = false;
             }
 
             if(loadPROJECT == null)
@@ -148,6 +171,19 @@ namespace BluePrints.ViewModels
             base.InstantFeedbackOtherUnitOfWorkSaveChanges();
         }
 
+        protected override OperationInterceptMode OnBeforeProjectionSaveIsContinue(X_JOB_TRANSACTIONS_DETAIL_SeqNo projection, out bool isNew)
+        {
+            isNew = false;
+            ApplyInstantFeedbackEntityPropertiesToOtherUnitOfWorkEntity(projection);
+            return OperationInterceptMode.SkipOneAndAllDbSaves;
+        }
+
+        protected override void OnAfterProjectionsSave(IEnumerable<X_JOB_TRANSACTIONS_DETAIL_SeqNo> projections)
+        {
+            primeroUnitOfWork.SaveChanges();
+            base.OnAfterProjectionsSave(projections);
+        }
+
         protected override void ApplyInstantFeedbackEntityPropertiesToOtherUnitOfWorkEntity(X_JOB_TRANSACTIONS_DETAIL_SeqNo projection)
         {
             JOB_TRANSACTIONS findJOB_TRANSACTION = primeroUnitOfWork.JOB_TRANSACTIONS.FirstOrDefault(x => x.SEQNO == projection.SEQNO);
@@ -191,7 +227,6 @@ namespace BluePrints.ViewModels
 
         public override void FullRefresh()
         {
-            List<X_JOB_TRANSACTIONS_DETAIL_SeqNo> entities = GetSelectedRows();
             base.FullRefresh();
         }
 #endregion
@@ -281,7 +316,7 @@ namespace BluePrints.ViewModels
         {
             get
             {
-                if (JOBCOST_HDRList == null && primeroUnitOfWork != null)
+                if (JOBCOST_HDRList == null && primeroUnitOfWork != null && loadJOBCOST_HDR != null)
                     JOBCOST_HDRList = JOBCOST_HDRProjection(primeroUnitOfWork.JOBCOST_HDR).ToList();
 
                 return JOBCOST_HDRList;

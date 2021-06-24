@@ -54,12 +54,15 @@ namespace BluePrints.ViewModels
         private IUnitOfWorkFactory<IPrimeroEntitiesUnitOfWork> pgaUnitOfWorkFactory = PrimeroEntitiesUnitOfWorkSource.GetUnitOfWorkFactory(true);
         IPrimeroEntitiesUnitOfWork primeroUnitOfWork;
         IPrimeroEntitiesUnitOfWork pgaUnitOfWork;
+        IBluePrintsEntitiesUnitOfWork bluePrintsUnitOfWork;
         //timer to scan serial port
         protected override void resolveParameters(object parameter)
         {
+            bluePrintsUnitOfWork = bluePrintsUnitOfWorkFactory.CreateUnitOfWork();
             primeroUnitOfWork = primeroUnitOfWorkFactory.CreateUnitOfWork();
             pgaUnitOfWork = pgaUnitOfWorkFactory.CreateUnitOfWork();
         }
+
         protected override void addEntitiesLoader()
         {
             loaderCollection.AddLoaderDescription<ROLE, ROLE, Guid, IBluePrintsEntitiesUnitOfWork>(bluePrintsUnitOfWorkFactory, x => x.ROLES);
@@ -95,6 +98,8 @@ namespace BluePrints.ViewModels
 
         public IQueryable<USER> USERCollectionPopulation(IQueryable<USER> USERS)
         {
+            //DbContext cannot support parallel operation, load it up first in cache
+            PROJECT_PERMISSIONCollection.ToList();
             HashSet<USER> users = new HashSet<USER>(USERS);
             Parallel.ForEach(users, user =>
             {
@@ -122,14 +127,14 @@ namespace BluePrints.ViewModels
             user.Update();
         }
 
-        public IEnumerable<Guid> ChildrenRoles(Guid roleGuid)
+        public static IEnumerable<Guid> ChildrenRoles(Guid roleGuid, IEnumerable<ROLE> ROLECollection)
         {
             foreach (var role in ROLECollection)
                 if (role.PARENTGUID == roleGuid)
                 {
                     yield return role.GUID;
 
-                    foreach (var entityChild in ChildrenRoles(role.GUID))
+                    foreach (var entityChild in ChildrenRoles(role.GUID, ROLECollection))
                         yield return entityChild;
                 }
         }
@@ -170,6 +175,7 @@ namespace BluePrints.ViewModels
             }
 
             saveProjectAssignments(entity);
+            resetProjectPermision();
             base.OnAfterProjectionSave(projection, entity, isNew);
         }
         #endregion
@@ -180,48 +186,37 @@ namespace BluePrints.ViewModels
             if (entity.Project_Assignments != null)
             {
                 List<PROJECT_PERMISSION> remove_projects = new List<PROJECT_PERMISSION>();
-                foreach (PROJECT_PERMISSION assignment in PROJECT_PERMISSIONCollection.Where(x => x.GUID_USER == entity.GUID))
+                foreach (PROJECT_PERMISSION assignment in bluePrintsUnitOfWork.PROJECT_PERMISSIONS.Where(x => x.GUID_USER == entity.GUID))
                 {
                     if (!entity.Project_Assignments.Any(x => x.GUID == assignment.GUID_PROJECT))
-                        remove_projects.Add(assignment);
+                        bluePrintsUnitOfWork.PROJECT_PERMISSIONS.Remove(assignment);
                 }
-
-                PROJECT_PERMISSIONCollectionViewModel.BaseBulkDelete(remove_projects);
 
                 List<PROJECT_PERMISSION> add_projects = new List<PROJECT_PERMISSION>();
                 foreach (PROJECT project in entity.Project_Assignments)
                 {
-                    if (!add_projects.Any(x => x.GUID_PROJECT == project.GUID))
-                        add_projects.Add(new PROJECT_PERMISSION() { GUID_PROJECT = project.GUID, GUID_USER = entity.GUID });
+                    if (!bluePrintsUnitOfWork.PROJECT_PERMISSIONS.Where(x => x.GUID_USER == entity.GUID).Any(x => x.GUID_PROJECT == project.GUID))
+                        bluePrintsUnitOfWork.PROJECT_PERMISSIONS.Add(new PROJECT_PERMISSION() { GUID_PROJECT = project.GUID, GUID_USER = entity.GUID });
                 }
-
-                PROJECT_PERMISSIONCollectionViewModel.BaseBulkSave(add_projects);
             }
             else
             {
                 List<PROJECT_PERMISSION> remove_projects = new List<PROJECT_PERMISSION>();
-                foreach (PROJECT_PERMISSION assignment in PROJECT_PERMISSIONCollection.Where(x => x.GUID_USER == entity.GUID))
+                foreach (PROJECT_PERMISSION assignment in bluePrintsUnitOfWork.PROJECT_PERMISSIONS.Where(x => x.GUID_USER == entity.GUID))
                 {
-                    remove_projects.Add(assignment);
+                    bluePrintsUnitOfWork.PROJECT_PERMISSIONS.Remove(assignment);
                 }
-
-                PROJECT_PERMISSIONCollectionViewModel.BaseBulkDelete(remove_projects);
             }
+
+            bluePrintsUnitOfWork.SaveChanges();
         }
         #endregion
 
         #region View Properties
 
-        private int? getExoStaffId(USER bluePrintsUser, IEnumerable<STAFF> officeSpecificStaffCollection)
+        private static int? getExoStaffId(USER bluePrintsUser, IEnumerable<STAFF> officeSpecificStaffCollection)
         {
-            if (bluePrintsUser.GUID_OFFICE == null)
-                return null;
-
             string exoGuessUserName = bluePrintsUser.FIRST_NAME.ToUpper() + " " + bluePrintsUser.LAST_NAME.ToUpper();
-            OFFICE findOffice = OFFICECollection.FirstOrDefault(x => x.GUID == bluePrintsUser.GUID_OFFICE);
-            if (findOffice == null)
-                return null;
-
             STAFF exoSTAFF = officeSpecificStaffCollection.FirstOrDefault(x => x.NAME.Contains(exoGuessUserName));
             if (exoSTAFF != null)
             {
@@ -260,37 +255,34 @@ namespace BluePrints.ViewModels
                 return;
             }
 
-            bool showErrorMessage = false;
             List<USER> userToSave = new List<USER>();
             foreach(USER entity in SelectedEntities)
             {
-                if (entity.GUID_OFFICE == null)
-                {
-                    showErrorMessage = true;
-                    continue;
-                }
-
-                int? exoPerthId = getExoStaffId(entity, PerthSTAFFCollection);
-                if(exoPerthId != null)
-                {
-                    entity.EXO_STAFF_ID = exoPerthId;
+                if(PopulateUserStaffIds(entity, PerthSTAFFCollection, MontrealSTAFFCollection))
                     userToSave.Add(entity);
-                }
-
-                int? exoMontrealId = getExoStaffId(entity, MontrealSTAFFCollection);
-                if (exoMontrealId != null)
-                {
-                    entity.EXO_STAFF_ID_REMOTE = exoMontrealId;
-                    userToSave.Add(entity);
-                }
-            }
-
-            if (showErrorMessage)
-            {
-                MessageBoxService.ShowMessage("Cannot assign Exo user because office isn't populated, please populate office then try again", "Error", MessageButton.OK, MessageIcon.Information);
             }
 
             MainViewModel.BaseBulkSave(userToSave);
+        }
+
+        public static bool PopulateUserStaffIds(USER entity, IEnumerable<STAFF> PerthSTAFFCollection, IEnumerable<STAFF> MontrealSTAFFCollection)
+        {
+            int? exoPerthId = getExoStaffId(entity, PerthSTAFFCollection);
+            bool shouldSave = false;
+            if (exoPerthId != null)
+            {
+                entity.EXO_STAFF_ID = exoPerthId;
+                shouldSave = true;
+            }
+
+            int? exoMontrealId = getExoStaffId(entity, MontrealSTAFFCollection);
+            if (exoMontrealId != null)
+            {
+                entity.EXO_STAFF_ID_REMOTE = exoMontrealId;
+                shouldSave = true;
+            }
+
+            return shouldSave;
         }
 
         public bool CanTrimUsers()
@@ -412,23 +404,30 @@ namespace BluePrints.ViewModels
             }
         }
 
+        List<ROLE> restrictedROLECollection;
         public IEnumerable<ROLE> RestrictedROLECollection
         {
             get
             {
                 var collection = GetEntities<ROLE>();
-                if (collection != null)
-                {
-                    if (LoginCredentials.IsAdmin)
-                        collection = collection.OrderBy(x => x.NAME);
-                    else if (LoginCredentials.CurrentUser.GUID_ROLE == null)
-                        collection = collection.Where(x => x.GUID == Guid.Empty);
-                    else
-                        collection = collection.Where(x => x.GUID == LoginCredentials.CurrentUser.GUID_ROLE || ChildrenRoles((Guid)LoginCredentials.CurrentUser.GUID_ROLE).Contains((Guid)x.GUID)).OrderBy(x => x.NAME);
-                }
+                if (restrictedROLECollection == null && !IsLoading)
+                    restrictedROLECollection = GetRestrictedRoleCollection(collection);
 
-                return collection;
+                return restrictedROLECollection;
             }
+        }
+
+        public static List<ROLE> GetRestrictedRoleCollection(IEnumerable<ROLE> ROLECollection)
+        {
+            List<ROLE> returnRoleCollection;
+            if (LoginCredentials.IsAdmin)
+                returnRoleCollection = ROLECollection.OrderBy(x => x.NAME).ToList();
+            else if (LoginCredentials.CurrentUser.GUID_ROLE == null)
+                returnRoleCollection = ROLECollection.Where(x => x.GUID == Guid.Empty).ToList();
+            else
+                returnRoleCollection = ROLECollection.Where(x => x.GUID == LoginCredentials.CurrentUser.GUID_ROLE || ChildrenRoles((Guid)LoginCredentials.CurrentUser.GUID_ROLE, ROLECollection).Contains((Guid)x.GUID)).OrderBy(x => x.NAME).ToList();
+
+            return returnRoleCollection;
         }
 
         public IEnumerable<DEPARTMENT> DEPARTMENTCollection
@@ -486,27 +485,6 @@ namespace BluePrints.ViewModels
             }
         }
 
-        public IEnumerable<PROJECT_PERMISSION> PROJECT_PERMISSIONCollection
-        {
-            get
-            {
-                return GetEntities<PROJECT_PERMISSION>();
-            }
-        }
-
-        public CollectionViewModel<PROJECT_PERMISSION, PROJECT_PERMISSION, Guid, IBluePrintsEntitiesUnitOfWork> PROJECT_PERMISSIONCollectionViewModel
-        {
-            get
-            {
-                if (MainViewModel == null)
-                    return null;
-
-                return
-                    (CollectionViewModel<PROJECT_PERMISSION, PROJECT_PERMISSION, Guid, IBluePrintsEntitiesUnitOfWork>)
-                    loaderCollection.GetViewModel<PROJECT_PERMISSION>();
-            }
-        }
-
         public IEnumerable<OFFICE> OFFICECollection
         {
             get
@@ -519,6 +497,25 @@ namespace BluePrints.ViewModels
 
                 return collection;
             }
+        }
+
+        List<PROJECT_PERMISSION> projectPermissionCollection;
+        public List<PROJECT_PERMISSION> PROJECT_PERMISSIONCollection
+        {
+            get
+            {
+                if(bluePrintsUnitOfWork != null && projectPermissionCollection == null)
+                {
+                    projectPermissionCollection = bluePrintsUnitOfWork.PROJECT_PERMISSIONS.ToList();
+                }
+
+                return projectPermissionCollection;
+            }
+        }
+
+        private void resetProjectPermision()
+        {
+            projectPermissionCollection = null;
         }
         #endregion
 

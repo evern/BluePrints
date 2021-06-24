@@ -79,9 +79,9 @@ namespace BluePrints.ViewModels
         #endregion
 
         #region Saving Behavior
-        private void onAfterEntitySaved(CLIENT entity, CLIENT projection, bool isNewEntity)
+        private void onAfterEntitySaved(CLIENT projection, CLIENT entity, bool isNewEntity)
         {
-            save_project_assignments(entity);
+            save_project_assignments(projection);
         }
 
         private void save_project_assignments(CLIENT entity)

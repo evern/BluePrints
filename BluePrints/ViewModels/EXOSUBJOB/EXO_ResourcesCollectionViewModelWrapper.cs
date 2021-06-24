@@ -1,6 +1,8 @@
 ﻿using BaseModel.Data.Helpers;
 using BaseModel.DataModel;
 using BaseModel.Misc;
+using BaseModel.ViewModel.Base;
+using BaseModel.ViewModel.Dialogs;
 using BluePrints.BluePrintsEntitiesDataModel;
 using BluePrints.Common;
 using BluePrints.Common.Base;
@@ -54,7 +56,8 @@ namespace BluePrints.ViewModels
 
         private readonly IPrimeroEntitiesUnitOfWork primeroUnitOfWork = PrimeroEntitiesUnitOfWorkSource.GetUnitOfWorkFactory().CreateUnitOfWork();
         private readonly IPrimeroEntitiesUnitOfWork pgaUnitOfWork = PrimeroEntitiesUnitOfWorkSource.GetUnitOfWorkFactory(true).CreateUnitOfWork();
-
+        private readonly IUnitOfWorkFactory<IBluePrintsEntitiesUnitOfWork> bluePrintsUnitOfWorkFactory = BluePrintsEntitiesUnitOfWorkSource.GetUnitOfWorkFactory();
+        List<USER> activeDirectoryUSERS;
         protected override void resolveParameters(object parameter)
         {
             AlwaysSkipMessage = true;
@@ -66,6 +69,12 @@ namespace BluePrints.ViewModels
             loaderCollection.AddLoaderDescription<JOB_COSTTYPES, JOB_COSTTYPES, int, IPrimeroEntitiesUnitOfWork>(primeroUnitOfWorkFactory, x => x.JOB_COSTTYPES);
             loaderCollection.AddLoaderDescription<JOB_COSTGROUPS, JOB_COSTGROUPS, int, IPrimeroEntitiesUnitOfWork>(primeroUnitOfWorkFactory, x => x.JOB_COSTGROUPS);
             loaderCollection.AddLoaderDescription<PROFILE, PROFILE, int, IPrimeroEntitiesUnitOfWork>(primeroUnitOfWorkFactory, x => x.PROFILE);
+            loaderCollection.AddLoaderDescription<USER, USER, Guid, IBluePrintsEntitiesUnitOfWork>(bluePrintsUnitOfWorkFactory, x => x.USERS);
+            loaderCollection.AddLoaderDescription<DEPARTMENT, DEPARTMENT, Guid, IBluePrintsEntitiesUnitOfWork>(bluePrintsUnitOfWorkFactory, x => x.DEPARTMENTS);
+            loaderCollection.AddLoaderDescription<DISCIPLINE, DISCIPLINE, Guid, IBluePrintsEntitiesUnitOfWork>(bluePrintsUnitOfWorkFactory, x => x.DISCIPLINES);
+            loaderCollection.AddLoaderDescription<ROLE, ROLE, Guid, IBluePrintsEntitiesUnitOfWork>(bluePrintsUnitOfWorkFactory, x => x.ROLES);
+            loaderCollection.AddLoaderDescription<X_DEPARTMENT, X_DEPARTMENT, int, IPrimeroEntitiesUnitOfWork>(primeroUnitOfWorkFactory, x => x.X_DEPARTMENTS);
+            loaderCollection.AddLoaderDescription<OFFICE, OFFICE, Guid, IBluePrintsEntitiesUnitOfWork>(bluePrintsUnitOfWorkFactory, x => x.OFFICES);
         }
 #endregion
 
@@ -76,7 +85,7 @@ namespace BluePrints.ViewModels
 
         protected override Func<IRepositoryQuery<JOBCOST_RESOURCE>, IQueryable<ExoResourceProjection>> specifyMainViewModelProjection()
         {
-            return query => ExoQueries.GetResources(primeroUnitOfWork);
+            return query => ExoQueries.GetResources(primeroUnitOfWork, USERCollection);
         }
 
         protected override void AssignCallBacksAndRaisePropertyChange(IEnumerable<ExoResourceProjection> entities)
@@ -172,7 +181,7 @@ namespace BluePrints.ViewModels
             resource.SHORTCODE = addedResource.SHORTCODE;
             resource.RESOURCE_SEQNO = addedResource.SEQNO;
 
-            STOCK_ITEMS stockItem = ExoMethods.FindExistingOrAddStockItem(primeroUOW, resource.SHORTCODE, resource.RESOURCENAME, resource.SELLPRICE1, resource.SALES_GL_CODE, resource.PURCH_GL_CODE, resource.COS_GL_CODE, resource.STDCOST, resource.COSTGROUP, resource.COSTTYPE);
+            STOCK_ITEMS stockItem = ExoMethods.FindExistingOrAddStockItem(primeroUOW, resource.SHORTCODE, resource.RESOURCENAME, resource.SELLPRICE1, resource.SALES_GL_CODE, resource.PURCH_GL_CODE, resource.COS_GL_CODE, resource.STDCOST, resource.COSTGROUP, resource.COSTTYPE, resource.DEPARTMENT);
             primeroUOW.SaveChanges();
             resource.IsViewNewRow = false;
             resource.Update();
@@ -199,6 +208,11 @@ namespace BluePrints.ViewModels
             primeroUOW.SaveChanges();
         }
 
+        private IDialogService USERAddDialogService
+        {
+            get { return this.GetRequiredService<IDialogService>("USERAddDialogService"); }
+        }
+
         /// <summary>
         /// The view name to be used when saving layout for IDocumentContent
         /// </summary>
@@ -219,6 +233,26 @@ namespace BluePrints.ViewModels
             return string.Empty;
         }
 
+        public override void UnifiedCellValueChanged(string field_name, object old_value, object new_value, ExoResourceProjection projection, bool isNew)
+        {
+            if (field_name == BindableBase.GetPropertyName(() => new ExoResourceProjection().IsExistInBP))
+            {
+                if((bool)new_value)
+                {
+                    USER newUSER = USERCollection.FirstOrDefault(x => x.EXO_STAFF_ID == projection.STAFFNO);
+                    if (newUSER == null && userAdditionViewModel != null)
+                    {
+                        newUSER = userAdditionViewModel.GetNewUser();
+                        USERViewModel.Save(newUSER);
+                        userAdditionViewModel = null;
+                    }
+                }
+            }
+
+            base.UnifiedCellValueChanged(field_name, old_value, new_value, projection, isNew);
+        }
+
+        USERAdditionViewModel userAdditionViewModel;
         public override string UnifiedValueValidation(ExoResourceProjection projection, string field_name, object new_value, bool isPaste)
         {
             if (field_name == BindableBase.GetPropertyName(() => new ExoResourceProjection().RESOURCENAME))
@@ -230,17 +264,64 @@ namespace BluePrints.ViewModels
             if (!projection.IsViewNewRow && (IsChangingValueFromBackgroundEvents && !MainViewModel.EntitiesUndoRedoManager.IsInUndoRedoOperation || CellValueChangingFieldName != null))
             {
                 string validateFieldName = field_name;
-                if (!IsChangingValueFromBackgroundEvents && CellValueChangingFieldName != null)
-                    validateFieldName = CellValueChangingFieldName;
-
-                if (validateFieldName == BindableBase.GetPropertyName(() => new ExoResourceProjection().SHORTCODE) || validateFieldName == BindableBase.GetPropertyName(() => new ExoResourceProjection().DEFAULT_STOCKCODE))
+                if (!IsChangingValueFromBackgroundEvents && CellValueChangingFieldName != null && CellValueChangingFieldName == validateFieldName)
                 {
-                    if (MessageBoxService.ShowMessage("Are you sure you change " + field_name + " for " + projection.RESOURCENAME + "?", "Warning", MessageButton.OKCancel, MessageIcon.Warning) == MessageResult.Cancel)
-                        return "User cancel";
+                    if (validateFieldName == BindableBase.GetPropertyName(() => new ExoResourceProjection().SHORTCODE) || validateFieldName == BindableBase.GetPropertyName(() => new ExoResourceProjection().DEFAULT_STOCKCODE))
+                    {
+                        if (MessageBoxService.ShowMessage("Are you sure you want to change " + field_name + " for " + projection.RESOURCENAME + "?", "Warning", MessageButton.OKCancel, MessageIcon.Warning) == MessageResult.Cancel)
+                            return "Operation cancelled";
+                    }
+                    else if (validateFieldName == BindableBase.GetPropertyName(() => new ExoResourceProjection().IsExistInBP))
+                    {
+                        if (((bool)new_value))
+                        {
+                            USER newUSER = USERCollection.FirstOrDefault(x => x.EXO_STAFF_ID == projection.STAFFNO);
+                            if (newUSER == null)
+                            {
+                                USER activeDirectoryUSER = getActiveDirectoryUser(projection.RESOURCENAME);
+                                if (activeDirectoryUSER == null)
+                                    return "Cannot add user because user doesn't exist in active directory";
+                                else
+                                {
+                                    if (MessageBoxService.ShowMessage("Are you sure you add " + projection.RESOURCENAME + " to BluePrints?", "Confirmation", MessageButton.OKCancel, MessageIcon.Warning) == MessageResult.OK)
+                                    {
+                                        userAdditionViewModel = USERAdditionViewModel.Create(activeDirectoryUSER, DEPARTMENTCollection, DISCIPLINECollection, USERCollection, OFFICECollection, activeDirectoryUSER.TITLE, activeDirectoryUSER.DESCRIPTION, primeroUnitOfWork.STAFF, pgaUnitOfWork.STAFF);
+                                        userAdditionViewModel.PopulateUSERStaffId();
+                                        if (USERAddDialogService.ShowDialog(MessageButton.OKCancel, "New User", "USERAdditionView", userAdditionViewModel) == MessageResult.Cancel)
+                                        {
+                                            CellValueChangingFieldName = null;
+                                            userAdditionViewModel = null;
+                                            return "Operation cancelled";
+                                        }
+                                    }
+                                    else
+                                    {
+                                        CellValueChangingFieldName = null;
+                                        return "Operation cancelled";
+                                    }
+                                }
+                            }
+                        }
+                        else
+                        {
+                            MessageBoxService.ShowMessage("Please remove user from User maintenance in BluePrints", "Confirmation", MessageButton.OK, MessageIcon.Warning);
+                            CellValueChangingFieldName = null;
+                            return "Operation cancelled";
+                        }
+                    }
                 }
             }
 
             return string.Empty;
+        }
+
+        private USER getActiveDirectoryUser(string resourceName)
+        {
+            if (activeDirectoryUSERS == null)
+                activeDirectoryUSERS = EmailServices.GetUSERS();
+
+            string activeDirectorySearchName = resourceName.Replace(" ", ".").ToUpper();
+            return activeDirectoryUSERS.FirstOrDefault(x => x.NAME.ToUpper() == activeDirectorySearchName);
         }
 
         public IEnumerable<PROFILE> SecurityPROFILECollection
@@ -287,6 +368,51 @@ namespace BluePrints.ViewModels
             }
         }
 
+        public IEnumerable<DEPARTMENT> DEPARTMENTCollection
+        {
+            get
+            {
+                return GetEntities<DEPARTMENT>();
+            }
+        }
+
+        public IEnumerable<DISCIPLINE> DISCIPLINECollection
+        {
+            get
+            {
+                return GetEntities<DISCIPLINE>();
+            }
+        }
+
+        public IEnumerable<USER> USERCollection
+        {
+            get
+            {
+                return GetEntities<USER>();
+            }
+        }
+
+        public IEnumerable<OFFICE> OFFICECollection
+        {
+            get
+            {
+                return GetEntities<OFFICE>();
+            }
+        }
+
+        public CollectionViewModel<USER, USER, Guid, IBluePrintsEntitiesUnitOfWork> USERViewModel
+        {
+            get
+            {
+                if (loaderCollection == null)
+                    return null;
+
+                return
+                    (CollectionViewModel<USER, USER, Guid, IBluePrintsEntitiesUnitOfWork>)
+                    loaderCollection.GetViewModel<USER>();
+            }
+        }
+
         public IEnumerable<JOB_COSTTYPES> JOB_COSTTYPESCollection
         {
             get
@@ -294,6 +420,32 @@ namespace BluePrints.ViewModels
                 var collection = GetEntities<JOB_COSTTYPES>();
                 if (collection != null)
                     collection = collection.OrderBy(x => x.COSTDESC);
+                return collection;
+            }
+        }
+
+
+        List<ROLE> restrictedROLECollection;
+        public IEnumerable<ROLE> RestrictedROLECollection
+        {
+            get
+            {
+                var collection = GetEntities<ROLE>();
+                if (restrictedROLECollection == null)
+                    restrictedROLECollection = USERCollectionViewModelWrapper.GetRestrictedRoleCollection(collection);
+
+                return restrictedROLECollection;
+            }
+        }
+        
+        public IEnumerable<X_DEPARTMENT> X_DEPARTMENTCollection
+        {
+            get
+            {
+                var collection = GetEntities<X_DEPARTMENT>();
+                if (collection != null)
+                    collection = collection.OrderBy(x => x.X_Number);
+
                 return collection;
             }
         }

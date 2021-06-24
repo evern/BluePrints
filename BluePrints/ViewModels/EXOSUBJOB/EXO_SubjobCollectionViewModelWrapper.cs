@@ -181,7 +181,7 @@ namespace BluePrints.ViewModels
 
         protected override Func<IRepositoryQuery<BASELINE_ITEM>, IQueryable<ExoSubJobProjection>> specifyMainViewModelProjection()
         {
-            return query => ExoQueries.GetNativeExoSubJobEditableProjection(localPrimeroUnitOfWork, loadPROJECT, COMMODITY_CODECollection, STOCK_ITEMSCollection, exoSTAFFS, loadPROJECT.OfficeNameForExo, false, true);
+            return query => ExoQueries.GetNativeExoSubJobEditableProjection(localPrimeroUnitOfWork, loadPROJECT, COMMODITY_CODECollection, STOCK_ITEMSCollection, exoSTAFFS, loadPROJECT.OfficeNameForExo, true);
         }
        
         protected override void AssignCallBacksAndRaisePropertyChange(IEnumerable<ExoSubJobProjection> entities)
@@ -206,14 +206,25 @@ namespace BluePrints.ViewModels
             sender.ItemsSource = SelectedEntity.TaggedValidStockItems;
         }
 
+        public override void UnifiedNewRowInitializationFromView(ExoSubJobProjection projection)
+        {
+            projection.PopulateCommodityCodes(COMMODITY_CODECollection);
+            projection.PopulateStockItems(STOCK_ITEMSCollection);
+            projection.IgnoreExoBudgetError = ignoreExoBudgetError;
+            base.UnifiedNewRowInitializationFromView(projection);
+        }
+
         protected override OperationInterceptMode OnBeforeProjectionSaveIsContinue(ExoSubJobProjection projection, out bool isNew)
         {
             isNew = false;
-            ExoSubJobProjection newlyAddedProjection = commitToExo(projection);
-            if (newlyAddedProjection != null)
+            if (UnifiedRowValidation(projection) == string.Empty)
             {
-                isNew = true;
-                newlyAddedProjection.IgnoreExoBudgetError = ignoreExoBudgetError;
+                ExoSubJobProjection newlyAddedProjection = commitToExo(projection);
+                if (newlyAddedProjection != null)
+                {
+                    isNew = true;
+                    newlyAddedProjection.IgnoreExoBudgetError = ignoreExoBudgetError;
+                }
             }
 
             return OperationInterceptMode.SkipOneAndAllDbSaves;
@@ -265,7 +276,7 @@ namespace BluePrints.ViewModels
                         if ((projection.DisciplineCode != null && projection.DisciplineCode != string.Empty) && projection.DisciplineCode.Length > 4)
                             return "Discipline code cannot be more than 4 characters";
 
-                        if ((projection.DisciplineCode != null && projection.DisciplineCode != string.Empty) && projection.CommodityCode.Length > 4)
+                        if ((projection.CommodityCode != null && projection.CommodityCode != string.Empty) && projection.CommodityCode.Length > 4)
                             return "Commodity code cannot be more than 4 characters";
                     }
                 }
@@ -281,6 +292,12 @@ namespace BluePrints.ViewModels
                 return "Duplicate Subjob: " + formatCodeError(projection.SubJobCode) + " Discipline: " + formatCodeError(projection.DisciplineCode) + " Commodity: " + formatCodeError(projection.CommodityCode) + " Variation: " + formatCodeError(projection.VariationCode);
             }
 
+            if (!projection.IsCommodityCodeValid)
+                return "Invalid commodity code. Validity can be maintained in Data -> Commodity Codes";
+
+            if(!projection.IsStockCodeValid)
+                return "Invalid stock code. Validity can be maintained in Data -> Commodity Codes";
+
             return string.Empty;
         }
 
@@ -295,9 +312,6 @@ namespace BluePrints.ViewModels
         public override void UnifiedCellValueChanged(string field_name, object old_value, object new_value, ExoSubJobProjection projection, bool isNew)
         {
             string errorMessage = string.Empty;
-            projection.PopulateCommodityCodes(COMMODITY_CODECollection);
-            projection.PopulateStockItems(STOCK_ITEMSCollection);
-            projection.IgnoreExoBudgetError = ignoreExoBudgetError;
             projection.Update();
 
             List<KeyValuePair<string, string>> constraintIssues;
@@ -412,7 +426,7 @@ namespace BluePrints.ViewModels
 
         public override string UnifiedValueValidation(ExoSubJobProjection projection, string field_name, object new_value, bool isPaste)
         {
-            if (field_name.ToUpper().Contains("BUDGET"))
+            if (field_name == BindableBase.GetPropertyName(() => new ExoSubJobProjection().Budget))
             {
                 if(new_value != null && new_value.ToString() != string.Empty)
                 {
@@ -420,11 +434,50 @@ namespace BluePrints.ViewModels
                         return "You do not have authority to set or change budget";
                 }
             }
-            else if(field_name.ToUpper().Contains("VARIATIONCODE"))
+            else if(field_name == BindableBase.GetPropertyName(() => new ExoSubJobProjection().VariationCode))
             {
                 if (new_value != null && new_value.ToString().Length > 50)
                 {
                     return "Variation code cannot be more than 50 characters";
+                }
+            }
+            else if(field_name == BindableBase.GetPropertyName(() => new ExoSubJobProjection().SubJobCode))
+            {
+                if (new_value == null || new_value.ToString() == string.Empty)
+                    return "Sub Job not assigned";
+                if ((projection.DisciplineCode != null && projection.DisciplineCode != string.Empty) && new_value.ToString().Length > 15)
+                {
+                    return "Sub Job code cannot be more than 15 characters";
+                }
+            }
+
+            //only validate cost group and cost type for new row
+            if (!IgnoreCostGroupCostType)
+            {
+                if (field_name == BindableBase.GetPropertyName(() => new ExoSubJobProjection().DisciplineCode))
+                {
+                    if (new_value.ToString() == null || new_value.ToString() == string.Empty)
+                        return "Discipline code not assigned";
+                    else if ((new_value != null && new_value.ToString() != string.Empty) && new_value.ToString().Length > 4)
+                        return "Discipline code cannot be more than 4 characters";
+                }
+                else if (field_name == BindableBase.GetPropertyName(() => new ExoSubJobProjection().CommodityCode))
+                {
+                    if (new_value.ToString() == null || new_value.ToString() == string.Empty)
+                        return "Commodity code not assigned";
+                    else if (new_value.ToString().Length > 4)
+                        return "Commodity code cannot be more than 4 characters";
+                    if (!projection.IsValidCommodityCode(new_value.ToString()))
+                        return "Invalid commodity code. Validity can be maintained in Data -> Commodity Codes";
+                }
+                else if (field_name == BindableBase.GetPropertyName(() => new ExoSubJobProjection().StockCode))
+                {
+                    if (new_value.ToString() == null || new_value.ToString() == string.Empty)
+                        return "Stock code not assigned";
+                    else if (new_value.ToString().Length > 4)
+                        return "Stock code cannot be more than 4 characters";
+                    if (!projection.IsValidStockCode(new_value.ToString()))
+                        return "Invalid stock code. Validity can be maintained in Data -> Commodity Codes";
                 }
             }
 
@@ -468,7 +521,7 @@ namespace BluePrints.ViewModels
         public IEnumerable<ExoSubJobProjection> CommitToExo(IEnumerable<ExoSubJobProjection> projections, bool updateBudgetIfExist = false)
         {
             List<ErrorMessage> errorMessages;
-            IEnumerable<ExoSubJobProjection> addedProjections = ExoMethods.CommitToExo(projections, MessageBoxService, masterJob, copyLine, loadPROJECT, USERCollection, localPrimeroUnitOfWork, bluePrintsEntitiesUnitOfWork, BulkColumnEditDialogService, out errorMessages, Entities, updateBudgetIfExist, IgnoreCostGroupCostType);
+            IEnumerable<ExoSubJobProjection> addedProjections = ExoMethods.CommitToExo(projections, MessageBoxService, masterJob, copyLine, loadPROJECT, USERCollection, localPrimeroUnitOfWork, bluePrintsEntitiesUnitOfWork, BulkColumnEditDialogService, out errorMessages, updateBudgetIfExist, IgnoreCostGroupCostType);
 
             ShowErrorMessage("Errors", errorMessages);
             if (addedProjections.Count() > 0)
@@ -477,7 +530,6 @@ namespace BluePrints.ViewModels
                 {
                     addedProjection.PopulateCommodityCodes(COMMODITY_CODECollection);
                     addedProjection.PopulateStockItems(STOCK_ITEMSCollection);
-                    addedProjection.PopulateLineAuthUsers(Entities);
                     addedProjection.IsLineExistsInExo = true;
                 }
 

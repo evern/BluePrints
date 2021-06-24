@@ -58,6 +58,8 @@ namespace BluePrints.Common.Projections
 
         public double? STDCOST { get; set; }
 
+        public string DEPARTMENT { get; set; }
+
         [Required]
         public int COSTTYPE { get; set; }
 
@@ -66,5 +68,7 @@ namespace BluePrints.Common.Projections
 
         //indicate whether this row is commited to database
         public bool IsViewNewRow { get; set; }
+
+        public bool IsExistInBP { get; set; }
     }
 }

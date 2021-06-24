@@ -23,9 +23,9 @@
     <UpdatePeriodically>false</UpdatePeriodically>
     <UpdateRequired>true</UpdateRequired>
     <MapFileExtensions>true</MapFileExtensions>
-    <MinimumRequiredVersion>1.0.6.342</MinimumRequiredVersion>
-    <ApplicationRevision>342</ApplicationRevision>
-    <ApplicationVersion>1.0.6.%2a</ApplicationVersion>
+    <MinimumRequiredVersion>1.0.7.18</MinimumRequiredVersion>
+    <ApplicationRevision>18</ApplicationRevision>
+    <ApplicationVersion>1.0.7.%2a</ApplicationVersion>
     <UseApplicationTrust>false</UseApplicationTrust>
     <PublishWizardCompleted>true</PublishWizardCompleted>
     <BootstrapperEnabled>true</BootstrapperEnabled>
@@ -628,6 +628,7 @@
     <Compile Include="Common\Projections\MINUTE_AGENDAReportingProjection.cs" />
     <Compile Include="Common\Projections\MINUTE_AGENDAMasterDetailProjection.cs" />
     <Compile Include="Common\Projections\COMMODITY_CODEProjection.cs" />
+    <Compile Include="Common\Projections\POFlatForecastProjection.cs" />
     <Compile Include="Common\Projections\POForecastProjection.cs" />
     <Compile Include="Common\Projections\ProjectSummaryProjection.cs" />
     <Compile Include="Common\Projections\PROJECTTenderProfiles.cs" />
@@ -917,6 +918,7 @@
     <Compile Include="EntityFramework\Annotations\REGISTER_TQ.cs" />
     <Compile Include="EntityFramework\Annotations\REGISTER_TQ_ATTACHMENT.cs" />
     <Compile Include="EntityFramework\Annotations\JOBCOST_HDR.cs" />
+    <Compile Include="EntityFramework\Annotations\X_DEPARTMENT.cs" />
     <Compile Include="EntityFramework\Annotations\X_VARIATION_QUERY.cs" />
     <Compile Include="EntityFramework\Annotations\JOBCOST_LINES_AUDIT.cs" />
     <Compile Include="EntityFramework\Annotations\JOB_TIMESHEETS.cs" />
@@ -1117,6 +1119,7 @@
     <Compile Include="EntityFramework\BluePrintsEntitiesDataModel\IBluePrintsEntitiesUnitOfWork.cs" />
     <Compile Include="EntityFramework\BluePrintsEntitiesDataModel\BluePrintsEntitiesUnitOfWorkSource.cs" />
     <Compile Include="Common\Misc\BluePrintsEnums.cs" />
+    <Compile Include="EntityFramework\PrimeroData\X_DEPARTMENT.cs" />
     <Compile Include="EntityFramework\PrimeroData\X_JOB_TIMESHEETS.cs" />
     <Compile Include="EntityFramework\PrimeroData\X_JOB_TRANSACTIONS_DETAIL_SeqNo.cs" />
     <Compile Include="EntityFramework\PrimeroData\X_JOB_TRANSACTIONS_DETAIL.cs" />
@@ -1149,6 +1152,7 @@
     <Compile Include="ViewModels\PROGRESS_ITEM\SiteDirectProgressCollectionViewModelWrapper.cs" />
     <Compile Include="ViewModels\PROJECT\PROJECTForecastEACReportViewModelWrapper.cs" />
     <Compile Include="ViewModels\PROJECT\PROJECTPlanViewModelWrapper.cs" />
+    <Compile Include="ViewModels\PROJECT\PROJECTFlatPOForecastViewModelWrapper.cs" />
     <Compile Include="ViewModels\PROJECT\PROJECT_REVENUECollectionViewModelWrapper.cs" />
     <Compile Include="ViewModels\PROJECT\PROJECTIndirectForecastViewModelWrapper.cs" />
     <Compile Include="ViewModels\PROJECT\POSpreadViewModel.cs" />
@@ -1177,6 +1181,7 @@
     <Compile Include="ViewModels\TIMESHEET\TimesheetQueryCollectionViewModelWrapper.cs" />
     <Compile Include="ViewModels\TIMESHEET\TransactionCollectionViewModelWrapper.cs" />
     <Compile Include="ViewModels\TIMESHEET\TimesheetEntryCollectionViewModelWrapper.cs" />
+    <Compile Include="ViewModels\USER\USERAdditionViewModel.cs" />
     <Compile Include="ViewModels\USER\PROJECT_USERDashboardViewModelWrapper.cs" />
     <Compile Include="ViewModels\VARIATION\VariationQueryCollectionViewModelWrapper.cs" />
     <Compile Include="ViewModels\VARIATION\VARIATION_CONSTRUCTIONCollectionViewModelWrapper.cs" />
@@ -1272,6 +1277,9 @@
     </Compile>
     <Compile Include="Views\PROJECT\PROJECTPlanView.xaml.cs">
       <DependentUpon>PROJECTPlanView.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Views\PROJECT\PROJECTFlatPOForecastView.xaml.cs">
+      <DependentUpon>PROJECTFlatPOForecastView.xaml</DependentUpon>
     </Compile>
     <Compile Include="Views\PROJECT\PROJECT_REVENUECollectionView.xaml.cs">
       <DependentUpon>PROJECT_REVENUECollectionView.xaml</DependentUpon>
@@ -1931,6 +1939,9 @@
     <Compile Include="Views\TIMESHEET\TimesheetQueryCollectionView.xaml.cs">
       <DependentUpon>TimesheetQueryCollectionView.xaml</DependentUpon>
     </Compile>
+    <Compile Include="Views\TIMESHEET\TransactionCollectionInstantFeedbackView.xaml.cs">
+      <DependentUpon>TransactionCollectionInstantFeedbackView.xaml</DependentUpon>
+    </Compile>
     <Compile Include="Views\TIMESHEET\TransactionCollectionView.xaml.cs">
       <DependentUpon>TransactionCollectionView.xaml</DependentUpon>
     </Compile>
@@ -1942,6 +1953,9 @@
     </Compile>
     <Compile Include="Views\USER\USERDashboardView.xaml.cs">
       <DependentUpon>USERDashboardView.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Views\USER\USERAdditionView.xaml.cs">
+      <DependentUpon>USERAdditionView.xaml</DependentUpon>
     </Compile>
     <Compile Include="Views\USER\USERSelectionView.xaml.cs">
       <DependentUpon>USERSelectionView.xaml</DependentUpon>
@@ -2257,6 +2271,10 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>
+    <Page Include="Views\PROJECT\PROJECTFlatPOForecastView.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
     <Page Include="Views\PROJECT\PROJECT_REVENUECollectionView.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
@@ -2389,6 +2407,10 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>
+    <Page Include="Views\TIMESHEET\TransactionCollectionInstantFeedbackView.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
     <Page Include="Views\TIMESHEET\TransactionCollectionView.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
@@ -2402,6 +2424,10 @@
       <SubType>Designer</SubType>
     </Page>
     <Page Include="Views\USER\USERDashboardView.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Views\USER\USERAdditionView.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>

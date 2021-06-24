@@ -200,7 +200,8 @@ namespace BluePrints.ViewModels
 
         public void OnEntitiesSavedCallBack(BASELINE_ITEMProgress projectionEntity, BASELINE_ITEM entity, bool isNewEntity)
         {
-            projectionEntity.Entity.Entity.GUID_ORIGINAL = entity.GUID_ORIGINAL;
+            if(entity != null)
+                projectionEntity.Entity.Entity.GUID_ORIGINAL = entity.GUID_ORIGINAL;
         }
         #endregion
 

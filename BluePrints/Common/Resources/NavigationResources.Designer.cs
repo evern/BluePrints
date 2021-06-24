@@ -637,6 +637,15 @@ namespace BluePrints.Common.Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Project equipment hire PO forecast maintenance menu.
+        /// </summary>
+        internal static string Menu_Project_Forecast_Flat_PO {
+            get {
+                return ResourceManager.GetString("Menu_Project_Forecast_Flat_PO", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Project indirect forecast maintenance menu.
         /// </summary>
         internal static string Menu_Project_Forecast_Indirect {

@@ -14,7 +14,6 @@
                 <dxb:BarSubItem ItemLinksSource="{StaticResource RibbonDefaultGridButtons}" />
                 <dxb:BarButtonItem x:Name="biUploadToExo" Command="{Binding UploadToExoCommand}" Content="Upload Selected to Exo" Glyph="{dxc:DXImage Image=Satellite_16x16.png}" LargeGlyph="{dxc:DXImage Image=Satellite_32x32.png}" ToolTip="Add any missing subjob, discipline code, commodity code and available lines into exo" />
                 <dxb:BarButtonItem x:Name="biAlignBudget" Command="{Binding AlignExoBudgetCommand}" Content="Align Selected Budget" Glyph="{dxc:DXImage Images/Actions/ConvertToRange_16x16.png}" LargeGlyph="{dxc:DXImage Images/Actions/ConvertToRange_32x32.png}" ToolTip="Align selected exo budget with budget calculated from deliverable's list" />
-                <dxb:BarButtonItem x:Name="biAutoAssign" Command="{Binding AutoAssignPermissionCommand}" Content="Auto Assign Permission" Glyph="{dxc:DXImage Image=Wizard_16x16.png}" LargeGlyph="{dxc:DXImage Image=Wizard_32x32.png}" ToolTip="Auto assign permission by referencing authorised document type on role" />
                 <dxb:BarCheckItem x:Name="biShowPreferred" Content="Show Preferred User Only" IsEnabled="{Binding IsLoading, Converter={dxmvvm:BooleanNegationConverter}}" Glyph="{dxc:DXImage Image=BOUser_16x16.png}" IsChecked="{Binding ShowPreferred}" LargeGlyph="{dxc:DXImage Image=BOUser_32x32.png}" ToolTip="Show preferred user only (based on role)" />
             </dxb:BarManager.Items>
             <DockPanel>
@@ -40,7 +39,6 @@
                             <dxr:RibbonPageGroup MergeType="Replace" Caption="Permissions" SmallGlyph="{dxc:DXImage Image=Satellite_32x32.png}">
                                 <dxb:BarCheckItemLink BarItemName="biShowPreferred" />
                                 <dxb:BarButtonItemLink BarItemName="biUploadToExo"/>
-                                <dxb:BarButtonItemLink BarItemName="biAutoAssign"/>
                             </dxr:RibbonPageGroup>
                         </dxr:RibbonPage>
                     </dxr:RibbonDefaultPageCategory>
@@ -114,11 +112,11 @@
                                     </dxg:GridColumn>
                                     <dxg:GridColumn AllowEditing="False" FieldName="User.Full_Name" Header="User" AllowBestFit="false" Width="*"/>
                                     <dxg:GridColumn AllowEditing="False" FieldName="User.ROLE.NAME" Header="Role" AllowBestFit="false" Width="200" />
-                                    <dxg:GridColumn AllowEditing="False" FieldName="ShouldAssign" AllowBestFit="false" Width="50" HeaderToolTip="Is user recommended for selected subjob, based on document type assigned to role">
+                                    <!--<dxg:GridColumn AllowEditing="False" FieldName="ShouldAssign" AllowBestFit="false" Width="50" HeaderToolTip="Is user recommended for selected subjob, based on document type assigned to role">
                                         <dxg:GridColumn.EditSettings>
                                             <dxe:CheckEditSettings />
                                         </dxg:GridColumn.EditSettings>
-                                    </dxg:GridColumn>
+                                    </dxg:GridColumn>-->
                                 </dxg:GridControl.Columns>
                                 <dxg:GridControl.TotalSummary>
                                     <dxg:GridSummaryItem dxc:DXSerializer.Enabled="False" Alignment="Right" SummaryType="Count" />

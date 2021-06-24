@@ -126,6 +126,9 @@
   <data name="EXO_POUseFilter" xml:space="preserve">
     <value>Filter actual by selected PO line(s) in PO view</value>
   </data>
+  <data name="EXO_PreloadTransactions" xml:space="preserve">
+    <value>Preload all transactions instead of streaming from server</value>
+  </data>
   <data name="Forecast_ShowActuals" xml:space="preserve">
     <value>Show actuals on forecast</value>
   </data>

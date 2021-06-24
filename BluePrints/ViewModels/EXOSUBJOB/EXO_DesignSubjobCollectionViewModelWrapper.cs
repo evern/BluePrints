@@ -156,7 +156,7 @@ namespace BluePrints.ViewModels
 
         protected override Func<IRepositoryQuery<BASELINE_ITEM>, IQueryable<ExoSubJobProjection>> specifyMainViewModelProjection()
         {
-            return query => ExoQueries.GetExoDesignSubJobProjection(query.Where(x => x.GUID_BASELINE == liveBASELINE.GUID), WORKPACKCollection, loadPROJECT, livePROGRESS, RATECollection, PROGRESS_ITEMCollection, VARIATIONCollection, localPrimeroUnitOfWork, USERCollection, COMMODITY_CODECollection, DOCTYPECollection);
+            return query => ExoQueries.GetExoDesignSubJobProjection(query.Where(x => x.GUID_BASELINE == liveBASELINE.GUID), WORKPACKCollection, loadPROJECT, livePROGRESS, RATECollection, VARIATIONCollection, localPrimeroUnitOfWork, USERCollection, COMMODITY_CODECollection, DOCTYPECollection, loadPROJECT.OfficeNameForExo);
         }
 
         protected override void AssignCallBacksAndRaisePropertyChange(IEnumerable<ExoSubJobProjection> entities)
@@ -190,48 +190,16 @@ namespace BluePrints.ViewModels
                 subJob.Update();
             }
         }
-
-        public bool CanAutoAssignPermission()
-        {
-            return !IsLoading;
-        }
-
-        public void AutoAssignPermission()
-        {
-            if (MessageBoxService.ShowMessage("This will auto grant permission based on document type authorisation by role, but will not delete existing authorisations, do you wish to continue?", "Auto Assign Permission", MessageButton.OKCancel) == MessageResult.Cancel)
-                return;
-
-            int fullProgress = Entities.Count * USERCollection.Count();
-            LoadingScreenManager.ShowLoadingScreen(fullProgress);
-
-            int addedCount = 0;
-            foreach (ExoSubJobProjection subJob in Entities.Where(x => x.IsLineExistsInExo))
-            {
-                subJob.AuthUsers.Clear();
-                foreach (USER user in USERCollection)
-                {
-                    ExoSubJobAuth newUser = new ExoSubJobAuth();
-                    newUser.User = user;
-                    newUser.ShouldAssign = newUser.User.ROLE.ROLE_COMMODITY.Where(x => x.DOCTYPE != null).Any(x => SelectedEntities.Any(y => y.CommodityCode == x.DOCTYPE.CODE));
-                    if (newUser.ShouldAssign && subJob.SubJobId != null && user.ProjectLocaleExoId != null)
-                    {
-                        if (ExoMethods.findExistingOrAddResourceAllocation(localPrimeroUnitOfWork, (int)subJob.SubJobId, (int)user.ProjectLocaleExoId))
-                            addedCount += 1;
-
-                        newUser.IsAssigned = true;
-                        subJob.AuthUsers.Add(newUser);
-                    }
-
-                    LoadingScreenManager.Progress();
-                }
-            }
-
-            LoadingScreenManager.CloseLoadingScreen();
-            MessageBoxService.ShowMessage(addedCount + " user permission added");
-        }
         #endregion
 
         #region View Properties
+        protected override void refreshPermissions()
+        {
+            permissions = null;
+            base.refreshPermissions();
+        }
+
+        List<ExoSubJobAuth> permissions;
         public override IEnumerable<ExoSubJobAuth> BluePrintsUsers
         {
             get
@@ -239,29 +207,31 @@ namespace BluePrints.ViewModels
                 if (MainViewModel == null)
                     return null;
 
-                var permissions = new List<ExoSubJobAuth>();
                 if (SelectedEntities == null && MainViewModel.Entities.Count > 0)
                     SelectedEntities.Add(MainViewModel.Entities.First());
 
                 if (SelectedEntities == null || SelectedEntities.Count == 0)
                     return null;
 
-                foreach (USER user in USERCollection)
+                if(permissions == null)
                 {
-                    IEnumerable<ExoSubJobAuth> findUsers = SelectedEntities.SelectMany(x => x.AuthUsers);
-                    ExoSubJobAuth newUser = new ExoSubJobAuth();
-                    newUser.User = user;
-                    if (SelectedEntities.All(x => x.AuthUsers.Any(y => y.User.ProjectLocaleExoId == user.ProjectLocaleExoId)))
-                        newUser.IsAssigned = true;
-                    else if (SelectedEntities.Any(x => x.AuthUsers.Any(y => y.User.ProjectLocaleExoId == user.ProjectLocaleExoId)))
-                        newUser.IsAssigned = null;
-                    else
-                        newUser.IsAssigned = false;
+                    permissions = new List<ExoSubJobAuth>();
+                    foreach (USER user in USERCollection)
+                    {
+                        ExoSubJobAuth newAuth = new ExoSubJobAuth();
+                        newAuth.User = user;
+                        if (SelectedEntities.All(x => x.AuthUserIds.Any(y => y == user.ProjectLocaleExoId)))
+                            newAuth.IsAssigned = true;
+                        else if (SelectedEntities.Any(x => x.AuthUserIds.Any(y => y == user.ProjectLocaleExoId)))
+                            newAuth.IsAssigned = null;
+                        else
+                            newAuth.IsAssigned = false;
 
-                    if (newUser.User != null && newUser.User.ROLE != null && newUser.User.ROLE.ROLE_COMMODITY.Count > 0 && newUser.User.ROLE.ROLE_COMMODITY.Where(x => x.DOCTYPE != null).Any(x => SelectedEntities.Any(y => y.CommodityCode == x.DOCTYPE.CODE)))
-                        newUser.ShouldAssign = true;
+                        if (newAuth.User != null && newAuth.User.ROLE != null && newAuth.User.ROLE.ROLE_COMMODITY.Count > 0 && newAuth.User.ROLE.ROLE_COMMODITY.Where(x => x.DOCTYPE != null).Any(x => SelectedEntities.Any(y => y.CommodityCode == x.DOCTYPE.CODE)))
+                            newAuth.ShouldAssign = true;
 
-                    permissions.Add(newUser);
+                        permissions.Add(newAuth);
+                    }
                 }
 
                 isPermissionLoading = false;

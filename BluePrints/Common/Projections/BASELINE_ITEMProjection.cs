@@ -213,7 +213,7 @@ namespace BluePrints.Common.Projections
     {
         public static IQueryable<BASELINE_ITEMProjection> IDeliverable_Rates_Transformation(
             IQueryable<BASELINE_ITEM> BASELINE_ITEMS,
-            IEnumerable<RATE> RATES, bool showLoadingScreen = false)
+            IEnumerable<RATE> RATES = null, IEnumerable<DOCTYPE> DOCTYPES = null, bool showLoadingScreen = false)
         {
             //List<VARIATION_ITEM> variation_items = VARIATIONS.SelectMany(x => x.VARIATION_ITEM).ToList();
             //List<BASELINE_ITEM> baseline_items = BASELINE_ITEMS.ToList();
@@ -237,23 +237,31 @@ namespace BluePrints.Common.Projections
                 LoadingScreenManager.SetMessage("Loading Design Deliverables...");
             }
 
-            IQueryable<DOCTYPE> DOCTYPES = BluePrintsEntitiesUnitOfWorkSource.GetUnitOfWorkFactory().CreateUnitOfWork().DOCTYPES;
             foreach(BASELINE_ITEM baseline_item in baseline_items)
             {
                 BASELINE_ITEMProjection newBASELINE_ITEM = new BASELINE_ITEMProjection();
                 newBASELINE_ITEM.Entity = baseline_item;
 
-                DOCTYPE findDOCTYPE = DOCTYPES.FirstOrDefault(x => x.GUID == baseline_item.GUID_DOCTYPE);
-                string docTypeCode = baseline_item.DOCTYPE != null ? baseline_item.DOCTYPE.CODE : findDOCTYPE != null ? findDOCTYPE.CODE : string.Empty;
-                if (baseline_item.PHASE.PHASE_TYPE != null)
+                if(RATES != null)
                 {
-                    RATE findRATE = BluePrintsDataUtils.CascadeRateSearch(baseline_item.GUID_AREA, baseline_item.GUID_SUBAREA, baseline_item.GUID_DISCIPLINE, baseline_item.GUID_DEPARTMENT, docTypeCode, string.Empty, RATES, CostType.Charge, (PhaseType)baseline_item.PHASE.PHASE_TYPE);
-                    if (findRATE != null)
-                        newBASELINE_ITEM.RATE = findRATE;
+                    string docTypeCode = baseline_item.DOCTYPE != null ? baseline_item.DOCTYPE.CODE : string.Empty;
+                    if(docTypeCode == string.Empty && DOCTYPES != null)
+                    {
+                        DOCTYPE findDOCTYPE = DOCTYPES.FirstOrDefault(x => x.GUID == baseline_item.GUID_DOCTYPE);
+                        if (findDOCTYPE != null)
+                            docTypeCode = findDOCTYPE.CODE;
+                    }
 
-                    RATE findInternalRate = BluePrintsDataUtils.CascadeRateSearch(baseline_item.GUID_AREA, baseline_item.GUID_SUBAREA, baseline_item.GUID_DISCIPLINE, baseline_item.GUID_DEPARTMENT, docTypeCode, string.Empty, RATES, CostType.Cost, (PhaseType)baseline_item.PHASE.PHASE_TYPE);
-                    if (findInternalRate != null)
-                        newBASELINE_ITEM.INTERNAL_RATE = findInternalRate;
+                    if (baseline_item.PHASE.PHASE_TYPE != null)
+                    {
+                        RATE findRATE = BluePrintsDataUtils.CascadeRateSearch(baseline_item.GUID_AREA, baseline_item.GUID_SUBAREA, baseline_item.GUID_DISCIPLINE, baseline_item.GUID_DEPARTMENT, docTypeCode, string.Empty, RATES, CostType.Charge, (PhaseType)baseline_item.PHASE.PHASE_TYPE);
+                        if (findRATE != null)
+                            newBASELINE_ITEM.RATE = findRATE;
+
+                        RATE findInternalRate = BluePrintsDataUtils.CascadeRateSearch(baseline_item.GUID_AREA, baseline_item.GUID_SUBAREA, baseline_item.GUID_DISCIPLINE, baseline_item.GUID_DEPARTMENT, docTypeCode, string.Empty, RATES, CostType.Cost, (PhaseType)baseline_item.PHASE.PHASE_TYPE);
+                        if (findInternalRate != null)
+                            newBASELINE_ITEM.INTERNAL_RATE = findInternalRate;
+                    }
                 }
 
                 returnBASELINE_ITEMProjection.Add(newBASELINE_ITEM);
