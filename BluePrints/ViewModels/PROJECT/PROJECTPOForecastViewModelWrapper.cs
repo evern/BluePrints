@@ -88,7 +88,7 @@ namespace BluePrints.ViewModels
 
             setProject(loadPROJECT);
 
-            primeroUnitOfWorkFactory = PrimeroEntitiesUnitOfWorkSource.GetUnitOfWorkFactory(loadPROJECT.OfficeNameForExo == BluePrintsResources.OfficeMontreal);
+            primeroUnitOfWorkFactory = PrimeroEntitiesUnitOfWorkSource.GetUnitOfWorkFactory(loadPROJECT.OfficeNameForExo);
             primeroUnitOfWork = primeroUnitOfWorkFactory.CreateUnitOfWork();
 
             hiddenColumnFieldNames.Add(columnEntity);

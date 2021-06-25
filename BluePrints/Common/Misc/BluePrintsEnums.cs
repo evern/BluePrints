@@ -25,6 +25,15 @@ namespace BluePrints.Common
         public static DateTime DefaultLastDay = new DateTime(2099, 1, 1);
     }
 
+    public enum DatabaseLocale
+    {
+        Default,
+        Perth,
+        Montreal,
+        USA
+    }
+
+
     public enum RowEditAction
     {
         [Display(Name = "Add")]

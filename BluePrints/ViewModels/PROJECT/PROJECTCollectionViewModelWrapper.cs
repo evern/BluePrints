@@ -57,7 +57,7 @@ namespace BluePrints.ViewModels
         private Action<object> navigateCoreCommand;
         BackgroundWorker backgroundWorker = new BackgroundWorker();
         protected IPrimeroEntitiesUnitOfWork primeroPerthUnitOfWork = PrimeroEntitiesUnitOfWorkSource.GetUnitOfWorkFactory().CreateUnitOfWork();
-        protected IPrimeroEntitiesUnitOfWork primeroMontrealUnitOfWork = PrimeroEntitiesUnitOfWorkSource.GetUnitOfWorkFactory(true).CreateUnitOfWork();
+        protected IPrimeroEntitiesUnitOfWork primeroMontrealUnitOfWork = PrimeroEntitiesUnitOfWorkSource.GetUnitOfWorkFactory(BluePrintsResources.OfficeMontreal).CreateUnitOfWork();
 
         protected override void resolveParameters(object parameter)
         {

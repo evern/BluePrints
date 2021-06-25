@@ -406,8 +406,14 @@ namespace BluePrints.ViewModels
         {
             bool? isRemoteEXODbPreference = LoginCredentials.GetUserPreferenceBool(DataUtils.GetNameOf(() => UserPreferences.EXO_DesignTimeSheetOfficeIsForeign));
             isRemoteEXODb = isRemoteEXODbPreference == null ? false : (bool)isRemoteEXODbPreference;
+            string officeName = string.Empty;
 
-            primeroUnitOfWorkFactory = PrimeroEntitiesUnitOfWorkSource.GetUnitOfWorkFactory(IsRemoteEXODb);
+            if (IsRemoteEXODb)
+                officeName = BluePrintsResources.OfficeMontreal;
+            else
+                officeName = BluePrintsResources.OfficePerth;
+
+            primeroUnitOfWorkFactory = PrimeroEntitiesUnitOfWorkSource.GetUnitOfWorkFactory(officeName);
             primeroEntitiesUnitOfWork = primeroUnitOfWorkFactory.CreateUnitOfWork();
 
             IQueryable<USER> USERCollection = bluePrintsUnitOfWorkFactory.CreateUnitOfWork().USERS;

@@ -46,7 +46,7 @@ namespace BluePrints.ViewModels
         {            
             var receiveParameter = (DualEntitiesParameter<PROJECT, VARIATION>)parameter;
             loadPROJECT = receiveParameter.GetFirstEntity();
-            primeroUnitOfWorkFactory = PrimeroEntitiesUnitOfWorkSource.GetUnitOfWorkFactory(loadPROJECT.OfficeNameForExo == BluePrintsResources.OfficeMontreal);
+            primeroUnitOfWorkFactory = PrimeroEntitiesUnitOfWorkSource.GetUnitOfWorkFactory(loadPROJECT.OfficeNameForExo);
             primeroUnitOfWork = primeroUnitOfWorkFactory.CreateUnitOfWork();
             bluePrintsUnitOfWork = BluePrintsEntitiesUnitOfWorkSource.GetUnitOfWorkFactory().CreateUnitOfWork();
             loadVARIATION = receiveParameter.GetSecondEntity();

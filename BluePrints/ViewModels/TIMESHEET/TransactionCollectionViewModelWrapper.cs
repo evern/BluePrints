@@ -100,11 +100,13 @@ namespace BluePrints.ViewModels
         bool is2020Onwards = false;
         public bool IsYearToDate => isYearToDate;
         public bool Is2020Onwards => is2020Onwards;
-
+        public string officeName;
         protected override void resolveParameters(object parameter)
         {
-            var PROJECTParameter = (DualEntitiesParameter<Data.PROJECT, object>)parameter;
+            var PROJECTParameter = (TripleEntitiesParameter<Data.PROJECT, object, object>)parameter;
             loadPROJECT = PROJECTParameter.GetFirstEntity();
+            DatabaseLocale dbLocale = (DatabaseLocale)PROJECTParameter.GetThirdEntity();
+
             if (loadPROJECT == null)
             {
                 IsReadOnly = true;
@@ -114,13 +116,18 @@ namespace BluePrints.ViewModels
             }
 
             if(loadPROJECT == null)
-#if PERTH
-                primeroUnitOfWorkFactory = PrimeroEntitiesUnitOfWorkSource.GetUnitOfWorkFactory();
-#else
-                primeroUnitOfWorkFactory = PrimeroEntitiesUnitOfWorkSource.GetUnitOfWorkFactory(true);
-#endif
+            {
+                if (dbLocale == DatabaseLocale.Perth)
+                    officeName = BluePrintsResources.OfficePerth;
+                else if (dbLocale == DatabaseLocale.Montreal)
+                    officeName = BluePrintsResources.OfficeMontreal;
+                else
+                    officeName = BluePrintsResources.OfficeUSA;
+
+                primeroUnitOfWorkFactory = PrimeroEntitiesUnitOfWorkSource.GetUnitOfWorkFactory(officeName);
+            }
             else
-                primeroUnitOfWorkFactory = PrimeroEntitiesUnitOfWorkSource.GetUnitOfWorkFactory(loadPROJECT.OfficeNameForExo == BluePrintsResources.OfficeMontreal);
+                primeroUnitOfWorkFactory = PrimeroEntitiesUnitOfWorkSource.GetUnitOfWorkFactory(loadPROJECT.OfficeNameForExo);
 
             primeroUnitOfWork = primeroUnitOfWorkFactory.CreateUnitOfWork();
         }
@@ -254,7 +261,7 @@ namespace BluePrints.ViewModels
         public override string ViewName
         {
             //get { return "OffsiteDirectProgressViewModelWrapper" + view_project_specific_affix; }
-            get { return "TransactionEntryViewModelWrapper_v2" + view_project_specific_affix; }
+            get { return "TransactionEntryViewModelWrapper_v2" + view_project_specific_affix + officeName; }
         }
 
         private DevExpress.Mvvm.IDialogService DateFromToDialogService

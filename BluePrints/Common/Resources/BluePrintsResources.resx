@@ -399,4 +399,7 @@
   <data name="ReferenceInfoLineName" xml:space="preserve">
     <value>Information:</value>
   </data>
+  <data name="OfficeUSA" xml:space="preserve">
+    <value>USA</value>
+  </data>
 </root>

@@ -127,7 +127,7 @@ namespace BluePrints.ViewModels
 
         protected void initializeCompulsoryViewProperties(Data.PROJECT project)
         {
-            localPrimeroUnitOfWorkFactory = PrimeroEntitiesUnitOfWorkSource.GetUnitOfWorkFactory(loadPROJECT.OfficeNameForExo == BluePrintsResources.OfficeMontreal);
+            localPrimeroUnitOfWorkFactory = PrimeroEntitiesUnitOfWorkSource.GetUnitOfWorkFactory(loadPROJECT.OfficeNameForExo);
             localPrimeroUnitOfWork = localPrimeroUnitOfWorkFactory.CreateUnitOfWork();
             JOBCOST_HDRS = ExoQueries.GetProjectSubJobs(localPrimeroUnitOfWork, loadPROJECT.NUMBER).ToList();
             JOB_COSTGROUPS = ExoQueries.GetCostGroups(localPrimeroUnitOfWork).ToList();
