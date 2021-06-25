@@ -136,12 +136,12 @@
                                     </dxg:GridColumn>
                                     <dxg:GridColumn FieldName="EPCM_HOURS_IMPACT" Header="EPCM Hrs Impact" AllowBestFit="false" Width="60" >
                                         <dxg:GridColumn.EditSettings>
-                                            <dxe:SpinEditSettings Increment="1" IsFloatValue="False" IsTextEditable="True" Mask="n0" MaskType="Numeric" MaskUseAsDisplayFormat="True" />
+                                            <dxe:SpinEditSettings Increment="1" IsFloatValue="False" IsTextEditable="True" Mask="n2" MaskType="Numeric" MaskUseAsDisplayFormat="True" />
                                         </dxg:GridColumn.EditSettings>
                                     </dxg:GridColumn>
                                     <dxg:GridColumn FieldName="AVG_HR_RATE" Header="Avg Hr Rate ($/h)" AllowBestFit="false" Width="60" >
                                         <dxg:GridColumn.EditSettings>
-                                            <dxe:SpinEditSettings Increment="1" IsFloatValue="False" IsTextEditable="True" Mask="c0" MaskType="Numeric" MaskUseAsDisplayFormat="True" />
+                                            <dxe:SpinEditSettings Increment="1" IsFloatValue="False" IsTextEditable="True" Mask="c2" MaskType="Numeric" MaskUseAsDisplayFormat="True" />
                                         </dxg:GridColumn.EditSettings>
                                     </dxg:GridColumn>
                                     <dxg:GridColumn FieldName="EPCM_CostImpact" Header="EPCM Cost Impact ($)" AllowBestFit="false" Width="60" ReadOnly="True">
