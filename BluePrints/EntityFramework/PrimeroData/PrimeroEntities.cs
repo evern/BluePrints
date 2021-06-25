@@ -11,7 +11,7 @@ namespace BluePrints.PrimeroData
 
         protected override void OnModelCreating(DbModelBuilder modelBuilder)
         {
-            Database.SetInitializer<PGAEntities>(null);
+            Database.SetInitializer<PUSAEntities>(null);
             Database.CommandTimeout = 100000;
             base.OnModelCreating(modelBuilder);
         }

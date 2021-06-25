@@ -835,20 +835,47 @@ namespace BluePrints.Common.Resources {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Show all EXO transactions from 2020 onwards.
+        ///   Looks up a localized string similar to Show all Montreal EXO transactions from 2020 onwards.
         /// </summary>
-        internal static string Menu_Transactions2020ToDate {
+        internal static string Menu_TransactionsMontreal2020ToDate {
             get {
-                return ResourceManager.GetString("Menu_Transactions2020ToDate", resourceCulture);
+                return ResourceManager.GetString("Menu_TransactionsMontreal2020ToDate", resourceCulture);
             }
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Show all EXO transactions year to date.
+        ///   Looks up a localized string similar to Show all Montreal EXO transactions year to date.
         /// </summary>
-        internal static string Menu_TransactionsYearToDate {
+        internal static string Menu_TransactionsMontrealYearToDate {
             get {
-                return ResourceManager.GetString("Menu_TransactionsYearToDate", resourceCulture);
+                return ResourceManager.GetString("Menu_TransactionsMontrealYearToDate", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Show all Perth EXO transactions from 2020 onwards.
+        /// </summary>
+        internal static string Menu_TransactionsPerth2020ToDate {
+            get {
+                return ResourceManager.GetString("Menu_TransactionsPerth2020ToDate", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Show all Perth EXO transactions from 2020 onwards.
+        /// </summary>
+        internal static string Menu_TransactionsPerthYearToDate {
+            get {
+                return ResourceManager.GetString("Menu_TransactionsPerthYearToDate", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Show all USA EXO transactions year to date.
+        /// </summary>
+        internal static string Menu_TransactionsUSAYearToDate {
+            get {
+                return ResourceManager.GetString("Menu_TransactionsUSAYearToDate", resourceCulture);
             }
         }
         

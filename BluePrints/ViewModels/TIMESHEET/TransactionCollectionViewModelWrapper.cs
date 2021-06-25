@@ -105,18 +105,15 @@ namespace BluePrints.ViewModels
         {
             var PROJECTParameter = (TripleEntitiesParameter<Data.PROJECT, object, object>)parameter;
             loadPROJECT = PROJECTParameter.GetFirstEntity();
-            DatabaseLocale dbLocale = (DatabaseLocale)PROJECTParameter.GetThirdEntity();
 
-            if (loadPROJECT == null)
+            if(loadPROJECT == null)
             {
                 IsReadOnly = true;
                 isYearToDate = true;
                 is2020Onwards = (bool)PROJECTParameter.GetSecondEntity();
                 isUsePreloadMode = false;
-            }
 
-            if(loadPROJECT == null)
-            {
+                DatabaseLocale dbLocale = (DatabaseLocale)PROJECTParameter.GetThirdEntity();
                 if (dbLocale == DatabaseLocale.Perth)
                     officeName = BluePrintsResources.OfficePerth;
                 else if (dbLocale == DatabaseLocale.Montreal)

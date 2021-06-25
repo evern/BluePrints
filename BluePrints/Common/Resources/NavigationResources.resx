@@ -426,8 +426,8 @@
   <data name="Menu_Project_DesignVariationQuery" xml:space="preserve">
     <value>Query design variation breakdown</value>
   </data>
-  <data name="Menu_TransactionsYearToDate" xml:space="preserve">
-    <value>Show all EXO transactions year to date</value>
+  <data name="Menu_TransactionsMontrealYearToDate" xml:space="preserve">
+    <value>Show all Montreal EXO transactions year to date</value>
   </data>
   <data name="Menu_Project_Pipelines" xml:space="preserve">
     <value>Project pipelines maintenance menu</value>
@@ -441,7 +441,16 @@
   <data name="Menu_Project_Register_Clarification" xml:space="preserve">
     <value>Project Clarification Register</value>
   </data>
-  <data name="Menu_Transactions2020ToDate" xml:space="preserve">
-    <value>Show all EXO transactions from 2020 onwards</value>
+  <data name="Menu_TransactionsPerth2020ToDate" xml:space="preserve">
+    <value>Show all Perth EXO transactions from 2020 onwards</value>
+  </data>
+  <data name="Menu_TransactionsMontreal2020ToDate" xml:space="preserve">
+    <value>Show all Montreal EXO transactions from 2020 onwards</value>
+  </data>
+  <data name="Menu_TransactionsPerthYearToDate" xml:space="preserve">
+    <value>Show all Perth EXO transactions from 2020 onwards</value>
+  </data>
+  <data name="Menu_TransactionsUSAYearToDate" xml:space="preserve">
+    <value>Show all USA EXO transactions year to date</value>
   </data>
 </root>
