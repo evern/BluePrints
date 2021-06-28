@@ -376,6 +376,15 @@ namespace BluePrints.Common.Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Project construction direct charge rate maintenance.
+        /// </summary>
+        internal static string Menu_Project_ConstructionDirectChargeRate {
+            get {
+                return ResourceManager.GetString("Menu_Project_ConstructionDirectChargeRate", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Project construction direct cost rate maintenance.
         /// </summary>
         internal static string Menu_Project_ConstructionDirectCostRate {

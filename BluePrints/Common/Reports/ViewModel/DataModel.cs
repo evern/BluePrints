@@ -61,7 +61,7 @@ namespace BluePrints.Common.ViewModel.Reporting
             get
             {
                 if (constructionStages == null)
-                    throw new NotImplementedException();
+                    return 0;
 
                 if(earned_units_ondatadate == null)
                     earned_units_ondatadate = getEarnedUnits(PROGRESS_ITEMSCurrent);
@@ -90,7 +90,7 @@ namespace BluePrints.Common.ViewModel.Reporting
         private decimal getEarnedUnits(IEnumerable<PROGRESS_ITEM> progresses)
         {
             if (constructionStages == null)
-                throw new NotImplementedException();
+                return 0;
 
             decimal earnedUnits = 0;
             foreach (PROGRESS_ITEM progress in progresses)
@@ -118,13 +118,15 @@ namespace BluePrints.Common.ViewModel.Reporting
 
         public void GetError(ErrorInfo info)
         {
-            if(Entity.Entity.ExoLines != null && (Entity.Subjob_Name != string.Empty) && (Entity.Discipline_Code != string.Empty) && (Entity.Commodity_Code != string.Empty))
-            {
-                if (!Entity.Entity.ExoLines.Any(x => x.SubJobCode == Entity.Subjob_Name && x.DisciplineCode == Entity.Discipline_Code && x.CommodityCode == Entity.Commodity_Code))
-                    info.ErrorText = Entity.Subjob_Name + " " + Entity.Discipline_Code + " " + Entity.Commodity_Code + " doesn't exist in EXO";
-                else
-                    info.ErrorText = string.Empty;
-            }
+            info.ErrorText = string.Empty;
+            //Show error when row doesn't exist in EXO
+            //if(Entity.Entity.ExoLines != null && (Entity.Subjob_Name != string.Empty) && (Entity.Discipline_Code != string.Empty) && (Entity.Commodity_Code != string.Empty))
+            //{
+            //    if (!Entity.Entity.ExoLines.Any(x => x.SubJobCode == Entity.Subjob_Name && x.DisciplineCode == Entity.Discipline_Code && x.CommodityCode == Entity.Commodity_Code))
+            //        info.ErrorText = Entity.Subjob_Name + " " + Entity.Discipline_Code + " " + Entity.Commodity_Code + " doesn't exist in EXO";
+            //    else
+            //        info.ErrorText = string.Empty;
+            //}
         }
 
         public void GetPropertyError(string propertyName, ErrorInfo info)

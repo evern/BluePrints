@@ -60,9 +60,39 @@ namespace BluePrints.Common.Projections
 
         public void SetOriginalEntityKey(Guid newGuid) { }
 
-        public decimal Budget_ItemRate => 0;
+        public decimal Budget_ItemRate
+        {
+            get
+            {
+                if (RATE == null || RATE.RATE1 == null)
+                    return 0;
 
-        public decimal Budget_Costs => Budget_Units * Budget_ItemRate;
+                return (decimal)RATE.RATE1;
+            }
+        }
+
+        public decimal Budget_ItemInternalRate
+        {
+            get
+            {
+                if (Entity.BUDGET_INSTALL_RATE != null)
+                    return (decimal)Entity.BUDGET_INSTALL_RATE;
+
+                if (INTERNAL_RATE == null || INTERNAL_RATE.RATE1 == null)
+                    return 0;
+
+                return (decimal)INTERNAL_RATE.RATE1;
+            }
+        }
+
+        public decimal Variation_InternalCosts => Variation_Units * Budget_ItemInternalRate;
+
+        public decimal Total_InternalCosts => Budget_InternalCost + Variation_InternalCosts;
+
+        //always use budget hours for tracking budget internal costs (not including budget adjustments)
+        public decimal Budget_InternalCost => Entity.BUDGET_HOURS == null ? 0 : (decimal)Entity.BUDGET_HOURS * Budget_ItemInternalRate;
+
+        public decimal Budget_Costs => Entity.BUDGET_HOURS == null  ? 0 : (decimal)Entity.BUDGET_HOURS * Budget_ItemRate;
 
         public decimal Total_Costs => Budget_Costs;
 
@@ -134,14 +164,6 @@ namespace BluePrints.Common.Projections
         public decimal Budget_Adjustment_Units => 0;
 
         public decimal Budget_Adjustment_Costs => 0;
-
-        public decimal Budget_ItemInternalRate => Budget_ItemRate;
-
-        public decimal Budget_InternalCost => Budget_Units * Budget_ItemInternalRate;
-
-        public decimal Variation_InternalCosts => Variation_Units * Budget_ItemInternalRate;
-
-        public decimal Total_InternalCosts => Budget_InternalCost + Variation_InternalCosts;
 
         public decimal Unadjusted_Budget_Units => Budget_Units;
 
@@ -218,9 +240,9 @@ namespace BluePrints.Common.Projections
                         newESTIMATE_ITEM.RATE = findRATE;
 
                     //Not available at this moment
-                    //RATE findInternalRate = BluePrintsDataUtils.CascadeRateSearch(estimate_item.GUID_AREA, estimate_item.GUID_SUBAREA, estimate_item.GUID_DISCIPLINE, estimate_item.GUID_DEPARTMENT, estimate_item.Commodity_Code, string.Empty, RATES, CostType.Cost, (PhaseType)estimate_item.PHASE.PHASE_TYPE);
-                    //if (findInternalRate != null)
-                    //    newESTIMATE_ITEM.INTERNAL_RATE = findInternalRate;
+                    RATE findInternalRate = BluePrintsDataUtils.CascadeRateSearch(estimate_item.GUID_AREA, estimate_item.GUID_SUBAREA, estimate_item.GUID_DISCIPLINE, estimate_item.GUID_DEPARTMENT, estimate_item.Commodity_Code, string.Empty, RATES, CostType.Cost, (PhaseType)estimate_item.PHASE.PHASE_TYPE);
+                    if (findInternalRate != null)
+                        newESTIMATE_ITEM.INTERNAL_RATE = findInternalRate;
                 }
 
                 returnProjections.Add(newESTIMATE_ITEM);

@@ -161,7 +161,7 @@
                         </dxg:GridColumn>
                         <dxg:GridColumn FieldName="Entity.Entity.NAME" Header="Name" />
                         <dxg:GridColumn FieldName="Entity.Entity.CLIENT_NAME" Header="Client Name" />
-                        <dxg:GridColumn FieldName="Entity.Entity.BUDGET_QUANTITY" Header="Quantity">
+                        <dxg:GridColumn FieldName="Entity.Entity.BUDGET_QUANTITY" Header="Budget Quantity">
                             <dxg:GridColumn.EditSettings>
                                 <dxe:SpinEditSettings Mask="n2" MaskType="Numeric" MaskUseAsDisplayFormat="True" />
                             </dxg:GridColumn.EditSettings>
@@ -172,9 +172,24 @@
                                 <dxe:SpinEditSettings Mask="n2" MaskType="Numeric" MaskUseAsDisplayFormat="True" />
                             </dxg:GridColumn.EditSettings>
                         </dxg:GridColumn>
-                        <dxg:GridColumn FieldName="Entity.Entity.BUDGET_HOURS" Header="Hours">
+                        <dxg:GridColumn FieldName="Entity.Entity.BUDGET_HOURS" Header="Budget Hours">
                             <dxg:GridColumn.EditSettings>
                                 <dxe:SpinEditSettings Mask="n2" MaskType="Numeric" MaskUseAsDisplayFormat="True" />
+                            </dxg:GridColumn.EditSettings>
+                        </dxg:GridColumn>
+                        <dxg:GridColumn FieldName="Entity.Entity.BUDGET_INSTALL_RATE" Header="Override Rate" >
+                            <dxg:GridColumn.EditSettings>
+                                <dxe:SpinEditSettings Mask="c2" MaskType="Numeric" MaskUseAsDisplayFormat="True" />
+                            </dxg:GridColumn.EditSettings>
+                        </dxg:GridColumn>
+                        <dxg:GridColumn FieldName="Budget_Costs" Header="Budget Charge" ReadOnly="True">
+                            <dxg:GridColumn.EditSettings>
+                                <dxe:SpinEditSettings Mask="c2" MaskType="Numeric" MaskUseAsDisplayFormat="True" />
+                            </dxg:GridColumn.EditSettings>
+                        </dxg:GridColumn>
+                        <dxg:GridColumn FieldName="Budget_InternalCost" Header="Budget Cost" ReadOnly="True">
+                            <dxg:GridColumn.EditSettings>
+                                <dxe:SpinEditSettings Mask="c2" MaskType="Numeric" MaskUseAsDisplayFormat="True" />
                             </dxg:GridColumn.EditSettings>
                         </dxg:GridColumn>
                         <dxg:GridColumn FieldName="Entity.Entity.P6ACTIVITYMAP" Header="P6 Activity (Optional)"/>
@@ -182,11 +197,13 @@
                     </dxg:GridControl.Columns>
                     <dxg:GridControl.GroupSummary>
                         <dxg:GridSummaryItem FieldName="Entity.Entity.GUID_AREA" dxc:DXSerializer.Enabled="False" DisplayFormat="{}{0} Record(s)" SummaryType="Count" />
-                        <dxg:GridSummaryItem dxc:DXSerializer.Enabled="False" DisplayFormat="c2" FieldName="Entity.Entity.BUDGET_INSTALL_RATE" SummaryType="Sum" />
+                        <dxg:GridSummaryItem dxc:DXSerializer.Enabled="False" DisplayFormat="c2" FieldName="Budget_Costs" SummaryType="Sum" />
+                        <dxg:GridSummaryItem dxc:DXSerializer.Enabled="False" DisplayFormat="c2" FieldName="Budget_InternalCost" SummaryType="Sum" />
                     </dxg:GridControl.GroupSummary>
                     <dxg:GridControl.TotalSummary>
                         <dxg:GridSummaryItem FieldName="Entity.Entity.GUID_AREA" dxc:DXSerializer.Enabled="False" DisplayFormat="{}{0} Record(s)" SummaryType="Count" />
-                        <dxg:GridSummaryItem dxc:DXSerializer.Enabled="False" DisplayFormat="c2" FieldName="Entity.Entity.BUDGET_INSTALL_RATE" SummaryType="Sum" />
+                        <dxg:GridSummaryItem dxc:DXSerializer.Enabled="False" DisplayFormat="c2" FieldName="Budget_Costs" SummaryType="Sum" />
+                        <dxg:GridSummaryItem dxc:DXSerializer.Enabled="False" DisplayFormat="c2" FieldName="Budget_InternalCost" SummaryType="Sum" />
                     </dxg:GridControl.TotalSummary>
                     <dxg:GridControl.View>
                         <dxg:TableView x:Name="tableView" Style="{StaticResource DefaultTableViewTemplate}">

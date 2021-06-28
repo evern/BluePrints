@@ -45,14 +45,14 @@ namespace BluePrints.ViewModels
         protected override CostType loadCostType => CostType.Cost;
         protected IUnitOfWorkFactory<IPrimeroEntitiesUnitOfWork> primeroUnitOfWorkFactory;
         protected IPrimeroEntitiesUnitOfWork primeroUnitOfWork;
-        PhaseType loadPhaseType = PhaseType.Construct;
         protected override void resolveParameters(object parameter)
         {
-            var PROJECTParameter = (DualEntitiesParameter<PROJECT, object>) parameter;
+            var PROJECTParameter = (TripleEntitiesParameter<PROJECT, object, object>) parameter;
             loadPROJECT = PROJECTParameter.GetFirstEntity();
             primeroUnitOfWorkFactory = PrimeroEntitiesUnitOfWorkSource.GetUnitOfWorkFactory(loadPROJECT.OfficeNameForExo == BluePrintsResources.OfficeMontreal);
             primeroUnitOfWork = primeroUnitOfWorkFactory.CreateUnitOfWork();
             loadPhaseType = (PhaseType)PROJECTParameter.GetSecondEntity();
+            loadChargeType = (ChargeType)PROJECTParameter.GetThirdEntity();
         }
 
         protected override void addEntitiesLoader()
@@ -287,12 +287,13 @@ namespace BluePrints.ViewModels
 
         protected override void populatePHASE(RATE entity)
         {
-            PHASE selectedPHASE = PHASECollection.FirstOrDefault(x => x.PHASE_TYPE == loadPhaseType && x.CHARGE_TYPE == ChargeType.Chargeable);
+            PHASE selectedPHASE = PHASECollection.FirstOrDefault(x => x.PHASE_TYPE == loadPhaseType && x.CHARGE_TYPE == loadChargeType);
             if (selectedPHASE != null)
             {
                 entity.GUID_PHASE = selectedPHASE.GUID;
                 entity.CHARGE_TYPE = (ChargeType)selectedPHASE.CHARGE_TYPE;
                 entity.PHASE_TYPE = (PhaseType)selectedPHASE.PHASE_TYPE;
+                entity.COST_TYPE = CostType.Cost;
             }
         }
 

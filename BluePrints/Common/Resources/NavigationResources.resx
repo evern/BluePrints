@@ -465,4 +465,7 @@
   <data name="Menu_Project_Forecast_Flat_PO" xml:space="preserve">
     <value>Project equipment hire PO forecast maintenance menu</value>
   </data>
+  <data name="Menu_Project_ConstructionDirectChargeRate" xml:space="preserve">
+    <value>Project construction direct charge rate maintenance</value>
+  </data>
 </root>

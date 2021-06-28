@@ -44,13 +44,16 @@ namespace BluePrints.ViewModels
 
         protected PROJECT loadPROJECT;
         protected ChargeType loadChargeType;
+        protected PhaseType loadPhaseType;
         protected virtual CostType loadCostType => CostType.Charge;
+        public bool IsConstructionPhase => loadPhaseType == PhaseType.Construct;
         protected IUnitOfWorkFactory<IBluePrintsEntitiesUnitOfWork> bluePrintsUnitOfWorkFactory = BluePrintsEntitiesUnitOfWorkSource.GetUnitOfWorkFactory();
         protected override void resolveParameters(object parameter)
         {
-            var PROJECTParameter = (DualEntitiesParameter<PROJECT, object>) parameter;
+            var PROJECTParameter = (TripleEntitiesParameter<PROJECT, object, object>) parameter;
             loadPROJECT = PROJECTParameter.GetFirstEntity();
-            loadChargeType = (ChargeType)PROJECTParameter.GetSecondEntity();
+            loadPhaseType = (PhaseType)PROJECTParameter.GetSecondEntity();
+            loadChargeType = (ChargeType)PROJECTParameter.GetThirdEntity();
         }
 
         protected override void addEntitiesLoader()
@@ -78,10 +81,7 @@ namespace BluePrints.ViewModels
 
         protected virtual Func<IRepositoryQuery<PHASE>, IQueryable<PHASE>> PHASEProjectionFunc()
         {
-            if(loadChargeType == ChargeType.Chargeable)
-                return query => query.Where(x => (x.PHASE_TYPE == PhaseType.Design && x.CHARGE_TYPE == ChargeType.Chargeable));
-            else
-                return query => query.Where(x => (x.PHASE_TYPE == PhaseType.Indirect && x.CHARGE_TYPE == ChargeType.Chargeable));
+             return query => query.Where(x => (x.PHASE_TYPE == loadPhaseType && x.CHARGE_TYPE == loadChargeType));
         }
 
         private Func<IRepositoryQuery<PROJECT>, IQueryable<PROJECT>> PROJECTProjectionFunc()
@@ -106,7 +106,7 @@ namespace BluePrints.ViewModels
 
         protected virtual IQueryable<RATE> rateCommodityProjection(IRepositoryQuery<RATE> rates)
         {
-            List<RATE> rateCollection = rates.Where(x => x.GUID_PROJECT == loadPROJECT.GUID && x.CHARGE_TYPE == loadChargeType && x.COST_TYPE == loadCostType).ToList();
+            List<RATE> rateCollection = rates.Where(x => x.GUID_PROJECT == loadPROJECT.GUID && x.CHARGE_TYPE == loadChargeType && x.PHASE_TYPE == loadPhaseType && x.COST_TYPE == loadCostType).ToList();
             rateCollection.ForEach(x => initializeRATE(x));
 
             return rateCollection.AsQueryable();
@@ -129,25 +129,15 @@ namespace BluePrints.ViewModels
 
         protected virtual void populatePHASE(RATE entity)
         {
-            if(entity.GUID_PHASE == null)
+            if (entity.GUID_PHASE == null)
             {
-                if (loadChargeType == ChargeType.Chargeable)
+                PHASE selectedPHASE = PHASECollection.FirstOrDefault(x => x.PHASE_TYPE == loadPhaseType && x.CHARGE_TYPE == ChargeType.Chargeable);
+                if (selectedPHASE != null)
                 {
-                    PHASE findPHASE = PHASECollection.FirstOrDefault(x => x.INTERNAL_NUM.ToUpper() == "D1");
-                    if (findPHASE != null)
-                    {
-                        entity.GUID_PHASE = findPHASE.GUID;
-                        entity.PHASE_TYPE = PhaseType.Design;
-                    }
-                }
-                else if (loadChargeType == ChargeType.NotChargeable)
-                {
-                    PHASE findPHASE = PHASECollection.FirstOrDefault(x => x.INTERNAL_NUM.ToUpper() == "I1");
-                    if (findPHASE != null)
-                    {
-                        entity.GUID_PHASE = findPHASE.GUID;
-                        entity.PHASE_TYPE = PhaseType.Indirect;
-                    }
+                    entity.GUID_PHASE = selectedPHASE.GUID;
+                    entity.CHARGE_TYPE = (ChargeType)selectedPHASE.CHARGE_TYPE;
+                    entity.PHASE_TYPE = (PhaseType)selectedPHASE.PHASE_TYPE;
+                    entity.COST_TYPE = CostType.Charge;
                 }
             }
         }

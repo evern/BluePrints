@@ -35,9 +35,7 @@ using System.Windows.Threading;
 
 namespace BluePrints.ViewModels
 {
-    public class ESTIMATE_ITEMCollectionViewModelWrapper :
-        BluePrintsEntitiesCollectionWrapper
-        <ESTIMATE_ITEM, ESTIMATE_ITEMProgress, Guid, IBluePrintsEntitiesUnitOfWork>
+    public class ESTIMATE_ITEMCollectionViewModelWrapper : BluePrintsEntitiesCollectionWrapper<ESTIMATE_ITEM, ESTIMATE_ITEMProgress, Guid, IBluePrintsEntitiesUnitOfWork>
     {
         /// <summary>
         /// Creates a new instance of ESTIMATE_ITEM_ITEMSViewModelWrapper as a POCO view model.
