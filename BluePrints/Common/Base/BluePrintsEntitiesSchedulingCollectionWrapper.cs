@@ -747,6 +747,7 @@ namespace BluePrints.Common.Base
             if (Selected_P6_Assignments.Count == 0)
                 return;
 
+            Selected_Activity = null;
             remove_assignments(Selected_P6_Assignments.ToList());
             SetMaxUnits();
             raise_deliverable_assignment_changes();

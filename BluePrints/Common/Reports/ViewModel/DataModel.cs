@@ -47,6 +47,8 @@ namespace BluePrints.Common.ViewModel.Reporting
 
         private IEnumerable<PROGRESS_ITEM> PROGRESS_ITEMSCurrent => PROGRESS_ITEMS.Where(y => y.EARNED_DATE.Date == ReportingDataDate.Date);
 
+        public override decimal P6_Assignment_Total_Quantity => Entity.Total_Quantity;
+
         public void resetEarnedUnits()
         {
             earned_units_ondatadate = null;
