@@ -106,11 +106,29 @@ namespace BluePrints.Common.Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Project construct rates category.
+        /// </summary>
+        internal static string Category_Project_Construct_Rate {
+            get {
+                return ResourceManager.GetString("Category_Project_Construct_Rate", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Project design category.
         /// </summary>
         internal static string Category_Project_Design {
             get {
                 return ResourceManager.GetString("Category_Project_Design", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Project design rates category.
+        /// </summary>
+        internal static string Category_Project_Design_Rate {
+            get {
+                return ResourceManager.GetString("Category_Project_Design_Rate", resourceCulture);
             }
         }
         
@@ -129,15 +147,6 @@ namespace BluePrints.Common.Resources {
         internal static string Category_Project_Forecast {
             get {
                 return ResourceManager.GetString("Category_Project_Forecast", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Project rates category.
-        /// </summary>
-        internal static string Category_Project_Rate {
-            get {
-                return ResourceManager.GetString("Category_Project_Rate", resourceCulture);
             }
         }
         

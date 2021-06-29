@@ -135,8 +135,8 @@
   <data name="Category_Project_Forecast" xml:space="preserve">
     <value>Project forecast category</value>
   </data>
-  <data name="Category_Project_Rate" xml:space="preserve">
-    <value>Project rates category</value>
+  <data name="Category_Project_Design_Rate" xml:space="preserve">
+    <value>Project design rates category</value>
   </data>
   <data name="Category_Register" xml:space="preserve">
     <value>Project registers category</value>
@@ -467,5 +467,8 @@
   </data>
   <data name="Menu_Project_ConstructionDirectChargeRate" xml:space="preserve">
     <value>Project construction direct charge rate maintenance</value>
+  </data>
+  <data name="Category_Project_Construct_Rate" xml:space="preserve">
+    <value>Project construct rates category</value>
   </data>
 </root>

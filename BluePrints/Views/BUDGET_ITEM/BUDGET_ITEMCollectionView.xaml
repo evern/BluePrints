@@ -177,7 +177,7 @@
                                 <dxe:SpinEditSettings Mask="n2" MaskType="Numeric" MaskUseAsDisplayFormat="True" />
                             </dxg:GridColumn.EditSettings>
                         </dxg:GridColumn>
-                        <dxg:GridColumn FieldName="Entity.Entity.BUDGET_INSTALL_RATE" Header="Override Rate" >
+                        <dxg:GridColumn FieldName="Entity.Entity.INSTALL_RATE" Header="Override Rate" >
                             <dxg:GridColumn.EditSettings>
                                 <dxe:SpinEditSettings Mask="c2" MaskType="Numeric" MaskUseAsDisplayFormat="True" />
                             </dxg:GridColumn.EditSettings>

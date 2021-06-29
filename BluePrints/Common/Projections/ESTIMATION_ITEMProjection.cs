@@ -75,8 +75,8 @@ namespace BluePrints.Common.Projections
         {
             get
             {
-                if (Entity.BUDGET_INSTALL_RATE != null)
-                    return (decimal)Entity.BUDGET_INSTALL_RATE;
+                if (Entity.INSTALL_RATE != null)
+                    return (decimal)Entity.INSTALL_RATE;
 
                 if (INTERNAL_RATE == null || INTERNAL_RATE.RATE1 == null)
                     return 0;
