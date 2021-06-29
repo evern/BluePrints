@@ -196,7 +196,7 @@ namespace BluePrints.ViewModels
 
         public override bool OnBeforeEntitiesChanged(object key, Type changedType, EntityMessageType messageType, object sender, Guid senderKey, bool isBulkRefresh)
         {
-            if (sender != MainViewModel && changedType == typeof(VARIATION))
+            if (IsSummaryColumnsVisible && sender != MainViewModel && changedType == typeof(VARIATION))
             {
                 Guid guid = (Guid)key;
                 VARIATIONProjection variationToRefresh = Entities.FirstOrDefault(x => x.GUID == guid);
