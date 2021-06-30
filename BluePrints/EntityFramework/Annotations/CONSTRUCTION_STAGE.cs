@@ -13,7 +13,7 @@ namespace BluePrints.Data
     using System.ComponentModel.DataAnnotations.Schema;
     using System.Linq;
 
-    [ConstraintAttributes("SCORE_CARD_DISCIPLINE, NAME")]
+    [ConstraintAttributes("SCORE_CARD_DISCIPLINE, NAME, SORT_ORDER")]
     public partial class CONSTRUCTION_STAGE : EntityBase, IGuidEntityKey, IEntityNumber, ICanSync, IHaveCreatedDate, IDXDataErrorInfo
     {
         [NotMapped]

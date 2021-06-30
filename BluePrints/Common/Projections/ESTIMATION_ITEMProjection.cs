@@ -64,6 +64,9 @@ namespace BluePrints.Common.Projections
         {
             get
             {
+                if (Entity.CHARGE_RATE != null)
+                    return (decimal)Entity.CHARGE_RATE;
+
                 if (RATE == null || RATE.RATE1 == null)
                     return 0;
 

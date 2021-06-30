@@ -13,7 +13,8 @@
         <dxb:BarManager>
             <dxb:BarManager.Items>
                 <dxb:BarSubItem ItemLinksSource="{StaticResource RibbonDefaultGridButtons}" />
-                <dxb:BarSubItem ItemLinksSource="{StaticResource ContextMenuDuplicateInsertButtons}" />
+                <dxb:BarButtonItem x:Name="biDuplicate1" Command="{Binding DuplicateCommand}" Content="Duplicate" Glyph="{dx:DXImageOffice2013 Image=Paste_16x16.png}" RibbonStyle="SmallWithText" ToolTip="Duplicate selected stage(s) and increment their order numbers from the largest order number onwards" />
+                <dxb:BarButtonItem x:Name="biInsert1" Command="{Binding  InsertCommand}" Content="Insert" Glyph="{dx:DXImageOffice2013 Image=Paste_16x16.png}" RibbonStyle="SmallWithText" ToolTip="Insert new stage(s) and rename their order numbers to the number right after selected stage(s)" />
                 <dxb:BarSubItem x:Name="biDuplicateMulti" Content="Duplicate Multiple" Glyph="{dx:DXImageOffice2013 Image=Parameters_16x16.png}" ToolTip="Specify number of times to duplicate selected item">
                     <dxb:BarEditItem Name="contextMenuDuplicateMultiCount" EditValue="2" Content="Count">
                         <dxb:BarEditItem.EditSettings>
