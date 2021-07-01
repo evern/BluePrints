@@ -443,10 +443,12 @@ namespace BluePrints.ViewModels
             dataPointsTable.Columns.Add(currentPeriodEarnedUnits, typeof(decimal));
             dataPointsTable.Columns.Add(cumulativeEarnedUnits, typeof(decimal));
 
-            foreach (ESTIMATE_ITEMProgress entity in Entities)
-            {
-                populateRow(entity, false);
-            }
+            //when it's disposed
+            if(Entities != null)
+                foreach (ESTIMATE_ITEMProgress entity in Entities)
+                {
+                    populateRow(entity, false);
+                }
 
             GridControlService.EndDataUpdate();
         }
