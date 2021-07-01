@@ -70,18 +70,18 @@
                 </dxr:RibbonControl>
                 <custom:GridControlEx x:Name="GridControl" dx:DXSerializer.SerializationID="GridControlCONSTRUCTION_STAGE" AutoExpandAllGroups="True" dx:DXSerializer.StoreLayoutMode="All" Style="{StaticResource DefaultGridControlTemplate}">
                     <dxg:GridControl.Columns>
-                        <dxg:GridColumn Header="Discipline" GroupIndex="1" SortIndex="1" FieldName="SCORE_CARD_DISCIPLINE">
+                        <dxg:GridColumn Header="Discipline" GroupIndex="1" SortIndex="1" AllowBestFit="False" Width="150" FieldName="SCORE_CARD_DISCIPLINE">
                             <dxg:GridColumn.EditSettings>
                                 <dxe:ComboBoxEditSettings AutoComplete="True" IsTextEditable="True" ItemsSource="{dxe:EnumItemsSource EnumType={x:Type common:ScoreCardDiscipline}}" />
                             </dxg:GridColumn.EditSettings>
                         </dxg:GridColumn>
-                        <dxg:GridColumn Header="Name" FieldName="NAME" />
-                        <dxg:GridColumn Header="Weight" FieldName="WEIGHT_PERCENTAGE" >
+                        <dxg:GridColumn Header="Name" FieldName="NAME" AllowBestFit="False"  Width="250" />
+                        <dxg:GridColumn Header="Weight" FieldName="WEIGHT_PERCENTAGE" AllowBestFit="False" Width="100" >
                             <dxg:GridColumn.EditSettings>
                                 <dxe:SpinEditSettings Increment="0.1" Mask="p0" MaskType="Numeric" MaskUseAsDisplayFormat="True" MaxValue="1" MinValue="0" />
                             </dxg:GridColumn.EditSettings>
                         </dxg:GridColumn>
-                        <dxg:GridColumn Header="ID" AllowBestFit="false" SortIndex="2"  Width="50" FieldName="SORT_ORDER" HeaderToolTip="Unique number" AllowMoving="false" />
+                        <dxg:GridColumn Header="ID" SortIndex="2" AllowBestFit="False" Width="75" FieldName="SORT_ORDER" HeaderToolTip="Unique number" AllowMoving="false" />
                     </dxg:GridControl.Columns>
                     <dxg:GridControl.TotalSummary>
                         <dxg:GridSummaryItem dx:DXSerializer.Enabled="False" Alignment="Right" SummaryType="Count" />
