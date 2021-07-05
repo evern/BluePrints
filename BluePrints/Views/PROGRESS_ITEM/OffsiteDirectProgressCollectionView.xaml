@@ -107,6 +107,11 @@
                     </dxmvvm:Interaction.Behaviors>
                     <dxg:GridControl.Bands>
                         <dxg:GridControlBand Header="Properties (Read Only)">
+                            <dxg:GridColumn FieldName="Entity.Entity.GUID_PHASE" Header="Phase" AllowBestFit="false" Width="50" HeaderToolTip="Automatically assigned field. Changing this will affect subjob name">
+                                <dxg:GridColumn.EditSettings>
+                                    <dxe:ComboBoxEditSettings AutoComplete="True" DisplayMember="INTERNAL_NUM" IsTextEditable="True" ItemsSource="{Binding PHASECollection}" ValueMember="GUID" />
+                                </dxg:GridColumn.EditSettings>
+                            </dxg:GridColumn>
                             <dxg:GridColumn FieldName="Entity.Entity.GUID_AREA" Header="Area" AllowBestFit="false" Width="50" ReadOnly="True">
                                 <dxg:GridColumn.EditSettings>
                                     <dxe:ComboBoxEditSettings AutoComplete="True" DisplayMember="INTERNAL_NUM" IsTextEditable="True" ItemsSource="{Binding AREACollection}" ValueMember="GUID" />
