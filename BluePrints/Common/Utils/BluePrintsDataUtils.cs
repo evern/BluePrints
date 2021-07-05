@@ -907,7 +907,6 @@ namespace BluePrints.Common.ViewModel.Utils
                             burnedDataPoint.BudgetedUnits = 0;
                             burnedDataPoint.BudgetedCosts = 0;
                             burnedDataPoint.Units = jobTransaction.QUANTITY == null ? 0 : (decimal)jobTransaction.QUANTITY;
-                            currencyConversion = jobTransaction.EXCHRATE != null ? 1 / (decimal)jobTransaction.EXCHRATE : currencyConversion;
                             //burnedDataPoint.Costs = (decimal)jobTransaction.LINETOTAL * currencyConversion;
                             burnedDataPoint.Costs = jobTransaction.LINECOST == null ? 0 : (decimal)jobTransaction.LINECOST * currencyConversion;
                             burnedDataPoint.CostPerQty = burnedDataPoint.Units == 0 ? 0 : burnedDataPoint.Costs / burnedDataPoint.Units;
@@ -1000,7 +999,6 @@ namespace BluePrints.Common.ViewModel.Utils
                         decimal qty = jobMaterial.quantity == null ? 0 : (decimal)jobMaterial.quantity;
                         decimal lineCost = jobMaterial.LINECOST == null ? 0 : (decimal)jobMaterial.LINECOST;
                         materialDataPoint.Units = qty;
-                        currencyConversion = jobMaterial.EXCHRATE != null ? 1 / (decimal)jobMaterial.EXCHRATE : currencyConversion;
                         materialDataPoint.Costs = lineCost * currencyConversion;
                         materialDataPoint.CostPerQty = materialDataPoint.Units == 0 ? 0 : materialDataPoint.Costs / materialDataPoint.Units;
 
