@@ -825,7 +825,7 @@ namespace BluePrints.Common.ViewModel.Utils
                                   join JOBCOST_HDR1 in primeroUOW.JOBCOST_HDR
                                   on JOBTRANS.JOBNO equals JOBCOST_HDR1.JOBNO
                                   where JOBCOST_HDR2.JOBCODE == projectNumber && JOBTRANS.TRANSTYPE == "C" && JOBTRANS.LINE_STATUS != "X" && JOBTRANS.STOCKCODE == "@" && JOBTRANS.TRANSDATE <= dataDate
-                                  select new { JOBCOST_HDR1.JOBCODE, JOBTRANS.QUANTITY, JOBTRANS.STOCKCODE, JOBTRANS.LINETOTAL, JOBTRANS.LINECOST, JOBTRANS.TRANSDATE, VARIATIONCODE = JOBTRANS.X_VARIATIONCODE, JOBTRANS.INVOICED, JOBTRANS.INVOICEDATE, JOBTRANS.INVSEQNO };
+                                  select new { JOBCOST_HDR1.JOBCODE, JOBTRANS.QUANTITY, JOBTRANS.STOCKCODE, JOBTRANS.LINETOTAL, JOBTRANS.LINECOST, JOBTRANS.TRANSDATE, VARIATIONCODE = JOBTRANS.X_VARIATIONCODE, JOBTRANS.INVOICED, JOBTRANS.INVOICEDATE, JOBTRANS.INVSEQNO, JOBTRANS.EXCHRATE };
 
             var jobTransactionsList = jobTransactions.ToList();
             if (showLoadingScreen)
@@ -842,6 +842,8 @@ namespace BluePrints.Common.ViewModel.Utils
                 revenueDataPoint.BudgetedCosts = 0;
                 revenueDataPoint.Units = (decimal)jobTransaction.QUANTITY;
                 //burnedDataPoint.Costs = (decimal)jobTransaction.LINETOTAL * currencyConversion;
+                currencyConversion = jobTransaction.EXCHRATE != null ? 1 / (decimal)jobTransaction.EXCHRATE : currencyConversion;
+
                 revenueDataPoint.Costs = jobTransaction.LINETOTAL == null ? 0 : (decimal)jobTransaction.LINETOTAL * currencyConversion;
                 revenueDataPoint.CostPerQty = revenueDataPoint.Units == 0 ? 0 : revenueDataPoint.Costs / revenueDataPoint.Units;
                 //burnedDataPoint.ProgressDate = alignedDataDates.FirstOrDefault(dates => dates.Date >= jobTransaction.TRANSDATE);
@@ -905,6 +907,7 @@ namespace BluePrints.Common.ViewModel.Utils
                             burnedDataPoint.BudgetedUnits = 0;
                             burnedDataPoint.BudgetedCosts = 0;
                             burnedDataPoint.Units = jobTransaction.QUANTITY == null ? 0 : (decimal)jobTransaction.QUANTITY;
+                            currencyConversion = jobTransaction.EXCHRATE != null ? 1 / (decimal)jobTransaction.EXCHRATE : currencyConversion;
                             //burnedDataPoint.Costs = (decimal)jobTransaction.LINETOTAL * currencyConversion;
                             burnedDataPoint.Costs = jobTransaction.LINECOST == null ? 0 : (decimal)jobTransaction.LINECOST * currencyConversion;
                             burnedDataPoint.CostPerQty = burnedDataPoint.Units == 0 ? 0 : burnedDataPoint.Costs / burnedDataPoint.Units;
@@ -963,7 +966,7 @@ namespace BluePrints.Common.ViewModel.Utils
 
             using (var t = new TransactionScope(TransactionScopeOption.Required, new TransactionOptions { IsolationLevel = System.Transactions.IsolationLevel.ReadUncommitted }))
             {
-                var jobMaterials = from X_JOB_TRANSACTIONS_DETAIL in primeroUOW.X_JOB_TRANSACTIONS_DETAILS
+                var jobMaterials = from X_JOB_TRANSACTIONS_DETAIL in primeroUOW.X_JOB_TRANSACTIONS_DETAIL_SeqNos
                                    join JOBCOST_HDR in primeroUOW.JOBCOST_HDR
                                    on X_JOB_TRANSACTIONS_DETAIL.jobno equals JOBCOST_HDR.JOBNO
                                    join JOBCOST_HDR2 in primeroUOW.JOBCOST_HDR
@@ -997,6 +1000,7 @@ namespace BluePrints.Common.ViewModel.Utils
                         decimal qty = jobMaterial.quantity == null ? 0 : (decimal)jobMaterial.quantity;
                         decimal lineCost = jobMaterial.LINECOST == null ? 0 : (decimal)jobMaterial.LINECOST;
                         materialDataPoint.Units = qty;
+                        currencyConversion = jobMaterial.EXCHRATE != null ? 1 / (decimal)jobMaterial.EXCHRATE : currencyConversion;
                         materialDataPoint.Costs = lineCost * currencyConversion;
                         materialDataPoint.CostPerQty = materialDataPoint.Units == 0 ? 0 : materialDataPoint.Costs / materialDataPoint.Units;
 
