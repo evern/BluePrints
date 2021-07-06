@@ -1,4 +1,5 @@
 ﻿using BaseModel.Data.Helpers;
+using BaseModel.DataModel;
 using BaseModel.Misc;
 using BluePrints.Common.ViewModel.Utils;
 using DevExpress.Mvvm;
@@ -445,7 +446,7 @@ namespace BluePrints.Common.ViewModel.Reporting
         }
     }
 
-    public class ExoDataPoint : DataPoint, ICanUpdate
+    public class ExoDataPoint : DataPoint, ICanUpdate, IHaveDisciplineDesc
     {
         public ExoDataPoint()
         {
@@ -526,16 +527,14 @@ namespace BluePrints.Common.ViewModel.Reporting
 
         public string Commodity_Code { get; set; }
 
-        public bool NewEntityFromView { get => throw new NotImplementedException(); set => throw new NotImplementedException(); }
+        #region IHaveDisciplineDesc
+        public string DisciplineCode => Discipline_Code;
 
-        public void Update()
-        {
-            //for compliance in collection view model wrapper, but we never call this
-            throw new NotImplementedException();
-        }
+        public string DisciplineDesc { get; set; }
+        #endregion
     }
 
-    public class DataPoint
+    public class DataPoint : EntityBase
     {
         public DateTime ProgressDate { get; set; }
         public DateTime ActualDate { get; set; }

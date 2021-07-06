@@ -10,7 +10,7 @@ using System.Threading.Tasks;
 
 namespace BluePrints.Common.ViewModel.Reporting
 {
-    public interface IHaveDisciplineDesc
+    public interface IHaveDisciplineDesc : ICanUpdate
     {
         string DisciplineCode { get; }
         string DisciplineDesc { get; set; }

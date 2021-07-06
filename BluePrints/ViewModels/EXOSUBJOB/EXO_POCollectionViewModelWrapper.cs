@@ -1,6 +1,7 @@
 ﻿using BaseModel.Data.Helpers;
 using BaseModel.DataModel;
 using BaseModel.Misc;
+using BaseModel.ViewModel.Base;
 using BaseModel.ViewModel.Loader;
 using BaseModel.ViewModel.Services;
 using BluePrints.BluePrintsEntitiesDataModel;
@@ -14,6 +15,7 @@ using BluePrints.Data;
 using BluePrints.PrimeroData;
 using BluePrints.PrimeroData.PrimeroEntitiesDataModel;
 using DevExpress.Data.Filtering;
+using DevExpress.Mvvm;
 using DevExpress.Mvvm.POCO;
 using DevExpress.Xpf.Grid;
 using System;
@@ -122,7 +124,13 @@ namespace BluePrints.ViewModels
         {
             DateTime futureDateTime = DateTime.Now.AddYears(10);
             if(ExoMaterials == null)
+            {
                 ExoMaterials = BluePrintsDataUtils.GetMaterials(MainViewModel.UnitOfWork, loadPROJECT.NUMBER, futureDateTime);
+                foreach(ExoDataPoint exoMaterial in ExoMaterials)
+                {
+                    exoMaterial.PopulateDisciplineDesc(DISCIPLINE_DESCCollection, JOB_COSTGROUPSCollection);
+                }
+            }
 
             List<PURCHORD_LINES> exoPos = BluePrintsDataUtils.GetAllNativeEXOPO(MainViewModel.UnitOfWork, query, loadPROJECT.NUMBER);
             List<PURCHORD_LINES> returnDataPoints = new List<PURCHORD_LINES>();
@@ -151,6 +159,30 @@ namespace BluePrints.ViewModels
         {
             DetailTableViewService.ApplyBestFit();
             base.OnAfterAssignedCallbackAndRaisePropertyChanged();
+        }
+
+        public override void UnifiedCellValueChanged(string field_name, object old_value, object new_value, PURCHORD_LINES projection, bool isNew)
+        {
+            if(field_name == BindableBase.GetPropertyName(() => new PURCHORD_LINES().DisciplineDesc))
+            {
+                projection.FindExistingOrAddDisciplineDesc(DISCIPLINE_DESCCollectionViewModel, loadPROJECT.GUID);
+
+                //update view discipline desc on PO with same discipline code
+                foreach (IHaveDisciplineDesc purchordLine in MainViewModel.Entities.Where(x => x.DisciplineCode == projection.DisciplineCode))
+                {
+                    purchordLine.DisciplineDesc = projection.DisciplineDesc;
+                    purchordLine.Update();
+                }
+
+                //update view discipline desc on actuals with same discipline code
+                foreach (IHaveDisciplineDesc exoMaterial in ExoMaterials.Where(x => x.DisciplineCode == projection.DisciplineCode))
+                {
+                    exoMaterial.DisciplineDesc = projection.DisciplineDesc;
+                    exoMaterial.Update();
+                }
+            }
+
+            base.UnifiedCellValueChanged(field_name, old_value, new_value, projection, isNew);
         }
 
         public override string UnifiedValueValidation(PURCHORD_LINES projection, string field_name, object new_value, bool isPaste)
@@ -366,6 +398,17 @@ namespace BluePrints.ViewModels
                 }
 
                 return allStockCodeRanges.OrderBy(x => x);
+            }
+        }
+
+        public CollectionViewModel<DISCIPLINE_DESC, DISCIPLINE_DESC, Guid, IBluePrintsEntitiesUnitOfWork> DISCIPLINE_DESCCollectionViewModel
+        {
+            get
+            {
+                if (MainViewModel == null)
+                    return null;
+
+                return (CollectionViewModel<DISCIPLINE_DESC, DISCIPLINE_DESC, Guid, IBluePrintsEntitiesUnitOfWork>)loaderCollection.GetViewModel<DISCIPLINE_DESC>();
             }
         }
         #endregion

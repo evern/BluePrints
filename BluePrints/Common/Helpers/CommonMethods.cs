@@ -1,4 +1,5 @@
-﻿using BluePrints.BluePrintsEntitiesDataModel;
+﻿using BaseModel.ViewModel.Base;
+using BluePrints.BluePrintsEntitiesDataModel;
 using BluePrints.Common.Projections;
 using BluePrints.Common.ViewModel.Reporting;
 using BluePrints.Data;
@@ -35,6 +36,24 @@ namespace BluePrints.Common.Helpers
                 else
                     entity.DisciplineDesc = string.Empty;
             }
+        }
+
+        public static void FindExistingOrAddDisciplineDesc(this IHaveDisciplineDesc entity, CollectionViewModel<DISCIPLINE_DESC, DISCIPLINE_DESC, Guid, IBluePrintsEntitiesUnitOfWork> DISCIPLINE_DESCCollectionViewModel, Guid GuidProject)
+        {
+            DISCIPLINE_DESC findDisciplineDesc = DISCIPLINE_DESCCollectionViewModel.Entities.FirstOrDefault(x => x.GUID_PROJECT == GuidProject && x.NAME == entity.DisciplineCode);
+            if(findDisciplineDesc != null)
+            {
+                findDisciplineDesc.DESCRIPTION = entity.DisciplineDesc;
+            }
+            else
+            {
+                findDisciplineDesc = new DISCIPLINE_DESC();
+                findDisciplineDesc.GUID_PROJECT = GuidProject;
+                findDisciplineDesc.NAME = entity.DisciplineCode;
+                findDisciplineDesc.DESCRIPTION = entity.DisciplineDesc;
+            }
+
+            DISCIPLINE_DESCCollectionViewModel.Save(findDisciplineDesc);
         }
     }
 
