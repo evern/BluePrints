@@ -117,6 +117,8 @@ namespace BluePrints.ViewModels
             loaderCollection.AddLoaderDescription(bluePrintsUnitOfWorkFactory, x => x.FORECAST_JOB_SETTINGS, FORECAST_JOB_SETTINGProjectionFunc);
             loaderCollection.AddLoaderDescription(bluePrintsUnitOfWorkFactory, x => x.VARIATION_CONSTRUCTIONS, VARIATION_CONSTRUCTIONProjectionFunc);
             loaderCollection.AddLoaderDescription<JOB_COSTTYPES, JOB_COSTTYPES, int, IPrimeroEntitiesUnitOfWork>(primeroUnitOfWorkFactory, x => x.JOB_COSTTYPES);
+            loaderCollection.AddLoaderDescription(bluePrintsUnitOfWorkFactory, x => x.DISCIPLINE_DESCS, DISCIPLINE_DESCProjectionFunc);
+            loaderCollection.AddLoaderDescription<JOB_COSTGROUPS, JOB_COSTGROUPS, int, IPrimeroEntitiesUnitOfWork>(primeroUnitOfWorkFactory, x => x.JOB_COSTGROUPS);
         }
 
         private void setProject(Data.PROJECT project)
@@ -212,6 +214,11 @@ namespace BluePrints.ViewModels
             return query => query.Where(x => x.GUID_PROJECT == LoadPROJECT.GUID);
         }
 
+        protected virtual Func<IRepositoryQuery<DISCIPLINE_DESC>, IQueryable<DISCIPLINE_DESC>> DISCIPLINE_DESCProjectionFunc()
+        {
+            return query => query.Where(x => x.GUID_PROJECT == LoadPROJECT.GUID);
+        }
+
         public bool IsLoadingForecast { get; set; }
         public bool IsHidden { get; set; }
         public bool IsJobForecast;
@@ -237,23 +244,6 @@ namespace BluePrints.ViewModels
         DispatcherTimer delayedEditValueChangeSetTimer;
         DispatcherTimer delayedDateChangeMessageBoxTimer;
         BackgroundWorker projectSavingBackgroundWorker = new BackgroundWorker();
-
-
-        protected int spreadSheetPhaseIndex = 0;
-        protected int spreadSheetAreaIndex = 1;
-        protected int spreadSheetSubAreaIndex = 2;
-        protected int spreadSheetSubJobIndex = 3;
-        protected int spreadSheetSubJobTitleIndex = 4;
-        protected int spreadSheetVariationIndex = 5;
-        protected int spreadSheetDisciplineIndex = 6;
-        protected int spreadSheetDisciplineNameIndex = 7;
-        protected int spreadSheetCommodityIndex = 8;
-        protected int spreadSheetCommodityNameIndex = 9;
-        protected int spreadSheetCommodityDescriptionIndex = 10;
-        protected int spreadSheetCommodityUOMIndex = 11;
-        protected int spreadSheetRateIndex = 12;
-        protected int spreadSheetBudgetIndex = 13;
-        protected int spreadSheetDateStartIndex = 14;
 
         bool isWeeks;
         public bool IsWeeks
@@ -731,6 +721,12 @@ namespace BluePrints.ViewModels
             if (commodityJobs == null)
             {
                 List<ExoSubJobProjection> unifiedJobList = ForecastHelper.ConstructUnifiedJobList(queryJobLines, COMMODITY_CODECollection, allDataPoints, JOB_COSTTYPESCollection, ShowLoadingScreen, AllProjectDashboards);
+                //update discipline description a.k.a package no
+                foreach(ExoDataPoint dataPoint in allDataPoints)
+                {
+                    dataPoint.PopulateDisciplineDesc(DISCIPLINE_DESCCollection, JOB_COSTGROUPCollection);
+                }
+
                 DetailedData.AddRange(allDataPoints);
 
                 commodityJobs = ForecastHelper.CreateCommodityProjections(unifiedJobList, queryJobLines, AllProjectDashboards, FORECAST_POCollection, FORECAST_EACCollection, FORECAST_EACPreviousCommitmentCollection, FORECAST_JOBCollection, FORECAST_JOB_SETTINGCollection, COMMODITY_CODECollection, alignedDataDateCollection, (DateTime)FixedDataDate, isWeeks, ShowLoadingScreen);
@@ -742,6 +738,7 @@ namespace BluePrints.ViewModels
                 LoadingScreenManager.ShowLoadingScreen(commodityJobs.Count);
                 LoadingScreenManager.SetMessage("Preparing View...");
             }
+
             //construct data points table
             dataPointsTable.Columns.Add(columnEntity, typeof(ForecastJobData));
             dataPointsTable.Columns.Add(columnCompare, typeof(DataTable));
@@ -875,6 +872,9 @@ namespace BluePrints.ViewModels
             List<string> uniqueIndirectStockCodes = new List<string>();
             List<string> uniqueMaterialStockCodes = new List<string>();
             List<string> uniqueActualStockCodes = new List<string>();
+
+            //update discipline desc
+            commodityJob.PopulateDisciplineDesc(DISCIPLINE_DESCCollection, JOB_COSTGROUPCollection);
 
             if (commodityJob.DateCosts.Count > 0)
             {
@@ -1078,6 +1078,7 @@ namespace BluePrints.ViewModels
                 columns.Add(new ColumnDescriptor() { FieldName = "Entity.Projection.SubJobTitle", ReadOnly = true, Header = "Subjob Title", Visible = false, Fixed = FixedStyle.Left, Width = 95, Settings = SettingsType.Default });
                 columns.Add(new ColumnDescriptor() { FieldName = "Entity.Projection.AreaCode", ReadOnly = true, Visible = false, Header = "Area", Fixed = FixedStyle.Left, Width = 60, Settings = SettingsType.Default });
                 columns.Add(new ColumnDescriptor() { FieldName = "Entity.Projection.DisciplineCode", ReadOnly = true, Header = "Discipline", Fixed = FixedStyle.Left, Width = 38, Settings = SettingsType.Default });
+                columns.Add(new ColumnDescriptor() { FieldName = "Entity.DisciplineDesc", ReadOnly = true, Header = "Package", Fixed = FixedStyle.Left, Width = 100, Settings = SettingsType.Default });
                 columns.Add(new ColumnDescriptor() { FieldName = "Entity.Projection.CommodityCode", ReadOnly = true, Header = "Commodity", Fixed = FixedStyle.Left, Width = 35, Settings = SettingsType.CommodityCode });
                 columns.Add(new ColumnDescriptor() { FieldName = "Entity.Projection.CommodityName", ReadOnly = true, Header = "Commodity Name", Fixed = FixedStyle.Left, Width = 50, Settings = SettingsType.Default });
                 columns.Add(new ColumnDescriptor() { FieldName = "Entity.Projection.VariationCode", ReadOnly = true, Header = "Variation", Fixed = FixedStyle.Left, Width = 60, Settings = SettingsType.Default });
@@ -1823,6 +1824,10 @@ namespace BluePrints.ViewModels
                 entity.ForecastErrorString = string.Empty;
 
                 forecastJobData.RaisePropertiesChanged();
+            }
+            else if(fieldName == BindableBase.GetPropertyName(() => new ForecastJobData().DisciplineDesc))
+            {
+                forecastJobData.FindExistingOrAddDisciplineDesc(DISCIPLINE_DESCCollectionViewModel, LoadPROJECT.GUID);
             }
             else if(fieldName == BindableBase.GetPropertyName(() => new ForecastJobData().PreviousEAC))
             {
@@ -2904,6 +2909,39 @@ namespace BluePrints.ViewModels
         #endregion
 
         #region Entity Wrapper Properties
+        public IEnumerable<JOB_COSTGROUPS> JOB_COSTGROUPCollection
+        {
+            get
+            {
+                var collection = GetEntities<JOB_COSTGROUPS>();
+                if (collection != null)
+                    collection = collection.OrderBy(x => x.SHORTCODE);
+                return collection;
+            }
+        }
+
+        public IEnumerable<DISCIPLINE_DESC> DISCIPLINE_DESCCollection
+        {
+            get
+            {
+                var collection = GetEntities<DISCIPLINE_DESC>();
+                if (collection != null)
+                    collection = collection.OrderBy(x => x.NAME);
+                return collection;
+            }
+        }
+
+        public CollectionViewModel<DISCIPLINE_DESC, DISCIPLINE_DESC, Guid, IBluePrintsEntitiesUnitOfWork> DISCIPLINE_DESCCollectionViewModel
+        {
+            get
+            {
+                if (MainViewModel == null)
+                    return null;
+
+                return (CollectionViewModel<DISCIPLINE_DESC, DISCIPLINE_DESC, Guid, IBluePrintsEntitiesUnitOfWork>)loaderCollection.GetViewModel<DISCIPLINE_DESC>();
+            }
+        }
+
         public IEnumerable<PROJWBS> P6PROJECTSCollection
         {
             get

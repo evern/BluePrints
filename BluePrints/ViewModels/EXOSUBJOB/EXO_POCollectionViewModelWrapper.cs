@@ -360,17 +360,6 @@ namespace BluePrints.ViewModels
             }
         }
 
-        public IEnumerable<DISCIPLINE_DESC> DISCIPLINE_DESCCollection
-        {
-            get
-            {
-                var collection = GetEntities<DISCIPLINE_DESC>();
-                if (collection != null)
-                    collection = collection.OrderBy(x => x.NAME);
-                return collection;
-            }
-        }
-
         public IEnumerable<string> COMMODITY_CODEStringCollection
         {
             get
@@ -398,6 +387,17 @@ namespace BluePrints.ViewModels
                 }
 
                 return allStockCodeRanges.OrderBy(x => x);
+            }
+        }
+
+        public IEnumerable<DISCIPLINE_DESC> DISCIPLINE_DESCCollection
+        {
+            get
+            {
+                var collection = GetEntities<DISCIPLINE_DESC>();
+                if (collection != null)
+                    collection = collection.OrderBy(x => x.NAME);
+                return collection;
             }
         }
 
