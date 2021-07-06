@@ -208,6 +208,7 @@
                                         <dxg:GridColumn FieldName="PONumber" Header="PO Number" ReadOnly="True" VisibleIndex="1" />
                                         <dxg:GridColumn Width="150" FieldName="Subjob_Name" Header="Subjob" ReadOnly="True" SortIndex="10" VisibleIndex="10" />
                                         <dxg:GridColumn FieldName="Discipline_Code" Header="Discipline" ReadOnly="True" SortIndex="20" VisibleIndex="20" />
+                                        <dxg:GridColumn FieldName="DisciplineDesc" Header="Package" ReadOnly="True" VisibleIndex="25" />
                                         <dxg:GridColumn FieldName="Commodity_Code" Header="Commodity" ReadOnly="True" SortIndex="30" VisibleIndex="30" />
                                         <dxg:GridColumn FieldName="StockCode" Header="Stock" ReadOnly="True" SortIndex="40" VisibleIndex="40" />
                                         <dxg:GridColumn FieldName="Variation_Code" Header="Variation" ReadOnly="True" Visible="True" VisibleIndex="50" />

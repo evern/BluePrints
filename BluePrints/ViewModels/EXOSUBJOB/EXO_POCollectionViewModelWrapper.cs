@@ -338,17 +338,6 @@ namespace BluePrints.ViewModels
             }
         }
 
-        public IEnumerable<JOB_COSTGROUPS> JOB_COSTGROUPSCollection
-        {
-            get
-            {
-                var collection = GetEntities<JOB_COSTGROUPS>();
-                if (collection != null)
-                    collection = collection.OrderBy(x => x.SHORTCODE);
-                return collection;
-            }
-        }
-
         public IEnumerable<JOB_COSTTYPES> JOB_COSTTYPESCollection
         {
             get
@@ -387,6 +376,17 @@ namespace BluePrints.ViewModels
                 }
 
                 return allStockCodeRanges.OrderBy(x => x);
+            }
+        }
+
+        public IEnumerable<JOB_COSTGROUPS> JOB_COSTGROUPSCollection
+        {
+            get
+            {
+                var collection = GetEntities<JOB_COSTGROUPS>();
+                if (collection != null)
+                    collection = collection.OrderBy(x => x.SHORTCODE);
+                return collection;
             }
         }
 
