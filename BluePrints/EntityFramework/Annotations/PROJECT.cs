@@ -25,6 +25,7 @@ namespace BluePrints.Data
             CLIENT_PROJECT = new HashSet<CLIENT_PROJECT>();
             STOCK_GROUP = new HashSet<STOCK_GROUP>();
             DELIVERABLES_STATUS = new HashSet<DELIVERABLES_STATUS>();
+            DISCIPLINE_DESC = new HashSet<DISCIPLINE_DESC>();
             ESTIMATE = new HashSet<ESTIMATE>();
             FORECAST_JOB = new HashSet<FORECAST_JOB>();
             FORECAST_JOB_SETTING = new HashSet<FORECAST_JOB_SETTING>();

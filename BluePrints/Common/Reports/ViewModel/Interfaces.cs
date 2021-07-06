@@ -10,6 +10,12 @@ using System.Threading.Tasks;
 
 namespace BluePrints.Common.ViewModel.Reporting
 {
+    public interface IHaveDisciplineDesc
+    {
+        string DisciplineCode { get; }
+        string DisciplineDesc { get; set; }
+    }
+
     public interface IHaveWBSCodeString
     {
         string SUBJOB_CODE { get; set; }

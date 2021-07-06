@@ -99,6 +99,11 @@ namespace BluePrints.BluePrintsEntitiesDataModel
             get { return GetRepository((DISCIPLINE x) => x.GUID); }
         }
 
+        IRepository<DISCIPLINE_DESC, Guid> IBluePrintsEntitiesUnitOfWork.DISCIPLINE_DESCS
+        {
+            get { return GetRepository((DISCIPLINE_DESC x) => x.GUID); }
+        }
+
         IRepository<DOCTYPE, Guid> IBluePrintsEntitiesUnitOfWork.DOCTYPES
         {
             get { return GetRepository((DOCTYPE x) => x.GUID); }

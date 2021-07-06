@@ -6,6 +6,7 @@ using BaseModel.ViewModel.Services;
 using BluePrints.BluePrintsEntitiesDataModel;
 using BluePrints.Common;
 using BluePrints.Common.Base;
+using BluePrints.Common.Helpers;
 using BluePrints.Common.Resources;
 using BluePrints.Common.ViewModel.Reporting;
 using BluePrints.Common.ViewModel.Utils;
@@ -89,6 +90,7 @@ namespace BluePrints.ViewModels
             loaderCollection.AddLoaderDescription<JOB_COSTGROUPS, JOB_COSTGROUPS, int, IPrimeroEntitiesUnitOfWork>(primeroUnitOfWorkFactory, x => x.JOB_COSTGROUPS);
             loaderCollection.AddLoaderDescription<JOB_COSTTYPES, JOB_COSTTYPES, int, IPrimeroEntitiesUnitOfWork>(primeroUnitOfWorkFactory, x => x.JOB_COSTTYPES);
             loaderCollection.AddLoaderDescription(primeroUnitOfWorkFactory, x => x.JOBCOST_HDR, JOBCOST_HDRProjectionFunc);
+            loaderCollection.AddLoaderDescription(bluePrintsUnitOfWorkFactory, x => x.DISCIPLINE_DESCS, DISCIPLINE_DESCProjectionFunc);
         }
 
         protected virtual Func<IRepositoryQuery<COMMODITY_CODE>, IQueryable<COMMODITY_CODE>> COMMODITY_CODEProjectionFunc()
@@ -99,6 +101,11 @@ namespace BluePrints.ViewModels
         private Func<IRepositoryQuery<JOBCOST_HDR>, IQueryable<JOBCOST_HDR>> JOBCOST_HDRProjectionFunc()
         {
             return query => query.Where(x => x.JOBCODE.Contains(loadPROJECT.NUMBER.ToString()));
+        }
+
+        private Func<IRepositoryQuery<DISCIPLINE_DESC>, IQueryable<DISCIPLINE_DESC>> DISCIPLINE_DESCProjectionFunc()
+        {
+            return query => query.Where(x => x.GUID_PROJECT == loadPROJECT.GUID);
         }
 
         protected override void onAuxiliaryEntitiesCollectionLoaded()
@@ -125,18 +132,9 @@ namespace BluePrints.ViewModels
                 exoPo.PopulateCommodityCodes(COMMODITY_CODECollection);
                 exoPo.PopulateCostTypes(JOB_COSTTYPESCollection);
                 exoPo.PopulateStockItems(STOCK_ITEMSCollection);
+                exoPo.PopulateDisciplineDesc(DISCIPLINE_DESCCollection, JOB_COSTGROUPSCollection);
 
                 returnDataPoints.Add(exoPo);
-                //if (exoPo.Status != 2)
-                //{
-                //    returnDataPoints.Add(exoPo);
-                //}
-                //else
-                //{
-                //    if (ExoMaterials.Any(x => x.PONumber == ((int)exoPo.HDR_SEQNO).ToString()))
-                //        returnDataPoints.Add(exoPo);
-                //}
-
                 exoPo.Update();
             }
 
@@ -326,6 +324,17 @@ namespace BluePrints.ViewModels
                 var collection = GetEntities<JOB_COSTTYPES>();
                 if (collection != null)
                     collection = collection.OrderBy(x => x.SHORTCODE);
+                return collection;
+            }
+        }
+
+        public IEnumerable<DISCIPLINE_DESC> DISCIPLINE_DESCCollection
+        {
+            get
+            {
+                var collection = GetEntities<DISCIPLINE_DESC>();
+                if (collection != null)
+                    collection = collection.OrderBy(x => x.NAME);
                 return collection;
             }
         }

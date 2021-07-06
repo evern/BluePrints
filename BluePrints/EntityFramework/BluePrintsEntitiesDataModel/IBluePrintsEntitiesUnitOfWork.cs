@@ -93,6 +93,11 @@ namespace BluePrints.BluePrintsEntitiesDataModel
         IRepository<DISCIPLINE, Guid> DISCIPLINES { get; }
 
         /// <summary>
+        /// The DISCIPLINE_DESC entities repository.
+        /// </summary>
+        IRepository<DISCIPLINE_DESC, Guid> DISCIPLINE_DESCS { get; }
+
+        /// <summary>
         /// The DOCTYPE entities repository.
         /// </summary>
         IRepository<DOCTYPE, Guid> DOCTYPES { get; }

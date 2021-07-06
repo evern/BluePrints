@@ -911,6 +911,7 @@
     <Compile Include="Common\View\PrimaveraAffinityReport.xaml.cs">
       <DependentUpon>PrimaveraAffinityReport.xaml</DependentUpon>
     </Compile>
+    <Compile Include="EntityFramework\Annotations\DISCIPLINE_DESC.cs" />
     <Compile Include="EntityFramework\Annotations\FORECAST_HISTORY.cs" />
     <Compile Include="EntityFramework\Annotations\PROGRESS_ETC.cs" />
     <Compile Include="EntityFramework\Annotations\REGISTER_CHANGE_ATTACHMENT.cs" />
@@ -996,6 +997,7 @@
     <Compile Include="EntityFramework\Annotations\WORKPACK.cs" />
     <Compile Include="EntityFramework\Annotations\X_JOB_TIMESHEETS.cs" />
     <Compile Include="EntityFramework\Annotations\X_JOB_TRANSACTIONS_DETAIL_SeqNo.cs" />
+    <Compile Include="EntityFramework\BluePrintsData\DISCIPLINE_DESC.cs" />
     <Compile Include="EntityFramework\BluePrintsData\FORECAST_HISTORY.cs" />
     <Compile Include="EntityFramework\BluePrintsData\PROGRESS_ETC.cs" />
     <Compile Include="EntityFramework\BluePrintsData\REGISTER_CLARIFICATION.cs" />

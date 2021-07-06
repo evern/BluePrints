@@ -3,6 +3,7 @@ namespace BluePrints.PrimeroData
     using BaseModel.Data.Helpers;
     using BaseModel.DataModel;
     using BluePrints.Common.Projections;
+    using BluePrints.Common.ViewModel.Reporting;
     using BluePrints.Data;
     using DevExpress.Mvvm;
     using System;
@@ -11,13 +12,19 @@ namespace BluePrints.PrimeroData
     using System.ComponentModel.DataAnnotations.Schema;
     using System.Linq;
 
-    public partial class PURCHORD_LINES : CodesValidationModel
+    public partial class PURCHORD_LINES : CodesValidationModel, IHaveDisciplineDesc
     {
         [NotMapped]
         public string Subjob_Name { get; set; }
 
         [NotMapped]
         public string Discipline_Code { get; set; }
+
+        [NotMapped]
+        public string DisciplineCode => Discipline_Code;
+
+        [NotMapped]
+        public string DisciplineDesc { get; set; }
 
         [NotMapped]
         public string Commodity_Code { get; set; }
