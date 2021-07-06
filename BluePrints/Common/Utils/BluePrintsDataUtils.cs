@@ -854,7 +854,7 @@ namespace BluePrints.Common.ViewModel.Utils
                 revenueDataPoint.StockCode = jobTransaction.STOCKCODE;
                 revenueDataPoint.Variation_Code = BluePrintsDataUtils.normalizeVariationCode(jobTransaction.VARIATIONCODE);
                 revenueDataPoint.InvoiceNo = jobTransaction.INVSEQNO.ToString();
-                revenueDataPoint.InvoiceAmount = Convert.ToDecimal(jobTransaction.INVOICED);
+                revenueDataPoint.InvoiceAmount = Convert.ToDecimal(jobTransaction.INVOICED) * currencyConversion;
                 revenueDataPoint.InvoiceDate = jobTransaction.INVOICEDATE;
 
                 revenueDataPoints.Add(revenueDataPoint);
@@ -965,7 +965,7 @@ namespace BluePrints.Common.ViewModel.Utils
 
             using (var t = new TransactionScope(TransactionScopeOption.Required, new TransactionOptions { IsolationLevel = System.Transactions.IsolationLevel.ReadUncommitted }))
             {
-                var jobMaterials = from X_JOB_TRANSACTIONS_DETAIL in primeroUOW.X_JOB_TRANSACTIONS_DETAIL_SeqNos
+                var jobMaterials = from X_JOB_TRANSACTIONS_DETAIL in primeroUOW.X_JOB_TRANSACTIONS_DETAILS
                                    join JOBCOST_HDR in primeroUOW.JOBCOST_HDR
                                    on X_JOB_TRANSACTIONS_DETAIL.jobno equals JOBCOST_HDR.JOBNO
                                    join JOBCOST_HDR2 in primeroUOW.JOBCOST_HDR
