@@ -1500,7 +1500,7 @@ namespace BluePrints.Common.ViewModel.Utils
                 List<string> unsavedEntitiesSimilarNames =
                 unsavedEntities.Where(x => x.EntityNumber != null && x.EntityNumber.Contains(valueToFillStringOnly)).Select(x => x.EntityNumber).ToList();
 
-                List<string> insertSelectedEntitiesSimilarNames = insertSelectedEntities.Where(x => x.EntityNumber.Contains(valueToFillStringOnly)).Select(x => x.EntityNumber).ToList();
+                List<string> insertSelectedEntitiesSimilarNames = insertSelectedEntities.Where(x => x.EntityNumber != null && x.EntityNumber.Contains(valueToFillStringOnly)).Select(x => x.EntityNumber).ToList();
 
                 do
                 {
