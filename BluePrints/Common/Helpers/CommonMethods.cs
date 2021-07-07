@@ -1,5 +1,7 @@
-﻿using BluePrints.BluePrintsEntitiesDataModel;
+﻿using BaseModel.ViewModel.Base;
+using BluePrints.BluePrintsEntitiesDataModel;
 using BluePrints.Common.Projections;
+using BluePrints.Common.ViewModel.Reporting;
 using BluePrints.Data;
 using BluePrints.PrimeroData;
 using BluePrints.PrimeroData.PrimeroEntitiesDataModel;
@@ -8,10 +10,53 @@ using DevExpress.Xpf.Core.Serialization;
 using DevExpress.Xpf.Grid;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Management;
 
 namespace BluePrints.Common.Helpers
 {
+    public static class IHaveDisciplineDescExtension
+    {
+        public static void PopulateDisciplineDesc(this IHaveDisciplineDesc entity, IEnumerable<DISCIPLINE_DESC> DISCIPLINE_DESCCollection, IEnumerable<JOB_COSTGROUPS> JOB_COSTGROUPCollection)
+        {
+            if(entity.DisciplineCode == null)
+            {
+                entity.DisciplineDesc = string.Empty;
+                return;
+            }
+
+            DISCIPLINE_DESC findDISCIPLINE_DESC = DISCIPLINE_DESCCollection.FirstOrDefault(x => x.NAME.ToUpper() == entity.DisciplineCode.ToUpper());
+            if (findDISCIPLINE_DESC != null)
+                entity.DisciplineDesc = findDISCIPLINE_DESC.DESCRIPTION;
+            else
+            {
+                JOB_COSTGROUPS findJOB_COSTGROUPS = JOB_COSTGROUPCollection.FirstOrDefault(x => x.SHORTCODE.ToUpper() == entity.DisciplineCode.ToUpper());
+                if (findJOB_COSTGROUPS != null)
+                    entity.DisciplineDesc = findJOB_COSTGROUPS.COSTDESC;
+                else
+                    entity.DisciplineDesc = string.Empty;
+            }
+        }
+
+        public static void FindExistingOrAddDisciplineDesc(this IHaveDisciplineDesc entity, CollectionViewModel<DISCIPLINE_DESC, DISCIPLINE_DESC, Guid, IBluePrintsEntitiesUnitOfWork> DISCIPLINE_DESCCollectionViewModel, Guid GuidProject)
+        {
+            DISCIPLINE_DESC findDisciplineDesc = DISCIPLINE_DESCCollectionViewModel.Entities.FirstOrDefault(x => x.GUID_PROJECT == GuidProject && x.NAME == entity.DisciplineCode);
+            if(findDisciplineDesc != null)
+            {
+                findDisciplineDesc.DESCRIPTION = entity.DisciplineDesc;
+            }
+            else
+            {
+                findDisciplineDesc = new DISCIPLINE_DESC();
+                findDisciplineDesc.GUID_PROJECT = GuidProject;
+                findDisciplineDesc.NAME = entity.DisciplineCode;
+                findDisciplineDesc.DESCRIPTION = entity.DisciplineDesc;
+            }
+
+            DISCIPLINE_DESCCollectionViewModel.Save(findDisciplineDesc);
+        }
+    }
+
     public static class CommonMethods
     {
         public static DateTime GetStartOfWeek(this DateTime dt, DayOfWeek startOfWeek)

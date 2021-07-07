@@ -511,6 +511,15 @@ namespace BluePrints.Common.Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Discipline description a.k.a package name maintenance menu.
+        /// </summary>
+        internal static string Menu_Project_DisciplineDescription {
+            get {
+                return ResourceManager.GetString("Menu_Project_DisciplineDescription", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Project POs maintenance menu read/write.
         /// </summary>
         internal static string Menu_Project_EXO_AllPO {

@@ -453,4 +453,7 @@
   <data name="Menu_TransactionsUSAYearToDate" xml:space="preserve">
     <value>Show all USA EXO transactions year to date</value>
   </data>
+  <data name="Menu_Project_DisciplineDescription" xml:space="preserve">
+    <value>Discipline description a.k.a package name maintenance menu</value>
+  </data>
 </root>
