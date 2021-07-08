@@ -270,6 +270,13 @@ namespace BluePrints.Common.ViewModel.Reporting
         string Estimate_Stock_Code_Description { get; }
     }
 
+    public interface IHaveTrueP6Dates : ICanUpdate
+    {
+        DateTime? TrueP6PlannedEndDate { get; set; }
+        DateTime? TrueP6RemainingEndDate { get; set; }
+        List<P6_ASSIGNMENT> P6_Assignments { get; }
+    }
+
     public interface IHaveDBProductivityOverride
     {
         decimal? DB_Productivity_Override { get; set; }

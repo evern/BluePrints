@@ -13,7 +13,7 @@ using System.Threading.Tasks;
 namespace BluePrints.Common.Projections
 {
     [BulkEditDisabledAttributes("DeliverableStatusProgressGuid, DeliverableStatusGuid")]
-    public class BASELINE_ITEMProgress : BluePrintsProgressableProjectionBase<BASELINE_ITEMProjection>, ICanAssignP6, ISupportVariation<BASELINE_ITEM>, IHaveDBProductivityOverride, IEntityNumber, IBookable, IDXDataErrorInfo
+    public class BASELINE_ITEMProgress : BluePrintsProgressableProjectionBase<BASELINE_ITEMProjection>, ICanAssignP6, ISupportVariation<BASELINE_ITEM>, IHaveDBProductivityOverride, IEntityNumber, IBookable, IDXDataErrorInfo, IHaveTrueP6Dates
     {
         public BASELINE_ITEMProgress()
         {
@@ -370,6 +370,13 @@ namespace BluePrints.Common.Projections
         #region User Report
         public string User_Name { get; set; }
         public string User_Role { get; set; }
+        #endregion
+
+        #region IHaveTrueP6Dates
+        public DateTime? ViewDueDate => TrueP6PlannedEndDate == null ? DueDate : TrueP6PlannedEndDate;
+        public DateTime? ViewForecastDate => TrueP6RemainingEndDate == null ? ForecastDate : TrueP6RemainingEndDate;
+        public DateTime? TrueP6PlannedEndDate { get; set; }
+        public DateTime? TrueP6RemainingEndDate { get; set; }
         #endregion
     }
 }

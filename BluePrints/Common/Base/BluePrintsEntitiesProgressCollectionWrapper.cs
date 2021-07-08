@@ -5,6 +5,7 @@ using BaseModel.ViewModel.Base;
 using BaseModel.ViewModel.Dialogs;
 using BaseModel.ViewModel.Loader;
 using BluePrints.BluePrintsEntitiesDataModel;
+using BluePrints.Common.Helpers;
 using BluePrints.Common.Misc;
 using BluePrints.Common.Projections;
 using BluePrints.Common.Reports;
@@ -47,6 +48,7 @@ namespace BluePrints.Common.Base
         protected Data.PROJECT loadPROJECT;
         public P6Data.PROJECT p6PROJECT;
         protected PROGRESS loadPROGRESS;
+        protected BASELINE liveBASELINE;
         protected bool isQueryForLiveStatus;
         protected abstract CostGroup cost_group { get; }
         protected abstract PhaseType progress_type { get; }
@@ -57,6 +59,7 @@ namespace BluePrints.Common.Base
         //calculates the planned values only for each deliverables
         protected BackgroundWorker calculatePlannedBackgroundWorker;
         protected BackgroundWorker loadExoBackgroundWorker;
+        protected BackgroundWorker updateP6DatesBackgroundWorker;
         //set current data date timer
         protected DispatcherTimer delayedPROGRESSSavingDispatcher;
         protected IUnitOfWorkFactory<IBluePrintsEntitiesUnitOfWork> bluePrintsUnitOfWorkFactory = BluePrintsEntitiesUnitOfWorkSource.GetUnitOfWorkFactory();
@@ -78,7 +81,6 @@ namespace BluePrints.Common.Base
             calculatePlannedBackgroundWorker.RunWorkerCompleted += calculatePlannedBackgroundWorker_RunWorkerCompleted;
             calculatePlannedBackgroundWorker.WorkerSupportsCancellation = true;
 
-
             loadExoBackgroundWorker = new BackgroundWorker();
             loadExoBackgroundWorker.DoWork += loadExoBackgroundWorker_DoWork;
             loadExoBackgroundWorker.RunWorkerCompleted += loadExoBackgroundWorker_RunWorkerCompleted;
@@ -87,6 +89,11 @@ namespace BluePrints.Common.Base
             progressSaveBackgroundWorker = new BackgroundWorker();
             progressSaveBackgroundWorker.DoWork += ProgressSaveBackgroundWorker_DoWork;
             progressSaveBackgroundWorker.WorkerSupportsCancellation = true;
+
+            updateP6DatesBackgroundWorker = new BackgroundWorker();
+            updateP6DatesBackgroundWorker.DoWork += updateP6DatesBackgroundWorker_DoWork;
+            updateP6DatesBackgroundWorker.RunWorkerCompleted += updateP6DatesBackgroundWorker_RunWorkerCompleted;
+            updateP6DatesBackgroundWorker.WorkerSupportsCancellation = true;
         }
 
         protected IPrimeroEntitiesUnitOfWork primeroUnitOfWork;
@@ -423,7 +430,11 @@ namespace BluePrints.Common.Base
                 if (!skipExoDataLoading && !loadExoBackgroundWorker.IsBusy)
                     loadExoBackgroundWorker.RunWorkerAsync();
 
-                if(!calculatePlannedBackgroundWorker.IsBusy)
+                liveBASELINE = bluePrintsUOW.BASELINES.FirstOrDefault(x => x.GUID_PROJECT == loadPROJECT.GUID && x.STATUS == BaselineStatus.Live);
+                if (!updateP6DatesBackgroundWorker.IsBusy)
+                    updateP6DatesBackgroundWorker.RunWorkerAsync(new object[] { liveBASELINE, loadPROGRESS, p6UOW });
+
+                if (!calculatePlannedBackgroundWorker.IsBusy)
                     calculatePlannedBackgroundWorker.RunWorkerAsync();
             }
         }
@@ -480,6 +491,9 @@ namespace BluePrints.Common.Base
         public bool IsCalculationCompleted { get; set; }
         protected void calculatePlannedBackgroundWorker_RunWorkerCompleted(object sender, RunWorkerCompletedEventArgs e)
         {
+            if (calculatePlannedBackgroundWorker.CancellationPending)
+                return;
+
             IsCalculationCompleted = true;
             onCalculatePlannedBackgroundWorkerCompleted();
             this.RaisePropertyChanged(x => x.IsCalculationCompleted);
@@ -1300,6 +1314,64 @@ namespace BluePrints.Common.Base
             scheduling_view_model.SetParentViewModel(this);
             var ParameterObj = scheduling_view_model as ISupportParameter;
             ParameterObj.Parameter = new object[] { loadPROGRESS, mappingSelectionType, loadPROJECT, false };
+        }
+
+        private void updateP6DatesBackgroundWorker_DoWork(object sender, DoWorkEventArgs e)
+        {
+            if (updateP6DatesBackgroundWorker.CancellationPending)
+            {
+                e.Cancel = true;
+                return;
+            }
+
+            var argumentObject = (object[])e.Argument;
+            BASELINE baseline = (BASELINE)argumentObject[0];
+            PROGRESS progress = (PROGRESS)argumentObject[1];
+            IP6EntitiesUnitOfWork p6UnitOfWork = (IP6EntitiesUnitOfWork)argumentObject[2];
+            UpdateTrueP6Dates(baseline, progress, p6UnitOfWork);
+        }
+
+        private void updateP6DatesBackgroundWorker_RunWorkerCompleted(object sender, RunWorkerCompletedEventArgs e)
+        {
+            if (updateP6DatesBackgroundWorker.CancellationPending)
+                return;
+
+            if (typeof(TMainProjectionEntity).GetInterfaces().Contains(typeof(IHaveTrueP6Dates)))
+            {
+                foreach (IHaveTrueP6Dates entity in Entities)
+                {
+                    entity.Update();
+                }
+            }
+        }
+
+        private void UpdateTrueP6Dates(BASELINE liveBASELINE, PROGRESS livePROGRESS, IP6EntitiesUnitOfWork p6UnitOfWork)
+        {
+            if (typeof(TMainProjectionEntity).GetInterfaces().Contains(typeof(IHaveTrueP6Dates)))
+            {
+                if(liveBASELINE != null)
+                {
+                    P6Data.PROJECT p6BaselinePROJECT = p6UnitOfWork.PROJECT.FirstOrDefault(x => x.proj_short_name == liveBASELINE.P6BASELINE_NAME);
+                    if(p6BaselinePROJECT != null)
+                    {
+                        List<TASK> P6PlannedTASKS = p6BaselinePROJECT.TASK.ToList();
+                        foreach (IHaveTrueP6Dates entity in Entities)
+                        {
+                            entity.PopulateTrueP6Dates(P6PlannedTASKS, true);
+                        }
+                    }
+                }
+
+                P6Data.PROJECT p6ProgressPROJECT = p6UnitOfWork.PROJECT.FirstOrDefault(x => x.proj_short_name == loadPROGRESS.P6PROGRESS_NAME);
+                if(p6ProgressPROJECT != null)
+                {
+                    List<TASK> P6RemainingTASKS = p6ProgressPROJECT.TASK.ToList();
+                    foreach (IHaveTrueP6Dates entity in Entities)
+                    {
+                        entity.PopulateTrueP6Dates(P6RemainingTASKS, false);
+                    }
+                }
+            }
         }
 
         private List<P6Simulation> push_units_to_p6(IEnumerable<ICanAssignP6> deliverables, bool isSimulation, List<P6ErrorMessage> errorMessages)

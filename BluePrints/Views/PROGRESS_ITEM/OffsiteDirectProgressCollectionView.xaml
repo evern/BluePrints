@@ -345,12 +345,12 @@
                                     <dxe:DateEditSettings />
                                 </dxg:GridColumn.EditSettings>
                             </dxg:GridColumn>
-                            <dxg:GridColumn FieldName="DueDate" Header="Due Date" AllowBestFit="false" Width="80" HeaderToolTip="Date obtained from subjob or P6" IsEnabled="False" ReadOnly="True">
+                            <dxg:GridColumn FieldName="ViewDueDate" Header="Due Date" AllowBestFit="false" Width="80" HeaderToolTip="Date obtained from subjob or P6" IsEnabled="False" ReadOnly="True">
                                 <dxg:GridColumn.EditSettings>
                                     <dxe:DateEditSettings />
                                 </dxg:GridColumn.EditSettings>
                             </dxg:GridColumn>
-                            <dxg:GridColumn FieldName="ForecastDate" Header="Forecast Finish Date" AllowBestFit="false" Width="80" HeaderToolTip="Date obtained from subjob or P6. Calculated by 1.0 productivity by default and can be overridden by Override Productivity column" IsEnabled="False" ReadOnly="True">
+                            <dxg:GridColumn FieldName="ViewForecastDate" Header="Forecast Finish Date" AllowBestFit="false" Width="80" HeaderToolTip="Date obtained from P6" IsEnabled="False" ReadOnly="True">
                                 <dxg:GridColumn.EditSettings>
                                     <dxe:DateEditSettings />
                                 </dxg:GridColumn.EditSettings>

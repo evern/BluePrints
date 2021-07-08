@@ -31,12 +31,13 @@ using System.Transactions;
 namespace BluePrints.Common.ViewModel.Utils
 {
     public static class BluePrintsUtils
-    {/// <summary>
-     /// Encrypt a string
-     /// </summary>
-     /// <param name="toEncrypt">string to encrypt</param>
-     /// <param name="useHashing">use hashing</param>
-     /// <returns>encrypted string</returns>
+    {
+        /// <summary>
+        /// Encrypt a string
+        /// </summary>
+        /// <param name="toEncrypt">string to encrypt</param>
+        /// <param name="useHashing">use hashing</param>
+         /// <returns>encrypted string</returns>
         public static string Encrypt(string toEncrypt, bool useHashing)
         {
             byte[] keyArray;

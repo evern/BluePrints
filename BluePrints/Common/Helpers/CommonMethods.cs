@@ -3,6 +3,8 @@ using BluePrints.BluePrintsEntitiesDataModel;
 using BluePrints.Common.Projections;
 using BluePrints.Common.ViewModel.Reporting;
 using BluePrints.Data;
+using BluePrints.P6Data;
+using BluePrints.P6EntitiesDataModel;
 using BluePrints.PrimeroData;
 using BluePrints.PrimeroData.PrimeroEntitiesDataModel;
 using DevExpress.Mvvm;
@@ -15,6 +17,27 @@ using System.Management;
 
 namespace BluePrints.Common.Helpers
 {
+    public static class IHaveTrueP6DatesExtension
+    {
+        public static void PopulateTrueP6Dates(this IHaveTrueP6Dates entity, IEnumerable<TASK> TASKS, bool isPlanned)
+        {
+            if(entity.P6_Assignments != null)
+            {
+                decimal maxPercentage = entity.P6_Assignments.Max(x => x.HIGH_VALUE);
+                P6_ASSIGNMENT finalP6_ASSIGNMENT = entity.P6_Assignments.First(x => x.HIGH_VALUE == maxPercentage);
+
+                TASK TASK = TASKS.FirstOrDefault(x => x.task_code == finalP6_ASSIGNMENT.P6_ACTIVITYID);
+                if (TASK != null && TASK.early_end_date != null)
+                {
+                    if(isPlanned)
+                        entity.TrueP6PlannedEndDate = (DateTime)TASK.early_end_date;
+                    else
+                        entity.TrueP6RemainingEndDate = (DateTime)TASK.early_end_date;
+                }
+            }
+        }
+    }
+
     public static class IHaveDisciplineDescExtension
     {
         public static void PopulateDisciplineDesc(this IHaveDisciplineDesc entity, IEnumerable<DISCIPLINE_DESC> DISCIPLINE_DESCCollection, IEnumerable<JOB_COSTGROUPS> JOB_COSTGROUPCollection)
