@@ -30,7 +30,10 @@ namespace BluePrints.Common.Helpers
                 if (TASK != null && TASK.early_end_date != null)
                 {
                     if(isPlanned)
+                    {
+                        entity.TrueP6PlannedStartDate = (DateTime)TASK.early_start_date;
                         entity.TrueP6PlannedEndDate = (DateTime)TASK.early_end_date;
+                    }
                     else
                         entity.TrueP6RemainingEndDate = (DateTime)TASK.early_end_date;
                 }
