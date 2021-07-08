@@ -366,6 +366,11 @@
                                     <dxe:SpinEditSettings Mask="###,##0 hrs" MaskType="Numeric" MaskUseAsDisplayFormat="True" />
                                 </dxg:GridColumn.EditSettings>
                             </dxg:GridColumn>
+                            <dxg:GridColumn FieldName="Entity.Entity.BY_DURATION" Header="By Duration">
+                                <dxg:GridColumn.EditSettings>
+                                    <dxe:CheckEditSettings />
+                                </dxg:GridColumn.EditSettings>
+                            </dxg:GridColumn>
                         </dxg:GridControlBand>
                         <dxg:GridControlBand Header="Dates">
                             <dxg:GridColumn FieldName="Entity.Entity.TENDER_START_DATE" Visible="{Binding IsTender}" AllowBestFit="false" Width="80" Header="Tender Start" FilterPopupMode="DateAlt" HeaderToolTip="Tender date when the deliverable is going to start, this will override deliverable start date, only affects planned S-Curve">

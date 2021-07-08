@@ -761,7 +761,7 @@ namespace BluePrints.Common.ViewModel.Reporting
             }
         }
 
-        public decimal MinPercentage => Total_Units == 0 ? 1 : (Earned_Units_BeforeDataDate / Total_Units);
+        public decimal MinPercentage => Total_Units == 0 ? 0 : (Earned_Units_BeforeDataDate / Total_Units);
 
         public virtual decimal MaxPercentage => Total_Units == 0 ? 1 : ((Total_Units - Earned_Units_AfterDataDate) / Total_Units);
 
@@ -989,7 +989,8 @@ namespace BluePrints.Common.ViewModel.Reporting
 
         public virtual decimal getCurrentPeriodEarnedUnits(decimal newPercentage)
         {
-            decimal total_earned_units = newPercentage * Total_Units;
+            decimal totalUnits = IsByDuration ? BluePrintsConstants.DurationBasedTotalUnits : Total_Units;
+            decimal total_earned_units = newPercentage * totalUnits;
             decimal current_period_earned_units = total_earned_units - Earned_Units_BeforeDataDate;
             return current_period_earned_units;
         }
