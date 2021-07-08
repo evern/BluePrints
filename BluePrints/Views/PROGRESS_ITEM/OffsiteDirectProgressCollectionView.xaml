@@ -340,12 +340,12 @@
                                     <dxe:SpinEditSettings Mask="p" MaskType="Numeric" MaskUseAsDisplayFormat="True" />
                                 </dxg:GridColumn.EditSettings>
                             </dxg:GridColumn>
-                            <dxg:GridColumn FieldName="StartDate" Header="Start Date" AllowBestFit="false" Width="80" HeaderToolTip="Date obtained from subjob or P6" IsEnabled="False" ReadOnly="True">
+                            <dxg:GridColumn FieldName="ViewStartDate" Header="Start Date" AllowBestFit="false" Width="80" HeaderToolTip="Planned start date obtained from subjob or P6" IsEnabled="False" ReadOnly="True">
                                 <dxg:GridColumn.EditSettings>
                                     <dxe:DateEditSettings />
                                 </dxg:GridColumn.EditSettings>
                             </dxg:GridColumn>
-                            <dxg:GridColumn FieldName="ViewDueDate" Header="Due Date" AllowBestFit="false" Width="80" HeaderToolTip="Date obtained from subjob or P6" IsEnabled="False" ReadOnly="True">
+                            <dxg:GridColumn FieldName="ViewDueDate" Header="Due Date" AllowBestFit="false" Width="80" HeaderToolTip="Planned due date obtained from subjob or P6" IsEnabled="False" ReadOnly="True">
                                 <dxg:GridColumn.EditSettings>
                                     <dxe:DateEditSettings />
                                 </dxg:GridColumn.EditSettings>

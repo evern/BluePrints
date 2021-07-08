@@ -373,8 +373,10 @@ namespace BluePrints.Common.Projections
         #endregion
 
         #region IHaveTrueP6Dates
+        public DateTime? ViewStartDate => TrueP6PlannedStartDate == null ? StartDate : TrueP6PlannedStartDate;
         public DateTime? ViewDueDate => TrueP6PlannedEndDate == null ? DueDate : TrueP6PlannedEndDate;
         public DateTime? ViewForecastDate => TrueP6RemainingEndDate == null ? ForecastDate : TrueP6RemainingEndDate;
+        public DateTime? TrueP6PlannedStartDate { get; set; }
         public DateTime? TrueP6PlannedEndDate { get; set; }
         public DateTime? TrueP6RemainingEndDate { get; set; }
         #endregion
