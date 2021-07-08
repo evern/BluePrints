@@ -143,14 +143,18 @@ namespace BluePrints.ViewModels
 
         protected override void OnAfterAssignedCallbackAndRaisePropertyChanged()
         {
-            //progress items needs to get notified for view to reflect update
-            PROGRESS_ITEMSCollectionViewModel.AlwaysSkipMessage = false;
+            //avoid crash when this is disposed
+            if(PROGRESS_ITEMSCollectionViewModel != null)
+            {
+                //progress items needs to get notified for view to reflect update
+                PROGRESS_ITEMSCollectionViewModel.AlwaysSkipMessage = false;
 
-            //only respond to message from same key
-            PROGRESS_ITEMSCollectionViewModel.RefreshOnlyOnSameSenderKey = true;
+                //only respond to message from same key
+                PROGRESS_ITEMSCollectionViewModel.RefreshOnlyOnSameSenderKey = true;
 
-            if (PROJECT_REPORTCollectionViewModel != null)
-                PROJECT_REPORTCollectionViewModel.AlwaysSkipMessage = false;
+                if (PROJECT_REPORTCollectionViewModel != null)
+                    PROJECT_REPORTCollectionViewModel.AlwaysSkipMessage = false;
+            }
 
             base.OnAfterAssignedCallbackAndRaisePropertyChanged();
         }
