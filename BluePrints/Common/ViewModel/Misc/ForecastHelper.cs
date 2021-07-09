@@ -279,6 +279,21 @@ namespace BluePrints.Common.ViewModel.Misc
             }
         }
 
+        public static void PopulateFirstEAC(ForecastJobData forecastProjection, IEnumerable<FORECAST_EAC> FORECAST_EACFirstEACCollection)
+        {
+            //populate previous estimate to completion
+            FORECAST_EAC previousEAC = FORECAST_EACFirstEACCollection.FirstOrDefault(x => x.SUBJOB_CODE == forecastProjection.Projection.SubJobCode && x.DISCIPLINE_CODE == forecastProjection.Projection.DisciplineCode && x.COMMODITY_CODE == forecastProjection.Projection.CommodityCode && x.VARIATION_CODE == forecastProjection.Projection.VariationCode);
+            if (previousEAC != null)
+            {
+                if (previousEAC.FORECAST_COSTS != null)
+                    forecastProjection.FirstEAC = (decimal)previousEAC.FORECAST_COSTS;
+            }
+            else
+            {
+                forecastProjection.PreviousEAC = 0.00m;
+            }
+        }
+
         /// <summary>
         /// For the purpose of presentation, variation code must always be empty
         /// But when budget is edited, findExistingOrAddNewLine will handle the difference between null and string.empty values

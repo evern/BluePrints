@@ -373,7 +373,7 @@
     <value>Move forecast data date forward and backward</value>
   </data>
   <data name="Permission_Forecast_SaveEAC" xml:space="preserve">
-    <value>Save forecast EAC</value>
+    <value>Save forecast current EAC and Rev 0 Budget</value>
   </data>
   <data name="Permission_Forecast_EditPreviousEAC" xml:space="preserve">
     <value>Edit previous EAC</value>

@@ -1069,7 +1069,7 @@ namespace BluePrints.Common.Resources {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Save forecast EAC.
+        ///   Looks up a localized string similar to Save forecast current EAC and Rev 0 Budget.
         /// </summary>
         internal static string Permission_Forecast_SaveEAC {
             get {

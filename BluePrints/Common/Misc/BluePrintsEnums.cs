@@ -1023,7 +1023,9 @@ namespace BluePrints.Common
         [Display(Name = "EAC")]
         EAC = 0,
         [Display(Name = "Previous Commitment")]
-        PreviousCommitment = 1
+        PreviousCommitment = 1,
+        [Display(Name = "First EAc")]
+        FirstEAC = 2
     }
 
     public class ReportingEnum

@@ -1983,7 +1983,6 @@ namespace BluePrints.ViewModels
             }
         }
 
-
         public CollectionViewModel<BASELINE_ITEM_WORK, BASELINE_ITEM_WORK, Guid, IBluePrintsEntitiesUnitOfWork> BASELINE_ITEM_WORKCollectionViewModel
         {
             get
