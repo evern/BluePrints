@@ -127,18 +127,38 @@ namespace BluePrints.Common.ViewModel.Reporting
 
         public void BuildEarnedDataPoints(IReportable reportable, decimal qtyPerUnit)
         {
-            IEnumerable<DataPoint> progressItemEarnedDataPoints = reportable.PROGRESS_ITEM_UpToCurrentDataDate.Select(x => new DataPoint()
+            List<DataPoint> progressItemEarnedDataPoints;
+            if(reportable.Stats.AllowPercentageOnZeroTotalUnits)
             {
-                DeliverableGuid = reportable.OriginalEntityKey,
-                TotalUnits = reportable.Stats.TotalUnits,
-                TotalCosts = reportable.Stats.TotalCosts * CurrencyConversion,
-                BudgetedUnits = reportable.Stats.BudgetedUnits,
-                BudgetedCosts = reportable.Stats.BudgetedCosts * CurrencyConversion,
-                Units = x.ReportingEarnedUnits,
-                Quantity = x.ReportingEarnedUnits * qtyPerUnit,
-                Costs = x.ReportingEarnedUnits * reportable.Budget_ItemRate * CurrencyConversion,
-                ProgressDate = x.EARNED_DATE,
-            }).ToArray();
+                progressItemEarnedDataPoints = reportable.PROGRESS_ITEM_UpToCurrentDataDate.Select(x => new DataPoint()
+                {
+                    DeliverableGuid = reportable.OriginalEntityKey,
+                    TotalUnits = reportable.Stats.TotalUnits == 0 ? BluePrintsConstants.DurationBasedTotalUnits : reportable.Stats.TotalUnits,
+                    TotalCosts = reportable.Stats.TotalCosts * CurrencyConversion,
+                    BudgetedUnits = reportable.Stats.BudgetedUnits,
+                    BudgetedCosts = reportable.Stats.BudgetedCosts * CurrencyConversion,
+                    Units = x.EARNED_UNITS,
+                    Quantity = x.EARNED_UNITS * qtyPerUnit,
+                    Costs = x.EARNED_UNITS * reportable.Budget_ItemRate * CurrencyConversion,
+                    ProgressDate = x.EARNED_DATE,
+                }).ToList();
+            }
+            else
+            {
+                progressItemEarnedDataPoints = reportable.PROGRESS_ITEM_UpToCurrentDataDate.Select(x => new DataPoint()
+                {
+                    DeliverableGuid = reportable.OriginalEntityKey,
+                    TotalUnits = reportable.Stats.TotalUnits,
+                    TotalCosts = reportable.Stats.TotalCosts * CurrencyConversion,
+                    BudgetedUnits = reportable.Stats.BudgetedUnits,
+                    BudgetedCosts = reportable.Stats.BudgetedCosts * CurrencyConversion,
+                    Units = x.ReportingEarnedUnits,
+                    Quantity = x.ReportingEarnedUnits * qtyPerUnit,
+                    Costs = x.ReportingEarnedUnits * reportable.Budget_ItemRate * CurrencyConversion,
+                    ProgressDate = x.EARNED_DATE,
+                }).ToList();
+            }
+
 
             //adjust set earned data should only be performed at this level (lowest level), summary dashboard entity will just use set data
             reportable.Stats.Earned.SetData(new ObservableCollection<DataPoint>(progressItemEarnedDataPoints));

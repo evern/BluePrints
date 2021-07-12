@@ -166,7 +166,7 @@ namespace BluePrints.ViewModels
         protected override Func<IRepositoryQuery<BASELINE_ITEM>, IQueryable<BASELINE_ITEMProgress>>
             specifyMainViewModelProjection()
         {
-            return query => ProgressQueries.OffsiteDirectProgressItemTransformation(query.Where(x => x.GUID_BASELINE == loadBASELINE.GUID), loadPROJECT, loadPROGRESS, RATECollection, PROGRESS_ITEMCollection, VARIATIONCollection, false, P6_ASSIGNMENTCollection, DeliverableInternalNumberMode.Default, false, P6TASKCollection, null, null, DateTime.Now.Date, null, DELIVERABLES_STATUSCollection, DSTATUS_DOCTYPECollection);
+            return query => ProgressQueries.OffsiteDirectProgressItemTransformation(query.Where(x => x.GUID_BASELINE == loadBASELINE.GUID), loadPROJECT, loadPROGRESS, RATECollection, PROGRESS_ITEMCollection, VARIATIONCollection, false, P6_ASSIGNMENTCollection, DeliverableInternalNumberMode.Default, false, P6TASKCollection, null, null, DateTime.Now.Date, null, DELIVERABLES_STATUSCollection, DSTATUS_DOCTYPECollection, null, null, null, null, false, true);
         }
 
         bool isBestFitApplied;
@@ -630,11 +630,11 @@ namespace BluePrints.ViewModels
 
         private void updatePercentage(BASELINE_ITEMProgress entity, string fieldName, object oldValue, object newValue, out ErrorMessage errorMessage)
         {
-            if (entity.Total_Units == 0)
-            {
-                errorMessage = new ErrorMessage(entity.Deliverable_Name, "Deliverable doesn't have any units to progress");
-                return;
-            }
+            //if (entity.Total_Units == 0)
+            //{
+            //    errorMessage = new ErrorMessage(entity.Deliverable_Name, "Deliverable doesn't have any units to progress");
+            //    return;
+            //}
 
             errorMessage = null;
             DateTime columnDate;
@@ -813,6 +813,9 @@ namespace BluePrints.ViewModels
             //else if (deliverable.Stats.Budgeted.CurrentPeriodDataPoint != null && deliverable.Stats.Budgeted.CumulativeDataPoints.Count > 0)
             //    return deliverable.Stats.Budgeted.CumulativeDataPoints.Last().BudgetedUnits;
             //else
+            if (deliverable.Total_Units == 0)
+                return BluePrintsConstants.DurationBasedTotalUnits;
+
             return deliverable.Total_Units;
         }
 
