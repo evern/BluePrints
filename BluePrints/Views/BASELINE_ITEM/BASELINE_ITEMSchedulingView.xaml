@@ -365,11 +365,11 @@
                                         <dxe:ComboBoxEditSettings AutoComplete="True" DisplayMember="NAME" IsTextEditable="True" ItemsSource="{Binding USERCollection}" NullValueButtonPlacement="EditBox" ValueMember="GUID" />
                                     </dxg:GridColumn.EditSettings>
                                 </dxg:GridColumn>
-                                <dxg:GridColumn Header="By Duration" FieldName="Entity.Entity.BY_DURATION" Visible="False" ReadOnly="True">
+                                <!--<dxg:GridColumn Header="By Duration" FieldName="Entity.Entity.BY_DURATION" Visible="False" ReadOnly="True">
                                     <dxg:GridColumn.EditSettings>
                                         <dxe:CheckEditSettings />
                                     </dxg:GridColumn.EditSettings>
-                                </dxg:GridColumn>
+                                </dxg:GridColumn>-->
                                 <dxg:GridColumn Header="Budget Hours" FieldName="Entity.Entity.BUDGET_HOURS" AllowBestFit="false" Width="70" ReadOnly="True">
                                     <dxg:GridColumn.EditSettings>
                                         <dxe:SpinEditSettings Mask="n0" MaskType="Numeric" MaskUseAsDisplayFormat="True" />

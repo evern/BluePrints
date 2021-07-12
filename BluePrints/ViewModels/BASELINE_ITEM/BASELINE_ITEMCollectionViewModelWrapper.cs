@@ -852,15 +852,8 @@ namespace BluePrints.ViewModels
             //budget hours field is disabled but just in case
             if (fieldName == BindableBase.GetPropertyName(() => new BASELINE_ITEM().BUDGET_HOURS))
             {
-                if (entity.Entity.Entity.BY_DURATION && ((decimal)newValue) > 0)
-                    return "Cannot set budgeted hours when deliverables is by duration";
-                else if ((decimal)newValue < entity.MinEstimateUnits)
+                if ((decimal)newValue < entity.MinEstimateUnits)
                     return "Budgeted hours cannot be less than " + entity.MinEstimateUnits.ToString();
-            }
-            else if (fieldName == BindableBase.GetPropertyName(() => new BASELINE_ITEM().BY_DURATION))
-            {
-                if (entity.Earned_Units_Total > 0)
-                    return "Cannot set budgeted hours when deliverables is by duration";
             }
             else if (fieldName == BindableBase.GetPropertyName(() => new BASELINE_ITEM().INTERNAL_NUM))
             {

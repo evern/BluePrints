@@ -468,7 +468,7 @@ namespace BluePrints.Common.ViewModel.Reporting
             //Initialization without stats
         }
 
-        public BluePrintsProgressableProjectionBase(PROJECT PROJECT, PROGRESS Live_PROGRESS, IDeliverable_Rates entity, IEnumerable<VariationAdjustment> variation_adjustments, bool useReportDate, DateTime? extrapolateDate = null, bool forceRetrieveRemainingDataPoints = false)
+        public BluePrintsProgressableProjectionBase(PROJECT PROJECT, PROGRESS Live_PROGRESS, IDeliverable_Rates entity, IEnumerable<VariationAdjustment> variation_adjustments, bool useReportDate, DateTime? extrapolateDate = null, bool forceRetrieveRemainingDataPoints = false, bool allowPercentageOnZeroTotalUnits = false)
         {
             this.Live_PROGRESS = Live_PROGRESS;
             //DateTime reporting_data_date = Live_PROGRESS.DATA_DATE;
@@ -479,13 +479,16 @@ namespace BluePrints.Common.ViewModel.Reporting
             ApprovedVariations = variation_adjustments.Where(x => x.DeliverableOriginalGuid == entity.OriginalEntityKey).ToList();
             decimal variationUnits = ApprovedVariations.Sum(x => x.AdjustmentUnits);
             decimal totalUnits = entity.Budget_Units + variationUnits;
+            if (allowPercentageOnZeroTotalUnits && totalUnits == 0)
+                totalUnits = BluePrintsConstants.DurationBasedTotalUnits;
+
             decimal unitsPerQuantity = entity.Budget_Quantity == 0 ? 0 : entity.Budget_Units / entity.Budget_Quantity;
             decimal totalQuantity = unitsPerQuantity == 0 ? 0 : totalUnits / unitsPerQuantity;
             decimal costsPerUnit = entity.Budget_Costs == 0 ? 0 : entity.Budget_Units / entity.Budget_Costs;
             decimal totalCosts = totalUnits * costsPerUnit;
 
             PartialStatsBuilder partialStatsBuilder = new PartialStatsBuilder(PROJECT.CURRENCYCONVERSION);
-            Stats = new ProgressStats(reporting_data_date, reporting_interval, first_aligned_data_date, entity.Budget_Units, totalUnits, entity.Budget_Quantity, totalQuantity, entity.Budget_Costs, totalCosts, ApprovedVariations, extrapolateDate, forceRetrieveRemainingDataPoints);
+            Stats = new ProgressStats(reporting_data_date, reporting_interval, first_aligned_data_date, entity.Budget_Units, totalUnits, entity.Budget_Quantity, totalQuantity, entity.Budget_Costs, totalCosts, ApprovedVariations, extrapolateDate, forceRetrieveRemainingDataPoints, allowPercentageOnZeroTotalUnits);
             statsSummarizer = new SingleObjectSummarizer(this, partialStatsBuilder);
         }
 
@@ -554,7 +557,8 @@ namespace BluePrints.Common.ViewModel.Reporting
 
         public IEnumerable<DeliverableEarnedPercentages> EarnedPercentages => Stats == null || Stats.Earned == null || Stats.Earned.CumulativeDataPoints == null || Stats.Earned.CumulativeDataPoints.Count == 0 ? null : Stats.Earned.CumulativeDataPoints.Where(x => Stats.Earned.DataPoints.Any(z => z.ProgressDate == x.ProgressDate)).Select(x => new DeliverableEarnedPercentages() { EarnedDate = x.ProgressDate, EarnedPercentage = x.UnitsPercentage });
 
-        public bool IsByDuration { get => Entity.IsByDuration; set => Entity.IsByDuration = value; }
+        public bool IsByDuration => Total_Units == 0;
+
         #region local non-interface variables
         public Guid? GuidCurrent
         {
@@ -680,9 +684,7 @@ namespace BluePrints.Common.ViewModel.Reporting
             if (Earned_Units_OnDataDate == 0 && PROGRESS_ITEM_Current == null && can_return_null)
                 return null;
 
-            IDeliverable deliverable = Entity as IDeliverable;
-
-            if (deliverable != null && deliverable.IsByDuration)
+            if (Entity != null && Entity.IsByDuration)
                 return Earned_Units_ToDate / BluePrintsConstants.DurationBasedTotalUnits;
             else if (Total_Units > 0)
                 return Earned_Units_ToDate / Total_Units;
@@ -795,7 +797,7 @@ namespace BluePrints.Common.ViewModel.Reporting
             }
         }
 
-        public decimal Earned_Percentage_OnDataDate => Total_Units == 0 ? 0 : (Earned_Units_OnDataDate / Total_Units);
+        public decimal Earned_Percentage_OnDataDate => IsByDuration ? (Earned_Units_OnDataDate / BluePrintsConstants.DurationBasedTotalUnits) : Total_Units == 0 ? 0 : (Earned_Units_OnDataDate / Total_Units);
 
         public virtual decimal Earned_Units_OnDataDate => PROGRESS_ITEM_Current == null ? 0 : PROGRESS_ITEM_Current.EARNED_UNITS;
 
@@ -1155,7 +1157,18 @@ namespace BluePrints.Common.ViewModel.Reporting
             }
         }
 
-        public decimal MinEstimateUnits => Earned_Units_Total - Budget_Adjustment_Units - Variation_Units < 0 ? 0 : Earned_Units_Total - Budget_Adjustment_Units - Variation_Units;
+        public decimal MinEstimateUnits
+        {
+            get
+            {
+                //because the earned portion can have fully earned variation units
+                decimal budgetMinUnits = Earned_Units_Total - Budget_Adjustment_Units - Variation_Units;
+                if (budgetMinUnits <= BluePrintsConstants.DurationBasedTotalUnits)
+                    return 0;
+                else
+                    return budgetMinUnits;
+            }
+        }
 
         public decimal Unadjusted_Budget_Units => Entity.Budget_Units;
 

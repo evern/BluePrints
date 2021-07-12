@@ -94,6 +94,7 @@ namespace BluePrints.Common.ViewModel.Reporting
 
     public interface IDeliverable_Rates : IDeliverable, IHaveCosts, IHaveVariation
     {
+        bool IsByDuration { get; }
         IEnumerable<User_Weight> AssignedUsers { get; }
     }
 
@@ -115,7 +116,6 @@ namespace BluePrints.Common.ViewModel.Reporting
         Guid? Discipline_Guid { get; }
         decimal Discipline_Number { get; }
         Guid? Workpack_Guid { get; set; }
-        bool IsByDuration { get; set; }
     }
 
     public interface IHaveProcurementSubjob

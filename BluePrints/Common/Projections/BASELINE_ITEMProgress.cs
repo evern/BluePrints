@@ -19,8 +19,8 @@ namespace BluePrints.Common.Projections
         {
         }
 
-        public BASELINE_ITEMProgress(PROJECT PROJECT, PROGRESS LivePROGRESS, IDeliverable_Rates entity, IEnumerable<VariationAdjustment> projectVariationAdjustments, bool useReportDate, DateTime? extrapolateDate = null)
-            : base(PROJECT, LivePROGRESS, entity, projectVariationAdjustments, useReportDate, extrapolateDate)
+        public BASELINE_ITEMProgress(PROJECT PROJECT, PROGRESS LivePROGRESS, IDeliverable_Rates entity, IEnumerable<VariationAdjustment> projectVariationAdjustments, bool useReportDate, DateTime? extrapolateDate = null, bool allowPercentageOnZeroTotalUnits = false)
+            : base(PROJECT, LivePROGRESS, entity, projectVariationAdjustments, useReportDate, extrapolateDate, false, allowPercentageOnZeroTotalUnits)
         {
         }
 
@@ -76,21 +76,21 @@ namespace BluePrints.Common.Projections
 
         private VariationAction? committedVariationAction => VARIATION_ITEM == null ? (VariationAction?)null : VARIATION_ITEM.ACTION;
 
-        public bool AdjustUnitsReadOnly => DisplayVariationAction == VariationAction.Cancel || (IsSubmitted || IsByDuration);
+        public bool AdjustUnitsReadOnly => DisplayVariationAction == VariationAction.Cancel || (IsSubmitted);
 
         public bool IsSubmitted => SubmittedDate != null;
 
         public bool IsApproved => ApprovedDate != null;
 
-        public decimal DisplayTotalUnits => IsByDuration ? 0 : IsApproved ? (base.Budget_Units + Variation_Units) : (base.Budget_Units + Variation_Units + Forecast_Units);
+        public decimal DisplayTotalUnits => IsApproved ? (base.Budget_Units + Variation_Units) : (base.Budget_Units + Variation_Units + Forecast_Units);
 
-        public virtual decimal Forecast_Total_Costs => IsByDuration ? 0 : (base.Budget_Units + Variation_Units + Forecast_Units) * Budget_ItemRate;
+        public virtual decimal Forecast_Total_Costs => (base.Budget_Units + Variation_Units + Forecast_Units) * Budget_ItemRate;
 
-        public virtual decimal Forecast_Costs => IsByDuration ? 0 : Forecast_Units * base.Entity.Budget_ItemRate;
+        public virtual decimal Forecast_Costs => Forecast_Units * base.Entity.Budget_ItemRate;
 
-        public virtual decimal Forecast_Total_InternalCosts => IsByDuration ? 0 : (base.Budget_Units + Variation_Units + Forecast_Units) * Budget_ItemInternalRate;
+        public virtual decimal Forecast_Total_InternalCosts => (base.Budget_Units + Variation_Units + Forecast_Units) * Budget_ItemInternalRate;
 
-        public virtual decimal Forecast_InternalCosts => IsByDuration ? 0 : Forecast_Units * base.Entity.Budget_ItemInternalRate;
+        public virtual decimal Forecast_InternalCosts => Forecast_Units * base.Entity.Budget_ItemInternalRate;
 
         public decimal Forecast_Units => DisplayVariationUnits;
 

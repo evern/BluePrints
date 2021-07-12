@@ -323,7 +323,7 @@ namespace BluePrints.Common.Projections
 
         public ChargeType? Charge => Entity.Charge;
 
-        public bool IsByDuration { get => Entity.IsByDuration; set => Entity.IsByDuration = value; }
+        public bool IsByDuration => Total_Units == 0;
 
         public IEnumerable<User_Weight> AssignedUsers => new List<User_Weight>();
 

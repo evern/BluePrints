@@ -817,7 +817,7 @@ namespace BluePrints.ViewModels
                     VariationApprovalViewModel<TEntity> viewModel = VariationApprovalViewModel<TEntity>.CreateViewModel(approvalActions);
                     if (ErrorMessagesDialogService.ShowDialog(MessageButton.OKCancel, string.Empty, "ListVariationApprovalAction", viewModel) == MessageResult.OK)
                     {
-                        PROGRESS livePROGRESS = bluePrintsUnitOfWork.PROGRESSES.FirstOrDefault(x => x.STATUS == ProgressStatus.Live && x.GUID_PROJECT == loadPROJECT.GUID);
+                        PROGRESS livePROGRESS = bluePrintsUnitOfWork.PROGRESSES.FirstOrDefault(x => x.TYPE == PhaseType.Design && x.STATUS == ProgressStatus.Live && x.GUID_PROJECT == loadPROJECT.GUID);
                         if (livePROGRESS != null)
                         {
                             if(approvalActions.Any(x => x.ReduceEarned))

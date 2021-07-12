@@ -236,7 +236,7 @@ namespace BluePrints.Common.ViewModel.Reporting
 
         public Guid DeliverableKey => ((IReportable)ProgressItem).GUID;
 
-        public bool IsByDuration { get => ((IReportable)ProgressItem).IsByDuration; set => ((IReportable)ProgressItem).IsByDuration = value; }
+        public bool IsByDuration => ((IReportable)ProgressItem).IsByDuration;
 
         public DateTime? TaskAssignmentStartDate { get; set; }
         public decimal EarnedUnitsAccountedFor { get; set; }
@@ -657,7 +657,7 @@ namespace BluePrints.Common.ViewModel.Reporting
 
         public ESTIMATE_ITEMProgress ReadOnlyEstimate => Reportable as ESTIMATE_ITEMProgress;
 
-        public bool IsByDuration { get => Reportable.IsByDuration; set => Reportable.IsByDuration = value; }
+        public bool IsByDuration => Reportable.IsByDuration;
 
         public ChargeType? Charge => Reportable.Charge;
 

@@ -97,7 +97,7 @@ namespace BluePrints.Common.Projections
 
         public Guid? Workpack_Guid { get => Entity.Workpack_Guid; set => Entity.Workpack_Guid = value; }
 
-        public bool IsByDuration { get => Entity.IsByDuration; set => Entity.IsByDuration = value; }
+        public bool IsByDuration => Total_Units == 0;
 
         public string Commodity_Code => Entity.Commodity_Code;
 

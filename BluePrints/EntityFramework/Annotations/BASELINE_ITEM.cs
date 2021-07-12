@@ -327,9 +327,6 @@ namespace BluePrints.Data
         [NotMapped]
         public Guid? Workpack_Guid { get => GUID_WORKPACK; set => GUID_WORKPACK = value; }
 
-        [NotMapped]
-        public bool IsByDuration { get => BY_DURATION; set => BY_DURATION = value; }
-
         public Guid OriginalEntityKey => GUID_ORIGINAL;
 
         public string Commodity_Code => DOCTYPE == null ? string.Empty : DOCTYPE.CODE;
