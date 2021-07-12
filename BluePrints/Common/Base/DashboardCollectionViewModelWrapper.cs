@@ -656,8 +656,8 @@ namespace BluePrints.Common.ViewModel
             if(!switchChartOnly)
             {
                 stats_switch.IsActualVisible = viewType == DashboardViewType.Costs ? true : false;
-                stats_switch.Field_Mask = viewType == DashboardViewType.Costs ? "c" : "n";
-                stats_switch.Summary_Display_Format = viewType == DashboardViewType.Costs ? "{}{0:c}" : "{}{0:n}";
+                stats_switch.Field_Mask = viewType == DashboardViewType.Costs ? "c1" : "n1";
+                stats_switch.Summary_Display_Format = viewType == DashboardViewType.Costs ? "{}{0:c1}" : "{}{0:n1}";
                 string stats_string = BindableBase.GetPropertyName(() => new PROJECT_Dashboard().Stats) + ".{0}";
 
                 string current_period_cumulative_string = BindableBase.GetPropertyName(() => new PROJECT_Dashboard().Stats) + ".{0}." + BindableBase.GetPropertyName(() => new PROJECT_Dashboard().Stats.Earned.CurrentPeriodCumulativeDataPoint) + ".";
@@ -732,10 +732,10 @@ namespace BluePrints.Common.ViewModel
                 stats_switch.Header_Cumulative_Current_Planned_Percentage = "Current Planned % to Date";
 
                 gridControlService.ClearSummary();
-                string summaryPercentageString = "{0:p2}";
-                string summaryDecimalString = "{0:0.00}";
+                string summaryPercentageString = "{0:p1}";
+                string summaryDecimalString = "{0:0.0}";
                 if (viewType == DashboardViewType.Costs)
-                    summaryDecimalString = "{0:c2}";
+                    summaryDecimalString = "{0:c1}";
 
                 gridControlService.AddSummary("SubjobCode", SummaryItemType.Count, "Total {0} Records");
                 gridControlService.AddSummary(stats_switch.Total_Current, SummaryItemType.Sum, summaryDecimalString);
@@ -839,7 +839,7 @@ namespace BluePrints.Common.ViewModel
                 stats_switch.LineSeriesTenderEarnedDisplayName = "Budgeted Earned %";
                 stats_switch.LineSeriesBurnedDisplayName = "Burned %";
                 stats_switch.LineSeriesActualDisplayName = "Actual %";
-                stats_switch.LineSeriesLabelPattern = "{S} - [{V:p2}]";
+                stats_switch.LineSeriesLabelPattern = "{S} - [{V:p1}]";
             }
             else
             {
@@ -855,10 +855,10 @@ namespace BluePrints.Common.ViewModel
                 stats_switch.LineSeriesTenderEarnedDisplayName = viewType == DashboardViewType.Costs ? "Budgeted Earned Costs" : viewType == DashboardViewType.Quantity ? "Budgeted Earned Qty" : "Budgeted Earned Units";
                 stats_switch.LineSeriesBurnedDisplayName = viewType == DashboardViewType.Costs ? "Burned Costs" : viewType == DashboardViewType.Quantity ? "Burned Qty" : "Burned Units";
                 stats_switch.LineSeriesActualDisplayName = viewType == DashboardViewType.Costs ? "Actual Costs" : viewType == DashboardViewType.Quantity ? "Actual Qty" : "Actual Units";
-                stats_switch.LineSeriesLabelPattern = "{S} - [{V:n2}]";
+                stats_switch.LineSeriesLabelPattern = "{S} - [{V:n1}]";
             }
 
-            stats_switch.BarSeriesCrosshairPattern = viewType == DashboardViewType.Costs ? "{S} - [{V:c}]" : "{S} - [{V:n}]";
+            stats_switch.BarSeriesCrosshairPattern = viewType == DashboardViewType.Costs ? "{S} - [{V:c1}]" : "{S} - [{V:n1}]";
             stats_switch.AxisYPrimaryLabel = viewType == DashboardViewType.Costs ? "Costs" : viewType == DashboardViewType.Quantity ? "Quantity" :  "Units";
 
             stats_switch.StatsUpdate();
