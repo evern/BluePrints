@@ -35,7 +35,11 @@
                         <dxg:GridColumn Header="Notice" FieldName="ERROR" ReadOnly="True" IsSmart="True" />
                         <dxg:GridColumn Header="Activity ID" FixedWidth="True" Width="150" FieldName="TASK" ReadOnly="True" IsSmart="True" />
                         <dxg:GridColumn Header="Deliverable Name" FixedWidth="True" Width="150" FieldName="DELIVERABLE_NAME" ReadOnly="True" IsSmart="True" />
-                        <dxg:GridColumn Header="Units" FixedWidth="True" Width="80" FieldName="UNITS" ReadOnly="True" IsSmart="True" />
+                        <dxg:GridColumn Header="Units" FixedWidth="True" Width="80" FieldName="UNITS" ReadOnly="True" IsSmart="True" >
+                            <dxg:GridColumn.EditSettings>
+                                <dxe:SpinEditSettings Mask="n2" MaskType="Numeric" MaskUseAsDisplayFormat="True" />
+                            </dxg:GridColumn.EditSettings>
+                        </dxg:GridColumn>
                         <dxg:GridColumn Header="Earned Date" FixedWidth="True" Width="80" FieldName="PROGRESS_DATE" ReadOnly="True" IsSmart="True" >
                             <dxg:GridColumn.EditSettings>
                                 <dxe:DateEditSettings Mask="dd-MMM-yy" MaskUseAsDisplayFormat="True" />
