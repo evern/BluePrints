@@ -265,7 +265,7 @@ namespace BluePrints.Common.Base
             if (MainViewModel == null)
                 return;
 
-            BluePrintsUtils.LoadExoAuthorisation<TMainProjectionEntity>(Entities, ref exoAuthorisations, getProjectContexts(), getContextUserIds());
+            BluePrintsUtils.LoadExoAuthorisation<TMainProjectionEntity>(Entities, ref exoAuthorisations, projectContexts, userIdContexts);
         }
 
         private void loadExoBackgroundWorker_RunWorkerCompleted(object sender, RunWorkerCompletedEventArgs e)
@@ -426,7 +426,10 @@ namespace BluePrints.Common.Base
                 //IsLoading = true;
                 //this.RaisePropertyChanged(x => x.IsLoading);
                 IsCalculationCompleted = false;
-                this.RaisePropertyChanged(x => x.IsCalculationCompleted);
+                this.RaisePropertyChanged(x => x.IsCalculationCompleted); 
+                getProjectContexts();
+                getContextUserIds();
+
                 if (!skipExoDataLoading && !loadExoBackgroundWorker.IsBusy)
                     loadExoBackgroundWorker.RunWorkerAsync();
 
@@ -1401,11 +1404,11 @@ namespace BluePrints.Common.Base
 
                 bool isNullProgress = false;
                 //comment this off because duration needs to be calculated even if deliverable is not progressed
-                if (current_progress_deliverable.PROGRESS_ITEM_UpToCurrentDataDate == null || current_progress_deliverable.PROGRESS_ITEM_UpToCurrentDataDate.Where(x => x.EARNED_UNITS > 0).Count() == 0)
+                if (current_progress_deliverable.PROGRESS_ITEM_UpToCurrentDataDate == null || current_progress_deliverable.PROGRESS_ITEM_UpToCurrentDataDate.Where(x => x.ReportingEarnedUnits > 0).Count() == 0)
                     isNullProgress = true;
 
-                DateTime? first_progress_date = isNullProgress ? (DateTime?)null : current_progress_deliverable.PROGRESS_ITEM_UpToCurrentDataDate.Where(x => x.EARNED_UNITS > 0).Min(x => x.EARNED_DATE);
-                DateTime? last_progress_date = isNullProgress ? (DateTime?)null : current_progress_deliverable.PROGRESS_ITEM_UpToCurrentDataDate.Where(x => x.EARNED_UNITS > 0).Max(x => x.EARNED_DATE);
+                DateTime? first_progress_date = isNullProgress ? (DateTime?)null : current_progress_deliverable.PROGRESS_ITEM_UpToCurrentDataDate.Where(x => x.ReportingEarnedUnits > 0).Min(x => x.EARNED_DATE);
+                DateTime? last_progress_date = isNullProgress ? (DateTime?)null : current_progress_deliverable.PROGRESS_ITEM_UpToCurrentDataDate.Where(x => x.ReportingEarnedUnits > 0).Max(x => x.EARNED_DATE);
 
                 decimal total_percentage_to_date;
 
