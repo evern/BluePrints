@@ -1161,8 +1161,10 @@ namespace BluePrints.Common.ViewModel.Reporting
         {
             get
             {
+                decimal earnedUnits = Earned_Units_Total <= BluePrintsConstants.DurationBasedTotalUnits ? 0 : Earned_Units_Total;
+
                 //because the earned portion can have fully earned variation units
-                decimal budgetMinUnits = Earned_Units_Total - Budget_Adjustment_Units - Variation_Units;
+                decimal budgetMinUnits = earnedUnits - Budget_Adjustment_Units - Variation_Units;
                 if (budgetMinUnits <= BluePrintsConstants.DurationBasedTotalUnits)
                     return 0;
                 else
