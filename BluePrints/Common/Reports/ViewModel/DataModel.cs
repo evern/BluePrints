@@ -684,7 +684,7 @@ namespace BluePrints.Common.ViewModel.Reporting
             if (Earned_Units_OnDataDate == 0 && PROGRESS_ITEM_Current == null && can_return_null)
                 return null;
 
-            if (Entity != null && Entity.IsByDuration)
+            if (Entity != null && IsByDuration)
                 return Earned_Units_ToDate / BluePrintsConstants.DurationBasedTotalUnits;
             else if (Total_Units > 0)
                 return Earned_Units_ToDate / Total_Units;

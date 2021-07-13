@@ -160,11 +160,11 @@ namespace BluePrints.Common.Projections
 
         public string Variation_Code => string.Empty;
 
-        public decimal Variation_Units => Entity.DC_HOURS;
+        public decimal Variation_Units => throw new NotImplementedException();
 
         public decimal Variation_Costs => 0;
 
-        public decimal Total_Units => Entity.Budget_Units + Entity.DC_HOURS;
+        public decimal Total_Units => Budget_Units + Variation_Units;
 
         public decimal Total_Costs => 0;
 
