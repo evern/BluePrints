@@ -699,7 +699,7 @@ namespace BluePrints.ViewModels
             }
 
             onBeforeSavedDualSubjobAssignment(pasteEntity);
-            BluePrintsDataUtils.OnBeforeSavedGenerateAndAssignWorkpack(pasteEntity, WORKPACKSCollectionViewModel, SUBJOBCollection, DISCIPLINECollection);
+            BluePrintsDataUtils.OnBeforeSavedGenerateAndAssignWorkpack(loadPROJECT, pasteEntity, WORKPACKSCollectionViewModel, SUBJOBCollection, DISCIPLINECollection);
             return true;
         }
 
@@ -827,7 +827,7 @@ namespace BluePrints.ViewModels
 
             onBeforeSavedDualSubjobAssignment(projection);
             onBeforeSavedProjectStockCodeLogging(projection);
-            BluePrintsDataUtils.OnBeforeSavedGenerateAndAssignWorkpack(projection, WORKPACKSCollectionViewModel, SUBJOBCollection, DISCIPLINECollection);
+            BluePrintsDataUtils.OnBeforeSavedGenerateAndAssignWorkpack(loadPROJECT, projection, WORKPACKSCollectionViewModel, SUBJOBCollection, DISCIPLINECollection);
             return base.OnBeforeProjectionSaveIsContinue(projection, out isNew);
         }
 

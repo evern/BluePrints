@@ -1374,40 +1374,41 @@ namespace BluePrints.Common.ViewModel.Utils
         /// Optional parameter of phase type or charge type, otherwise use deliverables phase guid to generate workpack name
         /// </summary>
         /// <param name="entity"></param>
-        public static void OnBeforeSavedGenerateAndAssignWorkpack(IDeliverable entity, CollectionViewModel<WORKPACK, WORKPACK, Guid, IBluePrintsEntitiesUnitOfWork> WORKPACKCollectionViewModel, IEnumerable<SUBJOB> SUBJOBCollection, IEnumerable<DISCIPLINE> DISCIPLINECollection, bool forceIgnore = false)
+        public static void OnBeforeSavedGenerateAndAssignWorkpack(PROJECT loadPROJECT, IDeliverable entity, CollectionViewModel<WORKPACK, WORKPACK, Guid, IBluePrintsEntitiesUnitOfWork> WORKPACKCollectionViewModel, IEnumerable<SUBJOB> SUBJOBCollection, IEnumerable<DISCIPLINE> DISCIPLINECollection, bool forceIgnore = false)
         {
-            //workpack has been deprecated
+            if (!loadPROJECT.USE_WORKPACKS)
+                return;
 
-            ////provision for when workpack is manually assigned or using legacy workpack
-            //if (forceIgnore || (entity.Subjob_Guid == null || entity.Discipline_Guid == null))
+            //provision for when workpack is manually assigned or using legacy workpack
+            if (forceIgnore || (entity.Subjob_Guid == null || entity.Discipline_Guid == null))
+                return;
+
+            ////when user wish to override default workpack
+            //if (entity.Workpack_Guid != null)
             //    return;
 
-            //////when user wish to override default workpack
-            ////if (entity.Workpack_Guid != null)
-            ////    return;
+            WORKPACK existingWORKPACK = WORKPACKCollectionViewModel.Entities.FirstOrDefault(x => x.GUID_SUBJOB == entity.Subjob_Guid && x.GUID_DISCIPLINE == entity.Discipline_Guid && x.DISCIPLINE_NUM == entity.Discipline_Number);
+            if((existingWORKPACK != null) && entity.Workpack_Guid != null)
+            {
+                WORKPACK findWORKPACK = WORKPACKCollectionViewModel.Entities.FirstOrDefault(x => x.GUID == entity.Workpack_Guid);
+                if (findWORKPACK != null && (findWORKPACK == existingWORKPACK))
+                    return;
+            }
 
-            //WORKPACK existingWORKPACK = WORKPACKCollectionViewModel.Entities.FirstOrDefault(x => x.GUID_SUBJOB == entity.Subjob_Guid && x.GUID_DISCIPLINE == entity.Discipline_Guid && x.DISCIPLINE_NUM == entity.Discipline_Number);
-            //if((existingWORKPACK != null) && entity.Workpack_Guid != null)
-            //{
-            //    WORKPACK findWORKPACK = WORKPACKCollectionViewModel.Entities.FirstOrDefault(x => x.GUID == entity.Workpack_Guid);
-            //    if (findWORKPACK != null && (findWORKPACK == existingWORKPACK))
-            //        return;
-            //}
-
-            //if (existingWORKPACK == null)
-            //{
-            //    WORKPACK newWORKPACK = new WORKPACK();
-            //    newWORKPACK.GUID_SUBJOB = (Guid)entity.Subjob_Guid;
-            //    newWORKPACK.GUID_DISCIPLINE = (Guid)entity.Discipline_Guid;
-            //    newWORKPACK.DISCIPLINE_NUM = entity.Discipline_Number;
-            //    BluePrintsDataUtils.WORKPACK_Populate_Name(newWORKPACK, SUBJOBCollection, DISCIPLINECollection);
-            //    WORKPACKCollectionViewModel.Save(newWORKPACK);
-            //    entity.Workpack_Guid = newWORKPACK.GUID;
-            //}
-            //else
-            //{
-            //    entity.Workpack_Guid = existingWORKPACK.GUID;
-            //}
+            if (existingWORKPACK == null)
+            {
+                WORKPACK newWORKPACK = new WORKPACK();
+                newWORKPACK.GUID_SUBJOB = (Guid)entity.Subjob_Guid;
+                newWORKPACK.GUID_DISCIPLINE = (Guid)entity.Discipline_Guid;
+                newWORKPACK.DISCIPLINE_NUM = entity.Discipline_Number;
+                BluePrintsDataUtils.WORKPACK_Populate_Name(newWORKPACK, SUBJOBCollection, DISCIPLINECollection);
+                WORKPACKCollectionViewModel.Save(newWORKPACK);
+                entity.Workpack_Guid = newWORKPACK.GUID;
+            }
+            else
+            {
+                entity.Workpack_Guid = existingWORKPACK.GUID;
+            }
         }
 
         /// <summary>

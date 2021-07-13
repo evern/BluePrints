@@ -738,7 +738,7 @@ namespace BluePrints.ViewModels
                 projection.Entity.Entity.INTERNAL_NUM = generateInternalNumber(projection, out errorMessage);
 
             BluePrintsDataUtils.OnBeforeSavedGenerateAndAssignSubjob(loadPROJECT, PHASECollection, AREACollection, SUBAREACollection, projection, bluePrintsUnitOfWork, phaseType, chargeType, false, allowSubJobDeletion);
-            BluePrintsDataUtils.OnBeforeSavedGenerateAndAssignWorkpack(projection, WORKPACKSCollectionViewModel, SUBJOBCollection, DISCIPLINECollection, allowWorkpackDeletion);
+            BluePrintsDataUtils.OnBeforeSavedGenerateAndAssignWorkpack(loadPROJECT, projection, WORKPACKSCollectionViewModel, SUBJOBCollection, DISCIPLINECollection, allowWorkpackDeletion);
             projection.Update();
             return base.OnBeforeProjectionSaveIsContinue(projection, out isNew);
         }
