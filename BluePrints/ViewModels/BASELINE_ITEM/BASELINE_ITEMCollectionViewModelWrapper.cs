@@ -287,6 +287,7 @@ namespace BluePrints.ViewModels
             allowSubJobDeletion = false;
             allowWorkpackDeletion = false;
             Allow_Drag_Drop = false;
+            AlwaysSkipMessage = true;
         }
 
         //#region Interface Delegates
