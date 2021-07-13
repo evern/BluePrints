@@ -71,11 +71,17 @@ namespace BluePrints.Common.Base
         protected bool isUseReportDate = false;
         protected bool canDateBackwardForward = false;
         BackgroundWorker progressSaveBackgroundWorker;
+        protected DispatcherTimer backgroundWorkerDelayedLaunchTimer;
         public BluePrintsEntitiesProgressCollectionWrapper()
         {
             onMainViewModelFirstLoadedTimer = new DispatcherTimer();
             onMainViewModelFirstLoadedTimer.Interval = new TimeSpan(0, 0, 0, 1);
             onMainViewModelFirstLoadedTimer.Tick += onMainViewModelFirstLoaded;
+
+            backgroundWorkerDelayedLaunchTimer = new DispatcherTimer();
+            backgroundWorkerDelayedLaunchTimer.Interval = new TimeSpan(0, 0, 0, 3);
+            backgroundWorkerDelayedLaunchTimer.Tick += backgroundWorkerDelayedLaunchTimer_Tick;
+
             calculatePlannedBackgroundWorker = new BackgroundWorker();
             calculatePlannedBackgroundWorker.DoWork += calculatePlannedBackgroundWorker_DoWork;
             calculatePlannedBackgroundWorker.RunWorkerCompleted += calculatePlannedBackgroundWorker_RunWorkerCompleted;
@@ -430,16 +436,23 @@ namespace BluePrints.Common.Base
                 getProjectContexts();
                 getContextUserIds();
 
-                if (!skipExoDataLoading && !loadExoBackgroundWorker.IsBusy)
-                    loadExoBackgroundWorker.RunWorkerAsync();
-
-                liveBASELINE = bluePrintsUOW.BASELINES.FirstOrDefault(x => x.GUID_PROJECT == loadPROJECT.GUID && x.STATUS == BaselineStatus.Live);
-                if (!updateP6DatesBackgroundWorker.IsBusy)
-                    updateP6DatesBackgroundWorker.RunWorkerAsync(new object[] { liveBASELINE, loadPROGRESS, p6UOW });
-
-                if (!calculatePlannedBackgroundWorker.IsBusy)
-                    calculatePlannedBackgroundWorker.RunWorkerAsync();
             }
+
+            backgroundWorkerDelayedLaunchTimer.Start();
+        }
+
+        private void backgroundWorkerDelayedLaunchTimer_Tick(object sender, EventArgs e)
+        {
+            backgroundWorkerDelayedLaunchTimer.Stop();
+            if (!skipExoDataLoading && !loadExoBackgroundWorker.IsBusy)
+                loadExoBackgroundWorker.RunWorkerAsync();
+
+            liveBASELINE = bluePrintsUOW.BASELINES.FirstOrDefault(x => x.GUID_PROJECT == loadPROJECT.GUID && x.STATUS == BaselineStatus.Live);
+            if (!updateP6DatesBackgroundWorker.IsBusy)
+                updateP6DatesBackgroundWorker.RunWorkerAsync(new object[] { liveBASELINE, loadPROGRESS, p6UOW });
+
+            if (!calculatePlannedBackgroundWorker.IsBusy)
+                calculatePlannedBackgroundWorker.RunWorkerAsync();
         }
 
         protected bool extrapolateDataDate = false;

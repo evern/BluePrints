@@ -704,17 +704,17 @@ namespace BluePrints.ViewModels
                 projection.Entity.Entity.GUID_OFFICE = loadPROJECT.GUID_OFFICE;
 
             //this context is inherited by variation and is used to save newly added variation
-            if(projection.Entity.Entity.GUID_VARIATION == null)
+            if(projection.Entity.Entity.GUID_BASELINE == null && projection.Entity.Entity.GUID_VARIATION == null)
                 projection.Entity.Entity.GUID_BASELINE = loadBASELINE.GUID;
 
             PhaseType? phaseType = null;
             ChargeType? chargeType = null;
-
-            PHASE defaultPHASE = PHASECollection.FirstOrDefault(x => (x.PHASE_TYPE != null && x.PHASE_TYPE == PhaseType.Design) && (x.CHARGE_TYPE != null && x.CHARGE_TYPE == ChargeType.Chargeable));
+            PHASE defaultPHASE;
             if (viewType == DeliverablesViewType.Direct)
             {
                 phaseType = PhaseType.Design;
                 chargeType = ChargeType.Chargeable;
+                defaultPHASE = PHASECollection.FirstOrDefault(x => (x.PHASE_TYPE != null && x.PHASE_TYPE == PhaseType.Design) && (x.CHARGE_TYPE != null && x.CHARGE_TYPE == ChargeType.Chargeable));
                 if (defaultPHASE != null)
                     projection.Phase_Guid = defaultPHASE.GUID;
             }
@@ -726,9 +726,11 @@ namespace BluePrints.ViewModels
                 if (indirectPHASE != null)
                     projection.Phase_Guid = indirectPHASE.GUID;
             }
-            else if (projection.Phase_Guid == null && defaultPHASE != null)
+            else if (projection.Phase_Guid == null)
             {
-                projection.Phase_Guid = defaultPHASE.GUID;
+                defaultPHASE = PHASECollection.FirstOrDefault(x => (x.PHASE_TYPE != null && x.PHASE_TYPE == PhaseType.Design) && (x.CHARGE_TYPE != null && x.CHARGE_TYPE == ChargeType.Chargeable));
+                if(defaultPHASE != null)
+                    projection.Phase_Guid = defaultPHASE.GUID;
             }
 
             string errorMessage = string.Empty;
