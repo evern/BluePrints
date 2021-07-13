@@ -301,12 +301,16 @@ namespace BluePrints.Common.ViewModel.Utils
             exoAuthorisations = new List<ExoTimeAuthorisation>(cacheExoAuthorisations);
             //view can be closed if this is a async task and projection can be disposed
             if(projections != null)
-                foreach (var deliverable in projections)
+            {
+                //to prevent enumeration change error
+                List<TProjection> projectionsList = projections.ToList();
+                foreach (var deliverable in projectionsList)
                 {
                     ExoTimeAuthorisation findAuthorisation = exoAuthorisations.Where(x => userIdForCanBook.Any(y => y.Id == x.ResourceStaffId && y.OfficeName == x.OfficeName)).FirstOrDefault(x => x.SubJobCode == deliverable.Subjob_Name && x.DisciplineCode == deliverable.Discipline_Code && x.CommodityCode == deliverable.Commodity_Code);
                     deliverable.CanBook = findAuthorisation != null;
                     deliverable.Update();
                 }
+            }
             else
             {
                 cacheExoAuthorisations.Clear();
