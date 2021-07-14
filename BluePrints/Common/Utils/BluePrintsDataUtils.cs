@@ -1256,7 +1256,7 @@ namespace BluePrints.Common.ViewModel.Utils
             bool assignToProcurementSubjob = (isProcurementSubjob && iHaveProcurementSubjobEntity != null);
 
             string internalNumber = BluePrintsDataUtils.SUBJOB_Generate_InternalNumber(entity.Area_Guid, entity.SubArea_Guid, loadPROJECT, AREACollection, SUBAREACollection, out existingOrNewPhaseGuid, entity.Phase_Guid, PHASECollection, PhaseType, ChargeType);
-            IEnumerable<SUBJOB> SUBJOBCollection = bluePrintsUnitOfWork.SUBJOBS;
+            IEnumerable<SUBJOB> SUBJOBCollection = bluePrintsUnitOfWork.SUBJOBS.Where(x => x.GUID_PROJECT == loadPROJECT.GUID);
             ////provision for when subjob is manually assigned or using legacy subjob
             if (entity.Subjob_Guid != null)
             {

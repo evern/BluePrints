@@ -7,6 +7,7 @@ using BluePrints.Common;
 using BluePrints.Common.Base;
 using BluePrints.Common.Projections;
 using BluePrints.Common.Resources;
+using BluePrints.Common.ViewModel.Reporting;
 using BluePrints.Common.ViewModel.Utils;
 using BluePrints.Data;
 using DevExpress.Mvvm;
@@ -15,7 +16,9 @@ using DevExpress.Xpf.Bars;
 using DevExpress.Xpf.Grid;
 using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Linq;
+using System.Threading;
 using System.Windows;
 
 namespace BluePrints.ViewModels
@@ -46,11 +49,9 @@ namespace BluePrints.ViewModels
 
         #region Database Operations
         private PROJECT loadPROJECT;
-        private PROGRESS loadPROGRESS;
-        private BASELINE loadBASELINE;
-        private IUnitOfWorkFactory<IBluePrintsEntitiesUnitOfWork> bluePrintsUnitOfWorkFactory =
-            BluePrintsEntitiesUnitOfWorkSource.GetUnitOfWorkFactory();
-
+        private IUnitOfWorkFactory<IBluePrintsEntitiesUnitOfWork> bluePrintsUnitOfWorkFactory = BluePrintsEntitiesUnitOfWorkSource.GetUnitOfWorkFactory();
+        protected BackgroundWorker summaryBackgroundWorker;
+        Timer summaryBackgroundWorkerTimer;
         protected override void resolveParameters(object parameter)
         {
             var PROJECTParameter = (EntitiesParameter<PROJECT>) parameter;
@@ -65,13 +66,6 @@ namespace BluePrints.ViewModels
             loaderCollection.AddLoaderDescription<DEPARTMENT, DEPARTMENT, Guid, IBluePrintsEntitiesUnitOfWork>(bluePrintsUnitOfWorkFactory, x => x.DEPARTMENTS);
             loaderCollection.AddLoaderDescription<DISCIPLINE, DISCIPLINE, Guid, IBluePrintsEntitiesUnitOfWork>(bluePrintsUnitOfWorkFactory, x => x.DISCIPLINES);
             loaderCollection.AddLoaderDescription<DOCTYPE, DOCTYPE, Guid, IBluePrintsEntitiesUnitOfWork>(bluePrintsUnitOfWorkFactory, x => x.DOCTYPES);
-            loaderCollection.AddLoaderDescription<DELIVERABLES_STATUS, DELIVERABLES_STATUS, Guid, IBluePrintsEntitiesUnitOfWork>(bluePrintsUnitOfWorkFactory, x => x.DELIVERABLES_STATUSES);
-            loaderCollection.AddLoaderDescription(bluePrintsUnitOfWorkFactory, x => x.BASELINES, BASELINEProjectionFunc, x => loadBASELINE = x);
-            loaderCollection.AddLoaderDescription(bluePrintsUnitOfWorkFactory, x => x.BASELINE_ITEMS, BASELINE_ITEMProjectionFunc);
-            loaderCollection.AddLoaderDescription(bluePrintsUnitOfWorkFactory, x => x.PROGRESSES, PROGRESSProjectionFunc, x => loadPROGRESS = x);
-            loaderCollection.AddLoaderDescription(bluePrintsUnitOfWorkFactory, x => x.PROGRESS_ITEMS, PROGRESS_ITEMProjectionFunc);
-            loaderCollection.AddLoaderDescription(bluePrintsUnitOfWorkFactory, x => x.RATES, RATEProjectionFunc);
-            loaderCollection.AddLoaderDescription(bluePrintsUnitOfWorkFactory, x => x.VARIATIONS, VARIATIONProjectionFunc);
         }
 
         private Func<IRepositoryQuery<VARIATION>, IQueryable<VARIATION>> VARIATIONProjectionFunc()
@@ -87,22 +81,6 @@ namespace BluePrints.ViewModels
         private Func<IRepositoryQuery<BASELINE>, IQueryable<BASELINE>> BASELINEProjectionFunc()
         {
             return query => query.Where(x => x.GUID_PROJECT == loadPROJECT.GUID && x.STATUS == BaselineStatus.Live);
-        }
-
-        private Func<IRepositoryQuery<PROGRESS_ITEM>, IQueryable<PROGRESS_ITEM>> PROGRESS_ITEMProjectionFunc()
-        {
-            if(loadPROGRESS == null)
-                return query => query.Where(x => x.GUID_PROGRESS == Guid.Empty);
-            else
-                return query => query.Where(x => x.GUID_PROGRESS == loadPROGRESS.GUID);
-        }
-
-        private Func<IRepositoryQuery<BASELINE_ITEM>, IQueryable<BASELINE_ITEM>> BASELINE_ITEMProjectionFunc()
-        {
-            if (loadBASELINE == null)
-                return query => query.Where(x => x.GUID_BASELINE == Guid.Empty);
-            else
-                return query => query.Where(x => x.GUID_BASELINE == loadBASELINE.GUID);
         }
 
         private Func<IRepositoryQuery<RATE>, IQueryable<RATE>> RATEProjectionFunc()
@@ -132,20 +110,66 @@ namespace BluePrints.ViewModels
 
         protected override Func<IRepositoryQuery<SUBJOB>, IQueryable<SUBJOBProjection>> specifyMainViewModelProjection()
         {
-            IEnumerable<BASELINE_ITEM> BASELINE_ITEMS = loaderCollection.GetCollection<BASELINE_ITEM>();
-            var BASELINE = loaderCollection.GetObject<BASELINE>();
-            var PROGRESS = loaderCollection.GetObject<PROGRESS>();
-            var PROGRESS_ITEMS = loaderCollection.GetCollection<PROGRESS_ITEM>();
-            var RATES = loaderCollection.GetCollection<RATE>();
-            var DELIVERABLE_STATUSES = loaderCollection.GetCollection<DELIVERABLES_STATUS>();
-
-            return query => SUBJOBProjectionQueries.IDeliverable_Rates_Group_Transformation(query.Where(x => x.GUID_PROJECT == loadPROJECT.GUID), BASELINE_ITEMS, loadPROJECT, PROGRESS, BASELINE, PROGRESS_ITEMS, RATES, VARIATIONCollection);
+            return query => SUBJOBProjectionQueries.IDeliverable_Rates_Group_Transformation(query.Where(x => x.GUID_PROJECT == loadPROJECT.GUID));
         }
 
         protected override void AssignCallBacksAndRaisePropertyChange(IEnumerable<SUBJOBProjection> entities)
         {
             MainViewModel.SetParentViewModel(this);
             base.AssignCallBacksAndRaisePropertyChange(entities);
+        }
+
+        protected override bool OnMainViewModelLoaded(IEnumerable<SUBJOBProjection> entities)
+        {
+            summaryBackgroundWorker = new BackgroundWorker();
+            summaryBackgroundWorker.DoWork += summaryBackgroundWorker_DoWork;
+            summaryBackgroundWorker.RunWorkerCompleted += SummaryBackgroundWorker_RunWorkerCompleted;
+            summaryBackgroundWorker.WorkerSupportsCancellation = true;
+
+            summaryBackgroundWorkerTimer = new Timer(new TimerCallback(summaryBackgroundTimerCallBack), null, 2000, 1000);
+            return base.OnMainViewModelLoaded(entities);
+        }
+
+        private void summaryBackgroundTimerCallBack(object state)
+        {
+            summaryBackgroundWorkerTimer.Change(Timeout.Infinite, Timeout.Infinite);
+            summaryBackgroundWorker.RunWorkerAsync();
+        }
+
+        private void SummaryBackgroundWorker_RunWorkerCompleted(object sender, RunWorkerCompletedEventArgs e)
+        {
+            if (summaryBackgroundWorker.CancellationPending)
+                return;
+
+            foreach (SUBJOBProjection entity in Entities)
+            {
+                entity.Update();
+            }
+        }
+
+        private void summaryBackgroundWorker_DoWork(object sender, DoWorkEventArgs e)
+        {
+            if (summaryBackgroundWorker.CancellationPending)
+            {
+                e.Cancel = true;
+                return;
+            }
+
+            PROGRESS liveDesignPROGRESS = PROGRESSProjectionFunc()(MainEntityUnitOfWork.PROGRESSES).FirstOrDefault();
+            BASELINE liveDesignBASELINE = BASELINEProjectionFunc()(MainEntityUnitOfWork.BASELINES).FirstOrDefault();
+            if (liveDesignPROGRESS != null && liveDesignBASELINE != null)
+            {
+                List<RATE> RATES = RATEProjectionFunc()(MainEntityUnitOfWork.RATES).ToList();
+                List<PROGRESS_ITEM> PROGRESS_ITEMS = MainEntityUnitOfWork.PROGRESS_ITEMS.Where(x => x.GUID_PROGRESS == liveDesignPROGRESS.GUID).ToList();
+                List<VARIATION> VARIATIONS = VARIATIONProjectionFunc()(MainEntityUnitOfWork.VARIATIONS).ToList();
+                IQueryable<BASELINE_ITEM> BASELINE_ITEMS = MainEntityUnitOfWork.BASELINE_ITEMS.Where(x => x.GUID_BASELINE == liveDesignBASELINE.GUID);
+                IQueryable<BASELINE_ITEMProgress> deliverables = ProgressQueries.OffsiteDirectProgressItemTransformation(BASELINE_ITEMS, loadPROJECT, liveDesignPROGRESS, RATES, PROGRESS_ITEMS, VARIATIONS);
+
+                foreach(SUBJOBProjection entity in Entities)
+                {
+                    entity.DeliverableRates = deliverables.Where(x => x.Subjob_Guid == entity.GUID);
+                }
+            }
         }
 
         #region Collection Call Backs
@@ -513,6 +537,12 @@ namespace BluePrints.ViewModels
             }
 
             return string.Empty;
+        }
+
+        protected override void OnClose(CancelEventArgs e)
+        {
+            summaryBackgroundWorker.CancelAsync();
+            base.OnClose(e);
         }
         #endregion
     }
