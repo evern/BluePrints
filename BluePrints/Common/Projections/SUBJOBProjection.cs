@@ -196,6 +196,16 @@ namespace BluePrints.Common.Projections
         {
             throw new NotImplementedException();
         }
+
+        #region View Components - Used in SUBJOBCollectionView to allow null value to be detected in template selector to show progress bar
+        public decimal? ViewBudget_Units => Reportables == null ? (decimal?)null : Budget_Units;
+
+        public decimal? ViewTotal_Units => Reportables == null ? (decimal?)null : Total_Units;
+
+        public decimal? ViewBudget_Costs => Reportables == null ? (decimal?)null : Budget_Costs;
+
+        public decimal? ViewTotal_Costs => Reportables == null ? (decimal?)null : Total_Costs;
+        #endregion
     }
 
     public static class SUBJOBProjectionQueries
