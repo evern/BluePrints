@@ -71,7 +71,7 @@ namespace BluePrints.ViewModels
             loadPROGRESS = receiveParameter.GetSecondEntity();
             scoreCardDiscipline = (ScoreCardDiscipline)receiveParameter.GetThirdEntity();
 
-            primeroUnitOfWork = PrimeroEntitiesUnitOfWorkSource.GetUnitOfWorkFactory(loadPROJECT.OfficeNameForExo == BluePrintsResources.OfficeMontreal).CreateUnitOfWork();
+            primeroUnitOfWork = PrimeroEntitiesUnitOfWorkSource.GetUnitOfWorkFactory(BluePrintsResources.OfficeMontreal).CreateUnitOfWork();
 
             gridRefreshDispatcherTimer = new DispatcherTimer();
             gridRefreshDispatcherTimer.Interval = new TimeSpan(0, 0, 0, 0, 100);

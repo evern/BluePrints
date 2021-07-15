@@ -102,7 +102,7 @@ namespace BluePrints.Common.Base
             bool? allowSummaryCalculationOnUpdatePreference = LoginCredentials.GetUserPreferenceBool(DataUtils.GetNameOf(() => UserPreferences.DesignProgress_AllowSummaryUpdate));
             allowSummaryCalculationOnUpdate = allowSummaryCalculationOnUpdatePreference == null ? true : (bool)allowSummaryCalculationOnUpdatePreference;
 
-            primeroUnitOfWork = PrimeroEntitiesUnitOfWorkSource.GetUnitOfWorkFactory(loadPROJECT.OfficeNameForExo == BluePrintsResources.OfficeMontreal).CreateUnitOfWork();
+            primeroUnitOfWork = PrimeroEntitiesUnitOfWorkSource.GetUnitOfWorkFactory(loadPROJECT.OfficeNameForExo).CreateUnitOfWork();
             if (loadPROJECT != null)
                 isQueryForLiveStatus = true;
         }
@@ -271,7 +271,7 @@ namespace BluePrints.Common.Base
             if (projectContexts == null)
             {
                 IPrimeroEntitiesUnitOfWork perthUOW = PrimeroEntitiesUnitOfWorkSource.GetUnitOfWorkFactory().CreateUnitOfWork();
-                IPrimeroEntitiesUnitOfWork montrealUOW = PrimeroEntitiesUnitOfWorkSource.GetUnitOfWorkFactory(true).CreateUnitOfWork();
+                IPrimeroEntitiesUnitOfWork montrealUOW = PrimeroEntitiesUnitOfWorkSource.GetUnitOfWorkFactory(BluePrintsResources.OfficeMontreal).CreateUnitOfWork();
                 projectContexts = new List<ProjectUnitOfWorkContext>();
                 foreach (var entity in MainViewModel.Entities)
                 {
