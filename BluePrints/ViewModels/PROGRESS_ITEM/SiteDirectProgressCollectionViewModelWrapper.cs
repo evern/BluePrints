@@ -397,8 +397,8 @@ namespace BluePrints.ViewModels
             //unbound columns
             columns.Add(new ColumnDescriptor() { FieldName = currentPeriodPercentage, ReadOnly = true, Header = "Period Progress", HeaderToolTip = "Current period progress", Fixed = FixedStyle.Left, Width = 60, Mask = "p2", Settings = SettingsType.Number });
             columns.Add(new ColumnDescriptor() { FieldName = cumulativePercentage, ReadOnly = true, Header = "Progress", HeaderToolTip = "Cumulative progress", Fixed = FixedStyle.Left, Width = 60, Mask = "p2", Settings = SettingsType.Number });
-            columns.Add(new ColumnDescriptor() { FieldName = currentPeriodEarnedUnits, ReadOnly = true, Header = "Total Earned Hrs", HeaderToolTip = "Cumulative progress", Fixed = FixedStyle.Left, Width = 60, Mask = "n2", Settings = SettingsType.Number });
-            columns.Add(new ColumnDescriptor() { FieldName = cumulativeEarnedUnits, ReadOnly = true, Header = "Period Earned Hrs", HeaderToolTip = "Current period progress", Fixed = FixedStyle.Left, Width = 60, Mask = "n2", Settings = SettingsType.Number });
+            columns.Add(new ColumnDescriptor() { FieldName = currentPeriodEarnedUnits, ReadOnly = true, Header = "Period Earned Hrs", HeaderToolTip = "Cumulative progress", Fixed = FixedStyle.Left, Width = 60, Mask = "n2", Settings = SettingsType.Number });
+            columns.Add(new ColumnDescriptor() { FieldName = cumulativeEarnedUnits, ReadOnly = true, Header = "Total Earned Hrs", HeaderToolTip = "Current period progress", Fixed = FixedStyle.Left, Width = 60, Mask = "n2", Settings = SettingsType.Number });
 
             foreach (CONSTRUCTION_STAGE CONSTRUCTION_STAGE in CONSTRUCTION_STAGECollection)
             {
