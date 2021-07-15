@@ -11,31 +11,14 @@ namespace BluePrints.Common.ViewModel.Reporting
     /// </summary>
     public static class ProjectionHelpers
     {
-        public static void Initialize_Stats(IEnumerable<IReportable> reportableItems, IEnumerable<VariationAdjustment> variationAdjustments, DateTime reporting_data_date, TimeSpan reporting_interval, DateTime first_aligned_data_date, bool progressHaveStats, DateTime? overrideLastProgressDate = null, bool forceRetrieveRemainingDataPoints = false, bool allowPercentageOnZeroTotalUnits = false)
+        public static void Initialize_Stats(IEnumerable<IReportable> reportableItems, IEnumerable<VariationAdjustment> variationAdjustments, DateTime reporting_data_date, TimeSpan reporting_interval, DateTime first_aligned_data_date, bool progressHaveStats, DateTime? overrideLastProgressDate = null, bool forceRetrieveRemainingDataPoints = false)
         {
             if (progressHaveStats)
                 return;
 
             foreach (IReportable reportableItem in reportableItems)
             {
-                ReportablesDisplay reportablesDisplay = reportableItem as ReportablesDisplay;
-                if (reportablesDisplay != null)
-                {
-                    IReportable_Group reportable_Group = reportablesDisplay.ProgressItem as IReportable_Group;
-                    if (reportable_Group != null)
-                    {
-                        List<VariationAdjustment> group_variation_adjustments = new List<VariationAdjustment>();
-                        foreach(IReportable reportable in reportable_Group.Reportables)
-                        {
-                            group_variation_adjustments.AddRange(variationAdjustments.Where(x => x.DeliverableOriginalGuid == reportable.OriginalEntityKey).ToList());
-                            reportable.Stats = new ProgressStats(reporting_data_date, reporting_interval, first_aligned_data_date, reportable.Budget_Units, reportable.Total_Units, reportableItem.Budget_Quantity, reportableItem.Total_Quantity, reportable.Budget_Costs, reportable.Total_Costs, variationAdjustments.Where(x => x.DeliverableOriginalGuid == reportable.OriginalEntityKey), overrideLastProgressDate, forceRetrieveRemainingDataPoints);
-                        }
-
-                        reportable_Group.Stats = new ProgressStats(reporting_data_date, reporting_interval, first_aligned_data_date, reportable_Group.Budget_Units, reportable_Group.Total_Units, reportableItem.Budget_Quantity, reportableItem.Total_Quantity, reportable_Group.Budget_Costs, reportable_Group.Total_Costs, group_variation_adjustments, overrideLastProgressDate, forceRetrieveRemainingDataPoints);
-                    }
-                }
-                else
-                    reportableItem.Stats = new ProgressStats(reporting_data_date, reporting_interval, first_aligned_data_date, reportableItem.Budget_Units, reportableItem.Total_Units, reportableItem.Budget_Quantity, reportableItem.Total_Quantity, reportableItem.Budget_Costs, reportableItem.Total_Costs, variationAdjustments.Where(x => x.DeliverableOriginalGuid == reportableItem.OriginalEntityKey), overrideLastProgressDate, forceRetrieveRemainingDataPoints, allowPercentageOnZeroTotalUnits);
+                reportableItem.Stats = new ProgressStats(reporting_data_date, reporting_interval, first_aligned_data_date, reportableItem.Budget_Units, reportableItem.Total_Units, reportableItem.Budget_Quantity, reportableItem.Total_Quantity, reportableItem.Budget_Costs, reportableItem.Total_Costs, variationAdjustments.Where(x => x.DeliverableOriginalGuid == reportableItem.OriginalEntityKey), overrideLastProgressDate, forceRetrieveRemainingDataPoints);
             }
         }
 
@@ -54,14 +37,7 @@ namespace BluePrints.Common.ViewModel.Reporting
                     IDeliverable_Rates lookUpDeliverable = deliverables.FirstOrDefault(x => x.OriginalEntityKey == variation_item.GUID_ORIBASEITEM);
                     if (lookUpDeliverable != null)
                     {
-                        ICanProgressByQuantity progressByQuantityDeliverable = lookUpDeliverable as ICanProgressByQuantity;
-                        decimal variation_units;
-                        if (progressByQuantityDeliverable == null)
-                            variation_units = variation_item.VARIATION_UNITS;
-                        else
-                            variation_units = variation_item.VARIATION_UNITS * progressByQuantityDeliverable.UnitsPerQuantity;
-
-                        variationAdjustments.Add(new VariationAdjustment(variation_item.GUID_ORIBASEITEM) { VariationName = variation.NAME, AdjustmentDate = (DateTime)variation.APPROVED, AdjustmentUnits = variation_units, AdjustmentRate = lookUpDeliverable.Budget_ItemRate, AdjustmentInternalRate = lookUpDeliverable.Budget_ItemInternalRate, IsBudgetAdjustment = variation.ADJUSTMENT_TO_BUDGET });
+                        variationAdjustments.Add(new VariationAdjustment(variation_item.GUID_ORIBASEITEM) { VariationName = variation.NAME, AdjustmentDate = (DateTime)variation.APPROVED, AdjustmentUnits = variation_item.VARIATION_UNITS, AdjustmentRate = lookUpDeliverable.Budget_ItemRate, AdjustmentInternalRate = lookUpDeliverable.Budget_ItemInternalRate, IsBudgetAdjustment = variation.ADJUSTMENT_TO_BUDGET });
                     }
                 }
             }

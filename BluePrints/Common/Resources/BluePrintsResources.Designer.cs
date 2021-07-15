@@ -439,6 +439,15 @@ namespace BluePrints.Common.Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to EH.
+        /// </summary>
+        internal static string EquipmentHireStockCodeInitials {
+            get {
+                return ResourceManager.GetString("EquipmentHireStockCodeInitials", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to DataService Request Error.
         /// </summary>
         internal static string Exception_DataServiceRequestErrorCaption {

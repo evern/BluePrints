@@ -88,8 +88,6 @@ namespace BluePrints.Data
         public virtual DbSet<ROSTER_STAFF> ROSTER_STAFF { get; set; }
         public virtual DbSet<ROSTER_STAFF_STATUS> ROSTER_STAFF_STATUS { get; set; }
         public virtual DbSet<SETTINGS_GLOBAL> SETTINGS_GLOBAL { get; set; }
-        public virtual DbSet<STOCK_CODE> STOCK_CODE { get; set; }
-        public virtual DbSet<STOCK_GROUP> STOCK_GROUP { get; set; }
         public virtual DbSet<UOM> UOM { get; set; }
         public virtual DbSet<USER> USER { get; set; }
         public virtual DbSet<USER_PREFERENCE> USER_PREFERENCE { get; set; }
@@ -209,16 +207,6 @@ namespace BluePrints.Data
                 .HasForeignKey(e => e.GUID_CLIENT)
                 .WillCascadeOnDelete(false);
 
-            modelBuilder.Entity<COMMODITY_CODE>()
-                .HasMany(e => e.ESTIMATE_ITEM)
-                .WithOptional(e => e.COMMODITY_CODES)
-                .HasForeignKey(e => e.GUID_COMMODITY_CODE);
-
-            modelBuilder.Entity<COMMODITY_CODE>()
-                .HasMany(e => e.STOCK_CODE)
-                .WithOptional(e => e.COMMODITY_CODE)
-                .HasForeignKey(e => e.GUID_COMMODITY_CODE);
-
             modelBuilder.Entity<DELIVERABLES_STATUS>()
                 .Property(e => e.MAX_PERCENTAGE)
                 .HasPrecision(5, 2);
@@ -319,12 +307,6 @@ namespace BluePrints.Data
                 .HasMany(e => e.REGISTER_NC)
                 .WithOptional(e => e.DISCIPLINE)
                 .HasForeignKey(e => e.GUID_DISCIPLINE);
-
-            modelBuilder.Entity<DISCIPLINE>()
-                .HasMany(e => e.STOCK_CODE)
-                .WithRequired(e => e.DISCIPLINE)
-                .HasForeignKey(e => e.GUID_DISCIPLINE)
-                .WillCascadeOnDelete(false);
 
             modelBuilder.Entity<DISCIPLINE>()
                 .HasMany(e => e.USER)
@@ -503,6 +485,12 @@ namespace BluePrints.Data
 
             modelBuilder.Entity<PROJECT>()
                 .HasMany(e => e.AREA)
+                .WithRequired(e => e.PROJECT)
+                .HasForeignKey(e => e.GUID_PROJECT)
+                .WillCascadeOnDelete(false);
+
+            modelBuilder.Entity<PROJECT>()
+                .HasMany(e => e.CONSTRUCTION_STAGE)
                 .WithRequired(e => e.PROJECT)
                 .HasForeignKey(e => e.GUID_PROJECT)
                 .WillCascadeOnDelete(false);
@@ -715,16 +703,6 @@ namespace BluePrints.Data
                 .WillCascadeOnDelete(false);
 
             modelBuilder.Entity<PROJECT>()
-                .HasMany(e => e.STOCK_CODE)
-                .WithOptional(e => e.PROJECT)
-                .HasForeignKey(e => e.GUID_PROJECT);
-
-            modelBuilder.Entity<PROJECT>()
-                .HasMany(e => e.STOCK_GROUP)
-                .WithOptional(e => e.PROJECT)
-                .HasForeignKey(e => e.GUID_PROJECT);
-
-            modelBuilder.Entity<PROJECT>()
                 .HasMany(e => e.SUBJOB)
                 .WithRequired(e => e.PROJECT)
                 .HasForeignKey(e => e.GUID_PROJECT)
@@ -911,21 +889,6 @@ namespace BluePrints.Data
             modelBuilder.Entity<SETTINGS_GLOBAL>()
                 .Property(e => e.REVIEW_PERIOD)
                 .HasPrecision(2, 0);
-
-            modelBuilder.Entity<STOCK_CODE>()
-                .HasMany(e => e.ESTIMATE_ITEM)
-                .WithOptional(e => e.STOCK_CODE)
-                .HasForeignKey(e => e.GUID_BUDGET_STOCK_CODE);
-
-            modelBuilder.Entity<STOCK_CODE>()
-                .HasMany(e => e.ESTIMATE_ITEM1)
-                .WithOptional(e => e.STOCK_CODE1)
-                .HasForeignKey(e => e.GUID_ESTIMATE_STOCK_CODE);
-
-            modelBuilder.Entity<STOCK_GROUP>()
-                .HasMany(e => e.ESTIMATE_ITEM)
-                .WithOptional(e => e.STOCK_GROUP)
-                .HasForeignKey(e => e.GUID_STOCK_GROUP);
 
             modelBuilder.Entity<SUBJOB>()
                 .HasMany(e => e.BASELINE_ITEM)

@@ -399,6 +399,9 @@
   <data name="ReferenceInfoLineName" xml:space="preserve">
     <value>Information:</value>
   </data>
+  <data name="EquipmentHireStockCodeInitials" xml:space="preserve">
+    <value>EH</value>
+  </data>
   <data name="OfficeUSA" xml:space="preserve">
     <value>USA</value>
   </data>

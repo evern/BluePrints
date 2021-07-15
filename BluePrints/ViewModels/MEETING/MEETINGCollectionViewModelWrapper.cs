@@ -143,11 +143,6 @@ namespace BluePrints.ViewModels
         #endregion
 
         #region IEntityNumber
-        protected override string GetEntityNumberFieldName()
-        {
-            return BindableBase.GetPropertyName(() => new MEETING().NUMBER);
-        }
-
         protected override int DefaultNumericFieldLength()
         {
             return Int32.Parse(BluePrintsResources.Default_Register_Numeric_Length);
@@ -383,6 +378,11 @@ namespace BluePrints.ViewModels
                     "[" + SelectedEntity.EntityNumber + "] Agenda");
 
             DocumentManagerService.ShowExistingEntityDocumentWithLogging(DocumentInfo, this);
+        }
+
+        protected override string GetEntityNumberFieldName()
+        {
+            throw new NotImplementedException();
         }
         #endregion
     }

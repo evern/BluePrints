@@ -25,6 +25,27 @@ namespace BluePrints.Common
         public static DateTime DefaultLastDay = new DateTime(2099, 1, 1);
     }
 
+    public enum ScoreCardDiscipline
+    {
+        [Display(Name = "Concrete")]
+        Concrete,
+        [Display(Name = "Electrical")]
+        Electrical,
+        [Display(Name = "Mechanical")]
+        Mechanical,
+        [Display(Name = "Piping")]
+        Piping,
+        [Display(Name = "Structural")]
+        Structural
+    }
+
+    public enum ExoQueryType
+    {
+        EquipmentHireOnly = 0,
+        ExcludeEquipmentHire = 1,
+        All = 3
+    }
+
     public enum DatabaseLocale
     {
         Default,
@@ -32,8 +53,6 @@ namespace BluePrints.Common
         Montreal,
         USA
     }
-
-
     public enum RowEditAction
     {
         [Display(Name = "Add")]

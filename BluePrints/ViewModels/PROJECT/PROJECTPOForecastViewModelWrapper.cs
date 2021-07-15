@@ -66,10 +66,10 @@ namespace BluePrints.ViewModels
         protected IPrimeroEntitiesUnitOfWork primeroUnitOfWork;
 
         protected PROJECT loadPROJECT;
-        List<DateTime> alignedDataDateCollection;
-        List<ExoDataPoint> allExoPos = new List<ExoDataPoint>();
-        List<ExoDataPoint> allExoActuals = new List<ExoDataPoint>();
-        List<string> hiddenColumnFieldNames = new List<string>();
+        protected List<DateTime> alignedDataDateCollection;
+        protected List<ExoDataPoint> allExoPos = new List<ExoDataPoint>();
+        protected List<ExoDataPoint> allExoActuals = new List<ExoDataPoint>();
+        protected List<string> hiddenColumnFieldNames = new List<string>();
         protected string columnEntity = "Entity";
         DispatcherTimer selectedItemsChangedDispatcher;
         DispatcherTimer closeEditorDispatcher;
@@ -159,13 +159,13 @@ namespace BluePrints.ViewModels
                 base.BackgroundRefresh();
         }
 
-        bool isExoDataLoaded = false;
-        private void loadExoData(IPrimeroEntitiesUnitOfWork primeroUOW)
+        protected bool isExoDataLoaded = false;
+        protected virtual void loadExoData(IPrimeroEntitiesUnitOfWork primeroUOW)
         {
             isExoDataLoaded = false;
             //cannot put in assigncallback mainviewmodel because it can take too long and mainviewmodel will be null
-            allExoPos = BluePrintsDataUtils.GetEXOPO(primeroUOW, loadPROJECT.NUMBER, ActualsCutOffDate, null, true);
-            allExoActuals = BluePrintsDataUtils.GetMaterials(primeroUOW, loadPROJECT.NUMBER, ActualsCutOffDate, null, 1, true);
+            allExoPos = BluePrintsDataUtils.GetEXOPO(primeroUOW, loadPROJECT.NUMBER, ActualsCutOffDate, null, true, ExoQueryType.ExcludeEquipmentHire);
+            allExoActuals = BluePrintsDataUtils.GetMaterials(primeroUOW, loadPROJECT.NUMBER, ActualsCutOffDate, null, 1, true, ExoQueryType.ExcludeEquipmentHire);
             //po remaining cost adjustment based on description
             //foreach(ExoDataPoint exoDataPoint in allExoPos)
             //{
@@ -495,7 +495,7 @@ namespace BluePrints.ViewModels
             }
         }
 
-        private void updateDataPointsTable()
+        protected virtual void updateDataPointsTable()
         {
             GridControlService.BeginDataUpdate();
 
@@ -531,7 +531,7 @@ namespace BluePrints.ViewModels
                 newForecast.VariationCode = poLine.VariationCode;
 
                 //populate comment
-                FORECAST_PO_SETTING forecastPOSetting = FORECAST_PO_SETTINGCollection.FirstOrDefault(x => x.PONO == poLine.PONumber && x.VARIATION_CODE == poLine.VariationCode);
+                FORECAST_PO_SETTING forecastPOSetting = FORECAST_PO_SETTINGCollection.FirstOrDefault(x => x.PONO == poLine.PONumber && x.VARIATION_CODE == poLine.VariationCode && (x.STOCK_CODE == null || x.STOCK_CODE == string.Empty));
                 if (forecastPOSetting != null)
                     newForecast.Comments = forecastPOSetting.PO_COMMENTS;
 
@@ -552,7 +552,7 @@ namespace BluePrints.ViewModels
             GridControlService.EndDataUpdate();
         }
 
-        DataTable dataPointsTable = null;
+        protected DataTable dataPointsTable = null;
         public virtual DataTable DataPointsTable
         {
             get
@@ -561,7 +561,7 @@ namespace BluePrints.ViewModels
             }
         }
 
-        private void InitializeColumnSource(ObservableCollection<ColumnDescriptor> columns, ObservableCollection<SummaryDescriptor> summaries, List<DateTime> alignedDates)
+        protected virtual void InitializeColumnSource(ObservableCollection<ColumnDescriptor> columns, ObservableCollection<SummaryDescriptor> summaries, List<DateTime> alignedDates)
         {
             columns.Clear();
             summaries.Clear();
@@ -585,10 +585,11 @@ namespace BluePrints.ViewModels
             {
                 string columnFieldName = alignedDate.Date.ToString(BluePrintsResources.ColumnDateFormat);
                 columns.Add(new ColumnDescriptor() { FieldName = columnFieldName, ReadOnly = false, Header = columnFieldName, Mask = "c0", Increment = 1, Fixed = FixedStyle.None, Width = 60, Settings = SettingsType.ForecastFuture });
+                summaries.Add(new SummaryDescriptor() { FieldName = columnFieldName, DisplayFormat = "c0", Type = SummaryItemType.Sum });
             }
         }
 
-        private void findExistingOrAddNewFORECAST_JOB_SETTING(DataRow updateRow, string comments)
+        protected virtual void findExistingOrAddNewFORECAST_JOB_SETTING(DataRow updateRow, string comments)
         {
             POForecastProjection forecast = ((POForecastProjection)updateRow[columnEntity]);    
             FORECAST_PO_SETTING relevantFORECAST_PO_SETTING = FORECAST_PO_SETTINGCollection.FirstOrDefault(x => x.PONO == forecast.PONO && x.VARIATION_CODE == forecast.VariationCode);
@@ -942,7 +943,7 @@ namespace BluePrints.ViewModels
             return !IsLoading;
         }
 
-        public void AlignPOsWithActuals()
+        public virtual void AlignPOsWithActuals()
         {
             EntitiesUndoRedoManager.Clear();
             IEnumerable<POForecastProjection> projections = from DataRow dr in dataPointsTable.Rows
@@ -1002,17 +1003,8 @@ namespace BluePrints.ViewModels
                         {
                             decimal forecastValue = FORECAST_PO.FORECAST_VALUE == null ? 0 : (decimal)FORECAST_PO.FORECAST_VALUE;
                             decimal postAdjustmentCosts = forecastValue + wbsCostDifference;
-                            //if (postAdjustmentCosts > 0)
-                            //{
-                                FORECAST_PO.FORECAST_VALUE += wbsCostDifference;
-                                saveFORECAST_POs.Add(FORECAST_PO);
-                            //}
-                            //else
-                            //{
-                            //    wbsCostDifference += forecastValue;
-                            //    FORECAST_PO.FORECAST_VALUE = 0.00m;
-                            //    saveFORECAST_POs.Add(FORECAST_PO);
-                            //}
+                            FORECAST_PO.FORECAST_VALUE += wbsCostDifference;
+                            saveFORECAST_POs.Add(FORECAST_PO);
                         }
                     }
                 }
@@ -1024,7 +1016,7 @@ namespace BluePrints.ViewModels
             refreshDataTable();
         }
 
-        private void refreshDataTable()
+        protected void refreshDataTable()
         {
             generateAlignedDataDates();
             dataPointsTable = null;
@@ -1498,12 +1490,17 @@ namespace BluePrints.ViewModels
             get { return "PROJECTPOForecastViewModelWrapper_v2"; }
         }
         #endregion
+    }
 
-        public class POLine
-        {
-            public string PONumber { get; set; }
-            public string VariationCode { get; set; }
-            public List<ExoDataPoint> DataPoints { get; set; }
-        }
+    public class POFlatLine : POLine
+    {
+        public string StockCode { get; set; }
+    }
+
+    public class POLine
+    {
+        public string PONumber { get; set; }
+        public string VariationCode { get; set; }
+        public List<ExoDataPoint> DataPoints { get; set; }
     }
 }

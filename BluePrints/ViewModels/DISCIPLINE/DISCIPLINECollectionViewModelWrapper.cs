@@ -42,6 +42,7 @@ namespace BluePrints.ViewModels
 
         protected override void resolveParameters(object parameter)
         {
+            AlwaysSkipMessage = true;
         }
 
         protected override void addEntitiesLoader()

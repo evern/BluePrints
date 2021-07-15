@@ -5,7 +5,6 @@ using BaseModel.ViewModel.Base;
 using BaseModel.ViewModel.Dialogs;
 using BaseModel.ViewModel.Loader;
 using BluePrints.BluePrintsEntitiesDataModel;
-using BluePrints.Common.Helpers;
 using BluePrints.Common.Misc;
 using BluePrints.Common.Projections;
 using BluePrints.Common.Reports;
@@ -48,7 +47,6 @@ namespace BluePrints.Common.Base
         protected Data.PROJECT loadPROJECT;
         public P6Data.PROJECT p6PROJECT;
         protected PROGRESS loadPROGRESS;
-        protected BASELINE liveBASELINE;
         protected bool isQueryForLiveStatus;
         protected abstract CostGroup cost_group { get; }
         protected abstract PhaseType progress_type { get; }
@@ -59,7 +57,6 @@ namespace BluePrints.Common.Base
         //calculates the planned values only for each deliverables
         protected BackgroundWorker calculatePlannedBackgroundWorker;
         protected BackgroundWorker loadExoBackgroundWorker;
-        protected BackgroundWorker updateP6DatesBackgroundWorker;
         //set current data date timer
         protected DispatcherTimer delayedPROGRESSSavingDispatcher;
         protected IUnitOfWorkFactory<IBluePrintsEntitiesUnitOfWork> bluePrintsUnitOfWorkFactory = BluePrintsEntitiesUnitOfWorkSource.GetUnitOfWorkFactory();
@@ -71,21 +68,16 @@ namespace BluePrints.Common.Base
         protected bool isUseReportDate = false;
         protected bool canDateBackwardForward = false;
         BackgroundWorker progressSaveBackgroundWorker;
-        protected DispatcherTimer backgroundWorkerDelayedLaunchTimer;
         public BluePrintsEntitiesProgressCollectionWrapper()
         {
             onMainViewModelFirstLoadedTimer = new DispatcherTimer();
             onMainViewModelFirstLoadedTimer.Interval = new TimeSpan(0, 0, 0, 1);
             onMainViewModelFirstLoadedTimer.Tick += onMainViewModelFirstLoaded;
-
-            backgroundWorkerDelayedLaunchTimer = new DispatcherTimer();
-            backgroundWorkerDelayedLaunchTimer.Interval = new TimeSpan(0, 0, 0, 3);
-            backgroundWorkerDelayedLaunchTimer.Tick += backgroundWorkerDelayedLaunchTimer_Tick;
-
             calculatePlannedBackgroundWorker = new BackgroundWorker();
             calculatePlannedBackgroundWorker.DoWork += calculatePlannedBackgroundWorker_DoWork;
             calculatePlannedBackgroundWorker.RunWorkerCompleted += calculatePlannedBackgroundWorker_RunWorkerCompleted;
             calculatePlannedBackgroundWorker.WorkerSupportsCancellation = true;
+
 
             loadExoBackgroundWorker = new BackgroundWorker();
             loadExoBackgroundWorker.DoWork += loadExoBackgroundWorker_DoWork;
@@ -95,11 +87,6 @@ namespace BluePrints.Common.Base
             progressSaveBackgroundWorker = new BackgroundWorker();
             progressSaveBackgroundWorker.DoWork += ProgressSaveBackgroundWorker_DoWork;
             progressSaveBackgroundWorker.WorkerSupportsCancellation = true;
-
-            updateP6DatesBackgroundWorker = new BackgroundWorker();
-            updateP6DatesBackgroundWorker.DoWork += updateP6DatesBackgroundWorker_DoWork;
-            updateP6DatesBackgroundWorker.RunWorkerCompleted += updateP6DatesBackgroundWorker_RunWorkerCompleted;
-            updateP6DatesBackgroundWorker.WorkerSupportsCancellation = true;
         }
 
         protected IPrimeroEntitiesUnitOfWork primeroUnitOfWork;
@@ -115,7 +102,7 @@ namespace BluePrints.Common.Base
             bool? allowSummaryCalculationOnUpdatePreference = LoginCredentials.GetUserPreferenceBool(DataUtils.GetNameOf(() => UserPreferences.DesignProgress_AllowSummaryUpdate));
             allowSummaryCalculationOnUpdate = allowSummaryCalculationOnUpdatePreference == null ? true : (bool)allowSummaryCalculationOnUpdatePreference;
 
-            primeroUnitOfWork = PrimeroEntitiesUnitOfWorkSource.GetUnitOfWorkFactory(loadPROJECT.OfficeNameForExo).CreateUnitOfWork();
+            primeroUnitOfWork = PrimeroEntitiesUnitOfWorkSource.GetUnitOfWorkFactory(loadPROJECT.OfficeNameForExo == BluePrintsResources.OfficeMontreal).CreateUnitOfWork();
             if (loadPROJECT != null)
                 isQueryForLiveStatus = true;
         }
@@ -139,7 +126,6 @@ namespace BluePrints.Common.Base
                 loaderCollection.AddLoaderDescription(p6UnitOfWorkFactory, x => x.TASK, P6TASKProjectionFunc);
             }
 
-            loaderCollection.AddLoaderDescription<Data.PHASE, Data.PHASE, Guid, IBluePrintsEntitiesUnitOfWork>(bluePrintsUnitOfWorkFactory, x => x.PHASES);
             loaderCollection.AddLoaderDescription(bluePrintsUnitOfWorkFactory, x => x.SUBJOBS, SUBJOBProjectionFunc);
             loaderCollection.AddLoaderDescription(bluePrintsUnitOfWorkFactory, x => x.WORKPACKS, WORKPACKProjectionFunc);
             loaderCollection.AddLoaderDescription(bluePrintsUnitOfWorkFactory, x => x.PROGRESS_ITEMS, PROGRESS_ITEMProjectionFunc);
@@ -271,7 +257,7 @@ namespace BluePrints.Common.Base
             if (MainViewModel == null)
                 return;
 
-            BluePrintsUtils.LoadExoAuthorisation<TMainProjectionEntity>(Entities, ref exoAuthorisations, projectContexts, userIdContexts);
+            BluePrintsUtils.LoadExoAuthorisation<TMainProjectionEntity>(Entities, ref exoAuthorisations, getProjectContexts(), getContextUserIds());
         }
 
         private void loadExoBackgroundWorker_RunWorkerCompleted(object sender, RunWorkerCompletedEventArgs e)
@@ -285,7 +271,7 @@ namespace BluePrints.Common.Base
             if (projectContexts == null)
             {
                 IPrimeroEntitiesUnitOfWork perthUOW = PrimeroEntitiesUnitOfWorkSource.GetUnitOfWorkFactory().CreateUnitOfWork();
-                IPrimeroEntitiesUnitOfWork montrealUOW = PrimeroEntitiesUnitOfWorkSource.GetUnitOfWorkFactory(BluePrintsResources.OfficeMontreal).CreateUnitOfWork();
+                IPrimeroEntitiesUnitOfWork montrealUOW = PrimeroEntitiesUnitOfWorkSource.GetUnitOfWorkFactory(true).CreateUnitOfWork();
                 projectContexts = new List<ProjectUnitOfWorkContext>();
                 foreach (var entity in MainViewModel.Entities)
                 {
@@ -432,27 +418,13 @@ namespace BluePrints.Common.Base
                 //IsLoading = true;
                 //this.RaisePropertyChanged(x => x.IsLoading);
                 IsCalculationCompleted = false;
-                this.RaisePropertyChanged(x => x.IsCalculationCompleted); 
-                getProjectContexts();
-                getContextUserIds();
+                this.RaisePropertyChanged(x => x.IsCalculationCompleted);
+                if (!skipExoDataLoading && !loadExoBackgroundWorker.IsBusy)
+                    loadExoBackgroundWorker.RunWorkerAsync();
 
+                if(!calculatePlannedBackgroundWorker.IsBusy)
+                    calculatePlannedBackgroundWorker.RunWorkerAsync();
             }
-
-            backgroundWorkerDelayedLaunchTimer.Start();
-        }
-
-        private void backgroundWorkerDelayedLaunchTimer_Tick(object sender, EventArgs e)
-        {
-            backgroundWorkerDelayedLaunchTimer.Stop();
-            if (!skipExoDataLoading && !loadExoBackgroundWorker.IsBusy)
-                loadExoBackgroundWorker.RunWorkerAsync();
-
-            liveBASELINE = bluePrintsUOW.BASELINES.FirstOrDefault(x => x.GUID_PROJECT == loadPROJECT.GUID && x.STATUS == BaselineStatus.Live);
-            if (!updateP6DatesBackgroundWorker.IsBusy)
-                updateP6DatesBackgroundWorker.RunWorkerAsync(new object[] { liveBASELINE, loadPROGRESS, p6UOW });
-
-            if (!calculatePlannedBackgroundWorker.IsBusy)
-                calculatePlannedBackgroundWorker.RunWorkerAsync();
         }
 
         protected bool extrapolateDataDate = false;
@@ -465,7 +437,7 @@ namespace BluePrints.Common.Base
             TimeSpan reportInterval = ChronologicalHelpers.ConvertProgressIntervalToPeriod(loadPROGRESS);
             DateTime firstAlignedDataDate = ChronologicalHelpers.GenerateFirstAlignedDataDate(loadPROGRESS);
             List<VariationAdjustment> projectVariationAdjustment = ProjectionHelpers.BuildProjectVariationAdjustments(VARIATIONCollection.AsQueryable(), ReportableCollection);
-            projectSummary = new ProjectSummaryStats(MainViewModel.Entities, DataDate, reportInterval, firstAlignedDataDate, projectVariationAdjustment, extrapolateDataDate ? DateTime.Now : (DateTime?)null, false, true);
+            projectSummary = new ProjectSummaryStats(MainViewModel.Entities, DataDate, reportInterval, firstAlignedDataDate, projectVariationAdjustment, extrapolateDataDate ? DateTime.Now : (DateTime?)null);
             DateTime reporting_data_date = DataDate;
             FullStatsBuilder fullStatsBuilder = new FullStatsBuilder(loadPROJECT.NUMBER, loadPROJECT.CURRENCYCONVERSION, reportInterval, firstAlignedDataDate, SUBJOBCollection, reporting_data_date, primeroUnitOfWork);
             fullSummarizer = new FullSummarizer(projectSummary, fullStatsBuilder, loadPROJECT.NUMBER);
@@ -490,7 +462,7 @@ namespace BluePrints.Common.Base
             {
                 fullSummarizer.BuildBudgeted(1, 1, false, false);
                 //fullSummarizer.BuildEarned();
-                fullSummarizer.BuildRemaining();
+                //fullSummarizer.BuildRemaining();
                 fullSummarizer.BuildBurnedDataPoints(false, false, false, false, true);
                 //fullSummarizer.Summarize();
                 //mainThreadDispatcher.BeginInvoke(new Action(() => BackgroundRefresh()));
@@ -507,9 +479,6 @@ namespace BluePrints.Common.Base
         public bool IsCalculationCompleted { get; set; }
         protected void calculatePlannedBackgroundWorker_RunWorkerCompleted(object sender, RunWorkerCompletedEventArgs e)
         {
-            if (calculatePlannedBackgroundWorker.CancellationPending)
-                return;
-
             IsCalculationCompleted = true;
             onCalculatePlannedBackgroundWorkerCompleted();
             this.RaisePropertyChanged(x => x.IsCalculationCompleted);
@@ -668,9 +637,6 @@ namespace BluePrints.Common.Base
 
         protected void DateChange(DateNavigationType navigationType)
         {
-            //if (!IsCalculationCompleted)
-            //    return;
-
             if (BluePrintsUtils.ProgressDateChange(navigationType, loadPROGRESS, isUseReportDate))
                 delayedPROGRESSSavingDispatcher.Start();
         }
@@ -888,7 +854,7 @@ namespace BluePrints.Common.Base
 
                 if (allAssignmentTasks.All(x => x.act_work_qty == 0))
                 {
-                    decimal allEarnedUnits = deliverable.Progresses.Sum(x => x.EARNED_UNITS);
+                    decimal allEarnedUnits = deliverable.Progresses.Sum(x => x.EarnedUnits);
                     allEarnedUnits *= -1;
                     removeOrReduceDataPointsForTasks(deliverable, allEarnedUnits);
                     bluePrintsUOW.SaveChanges();
@@ -916,7 +882,7 @@ namespace BluePrints.Common.Base
 
                                 decimal totalSupposedUnits = supposedUnitsForPreviousAssignment + proRateUnitsForCurrentAssignment;
 
-                                decimal totalUnitsEarned = deliverable.Progresses.Sum(x => x.EARNED_UNITS);
+                                decimal totalUnitsEarned = deliverable.Progresses.Sum(x => x.EarnedUnits);
                                 decimal unitsParity = totalSupposedUnits - totalUnitsEarned;
 
                                 //Add units for previous task assignments
@@ -1006,14 +972,14 @@ namespace BluePrints.Common.Base
                 PROGRESS_ITEM currentDateProgress = bluePrintsUOW.PROGRESS_ITEMS.FirstOrDefault(x => x.GUID == progress.GUID);
                 if (reduceUnits > 0)
                 {
-                    if (currentDateProgress.EARNED_UNITS < reduceUnits)
+                    if (currentDateProgress.EarnedUnits < reduceUnits)
                     {
-                        reduceUnits -= currentDateProgress.EARNED_UNITS;
-                        currentDateProgress.EARNED_UNITS = 0;
+                        reduceUnits -= currentDateProgress.EarnedUnits;
+                        currentDateProgress.EarnedUnits = 0;
                     }
-                    else if (currentDateProgress.EARNED_UNITS >= reduceUnits)
+                    else if (currentDateProgress.EarnedUnits >= reduceUnits)
                     {
-                        currentDateProgress.EARNED_UNITS -= reduceUnits;
+                        currentDateProgress.EarnedUnits -= reduceUnits;
                         reduceUnits = 0;
                     }
                 }
@@ -1067,7 +1033,7 @@ namespace BluePrints.Common.Base
                         if (repositoryProgress.Count() == 0)
                             earnedUnits = 0;
                         else
-                            repositoryProgress.Sum(x => x.EARNED_UNITS);
+                            repositoryProgress.Sum(x => x.EarnedUnits);
 
                         if (earnedUnits >= supposedUnitsForAssignments)
                             continue;
@@ -1086,11 +1052,11 @@ namespace BluePrints.Common.Base
                             DateTime interpolationDateFormat = interpolatedDate.Date.AddDays(1).AddSeconds(-1);
                             PROGRESS_ITEM currentDateProgress = bluePrintsUOW.PROGRESS_ITEMS.FirstOrDefault(x => x.PROGRESS.STATUS == ProgressStatus.Live && x.GUID_ORIBASEITEM == deliverable.OriginalEntityKey && x.EARNED_DATE == interpolationDateFormat);
                             if (currentDateProgress != null)
-                                currentDateProgress.EARNED_UNITS += totalUnitsToAddPerPeriod;
+                                currentDateProgress.EarnedUnits += totalUnitsToAddPerPeriod;
                             else
                             {
                                 PROGRESS_ITEM newPROGRESS_ITEM = new PROGRESS_ITEM();
-                                newPROGRESS_ITEM.EARNED_UNITS = totalUnitsToAddPerPeriod;
+                                newPROGRESS_ITEM.EarnedUnits = totalUnitsToAddPerPeriod;
                                 newPROGRESS_ITEM.EARNED_DATE = interpolationDateFormat;
                                 newPROGRESS_ITEM.GUID_ORIBASEITEM = deliverable.OriginalEntityKey;
                                 newPROGRESS_ITEM.GUID_PROGRESS = loadPROGRESS.GUID;
@@ -1245,13 +1211,13 @@ namespace BluePrints.Common.Base
                         PROGRESS_ITEM currentDateProgress = bluePrintsUOW.PROGRESS_ITEMS.FirstOrDefault(x => x.GUID_PROGRESS == loadPROGRESS.GUID && x.GUID_ORIBASEITEM == simulation.DeliverableOriginalEntityKey && x.EARNED_DATE == interpolationDateFormat);
                         if (currentDateProgress != null)
                         {
-                            currentDateProgress.EARNED_UNITS += proratedParityPerPeriod;
+                            currentDateProgress.EarnedUnits += proratedParityPerPeriod;
                             //simulation.PostPushUnits += proratedParityPerPeriod;
                         }
                         else
                         {
                             PROGRESS_ITEM newPROGRESS_ITEM = new PROGRESS_ITEM();
-                            newPROGRESS_ITEM.EARNED_UNITS = proratedParityPerPeriod;
+                            newPROGRESS_ITEM.EarnedUnits = proratedParityPerPeriod;
                             newPROGRESS_ITEM.EARNED_DATE = interpolationDateFormat;
                             newPROGRESS_ITEM.GUID_ORIBASEITEM = simulation.DeliverableOriginalEntityKey;
                             newPROGRESS_ITEM.GUID_PROGRESS = loadPROGRESS.GUID;
@@ -1273,14 +1239,14 @@ namespace BluePrints.Common.Base
             {
                 if (reduceUnits > 0)
                 {
-                    if (progress.EARNED_UNITS < reduceUnits)
+                    if (progress.EarnedUnits < reduceUnits)
                     {
-                        reduceUnits -= progress.EARNED_UNITS;
-                        progress.EARNED_UNITS = 0;
+                        reduceUnits -= progress.EarnedUnits;
+                        progress.EarnedUnits = 0;
                     }
-                    else if (progress.EARNED_UNITS >= reduceUnits)
+                    else if (progress.EarnedUnits >= reduceUnits)
                     {
-                        progress.EARNED_UNITS -= reduceUnits;
+                        progress.EarnedUnits -= reduceUnits;
                         reduceUnits = 0;
                     }
                 }
@@ -1332,64 +1298,6 @@ namespace BluePrints.Common.Base
             ParameterObj.Parameter = new object[] { loadPROGRESS, mappingSelectionType, loadPROJECT, false };
         }
 
-        private void updateP6DatesBackgroundWorker_DoWork(object sender, DoWorkEventArgs e)
-        {
-            if (updateP6DatesBackgroundWorker.CancellationPending)
-            {
-                e.Cancel = true;
-                return;
-            }
-
-            var argumentObject = (object[])e.Argument;
-            BASELINE baseline = (BASELINE)argumentObject[0];
-            PROGRESS progress = (PROGRESS)argumentObject[1];
-            IP6EntitiesUnitOfWork p6UnitOfWork = (IP6EntitiesUnitOfWork)argumentObject[2];
-            UpdateTrueP6Dates(baseline, progress, p6UnitOfWork);
-        }
-
-        private void updateP6DatesBackgroundWorker_RunWorkerCompleted(object sender, RunWorkerCompletedEventArgs e)
-        {
-            if (updateP6DatesBackgroundWorker.CancellationPending)
-                return;
-
-            if (typeof(TMainProjectionEntity).GetInterfaces().Contains(typeof(IHaveTrueP6Dates)))
-            {
-                foreach (IHaveTrueP6Dates entity in Entities)
-                {
-                    entity.Update();
-                }
-            }
-        }
-
-        private void UpdateTrueP6Dates(BASELINE liveBASELINE, PROGRESS livePROGRESS, IP6EntitiesUnitOfWork p6UnitOfWork)
-        {
-            if (typeof(TMainProjectionEntity).GetInterfaces().Contains(typeof(IHaveTrueP6Dates)))
-            {
-                if(liveBASELINE != null)
-                {
-                    P6Data.PROJECT p6BaselinePROJECT = p6UnitOfWork.PROJECT.FirstOrDefault(x => x.proj_short_name == liveBASELINE.P6BASELINE_NAME);
-                    if(p6BaselinePROJECT != null)
-                    {
-                        List<TASK> P6PlannedTASKS = p6BaselinePROJECT.TASK.ToList();
-                        foreach (IHaveTrueP6Dates entity in Entities)
-                        {
-                            entity.PopulateTrueP6Dates(P6PlannedTASKS, true);
-                        }
-                    }
-                }
-
-                P6Data.PROJECT p6ProgressPROJECT = p6UnitOfWork.PROJECT.FirstOrDefault(x => x.proj_short_name == loadPROGRESS.P6PROGRESS_NAME);
-                if(p6ProgressPROJECT != null)
-                {
-                    List<TASK> P6RemainingTASKS = p6ProgressPROJECT.TASK.ToList();
-                    foreach (IHaveTrueP6Dates entity in Entities)
-                    {
-                        entity.PopulateTrueP6Dates(P6RemainingTASKS, false);
-                    }
-                }
-            }
-        }
-
         private List<P6Simulation> push_units_to_p6(IEnumerable<ICanAssignP6> deliverables, bool isSimulation, List<P6ErrorMessage> errorMessages)
         {
             List<TASK> processedP6Task = new List<TASK>();
@@ -1417,11 +1325,11 @@ namespace BluePrints.Common.Base
 
                 bool isNullProgress = false;
                 //comment this off because duration needs to be calculated even if deliverable is not progressed
-                if (current_progress_deliverable.PROGRESS_ITEM_UpToCurrentDataDate == null || current_progress_deliverable.PROGRESS_ITEM_UpToCurrentDataDate.Where(x => x.ReportingEarnedUnits > 0).Count() == 0)
+                if (current_progress_deliverable.PROGRESS_ITEM_UpToCurrentDataDate == null || current_progress_deliverable.PROGRESS_ITEM_UpToCurrentDataDate.Where(x => x.EarnedUnits > 0).Count() == 0)
                     isNullProgress = true;
 
-                DateTime? first_progress_date = isNullProgress ? (DateTime?)null : current_progress_deliverable.PROGRESS_ITEM_UpToCurrentDataDate.Where(x => x.ReportingEarnedUnits > 0).Min(x => x.EARNED_DATE);
-                DateTime? last_progress_date = isNullProgress ? (DateTime?)null : current_progress_deliverable.PROGRESS_ITEM_UpToCurrentDataDate.Where(x => x.ReportingEarnedUnits > 0).Max(x => x.EARNED_DATE);
+                DateTime? first_progress_date = isNullProgress ? (DateTime?)null : current_progress_deliverable.PROGRESS_ITEM_UpToCurrentDataDate.Where(x => x.EarnedUnits > 0).Min(x => x.EARNED_DATE);
+                DateTime? last_progress_date = isNullProgress ? (DateTime?)null : current_progress_deliverable.PROGRESS_ITEM_UpToCurrentDataDate.Where(x => x.EarnedUnits > 0).Max(x => x.EARNED_DATE);
 
                 decimal total_percentage_to_date;
 
@@ -1660,11 +1568,11 @@ namespace BluePrints.Common.Base
                         {
                             foreach (PROGRESS_ITEM progressItem in current_progress_deliverable.PROGRESS_ITEM_UpToCurrentDataDate)
                             {
-                                assignedUnits += progressItem.EARNED_UNITS;
+                                assignedUnits += progressItem.EarnedUnits;
                                 decimal currentPercentage = assignedUnits / deliverable.Total_Units;
 
                                 if (currentPercentage > p6_assignment.LOW_VALUE && currentPercentage <= p6_assignment.HIGH_VALUE)
-                                    errorMessages.Add(new P6ErrorMessage("Task not found", p6_assignment.P6_ACTIVITYID, current_progress_deliverable.Deliverable_Name, progressItem.EARNED_UNITS, progressItem.EARNED_DATE));
+                                    errorMessages.Add(new P6ErrorMessage("Task not found", p6_assignment.P6_ACTIVITYID, current_progress_deliverable.Deliverable_Name, progressItem.EarnedUnits, progressItem.EARNED_DATE));
                             }
                         }
 
@@ -2014,17 +1922,6 @@ namespace BluePrints.Common.Base
 
                 return
                     (CollectionViewModel<PROJECT_REPORT, PROJECT_REPORT, Guid, IBluePrintsEntitiesUnitOfWork>)loaderCollection.GetViewModel<PROJECT_REPORT>();
-            }
-        }
-
-        public IEnumerable<Data.PHASE> PHASECollection
-        {
-            get
-            {
-                var collection = GetEntities<Data.PHASE>();
-                if (collection != null)
-                    collection = collection.OrderBy(x => x.INTERNAL_NUM);
-                return collection;
             }
         }
 

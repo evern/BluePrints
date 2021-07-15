@@ -43,9 +43,7 @@ namespace BluePrints.ViewModels
         }
 
         #region Database Operations
-
         private PROJECT loadPROJECT;
-
         private IUnitOfWorkFactory<IBluePrintsEntitiesUnitOfWork> bluePrintsUnitOfWorkFactory =
             BluePrintsEntitiesUnitOfWorkSource.GetUnitOfWorkFactory();
 
@@ -63,11 +61,6 @@ namespace BluePrints.ViewModels
         private Func<IRepositoryQuery<PROJECT>, IQueryable<PROJECT>> PROJECTProjectionFunc()
         {
             return query => query.Where(x => x.GUID == loadPROJECT.GUID);
-        }
-
-        private Func<IRepositoryQuery<STOCK_CODE>, IQueryable<STOCK_CODE>> STOCK_CODEProjectionFunc()
-        {
-            return query => query.Where(x => (x.GUID_PROJECT == loadPROJECT.GUID || x.GUID_PROJECT == null));
         }
 
         protected override void onAuxiliaryEntitiesCollectionLoaded()
@@ -131,28 +124,6 @@ namespace BluePrints.ViewModels
             }
         }
 
-        public IEnumerable<STOCK_CODE> GlobalSTOCK_CODECollection
-        {
-            get
-            {
-                var collection = GetEntities<STOCK_CODE>();
-                if (collection != null)
-                    collection = collection.Where(x => x.GUID_PROJECT == null).OrderBy(x => x.CODE);
-                return collection;
-            }
-        }
-
-        public IEnumerable<STOCK_CODE> ProjectSTOCK_CODECollection
-        {
-            get
-            {
-                var collection = GetEntities<STOCK_CODE>();
-                if (collection != null)
-                    collection = collection.Where(x => x.GUID_PROJECT == loadPROJECT.GUID).OrderBy(x => x.CODE);
-                return collection;
-            }
-        }
-
         public IEnumerable<DISCIPLINE> DISCIPLINECollection
         {
             get
@@ -161,17 +132,6 @@ namespace BluePrints.ViewModels
                 if (collection != null)
                     collection = collection.OrderBy(x => x.NAME);
                 return collection;
-            }
-        }
-
-        public CollectionViewModel<STOCK_CODE, STOCK_CODE, Guid, IBluePrintsEntitiesUnitOfWork> STOCK_CODECollectionViewModel
-        {
-            get
-            {
-                if (MainViewModel == null)
-                    return null;
-
-                return (CollectionViewModel<STOCK_CODE, STOCK_CODE, Guid, IBluePrintsEntitiesUnitOfWork>)loaderCollection.GetViewModel<STOCK_CODE>();
             }
         }
 

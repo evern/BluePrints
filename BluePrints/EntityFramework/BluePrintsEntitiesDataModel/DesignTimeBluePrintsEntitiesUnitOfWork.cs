@@ -43,10 +43,10 @@ namespace BluePrints.BluePrintsEntitiesDataModel
         {
             get { return GetRepository((CONSTRUCTION_CONFIG x) => x.GUID); }
         }
-        
-        IRepository<STOCK_GROUP, Guid> IBluePrintsEntitiesUnitOfWork.STOCK_GROUPS
+
+        IRepository<CONSTRUCTION_STAGE, Guid> IBluePrintsEntitiesUnitOfWork.CONSTRUCTION_STAGES
         {
-            get { return GetRepository((STOCK_GROUP x) => x.GUID); }
+            get { return GetRepository((CONSTRUCTION_STAGE x) => x.GUID); }
         }
 
         IRepository<COMMODITY_CODE, Guid> IBluePrintsEntitiesUnitOfWork.COMMODITY_CODES
@@ -377,11 +377,6 @@ namespace BluePrints.BluePrintsEntitiesDataModel
         IRepository<SETTINGS_GLOBAL, Guid> IBluePrintsEntitiesUnitOfWork.SETTINGS_GLOBALS
         {
             get { return GetRepository((SETTINGS_GLOBAL x) => x.GUID); }
-        }
-
-        IRepository<STOCK_CODE, Guid> IBluePrintsEntitiesUnitOfWork.STOCK_CODES
-        {
-            get { return GetRepository((STOCK_CODE x) => x.GUID); }
         }
 
         IRepository<TENDER_PROFILE, Guid> IBluePrintsEntitiesUnitOfWork.TENDER_PROFILES
