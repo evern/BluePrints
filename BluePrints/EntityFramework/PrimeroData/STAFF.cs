@@ -50,9 +50,6 @@ namespace BluePrints.PrimeroData
 
         public int USERPROFILEID { get; set; }
 
-        [NotMapped]
-        public string Office { get; set; }
-
         [Required]
         [StringLength(30)]
         public string LOGINID { get; set; }

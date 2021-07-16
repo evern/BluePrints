@@ -21,6 +21,7 @@ using BaseModel.ViewModel.Base;
 using BaseModel.ViewModel.Dialogs;
 using BaseModel.Misc;
 using System.Threading.Tasks;
+using System.Collections.Concurrent;
 
 namespace BluePrints.ViewModels
 {
@@ -68,15 +69,9 @@ namespace BluePrints.ViewModels
             loaderCollection.AddLoaderDescription<ROLE, ROLE, Guid, IBluePrintsEntitiesUnitOfWork>(bluePrintsUnitOfWorkFactory, x => x.ROLES);
             loaderCollection.AddLoaderDescription<DEPARTMENT, DEPARTMENT, Guid, IBluePrintsEntitiesUnitOfWork>(bluePrintsUnitOfWorkFactory, x => x.DEPARTMENTS);
             loaderCollection.AddLoaderDescription<DISCIPLINE, DISCIPLINE, Guid, IBluePrintsEntitiesUnitOfWork>(bluePrintsUnitOfWorkFactory, x => x.DISCIPLINES);
-            loaderCollection.AddLoaderDescription(primeroUnitOfWorkFactory, x => x.STAFF, STAFFProjectionFunc);
             loaderCollection.AddLoaderDescription<OFFICE, OFFICE, Guid, IBluePrintsEntitiesUnitOfWork>(bluePrintsUnitOfWorkFactory, x => x.OFFICES);
             loaderCollection.AddLoaderDescription<PROJECT_PERMISSION, PROJECT_PERMISSION, Guid, IBluePrintsEntitiesUnitOfWork>(bluePrintsUnitOfWorkFactory, x => x.PROJECT_PERMISSIONS);
             loaderCollection.AddLoaderDescription<PROJECT, PROJECT, Guid, IBluePrintsEntitiesUnitOfWork>(bluePrintsUnitOfWorkFactory, x => x.PROJECTS);
-        }
-
-        private Func<IRepositoryQuery<STAFF>, IQueryable<STAFF>> STAFFProjectionFunc()
-        {
-            return query => query.Where(x => x.ISACTIVE == "Y");
         }
 
         protected override void onAuxiliaryEntitiesCollectionLoaded()
@@ -92,6 +87,7 @@ namespace BluePrints.ViewModels
                 return query => query.Where(x => x.GUID == Guid.Empty);
             else
                 return query => USERCollectionPopulation(query.OrderBy(x => x.NAME));
+            //allow only authorised role per role hierarchy to be queried
             //else
             //    return query => query.ToArray().Where(x => x.GUID_ROLE == null || x.GUID_ROLE == LoginCredentials.CurrentUser.GUID_ROLE || ChildrenRoles((Guid)LoginCredentials.CurrentUser.GUID_ROLE).Contains((Guid)x.GUID_ROLE)).AsQueryable();
         }
@@ -100,12 +96,30 @@ namespace BluePrints.ViewModels
         {
             //DbContext cannot support parallel operation, load it up first in cache
             //PROJECT_PERMISSIONCollection.ToList();
-            HashSet<USER> users = new HashSet<USER>(USERS);
-            Parallel.ForEach(users, user =>
+            List<USER> users;
+
+            //use isFirstLoaded to avoid cross thread operation when updating
+            if(isFirstLoaded)
             {
-                populateUserProperties(user, OFFICECollection);
-                populateUserAuthorisedProjects(user, PROJECTCollection);
-            });
+                foreach(USER user in USERS)
+                {
+                    populateUserProperties(user, OFFICECollection);
+                    populateUserAuthorisedProjects(user, PROJECTCollection);
+                }
+
+                users = new List<USER>(USERS);
+            }
+            else
+            {
+                ConcurrentBag<USER> loopUSERs = new ConcurrentBag<USER>(USERS);
+                Parallel.ForEach(loopUSERs, user =>
+                {
+                    populateUserProperties(user, OFFICECollection);
+                    populateUserAuthorisedProjects(user, PROJECTCollection);
+                });
+
+                users = new List<USER>(loopUSERs);
+            }
 
             return users.AsQueryable();
         }
@@ -117,13 +131,13 @@ namespace BluePrints.ViewModels
                 OFFICE office = OFFICECollection.FirstOrDefault(x => x.GUID == user.GUID_OFFICE);
                 user.QueryOfficeName = office.NAME;
             }
-
             user.Update();
         }
 
         private void populateUserAuthorisedProjects(USER user, IEnumerable<PROJECT> PROJECTCollection)
         {
-            user.Projects = PROJECTCollection.Where(project => PROJECT_PERMISSIONCollection.Any(permission => permission.GUID_USER == user.GUID && permission.GUID_PROJECT == project.GUID)).ToList();
+            List<PROJECT_PERMISSION> userPROJECT_PERMISSION = PROJECT_PERMISSIONCollection.Where(x => x.GUID_USER == user.GUID).ToList();
+            user.Projects = PROJECTCollection.Where(project => userPROJECT_PERMISSION.Any(permission => permission.GUID_PROJECT == project.GUID)).ToList();
             user.Update();
         }
 
@@ -257,7 +271,7 @@ namespace BluePrints.ViewModels
             List<USER> userToSave = new List<USER>();
             foreach(USER entity in SelectedEntities)
             {
-                if(PopulateUserStaffIds(entity, PerthSTAFFCollection, MontrealSTAFFCollection))
+                if (PopulateUserStaffIds(entity, PerthSTAFFCollection, MontrealSTAFFCollection))
                     userToSave.Add(entity);
             }
 
@@ -361,13 +375,15 @@ namespace BluePrints.ViewModels
         {
             get
             {
-                if (pgaUnitOfWork == null)
+                if (primeroUnitOfWork == null)
                     return null;
 
                 if (perthStaffCollection == null)
                 {
-                    perthStaffCollection = new List<STAFF>(primeroUnitOfWork.STAFF.OrderBy(x => x.NAME));
-                    perthStaffCollection.ForEach(x => x.Office = BluePrintsResources.OfficePerth);
+                    LoadingScreenManager.ShowLoadingScreen(1);
+                    LoadingScreenManager.SetMessage("Loading Perth Active Staffs");
+                    perthStaffCollection = new List<STAFF>(primeroUnitOfWork.STAFF.Where(x => x.ISACTIVE == "Y").OrderBy(x => x.NAME));
+                    LoadingScreenManager.CloseLoadingScreen();
                 }
 
                 return perthStaffCollection;
@@ -382,10 +398,12 @@ namespace BluePrints.ViewModels
                 if (pgaUnitOfWork == null)
                     return null;
 
-                if(pgaStaffCollection == null)
+                if (pgaStaffCollection == null)
                 {
-                    pgaStaffCollection = new List<STAFF>(pgaUnitOfWork.STAFF.OrderBy(x => x.NAME));
-                    pgaStaffCollection.ForEach(x => x.Office = BluePrintsResources.OfficeMontreal);
+                    LoadingScreenManager.ShowLoadingScreen(1);
+                    LoadingScreenManager.SetMessage("Loading Montreal Active Staffs");
+                    pgaStaffCollection = new List<STAFF>(pgaUnitOfWork.STAFF.Where(x => x.ISACTIVE == "Y").OrderBy(x => x.NAME));
+                    LoadingScreenManager.CloseLoadingScreen();
                 }
 
                 return pgaStaffCollection;

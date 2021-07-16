@@ -184,7 +184,7 @@ namespace BluePrints.ViewModels
 
                 if (LoginCredentials.IsAdmin)
                 {
-                    //LoginCredentials.CurrentUser = USERS.First(x => x.NAME.ToUpper() == "BEN.DAVIES");
+                    //LoginCredentials.CurrentUser = USERS.First(x => x.NAME.ToUpper() == "IVAN.PROVASE");
                     LoginCredentials.CurrentUser = new USER() { NAME = BluePrintsResources.Default_AdminUsername };
                     //USER_PREFERENCE transactionPreloadPreference = new USER_PREFERENCE();
                     //transactionPreloadPreference.PREFERENCE_NAME = DataUtils.GetNameOf(() => UserPreferences.EXO_PreloadTransactions);
