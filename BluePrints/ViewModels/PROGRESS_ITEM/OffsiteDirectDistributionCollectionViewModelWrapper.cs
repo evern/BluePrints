@@ -94,6 +94,7 @@ namespace BluePrints.ViewModels
             gridRefreshDispatcherTimer = new DispatcherTimer();
             gridRefreshDispatcherTimer.Interval = new TimeSpan(0, 0, 0, 1);
 
+            skipExoDataLoading = true;
             base.resolveParameters(parameter);
         }
 
@@ -249,7 +250,7 @@ namespace BluePrints.ViewModels
         #endregion
 
         #endregion
-
+        
         #region View Properties
         public override void FullRefresh()
         {
