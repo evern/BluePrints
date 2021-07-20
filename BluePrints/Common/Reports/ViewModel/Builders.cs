@@ -161,20 +161,20 @@ namespace BluePrints.Common.ViewModel.Reporting
 
 
             //adjust set earned data should only be performed at this level (lowest level), summary dashboard entity will just use set data
-            reportable.Stats.Earned.SetData(progressItemEarnedDataPoints);
-            reportable.Stats.TenderEarned.SetData(progressItemEarnedDataPoints);
+            reportable.Stats.Earned.SetData(new ObservableCollection<DataPoint>(progressItemEarnedDataPoints));
+            reportable.Stats.TenderEarned.SetData(new ObservableCollection<DataPoint>(progressItemEarnedDataPoints));
         }
 
         public void BuildPlannedDataPointsFromQuery(IReportable reportable, decimal weightingPortion = 1, bool isForecast = false)
         {
             using (BluePrintsEntities bluePrintDataContext = new BluePrintsEntities())
             {
-                List<Data.DataPoint> plannedDataPoints = bluePrintDataContext.QueryDeliverablePlannedDataPoints(reportable.GUID, isForecast);
+                List<StoredProcedure_PlannedDataPoint> plannedDataPoints = bluePrintDataContext.QueryDeliverablePlannedDataPoints(reportable.GUID, isForecast);
                 Double weightingPortionDbl = Convert.ToDouble(weightingPortion);
-                foreach (Data.DataPoint plannedDataPoint in plannedDataPoints)
+                foreach (StoredProcedure_PlannedDataPoint plannedDataPoint in plannedDataPoints)
                 {
-                    plannedDataPoint.PeriodUnits *= weightingPortionDbl;
-                    plannedDataPoint.PeriodPrice *= weightingPortionDbl;
+                    plannedDataPoint.PeriodPlannedUnits *= weightingPortionDbl;
+                    plannedDataPoint.PeriodPlannedPrice *= weightingPortionDbl;
                 }
 
                 reportable.Stats.Budgeted.SetPlannedData(plannedDataPoints);
@@ -186,12 +186,12 @@ namespace BluePrints.Common.ViewModel.Reporting
         {
             using (BluePrintsEntities bluePrintDataContext = new BluePrintsEntities())
             {
-                List<Data.DataPoint> RemainingDataPoints = bluePrintDataContext.QueryDeliverableRemainingDataPoints(reportable.GUID, isForecast);
+                List<StoredProcedure_RemainingDataPoint> RemainingDataPoints = bluePrintDataContext.QueryDeliverableRemainingDataPoints(reportable.GUID, isForecast);
                 Double weightingPortionDbl = Convert.ToDouble(weightingPortion);
-                foreach (Data.DataPoint remainingDataPoint in RemainingDataPoints)
+                foreach (StoredProcedure_RemainingDataPoint remainingDataPoint in RemainingDataPoints)
                 {
-                    remainingDataPoint.PeriodUnits *= weightingPortionDbl;
-                    remainingDataPoint.PeriodPrice *= weightingPortionDbl;
+                    remainingDataPoint.PeriodRemainingUnits *= weightingPortionDbl;
+                    remainingDataPoint.PeriodRemainingPrice *= weightingPortionDbl;
                 }
 
                 reportable.Stats.Remaining.SetRemainingData(RemainingDataPoints, reportable.Stats.Earned.GetData());

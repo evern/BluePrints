@@ -1960,18 +1960,6 @@ namespace BluePrints.Common.ViewModel.Utils
             LoadDataDate = saveDateTime;
         }
 
-        public static string GetPhaseCodeFromSubJobCode(string SubJobCode)
-        {
-            if (SubJobCode == null || SubJobCode == string.Empty)
-                return string.Empty;
-
-            List<string> codePartition = SubJobCode.Split('-').ToList();
-            if (codePartition.Count < 4)
-                return string.Empty;
-
-            return codePartition[3];
-        }
-
         public static string GetPreferredDocumentTypeName(string preferenceName)
         {
             string viewName = string.Empty;

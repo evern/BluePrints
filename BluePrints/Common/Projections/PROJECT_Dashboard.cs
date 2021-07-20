@@ -40,7 +40,7 @@ namespace BluePrints.Common.Projections
             if(latest_data_date != null && earliest_first_aligned_data_date != null)
             {
                 fullStatsBuilder = new FullStatsBuilder(project_number, currency_conversion, reporting_interval, (DateTime)earliest_first_aligned_data_date, SUBJOBS, (DateTime)latest_data_date, PrimeroUOW);
-                Stats = new ProjectSummaryStats(reportableItems, (DateTime)latest_data_date, reporting_interval, (DateTime)earliest_first_aligned_data_date, projectVariationAdjustments, null, forceRetrieveRemainingDataPoints, false);
+                Stats = new ProjectSummaryStats(reportableItems, (DateTime)latest_data_date, reporting_interval, (DateTime)earliest_first_aligned_data_date, projectVariationAdjustments, null, forceRetrieveRemainingDataPoints);
                 projectSummarizer = new FullSummarizer((ProjectSummaryStats)Stats, fullStatsBuilder, project_number);
             }
         }
@@ -88,8 +88,10 @@ namespace BluePrints.Common.Projections
                 LoadingScreenManager.CloseLoadingScreen();
         }
 
+        public List<DashboardTreeStructure> Subjob_TreeDashboards { get; set; }
         public List<DashboardFlatStructure> Subjob_Dashboards { get; set; }
         public List<Dashboard_Export_Data_Point> Export_Data { get; set; }
+        public bool IHaveSubjob_Dashboards { get { return Subjob_TreeDashboards != null && Subjob_TreeDashboards.Count > 0; } }
 
         //for project plan tender profile saving
         public IBluePrintsEntitiesUnitOfWork BluePrintsEntitiesUnitOfWork { get; set; }
@@ -135,16 +137,28 @@ namespace BluePrints.Common.Projections
             foreach (var current_project in project_single_or_active_selection)
             {
                 BASELINE live_baseline = BASELINES.FirstOrDefault(x => x.GUID_PROJECT == current_project.GUID);
-                ESTIMATE live_estimation_direct = ESTIMATES.FirstOrDefault(x => x.GUID_PROJECT == current_project.GUID); 
+                ESTIMATE live_estimation_direct = ESTIMATES.FirstOrDefault(x => x.GUID_PROJECT == current_project.GUID);
                 PROGRESS live_baseline_progress = PROGRESSES.FirstOrDefault(x => x.GUID_PROJECT == current_project.GUID && x.STATUS == ProgressStatus.Live && x.TYPE == PhaseType.Design);
                 PROGRESS live_estimation_direct_progress = PROGRESSES.FirstOrDefault(x => x.GUID_PROJECT == current_project.GUID && x.STATUS == ProgressStatus.Live && x.TYPE == PhaseType.Construct);
 
-                IEnumerable<RATE> project_rates = RATES.Where(x => x.GUID_PROJECT == current_project.GUID); 
+                IEnumerable<PROGRESS_ITEM> live_baseline_progresses;
+                if (live_baseline_progress != null)
+                    live_baseline_progresses = PROGRESS_ITEMS.Where(x => x.GUID_PROGRESS == live_baseline_progress.GUID);
+                else
+                    live_baseline_progresses = null;
+
+                IEnumerable<PROGRESS_ITEM> live_estimation_direct_progresses;
+                if (live_estimation_direct_progress != null)
+                    live_estimation_direct_progresses = PROGRESS_ITEMS.Where(x => x.GUID_PROGRESS == live_estimation_direct_progress.GUID);
+                else
+                    live_estimation_direct_progresses = null;
+
+                IEnumerable<RATE> project_rates = RATES.Where(x => x.GUID_PROJECT == current_project.GUID);
                 IEnumerable<VARIATION> approved_project_variations = VARIATIONS.Where(x => x.GUID_PROJECT == current_project.GUID);
                 List<IReportable> reportables = new List<IReportable>();
 
-                List<PROGRESS> projectProgresses = new List<PROGRESS>();
-                if (live_baseline != null && live_baseline_progress != null)
+                List<PROGRESS> current_project_progresses = new List<PROGRESS>();
+                if (live_baseline != null && live_baseline_progresses != null)
                 {
                     //IEnumerable<BASELINE_ITEM> live_baseline_items = live_baseline.BASELINE_ITEM.Where(x => !x.BY_DURATION);
                     IEnumerable<BASELINE_ITEM> live_baseline_items = live_baseline.BASELINE_ITEM;
@@ -160,9 +174,9 @@ namespace BluePrints.Common.Projections
                     }
 
                     IEnumerable<BASELINE_ITEMProgress> project_baseline_item_progresses = ProgressQueries.OffsiteDirectProgressItemTransformation(
-                    live_baseline_items.AsQueryable(), current_project, live_baseline_progress, project_rates, null, approved_project_variations, false, null, DeliverableInternalNumberMode.Default, true, null, USERCollection, BASELINE_ITEM_WORKCollection, null, null, null, null, null, null, null, null, showLoadingScreen).ToArray().AsEnumerable();
+                    live_baseline_items.AsQueryable(), current_project, live_baseline_progress, project_rates, live_baseline_progresses, approved_project_variations, false, null, DeliverableInternalNumberMode.Default, true, null, USERCollection, BASELINE_ITEM_WORKCollection, null, null, null, null, null, null, null, null, showLoadingScreen).ToArray().AsEnumerable();
                     reportables.AddRange(project_baseline_item_progresses);
-                    projectProgresses.Add(live_baseline_progress);
+                    current_project_progresses.Add(live_baseline_progress);
                 }
 
                 if (live_estimation_direct != null && live_estimation_direct_progress != null)
@@ -180,13 +194,13 @@ namespace BluePrints.Common.Projections
                     }
 
                     IEnumerable<ESTIMATE_ITEMProgress> project_estimation_direct_item_progresses =
-                    ESTIMATE_ITEMProjectionQueries.IDeliverable_Progress_Transformation(live_estimation_direct_items.AsQueryable(), current_project, project_rates, live_estimation_direct_progress, null, true, approved_project_variations, false, null, showLoadingScreen, null, forceRetrieveRemainingDataPoints);
+                    ESTIMATE_ITEMProjectionQueries.IDeliverable_Progress_Transformation(live_estimation_direct_items.AsQueryable(), current_project, project_rates, live_estimation_direct_progress, live_estimation_direct_progresses, true, approved_project_variations, false, null, showLoadingScreen, null, forceRetrieveRemainingDataPoints);
                     reportables.AddRange(project_estimation_direct_item_progresses);
-                    projectProgresses.Add(live_estimation_direct_progress);
+                    current_project_progresses.Add(live_estimation_direct_progress);
                 }
 
                 IPrimeroEntitiesUnitOfWork primeroUOW = PrimeroEntitiesUnitOfWorkSource.GetUnitOfWorkFactory(current_project.OfficeNameForExo).CreateUnitOfWork();
-                var current_project_dashboard = new PROJECT_Dashboard(reportables, projectProgresses, current_project.SUBJOB, approved_project_variations, current_project.NUMBER, current_project.CURRENCYCONVERSION, primeroUOW, fixedStartDate, fixedDataDate, forceRetrieveRemainingDataPoints)
+                var current_project_dashboard = new PROJECT_Dashboard(reportables, current_project_progresses, current_project.SUBJOB, approved_project_variations, current_project.NUMBER, current_project.CURRENCYCONVERSION, primeroUOW, fixedStartDate, fixedDataDate, forceRetrieveRemainingDataPoints)
                 {
                     GUID = current_project.GUID,
                     Entity = current_project
