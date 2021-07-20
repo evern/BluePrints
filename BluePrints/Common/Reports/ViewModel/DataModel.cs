@@ -22,11 +22,9 @@ namespace BluePrints.Common.ViewModel.Reporting
             Entity.Entity.VARIATION_CODE = string.Empty;
         }
 
-        IEnumerable<CONSTRUCTION_STAGE> constructionStages = null;
-        public ESTIMATE_ITEMProgress(PROJECT PROJECT, PROGRESS LivePROGRESS, IDeliverable_Rates entity, IEnumerable<VariationAdjustment> projectVariationAdjustments, bool forceRetrieveRemainingDataPoints, IEnumerable<CONSTRUCTION_STAGE> constructionStages = null)
+        public ESTIMATE_ITEMProgress(PROJECT PROJECT, PROGRESS LivePROGRESS, IDeliverable_Rates entity, IEnumerable<VariationAdjustment> projectVariationAdjustments, bool forceRetrieveRemainingDataPoints)
             : base(PROJECT, LivePROGRESS, entity, projectVariationAdjustments, forceRetrieveRemainingDataPoints)
         {
-            this.constructionStages = constructionStages;
         }
 
         public string UniqueJobcode => Entity.Deliverable_Name + " " + Entity.Variation_Code;
@@ -60,9 +58,6 @@ namespace BluePrints.Common.ViewModel.Reporting
         {
             get
             {
-                if (constructionStages == null)
-                    return 0;
-
                 if(earned_units_ondatadate == null)
                     earned_units_ondatadate = getEarnedUnits(PROGRESS_ITEMSCurrent);
 
@@ -89,18 +84,9 @@ namespace BluePrints.Common.ViewModel.Reporting
 
         private decimal getEarnedUnits(IEnumerable<PROGRESS_ITEM> progresses)
         {
-            if (constructionStages == null)
-                return 0;
-
             decimal earnedUnits = 0;
             foreach (PROGRESS_ITEM progress in progresses)
-            {
-                CONSTRUCTION_STAGE findCONSTRUCTION_STAGE = constructionStages.FirstOrDefault(x => x.SORT_ORDER == progress.STAGE_ORDER);
-                if (Entity.Entity.BUDGET_INSTALL_HOURS_PER_QTY != null && findCONSTRUCTION_STAGE != null)
-                {
-                    earnedUnits += progress.EarnedUnits * findCONSTRUCTION_STAGE.WEIGHT_PERCENTAGE * (decimal)Entity.Entity.BUDGET_INSTALL_HOURS_PER_QTY;
-                }
-            }
+                earnedUnits += progress.EarnedUnits;
 
             return earnedUnits;
         }

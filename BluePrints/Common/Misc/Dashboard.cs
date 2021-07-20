@@ -592,7 +592,7 @@ namespace BluePrints.Common.Misc
             //group different actuals data points
             allActualsPointsGroups = groupFunc(allDataPoints);
 
-            foreach(ExoDataPointsGroup exoDataPointsGroup in allActualsPointsGroups)
+            foreach (ExoDataPointsGroup exoDataPointsGroup in allActualsPointsGroups)
             {
                 WBSReportable findWBSReportable;
                 if (isVariationSeparated)
@@ -601,7 +601,7 @@ namespace BluePrints.Common.Misc
                     findWBSReportable = projectSummaryStats.WBSReportables.FirstOrDefault(x => x.SUBJOB_CODE == exoDataPointsGroup.SubJobCode && x.DISCIPLINE_CODE == exoDataPointsGroup.DisciplineCode && x.COMMODITY_CODE == exoDataPointsGroup.CommodityCode);
 
                 //when full WBS code breakdown only exists in EXO
-                if(findWBSReportable == null)
+                if (findWBSReportable == null)
                 {
                     if (isVariationSeparated)
                         projectSummaryStats.AddMissingActualsWBSReportables(exoDataPointsGroup.SubJobCode, exoDataPointsGroup.DisciplineCode, exoDataPointsGroup.CommodityCode, exoDataPointsGroup.VariationCode);
