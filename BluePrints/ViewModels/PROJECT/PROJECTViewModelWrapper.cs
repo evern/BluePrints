@@ -76,7 +76,6 @@ namespace BluePrints.ViewModels
         public Action<AREACollectionViewModelWrapper> AssignAREADelegates;
         public Action<RATECollectionViewModelWrapper> AssignRATEDelegates;
         private DispatcherTimer selectAllDispatcher;
-        protected List<DashboardTreeStructure> hierarchicalDashboard = null;
         protected IUnitOfWorkFactory<IBluePrintsEntitiesUnitOfWork> bluePrintsUnitOfWorkFactory = BluePrintsEntitiesUnitOfWorkSource.GetUnitOfWorkFactory();
         protected IUnitOfWorkFactory<IPrimeroEntitiesUnitOfWork> primeroUnitOfWorkFactory = PrimeroEntitiesUnitOfWorkSource.GetUnitOfWorkFactory();
         protected IUnitOfWorkFactory<IP6EntitiesUnitOfWork> p6UnitOfWorkFactory = P6EntitiesUnitOfWorkSource.GetUnitOfWorkFactory();
@@ -323,7 +322,7 @@ namespace BluePrints.ViewModels
 
         protected virtual List<DashboardFlatStructure> getDashboardStructure(PROJECT_Dashboard project, bool isVariationSeparated, bool forceRetrieveRemainingDataPoints = false)
         {
-            return DashboardHelpers.ProjectDashboardSummaryBuilder((ProjectSummaryStats)project.Stats, out hierarchicalDashboard, SUBJOBCollection, ShowLoadingScreen, isVariationSeparated, forceRetrieveRemainingDataPoints, DOCTYPECollection);
+            return DashboardHelpers.ProjectDashboardSummaryBuilder((ProjectSummaryStats)project.Stats, SUBJOBCollection, ShowLoadingScreen, isVariationSeparated, forceRetrieveRemainingDataPoints, DOCTYPECollection);
         }
 
         private void summaryBackgroundWorker_RunWorkerCompleted(object sender, RunWorkerCompletedEventArgs e)
@@ -371,12 +370,10 @@ namespace BluePrints.ViewModels
 
         private void dashboardExcelFomatting()
         {
-            if (hierarchicalDashboard == null)
-                return;
-
             LoadingScreenManager.ShowLoadingScreen(1);
             PROJECT_Dashboard dashboard = Entities.First();
-            dashboard.Export_Data = DashboardHelpers.BuildExportData(hierarchicalDashboard, DOCTYPECollection);
+            //dashboard.Export_Data = DashboardHelpers.BuildExportData(hierarchicalDashboard, DOCTYPECollection);
+
             IsExportInternalNameVisible = false;
             this.RaisePropertyChanged(x => x.IsExportInternalNameVisible);
             this.RaisePropertyChanged(x => x.ExcelExportData);
@@ -427,9 +424,6 @@ namespace BluePrints.ViewModels
 
         private void export(StatsType statsType)
         {
-            if (hierarchicalDashboard == null)
-                return;
-
             LoadingScreenManager.ShowLoadingScreen(1);
             PROJECT_Dashboard dashboard = Entities.First();
             dashboard.Export_Data = DashboardHelpers.BuildExportDataByType(statsType, LoadPROJECT.NUMBER, dashboard);

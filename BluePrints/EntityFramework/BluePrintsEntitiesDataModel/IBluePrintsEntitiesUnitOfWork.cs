@@ -491,5 +491,10 @@ namespace BluePrints.BluePrintsEntitiesDataModel
         /// The X_VARIATION_QUERY entities repository.
         /// </summary>
         IRepository<X_VARIATION_QUERY, Guid> X_VARIATION_QUERY { get; }
+
+        /// <summary>
+        /// The X_EARNED_QUERY entities repository.
+        /// </summary>
+        IRepository<X_EARNED_QUERY, Guid> X_EARNED_QUERY { get; }
     }
 }

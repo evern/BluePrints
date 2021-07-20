@@ -99,6 +99,7 @@ namespace BluePrints.Data
         public virtual DbSet<VARIATION_CONSTRUCTION_ITEM> VARIATION_CONSTRUCTION_ITEM { get; set; }
         public virtual DbSet<VARIATION_CONSTRUCTION_IMPACT> VARIATION_CONSTRUCTION_IMPACT { get; set; }
         public virtual DbSet<X_VARIATION_QUERY> X_VARIATION_QUERY { get; set; }
+        public virtual DbSet<X_EARNED_QUERY> X_EARNED_QUERY { get; set; }
 
         protected override void OnModelCreating(DbModelBuilder modelBuilder)
         {
@@ -1050,6 +1051,10 @@ namespace BluePrints.Data
                 .HasMany(e => e.ESTIMATE_ITEM)
                 .WithOptional(e => e.WORKPACK)
                 .HasForeignKey(e => e.GUID_WORKPACK);
+
+            modelBuilder.Entity<X_EARNED_QUERY>()
+                .Property(e => e.EARNED_UNITS)
+                .HasPrecision(18, 7);
         }
     }
 

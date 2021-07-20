@@ -1,4 +1,5 @@
-﻿using BluePrints.Common.Projections;
+﻿using BluePrints.Common.Misc;
+using BluePrints.Common.Projections;
 using BluePrints.Data;
 using DevExpress.Mvvm;
 using System;
@@ -25,7 +26,7 @@ namespace BluePrints.Common.ViewModel.Reporting
         }
     }
 
-    public class ProjectSummaryStats : SummaryStats
+    public class ProjectSummaryStats : WBSSummary
     {
         #region Progress Error Log
         readonly DateTime reporting_data_date;
@@ -41,9 +42,6 @@ namespace BluePrints.Common.ViewModel.Reporting
             this.reporting_interval = reporting_interval;
             this.first_aligned_data_date = first_aligned_data_date;
             ExoMissingSUBJOBS = new List<SUBJOB>();
-
-            //stats are already initialised in progress item before invoking
-            //ProjectionHelpers.Initialize_Stats(progressItem, projectVariationAdjustments, reporting_data_date, reporting_interval, first_aligned_data_date, false, overrideLastProgressDate, forceRetrieveRemainingDataPoints, allowPercentageOnZeroTotalUnits);
         }
 
         public IEnumerable<ExoDataPoint> GetBurnedDataPoints()

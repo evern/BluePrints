@@ -60,16 +60,6 @@ namespace BluePrints.Common.Projections
 
     public static class SUBJOB_DashboardQueries
     {
-        public static IQueryable<SUBJOB_Dashboard> Subjob_Dashboard(IQueryable<SUBJOB> SUBJOBS,
-            IEnumerable<PROGRESS> PROGRESSES, BASELINE BASELINE, ESTIMATE ESTIMATE, 
-            IEnumerable<PROGRESS_ITEM> PROGRESS_ITEMS,
-            IEnumerable<RATE> RATES,
-            IEnumerable<DELIVERABLES_STATUS> DELIVERABLES_STATUSES)
-        {
-            var projectDashboard = DashboardQueries.Single_Project_DashboardTransformation(BASELINE.PROJECT, BASELINE, ESTIMATE, PROGRESSES, PROGRESS_ITEMS, RATES, null, true);
-            return Subjob_Dashboard_Summary(SUBJOBS, projectDashboard);
-        }
-
         public static IQueryable<SUBJOB_Dashboard> Subjob_Dashboard_Summary(IQueryable<SUBJOB> SUBJOBS,
             PROJECT_Dashboard projectDashboard, IEnumerable<AREA> subAreaCollection = null)
         {

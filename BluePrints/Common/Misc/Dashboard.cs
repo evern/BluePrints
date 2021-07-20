@@ -38,14 +38,7 @@ namespace BluePrints.Common.Misc
         {
             get
             {
-                if (Code == null || Code == string.Empty)
-                    return string.Empty;
-
-                List<string> codePartition = Code.Split('-').ToList();
-                if (codePartition.Count < 4)
-                    return string.Empty;
-
-                return codePartition[3];
+                return BluePrintsDataUtils.GetPhaseCodeFromSubJobCode(Code);
             }
         }
 
@@ -53,17 +46,10 @@ namespace BluePrints.Common.Misc
 
         public bool IHave_ChildDashboard => Child_Dashboards != null && Child_Dashboards.Count > 0;
 
+        //deprecated
         public SummaryStats Summary { get; set; }
 
-        public ProgressStats Stats
-        {
-            get => Summary;
-            set
-            {
-                if (value.GetType() == typeof(SummaryStats))
-                    Summary = (SummaryStats)value;
-            }
-        }
+        public ProgressStats Stats { get; set; }
     }
 
     /// <summary>
@@ -151,10 +137,10 @@ namespace BluePrints.Common.Misc
             {
                 if(statsType == StatsType.Remaining)
                 {
-                    List<StoredProcedure_RemainingDataPoint> remainingDataPoints = bluePrintDataContext.QueryDeliverableRemainingDataPointsByProject(projectNumber);
-                    foreach (StoredProcedure_RemainingDataPoint dataPoint in remainingDataPoints)
+                    List<Data.DataPoint> remainingDataPoints = bluePrintDataContext.QueryDeliverableRemainingDataPointsByProject(projectNumber);
+                    foreach (Data.DataPoint dataPoint in remainingDataPoints)
                     {
-                        exports.Add(createExportDataPoint(reportables, statsType, dataPoint.Original_Guid, dataPoint.UniversalPeriodEndDate, dataPoint.PeriodRemainingUnits, dataPoint.PeriodRemainingPrice));
+                        exports.Add(createExportDataPoint(reportables, statsType, dataPoint.Original_Guid, dataPoint.UniversalPeriodEndDate, dataPoint.PeriodUnits, dataPoint.PeriodPrice));
                     }
                 }
                 else if(statsType == StatsType.Earned)
@@ -166,18 +152,18 @@ namespace BluePrints.Common.Misc
                 }
                 else if(statsType == StatsType.Planned)
                 {
-                    List<StoredProcedure_PlannedDataPoint> plannedDataPoints = bluePrintDataContext.QueryDeliverablePlannedDataPointsByProject(projectNumber);
-                    foreach (StoredProcedure_PlannedDataPoint dataPoint in plannedDataPoints)
+                    List<Data.DataPoint> plannedDataPoints = bluePrintDataContext.QueryDeliverablePlannedDataPointsByProject(projectNumber);
+                    foreach (Data.DataPoint dataPoint in plannedDataPoints)
                     {
-                        exports.Add(createExportDataPoint(reportables, statsType, dataPoint.Original_Guid, dataPoint.UniversalPeriodEndDate, dataPoint.PeriodPlannedUnits, dataPoint.PeriodPlannedPrice));
+                        exports.Add(createExportDataPoint(reportables, statsType, dataPoint.Original_Guid, dataPoint.UniversalPeriodEndDate, dataPoint.PeriodUnits, dataPoint.PeriodPrice));
                     }
                 }
                 else if (statsType == StatsType.Current)
                 {
-                    List<StoredProcedure_PlannedDataPoint> currentDataPoints = bluePrintDataContext.QueryDeliverableCurrentDataPointsByProject(projectNumber);
-                    foreach (StoredProcedure_PlannedDataPoint dataPoint in currentDataPoints)
+                    List<Data.DataPoint> currentDataPoints = bluePrintDataContext.QueryDeliverableCurrentDataPointsByProject(projectNumber);
+                    foreach (Data.DataPoint dataPoint in currentDataPoints)
                     {
-                        exports.Add(createExportDataPoint(reportables, statsType, dataPoint.Original_Guid, dataPoint.UniversalPeriodEndDate, dataPoint.PeriodPlannedUnits, dataPoint.PeriodPlannedPrice));
+                        exports.Add(createExportDataPoint(reportables, statsType, dataPoint.Original_Guid, dataPoint.UniversalPeriodEndDate, dataPoint.PeriodUnits, dataPoint.PeriodPrice));
                     }
                 }
             }
@@ -464,11 +450,6 @@ namespace BluePrints.Common.Misc
                     child_dashboard.Add(new_dashboard);
             });
 
-            //foreach (string unique_code in unique_codes.OrderBy(x => x))
-            //{
-
-            //}
-
             dashboard.Child_Dashboards = child_dashboard.Where(x => x.Stats != null).ToList();
         }
 
@@ -575,62 +556,78 @@ namespace BluePrints.Common.Misc
             return project_dashboard.Child_Dashboards;
         }
 
-        public static List<DashboardFlatStructure> ProjectDashboardSummaryBuilder(ProjectSummaryStats project_summary_stats, out List<DashboardTreeStructure> hierarchicalDashboards, IEnumerable<SUBJOB> SUBJOBCollection, bool showLoadingScreen, bool isVariationSeparated = false, bool forceRetrieveRemainingDataPoints = false, IEnumerable<DOCTYPE> DOCTYPECollection = null)
+        public static List<DashboardFlatStructure> ProjectDashboardSummaryBuilder(ProjectSummaryStats projectSummaryStats, IEnumerable<SUBJOB> SUBJOBCollection, bool showLoadingScreen, bool isVariationSeparated = false, bool forceRetrieveRemainingDataPoints = false, IEnumerable<DOCTYPE> DOCTYPECollection = null)
         {
             List<DashboardFlatStructure> flatDashboards = new List<DashboardFlatStructure>();
-            hierarchicalDashboards = ProjectDashboardHierarchicalBuilder(project_summary_stats, showLoadingScreen, isVariationSeparated, forceRetrieveRemainingDataPoints);
 
             IEnumerable<SUBJOB> designSubjobs = SUBJOBCollection == null ? new List<SUBJOB>() : SUBJOBCollection.Where(x => x.PHASE != null && x.PHASE.PHASE_TYPE == PhaseType.Design);
             IEnumerable<SUBJOB> constructionSubjobs = SUBJOBCollection == null ? new List<SUBJOB>() : SUBJOBCollection.Where(x => x.PHASE != null && x.PHASE.PHASE_TYPE == PhaseType.Construct);
             IEnumerable<SUBJOB> all_subjobs = SUBJOBCollection == null ? new List<SUBJOB>() : SUBJOBCollection.ToList();
 
-            foreach(DashboardTreeStructure subJobDashboard in hierarchicalDashboards.OrderBy(x => x.Code))
+            IEnumerable<ExoDataPoint> burnedDataPoints = projectSummaryStats.Burned.GetData().Select(x => (ExoDataPoint)x);
+            IEnumerable<ExoDataPoint> actualDataPoints = projectSummaryStats.Actual.GetData().Select(x => (ExoDataPoint)x);
+            IEnumerable<ExoDataPoint> materialDataPoints = projectSummaryStats.Material.GetData().Select(x => (ExoDataPoint)x);
+            IEnumerable<ExoDataPoint> poDataPoints = projectSummaryStats.PO.GetData().Select(x => (ExoDataPoint)x);
+            IEnumerable<ExoDataPoint> previousPODataPoints = projectSummaryStats.PreviousPO.GetData().Select(x => (ExoDataPoint)x);
+            List<ExoDataPoint> allDataPoints = new List<ExoDataPoint>();
+            allDataPoints.AddRange(burnedDataPoints);
+            allDataPoints.AddRange(actualDataPoints);
+            allDataPoints.AddRange(materialDataPoints);
+            allDataPoints.AddRange(poDataPoints);
+            allDataPoints.AddRange(previousPODataPoints);
+
+            List<ExoDataPointsGroup> allActualsPointsGroups;
+            List<ExoDataPointsGroup> burnedDataPointsGroups;
+            List<ExoDataPointsGroup> actualDataPointsGroups;
+            List<ExoDataPointsGroup> materialDataPointsGroups;
+            List<ExoDataPointsGroup> poDataPointsGroups;
+            List<ExoDataPointsGroup> previousPODataPointsGroups;
+
+            Func<IEnumerable<ExoDataPoint>, List<ExoDataPointsGroup>> groupFunc;
+            if(isVariationSeparated)
+                groupFunc = new Func<IEnumerable<ExoDataPoint>, List<ExoDataPointsGroup>>(y => y.GroupBy(x => new { x.Subjob_Name, x.DisciplineCode, x.Commodity_Code, x.Variation_Code }).Select(g => new ExoDataPointsGroup(g.Key.Subjob_Name, g.Key.DisciplineCode, g.Key.Commodity_Code, g.Key.Variation_Code, g)).ToList());
+            else
+                groupFunc = new Func<IEnumerable<ExoDataPoint>, List<ExoDataPointsGroup>>(y => y.GroupBy(x => new { x.Subjob_Name, x.DisciplineCode, x.Commodity_Code }).Select(g => new ExoDataPointsGroup(g.Key.Subjob_Name, g.Key.DisciplineCode, g.Key.Commodity_Code, "", g)).ToList());
+
+            //group different actuals data points
+            allActualsPointsGroups = groupFunc(allDataPoints);
+
+            foreach(ExoDataPointsGroup exoDataPointsGroup in allActualsPointsGroups)
             {
-                if (subJobDashboard.Child_Dashboards == null || subJobDashboard.Child_Dashboards.Count == 0)
-                    populateFlatDashboards(flatDashboards, subJobDashboard, string.Empty, string.Empty, string.Empty, subJobDashboard.Stats, designSubjobs, constructionSubjobs, DOCTYPECollection);
+                WBSReportable findWBSReportable;
+                if (isVariationSeparated)
+                    findWBSReportable = projectSummaryStats.WBSReportables.FirstOrDefault(x => x.SUBJOB_CODE == exoDataPointsGroup.SubJobCode && x.DISCIPLINE_CODE == exoDataPointsGroup.DisciplineCode && x.COMMODITY_CODE == exoDataPointsGroup.CommodityCode && x.VARIATION_CODE == exoDataPointsGroup.VariationCode);
                 else
+                    findWBSReportable = projectSummaryStats.WBSReportables.FirstOrDefault(x => x.SUBJOB_CODE == exoDataPointsGroup.SubJobCode && x.DISCIPLINE_CODE == exoDataPointsGroup.DisciplineCode && x.COMMODITY_CODE == exoDataPointsGroup.CommodityCode);
+
+                //when full WBS code breakdown only exists in EXO
+                if(findWBSReportable == null)
                 {
                     if (isVariationSeparated)
-                    {
-                        foreach (DashboardTreeStructure variationDashboard in subJobDashboard.Child_Dashboards.OrderBy(x => x.Code))
-                        {
-                            if (variationDashboard.Child_Dashboards == null || variationDashboard.Child_Dashboards.Count == 0)
-                                populateFlatDashboards(flatDashboards, subJobDashboard, variationDashboard.Code, string.Empty, string.Empty, variationDashboard.Stats, designSubjobs, constructionSubjobs, DOCTYPECollection);
-                            else
-                            {
-                                foreach (DashboardTreeStructure disciplineDashboard in variationDashboard.Child_Dashboards.OrderBy(x => x.Code))
-                                {
-                                    if (disciplineDashboard.Child_Dashboards == null || disciplineDashboard.Child_Dashboards.Count == 0)
-                                        populateFlatDashboards(flatDashboards, subJobDashboard, variationDashboard.Code, disciplineDashboard.Code, string.Empty, disciplineDashboard.Stats, designSubjobs, constructionSubjobs, DOCTYPECollection);
-                                    else
-                                    {
-                                        foreach (DashboardTreeStructure commodityDashboard in disciplineDashboard.Child_Dashboards.OrderBy(x => x.Code))
-                                        {
-                                            populateFlatDashboards(flatDashboards, subJobDashboard, variationDashboard.Code, disciplineDashboard.Code, commodityDashboard.Code, commodityDashboard.Stats, designSubjobs, constructionSubjobs, DOCTYPECollection);
-                                        };
-                                    }
-                                };
-                            }
-                        };
-                    }
+                        projectSummaryStats.AddMissingActualsWBSReportables(exoDataPointsGroup.SubJobCode, exoDataPointsGroup.DisciplineCode, exoDataPointsGroup.CommodityCode, exoDataPointsGroup.VariationCode);
                     else
-                    {
-                        foreach (DashboardTreeStructure disciplineDashboard in subJobDashboard.Child_Dashboards.OrderBy(x => x.Code))
-                        {
-                            if (disciplineDashboard.Child_Dashboards == null || disciplineDashboard.Child_Dashboards.Count == 0)
-                                populateFlatDashboards(flatDashboards, subJobDashboard, string.Empty, disciplineDashboard.Code, string.Empty, disciplineDashboard.Stats, designSubjobs, constructionSubjobs, DOCTYPECollection);
-                            else
-                            {
-                                foreach (DashboardTreeStructure commodityDashboard in disciplineDashboard.Child_Dashboards.OrderBy(x => x.Code))
-                                {
-                                    populateFlatDashboards(flatDashboards, subJobDashboard, string.Empty, disciplineDashboard.Code, commodityDashboard.Code, commodityDashboard.Stats, designSubjobs, constructionSubjobs, DOCTYPECollection);
-                                };
-                            }
-                        };
-                    }
+                        projectSummaryStats.AddMissingActualsWBSReportables(exoDataPointsGroup.SubJobCode, exoDataPointsGroup.DisciplineCode, exoDataPointsGroup.CommodityCode, "");
                 }
-            };
+            }
 
+            burnedDataPointsGroups = groupFunc(burnedDataPoints);
+            actualDataPointsGroups = groupFunc(actualDataPoints);
+            materialDataPointsGroups = groupFunc(materialDataPoints);
+            poDataPointsGroups = groupFunc(poDataPoints);
+            previousPODataPointsGroups = groupFunc(previousPODataPoints);
+
+            foreach (WBSReportable wbsReportable in projectSummaryStats.WBSReportables)
+            {
+                //assign actuals to reportables
+                wbsReportable.AssignWBSReportableData(x => x.Burned.SetData, burnedDataPointsGroups, isVariationSeparated);
+                wbsReportable.AssignWBSReportableData(x => x.Actual.SetData, actualDataPointsGroups, isVariationSeparated);
+                wbsReportable.AssignWBSReportableData(x => x.Material.SetData, materialDataPointsGroups, isVariationSeparated);
+                wbsReportable.AssignWBSReportableData(x => x.PO.SetData, poDataPointsGroups, isVariationSeparated);
+                wbsReportable.AssignWBSReportableData(x => x.PreviousPO.SetData, previousPODataPointsGroups, isVariationSeparated);
+
+                populateFlatDashboards(flatDashboards, wbsReportable.SUBJOB_CODE, wbsReportable.DISCIPLINE_CODE, wbsReportable.COMMODITY_CODE, wbsReportable.VARIATION_CODE, wbsReportable, designSubjobs, constructionSubjobs, DOCTYPECollection);
+            }
+            
             return flatDashboards;
         }
 
@@ -642,6 +639,33 @@ namespace BluePrints.Common.Misc
             newDashboard.AreaCode = newDashboard.SubjobCode.Length > 9 ? newDashboard.SubjobCode.Substring(6, 3) : string.Empty;
             newDashboard.SubAreaCode = newDashboard.SubjobCode.Length > 12 ? newDashboard.SubjobCode.Substring(10, 2) : string.Empty;
             newDashboard.Phase = designSubJobs.Any(x => x.PHASE.INTERNAL_NUM == subjobDashboard.PhaseCodeFromSubJobCode) ? PhaseType.Design : constructSubJobs.Any(x => x.PHASE.INTERNAL_NUM == subjobDashboard.PhaseCodeFromSubJobCode) ? PhaseType.Construct : (PhaseType?)null;
+            newDashboard.DisciplineCode = disciplineCode;
+            newDashboard.CommodityCode = commodityCode;
+
+            DOCTYPE findDOCTYPE = DOCTYPECollection.FirstOrDefault(x => x.CODE == commodityCode);
+            if (findDOCTYPE != null)
+                newDashboard.DepartmentCode = findDOCTYPE.DEPARTMENT.CODE;
+
+            newDashboard.Variation_Code = variationCode;
+            newDashboard.Stats = stats;
+            newDashboard.ShouldHide = shouldHideSubjobDashboard(stats);
+            masterDashboardFlat.Add(newDashboard);
+        }
+
+        private static void populateFlatDashboards(List<DashboardFlatStructure> masterDashboardFlat, string subJobCode, string disciplineCode, string commodityCode, string variationCode, WBSReportable stats, IEnumerable<SUBJOB> designSubJobs, IEnumerable<SUBJOB> constructSubJobs, IEnumerable<DOCTYPE> DOCTYPECollection = null)
+        {
+            string s;
+            if (subJobCode == "00151-009-00-D1" && disciplineCode == "ST01")
+                s = string.Empty;
+
+            DashboardFlatStructure newDashboard = new DashboardFlatStructure();
+            newDashboard.SubjobCode = subJobCode;
+            newDashboard.PhaseCode = newDashboard.SubjobCode.Length > 14 ? newDashboard.SubjobCode.Substring(13, 2) : string.Empty;
+            newDashboard.AreaCode = newDashboard.SubjobCode.Length > 9 ? newDashboard.SubjobCode.Substring(6, 3) : string.Empty;
+            newDashboard.SubAreaCode = newDashboard.SubjobCode.Length > 12 ? newDashboard.SubjobCode.Substring(10, 2) : string.Empty;
+
+            string extractSubJobCode = BluePrintsDataUtils.GetPhaseCodeFromSubJobCode(subJobCode);
+            newDashboard.Phase = designSubJobs.Any(x => x.PHASE.INTERNAL_NUM == extractSubJobCode) ? PhaseType.Design : constructSubJobs.Any(x => x.PHASE.INTERNAL_NUM == extractSubJobCode) ? PhaseType.Construct : (PhaseType?)null;
             newDashboard.DisciplineCode = disciplineCode;
             newDashboard.CommodityCode = commodityCode;
 

@@ -394,23 +394,22 @@ namespace BluePrints.Common.ViewModel.Reporting
 
             return PeriodDataPointCollection;
         }
-
-        public static IEnumerable<DataPoint> ConvertStoredProcedurePlannedDataPointToDataPoints(IEnumerable<StoredProcedure_PlannedDataPoint> deliverablesDataPoints)
+        public static IEnumerable<DataPoint> ConvertDbPlannedDataPointToReportingDataPoints(IEnumerable<Data.DataPoint> deliverablesDataPoints)
         {
             List<DataPoint> progressInfoConversion = new List<DataPoint>();
-            foreach (StoredProcedure_PlannedDataPoint deliverablesDataPoint in deliverablesDataPoints)
+            foreach (Data.DataPoint deliverablesDataPoint in deliverablesDataPoints)
             {
                 progressInfoConversion.Add(new DataPoint
                 {
-                    DeliverableGuid = deliverablesDataPoint.Deliverable_Guid, 
+                    DeliverableGuid = deliverablesDataPoint.Deliverable_Guid,
                     BudgetedUnits = 0,
                     BudgetedCosts = 0,
-                    Costs = Convert.ToDecimal(deliverablesDataPoint.PeriodPlannedPrice),
-                    Units = Convert.ToDecimal(deliverablesDataPoint.PeriodPlannedUnits),
-                    Quantity = Convert.ToDecimal(deliverablesDataPoint.PeriodPlannedQuantity),
+                    Costs = Convert.ToDecimal(deliverablesDataPoint.PeriodPrice),
+                    Units = Convert.ToDecimal(deliverablesDataPoint.PeriodUnits),
+                    Quantity = Convert.ToDecimal(deliverablesDataPoint.PeriodQuantity),
 
-                    ProgressDate = deliverablesDataPoint.UniversalPeriodEndDate, 
-                    IsFromP6 = deliverablesDataPoint.IsFromP6, 
+                    ProgressDate = deliverablesDataPoint.UniversalPeriodEndDate,
+                    IsFromP6 = deliverablesDataPoint.IsFromP6,
                     RemainingDuration = deliverablesDataPoint.RemainingDuration == null ? (decimal?)null : Convert.ToDecimal(deliverablesDataPoint.RemainingDuration)
                 });
             }
@@ -418,18 +417,18 @@ namespace BluePrints.Common.ViewModel.Reporting
             return progressInfoConversion;
         }
 
-        public static IEnumerable<DataPoint> ConvertStoredProcedureRemainingDataPointToDataPoints(IEnumerable<StoredProcedure_RemainingDataPoint> deliverablesDataPoints)
+        public static IEnumerable<DataPoint> ConvertDbRemainingDataPointToReportingDataPoints(IEnumerable<Data.DataPoint> deliverablesDataPoints)
         {
             List<DataPoint> progressInfoConversion = new List<DataPoint>();
-            foreach (StoredProcedure_RemainingDataPoint deliverablesDataPoint in deliverablesDataPoints)
+            foreach (Data.DataPoint deliverablesDataPoint in deliverablesDataPoints)
             {
                 progressInfoConversion.Add(new DataPoint
                 {
                     DeliverableGuid = deliverablesDataPoint.Deliverable_Guid,
                     BudgetedUnits = 0,
                     BudgetedCosts = 0,
-                    Costs = Convert.ToDecimal(deliverablesDataPoint.PeriodRemainingPrice),
-                    Units = Convert.ToDecimal(deliverablesDataPoint.PeriodRemainingUnits),
+                    Costs = Convert.ToDecimal(deliverablesDataPoint.PeriodPrice),
+                    Units = Convert.ToDecimal(deliverablesDataPoint.PeriodUnits),
 
                     ProgressDate = deliverablesDataPoint.UniversalPeriodEndDate,
                     IsFromP6 = deliverablesDataPoint.IsFromP6,

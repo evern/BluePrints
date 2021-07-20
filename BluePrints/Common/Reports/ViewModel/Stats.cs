@@ -2,6 +2,7 @@
 using BaseModel.DataModel;
 using BaseModel.Misc;
 using BluePrints.Common.ViewModel.Utils;
+using BluePrints.Data;
 using DevExpress.Mvvm;
 using System;
 using System.Collections.Generic;
@@ -139,9 +140,9 @@ namespace BluePrints.Common.ViewModel.Reporting
             return this.rawDataPoints.Where(x => x.RemainingDuration != null && x.RemainingDuration > 0).Sum(x => (decimal)x.Units);
         }
 
-        public void SetPlannedData(IEnumerable<StoredProcedure_PlannedDataPoint> rawStoredProcedureDataPoints)
+        public void SetPlannedData(IEnumerable<Data.DataPoint> rawStoredProcedureDataPoints)
         {
-            List<DataPoint> convertedDataPoints = DataPointsHelpers.ConvertStoredProcedurePlannedDataPointToDataPoints(rawStoredProcedureDataPoints).ToList();
+            List<DataPoint> convertedDataPoints = DataPointsHelpers.ConvertDbPlannedDataPointToReportingDataPoints(rawStoredProcedureDataPoints).ToList();
 
             if (convertedDataPoints.All(x => x.IsFromP6))
                 SetFromP6();
@@ -150,9 +151,9 @@ namespace BluePrints.Common.ViewModel.Reporting
             this.StatsBuilt = true;
         }
 
-        public void SetRemainingData(IEnumerable<StoredProcedure_RemainingDataPoint> rawStoredProcedureDataPoints, IEnumerable<DataPoint> earnedDataPoints)
+        public void SetRemainingData(IEnumerable<Data.DataPoint> rawStoredProcedureDataPoints, IEnumerable<DataPoint> earnedDataPoints)
         {
-            List<DataPoint> convertedDataPoints = DataPointsHelpers.ConvertStoredProcedureRemainingDataPointToDataPoints(rawStoredProcedureDataPoints).ToList();
+            List<DataPoint> convertedDataPoints = DataPointsHelpers.ConvertDbRemainingDataPointToReportingDataPoints(rawStoredProcedureDataPoints).ToList();
 
             if (earnedDataPoints != null)
                 convertedDataPoints.AddRange(earnedDataPoints);
@@ -532,6 +533,63 @@ namespace BluePrints.Common.ViewModel.Reporting
 
         public string DisciplineDesc { get; set; }
         #endregion
+    }
+
+    public class EarnedQueriesGroup
+    {
+        public EarnedQueriesGroup(string subJobCode, string disciplineCode, string commodityCode, string variationCode, IEnumerable<X_EARNED_QUERY> earnedQueries)
+        {
+            SubJobCode = subJobCode;
+            DisciplineCode = disciplineCode;
+            CommodityCode = commodityCode;
+            VariationCode = variationCode;
+            EarnedQueries = earnedQueries.ToList();
+        }
+
+        public string SubJobCode { get; set; }
+        public string DisciplineCode { get; set; }
+        public string CommodityCode { get; set; }
+        public string VariationCode { get; set; }
+
+        public List<X_EARNED_QUERY> EarnedQueries { get; set; }
+    }
+
+    public class ExoDataPointsGroup
+    {
+        public ExoDataPointsGroup(string subJobCode, string disciplineCode, string commodityCode, string variationCode, IEnumerable<ExoDataPoint> exoDataPoints)
+        {
+            SubJobCode = subJobCode;
+            DisciplineCode = disciplineCode;
+            CommodityCode = commodityCode;
+            VariationCode = variationCode;
+            ExoDataPoints = exoDataPoints.ToList();
+        }
+
+        public string SubJobCode { get; set; }
+        public string DisciplineCode { get; set; }
+        public string CommodityCode { get; set; }
+        public string VariationCode { get; set; }
+
+        public List<ExoDataPoint> ExoDataPoints { get; set; }
+    }
+    
+    public class DataPointsGroup
+    {
+        public DataPointsGroup(string subJobCode, string disciplineCode, string commodityCode, string variationCode, IEnumerable<Data.DataPoint> dataPoints)
+        {
+            SubJobCode = subJobCode;
+            DisciplineCode = disciplineCode;
+            CommodityCode = commodityCode;
+            VariationCode = variationCode;
+            DataPoints = dataPoints.ToList();
+        }
+
+        public string SubJobCode { get; set; }
+        public string DisciplineCode { get; set; }
+        public string CommodityCode { get; set; }
+        public string VariationCode { get; set; }
+
+        public List<Data.DataPoint> DataPoints { get; set; }
     }
 
     public class DataPoint : EntityBase
