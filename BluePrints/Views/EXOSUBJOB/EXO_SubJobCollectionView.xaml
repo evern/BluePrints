@@ -71,7 +71,6 @@
                                 <dxe:ComboBoxEditSettings AutoComplete="True" IsTextEditable="True" ItemsSource="{Binding DISCIPLINE_CODEStringCollection}" Mask="{Binding DisciplineRegex}" MaskType="RegEx" MaskUseAsDisplayFormat="True" ValidateOnTextInput="False" />
                             </dxg:GridColumn.EditSettings>
                         </dxg:GridColumn>
-                        <dxg:GridColumn FieldName="DisciplineName" Header="Discipline Code Title" ReadOnly="True" HeaderToolTip="Discipline Code Title title in exo" />
                         <dxg:GridColumn FieldName="CommodityCode" Header="Commodity Code" AllowBestFit="false" Width="50" HeaderToolTip="Cost type in exo, type in free text or select from combo box">
                             <dxg:GridColumn.CellTemplate>
                                 <DataTemplate>
