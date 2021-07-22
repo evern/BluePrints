@@ -40,6 +40,9 @@ namespace BluePrints.Data
         [StringLength(50)]
         public string STOCK_CODE { get; set; }
 
+        [StringLength(250)]
+        public string DESCRIPTION { get; set; }
+
         [StringLength(50)]
         public string VARIATION_CODE { get; set; }
 

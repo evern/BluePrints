@@ -637,7 +637,7 @@ namespace BluePrints.Common.Resources {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Project EXO jobs maintenance menu.
+        ///   Looks up a localized string similar to Project EXO jobs maintenance menu read/write.
         /// </summary>
         internal static string Menu_Project_EXO_Jobs {
             get {

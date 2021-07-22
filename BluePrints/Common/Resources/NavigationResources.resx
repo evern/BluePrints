@@ -253,7 +253,7 @@
     <value>Project design variation maintenance menu</value>
   </data>
   <data name="Menu_Project_EXO_Jobs" xml:space="preserve">
-    <value>Project EXO jobs maintenance menu</value>
+    <value>Project EXO jobs maintenance menu read/write</value>
   </data>
   <data name="Menu_Project_EXO_Timesheets" xml:space="preserve">
     <value>Project EXO timesheet maintenance menu</value>

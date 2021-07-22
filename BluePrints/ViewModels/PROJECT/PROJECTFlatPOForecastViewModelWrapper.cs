@@ -116,7 +116,7 @@ namespace BluePrints.ViewModels
                 newFlatForecastProjection.StockCode = POFlatLine.StockCode;
 
                 //populate comment
-                FORECAST_PO_SETTING forecastPOSetting = FORECAST_PO_SETTINGCollection.FirstOrDefault(x => x.PONO == POFlatLine.PONumber && x.VARIATION_CODE == POFlatLine.VariationCode && x.STOCK_CODE == POFlatLine.StockCode);
+                FORECAST_PO_SETTING forecastPOSetting = FORECAST_PO_SETTINGCollection.FirstOrDefault(x => x.PONO == POFlatLine.PONumber && x.VARIATION_CODE == POFlatLine.VariationCode && x.DESCRIPTION == POFlatLine.Description && x.STOCK_CODE == POFlatLine.StockCode);
                 if (forecastPOSetting != null)
                     newFlatForecastProjection.Comments = forecastPOSetting.PO_COMMENTS;
 
@@ -128,7 +128,7 @@ namespace BluePrints.ViewModels
             {
                 DataRow newRow = DataPointsTable.NewRow();
                 newRow[columnEntity] = projection;
-                updateRowPOForecast(alignedDataDateCollection, Entities, allExoActuals, ActualsCutOffDate, projection.PONO, projection.StockCode, projection.VariationCode, newRow);
+                updateRowPOForecast(alignedDataDateCollection, Entities, allExoActuals, ActualsCutOffDate, projection.PONO, projection.StockCode, projection.Description, projection.VariationCode, newRow);
                 dataPointsTable.Rows.Add(newRow);
             }
 
@@ -175,7 +175,7 @@ namespace BluePrints.ViewModels
         protected override void findExistingOrAddNewFORECAST_JOB_SETTING(DataRow updateRow, string comments)
         {
             POFlatForecastProjection forecast = ((POFlatForecastProjection)updateRow[columnEntity]);    
-            FORECAST_PO_SETTING relevantFORECAST_PO_SETTING = FORECAST_PO_SETTINGCollection.FirstOrDefault(x => x.PONO == forecast.PONO && x.STOCK_CODE == forecast.StockCode && x.VARIATION_CODE == forecast.VariationCode);
+            FORECAST_PO_SETTING relevantFORECAST_PO_SETTING = FORECAST_PO_SETTINGCollection.FirstOrDefault(x => x.PONO == forecast.PONO && x.STOCK_CODE == forecast.StockCode && x.DESCRIPTION == forecast.Description && x.VARIATION_CODE == forecast.VariationCode);
             if (relevantFORECAST_PO_SETTING == null)
             {
                 FORECAST_PO_SETTING newFORECAST_PO_SETTING = new FORECAST_PO_SETTING();
@@ -183,7 +183,7 @@ namespace BluePrints.ViewModels
                 newFORECAST_PO_SETTING.PONO = forecast.PONO;
                 newFORECAST_PO_SETTING.VARIATION_CODE = forecast.VariationCode;
                 newFORECAST_PO_SETTING.STOCK_CODE = forecast.StockCode;
-
+                newFORECAST_PO_SETTING.DESCRIPTION = DataUtils.NormalizeString(forecast.Description);
                 if (forecast.VariationCode != null && forecast.VariationCode != string.Empty)
                     newFORECAST_PO_SETTING.VARIATION_CODE = forecast.VariationCode;
                 else
@@ -218,7 +218,7 @@ namespace BluePrints.ViewModels
             if (allExoPos == null)
                 return new List<POFlatLine>();
 
-            return allExoPos.GroupBy(x => new { x.PONumber, x.Variation_Code, x.StockCode }).Select(group => new POFlatLine { PONumber = group.Key.PONumber, VariationCode = group.Key.Variation_Code, StockCode = group.Key.StockCode, DataPoints = group.ToList() }).ToList();
+            return allExoPos.GroupBy(x => new { x.PONumber, x.Variation_Code, x.StockCode, x.Description }).Select(group => new POFlatLine { PONumber = group.Key.PONumber, VariationCode = group.Key.Variation_Code, StockCode = group.Key.StockCode, Description = group.Key.Description, DataPoints = group.ToList() }).ToList();
         }
 
         private void clearPOForecast(string poNo, string variationCode)
@@ -227,7 +227,7 @@ namespace BluePrints.ViewModels
             MainViewModel.BaseBulkDelete(removePOForecasts);
         }
 
-        private void findExistingOrAddNewFORECAST_PO(DataRow dataRow, DateTime forecastDate, decimal? viewCosts, bool skipUpdating = false)
+        protected override void findExistingOrAddNewFORECAST_PO(DataRow dataRow, DateTime forecastDate, decimal? viewCosts, bool skipUpdating = false)
         {
             POFlatForecastProjection entity = (POFlatForecastProjection)dataRow[columnEntity];
 
@@ -236,13 +236,13 @@ namespace BluePrints.ViewModels
             if (entity.PO_RemainingPrice > 0)
                 proRateOnPOItem = (decimal)viewCosts / entity.PO_RemainingPrice;
 
-            var groupByCodesPOItems = entity.ExoPOs.GroupBy(g => new { PONumber = g.PONumber, JobCode = g.Subjob_Name, DisciplineCode = g.Discipline_Code, CommodityCode = g.Commodity_Code, g.StockCode, VariationCode = g.Variation_Code }).Select(g => new { g.Key.PONumber, g.Key.JobCode, g.Key.DisciplineCode, g.Key.CommodityCode, g.Key.StockCode, g.Key.VariationCode, RemainingCosts = g.Sum(x => x.Costs) }).ToList();
+            var groupByCodesPOItems = entity.ExoPOs.GroupBy(g => new { PONumber = g.PONumber, JobCode = g.Subjob_Name, DisciplineCode = g.Discipline_Code, CommodityCode = g.Commodity_Code, g.StockCode, g.Description, VariationCode = g.Variation_Code }).Select(g => new { g.Key.PONumber, g.Key.JobCode, g.Key.DisciplineCode, g.Key.CommodityCode, g.Key.StockCode, g.Key.Description, g.Key.VariationCode, RemainingCosts = g.Sum(x => x.Costs) }).ToList();
             decimal cumulativeTrueProRateValue = 0;
 
             for(int i = 0;i < groupByCodesPOItems.Count;i++)
             {
                 var groupByCodesPOItem = groupByCodesPOItems[i];
-                FORECAST_PO findFORECAST_PO = Entities.FirstOrDefault(x => x.FORECAST_DATE == forecastDate.Date && x.PONO == groupByCodesPOItem.PONumber && x.COMMODITY_CODE == groupByCodesPOItem.CommodityCode && x.DISCIPLINE_CODE == groupByCodesPOItem.DisciplineCode && x.STOCK_CODE == groupByCodesPOItem.StockCode && x.VARIATION_CODE == groupByCodesPOItem.VariationCode && x.JOB_CODE == groupByCodesPOItem.JobCode);
+                FORECAST_PO findFORECAST_PO = Entities.FirstOrDefault(x => x.FORECAST_DATE == forecastDate.Date && x.PONO == groupByCodesPOItem.PONumber && x.COMMODITY_CODE == groupByCodesPOItem.CommodityCode && x.DISCIPLINE_CODE == groupByCodesPOItem.DisciplineCode && x.STOCK_CODE == groupByCodesPOItem.StockCode && x.DESCRIPTION == groupByCodesPOItem.Description && x.VARIATION_CODE == groupByCodesPOItem.VariationCode && x.JOB_CODE == groupByCodesPOItem.JobCode);
 
                 if (findFORECAST_PO == null)
                 {
@@ -255,7 +255,8 @@ namespace BluePrints.ViewModels
                 findFORECAST_PO.JOB_CODE = groupByCodesPOItem.JobCode;
                 findFORECAST_PO.DISCIPLINE_CODE = groupByCodesPOItem.DisciplineCode;
                 findFORECAST_PO.COMMODITY_CODE = groupByCodesPOItem.CommodityCode;
-                findFORECAST_PO.STOCK_CODE = groupByCodesPOItem.StockCode == null ? "" : groupByCodesPOItem.StockCode;
+                findFORECAST_PO.STOCK_CODE = DataUtils.NormalizeString(groupByCodesPOItem.StockCode);
+                findFORECAST_PO.DESCRIPTION = DataUtils.NormalizeString(groupByCodesPOItem.Description);
                 findFORECAST_PO.VARIATION_CODE = groupByCodesPOItem.VariationCode;
                 findFORECAST_PO.FORECAST_DATE = new DateTime(forecastDate.Year, forecastDate.Month, forecastDate.Day);
                 if (viewCosts == null || ((decimal)viewCosts) == 0.00m)
@@ -279,13 +280,13 @@ namespace BluePrints.ViewModels
             }
 
             if(!skipUpdating)
-                updateRowPOForecast(alignedDataDateCollection, Entities, allExoActuals, ActualsCutOffDate, string.Empty, string.Empty, string.Empty, dataRow);
+                updateRowPOForecast(alignedDataDateCollection, Entities, allExoActuals, ActualsCutOffDate, string.Empty, string.Empty, string.Empty, string.Empty, dataRow);
         }
 
-        private void updateRowPOForecast(List<DateTime> alignedDates, IEnumerable<FORECAST_PO> FORECAST_POCollection, IEnumerable<ExoDataPoint> cutOffActuals, DateTime cutOffDate, string POno = "", string stockCode = "", string variationCode = "", DataRow PORow = null)
+        private void updateRowPOForecast(List<DateTime> alignedDates, IEnumerable<FORECAST_PO> FORECAST_POCollection, IEnumerable<ExoDataPoint> cutOffActuals, DateTime cutOffDate, string POno = "", string stockCode = "", string description = "", string variationCode = "", DataRow PORow = null)
         {
             if(PORow == null && POno != string.Empty)
-                PORow = findPORow(POno, stockCode, variationCode);
+                PORow = findPORow(POno, stockCode, description, variationCode);
 
             if (PORow != null)
             {
@@ -329,7 +330,7 @@ namespace BluePrints.ViewModels
             foreach (POFlatForecastProjection projection in projections)
             {
                 LoadingScreenManager.Progress();
-                DataRow editing_row = findPORow(projection.PONO, projection.StockCode, projection.VariationCode);
+                DataRow editing_row = findPORow(projection.PONO, projection.StockCode, projection.Description, projection.VariationCode);
                 decimal totalForecastValue = projection.FORECAST_POs.Where(x => x.FORECAST_VALUE != null).Sum(x => (decimal)x.FORECAST_VALUE);
                 if (totalForecastValue == 0)
                 {
@@ -343,9 +344,9 @@ namespace BluePrints.ViewModels
                     foreach (FORECAST_PO FORECAST_PO in projection.FORECAST_POs.OrderBy(x => x.FORECAST_DATE))
                     {
                         //need to pro-rate costs by WBS
-                        decimal wbsRemainingCosts = projection.ExoPOs.Where(x => x.Subjob_Name == FORECAST_PO.JOB_CODE && x.Discipline_Code == FORECAST_PO.DISCIPLINE_CODE && x.Commodity_Code == FORECAST_PO.COMMODITY_CODE && x.StockCode == FORECAST_PO.STOCK_CODE).Sum(x => x.Costs);
+                        decimal wbsRemainingCosts = projection.ExoPOs.Where(x => x.Subjob_Name == FORECAST_PO.JOB_CODE && x.Discipline_Code == FORECAST_PO.DISCIPLINE_CODE && x.Commodity_Code == FORECAST_PO.COMMODITY_CODE && x.StockCode == FORECAST_PO.STOCK_CODE && x.Description == FORECAST_PO.DESCRIPTION).Sum(x => x.Costs);
                         //forecast POs already filtered by variation code
-                        decimal wbsForecastCosts = projection.FORECAST_POs.Where(x => x.JOB_CODE == FORECAST_PO.JOB_CODE && x.DISCIPLINE_CODE == FORECAST_PO.DISCIPLINE_CODE && x.COMMODITY_CODE == FORECAST_PO.COMMODITY_CODE && x.STOCK_CODE == FORECAST_PO.STOCK_CODE).Where(x => x.FORECAST_DATE.Date > ActualsCutOffDate.Date && x.FORECAST_VALUE != null).Sum(x => (decimal)x.FORECAST_VALUE);
+                        decimal wbsForecastCosts = projection.FORECAST_POs.Where(x => x.JOB_CODE == FORECAST_PO.JOB_CODE && x.DISCIPLINE_CODE == FORECAST_PO.DISCIPLINE_CODE && x.COMMODITY_CODE == FORECAST_PO.COMMODITY_CODE && x.STOCK_CODE == FORECAST_PO.STOCK_CODE && x.DESCRIPTION == FORECAST_PO.DESCRIPTION).Where(x => x.FORECAST_DATE.Date > ActualsCutOffDate.Date && x.FORECAST_VALUE != null).Sum(x => (decimal)x.FORECAST_VALUE);
                         decimal wbsCostDifference = wbsRemainingCosts - wbsForecastCosts;
 
                         if (FORECAST_PO.FORECAST_DATE.Date <= ActualsCutOffDate.Date)
@@ -388,10 +389,10 @@ namespace BluePrints.ViewModels
             refreshDataTable();
         }
 
-        private DataRow findPORow(string PONumber, string stockCode, string variationCode)
+        private DataRow findPORow(string PONumber, string stockCode, string description, string variationCode)
         {
             return (from DataRow dr in dataPointsTable.Rows
-                    where ((POFlatForecastProjection)dr[columnEntity]).PONO == PONumber && ((POFlatForecastProjection)dr[columnEntity]).VariationCode == variationCode && ((POFlatForecastProjection)dr[columnEntity]).StockCode == stockCode
+                    where ((POFlatForecastProjection)dr[columnEntity]).PONO == PONumber && ((POFlatForecastProjection)dr[columnEntity]).VariationCode == variationCode && ((POFlatForecastProjection)dr[columnEntity]).StockCode == stockCode && ((POFlatForecastProjection)dr[columnEntity]).Description == description
                     select dr).FirstOrDefault();
         }
         

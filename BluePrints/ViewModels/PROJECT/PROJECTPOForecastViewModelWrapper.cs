@@ -531,7 +531,7 @@ namespace BluePrints.ViewModels
                 newForecast.VariationCode = poLine.VariationCode;
 
                 //populate comment
-                FORECAST_PO_SETTING forecastPOSetting = FORECAST_PO_SETTINGCollection.FirstOrDefault(x => x.PONO == poLine.PONumber && x.VARIATION_CODE == poLine.VariationCode && (x.STOCK_CODE == null || x.STOCK_CODE == string.Empty));
+                FORECAST_PO_SETTING forecastPOSetting = FORECAST_PO_SETTINGCollection.FirstOrDefault(x => x.PONO == poLine.PONumber && x.VARIATION_CODE == poLine.VariationCode && (x.STOCK_CODE == null || x.STOCK_CODE == string.Empty) && (x.DESCRIPTION == null || x.DESCRIPTION == string.Empty));
                 if (forecastPOSetting != null)
                     newForecast.Comments = forecastPOSetting.PO_COMMENTS;
 
@@ -599,6 +599,10 @@ namespace BluePrints.ViewModels
                 newFORECAST_PO_SETTING.GUID_PROJECT = loadPROJECT.GUID;
                 newFORECAST_PO_SETTING.PONO = forecast.PONO;
                 newFORECAST_PO_SETTING.VARIATION_CODE = forecast.VariationCode;
+
+                //empty string differentiate comments from this and EH PO forecast
+                newFORECAST_PO_SETTING.STOCK_CODE = string.Empty;
+                newFORECAST_PO_SETTING.DESCRIPTION = string.Empty;
 
                 if (forecast.VariationCode != null && forecast.VariationCode != string.Empty)
                     newFORECAST_PO_SETTING.VARIATION_CODE = forecast.VariationCode;
@@ -680,8 +684,8 @@ namespace BluePrints.ViewModels
             else if (e.Column.FieldName.Contains(BindableBase.GetPropertyName(() => new POForecastProjection().Comments)))
             {
                 DataRowView dataRowView = (DataRowView)e.Row;
-                string commeentsValue = e.Value == null ? string.Empty : e.Value.ToString();
-                findExistingOrAddNewFORECAST_JOB_SETTING(dataRowView.Row, commeentsValue);
+                string commentsValue = e.Value == null ? string.Empty : e.Value.ToString();
+                findExistingOrAddNewFORECAST_JOB_SETTING(dataRowView.Row, commentsValue);
             }
         }
 
@@ -691,7 +695,7 @@ namespace BluePrints.ViewModels
             MainViewModel.BaseBulkDelete(removePOForecasts);
         }
 
-        private void findExistingOrAddNewFORECAST_PO(DataRow dataRow, DateTime forecastDate, decimal? viewCosts, bool skipUpdating = false)
+        protected virtual void findExistingOrAddNewFORECAST_PO(DataRow dataRow, DateTime forecastDate, decimal? viewCosts, bool skipUpdating = false)
         {
             POForecastProjection entity = (POForecastProjection)dataRow[columnEntity];
 
@@ -706,7 +710,7 @@ namespace BluePrints.ViewModels
             for(int i = 0;i < groupByCodesPOItems.Count;i++)
             {
                 var groupByCodesPOItem = groupByCodesPOItems[i];
-                FORECAST_PO findFORECAST_PO = Entities.FirstOrDefault(x => x.FORECAST_DATE == forecastDate.Date && x.PONO == groupByCodesPOItem.PONumber && x.COMMODITY_CODE == groupByCodesPOItem.CommodityCode && x.DISCIPLINE_CODE == groupByCodesPOItem.DisciplineCode && x.STOCK_CODE == groupByCodesPOItem.StockCode && x.VARIATION_CODE == groupByCodesPOItem.VariationCode && x.JOB_CODE == groupByCodesPOItem.JobCode);
+                FORECAST_PO findFORECAST_PO = Entities.FirstOrDefault(x => x.FORECAST_DATE == forecastDate.Date && x.PONO == groupByCodesPOItem.PONumber && x.COMMODITY_CODE == groupByCodesPOItem.CommodityCode && x.DISCIPLINE_CODE == groupByCodesPOItem.DisciplineCode && x.STOCK_CODE == groupByCodesPOItem.StockCode && x.DESCRIPTION == "" && x.VARIATION_CODE == groupByCodesPOItem.VariationCode && x.JOB_CODE == groupByCodesPOItem.JobCode);
 
                 if (findFORECAST_PO == null)
                 {
@@ -719,7 +723,10 @@ namespace BluePrints.ViewModels
                 findFORECAST_PO.JOB_CODE = groupByCodesPOItem.JobCode;
                 findFORECAST_PO.DISCIPLINE_CODE = groupByCodesPOItem.DisciplineCode;
                 findFORECAST_PO.COMMODITY_CODE = groupByCodesPOItem.CommodityCode;
-                findFORECAST_PO.STOCK_CODE = groupByCodesPOItem.StockCode == null ? "" : groupByCodesPOItem.StockCode;
+                findFORECAST_PO.STOCK_CODE = DataUtils.NormalizeString(groupByCodesPOItem.StockCode);
+
+                //non EH PO forecast's description are stored as empty string
+                findFORECAST_PO.DESCRIPTION = string.Empty;
                 findFORECAST_PO.VARIATION_CODE = groupByCodesPOItem.VariationCode;
                 findFORECAST_PO.FORECAST_DATE = new DateTime(forecastDate.Year, forecastDate.Month, forecastDate.Day);
                 if (viewCosts == null || ((decimal)viewCosts) == 0.00m)
@@ -1494,6 +1501,7 @@ namespace BluePrints.ViewModels
 
     public class POFlatLine : POLine
     {
+        public string Description { get; set; }
         public string StockCode { get; set; }
     }
 

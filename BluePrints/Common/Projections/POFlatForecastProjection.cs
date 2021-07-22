@@ -20,12 +20,12 @@ namespace BluePrints.Common.Projections
 
         protected override List<FORECAST_PO> getPOForecasts(IEnumerable<FORECAST_PO> allFORECAST_POs)
         {
-            return allFORECAST_POs.Where(x => x.PONO == this.PONO && x.VARIATION_CODE == this.VariationCode && x.STOCK_CODE == this.StockCode).ToList();
+            return allFORECAST_POs.Where(x => x.PONO == this.PONO && x.VARIATION_CODE == this.VariationCode && x.STOCK_CODE == this.StockCode && x.DESCRIPTION == this.Description).ToList();
         }
 
         protected override List<ExoDataPoint> getCurrentActuals(IEnumerable<ExoDataPoint> allActuals)
         {
-            return allActuals.Where(x => x.PONumber == this.PONO && x.Variation_Code == this.VariationCode && x.StockCode == this.StockCode).ToList();
+            return allActuals.Where(x => x.PONumber == this.PONO && x.Variation_Code == this.VariationCode && x.StockCode == this.StockCode && x.Description == this.Description).ToList();
         }
     }
 }
