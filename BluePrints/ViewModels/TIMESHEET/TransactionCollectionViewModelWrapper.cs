@@ -171,13 +171,13 @@ namespace BluePrints.ViewModels
                 if(Is2020Onwards)
                 {
                     DateTime date2020FirstDay = new DateTime(2020, 1, 1);
-                    return query => query.Where(x => x.transdate != null && ((DateTime)x.transdate) >= date2020FirstDay && x.LINE_STATUS != "x");
+                    return query => query.Where(x => x.transdate != null && ((DateTime)x.transdate) >= date2020FirstDay);
                 }
                 else
-                    return query => query.Where(x => x.transdate != null && x.LINE_STATUS != "x");
+                    return query => query.Where(x => x.transdate != null);
             }
             else
-                return query => query.Where(x => x.master_jobno == loadJOBCOST_HDR.MASTER_JOBNO && x.LINE_STATUS != "x");
+                return query => query.Where(x => x.master_jobno == loadJOBCOST_HDR.MASTER_JOBNO);
         }
 
         protected override void InstantFeedbackOtherUnitOfWorkSaveChanges()
