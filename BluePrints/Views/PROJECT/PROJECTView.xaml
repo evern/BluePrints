@@ -156,7 +156,7 @@
                         <Grid.RowDefinitions>
                             <RowDefinition Height="0" />
                         </Grid.RowDefinitions>
-                        <custom:GridControlEx x:Name="GridControlExcelExport" Grid.Row="0" dx:DXSerializer.Enabled="False" ItemsSource="{Binding ExcelExportData}" Visibility="Collapsed">
+                        <dxg:GridControl x:Name="GridControlExcelExport" Grid.Row="0" dx:DXSerializer.Enabled="False" ItemsSource="{Binding ExcelExportData}" Visibility="Collapsed">
                             <dxg:GridControl.Columns>
                                 <dxg:GridColumn FieldName="Type" ReadOnly="True" />
                                 <dxg:GridColumn FieldName="Subjob_Name" ReadOnly="True" />
@@ -172,11 +172,11 @@
                                 <!--  need to set tableView name here for export to work  -->
                                 <dxg:TableView Name="tableView" />
                             </dxg:GridControl.View>
-                        </custom:GridControlEx>
+                        </dxg:GridControl>
                     </Grid>
                     <dxlc:LayoutControl x:Name="layoutControl" Orientation="Vertical">
                         <dxlc:LayoutGroup Name="LayoutGroupGrid" Height="300" dxlc:LayoutControl.AllowVerticalSizing="True" Orientation="Vertical" View="Group">
-                            <custom:GridControlEx x:Name="GridControl" dx:DXSerializer.SerializationID="GridControlSingleProjectDashboard" IsFilterEnabled="False" ItemsSource="{Binding SingleProjectDashboards}" SelectedItems="{Binding Selected_Dashboards, Mode=TwoWay}" Style="{StaticResource SingleProjectGridControlTemplate}">
+                            <dxg:GridControl x:Name="GridControl" dx:DXSerializer.SerializationID="GridControlSingleProjectDashboard" IsFilterEnabled="False" ItemsSource="{Binding SingleProjectDashboards}" SelectedItems="{Binding Selected_Dashboards, Mode=TwoWay}" Style="{StaticResource SingleProjectGridControlTemplate}">
                                 <dxmvvm:Interaction.Behaviors>
                                     <dxmvvm:EventToCommand Command="{Binding CustomSummaryCommand}" EventName="CustomSummary" PassEventArgsToCommand="True" />
                                 </dxmvvm:Interaction.Behaviors>
@@ -327,7 +327,7 @@
                                         </dxg:TableView.RowCellMenuCustomizations>
                                     </dxg:TableView>
                                 </dxg:GridControl.View>
-                            </custom:GridControlEx>
+                            </dxg:GridControl>
                         </dxlc:LayoutGroup>
                         <dx:LoadingDecorator IsSplashScreenShown="{Binding IsLoading}">
                             <dxlc:LayoutGroup Name="LayoutGroupChart" Orientation="Vertical" View="Group">

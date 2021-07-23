@@ -202,7 +202,7 @@
                 </dxlc:LayoutControl>
                 <dxlc:LayoutGroup Name="LayoutGroupMain" Orientation="Horizontal" View="Group">
                     <dxlc:LayoutGroup>
-                        <custom:GridControlEx x:Name="GridControl" TotalSummarySource="{Binding SummaryDescriptors}"
+                        <dxg:GridControl x:Name="GridControl" TotalSummarySource="{Binding SummaryDescriptors}"
                                     TotalSummaryGeneratorTemplate="{StaticResource SummaryTemplate}"
                                     GroupSummarySource="{Binding SummaryDescriptors}"
                                     GroupSummaryGeneratorTemplate="{StaticResource SummaryTemplate}"
@@ -304,7 +304,7 @@
                                     </dxmvvm:Interaction.Behaviors>
                                 </dxg:TableView>
                             </dxg:GridControl.View>
-                        </custom:GridControlEx>
+                        </dxg:GridControl>
                     </dxlc:LayoutGroup>
                 </dxlc:LayoutGroup>
             </DockPanel>

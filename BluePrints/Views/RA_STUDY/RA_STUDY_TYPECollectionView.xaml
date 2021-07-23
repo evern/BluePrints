@@ -41,7 +41,7 @@
                 </dxr:RibbonControl>
                 <dxlc:LayoutGroup Orientation="Horizontal">
                     <dxlc:LayoutGroup>
-                        <custom:GridControlEx x:Name="GridControl" dx:DXSerializer.SerializationID="GridControlSTUDYTYPE" dx:DXSerializer.StoreLayoutMode="All" Style="{StaticResource DefaultGridControlTemplate}">
+                        <dxg:GridControl x:Name="GridControl" dx:DXSerializer.SerializationID="GridControlSTUDYTYPE" dx:DXSerializer.StoreLayoutMode="All" Style="{StaticResource DefaultGridControlTemplate}">
                             <dxg:GridControl.Columns>
                                 <dxg:GridColumn FieldName="Entity.STUDY_TYPE" Header="Study Type" />
                             </dxg:GridControl.Columns>
@@ -64,10 +64,10 @@
                                     </dxg:TableView.RowCellMenuCustomizations>
                                 </dxg:TableView>
                             </dxg:GridControl.View>
-                        </custom:GridControlEx>
+                        </dxg:GridControl>
                     </dxlc:LayoutGroup>
                     <dxlc:LayoutGroup DataContext="{Binding RA_GUIDE_PROMPTViewModel}">
-                        <custom:GridControlEx x:Name="GridControlPROMPT" MaxHeight="2000" dx:DXSerializer.SerializationID="GridControlPROMPT" dx:DXSerializer.StoreLayoutMode="All" IsEnabled="{Binding PROMPTEnabled}" ItemsSource="{Binding GUIDE_PROMPTS}" Style="{StaticResource MultiGridControlTemplate}">
+                        <dxg:GridControl x:Name="GridControlPROMPT" MaxHeight="2000" dx:DXSerializer.SerializationID="GridControlPROMPT" dx:DXSerializer.StoreLayoutMode="All" IsEnabled="{Binding PROMPTEnabled}" ItemsSource="{Binding GUIDE_PROMPTS}" Style="{StaticResource MultiGridControlTemplate}">
                             <dxg:GridControl.Columns>
                                 <dxg:GridColumn FieldName="GUIDE_PROMPT" Header="Guide Prompt" HeaderToolTip="Guide prompt name." />
                             </dxg:GridControl.Columns>
@@ -90,10 +90,10 @@
                                     </dxg:TableView.RowCellMenuCustomizations>
                                 </dxg:TableView>
                             </dxg:GridControl.View>
-                        </custom:GridControlEx>
+                        </dxg:GridControl>
                     </dxlc:LayoutGroup>
                     <dxlc:LayoutGroup DataContext="{Binding RA_GUIDE_SUBPROMPTViewModel}">
-                        <custom:GridControlEx x:Name="GridControlSUBPROMPT" MaxHeight="2000" dx:DXSerializer.SerializationID="GridControlSUBPROMPT" dx:DXSerializer.StoreLayoutMode="All" IsEnabled="{Binding SUBPROMPTEnabled}" ItemsSource="{Binding GUIDE_SUBPROMPTS}" Style="{StaticResource MultiGridControlTemplate}">
+                        <dxg:GridControl x:Name="GridControlSUBPROMPT" MaxHeight="2000" dx:DXSerializer.SerializationID="GridControlSUBPROMPT" dx:DXSerializer.StoreLayoutMode="All" IsEnabled="{Binding SUBPROMPTEnabled}" ItemsSource="{Binding GUIDE_SUBPROMPTS}" Style="{StaticResource MultiGridControlTemplate}">
                             <dxg:GridControl.Columns>
                                 <dxg:GridColumn FieldName="GUIDE_SUBPROMPT" Header="Guide Sub Prompt" HeaderToolTip="Guide sub prompt name." />
                             </dxg:GridControl.Columns>
@@ -116,7 +116,7 @@
                                     </dxg:TableView.RowCellMenuCustomizations>
                                 </dxg:TableView>
                             </dxg:GridControl.View>
-                        </custom:GridControlEx>
+                        </dxg:GridControl>
                     </dxlc:LayoutGroup>
                 </dxlc:LayoutGroup>
             </DockPanel>

@@ -35,7 +35,7 @@
                         </dxr:RibbonPage>
                     </dxr:RibbonDefaultPageCategory>
                 </dxr:RibbonControl>
-                <custom:GridControlEx x:Name="GridControl" dx:DXSerializer.SerializationID="GridControlDOCTYPE" dx:DXSerializer.StoreLayoutMode="All" Style="{StaticResource DefaultGridControlTemplate}">
+                <dxg:GridControl x:Name="GridControl" dx:DXSerializer.SerializationID="GridControlDOCTYPE" dx:DXSerializer.StoreLayoutMode="All" Style="{StaticResource DefaultGridControlTemplate}">
                     <dxg:GridControl.Columns>
                         <dxg:GridColumn Header="Department" Width="200" FieldName="GUID_DDEPARTMENT">
                             <dxg:GridColumn.EditSettings>
@@ -75,7 +75,7 @@
                             </dxg:TableView.RowCellMenuCustomizations>
                         </dxg:TableView>
                     </dxg:GridControl.View>
-                </custom:GridControlEx>
+                </dxg:GridControl>
             </DockPanel>
         </dxb:BarManager>
     </Grid>

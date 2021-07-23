@@ -58,7 +58,7 @@
                         </dxr:RibbonPage>
                     </dxr:RibbonDefaultPageCategory>
                 </dxr:RibbonControl>
-                <custom:GridControlEx x:Name="GridControl" dx:DXSerializer.SerializationID="GridControlUSER" dx:DXSerializer.StoreLayoutMode="All" Style="{StaticResource DefaultGridControlTemplate}">
+                <dxg:GridControl x:Name="GridControl" dx:DXSerializer.SerializationID="GridControlUSER" dx:DXSerializer.StoreLayoutMode="All" Style="{StaticResource DefaultGridControlTemplate}">
                     <dxg:GridControl.Columns>
                         <dxg:GridColumn FieldName="NAME" Header="Login Name" HeaderToolTip="Name used to login into system" />
                         <dxg:GridColumn FieldName="FIRST_NAME" Header="First Name" />
@@ -178,7 +178,7 @@
                             </dxg:TableView.RowCellMenuCustomizations>
                         </dxg:TableView>
                     </dxg:GridControl.View>
-                </custom:GridControlEx>
+                </dxg:GridControl>
             </DockPanel>
         </dxb:BarManager>
     </Grid>

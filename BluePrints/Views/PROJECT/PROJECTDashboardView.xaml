@@ -38,7 +38,7 @@
                 </dxr:RibbonControl>
                 <dxlc:LayoutControl Orientation="Vertical">
                     <dxlc:LayoutGroup Name="LayoutGroupGrid" Height="500" dxlc:LayoutControl.AllowVerticalSizing="True" Header="Edit Value" Orientation="Vertical" View="Group">
-                        <custom:GridControlEx x:Name="GridControl" dx:DXSerializer.SerializationID="GridControlMultiProjectDashboard" dx:DXSerializer.StoreLayoutMode="All" BandsSource="{StaticResource DashboardBands}" IsFilterEnabled="False" SelectedItems="{Binding Selected_Dashboards, Mode=TwoWay}" Style="{StaticResource DefaultGridControlTemplate}">
+                        <dxg:GridControl x:Name="GridControl" dx:DXSerializer.SerializationID="GridControlMultiProjectDashboard" dx:DXSerializer.StoreLayoutMode="All" BandsSource="{StaticResource DashboardBands}" IsFilterEnabled="False" SelectedItems="{Binding Selected_Dashboards, Mode=TwoWay}" Style="{StaticResource DefaultGridControlTemplate}">
                             <dxg:GridControl.DetailDescriptor>
                                 <dxg:DataControlDetailDescriptor ItemsSourceBinding="{Binding Subjob_TreeDashboards}">
                                     <dxg:GridControl x:Name="detailSubjobDashboardGridControl" dx:DXSerializer.SerializationID="GridControlDetailSubjobDashboard" BandsSource="{StaticResource DashboardChildBands}" SelectedItems="{Binding Selected_Dashboards, Mode=TwoWay}" SelectionMode="Row">
@@ -88,7 +88,7 @@
                                 <dxg:GridSummaryItem x:Name="totalSummaryPeriodBurned" dx:DXSerializer.Enabled="False" DisplayFormat="{}{0:n}" FieldName="Stats.Burned.CurrentPeriodDataPoint.Units" ShowInColumn="Stats.Burned.CurrentPeriodDataPoint.Units" SummaryType="Sum" />
                                 <dxg:GridSummaryItem x:Name="totalSummaryPeriodActual" dx:DXSerializer.Enabled="False" DisplayFormat="{}{0:n}" FieldName="Stats.Actual.CurrentPeriodDataPoint.Units" ShowInColumn="Stats.Actual.CurrentPeriodDataPoint.Units" SummaryType="Sum" Visible="{Binding IsActualVisible}" />
                             </dxg:GridControl.TotalSummary>
-                        </custom:GridControlEx>
+                        </dxg:GridControl>
                     </dxlc:LayoutGroup>
                     <dxlc:LayoutGroup Name="LayoutGroupChart" DataContext="{Binding DataContext, Mode=OneWay, NotifyOnSourceUpdated=True, NotifyOnTargetUpdated=True}" Orientation="Vertical" View="Group">
                         <dxc:ChartControl Name="chartSCurve" Margin="0" Padding="0" dx:DXSerializer.Enabled="False" AutoLayout="False">

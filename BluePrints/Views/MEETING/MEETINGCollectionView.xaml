@@ -35,7 +35,7 @@
                         </dxr:RibbonPage>
                     </dxr:RibbonDefaultPageCategory>
                 </dxr:RibbonControl>
-                <custom:GridControlEx x:Name="GridControl" dx:DXSerializer.SerializationID="GridControlMEETING" dx:DXSerializer.StoreLayoutMode="All" Style="{StaticResource DefaultGridControlTemplate}">
+                <dxg:GridControl x:Name="GridControl" dx:DXSerializer.SerializationID="GridControlMEETING" dx:DXSerializer.StoreLayoutMode="All" Style="{StaticResource DefaultGridControlTemplate}">
                         <dxmvvm:Interaction.Behaviors>
                             <dxmvvm:EventToCommand Command="{Binding EditCommand}" EventName="MouseDoubleClick" MarkRoutedEventsAsHandled="True" PassEventArgsToCommand="True" />
                         </dxmvvm:Interaction.Behaviors>
@@ -128,7 +128,7 @@
                                 </dxg:TableView.RowCellMenuCustomizations>
                             </dxg:TableView>
                         </dxg:GridControl.View>
-                    </custom:GridControlEx>
+                    </dxg:GridControl>
             </DockPanel>
         </dxb:BarManager>
     </Grid>

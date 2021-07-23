@@ -247,7 +247,7 @@
                         </dxlc:LayoutGroup>
                     </dxlc:LayoutGroup>
                     <dxlc:LayoutGroup Name="LayoutGroupTreeGrid" View="Group">
-                        <custom:GridControlEx x:Name="GridControl" dxc:DXSerializer.SerializationID="GridControlDeliverables" dxc:DXSerializer.StoreLayoutMode="All" CurrentItem="{Binding Selected_Deliverable, Mode=TwoWay}" SelectedItems="{Binding Selected_Deliverables, Mode=TwoWay}" Style="{StaticResource DefaultGridControlTemplate}">
+                        <dxg:GridControl x:Name="GridControl" dxc:DXSerializer.SerializationID="GridControlDeliverables" dxc:DXSerializer.StoreLayoutMode="All" CurrentItem="{Binding Selected_Deliverable, Mode=TwoWay}" SelectedItems="{Binding Selected_Deliverables, Mode=TwoWay}" Style="{StaticResource DefaultGridControlTemplate}">
                             <dxg:GridControl.Columns>
                                 <dxg:GridColumn FieldName="Entity.Entity.GUID_SUBJOB" Header="Sub Job" HeaderToolTip="Sub job category for reporting. Automatically assigned field" ReadOnly="True">
                                     <dxg:GridColumn.EditSettings>
@@ -354,7 +354,7 @@
                                     </dxg:GridDragDropManager.DragElementTemplate>
                                 </dxg:GridDragDropManager>
                             </dxmvvm:Interaction.Behaviors>
-                        </custom:GridControlEx>
+                        </dxg:GridControl>
                     </dxlc:LayoutGroup>
                 </dxlc:LayoutControl>
             </DockPanel>

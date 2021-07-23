@@ -35,8 +35,8 @@
                         </dxr:RibbonPage>
                     </dxr:RibbonDefaultPageCategory>
                 </dxr:RibbonControl>
-                <custom:GridControlEx x:Name="GridControl" dx:DXSerializer.SerializationID="GridControlPHASE" Style="{StaticResource DefaultGridControlTemplate}">
-                    <custom:GridControlEx.Columns>
+                <dxg:GridControl x:Name="GridControl" dx:DXSerializer.SerializationID="GridControlPHASE" Style="{StaticResource DefaultGridControlTemplate}">
+                    <dxg:GridControl.Columns>
                         <dxg:GridColumn Header="Internal Number" FieldName="INTERNAL_NUM" />
                         <dxg:GridColumn Header="Client Number" FieldName="CLIENT_NUM" />
                         <dxg:GridColumn Header="Title" Width="*" FieldName="TITLE" />
@@ -50,7 +50,7 @@
                                 <dxe:ComboBoxEditSettings AutoComplete="True" IsTextEditable="True" ItemsSource="{dxe:EnumItemsSource EnumType={x:Type common:ChargeType}}" NullValueButtonPlacement="Popup" />
                             </dxg:GridColumn.EditSettings>
                         </dxg:GridColumn>
-                    </custom:GridControlEx.Columns>
+                    </dxg:GridControl.Columns>
                     <dxg:GridControl.TotalSummary>
                         <dxg:GridSummaryItem dx:DXSerializer.Enabled="False" Alignment="Right" SummaryType="Count" />
                     </dxg:GridControl.TotalSummary>
@@ -67,7 +67,7 @@
                             </dxg:TableView.RowCellMenuCustomizations>
                         </dxg:TableView>
                     </dxg:GridControl.View>
-                </custom:GridControlEx>
+                </dxg:GridControl>
             </DockPanel>
         </dxb:BarManager>
     </Grid>

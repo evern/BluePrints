@@ -61,7 +61,7 @@
                         </dxr:RibbonPage>
                     </dxr:RibbonDefaultPageCategory>
                 </dxr:RibbonControl>
-                <custom:GridControlEx x:Name="GridControl" dx:DXSerializer.SerializationID="GridControlVARIATION_CONSTRUCTION" Style="{StaticResource DefaultGridControlTemplate}">
+                <dxg:GridControl x:Name="GridControl" dx:DXSerializer.SerializationID="GridControlVARIATION_CONSTRUCTION" Style="{StaticResource DefaultGridControlTemplate}">
                     <dxmvvm:Interaction.Behaviors>
                         <dxmvvm:EventToCommand Command="{Binding EditCommand}" EventName="MouseDoubleClick" MarkRoutedEventsAsHandled="True" PassEventArgsToCommand="True">
                             <dxmvvm:EventToCommand.EventArgsConverter>
@@ -69,7 +69,7 @@
                             </dxmvvm:EventToCommand.EventArgsConverter>
                         </dxmvvm:EventToCommand>
                     </dxmvvm:Interaction.Behaviors>
-                    <custom:GridControlEx.Columns>
+                    <dxg:GridControl.Columns>
                         <dxg:GridColumn FieldName="SUBMISSION_DATE" Header="Date" AllowBestFit="False" Width="75" HeaderStyle="{StaticResource HighlightColumnHeaderStyle}">
                             <dxg:GridColumn.EditSettings>
                                 <dxe:DateEditSettings NullValueButtonPlacement="Popup" />
@@ -189,7 +189,7 @@
                                 <dxe:CheckEditSettings />
                             </dxg:GridColumn.EditSettings>
                         </dxg:GridColumn>
-                    </custom:GridControlEx.Columns>
+                    </dxg:GridControl.Columns>
                     <dxg:GridControl.TotalSummary>
                         <dxg:GridSummaryItem dx:DXSerializer.Enabled="False" Alignment="Right" SummaryType="Count" />
                         <dxg:GridSummaryItem dxc:DXSerializer.Enabled="False" DisplayFormat="c2" FieldName="ManualApprovedEstimatedValue" SummaryType="Sum" />
@@ -231,7 +231,7 @@
                             </dxg:TableView.FormatConditions>
                         </dxg:TableView>
                 </dxg:GridControl.View>
-                </custom:GridControlEx>
+                </dxg:GridControl>
             </DockPanel>
         </dxb:BarManager>
     </Grid>

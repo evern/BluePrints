@@ -234,7 +234,7 @@
                     <dxdo:LayoutGroup Margin="0" Padding="0" BorderThickness="0" ItemHeight="*" Orientation="Horizontal">
                         <dxdo:LayoutGroup Margin="0" Padding="0" BorderThickness="0" ItemHeight="*" Orientation="Vertical">
                             <dxdo:LayoutPanel>
-                                <local:GridControlEx x:Name="GridControl" FontFamily="Calibri" FontSize="12" 
+                                <dxg:GridControl x:Name="GridControl" FontFamily="Calibri" FontSize="12" 
                                             TotalSummarySource="{Binding ParentSummaries}"
                                             TotalSummaryGeneratorTemplate="{StaticResource SummaryTemplate}"
                                             GroupSummarySource="{Binding ParentSummaries}"
@@ -270,7 +270,7 @@
                                             </dxg:TableView.RowCellMenuCustomizations>
                                         </dxg:TableView>
                                     </dxg:GridControl.View>
-                                </local:GridControlEx>
+                                </dxg:GridControl>
                             </dxdo:LayoutPanel>
                         </dxdo:LayoutGroup>
                         

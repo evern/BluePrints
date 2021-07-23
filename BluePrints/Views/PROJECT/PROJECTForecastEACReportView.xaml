@@ -119,7 +119,7 @@
                                         <dxmvvm:Interaction.Behaviors>
                                             <dxmvvm:LayoutSerializationService />
                                         </dxmvvm:Interaction.Behaviors>
-                                        <local:GridControlEx x:Name="GridControl" FontFamily="Calibri" FontSize="12" 
+                                        <dxg:GridControl x:Name="GridControl" FontFamily="Calibri" FontSize="12" 
                                              TotalSummarySource="{Binding DataContext.ViewSummaries, ElementName=userControl}"
                                              TotalSummaryGeneratorTemplate="{StaticResource SummaryTemplate}"
                                              GroupSummarySource="{Binding DataContext.ViewSummaries, ElementName=userControl}"
@@ -135,7 +135,7 @@
                                                     </dxg:TableView.RowCellMenuCustomizations>
                                                 </dxg:TableView>
                                             </dxg:GridControl.View>
-                                        </local:GridControlEx>
+                                        </dxg:GridControl>
                                     </Grid>
                                 </dxdo:LayoutPanel>
                             </dxdo:LayoutGroup>

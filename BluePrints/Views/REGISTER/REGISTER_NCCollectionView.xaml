@@ -68,7 +68,7 @@
                         </dxr:RibbonPage>
                     </dxr:RibbonDefaultPageCategory>
                 </dxr:RibbonControl>
-                <custom:GridControlEx x:Name="GridControl" dx:DXSerializer.SerializationID="GridControlREGISTER" dx:DXSerializer.StoreLayoutMode="All" Style="{StaticResource DefaultGridControlTemplate}">
+                <dxg:GridControl x:Name="GridControl" dx:DXSerializer.SerializationID="GridControlREGISTER" dx:DXSerializer.StoreLayoutMode="All" Style="{StaticResource DefaultGridControlTemplate}">
                     <dxg:GridControl.Columns>
                         <dxg:GridColumn Header="NC Number" AllowBestFit="false" Width="50" FieldName="NUMBER" HeaderToolTip="Unique Number" AllowMoving="false" />
                         <dxg:GridColumn Header="Area" AllowBestFit="false" Width="50" FieldName="GUID_AREA" AllowMoving="false">
@@ -146,7 +146,7 @@
                             </dxg:TableView.RowCellMenuCustomizations>
                         </dxg:TableView>
                     </dxg:GridControl.View>
-                </custom:GridControlEx>
+                </dxg:GridControl>
             </DockPanel>
         </dxb:BarManager>
     </Grid>

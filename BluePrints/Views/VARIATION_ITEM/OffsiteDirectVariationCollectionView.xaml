@@ -89,7 +89,7 @@
                         </Grid>
                     </dxlc:LayoutGroup>
                 </dxlc:LayoutControl>
-                <custom:GridControlEx x:Name="GridControl" dxc:DXSerializer.SerializationID="GridControlVARIATION_ITEM" dxc:DXSerializer.StoreLayoutMode="All" Style="{StaticResource DefaultGridControlTemplate}">
+                <dxg:GridControl x:Name="GridControl" dxc:DXSerializer.SerializationID="GridControlVARIATION_ITEM" dxc:DXSerializer.StoreLayoutMode="All" Style="{StaticResource DefaultGridControlTemplate}">
                     <dxg:GridControl.Columns>
                         <dxg:GridColumn Tag="True;True;Populate from Sub Job" FieldName="Entity.Entity.GUID_AREA" Header="Area" AllowBestFit="false" Width="50" HeaderToolTip="Changing this field will affect subjob and workpack name. Only editable on newly added variation deliverable">
                             <dxg:GridColumn.CellTemplate>
@@ -383,7 +383,7 @@
                             </dxg:TableView.RowCellMenuCustomizations>
                         </dxg:TableView>
                     </dxg:GridControl.View>
-                </custom:GridControlEx>
+                </dxg:GridControl>
             </DockPanel>
         </dxb:BarManager>
     </Grid>

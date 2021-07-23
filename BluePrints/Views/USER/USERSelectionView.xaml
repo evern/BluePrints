@@ -13,7 +13,7 @@
         </dxmvvm:Interaction.Behaviors>
         <dxlc:LayoutControl Name="LayoutControlRoot" Orientation="Vertical">
             <dxlc:LayoutGroup Name="LayoutGroupGrid" View="Group">
-                <custom:GridControlEx x:Name="GridControl" dx:DXSerializer.SerializationID="GridControlSelectionUSER" dx:DXSerializer.StoreLayoutMode="All" Style="{StaticResource BasicGridControlTemplate}">
+                <dxg:GridControl x:Name="GridControl" dx:DXSerializer.SerializationID="GridControlSelectionUSER" dx:DXSerializer.StoreLayoutMode="All" Style="{StaticResource BasicGridControlTemplate}">
                     <dxg:GridControl.Columns>
                         <dxg:GridColumn Header="Login Name" FieldName="NAME" />
                         <dxg:GridColumn Header="First Name" FieldName="FIRST_NAME" />
@@ -30,7 +30,7 @@
                     <dxg:GridControl.View>
                         <dxg:TableView x:Name="tableView" AllowEditing="False" NewItemRowPosition="None" Style="{StaticResource DefaultTableViewTemplate}" />
                     </dxg:GridControl.View>
-                </custom:GridControlEx>
+                </dxg:GridControl>
             </dxlc:LayoutGroup>
         </dxlc:LayoutControl>
     </Grid>

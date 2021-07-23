@@ -829,7 +829,7 @@
                                                 <dxb:BarButtonItem BarItemDisplayMode="ContentAndGlyph" Command="{Binding UndoCommand}" Content="Undo" Glyph="{dx:DXImage Image=Undo_16x16.png}" />
                                                 <dxb:BarButtonItem BarItemDisplayMode="ContentAndGlyph" Command="{Binding RedoCommand}" Content="Redo" Glyph="{dx:DXImage Image=Redo_16x16.png}" />
                                             </dxb:ToolBarControl>
-                                            <custom:GridControlEx x:Name="GridControl" Height="300" dx:DXSerializer.SerializationID="GridControlIncident" dx:DXSerializer.StoreLayoutMode="All" Style="{StaticResource AssociateGridControlTemplate}">
+                                            <dxg:GridControl x:Name="GridControl" Height="300" dx:DXSerializer.SerializationID="GridControlIncident" dx:DXSerializer.StoreLayoutMode="All" Style="{StaticResource AssociateGridControlTemplate}">
                                                 <dxg:GridControl.Columns>
                                                     <dxg:GridColumn FieldName="DATE" Header="Date" />
                                                     <dxg:GridColumn FieldName="NUMBER" Header="Number" />
@@ -906,7 +906,7 @@
                                                         </dxg:TableView.RowCellMenuCustomizations>
                                                     </dxg:TableView>
                                                 </dxg:GridControl.View>
-                                            </custom:GridControlEx>
+                                            </dxg:GridControl>
                                         </ExtraLayout:ExtraLayoutGroup>
                                         <ExtraLayout:ExtraLayoutGroup DataContext="{Binding DataContext.HSE_INJURYViewModel, ElementName=userControl}" Orientation="Vertical" Style="{StaticResource layoutControlLine}">
                                             <ExtraLayout:ExtraLayoutGroup Background="LightGray" Style="{StaticResource layoutControlLine}">
@@ -918,7 +918,7 @@
                                                 <dxb:BarButtonItem BarItemDisplayMode="ContentAndGlyph" Command="{Binding UndoCommand}" Content="Undo" Glyph="{dx:DXImage Image=Undo_16x16.png}" />
                                                 <dxb:BarButtonItem BarItemDisplayMode="ContentAndGlyph" Command="{Binding RedoCommand}" Content="Redo" Glyph="{dx:DXImage Image=Redo_16x16.png}" />
                                             </dxb:ToolBarControl>
-                                            <custom:GridControlEx x:Name="GridControl1" Height="300" dx:DXSerializer.SerializationID="GridControlInjury" dx:DXSerializer.StoreLayoutMode="All" Style="{StaticResource AssociateGridControlTemplate}">
+                                            <dxg:GridControl x:Name="GridControl1" Height="300" dx:DXSerializer.SerializationID="GridControlInjury" dx:DXSerializer.StoreLayoutMode="All" Style="{StaticResource AssociateGridControlTemplate}">
                                                 <dxg:GridControl.Columns>
                                                     <dxg:GridColumn FieldName="STAFFNO" Header="Name">
                                                         <dxg:GridColumn.EditSettings>
@@ -970,7 +970,7 @@
                                                         </dxg:TableView.RowCellMenuCustomizations>
                                                     </dxg:TableView>
                                                 </dxg:GridControl.View>
-                                            </custom:GridControlEx>
+                                            </dxg:GridControl>
                                         </ExtraLayout:ExtraLayoutGroup>
                                     </ExtraLayout:ExtraLayoutControl>
                                 </ExtraLayout:ExtraLayoutGroup>

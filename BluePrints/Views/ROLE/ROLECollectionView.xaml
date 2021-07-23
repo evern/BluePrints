@@ -146,7 +146,7 @@
                         </dxdo:LayoutGroup>
                         <dxdo:LayoutGroup>
                             <dxdo:LayoutPanel MinWidth="420" ShowHideButton="True" AutoHidden="True">
-                                <custom:GridControlEx x:Name="GridControlCommodity" MaxHeight="2000" dx:DXSerializer.SerializationID="GridControlCommodity" dx:DXSerializer.StoreLayoutMode="All" ItemsSource="{Binding DocTypePermissions}" SelectedItem="{Binding SelectedDocTypePermission, Mode=TwoWay}">
+                                <dxg:GridControl x:Name="GridControlCommodity" MaxHeight="2000" dx:DXSerializer.SerializationID="GridControlCommodity" dx:DXSerializer.StoreLayoutMode="All" ItemsSource="{Binding DocTypePermissions}" SelectedItem="{Binding SelectedDocTypePermission, Mode=TwoWay}">
                                     <dxg:GridControl.Columns>
                                         <dxg:GridColumn MinWidth="75" AllowEditing="False" FieldName="DocType.CODE" Header="Cost Type" HeaderToolTip="Cost type in exo is document type code in Blueprints" />
                                         <dxg:GridColumn AllowEditing="False" FieldName="DocType.NAME" Header="Description" />
@@ -169,7 +169,7 @@
                                             </dxmvvm:Interaction.Behaviors>
                                         </dxg:TableView>
                                     </dxg:GridControl.View>
-                                </custom:GridControlEx>
+                                </dxg:GridControl>
                             </dxdo:LayoutPanel>
                         </dxdo:LayoutGroup>
                     </dxdo:LayoutGroup>

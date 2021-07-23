@@ -105,7 +105,7 @@
                     </dxlc:LayoutGroup>
                     <dxc:LoadingDecorator IsSplashScreenShown="{Binding IsPermissionLoading}">
                         <dxlc:LayoutGroup Name="LayoutGroupPermission" Orientation="Horizontal" View="Group">
-                            <custom:GridControlEx x:Name="GridControl" MaxHeight="2000" dxc:DXSerializer.SerializationID="GridControlExoSubjobUsers" dxc:DXSerializer.StoreLayoutMode="All" IsEnabled="{Binding IsPermissionGridEnabled}" ItemsSource="{Binding BluePrintsUsers}" SelectedItem="{Binding SelectedUser, Mode=TwoWay}" SelectionMode="Row">
+                            <dxg:GridControl x:Name="GridControl" MaxHeight="2000" dxc:DXSerializer.SerializationID="GridControlExoSubjobUsers" dxc:DXSerializer.StoreLayoutMode="All" IsEnabled="{Binding IsPermissionGridEnabled}" ItemsSource="{Binding BluePrintsUsers}" SelectedItem="{Binding SelectedUser, Mode=TwoWay}" SelectionMode="Row">
                                 <dxg:GridControl.Columns>
                                     <dxg:GridColumn FieldName="IsAssigned" Header="Can Book" AllowBestFit="false" Width="50" HeaderToolTip="Indicate whether user have permission to book the selected time in exo">
                                         <dxg:GridColumn.EditSettings>
@@ -133,7 +133,7 @@
                                         </dxmvvm:Interaction.Behaviors>
                                     </dxg:TableView>
                                 </dxg:GridControl.View>
-                            </custom:GridControlEx>
+                            </dxg:GridControl>
                         </dxlc:LayoutGroup>
                     </dxc:LoadingDecorator>
                 </dxlc:LayoutControl>

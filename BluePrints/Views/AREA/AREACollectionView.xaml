@@ -39,7 +39,7 @@
                     <dxmvvm:Interaction.Behaviors>
                         <dxmvvm:LayoutSerializationService />
                     </dxmvvm:Interaction.Behaviors>
-                    <custom:GridControlEx x:Name="GridControl" dxc:DXSerializer.SerializationID="GridControlAREA" Style="{StaticResource DefaultGridControlTemplate}">
+                    <dxg:GridControl x:Name="GridControl" dxc:DXSerializer.SerializationID="GridControlAREA" Style="{StaticResource DefaultGridControlTemplate}">
                         <dxmvvm:Interaction.Behaviors>
                             <dxmvvm:EventToCommand Command="{Binding MasterRowExpandedCommand}" EventName="MasterRowExpanded" PassEventArgsToCommand="True" />
                             <dxmvvm:EventToCommand Command="{Binding MasterRowCollapsedCommand}" EventName="MasterRowCollapsed" PassEventArgsToCommand="True" />
@@ -97,7 +97,7 @@
                                 </dxg:TableView.RowCellMenuCustomizations>
                             </dxg:TableView>
                         </dxg:GridControl.View>
-                    </custom:GridControlEx>
+                    </dxg:GridControl>
                 </Grid>
             </DockPanel>
         </dxb:BarManager>

@@ -6,7 +6,7 @@
                     <dxlc:LayoutItem.Resources>
                         <converter:WarningToImageConverter x:Key="warningToImageConverter" />
                     </dxlc:LayoutItem.Resources>
-                    <custom:GridControlEx x:Name="GridControl" dx:DXSerializer.SerializationID="GridControlHealthCheckView" dx:DXSerializer.StoreLayoutMode="All" ItemsSource="{Binding SourceObjects}" SelectionMode="Row">
+                    <dxg:GridControl x:Name="GridControl" dx:DXSerializer.SerializationID="GridControlHealthCheckView" dx:DXSerializer.StoreLayoutMode="All" ItemsSource="{Binding SourceObjects}" SelectionMode="Row">
                         <dxg:GridControl.Columns>
                             <dxg:GridColumn Width="100" FieldName="Severity" Header="Severity" ReadOnly="True">
                                 <dxg:GridColumn.CellTemplate>
@@ -32,7 +32,7 @@
                         <dxg:GridControl.View>
                             <dxg:TableView x:Name="tableView" AutoWidth="True" ShowGroupPanel="False" ShowGroupedColumns="False" />
                         </dxg:GridControl.View>
-                    </custom:GridControlEx>
+                    </dxg:GridControl>
                 </dxlc:LayoutItem>
             </dxlc:LayoutGroup>
         </dxlc:LayoutGroup>

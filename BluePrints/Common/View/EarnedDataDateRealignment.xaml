@@ -16,7 +16,7 @@
         <dxlc:LayoutGroup Name="LayoutGroupMain" View="Group" Header="Edit Value" Orientation="Vertical">
             <dxlc:LayoutGroup Name="LayoutGroupContent" View="Group" Orientation="Vertical">
                 <dxlc:LayoutItem Height="500" >
-                    <custom:GridControlEx x:Name="GridControl" dx:DXSerializer.SerializationID="GridControlEarnedReassignment" dx:DXSerializer.StoreLayoutMode="All" ItemsSource="{Binding SourceObjects}" SelectionMode="Row">
+                    <dxg:GridControl x:Name="GridControl" dx:DXSerializer.SerializationID="GridControlEarnedReassignment" dx:DXSerializer.StoreLayoutMode="All" ItemsSource="{Binding SourceObjects}" SelectionMode="Row">
                         <dxg:GridControl.Columns>
                             <dxg:GridColumn Header="Units" ReadOnly="True" FieldName="EarnedUnits" />
                             <dxg:GridColumn Header="Backward Date" ReadOnly="True" FieldName="BackwardEarnedDate" />
@@ -29,7 +29,7 @@
                         <dxg:GridControl.View>
                             <dxg:TableView x:Name="tableView" ShowGroupedColumns="False" ShowGroupPanel="False"/>
                         </dxg:GridControl.View>
-                    </custom:GridControlEx>
+                    </dxg:GridControl>
                 </dxlc:LayoutItem>
             </dxlc:LayoutGroup>
         </dxlc:LayoutGroup>

@@ -3,7 +3,7 @@
         <dxlc:LayoutGroup Header="Edit Value" Name="LayoutGroupMain" Orientation="Vertical" View="Group">
             <dxlc:LayoutGroup Name="LayoutGroupContent" Height="230" Orientation="Horizontal" View="Group">
                 <dxlc:LayoutItem Height="230">
-                    <custom:GridControlEx x:Name="GridControl" dx:DXSerializer.SerializationID="GridControlExoAffinity" dx:DXSerializer.StoreLayoutMode="All" ItemsSource="{Binding SourceObjects}" SelectionMode="Row">
+                    <dxg:GridControl x:Name="GridControl" dx:DXSerializer.SerializationID="GridControlExoAffinity" dx:DXSerializer.StoreLayoutMode="All" ItemsSource="{Binding SourceObjects}" SelectionMode="Row">
                         <dxg:GridControl.Columns>
                             <dxg:GridColumn Header="SUBJOB NUMBER" FieldName="INTERNAL_NAME1" HeaderToolTip="Subjob number" ReadOnly="True" Width="130" IsSmart="True" />
                             <dxg:GridColumn Header="HOURS" FieldName="MissingQuantity" HeaderToolTip="Hours from exo with subjob not found in blueprints" ReadOnly="True" Width="100" IsSmart="True" />
@@ -14,7 +14,7 @@
                         <dxg:GridControl.View>
                             <dxg:TableView x:Name="tableView" ShowGroupPanel="False" ShowGroupedColumns="False" />
                         </dxg:GridControl.View>
-                    </custom:GridControlEx>
+                    </dxg:GridControl>
                 </dxlc:LayoutItem>
             </dxlc:LayoutGroup>
             <dxlc:LayoutGroup Name="LayoutGroupButtons" Height="25" HorizontalAlignment="Right" Orientation="Horizontal" View="Group" />

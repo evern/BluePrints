@@ -40,7 +40,7 @@
                 </dxr:RibbonControl>
                 <dxlc:LayoutControl x:Name="layoutControl" Orientation="Horizontal">
                     <dxlc:LayoutGroup Name="LayoutGroupGrid" dxlc:LayoutControl.AllowHorizontalSizing="True" Orientation="Horizontal" View="Group">
-                        <custom:GridControlEx x:Name="GridControl" dxc:DXSerializer.SerializationID="GridControlEXOResources" dxc:DXSerializer.StoreLayoutMode="All" Style="{StaticResource DefaultGridControlTemplate}">
+                        <dxg:GridControl x:Name="GridControl" dxc:DXSerializer.SerializationID="GridControlEXOResources" dxc:DXSerializer.StoreLayoutMode="All" Style="{StaticResource DefaultGridControlTemplate}">
                             <dxg:GridControl.Columns>
                                 <dxg:GridColumn FieldName="RESOURCENAME" Header="Name" />
                                 <dxg:GridColumn FieldName="TITLE" Header="Title" />
@@ -163,7 +163,7 @@
                                     </dxg:TableView.RowCellMenuCustomizations>
                                 </dxg:TableView>
                             </dxg:GridControl.View>
-                        </custom:GridControlEx>
+                        </dxg:GridControl>
                     </dxlc:LayoutGroup>
                 </dxlc:LayoutControl>
             </DockPanel>

@@ -36,7 +36,7 @@
                     <Grid.RowDefinitions>
                         <RowDefinition Height="0" />
                     </Grid.RowDefinitions>
-                    <custom:GridControlEx x:Name="GridControlExcelExport" Grid.Row="0" dx:DXSerializer.Enabled="False" ItemsSource="{Binding ExcelExportData}" Visibility="Collapsed">
+                    <dxg:GridControl x:Name="GridControlExcelExport" Grid.Row="0" dx:DXSerializer.Enabled="False" ItemsSource="{Binding ExcelExportData}" Visibility="Collapsed">
                         <dxg:GridControl.Columns>
                             <dxg:GridColumn FieldName="User" ReadOnly="True" />
                             <dxg:GridColumn FieldName="Role" ReadOnly="True" />
@@ -54,11 +54,11 @@
                             <!--  need to set tableView name here for export to work  -->
                             <dxg:TableView Name="tableView" />
                         </dxg:GridControl.View>
-                    </custom:GridControlEx>
+                    </dxg:GridControl>
                 </Grid>
                 <dxlc:LayoutControl Orientation="Vertical">
                     <dxlc:LayoutGroup Header="Edit Value" Name="LayoutGroupGrid" Height="500" dxlc:LayoutControl.AllowVerticalSizing="True" Orientation="Vertical" View="Group">
-                        <custom:GridControlEx x:Name="GridControl" dx:DXSerializer.SerializationID="GridControlUserDashboard" dx:DXSerializer.StoreLayoutMode="All" IsFilterEnabled="False" SelectedItems="{Binding Selected_Dashboards, Mode=TwoWay}" Style="{StaticResource DefaultGridControlTemplate}">
+                        <dxg:GridControl x:Name="GridControl" dx:DXSerializer.SerializationID="GridControlUserDashboard" dx:DXSerializer.StoreLayoutMode="All" IsFilterEnabled="False" SelectedItems="{Binding Selected_Dashboards, Mode=TwoWay}" Style="{StaticResource DefaultGridControlTemplate}">
                             <dxmvvm:Interaction.Behaviors>
                                 <dxmvvm:EventToCommand Command="{Binding CustomSummaryCommand}" EventName="CustomSummary" PassEventArgsToCommand="True" />
                             </dxmvvm:Interaction.Behaviors>
@@ -89,7 +89,7 @@
                                 <dxg:GridSummaryItem FieldName="Stats.Budgeted.CurrentPeriodDataPoint.Units" x:Name="totalSummaryPeriodPlanned" dx:DXSerializer.Enabled="False" DisplayFormat="{}{0:n}" ShowInColumn="Stats.Budgeted.CurrentPeriodDataPoint.Units" SummaryType="Sum" />
                                 <dxg:GridSummaryItem FieldName="Stats.Earned.CurrentPeriodDataPoint.Units" x:Name="totalSummaryPeriodEarned" dx:DXSerializer.Enabled="False" DisplayFormat="{}{0:n}" ShowInColumn="Stats.Earned.CurrentPeriodDataPoint.Units" SummaryType="Sum" />
                             </dxg:GridControl.TotalSummary>
-                        </custom:GridControlEx>
+                        </dxg:GridControl>
                     </dxlc:LayoutGroup>
                     <dx:LoadingDecorator IsSplashScreenShown="{Binding IsLoading}">
                         <dxlc:LayoutGroup Name="LayoutGroupChart" Orientation="Vertical" View="Group">

@@ -119,7 +119,7 @@
                                 </ExtraLayout:ExtraLayoutControl>
                             </ExtraLayout:ExtraLayoutGroup>
                         </ExtraLayout:ExtraLayoutControl>
-                        <custom:GridControlEx x:Name="GridControl" Grid.Row="1" MaxHeight="2000" MaxWidth="2000" dxc:DXSerializer.SerializationID="GridControlVARIATION_CONSTRUCTION_ITEM" AutoExpandAllGroups="True" dxc:DXSerializer.StoreLayoutMode="All" Style="{StaticResource DefaultGridControlTemplate}">
+                        <dxg:GridControl x:Name="GridControl" Grid.Row="1" MaxHeight="2000" MaxWidth="2000" dxc:DXSerializer.SerializationID="GridControlVARIATION_CONSTRUCTION_ITEM" AutoExpandAllGroups="True" dxc:DXSerializer.StoreLayoutMode="All" Style="{StaticResource DefaultGridControlTemplate}">
                             <dxg:GridControl.Columns>
                                 <dxg:GridColumn FieldName="TYPEProxy" Header="Type" AllowBestFit="false" Width="100" GroupIndex="1">
                                     <dxg:GridColumn.EditSettings>
@@ -245,7 +245,7 @@
                                     </dxg:TableView.RowCellMenuCustomizations>
                                 </dxg:TableView>
                             </dxg:GridControl.View>
-                        </custom:GridControlEx>
+                        </dxg:GridControl>
                         <ExtraLayout:ExtraLayoutControl Grid.Row="3" Margin="5, 0, 5, 5" Padding="0" dx:DXSerializer.Enabled="False" ItemSpace="0" Orientation="Horizontal">
                             <ExtraLayout:ExtraLayoutGroup Margin="0" Padding="0" VerticalAlignment="Top" ItemSpace="0" LayoutItemSize="1*" Orientation="Vertical">
                                 <dxlc:LayoutItem Label="NOTES" Height="30" />

@@ -76,7 +76,7 @@
                 <dxdo:DockLayoutManager Name="dockLayoutManager" Margin="0" Padding="0" BorderThickness="0" FloatingMode="Desktop" MDIMergeStyle="WhenChildActivated">
                     <dxdo:LayoutGroup Margin="0" Padding="0" BorderThickness="0" ItemHeight="*" Orientation="Vertical">
                         <dxdo:LayoutPanel>
-                            <custom:GridControlEx x:Name="GridControl" dx:DXSerializer.SerializationID="GridControlREGISTER" dx:DXSerializer.StoreLayoutMode="All" Style="{StaticResource DefaultGridControlTemplate}">
+                            <dxg:GridControl x:Name="GridControl" dx:DXSerializer.SerializationID="GridControlREGISTER" dx:DXSerializer.StoreLayoutMode="All" Style="{StaticResource DefaultGridControlTemplate}">
                                 <dxg:GridControl.Columns>
                                     <dxg:GridColumn Header="Change Number" AllowBestFit="false" Width="50" FieldName="NUMBER" HeaderToolTip="Unique number" AllowMoving="false" />
                                     <dxg:GridColumn Header="Area" AllowBestFit="false" Width="50" FieldName="GUID_AREA" AllowMoving="false">
@@ -191,7 +191,7 @@
                                         </dxg:TableView.RowCellMenuCustomizations>
                                     </dxg:TableView>
                                 </dxg:GridControl.View>
-                            </custom:GridControlEx>
+                            </dxg:GridControl>
                         </dxdo:LayoutPanel>
                         <dxdo:LayoutPanel FontFamily="Calibri" FontSize="12" Margin="10, 0, 0, 0" ItemHeight="Auto" ShowBorder="False" ShowControlBox="False" ShowCloseButton="False" ShowCollapseButton="False" ShowPinButton="False">
                             <dxlc:LayoutItem HorizontalAlignment="Left" LabelPosition="Left" >

@@ -106,7 +106,7 @@
                     <Grid.RowDefinitions>
                         <RowDefinition Height="0" />
                     </Grid.RowDefinitions>
-                    <custom:GridControlEx x:Name="GridControlExcelExport" Grid.Row="0" dxc:DXSerializer.Enabled="False" ItemsSource="{Binding ExcelExportData}" Visibility="Collapsed">
+                    <dxg:GridControl x:Name="GridControlExcelExport" Grid.Row="0" dxc:DXSerializer.Enabled="False" ItemsSource="{Binding ExcelExportData}" Visibility="Collapsed">
                         <dxg:GridControl.Columns>
                             <dxg:GridColumn Header="Unique Id" FieldName="DeliverableKey" ReadOnly="True" />
                             <dxg:GridColumn Header="Deliverable Id" FieldName="INTERNAL_NUM" ReadOnly="True" />
@@ -129,7 +129,7 @@
                             <!--  need to set tableView name here for export to work  -->
                             <dxg:TableView Name="tableView" AllowEditing="False" />
                         </dxg:GridControl.View>
-                    </custom:GridControlEx>
+                    </dxg:GridControl>
                 </Grid>
                 <dxlc:LayoutControl Orientation="Vertical">
                     <dxlc:LayoutGroup Header="Edit Value" Name="LayoutGroupGrid" Height="500" dxlc:LayoutControl.AllowVerticalSizing="True" Orientation="Vertical" View="Group">
@@ -290,7 +290,7 @@
                         </dxlc:LayoutGroup>
                     </dxlc:LayoutGroup>
                     <dxlc:LayoutGroup Name="LayoutGroupTreeGrid" View="Group">
-                        <custom:GridControlEx x:Name="GridControl" dxc:DXSerializer.SerializationID="GridControlDeliverables" dxc:DXSerializer.StoreLayoutMode="All" CurrentItem="{Binding Selected_Deliverable, Mode=TwoWay}" SelectedItems="{Binding Selected_Deliverables, Mode=TwoWay}" Style="{StaticResource DefaultGridControlTemplate}">
+                        <dxg:GridControl x:Name="GridControl" dxc:DXSerializer.SerializationID="GridControlDeliverables" dxc:DXSerializer.StoreLayoutMode="All" CurrentItem="{Binding Selected_Deliverable, Mode=TwoWay}" SelectedItems="{Binding Selected_Deliverables, Mode=TwoWay}" Style="{StaticResource DefaultGridControlTemplate}">
                             <dxg:GridControl.Columns>
                                 <dxg:GridColumn Header="Phase" FieldName="Entity.Entity.GUID_PHASE" AllowBestFit="false" Width="50" ReadOnly="True" VisibleIndex="0">
                                     <dxg:GridColumn.EditSettings>
@@ -492,7 +492,7 @@
                                     </dxg:GridDragDropManager.DragElementTemplate>
                                 </dxg:GridDragDropManager>
                             </dxmvvm:Interaction.Behaviors>
-                        </custom:GridControlEx>
+                        </dxg:GridControl>
                     </dxlc:LayoutGroup>
                 </dxlc:LayoutControl>
             </DockPanel>

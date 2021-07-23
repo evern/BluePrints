@@ -59,8 +59,8 @@
                         </dxr:RibbonPage>
                     </dxr:RibbonDefaultPageCategory>
                 </dxr:RibbonControl>
-                    <custom:GridControlEx x:Name="GridControl" dxc:DXSerializer.SerializationID="GridControlTENDER_PROFILE" Style="{StaticResource DefaultGridControlTemplate}">
-                        <custom:GridControlEx.Columns>
+                    <dxg:GridControl x:Name="GridControl" dxc:DXSerializer.SerializationID="GridControlTENDER_PROFILE" Style="{StaticResource DefaultGridControlTemplate}">
+                        <dxg:GridControl.Columns>
                             <dxg:GridColumn FieldName="GUID_DEPARTMENT" Header="Department" HeaderToolTip="Department of the profile">
                                 <dxg:GridColumn.EditSettings>
                                     <dxe:ComboBoxEditSettings AutoComplete="True" DisplayMember="NAME" IsTextEditable="True" ItemsSource="{Binding DEPARTMENTCollection}" ValueMember="GUID" />
@@ -91,7 +91,7 @@
                                     <dxe:ComboBoxEditSettings AutoComplete="True" IsTextEditable="True" ItemsSource="{dxe:EnumItemsSource EnumType={x:Type common:BellCurveShape}}" NullValueButtonPlacement="EditBox" />
                                 </dxg:GridColumn.EditSettings>
                             </dxg:GridColumn>
-                        </custom:GridControlEx.Columns>
+                        </dxg:GridControl.Columns>
                         <dxg:GridControl.TotalSummary>
                             <dxg:GridSummaryItem dxc:DXSerializer.Enabled="False" Alignment="Right" SummaryType="Count" />
                         </dxg:GridControl.TotalSummary>
@@ -107,7 +107,7 @@
                                 </dxg:TableView.RowCellMenuCustomizations>
                             </dxg:TableView>
                         </dxg:GridControl.View>
-                    </custom:GridControlEx>
+                    </dxg:GridControl>
                 </DockPanel>
         </dxb:BarManager>
     </Grid>

@@ -17,7 +17,7 @@
         <dxlc:LayoutGroup Name="LayoutGroupMain" View="Group" Header="Edit Value" Orientation="Vertical">
             <dxlc:LayoutGroup Name="LayoutGroupContent" View="Group" Orientation="Vertical">
                 <dxlc:LayoutItem Height="500" >
-                    <custom:GridControlEx x:Name="GridControl" dx:DXSerializer.SerializationID="GridControlEarnedReassignment" dx:DXSerializer.StoreLayoutMode="All" ItemsSource="{Binding SourceObjects}" SelectionMode="Row">
+                    <dxg:GridControl x:Name="GridControl" dx:DXSerializer.SerializationID="GridControlEarnedReassignment" dx:DXSerializer.StoreLayoutMode="All" ItemsSource="{Binding SourceObjects}" SelectionMode="Row">
                         <dxg:GridControl.Columns>
                             <dxg:GridColumn Header="Action" ReadOnly="True" FieldName="Action" >
                                 <dxg:GridColumn.EditSettings>
@@ -84,7 +84,7 @@
                         <dxg:GridControl.View>
                             <dxg:TableView x:Name="tableView" GroupSummaryDisplayMode="AlignByColumns" ShowTotalSummary="True" ShowGroupedColumns="True" ShowGroupPanel="True"/>
                         </dxg:GridControl.View>
-                    </custom:GridControlEx>
+                    </dxg:GridControl>
                 </dxlc:LayoutItem>
             </dxlc:LayoutGroup>
         </dxlc:LayoutGroup>

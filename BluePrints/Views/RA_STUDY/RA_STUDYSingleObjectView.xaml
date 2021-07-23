@@ -72,7 +72,7 @@
                                 <dxb:BarButtonItem BarItemDisplayMode="ContentAndGlyph" Command="{Binding UndoCommand}" Content="Undo" Glyph="{dx:DXImage Image=Undo_16x16.png}" />
                                 <dxb:BarButtonItem BarItemDisplayMode="ContentAndGlyph" Command="{Binding RedoCommand}" Content="Redo" Glyph="{dx:DXImage Image=Redo_16x16.png}" />
                             </dxb:ToolBarControl>
-                            <custom:GridControlEx x:Name="GridControlTeams" Grid.Row="1" MaxHeight="2000" dx:DXSerializer.SerializationID="GridControlTeams" dx:DXSerializer.StoreLayoutMode="All" ItemsSource="{Binding Entities}" Style="{StaticResource MultiGridControlTemplate}">
+                            <dxg:GridControl x:Name="GridControlTeams" Grid.Row="1" MaxHeight="2000" dx:DXSerializer.SerializationID="GridControlTeams" dx:DXSerializer.StoreLayoutMode="All" ItemsSource="{Binding Entities}" Style="{StaticResource MultiGridControlTemplate}">
                                 <dxg:GridControl.Columns>
                                     <dxg:GridColumn FieldName="GUID_USER" Header="Name" HeaderToolTip="Team member name.">
                                         <dxg:GridColumn.EditSettings>
@@ -101,7 +101,7 @@
                                         </dxg:TableView.RowCellMenuCustomizations>
                                     </dxg:TableView>
                                 </dxg:GridControl.View>
-                            </custom:GridControlEx>
+                            </dxg:GridControl>
                         </Grid>
                         <Grid dxlc:LayoutControl.TabHeader="Drawing" DataContext="{Binding RA_STUDY_DRAWINGViewModel}">
                             <Grid.RowDefinitions>
@@ -114,7 +114,7 @@
                                 <dxb:BarButtonItem BarItemDisplayMode="ContentAndGlyph" Command="{Binding UndoCommand}" Content="Undo" Glyph="{dx:DXImage Image=Undo_16x16.png}" />
                                 <dxb:BarButtonItem BarItemDisplayMode="ContentAndGlyph" Command="{Binding RedoCommand}" Content="Redo" Glyph="{dx:DXImage Image=Redo_16x16.png}" />
                             </dxb:ToolBarControl>
-                            <custom:GridControlEx x:Name="GridControlDrawings" Grid.Row="1" MaxHeight="2000" dx:DXSerializer.SerializationID="GridControlDrawings" dx:DXSerializer.StoreLayoutMode="All" ItemsSource="{Binding Entities}" Style="{StaticResource MultiGridControlTemplate}">
+                            <dxg:GridControl x:Name="GridControlDrawings" Grid.Row="1" MaxHeight="2000" dx:DXSerializer.SerializationID="GridControlDrawings" dx:DXSerializer.StoreLayoutMode="All" ItemsSource="{Binding Entities}" Style="{StaticResource MultiGridControlTemplate}">
                                 <dxg:GridControl.Columns>
                                     <dxg:GridColumn FieldName="NUMBER" Header="Number">
                                         <dxg:GridColumn.EditSettings>
@@ -149,7 +149,7 @@
                                         </dxg:TableView.RowCellMenuCustomizations>
                                     </dxg:TableView>
                                 </dxg:GridControl.View>
-                            </custom:GridControlEx>
+                            </dxg:GridControl>
                         </Grid>
                         <Grid dxlc:LayoutControl.TabHeader="Node" DataContext="{Binding RA_STUDY_NODEViewModel}">
                             <Grid.RowDefinitions>
@@ -162,7 +162,7 @@
                                 <dxb:BarButtonItem BarItemDisplayMode="ContentAndGlyph" Command="{Binding UndoCommand}" Content="Undo" Glyph="{dx:DXImage Image=Undo_16x16.png}" />
                                 <dxb:BarButtonItem BarItemDisplayMode="ContentAndGlyph" Command="{Binding RedoCommand}" Content="Redo" Glyph="{dx:DXImage Image=Redo_16x16.png}" />
                             </dxb:ToolBarControl>
-                            <custom:GridControlEx x:Name="GridControlNodes" Grid.Row="1" MaxHeight="2000" dx:DXSerializer.SerializationID="GridControlNodes" dx:DXSerializer.StoreLayoutMode="All" ItemsSource="{Binding Entities}" Style="{StaticResource MultiGridControlTemplate}">
+                            <dxg:GridControl x:Name="GridControlNodes" Grid.Row="1" MaxHeight="2000" dx:DXSerializer.SerializationID="GridControlNodes" dx:DXSerializer.StoreLayoutMode="All" ItemsSource="{Binding Entities}" Style="{StaticResource MultiGridControlTemplate}">
                                 <dxg:GridControl.Columns>
                                     <dxg:GridColumn FieldName="NUMBER" Header="Number" />
                                     <dxg:GridColumn FieldName="DESCRIPTION" Header="Description" />
@@ -191,7 +191,7 @@
                                         </dxg:TableView.RowCellMenuCustomizations>
                                     </dxg:TableView>
                                 </dxg:GridControl.View>
-                            </custom:GridControlEx>
+                            </dxg:GridControl>
                         </Grid>
                         <Grid dxlc:LayoutControl.TabHeader="Register" DataContext="{Binding RA_STUDY_DATAViewModel}">
                             <Grid.RowDefinitions>
@@ -204,7 +204,7 @@
                                 <dxb:BarButtonItem BarItemDisplayMode="ContentAndGlyph" Command="{Binding UndoCommand}" Content="Undo" Glyph="{dx:DXImage Image=Undo_16x16.png}" />
                                 <dxb:BarButtonItem BarItemDisplayMode="ContentAndGlyph" Command="{Binding RedoCommand}" Content="Redo" Glyph="{dx:DXImage Image=Redo_16x16.png}" />
                             </dxb:ToolBarControl>
-                            <custom:GridControlEx x:Name="GridControl" Grid.Row="1" MaxHeight="2000" dx:DXSerializer.SerializationID="GridControlRegisters" dx:DXSerializer.StoreLayoutMode="All" ItemsSource="{Binding Entities}" Style="{StaticResource MultiGridControlTemplate}">
+                            <dxg:GridControl x:Name="GridControl" Grid.Row="1" MaxHeight="2000" dx:DXSerializer.SerializationID="GridControlRegisters" dx:DXSerializer.StoreLayoutMode="All" ItemsSource="{Binding Entities}" Style="{StaticResource MultiGridControlTemplate}">
                                 <dxg:GridControl.Columns>
                                     <dxg:GridColumn FieldName="GUID_NODE" Header="Node">
                                         <dxg:GridColumn.EditSettings>
@@ -259,7 +259,7 @@
                                         </dxg:TableView.RowCellMenuCustomizations>
                                     </dxg:TableView>
                                 </dxg:GridControl.View>
-                            </custom:GridControlEx>
+                            </dxg:GridControl>
                         </Grid>
                     </dxlc:LayoutGroup>
                 </dxlc:LayoutControl>
