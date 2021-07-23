@@ -39,7 +39,7 @@ namespace BluePrints.Data
             }
         }
 
-        public decimal ReportingEarnedUnits => EARNED_UNITS <= BluePrintsConstants.DurationBasedTotalUnits ? 0 : EARNED_UNITS;
+        public decimal ReportingEarnedUnits => EarnedUnits <= BluePrintsConstants.DurationBasedTotalUnits ? 0 : EarnedUnits;
         public string Office => this.PROGRESS.PROJECT.NUMBER + " " + this.PROGRESS.PROJECT.OfficeName;
     }
 }
