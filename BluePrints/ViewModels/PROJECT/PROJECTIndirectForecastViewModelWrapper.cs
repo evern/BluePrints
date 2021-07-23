@@ -362,8 +362,9 @@ namespace BluePrints.ViewModels
 
             GridControlService.GridControl.EndDataUpdate();
 
-            LoadingScreenManager.SetMessage("Deleting deprecated indirect forecasts");
-            MainViewModel.BaseBulkDelete(deleteJobs);
+            //remove job deletion because jobs should be validated in budget input instead
+            //LoadingScreenManager.SetMessage("Deleting deprecated indirect forecasts");
+            //MainViewModel.BaseBulkDelete(deleteJobs);
             LoadingScreenManager.CloseLoadingScreen();
         }
 
