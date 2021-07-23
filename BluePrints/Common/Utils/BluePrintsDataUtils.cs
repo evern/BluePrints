@@ -874,7 +874,7 @@ namespace BluePrints.Common.ViewModel.Utils
                 revenueDataPoint.Subjob_Name = jobTransaction.JOBCODE;
                 revenueDataPoint.Quantity = (decimal)jobTransaction.QUANTITY;
                 revenueDataPoint.StockCode = jobTransaction.STOCKCODE;
-                revenueDataPoint.Variation_Code = BluePrintsDataUtils.normalizeVariationCode(jobTransaction.VARIATIONCODE);
+                revenueDataPoint.Variation_Code = DataUtils.NormalizeString(jobTransaction.VARIATIONCODE);
                 revenueDataPoint.InvoiceNo = jobTransaction.INVSEQNO.ToString();
                 revenueDataPoint.InvoiceAmount = Convert.ToDecimal(jobTransaction.INVOICED) * currencyConversion;
                 revenueDataPoint.InvoiceDate = jobTransaction.INVOICEDATE;
@@ -946,7 +946,7 @@ namespace BluePrints.Common.ViewModel.Utils
                             burnedDataPoint.Commodity_Code = jobTransaction.SHORTCODE;
                             burnedDataPoint.StockCode = jobTransaction.STOCKCODE;
                             burnedDataPoint.Narrative = jobTransaction.NARRATIVE;
-                            burnedDataPoint.Variation_Code = BluePrintsDataUtils.normalizeVariationCode(jobTransaction.VARIATIONCODE);
+                            burnedDataPoint.Variation_Code = DataUtils.NormalizeString(jobTransaction.VARIATIONCODE);
                             burnedDataPoint.InvoiceNo = jobTransaction.INVSEQNO.ToString();
                             burnedDataPoint.InvoiceAmount = Convert.ToDecimal(jobTransaction.INVOICED);
                             burnedDataPoint.InvoiceDate = jobTransaction.INVOICEDATE;
@@ -1043,7 +1043,7 @@ namespace BluePrints.Common.ViewModel.Utils
                         materialDataPoint.StockCode = jobMaterial.stockcode;
                         materialDataPoint.Cost_GLName = jobMaterial.COSGlName;
                         materialDataPoint.Purchase_GLName = jobMaterial.PurchGLName;
-                        materialDataPoint.Variation_Code = normalizeVariationCode(jobMaterial.VariationCode);
+                        materialDataPoint.Variation_Code = DataUtils.NormalizeString(jobMaterial.VariationCode);
                         materialDataPoint.InvoiceAmount = Convert.ToDecimal(jobMaterial.INVOICED);
                         materialDataPoint.InvoiceDate = jobMaterial.INVOICEDATE;
                         materialDataPoint.PONumber = jobMaterial.POno == null ? string.Empty : ((int)jobMaterial.POno).ToString();
@@ -1070,19 +1070,6 @@ namespace BluePrints.Common.ViewModel.Utils
                 return ApplicationDeployment.CurrentDeployment.CurrentVersion;
 
             return null;
-        }
-
-        public static string normalizeVariationCode(string variationCode)
-        {
-            if (variationCode == null)
-                return string.Empty;
-
-            //cannot use this because subjob code isn't formatted to 6 characters, because user's don't use variation code as 6 characters sometimes
-            //if (variationCode.Length >= 6)
-            //    return variationCode.Substring(0, 6);
-
-            //return string.Empty;
-            return variationCode;
         }
 
         public static List<ExoDataPoint> GetEXOPO(IPrimeroEntitiesUnitOfWork primeroUOW, string projectNumber, DateTime queryDate, List<DateTime> alignedDataDates = null, bool showLoadingScreen = false, ExoQueryType exoQueryType = ExoQueryType.All)
@@ -1138,7 +1125,7 @@ namespace BluePrints.Common.ViewModel.Utils
 
             foreach(var po in poList)
             {
-                if (po.COSTGROUPDESC != null && (po.COSTGROUPDESC.Length >= 3 && !po.COSTGROUPDESC.Substring(0, 3).Contains("G99") && !po.COSTGROUPDESC.Substring(0, 3).Contains("010")))
+                if (po.COSTGROUPDESC != null && po.COSTGROUPDESC.Length >= 3 && !po.COSTGROUPDESC.Substring(0, 3).Contains("G99") && !po.COSTGROUPDESC.Substring(0, 3).Contains("010"))
                 {
                     ExoDataPoint poDataPoint = new ExoDataPoint();
                     poDataPoint.BudgetedUnits = 0;
@@ -1174,7 +1161,7 @@ namespace BluePrints.Common.ViewModel.Utils
                     poDataPoint.Subjob_Name = po.JOBCODE;
                     poDataPoint.ResourceName = string.Empty;
                     poDataPoint.Quantity = poDataPoint.Units;
-                    poDataPoint.Description = po.DESCRIPTION;
+                    poDataPoint.Description = DataUtils.NormalizeString(po.DESCRIPTION);
                     poDataPoint.Narrative = po.NARRATIVE;
                     poDataPoint.Supplier = po.NAME;
                     poDataPoint.InvoiceNo = string.Empty;
@@ -1189,7 +1176,7 @@ namespace BluePrints.Common.ViewModel.Utils
                     poDataPoint.PONumber = po.SEQNO.ToString();
                     poDataPoint.POOrderQty = po.ORD_QUANT == null ? 0 : Convert.ToDecimal((double)po.ORD_QUANT);
                     poDataPoint.POSuppliedQty = po.SUP_QUANT == null ? 0 : Convert.ToDecimal((double)po.SUP_QUANT);
-                    poDataPoint.Variation_Code = normalizeVariationCode(po.X_VARIATIONCODE);
+                    poDataPoint.Variation_Code = DataUtils.NormalizeString(po.X_VARIATIONCODE);
                     poDataPoints.Add(poDataPoint);
                 }
 
@@ -1238,7 +1225,7 @@ namespace BluePrints.Common.ViewModel.Utils
                 po.PurchaseOrderLine.Subjob_Name = po.SubJob_Name;
                 po.PurchaseOrderLine.Discipline_Code = po.Discipline_Code;
                 po.PurchaseOrderLine.Commodity_Code = po.Commodity_Code;
-                po.PurchaseOrderLine.X_VARIATIONCODE = normalizeVariationCode(po.PurchaseOrderLine.X_VARIATIONCODE);
+                po.PurchaseOrderLine.X_VARIATIONCODE = DataUtils.NormalizeString(po.PurchaseOrderLine.X_VARIATIONCODE);
             }
 
             return pos.Select(x => x.PurchaseOrderLine).ToList();

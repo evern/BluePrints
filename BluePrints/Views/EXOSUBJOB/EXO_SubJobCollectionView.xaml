@@ -172,7 +172,7 @@
                         <dxg:GridSummaryItem dxc:DXSerializer.Enabled="False" DisplayFormat="c0" FieldName="SubJobRemainingPOCostSummary" SummaryType="Sum" />
                     </dxg:GridControl.GroupSummary>
                     <dxg:GridControl.View>
-                        <dxg:TableView x:Name="tableView" NewItemRowPosition="Top" ShowTotalSummary="True" Style="{StaticResource DefaultTableViewTemplate}">
+                        <dxg:TableView x:Name="tableView" ShowTotalSummary="True" Style="{StaticResource DefaultTableViewTemplate}">
                             <dxg:TableView.RowCellMenuCustomizations>
                                 <dxb:BarLinkContainerItem ItemLinksSource="{StaticResource ContextMenuDefaultHeaderButtons}" />
                                 <dxb:BarItemLinkSeparator />

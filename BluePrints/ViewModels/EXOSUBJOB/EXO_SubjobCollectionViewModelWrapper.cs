@@ -64,7 +64,7 @@ namespace BluePrints.ViewModels
         protected EXO_SubjobCollectionViewModelWrapper(
             IUnitOfWorkFactory<IBluePrintsEntitiesUnitOfWork> unitOfWorkFactory = null)
         {
-
+            IsReadOnly = LoginCredentials.getPermissionStatus(DataUtils.GetNameOf(() => NavigationResources.Menu_Project_EXO_Jobs)) == LoginCredentials.PermissionStatus.ReadOnly;
         }
 
         #region Code Properties
