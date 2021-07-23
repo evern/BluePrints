@@ -87,10 +87,7 @@ namespace BluePrints.Common.ViewModel.Reporting
             decimal earnedUnits = 0;
             foreach (PROGRESS_ITEM progress in progresses)
             {
-                if (Entity.Entity.BUDGET_INSTALL_HOURS_PER_QTY != null && progress.STAGE_WEIGHT != null && progress.BUDGET_INSTALL_HOURS_PER_QTY != null)
-                {
-                    earnedUnits += progress.EarnedUnits * (decimal)progress.STAGE_WEIGHT * (decimal)progress.BUDGET_INSTALL_HOURS_PER_QTY;
-                }
+                earnedUnits += progress.EarnedUnits;
             }
 
             return earnedUnits;
