@@ -2151,14 +2151,14 @@ namespace BluePrints.Common.Projections
             exoTime.SubJobCode = dbTime.SUBJOBNAME;
             exoTime.SubJobTitle = dbTime.SUBJOBTITLE;
             exoTime.DisciplineId = dbTime.DISCIPLINE_ID;
-            exoTime.DisciplineCode = dbTime.DISCIPLINE_CODE == null ? string.Empty : dbTime.DISCIPLINE_CODE;
+            exoTime.DisciplineCode = DataUtils.NormalizeString(dbTime.DISCIPLINE_CODE);
             exoTime.DisciplineName = dbTime.DISCIPLINE_NAME;
             exoTime.CommodityId = dbTime.COMMODITY_ID;
-            exoTime.CommodityCode = dbTime.COMMODITY_CODE == null ? string.Empty : dbTime.COMMODITY_CODE;
+            exoTime.CommodityCode = DataUtils.NormalizeString(dbTime.COMMODITY_CODE);
             exoTime.CommodityName = dbTime.COMMODITY_NAME;
             exoTime.StockCode = dbTime.STOCK_CODE;
             exoTime.StockName = dbTime.STOCK_NAME;
-            exoTime.VariationCode = dbTime.VARIATION_CODE == null ? string.Empty : dbTime.VARIATION_CODE;
+            exoTime.VariationCode = DataUtils.NormalizeString(dbTime.VARIATION_CODE);
             exoTime.BudgetQty = Convert.ToDecimal(dbTime.BUDGETED_QTY);
             exoTime.BudgetRev = Convert.ToDecimal(dbTime.BUDGETED_REV);
             exoTime.BudgetRate = Convert.ToDecimal(dbTime.BUDGETED_RATE);

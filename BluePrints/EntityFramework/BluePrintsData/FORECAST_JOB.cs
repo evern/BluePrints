@@ -74,6 +74,9 @@ namespace BluePrints.Data
 
         public Guid? DELETEDBY { get; set; }
 
+        [StringLength(100)]
+        public string DELETE_REASON { get; set; }
+
         public virtual PROJECT PROJECT { get; set; }
 
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]

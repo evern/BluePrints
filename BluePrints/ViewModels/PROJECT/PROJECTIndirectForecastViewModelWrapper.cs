@@ -331,6 +331,7 @@ namespace BluePrints.ViewModels
                 ExoSubJobProjection projection = QueryJobs.Where(x => x.CommodityId != null && x.DisciplineId != null && x.SubJobId != null).FirstOrDefault(x => x.CommodityCode == job.COMMODITY_CODE && x.DisciplineCode == job.DISCIPLINE_CODE && x.SubJobCode == job.SUBJOB_CODE && x.VariationCode == job.VARIATION_CODE);
                 if (projection == null)
                 {
+                    job.DELETE_REASON = "Removed from Budget Input";
                     deleteJobs.Add(job);
                     continue;
                 }
@@ -361,9 +362,18 @@ namespace BluePrints.ViewModels
             }
 
             GridControlService.GridControl.EndDataUpdate();
-
             LoadingScreenManager.SetMessage("Deleting deprecated indirect forecasts");
-            MainViewModel.BaseBulkDelete(deleteJobs);
+            if(deleteJobs.Count() > 0)
+            {
+                //saves the delete reason
+                MainViewModel.UnitOfWork.SaveChanges();
+
+                foreach (FORECAST_JOB deleteJob in deleteJobs)
+                    MainViewModel.UnitOfWork.FORECAST_JOBS.Remove(deleteJob);
+
+                MainViewModel.UnitOfWork.SaveChanges();
+            }
+
             LoadingScreenManager.CloseLoadingScreen();
         }
 
@@ -811,6 +821,12 @@ namespace BluePrints.ViewModels
                 editFORECAST_JOB = new FORECAST_JOB();
                 editFORECAST_JOB.BluePrintsEntitiesUnitOfWork = MainEntityUnitOfWork;
             }
+            else
+            {
+                FORECAST_JOB findExistingFORECAST_JOB = MainEntityUnitOfWork.FORECAST_JOBS.FirstOrDefault(x => x.GUID == editFORECAST_JOB.GUID);
+                if (findExistingFORECAST_JOB == null)
+                    editFORECAST_JOB.GUID = Guid.Empty;
+            }
 
             ExoSubJobProjection projection = QueryJobs.FirstOrDefault(x => x.FullCode == row[columnFullCode].ToString());
             if (projection != null)
@@ -824,6 +840,7 @@ namespace BluePrints.ViewModels
                 else
                     editFORECAST_JOB.VARIATION_CODE = projection.VariationCode;
 
+                editFORECAST_JOB.DELETE_REASON = string.Empty;
                 editFORECAST_JOB.GUID_PROJECT = LoadPROJECT.GUID;
                 editFORECAST_JOB.PrepareForSaveChanges(commitToDb);
                 //MainViewModel.Save(editFORECAST_JOB);
@@ -1226,7 +1243,7 @@ namespace BluePrints.ViewModels
                     if (rowIndex >= 0)
                     {
                         DataRowView dataRowView = dataPointsTable.DefaultView[rowIndex];
-                        deleteRow(dataRowView);
+                        deleteRow(dataRowView, "Undo");
                         dataPointsTable.Rows.Remove(dataRowView.Row);
                     }
                 }
@@ -1277,7 +1294,7 @@ namespace BluePrints.ViewModels
                     if (rowIndex >= 0)
                     {
                         DataRowView dataRowView = dataPointsTable.DefaultView[rowIndex];
-                        deleteRow(dataRowView);
+                        deleteRow(dataRowView, "Redo");
                         dataPointsTable.Rows.Remove(dataRowView.Row);
                     }
                 }
@@ -1328,7 +1345,7 @@ namespace BluePrints.ViewModels
             EntitiesUndoRedoManager.PauseActionId();
             foreach(DataRowView selectedRow in SelectedDataRows)
             {
-                deleteRow(selectedRow);
+                deleteRow(selectedRow, "User manual delete");
                 removeRows.Add(selectedRow.Row);
             }
             EntitiesUndoRedoManager.UnpauseActionId();
@@ -1337,11 +1354,16 @@ namespace BluePrints.ViewModels
                 DataPointsTable.Rows.Remove(removeRow);
         }
 
-        private void deleteRow(DataRowView selectedRow)
+        private void deleteRow(DataRowView selectedRow, string deleteReason)
         {
             FORECAST_JOB findFORECAST_JOB = (FORECAST_JOB)selectedRow[columnForecastJob];
             if (findFORECAST_JOB != null)
+            {
+                findFORECAST_JOB.DELETE_REASON = deleteReason;
+                //save the delete reason
+                MainViewModel.Save(findFORECAST_JOB);
                 MainViewModel.Delete(findFORECAST_JOB);
+            }
 
             if (!EntitiesUndoRedoManager.IsInUndoRedoOperation)
                 EntitiesUndoRedoManager.AddUndo(updateForecastJobFromDataRow(selectedRow.Row), null, null, null, EntityMessageType.Deleted);
