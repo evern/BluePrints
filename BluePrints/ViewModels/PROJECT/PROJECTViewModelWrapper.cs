@@ -372,7 +372,7 @@ namespace BluePrints.ViewModels
         {
             LoadingScreenManager.ShowLoadingScreen(1);
             PROJECT_Dashboard dashboard = Entities.First();
-            //dashboard.Export_Data = DashboardHelpers.BuildExportData(hierarchicalDashboard, DOCTYPECollection);
+            dashboard.Export_Data = DashboardHelpers.BuildExportData(hierarchicalDashboard, DOCTYPECollection);
 
             IsExportInternalNameVisible = false;
             this.RaisePropertyChanged(x => x.IsExportInternalNameVisible);
