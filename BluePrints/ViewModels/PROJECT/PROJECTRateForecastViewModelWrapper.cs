@@ -42,7 +42,7 @@ namespace BluePrints.ViewModels
         /// Creates a new instance of FORECAST_JOBCollectionViewModelWrapper as a POCO view model.
         /// </summary>
         /// <param name="unitOfWorkFactory">A factory used to create a unit of work instance.</param>
-        public static PROJECTRateForecastViewModelWrapper Create(
+        public static  new PROJECTRateForecastViewModelWrapper Create(
             IUnitOfWorkFactory<IBluePrintsEntitiesUnitOfWork> unitOfWorkFactory = null)
         {
             return ViewModelSource.Create(() => new PROJECTRateForecastViewModelWrapper(unitOfWorkFactory));

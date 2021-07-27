@@ -244,9 +244,8 @@ namespace BluePrints.ViewModels
             mainThreadDispatcher.BeginInvoke(new Action(() => this.RaisePropertyChanged(x => x.DataPointsTable)));
         }
 
-        protected override void onAfterRefresh()
+        protected void onAfterRefresh()
         {
-            base.onAfterRefresh();
             refreshDataPointsTable();
         }
 

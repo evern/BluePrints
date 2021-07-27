@@ -361,7 +361,7 @@ namespace BluePrints.ViewModels
             }
         }
 
-        protected void loadDataPointsTable()
+        protected override bool loadDataPointsTable()
         {
             IsLoading = true;
             this.RaisePropertyChanged(x => x.IsLoading);
@@ -373,6 +373,7 @@ namespace BluePrints.ViewModels
             this.RaisePropertyChanged(x => x.DataPointsTable);
             IsLoading = false;
             this.RaisePropertyChanged(x => x.IsLoading);
+            return true;
         }
 
         protected List<ExoDataPoint> exoActuals;
@@ -430,7 +431,7 @@ namespace BluePrints.ViewModels
             }
 
             //add dummy entries when there are actuals
-            if(showAllJobs)
+            if(showAllJobs && AllActuals != null)
             {
                 var actualsGroupByFullStockCode = AllActuals.GroupBy(x => new { x.FullCode, x.StockCode }).Select(g => new { g.Key.FullCode, g.Key.StockCode, Actual = g.First() });
                 foreach(var actualGroupByFullStockCode in actualsGroupByFullStockCode)

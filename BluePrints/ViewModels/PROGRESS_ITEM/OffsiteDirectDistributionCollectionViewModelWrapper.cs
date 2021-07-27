@@ -171,10 +171,8 @@ namespace BluePrints.ViewModels
             MainViewModel.ValidateFillDownCallBack = ValidateFillDownCallBack;
             MainViewModel.IsPasteCellLevel = false;
             MainViewModel.AlwaysSkipMessage = false;
-            MainViewModel.RefreshOnSameSenderKey = true;
             MainViewModel.DisableEntitiesPauseUnpause = true;
             PROGRESS_ITEMSCollectionViewModel.AlwaysSkipMessage = false;
-            PROGRESS_ITEMSCollectionViewModel.RefreshOnSameSenderKey = true;
             PROGRESS_ITEMSCollectionViewModel.DisableEntitiesPauseUnpause = true;
             doNotApplyBestFit = true;
         }
@@ -238,10 +236,9 @@ namespace BluePrints.ViewModels
             this.RaisePropertyChanged(x => x.DataPointsTable);
         }
         
-        protected override void onAfterRefresh()
+        protected void onAfterRefresh()
         {
             refreshDataPointsTable();
-            base.onAfterRefresh();
         }
         
         public override void OnAfterAuxiliaryEntitiesChanged(object key, Type changedType, EntityMessageType messageType, object sender, Guid senderKey, bool isBulkRefresh)

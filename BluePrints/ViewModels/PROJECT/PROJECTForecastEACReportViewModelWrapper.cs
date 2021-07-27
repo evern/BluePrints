@@ -74,13 +74,14 @@ namespace BluePrints.ViewModels
             CreateMainViewModel(bluePrintsUnitOfWorkFactory, x => x.FORECAST_EACS);
         }
 
-        private void loadDataPointsTable()
+        protected override bool loadDataPointsTable()
         {
             dataPointsTable = null;
 
             updateDataPointsTable();
             this.RaisePropertyChanged(x => x.DataPointsTable);
             this.RaisePropertyChanged(x => x.IsLoadingForecast);
+            return true;
         }
 
         DataTable dataPointsTable = null;

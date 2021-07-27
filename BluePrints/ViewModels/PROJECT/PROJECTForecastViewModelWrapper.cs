@@ -299,7 +299,7 @@ namespace BluePrints.ViewModels
         }
 
         public Action<DataTable> OnDataTableLoaded { get; set; }
-        private void loadDataPointsTable()
+        protected override bool loadDataPointsTable()
         {
             IsLoading = true;
             this.RaisePropertyChanged(x => x.IsLoading);
@@ -313,6 +313,7 @@ namespace BluePrints.ViewModels
 
             IsLoading = false;
             this.RaisePropertyChanged(x => x.IsLoading);
+            return true;
         }
 
         public bool FullScreenView = true;

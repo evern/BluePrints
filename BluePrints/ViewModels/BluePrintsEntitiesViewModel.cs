@@ -713,21 +713,19 @@ namespace BluePrints.Common.ViewModel
             if(imagePath != string.Empty)
             {
                 if (!imagePath.ToUpper().Contains("COMMON"))
-                    Image = new BitmapImage(new Uri("pack://application:,,,/DevExpress.Images.v19.2;component/Images/" + imagePath));
+                    Image = new BitmapImage(new Uri("pack://application:,,,/DevExpress.Images.v20.2;component/Images/" + imagePath));
                 else
                     Image = new BitmapImage(new Uri(imagePath, UriKind.Relative));
             }
             else
             {
                 if (!CanNavigate)
-                    Image = new BitmapImage(new Uri("pack://application:,,,/DevExpress.Images.v19.2;component/Images/Data/ManageDataSource_16x16.png"));
+                    Image = new BitmapImage(new Uri("pack://application:,,,/DevExpress.Images.v20.2;component/Images/Data/ManageDataSource_16x16.png"));
                     //new Uri(@"/Common/Images/PRIMERO.jpg", UriKind.Relative));
                 else
-                    Image = new BitmapImage(new Uri("pack://application:,,,/DevExpress.Images.v19.2;component/Images/Actions/Open_16x16.png"));
+                    Image = new BitmapImage(new Uri("pack://application:,,,/DevExpress.Images.v20.2;component/Images/Actions/Open_16x16.png"));
             }
         }
-
-        public RangeObservableCollection<BluePrintsEntitiesModuleDescription> ChildModules { get; set; }
 
         public string Caption => this.NavigationTitle;
 
