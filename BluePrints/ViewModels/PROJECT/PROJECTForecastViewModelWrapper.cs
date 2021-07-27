@@ -2443,6 +2443,22 @@ namespace BluePrints.ViewModels
             job.OriginalUncommitted = uncommittedPOValues + uncommitedP6Values + job.P6RemainingCosts;
         }
 
+        public bool CanRollOver()
+        {
+            return !IsLoading;
+        }
+
+        public void RollOver()
+        {
+            if (!checkSaveEACPermission())
+                return;
+
+            SaveBudget();
+            SaveCurrentMonthEAC();
+
+            MessageBoxService.ShowMessage("Rev 0 budget and EAC is saved", "Roll Over Data Saved", MessageButton.OK, MessageIcon.Information);
+        }
+
         public bool CanSaveCurrentMonthEAC()
         {
             return !IsLoading;
@@ -2450,9 +2466,6 @@ namespace BluePrints.ViewModels
 
         public void SaveCurrentMonthEAC()
         {
-            if (!checkSaveEACPermission())
-                return;
-
             LoadingScreenManager.ShowLoadingScreen(DataPointsTable.Rows.Count);
 
             DateTime firstForecastDate = new DateTime(FixedDataDateMonthEnd.Year, FixedDataDateMonthEnd.Month, 1).AddMonths(2).AddDays(-1);
@@ -2492,28 +2505,23 @@ namespace BluePrints.ViewModels
             LoadingScreenManager.SetMessage("Saving changes...");
             bluePrintsUnitOfWork.SaveChanges();
             LoadingScreenManager.CloseLoadingScreen();
-            MessageBoxService.ShowMessage("EAC for data date: " + FixedDataDateMonthEnd.ToString(BluePrintsResources.ColumnDateFormat) + " is saved\nData date will be changed to next month after closing this dialog", "EAC Saved", MessageButton.OK, MessageIcon.Information);
             FixedDataDate = FixedDataDateMonthEnd.AddMonths(1);
             LoadDataDate = FixedDataDate;
             SaveDateAndRefresh();
         }
 
-        public bool CanSaveFirstEAC()
+        public bool CanSaveBudget()
         {
             return !IsLoading;
         }
 
-        public void SaveFirstEAC()
+        public void SaveBudget()
         {
-            if (!checkSaveEACPermission())
-                return;
-
             LoadingScreenManager.ShowLoadingScreen(DataPointsTable.Rows.Count);
-
             foreach (DataRow masterRow in DataPointsTable.Rows)
             {
                 ForecastJobData entity = (ForecastJobData)masterRow[columnEntity];
-                findExistingOrAddNewEAC(FixedDataDateMonthEnd, entity, bluePrintsUnitOfWork, entity.EstimateAtCompletion, false, ForecastEACType.FirstEAC);
+                findExistingOrAddNewEAC(FixedDataDateMonthEnd, entity, bluePrintsUnitOfWork, entity.Budget, false, ForecastEACType.FirstEAC);
                 entity.FirstEAC = entity.EstimateAtCompletion;
                 LoadingScreenManager.Progress();
             }
@@ -2523,8 +2531,6 @@ namespace BluePrints.ViewModels
             LoadingScreenManager.SetMessage("Saving changes...");
             bluePrintsUnitOfWork.SaveChanges();
             LoadingScreenManager.CloseLoadingScreen();
-            GridControlService.RefreshData();
-            MessageBoxService.ShowMessage("Rev 0 budget is saved", "Rev 0 Budget Saved", MessageButton.OK, MessageIcon.Information);
         }
 
         private bool checkSaveEACPermission()
@@ -2582,7 +2588,6 @@ namespace BluePrints.ViewModels
                 return;
 
             string normalizedVariationCode = DataUtils.NormalizeString(projection.VariationCode);
-
             IQueryable<FORECAST_EAC> jobFORECAST_EACs = bluePrintsEntitiesUnitOfWork.FORECAST_EACS.Where(x => x.GUID_PROJECT == LoadPROJECT.GUID && x.SUBJOB_CODE == projection.SubJobCode && x.DISCIPLINE_CODE == projection.DisciplineCode && x.COMMODITY_CODE == projection.CommodityCode && x.VARIATION_CODE == normalizedVariationCode && x.TYPE == forecastEACType);
             FORECAST_EAC forecast_EAC;
             if(forecastEACType == ForecastEACType.FirstEAC)

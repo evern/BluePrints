@@ -280,6 +280,7 @@ namespace BluePrints.ViewModels
             queryJobLines = jobLines;
         }
         #endregion
+
         #region View Properties
         DataTable dataPointsTable = null;
         public DataTable DataPointsTable
