@@ -2457,18 +2457,18 @@ namespace BluePrints.ViewModels
             job.OriginalUncommitted = uncommittedPOValues + uncommitedP6Values + job.P6RemainingCosts;
         }
 
-        public bool CanBaselineBudget()
+        public bool CanSaveProjectBudget()
         {
             return !IsLoading;
         }
 
-        public void BaselineBudget()
+        public void SaveProjectBudget()
         {
-            if (!checkSaveEACPermission())
+            if (!checkSaveEACPermission(true))
                 return;
 
-            SaveProjectBudgetToTenderBudget();
-            SaveEACToProjectBudget();
+            saveProjectBudgetToTenderBudget();
+            saveEACToProjectBudget();
             MessageBoxService.ShowMessage("Project budget is saved to tender budget and EAC is saved as project budget", "Roll Over Data Saved", MessageButton.OK, MessageIcon.Information);
         }
 
@@ -2479,7 +2479,7 @@ namespace BluePrints.ViewModels
 
         public void SaveCurrentMonthEAC()
         {
-            if (!checkSaveEACPermission())
+            if (!checkSaveEACPermission(false))
                 return;
 
             LoadingScreenManager.ShowLoadingScreen(DataPointsTable.Rows.Count);
@@ -2529,11 +2529,8 @@ namespace BluePrints.ViewModels
         /// <summary>
         /// Saves project budget to tender budget
         /// </summary>
-        private void SaveProjectBudgetToTenderBudget()
+        private void saveProjectBudgetToTenderBudget()
         {
-            if (!checkSaveEACPermission())
-                return;
-
             LoadingScreenManager.ShowLoadingScreen(DataPointsTable.Rows.Count);
             LoadingScreenManager.SetMessage("Copying project budget to tender budget...");
             foreach (DataRow masterRow in DataPointsTable.Rows)
@@ -2554,11 +2551,8 @@ namespace BluePrints.ViewModels
         /// <summary>
         /// Saves project budget to tender budget
         /// </summary>
-        private void SaveEACToProjectBudget()
+        private void saveEACToProjectBudget()
         {
-            if (!checkSaveEACPermission())
-                return;
-
             List<ErrorMessage> errorMessages = new List<ErrorMessage>();
             LoadingScreenManager.ShowLoadingScreen(DataPointsTable.Rows.Count);
             LoadingScreenManager.SetMessage("Copying EAC to project budget...");
@@ -2579,12 +2573,23 @@ namespace BluePrints.ViewModels
             updateFloatingSummaryMembers();
         }
 
-        private bool checkSaveEACPermission()
+        private bool checkSaveEACPermission(bool isCheckProjectBudget)
         {
-            if (LoginCredentials.getPermissionStatus(DataUtils.GetNameOf(() => NavigationResources.Permission_Forecast_SaveEAC)) == LoginCredentials.PermissionStatus.None)
+            if(isCheckProjectBudget)
             {
-                MessageBoxService.ShowMessage("You are not authorised to use this function", "Not Authorised", MessageButton.OK, MessageIcon.Exclamation);
-                return false;
+                if (LoginCredentials.getPermissionStatus(DataUtils.GetNameOf(() => NavigationResources.Permission_Forecast_SaveProjectBudget)) == LoginCredentials.PermissionStatus.None)
+                {
+                    MessageBoxService.ShowMessage("You are not authorised to use this function", "Not Authorised", MessageButton.OK, MessageIcon.Exclamation);
+                    return false;
+                }
+            }
+            else
+            {
+                if (LoginCredentials.getPermissionStatus(DataUtils.GetNameOf(() => NavigationResources.Permission_Forecast_SaveEAC)) == LoginCredentials.PermissionStatus.None)
+                {
+                    MessageBoxService.ShowMessage("You are not authorised to use this function", "Not Authorised", MessageButton.OK, MessageIcon.Exclamation);
+                    return false;
+                }
             }
 
             List<ForecastJobData> jobs = getJobDataFromDatatable();
