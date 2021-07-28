@@ -279,18 +279,18 @@ namespace BluePrints.Common.ViewModel.Misc
             }
         }
 
-        public static void PopulateFirstEAC(ForecastJobData forecastProjection, IEnumerable<FORECAST_EAC> FORECAST_EACFirstEACCollection)
+        public static void PopulateTenderBudget(ForecastJobData forecastProjection, IEnumerable<FORECAST_EAC> FORECAST_EACTenderBudgetCollection)
         {
             //populate previous estimate to completion
-            FORECAST_EAC previousEAC = FORECAST_EACFirstEACCollection.FirstOrDefault(x => x.SUBJOB_CODE == forecastProjection.Projection.SubJobCode && x.DISCIPLINE_CODE == forecastProjection.Projection.DisciplineCode && x.COMMODITY_CODE == forecastProjection.Projection.CommodityCode && x.VARIATION_CODE == forecastProjection.Projection.VariationCode);
+            FORECAST_EAC previousEAC = FORECAST_EACTenderBudgetCollection.FirstOrDefault(x => x.SUBJOB_CODE == forecastProjection.Projection.SubJobCode && x.DISCIPLINE_CODE == forecastProjection.Projection.DisciplineCode && x.COMMODITY_CODE == forecastProjection.Projection.CommodityCode && x.VARIATION_CODE == forecastProjection.Projection.VariationCode);
             if (previousEAC != null)
             {
                 if (previousEAC.FORECAST_COSTS != null)
-                    forecastProjection.FirstEAC = (decimal)previousEAC.FORECAST_COSTS;
+                    forecastProjection.TenderBudget = (decimal)previousEAC.FORECAST_COSTS;
             }
             else
             {
-                forecastProjection.FirstEAC = 0.00m;
+                forecastProjection.TenderBudget = 0.00m;
             }
         }
 

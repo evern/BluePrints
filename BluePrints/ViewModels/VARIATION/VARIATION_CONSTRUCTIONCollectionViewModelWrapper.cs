@@ -229,7 +229,7 @@ namespace BluePrints.ViewModels
                             exoJob.IgnoreExoBudgetError = true;
                             exoJob.PopulateCommodityCodes(COMMODITY_CODECollection);
 
-                            JOBCOST_LINES line = ExoQueries.GetProjectLine(localPrimeroUnitOfWork, loadPROJECT.NUMBER, exoJob, true);
+                            JOBCOST_LINES line = ExoQueries.GetProjectLine(localPrimeroUnitOfWork, loadPROJECT.NUMBER, exoJob, ExoJobLinesQueryCompliance.IgnoreCostCentres);
                             if (line != null)
                             {
                                 localPrimeroUnitOfWork.JOBCOST_LINES.Remove(line);

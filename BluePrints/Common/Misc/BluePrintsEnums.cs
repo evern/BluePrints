@@ -33,6 +33,15 @@ namespace BluePrints.Common
         USA
     }
 
+    public enum ExoJobLinesQueryCompliance
+    {
+        [Display(Name = "Full")]
+        Full,
+        [Display(Name = "Ignore Cost Group/Cost Type")]
+        IgnoreCostCentres,
+        [Display(Name = "Ignore Stock Code")]
+        IgnoreStockCode
+    }
 
     public enum RowEditAction
     {
@@ -1024,8 +1033,8 @@ namespace BluePrints.Common
         EAC = 0,
         [Display(Name = "Previous Commitment")]
         PreviousCommitment = 1,
-        [Display(Name = "First EAc")]
-        FirstEAC = 2
+        [Display(Name = "Tender Budget")]
+        TenderBudget = 2
     }
 
     public class ReportingEnum

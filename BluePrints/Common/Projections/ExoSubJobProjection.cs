@@ -224,9 +224,9 @@ namespace BluePrints.Common.Projections
         {
             get
             {
-                string subJobCode = SubJobCode == null || SubJobCode == string.Empty ? "XXXXX-XXX-XX-XX" : SubJobCode;
-                string disciplineCode = DisciplineCode == null || DisciplineCode == string.Empty ? "XX00" : DisciplineCode;
-                string commodityCode = CommodityCode == null || CommodityCode == string.Empty ? "X00" : CommodityCode;
+                string subJobCode = SubJobCode == null || SubJobCode == string.Empty ? "(Missing)" : SubJobCode;
+                string disciplineCode = DisciplineCode == null || DisciplineCode == string.Empty ? "(Missing)" : DisciplineCode;
+                string commodityCode = CommodityCode == null || CommodityCode == string.Empty ? "(Missing)" : CommodityCode;
 
                 return subJobCode + "-" + disciplineCode + "-" + commodityCode;
             }
@@ -407,7 +407,12 @@ namespace BluePrints.Common.Projections
             int updatedLineCount = 0;
             foreach (ExoSubJobProjection projection in projections)
             {
-                if (projection.SubJobCode == null || projection.SubJobCode == string.Empty || !Regex.IsMatch(projection.SubJobCode, loadPROJECT.NUMBER + BluePrintsResources.Regex_SUBJOB))
+                if (projection.SubJobCode == null || projection.SubJobCode == string.Empty)
+                {
+                    errorMessages.Add(new ErrorMessage(projection.ErrorMessageIdentificationCode, "Missing sub job code"));
+                    continue;
+                }
+                else if (!Regex.IsMatch(projection.SubJobCode, loadPROJECT.NUMBER + BluePrintsResources.Regex_SUBJOB))
                 {
                     errorMessages.Add(new ErrorMessage(projection.ErrorMessageIdentificationCode, "Invalid sub job code"));
                     continue;
@@ -432,7 +437,18 @@ namespace BluePrints.Common.Projections
                 {
                     if(projection.StockCode != BluePrintsResources.VariationStockCode)
                     {
-                        if (projection.DisciplineCode == null || projection.DisciplineCode == string.Empty || !Regex.IsMatch(projection.DisciplineCode, BluePrintsResources.Regex_DISCIPLINE))
+                        if (projection.DisciplineCode == null || projection.DisciplineCode == string.Empty)
+                        {
+                            if (projection.CommodityCode == null || projection.CommodityCode == string.Empty)
+                            {
+                                errorMessages.Add(new ErrorMessage(projection.ErrorMessageIdentificationCode, "missing discipline and commodity code"));
+                                continue;
+                            }
+
+                            errorMessages.Add(new ErrorMessage(projection.ErrorMessageIdentificationCode, "Missing discipline code"));
+                            continue;
+                        }
+                        else if (!Regex.IsMatch(projection.DisciplineCode, BluePrintsResources.Regex_DISCIPLINE))
                         {
                             errorMessages.Add(new ErrorMessage(projection.ErrorMessageIdentificationCode, "Invalid discipline code"));
                             continue;
@@ -675,7 +691,8 @@ namespace BluePrints.Common.Projections
                 return null;
             else
             {
-                JOBCOST_LINES line = ExoQueries.GetProjectLine(pUnitOfWork, projectNumber, exoLine, ignoreCostGroupCostType);
+                ExoJobLinesQueryCompliance exoJobLinesQueryCompliance = ignoreCostGroupCostType ? ExoJobLinesQueryCompliance.IgnoreCostCentres : ExoJobLinesQueryCompliance.Full;
+                JOBCOST_LINES line = ExoQueries.GetProjectLine(pUnitOfWork, projectNumber, exoLine, exoJobLinesQueryCompliance);
 
                 if (line != null)
                 {
@@ -1889,16 +1906,21 @@ namespace BluePrints.Common.Projections
             return transactions;
         }
 
-        public static JOBCOST_LINES GetProjectLine(IPrimeroEntitiesUnitOfWork primeroUnitOfWork, string projectNumber, ExoSubJobProjection line, bool ignoreCostGroupCostType = false)
+        public static JOBCOST_LINES GetProjectLine(IPrimeroEntitiesUnitOfWork primeroUnitOfWork, string projectNumber, ExoSubJobProjection line, ExoJobLinesQueryCompliance jobLinesQueryType = ExoJobLinesQueryCompliance.Full)
         {
-            if (line.SubJobCode == null || line.SubJobCode == string.Empty || (!ignoreCostGroupCostType && (line.DisciplineCode == null || line.DisciplineCode == string.Empty || line.CommodityCode == null || line.CommodityCode == string.Empty)))
+            return GetProjectLines(primeroUnitOfWork, projectNumber, line, jobLinesQueryType).FirstOrDefault();
+        }
+
+        public static List<JOBCOST_LINES> GetProjectLines(IPrimeroEntitiesUnitOfWork primeroUnitOfWork, string projectNumber, ExoSubJobProjection line, ExoJobLinesQueryCompliance jobLinesQueryType = ExoJobLinesQueryCompliance.Full)
+        {
+            if (line.SubJobCode == null || line.SubJobCode == string.Empty || (jobLinesQueryType == ExoJobLinesQueryCompliance.Full && (line.DisciplineCode == null || line.DisciplineCode == string.Empty || line.CommodityCode == null || line.CommodityCode == string.Empty)))
                 return null;
 
             string stockCode = line.StockCode == null || line.StockCode == string.Empty ? line.CommodityCode : line.StockCode;
 
             IQueryable<JOBCOST_LINES> projectLines;
-            
-            if(!ignoreCostGroupCostType)
+
+            if (jobLinesQueryType == ExoJobLinesQueryCompliance.Full)
             {
                 projectLines = from JOBCOST_LINES in primeroUnitOfWork.JOBCOST_LINES
                                join JOB_COSTGROUPS in primeroUnitOfWork.JOB_COSTGROUPS
@@ -1912,7 +1934,7 @@ namespace BluePrints.Common.Projections
                                where MAINJOB.JOBCODE == projectNumber && JOBCOST_LINES.LINKED_STOCKCODE == stockCode.ToUpper() && SUBJOB.JOBCODE == line.SubJobCode.ToUpper() && JOB_COSTGROUPS.SHORTCODE == line.DisciplineCode.ToUpper() && JOB_COSTTYPES.SHORTCODE == line.CommodityCode.ToUpper()
                                select JOBCOST_LINES;
             }
-            else
+            else if(jobLinesQueryType == ExoJobLinesQueryCompliance.IgnoreCostCentres)
             {
                 projectLines = from JOBCOST_LINES in primeroUnitOfWork.JOBCOST_LINES
                                join JOB_COSTGROUPS in primeroUnitOfWork.JOB_COSTGROUPS
@@ -1930,13 +1952,26 @@ namespace BluePrints.Common.Projections
                                where MAINJOB.JOBCODE == projectNumber && JOBCOST_LINES.LINKED_STOCKCODE == stockCode.ToUpper() && SUBJOB.JOBCODE == line.SubJobCode.ToUpper()
                                select JOBCOST_LINES;
             }
-
+            else
+            {
+                projectLines = from JOBCOST_LINES in primeroUnitOfWork.JOBCOST_LINES
+                               join JOB_COSTGROUPS in primeroUnitOfWork.JOB_COSTGROUPS
+                               on JOBCOST_LINES.COST_CENTRE2 equals JOB_COSTGROUPS.SEQNO
+                               join JOB_COSTTYPES in primeroUnitOfWork.JOB_COSTTYPES
+                               on JOBCOST_LINES.COST_CENTRE equals JOB_COSTTYPES.SEQNO
+                               join SUBJOB in primeroUnitOfWork.JOBCOST_HDR
+                               on JOBCOST_LINES.JOBNO equals SUBJOB.JOBNO
+                               join MAINJOB in primeroUnitOfWork.JOBCOST_HDR
+                               on SUBJOB.MASTER_JOBNO equals MAINJOB.JOBNO
+                               where MAINJOB.JOBCODE == projectNumber && SUBJOB.JOBCODE == line.SubJobCode.ToUpper() && JOB_COSTGROUPS.SHORTCODE == line.DisciplineCode.ToUpper() && JOB_COSTTYPES.SHORTCODE == line.CommodityCode.ToUpper()
+                               select JOBCOST_LINES;
+            }
 
             List<JOBCOST_LINES> listProjectLines = projectLines.ToList();
             if (line.VariationCode == string.Empty || line.VariationCode == null)
-                return listProjectLines.FirstOrDefault(x => x.X_VARIATION_CODE == string.Empty || x.X_VARIATION_CODE == null);
+                return listProjectLines.Where(x => x.X_VARIATION_CODE == string.Empty || x.X_VARIATION_CODE == null).ToList();
             else
-                return listProjectLines.FirstOrDefault(x => x.X_VARIATION_CODE == line.VariationCode);
+                return listProjectLines.Where(x => x.X_VARIATION_CODE == line.VariationCode).ToList();
         }
 
         public static JOBCOST_LINES GetAnyProjectLineByJobNumber(IPrimeroEntitiesUnitOfWork primeroUnitOfWork, string projectNumber)

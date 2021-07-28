@@ -1179,7 +1179,7 @@ namespace BluePrints.ViewModels
             bool isAnyVariationJobNotExists = false;
             foreach (var exoVariationJob in exoVariationJobs)
             {
-                JOBCOST_LINES line = ExoQueries.GetProjectLine(primeroUnitOfWork, loadPROJECT.NUMBER, exoVariationJob, true);
+                JOBCOST_LINES line = ExoQueries.GetProjectLine(primeroUnitOfWork, loadPROJECT.NUMBER, exoVariationJob, ExoJobLinesQueryCompliance.IgnoreCostCentres);
                 if (line != null)
                     isAnyVariationJobsExists = true;
                 else
@@ -1277,7 +1277,7 @@ namespace BluePrints.ViewModels
                     bool hasRemoved = false;
                     foreach (var exoVariationJob in exoVariationJobs)
                     {
-                        JOBCOST_LINES line = ExoQueries.GetProjectLine(primeroUnitOfWork, loadPROJECT.NUMBER, exoVariationJob, true);
+                        JOBCOST_LINES line = ExoQueries.GetProjectLine(primeroUnitOfWork, loadPROJECT.NUMBER, exoVariationJob, ExoJobLinesQueryCompliance.IgnoreCostCentres);
                         if (line != null)
                         {
                             hasRemoved = true;

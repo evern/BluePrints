@@ -752,7 +752,7 @@ namespace BluePrints.ViewModels
             foreach (ForecastJobData commodityJob in commodityJobs)
             {
                 ForecastHelper.PopulateEAC(commodityJob, FORECAST_EACCollection, PreviousEACDataDate);
-                ForecastHelper.PopulateFirstEAC(commodityJob, FORECAST_EACFirstEACCollection);
+                ForecastHelper.PopulateTenderBudget(commodityJob, FORECAST_EACTenderBudgetCollection);
                 updateAdditionalJobInfo(commodityJob);
                 
                 DataRow commodityRow = updateDataTable(commodityJob, isNewData);
@@ -1083,9 +1083,9 @@ namespace BluePrints.ViewModels
                 columns.Add(new ColumnDescriptor() { FieldName = "Entity.Projection.CommodityCode", ReadOnly = true, Header = "Commodity", Fixed = FixedStyle.Left, Width = 35, Settings = SettingsType.CommodityCode });
                 columns.Add(new ColumnDescriptor() { FieldName = "Entity.Projection.CommodityName", ReadOnly = true, Header = "Commodity Name", Fixed = FixedStyle.Left, Width = 50, Settings = SettingsType.Default });
                 columns.Add(new ColumnDescriptor() { FieldName = "Entity.Projection.VariationCode", ReadOnly = true, Header = "Variation", Fixed = FixedStyle.Left, Width = 60, Settings = SettingsType.Default });
-                columns.Add(new ColumnDescriptor() { FieldName = "Entity.FirstEAC", ReadOnly = true, Header = "Rev 0 Budget (H)", Fixed = FixedStyle.Left, Width = 75, Settings = SettingsType.Number, Mask = "c0", HeaderToolTip = "First estimate at completion" });
-                summaries.Add(new SummaryDescriptor() { FieldName = "Entity.FirstEAC", DisplayFormat = "c0", Type = SummaryItemType.Sum });
-                columns.Add(new ColumnDescriptor() { FieldName = "Entity.Budget", ReadOnly = false, Header = "Budget (A)", Increment = 1, Fixed = FixedStyle.Left, Width = 75, Settings = SettingsType.Budget, HeaderToolTip = "Original budgeted cost at contract award" });
+                columns.Add(new ColumnDescriptor() { FieldName = "Entity.TenderBudget", ReadOnly = true, Header = "Tender Budget (H)", Fixed = FixedStyle.Left, Width = 75, Settings = SettingsType.Number, Mask = "c0", HeaderToolTip = "Budget saved here during Roll Over" });
+                summaries.Add(new SummaryDescriptor() { FieldName = "Entity.TenderBudget", DisplayFormat = "c0", Type = SummaryItemType.Sum });
+                columns.Add(new ColumnDescriptor() { FieldName = "Entity.Budget", ReadOnly = false, Header = "Project Budget (A)", Increment = 1, Fixed = FixedStyle.Left, Width = 75, Settings = SettingsType.Budget, HeaderToolTip = "EAC saved here during Roll Over" });
                 summaries.Add(new SummaryDescriptor() { FieldName = "Entity.Budget", DisplayFormat = "c0", Type = SummaryItemType.Sum });
                 columns.Add(new ColumnDescriptor() { FieldName = "Entity.BudgetVariance", ReadOnly = true, Header = "Rev 0 Variance (I) (H - A)", Fixed = FixedStyle.Left, Width = 75, Settings = SettingsType.Number, Mask = "c0", HeaderToolTip = "Budget variance from first EAC" });
                 summaries.Add(new SummaryDescriptor() { FieldName = "Entity.BudgetVariance", DisplayFormat = "c0", Type = SummaryItemType.Sum });
@@ -1980,7 +1980,7 @@ namespace BluePrints.ViewModels
             }
         }
 
-        private bool commitBudget(IPrimeroEntitiesUnitOfWork primeroUnitOfWork, DataRow dataRow, object newValue, out List<ErrorMessage> errorMessages)
+        private bool commitBudget(IPrimeroEntitiesUnitOfWork primeroUnitOfWork, DataRow dataRow, object newValue, out List<ErrorMessage> errorMessages, bool updateView = true)
         {
             errorMessages = new List<ErrorMessage>();
             if (IsLoading)
@@ -1994,23 +1994,37 @@ namespace BluePrints.ViewModels
                 List<ExoSubJobProjection> projections = new List<ExoSubJobProjection>();
                 projections.Add(projection);
 
-                JOBCOST_LINES findExistingOrAddLine = ExoQueries.GetProjectLine(primeroUnitOfWork, LoadPROJECT.NUMBER, projection);
-                if(findExistingOrAddLine == null)
+                List<JOBCOST_LINES> findExistingOrAddLines = ExoQueries.GetProjectLines(primeroUnitOfWork, LoadPROJECT.NUMBER, projection, ExoJobLinesQueryCompliance.IgnoreStockCode);
+                if(findExistingOrAddLines.Count == 0)
                 {
-                    IEnumerable<ExoSubJobProjection> addedProjections = ExoMethods.CommitToExo(projections, MessageBoxService, masterJob, copyLine, LoadPROJECT, USERCollection, primeroUnitOfWork, bluePrintsUnitOfWork, BulkColumnEditDialogService, out errorMessages);
-                    findExistingOrAddLine = ExoQueries.GetProjectLine(primeroUnitOfWork, LoadPROJECT.NUMBER, projection);
+                    ExoMethods.CommitToExo(projections, MessageBoxService, masterJob, copyLine, LoadPROJECT, USERCollection, primeroUnitOfWork, bluePrintsUnitOfWork, BulkColumnEditDialogService, out errorMessages);
+                    if (errorMessages.Count > 0)
+                        return false;
                 }
 
-                findExistingOrAddLine.QUOTE_QTY = 1;
-                findExistingOrAddLine.ACTUAL_UNITCOST = Convert.ToDouble(newDecimalValue);
-                primeroUnitOfWork.SaveChanges();
+                //put the budget on the line which stock code matches commodity code and set the rest to zero budget
+                foreach(JOBCOST_LINES findExistingOrAddLine in findExistingOrAddLines)
+                {
+                    if(findExistingOrAddLine.STOCKCODE == projection.CommodityCode)
+                    {
+                        findExistingOrAddLine.QUOTE_QTY = 1;
+                        findExistingOrAddLine.ACTUAL_UNITCOST = Convert.ToDouble(newDecimalValue);
+                    }
+                    else
+                        findExistingOrAddLine.ACTUAL_UNITCOST = 0;
+                }
 
+                primeroUnitOfWork.SaveChanges();
                 job.Budget = newDecimalValue;
                 recurseCalculateBudget(dataRow);
 
                 projection.Update();
-                refreshGridData();
-                updateFloatingSummaryMembers();
+                if(updateView)
+                {
+                    refreshGridData();
+                    updateFloatingSummaryMembers();
+                }
+
                 return true;
             }
 
@@ -2443,20 +2457,19 @@ namespace BluePrints.ViewModels
             job.OriginalUncommitted = uncommittedPOValues + uncommitedP6Values + job.P6RemainingCosts;
         }
 
-        public bool CanRollOver()
+        public bool CanBaselineBudget()
         {
             return !IsLoading;
         }
 
-        public void RollOver()
+        public void BaselineBudget()
         {
             if (!checkSaveEACPermission())
                 return;
 
-            SaveBudget();
-            SaveCurrentMonthEAC();
-
-            MessageBoxService.ShowMessage("Rev 0 budget and EAC is saved", "Roll Over Data Saved", MessageButton.OK, MessageIcon.Information);
+            SaveProjectBudgetToTenderBudget();
+            SaveEACToProjectBudget();
+            MessageBoxService.ShowMessage("Project budget is saved to tender budget and EAC is saved as project budget", "Roll Over Data Saved", MessageButton.OK, MessageIcon.Information);
         }
 
         public bool CanSaveCurrentMonthEAC()
@@ -2466,6 +2479,9 @@ namespace BluePrints.ViewModels
 
         public void SaveCurrentMonthEAC()
         {
+            if (!checkSaveEACPermission())
+                return;
+
             LoadingScreenManager.ShowLoadingScreen(DataPointsTable.Rows.Count);
 
             DateTime firstForecastDate = new DateTime(FixedDataDateMonthEnd.Year, FixedDataDateMonthEnd.Month, 1).AddMonths(2).AddDays(-1);
@@ -2510,19 +2526,21 @@ namespace BluePrints.ViewModels
             SaveDateAndRefresh();
         }
 
-        public bool CanSaveBudget()
+        /// <summary>
+        /// Saves project budget to tender budget
+        /// </summary>
+        private void SaveProjectBudgetToTenderBudget()
         {
-            return !IsLoading;
-        }
+            if (!checkSaveEACPermission())
+                return;
 
-        public void SaveBudget()
-        {
             LoadingScreenManager.ShowLoadingScreen(DataPointsTable.Rows.Count);
+            LoadingScreenManager.SetMessage("Copying project budget to tender budget...");
             foreach (DataRow masterRow in DataPointsTable.Rows)
             {
                 ForecastJobData entity = (ForecastJobData)masterRow[columnEntity];
-                findExistingOrAddNewEAC(FixedDataDateMonthEnd, entity, bluePrintsUnitOfWork, entity.Budget, false, ForecastEACType.FirstEAC);
-                entity.FirstEAC = entity.EstimateAtCompletion;
+                findExistingOrAddNewEAC(FixedDataDateMonthEnd, entity, bluePrintsUnitOfWork, entity.Budget, false, ForecastEACType.TenderBudget);
+                entity.TenderBudget = entity.Budget;
                 LoadingScreenManager.Progress();
             }
 
@@ -2531,6 +2549,34 @@ namespace BluePrints.ViewModels
             LoadingScreenManager.SetMessage("Saving changes...");
             bluePrintsUnitOfWork.SaveChanges();
             LoadingScreenManager.CloseLoadingScreen();
+        }
+
+        /// <summary>
+        /// Saves project budget to tender budget
+        /// </summary>
+        private void SaveEACToProjectBudget()
+        {
+            if (!checkSaveEACPermission())
+                return;
+
+            List<ErrorMessage> errorMessages = new List<ErrorMessage>();
+            LoadingScreenManager.ShowLoadingScreen(DataPointsTable.Rows.Count);
+            LoadingScreenManager.SetMessage("Copying EAC to project budget...");
+            foreach (DataRow forecastRow in DataPointsTable.Rows)
+            {
+                List<ErrorMessage> currentErrorMessages = new List<ErrorMessage>();
+                ForecastJobData entity = (ForecastJobData)forecastRow[columnEntity];
+                if(commitBudget(primeroEntitiesUnitOfWork, forecastRow, entity.EstimateAtCompletion, out currentErrorMessages, false))
+                    entity.Budget = entity.EstimateAtCompletion;
+
+                errorMessages.AddRange(currentErrorMessages);
+                LoadingScreenManager.Progress();
+            }
+
+            LoadingScreenManager.CloseLoadingScreen();
+            ShowErrorMessage("Save EAC to Project Budget Issues", errorMessages);
+            refreshGridData();
+            updateFloatingSummaryMembers();
         }
 
         private bool checkSaveEACPermission()
@@ -2590,7 +2636,7 @@ namespace BluePrints.ViewModels
             string normalizedVariationCode = DataUtils.NormalizeString(projection.VariationCode);
             IQueryable<FORECAST_EAC> jobFORECAST_EACs = bluePrintsEntitiesUnitOfWork.FORECAST_EACS.Where(x => x.GUID_PROJECT == LoadPROJECT.GUID && x.SUBJOB_CODE == projection.SubJobCode && x.DISCIPLINE_CODE == projection.DisciplineCode && x.COMMODITY_CODE == projection.CommodityCode && x.VARIATION_CODE == normalizedVariationCode && x.TYPE == forecastEACType);
             FORECAST_EAC forecast_EAC;
-            if(forecastEACType == ForecastEACType.FirstEAC)
+            if(forecastEACType == ForecastEACType.TenderBudget)
                 forecast_EAC = jobFORECAST_EACs.FirstOrDefault(x => x.TYPE == forecastEACType);
             else
                 forecast_EAC = jobFORECAST_EACs.FirstOrDefault(x => x.FORECAST_DATE == forecastDate.Date && x.TYPE == forecastEACType);
@@ -3109,11 +3155,11 @@ namespace BluePrints.ViewModels
             }
         }
 
-        public IEnumerable<FORECAST_EAC> FORECAST_EACFirstEACCollection
+        public IEnumerable<FORECAST_EAC> FORECAST_EACTenderBudgetCollection
         {
             get
             {
-                return GetEntities<FORECAST_EAC>().Where(x => x.TYPE == ForecastEACType.FirstEAC);
+                return GetEntities<FORECAST_EAC>().Where(x => x.TYPE == ForecastEACType.TenderBudget);
             }
         }
 
