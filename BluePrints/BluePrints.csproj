@@ -916,6 +916,7 @@
     <Compile Include="EntityFramework\Annotations\DataPoint.cs" />
     <Compile Include="EntityFramework\Annotations\DISCIPLINE_DESC.cs" />
     <Compile Include="EntityFramework\Annotations\FORECAST_HISTORY.cs" />
+    <Compile Include="EntityFramework\Annotations\FORECAST_CACHE.cs" />
     <Compile Include="EntityFramework\Annotations\PROGRESS_ETC.cs" />
     <Compile Include="EntityFramework\Annotations\REGISTER_CHANGE_ATTACHMENT.cs" />
     <Compile Include="EntityFramework\Annotations\REGISTER_CLARIFICATION.cs" />
@@ -1002,6 +1003,7 @@
     <Compile Include="EntityFramework\BluePrintsData\CONSTRUCTION_STAGE.cs" />
     <Compile Include="EntityFramework\BluePrintsData\DISCIPLINE_DESC.cs" />
     <Compile Include="EntityFramework\BluePrintsData\FORECAST_HISTORY.cs" />
+    <Compile Include="EntityFramework\BluePrintsData\FORECAST_CACHE.cs" />
     <Compile Include="EntityFramework\BluePrintsData\PROGRESS_ETC.cs" />
     <Compile Include="EntityFramework\BluePrintsData\REGISTER_CLARIFICATION.cs" />
     <Compile Include="EntityFramework\BluePrintsData\REGISTER_TQ.cs" />

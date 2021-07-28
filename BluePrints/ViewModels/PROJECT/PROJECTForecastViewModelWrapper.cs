@@ -119,6 +119,7 @@ namespace BluePrints.ViewModels
             loaderCollection.AddLoaderDescription<JOB_COSTTYPES, JOB_COSTTYPES, int, IPrimeroEntitiesUnitOfWork>(primeroUnitOfWorkFactory, x => x.JOB_COSTTYPES);
             loaderCollection.AddLoaderDescription(bluePrintsUnitOfWorkFactory, x => x.DISCIPLINE_DESCS, DISCIPLINE_DESCProjectionFunc);
             loaderCollection.AddLoaderDescription<JOB_COSTGROUPS, JOB_COSTGROUPS, int, IPrimeroEntitiesUnitOfWork>(primeroUnitOfWorkFactory, x => x.JOB_COSTGROUPS);
+            loaderCollection.AddLoaderDescription(bluePrintsUnitOfWorkFactory, x => x.FORECAST_CACHES, FORECAST_CACHEProjectionFunc);
         }
 
         private void setProject(Data.PROJECT project)
@@ -205,6 +206,11 @@ namespace BluePrints.ViewModels
         }
 
         protected virtual Func<IRepositoryQuery<VARIATION_CONSTRUCTION>, IQueryable<VARIATION_CONSTRUCTION>> VARIATION_CONSTRUCTIONProjectionFunc()
+        {
+            return query => query.Where(x => x.GUID_PROJECT == LoadPROJECT.GUID);
+        }
+
+        protected virtual Func<IRepositoryQuery<FORECAST_CACHE>, IQueryable<FORECAST_CACHE>> FORECAST_CACHEProjectionFunc()
         {
             return query => query.Where(x => x.GUID_PROJECT == LoadPROJECT.GUID);
         }
@@ -1253,6 +1259,32 @@ namespace BluePrints.ViewModels
             relevantFORECAST_JOB_SETTING.IS_FLOATING_PRODUCTIVITY = isFloatingProductivity;
             job.IsProductivityFloating = isFloatingProductivity;
             FORECAST_JOB_SETTINGCollectionViewModel.Save(relevantFORECAST_JOB_SETTING);
+        }
+
+        private void findExistingOrAddNewForecastCache(DataRow updateRow)
+        {
+            ForecastJobData job = ((ForecastJobData)updateRow[columnEntity]);
+            ExoSubJobProjection projection = job.Projection;
+            FORECAST_CACHE relevantFORECAST_CACHE = FORECAST_CACHECollection.FirstOrDefault(x => x.SUBJOB_CODE == projection.SubJobCode && x.DISCIPLINE_CODE == projection.DisciplineCode && x.COMMODITY_CODE == projection.CommodityCode && x.VARIATION_CODE == projection.VariationCode);
+            if (relevantFORECAST_CACHE == null)
+            {
+                FORECAST_CACHE newFORECAST_JOB_SETTING = new FORECAST_CACHE();
+                newFORECAST_JOB_SETTING.GUID_PROJECT = LoadPROJECT.GUID;
+                newFORECAST_JOB_SETTING.SUBJOB_CODE = projection.SubJobCode;
+                newFORECAST_JOB_SETTING.DISCIPLINE_CODE = DataUtils.NormalizeString(projection.DisciplineCode);
+                newFORECAST_JOB_SETTING.COMMODITY_CODE = DataUtils.NormalizeString(projection.CommodityCode);
+
+                if (projection.VariationCode != null && projection.VariationCode != string.Empty)
+                    newFORECAST_JOB_SETTING.VARIATION_CODE = projection.VariationCode;
+                else
+                    newFORECAST_JOB_SETTING.VARIATION_CODE = string.Empty;
+
+                relevantFORECAST_CACHE = newFORECAST_JOB_SETTING;
+            }
+
+            relevantFORECAST_CACHE.IS_FLOATING_PRODUCTIVITY = isFloatingProductivity;
+            job.IsProductivityFloating = isFloatingProductivity;
+            FORECAST_JOB_SETTINGCollectionViewModel.Save(relevantFORECAST_CACHE);
         }
 
         private void establishCurrentProductivity(ForecastJobData job)
@@ -3128,6 +3160,14 @@ namespace BluePrints.ViewModels
             }
         }
 
+        public IEnumerable<FORECAST_CACHE> FORECAST_CACHECollection
+        {
+            get
+            {
+                return GetEntities<FORECAST_CACHE>();
+            }
+        }
+
         public IEnumerable<FORECAST_JOB_SETTING> FORECAST_JOB_SETTINGCollection
         {
             get
@@ -3214,6 +3254,17 @@ namespace BluePrints.ViewModels
                     return null;
 
                 return (CollectionViewModel<FORECAST_JOB_SETTING, FORECAST_JOB_SETTING, Guid, IBluePrintsEntitiesUnitOfWork>)loaderCollection.GetViewModel<FORECAST_JOB_SETTING>();
+            }
+        }
+
+        public CollectionViewModel<FORECAST_CACHE, FORECAST_CACHE, Guid, IBluePrintsEntitiesUnitOfWork> FORECAST_CACHECollectionViewModel
+        {
+            get
+            {
+                if (MainViewModel == null)
+                    return null;
+
+                return (CollectionViewModel<FORECAST_CACHE, FORECAST_CACHE, Guid, IBluePrintsEntitiesUnitOfWork>)loaderCollection.GetViewModel<FORECAST_CACHE>();
             }
         }
 
