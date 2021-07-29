@@ -2002,6 +2002,7 @@ namespace BluePrints.ViewModels
                         return false;
                 }
 
+                bool isBudgetSet = false;
                 //put the budget on the line which stock code matches commodity code and set the rest to zero budget
                 foreach(JOBCOST_LINES findExistingOrAddLine in findExistingOrAddLines)
                 {
@@ -2009,6 +2010,13 @@ namespace BluePrints.ViewModels
                     {
                         findExistingOrAddLine.QUOTE_QTY = 1;
                         findExistingOrAddLine.ACTUAL_UNITCOST = Convert.ToDouble(newDecimalValue);
+                        isBudgetSet = true;
+                    }
+                    else if(findExistingOrAddLine == findExistingOrAddLines.Last() && !isBudgetSet)
+                    {
+                        findExistingOrAddLine.QUOTE_QTY = 1;
+                        findExistingOrAddLine.ACTUAL_UNITCOST = Convert.ToDouble(newDecimalValue);
+                        isBudgetSet = true;
                     }
                     else
                         findExistingOrAddLine.ACTUAL_UNITCOST = 0;
@@ -3284,7 +3292,7 @@ namespace BluePrints.ViewModels
             }
         }
 
-        public override string ViewName => "PROJECTForecastView_v4";
+        public override string ViewName => "PROJECTForecastView_v5";
 
         public override void ShowNotification()
         {
