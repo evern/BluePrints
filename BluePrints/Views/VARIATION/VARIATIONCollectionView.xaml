@@ -26,9 +26,21 @@
                 <dxb:BarButtonItem x:Name="biEdit" Content="Edit" Command="{Binding EditCommand}" LargeGlyph="{dx:DXImage Image=Edit_32x32.png}" Glyph="{dx:DXImage Image=Edit_16x16.png}" />
                 <dxb:BarButtonItem x:Name="biCalculate" Command="{Binding CalculateVariationSummaryCommand}" Content="Summarize Variations" Glyph="{dxc:DXImage Images/Function Library/Financial_16x16.png}" LargeGlyph="{dx:DXImage Images/Function Library/Financial_32x32.png}" ToolTip="Get actuals summary by job from EXO and show it in the grid" />
                 <dxb:BarButtonItem x:Name="biUpdateBudget" Command="{Binding UpdateVariationBudgetCommand}" Content="Update EXO budget" Glyph="{dxc:DXImage Images/Actions/Up2_16x16.png}" LargeGlyph="{dx:DXImage  Images/Actions/Up2_32x32.png}" ToolTip="Update EXO budget on approved variation" />
-                <dxb:BarCheckItem x:Name="biSubmit" Content="Submit" IsChecked="{Binding IsSubmitted}" IsEnabled="{Binding IsLoading, Converter={dxmvvm:BooleanNegationConverter}}" Glyph="{dx:DXImage Image=BOOrderItem_16x16.png}" LargeGlyph="{dx:DXImage Image=BOOrderItem_32x32.png}" />
-                <dxb:BarCheckItem x:Name="biApprove" Content="Approve" IsChecked="{Binding IsApproved}" IsEnabled="{Binding IsLoading, Converter={dxmvvm:BooleanNegationConverter}}" Glyph="{dx:DXImage Image=BOProduct_16x16.png}" LargeGlyph="{dx:DXImage Image=BOProduct_32x32.png}" />
-                <dxb:BarCheckItem x:Name="biClientApprove" Content="Client Approve" IsChecked="{Binding IsClientApproved}" IsEnabled="{Binding IsLoading, Converter={dxmvvm:BooleanNegationConverter}}" Glyph="{dx:DXImage Image=BOSaleItem_16x16.png}" LargeGlyph="{dx:DXImage Image=BOSaleItem_32x32.png}" />
+                <dxb:BarEditItem x:Name="biSubmit" Content="Submit" EditValue="{Binding IsSubmitted}" IsEnabled="{Binding IsLoading, Converter={dxmvvm:BooleanNegationConverter}}" Glyph="{dx:DXImage Image=BOOrderItem_16x16.png}" LargeGlyph="{dx:DXImage Image=BOOrderItem_32x32.png}" ToolTip="Shows status of selected variation, check to submit and uncheck to unsubmit" >
+                    <dxb:BarEditItem.EditSettings>
+                        <dxe:CheckEditSettings/>
+                    </dxb:BarEditItem.EditSettings>
+                </dxb:BarEditItem>
+                <dxb:BarEditItem x:Name="biApprove" Content="Approve" EditValue="{Binding IsApproved}" IsEnabled="{Binding IsLoading, Converter={dxmvvm:BooleanNegationConverter}}" Glyph="{dx:DXImage Image=BOProduct_16x16.png}" LargeGlyph="{dx:DXImage Image=BOProduct_32x32.png}" ToolTip="Shows status of selected variation, check to approve and uncheck to unapprove" >
+                    <dxb:BarEditItem.EditSettings>
+                        <dxe:CheckEditSettings/>
+                    </dxb:BarEditItem.EditSettings>
+                </dxb:BarEditItem>
+                <dxb:BarEditItem x:Name="biClientApprove" Content="Client Approve" EditValue="{Binding IsClientApproved}" IsEnabled="{Binding IsLoading, Converter={dxmvvm:BooleanNegationConverter}}" Glyph="{dx:DXImage Image=BOSaleItem_16x16.png}" LargeGlyph="{dx:DXImage Image=BOSaleItem_32x32.png}" ToolTip="Shows status of selected variation, check to client approve and uncheck to mark it as not client approved" >
+                    <dxb:BarEditItem.EditSettings>
+                        <dxe:CheckEditSettings/>
+                    </dxb:BarEditItem.EditSettings>
+                </dxb:BarEditItem>
                 <dxb:BarButtonItem x:Name="biAddToExo" Command="{Binding AddToExoCommand}" Content="Add Variation Code to Exo" LargeGlyph="{dx:DXImage SvgImages/RichEdit/TrackingChanges_Next.svg}" ToolTip="Add selected variation code to EXO" Glyph="{dx:DXImage SvgImages/RichEdit/TrackingChanges_Next.svg}" />
                 <dxb:BarButtonItem x:Name="biRemoveFromExo" Command="{Binding RemoveFromExoCommand}" Content="Remove Variation Code from Exo" ToolTip="Remove selected variation code from EXO" Glyph="{dx:DXImage SvgImages/RichEdit/TrackingChanges_Previous.svg}" LargeGlyph="{dx:DXImage SvgImages/RichEdit/TrackingChanges_Previous.svg}" />
             </dxb:BarManager.Items>
@@ -54,9 +66,9 @@
                             <dxr:RibbonPageGroup MergeType="Replace" Caption="Tools">
                                 <dxb:BarButtonItemLink BarItemName="biCalculate" />
                                 <dxb:BarButtonItemLink BarItemName="biEdit" />
-                                <dxb:BarCheckItemLink BarItemName="biSubmit" />
-                                <dxb:BarCheckItemLink BarItemName="biApprove" />
-                                <dxb:BarCheckItemLink BarItemName="biClientApprove" />
+                                <dxb:BarEditItemLink BarItemName="biSubmit" />
+                                <dxb:BarEditItemLink BarItemName="biApprove" />
+                                <dxb:BarEditItemLink BarItemName="biClientApprove" />
                                 <dxb:BarButtonItemLink BarItemName="biUpdateBudget" />
                                 <dxb:BarButtonItemLink BarItemName="biAddToExo" />
                             </dxr:RibbonPageGroup>

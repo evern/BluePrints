@@ -2034,9 +2034,16 @@ namespace BluePrints.ViewModels
                 {
                     if(findExistingOrAddLine.STOCKCODE == projection.CommodityCode)
                     {
+                        //prevent duplicate entries in budget input to multiple the budget
+                        if(isBudgetSet)
+                            findExistingOrAddLine.ACTUAL_UNITCOST = 0;
+                        else
+                        {
+                            findExistingOrAddLine.ACTUAL_UNITCOST = Convert.ToDouble(newDecimalValue);
+                            isBudgetSet = true;
+                        }
+
                         findExistingOrAddLine.QUOTE_QTY = 1;
-                        findExistingOrAddLine.ACTUAL_UNITCOST = Convert.ToDouble(newDecimalValue);
-                        isBudgetSet = true;
                     }
                     else if(findExistingOrAddLine == findExistingOrAddLines.Last() && !isBudgetSet)
                     {
