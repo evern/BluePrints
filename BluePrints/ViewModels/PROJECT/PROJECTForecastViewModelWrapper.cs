@@ -1083,7 +1083,7 @@ namespace BluePrints.ViewModels
                 columns.Add(new ColumnDescriptor() { FieldName = "Entity.Projection.CommodityCode", ReadOnly = true, Header = "Commodity", Fixed = FixedStyle.Left, Width = 35, Settings = SettingsType.CommodityCode });
                 columns.Add(new ColumnDescriptor() { FieldName = "Entity.Projection.CommodityName", ReadOnly = true, Header = "Commodity Name", Fixed = FixedStyle.Left, Width = 50, Settings = SettingsType.Default });
                 columns.Add(new ColumnDescriptor() { FieldName = "Entity.Projection.VariationCode", ReadOnly = true, Header = "Variation", Fixed = FixedStyle.Left, Width = 60, Settings = SettingsType.Default });
-                columns.Add(new ColumnDescriptor() { FieldName = "Entity.TenderBudget", ReadOnly = true, Header = "Tender Budget (H)", Fixed = FixedStyle.Left, Width = 75, Settings = SettingsType.Number, Mask = "c0", HeaderToolTip = "Budget saved here during Roll Over" });
+                columns.Add(new ColumnDescriptor() { FieldName = "Entity.TenderBudget", ReadOnly = false, Header = "Tender Budget (H)", Increment = 1, Fixed = FixedStyle.Left, Width = 75, Settings = SettingsType.Budget, Mask = "c0", HeaderToolTip = "Budget saved here during Roll Over" });
                 summaries.Add(new SummaryDescriptor() { FieldName = "Entity.TenderBudget", DisplayFormat = "c0", Type = SummaryItemType.Sum });
                 columns.Add(new ColumnDescriptor() { FieldName = "Entity.Budget", ReadOnly = false, Header = "Project Budget (A)", Increment = 1, Fixed = FixedStyle.Left, Width = 75, Settings = SettingsType.Budget, HeaderToolTip = "EAC saved here during Roll Over" });
                 summaries.Add(new SummaryDescriptor() { FieldName = "Entity.Budget", DisplayFormat = "c0", Type = SummaryItemType.Sum });
@@ -1583,8 +1583,16 @@ namespace BluePrints.ViewModels
                     List<ErrorMessage> commitCellErrorMessage;
                     if (copyColumn.FieldName.ToUpper() == "ENTITY.BUDGET")
                     {
-                        ForecastJobData job = ((ForecastJobData)newRow[columnEntity]);
+                        ForecastJobData job = (ForecastJobData)newRow[columnEntity];
                         decimal oldValue = job.Budget;
+
+                        commitCellValue(copyColumn.FieldName, newRow, oldValue, decimal_value, out commitCellErrorMessage, true);
+                        errorMessages.AddRange(commitCellErrorMessage);
+                    }
+                    else if(copyColumn.FieldName.ToUpper() == "ENTITY.TENDERBUDGET")
+                    {
+                        ForecastJobData job = (ForecastJobData)newRow[columnEntity];
+                        decimal oldValue = job.TenderBudget;
 
                         commitCellValue(copyColumn.FieldName, newRow, oldValue, decimal_value, out commitCellErrorMessage, true);
                         errorMessages.AddRange(commitCellErrorMessage);
@@ -1833,6 +1841,16 @@ namespace BluePrints.ViewModels
 
                 forecastJobData.RaisePropertiesChanged();
             }
+            else if (fieldName == BindableBase.GetPropertyName(() => new ForecastJobData().TenderBudget))
+            {
+                decimal newTenderBudget;
+                if (decimal.TryParse(newValue.ToString(), out newTenderBudget))
+                {
+                    findExistingOrAddNewEAC(FixedDataDateMonthEnd, forecastJobData, bluePrintsUnitOfWork, newTenderBudget, true, ForecastEACType.TenderBudget);
+                    forecastJobData.TenderBudget = newTenderBudget;
+                    forecastJobData.RaisePropertiesChanged();
+                }
+            }
             else if(fieldName == BindableBase.GetPropertyName(() => new ForecastJobData().DisciplineDesc))
             {
                 forecastJobData.FindExistingOrAddDisciplineDesc(DISCIPLINE_DESCCollectionViewModel, LoadPROJECT.GUID);
@@ -1952,7 +1970,15 @@ namespace BluePrints.ViewModels
                     {
                         e.ErrorContent = "You do not have permission to change the budget";
                         e.IsValid = false;
-                    }    
+                    }
+                }
+                else if (e.Column.FieldName.Contains(BindableBase.GetPropertyName(() => new ForecastJobData().TenderBudget)))
+                {
+                    if (LoginCredentials.getPermissionStatus(DataUtils.GetNameOf(() => NavigationResources.Permission_EXO_ChangeBudget)) == LoginCredentials.PermissionStatus.None)
+                    {
+                        e.ErrorContent = "You do not have permission to change the tender budget";
+                        e.IsValid = false;
+                    }
                 }
                 else if(e.Column.FieldName.Contains(BindableBase.GetPropertyName(() => new ForecastJobData().Productivity)))
                 {
