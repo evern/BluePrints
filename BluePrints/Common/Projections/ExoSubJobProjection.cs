@@ -220,6 +220,17 @@ namespace BluePrints.Common.Projections
             }
         }
 
+        public string FullCodeIncludeStockCode
+        {
+            get
+            {
+                if (SubJobId == null || DisciplineId == null || CommodityId == null)
+                    return string.Empty;
+
+                return FullCode + "-" + StockCode;
+            }
+        }
+
         public string ErrorMessageIdentificationCode
         {
             get

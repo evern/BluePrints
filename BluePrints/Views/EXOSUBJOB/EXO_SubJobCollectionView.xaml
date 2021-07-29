@@ -19,6 +19,7 @@
                 <dxb:BarButtonItem x:Name="biSetProcurementFilter" Command="{Binding SetProcurementFilterCommand}" Content="Show Procurement Only" Glyph="{dxc:DXImage Images/Business Objects/BOProduct_16x16.png}" LargeGlyph="{dxc:DXImage Images/Business Objects/BOProduct_32x32.png}" ToolTip="Show procurement jobs only" />
                 <dxb:BarButtonItem x:Name="biSetConstructionFilter" Command="{Binding SetConstructionFilterCommand}" Content="Show Construction Only" Glyph="{dxc:DXImage Images/Business Objects/BOEmployee_16x16.png}" LargeGlyph="{dxc:DXImage Images/Business Objects/BOEmployee_32x32.png}" ToolTip="Show construction jobs only" />
                 <dxb:BarButtonItem x:Name="biPopulateStandardCodes" Command="{Binding PopulateStandardCodesCommand}" Content="Populate Standard Jobs" Glyph="{dxc:DXImage Images/Data/AddNewDataSource_16x16.png}" LargeGlyph="{dxc:DXImage Images/Data/AddNewDataSource_16x16.png}" ToolTip="Create new jobs with area 000-00 from commodity codes that are marked as standard" />
+                <dxb:BarStaticItem x:Name="biLabel" LargeGlyph="{dxc:DXImage Images/Status/Warning_16x16.png}" Content="Rows Highlighted in Red Indicates Duplication" Glyph="{dxc:DXImage Images/Status/Warning_32x32.png}" />
             </dxb:BarManager.Items>
             <DockPanel>
                 <dxr:RibbonControl Style="{StaticResource DefaultRibbonControlStyle}">
@@ -47,6 +48,7 @@
                             <dxr:RibbonPageGroup MergeType="Replace" Caption="Tools">
                                 <dxb:BarButtonItemLink BarItemName="biCopyToJobSetup" />
                                 <dxb:BarButtonItemLink BarItemName="biPopulateStandardCodes" />
+                                <dxb:BarStaticItemLink BarItemName="biLabel" />
                             </dxr:RibbonPageGroup>
                         </dxr:RibbonPage>
                     </dxr:RibbonDefaultPageCategory>
@@ -157,6 +159,7 @@
                                 <dxe:SpinEditSettings Mask="c2" MaskType="Numeric" MaskUseAsDisplayFormat="True" />
                             </dxg:GridColumn.EditSettings>
                         </dxg:GridColumn>
+                        <dxg:GridColumn FieldName="FullCodeIncludeStockCode" Header="Full Code" ReadOnly="True" Visible="False" />
                     </dxg:GridControl.Columns>
                     <dxg:GridControl.TotalSummary>
                         <dxg:GridSummaryItem FieldName="SubJobCode" dxc:DXSerializer.Enabled="False" DisplayFormat="{}{0} Record(s)" SummaryType="Count" />
@@ -180,6 +183,11 @@
                                 <dxb:BarButtonItemLink BarItemName="biBulkDelete1" />
                                 <dxb:BarButtonItemLink BarItemName="biFullRefresh1" />
                             </dxg:TableView.RowCellMenuCustomizations>
+                            <dxg:TableView.FormatConditions>
+                                <dxg:UniqueDuplicateRuleFormatCondition FieldName="FullCodeIncludeStockCode" ApplyToRow="True">
+                                    <dxc:Format Background="#FFFF9B98" />
+                                </dxg:UniqueDuplicateRuleFormatCondition>
+                            </dxg:TableView.FormatConditions>
                         </dxg:TableView>
                     </dxg:GridControl.View>
                 </dxg:GridControl>
