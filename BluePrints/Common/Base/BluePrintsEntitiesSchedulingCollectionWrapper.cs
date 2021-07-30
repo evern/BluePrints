@@ -242,6 +242,8 @@ namespace BluePrints.Common.Base
                     {
                         activity.Start = allChildrenActivities.Min(x => x.Start);
                         activity.End = allChildrenActivities.Max(x => x.End);
+                        activity.EarlyStart = allChildrenActivities.Min(x => x.EarlyStart);
+                        activity.EarlyEnd = allChildrenActivities.Max(x => x.EarlyEnd);
                     }
                     else if (trim)
                         remove_activities.Add(activity);

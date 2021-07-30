@@ -31,10 +31,20 @@ namespace BluePrints.Common.ViewModel
         public decimal Assigned_Units { get; set; }
         public int WBSLevel { get; set; }
 
-        private DateTime? start;
-        public virtual DateTime? Start { get => Task != null ? Task.target_start_date : null; set => start = value; }
-        private DateTime? end;
-        public virtual DateTime? End { get => Task != null ? Task.target_end_date : null; set => end = value; }
+        //private member is used for WBS date
+        private DateTime? targetStartDate;
+        public virtual DateTime? Start { get => Task != null ? Task.target_start_date : null; set => targetStartDate = value; }
+        //private member is used for WBS date
+        private DateTime? targetEndDate;
+        public virtual DateTime? End { get => Task != null ? Task.target_end_date : null; set => targetEndDate = value; }
+
+        //private member is used for WBS date
+        private DateTime? earlyStartDate;
+        public virtual DateTime? EarlyStart { get => Task != null ? Task.early_start_date : null; set => earlyStartDate = value; }
+        //private member is used for WBS date
+        private DateTime? earlyEndDate;
+        public virtual DateTime? EarlyEnd { get => Task != null ? Task.early_end_date : null; set => earlyEndDate = value; }
+
         public decimal? Budgeted_Units { get; set; }
         public bool IsTask => Task != null;
 
