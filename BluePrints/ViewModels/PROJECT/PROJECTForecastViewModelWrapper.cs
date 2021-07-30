@@ -1282,9 +1282,9 @@ namespace BluePrints.ViewModels
                 relevantFORECAST_CACHE = newFORECAST_JOB_SETTING;
             }
 
-            relevantFORECAST_CACHE.IS_FLOATING_PRODUCTIVITY = isFloatingProductivity;
-            job.IsProductivityFloating = isFloatingProductivity;
-            FORECAST_JOB_SETTINGCollectionViewModel.Save(relevantFORECAST_CACHE);
+            //relevantFORECAST_CACHE.IS_FLOATING_PRODUCTIVITY = isFloatingProductivity;
+            //job.IsProductivityFloating = isFloatingProductivity;
+            //FORECAST_JOB_SETTINGCollectionViewModel.Save(relevantFORECAST_CACHE);
         }
 
         private void establishCurrentProductivity(ForecastJobData job)
