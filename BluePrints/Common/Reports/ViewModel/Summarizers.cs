@@ -171,28 +171,27 @@ namespace BluePrints.Common.ViewModel.Reporting
                 if(isSummariseByWBS)
                 {
                     List<DataPointsGroup> plannedDataPointsGroups = bluePrintDataContext.QueryDeliverablePlannedDataPointsGroupByProject(this.projectNumber, true, false, isForecast, false, isVariationSeparated);
+                    List<DataPointsGroup> plannedLateDataPointsGroups = new List<DataPointsGroup>();
+                    if(buildLate)
+                        plannedLateDataPointsGroups = bluePrintDataContext.QueryDeliverablePlannedDataPointsGroupByProject(this.projectNumber, true, true, isForecast, false, isVariationSeparated);
+
                     foreach (WBSReportable reportableObject in ((WBSSummary)SummaryStats).WBSReportables)
                     {
                         reportableObject.AssignWBSReportableData(x => x.Budgeted.SetPlannedData, plannedDataPointsGroups, isVariationSeparated);
-                        if(buildLate)
-                        {
-                            List<DataPointsGroup> plannedLateDataPointsGroups = bluePrintDataContext.QueryDeliverablePlannedDataPointsGroupByProject(this.projectNumber, true, true, isForecast, false, isVariationSeparated);
-                            reportableObject.AssignWBSReportableData(x => x.BudgetedLate.SetPlannedData, plannedLateDataPointsGroups, isVariationSeparated);
-                        }
+                        reportableObject.AssignWBSReportableData(x => x.BudgetedLate.SetPlannedData, plannedLateDataPointsGroups, isVariationSeparated);
                     }
                 }
                 else
                 {
                     List<Data.DataPoint> plannedDataPoints = bluePrintDataContext.QueryDeliverablePlannedDataPointsByProject(this.projectNumber, isForecast);
-                    List<Data.DataPoint> plannedLateDataPoints = null;
+                    List<Data.DataPoint> plannedLateDataPoints = new List<Data.DataPoint>();
                     if (buildLate)
                         plannedLateDataPoints = bluePrintDataContext.QueryDeliverablePlannedLateDataPointsByProject(this.projectNumber);
 
                     foreach (IReportable reportableObject in ((SummaryStats)this.SummaryStats).Reportables)
                     {
                         assignDataPointsByGuid(reportableObject, x => x.Stats.Budgeted, plannedDataPoints, reportableObject.OriginalEntityKey);
-                        if (buildLate)
-                            assignDataPointsByGuid(reportableObject, x => x.Stats.BudgetedLate, plannedDataPoints, reportableObject.OriginalEntityKey);
+                        assignDataPointsByGuid(reportableObject, x => x.Stats.BudgetedLate, plannedDataPoints, reportableObject.OriginalEntityKey);
 
                         reportableObject.Update();
                         LoadingScreenManager.Progress();
