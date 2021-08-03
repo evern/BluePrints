@@ -35,7 +35,7 @@ namespace BluePrints.Common.ViewModel.Reporting
             this.projectSUBJOBS = SUBJOBS;
         }
 
-        public void BuildExoDataPoints(IPrimeroEntitiesUnitOfWork primeroUOW, ProjectSummaryStats summaryObject, bool forceRetrieveAllJobs = false, bool forceRetrieveAllUnits = false, bool forceRetrieveAllPOs = false, bool showLoadingScreen = false, bool timeOnly = false, bool groupByMonths = false)
+        public void BuildExoDataPoints(IPrimeroEntitiesUnitOfWork primeroUOW, ProjectSummaryStats summaryObject, DashboardEXOQueryType dashboardEXOQueryType = DashboardEXOQueryType.All, bool isGroupByWBS = false, bool showLoadingScreen = false, bool forceRetrieveAllJobs = false, bool forceRetrieveAllUnits = false, bool forceRetrieveAllPOs = false)
         {
             try
             {
@@ -67,38 +67,42 @@ namespace BluePrints.Common.ViewModel.Reporting
                 List<DateTime> alignedDataDates = ChronologicalHelpers.GenerateAlignedDatesCollection(FirstAlignedDataDate, DateTime.Now.AddYears(1), ReportingInterval);
                 List<SUBJOB> missingSUBJOBS = new List<SUBJOB>();
 
-                if(groupByMonths)
-                    burnedDataPoints = BluePrintsDataUtils.GetBurnedByMonth(primeroUOW, projectNumber, actualsDataDate, qualifiedSubjobs, missingSUBJOBS, CurrencyConversion, showLoadingScreen);
+                if(isGroupByWBS)
+                    burnedDataPoints = BluePrintsDataUtils.GetBurnedByWBS(primeroUOW, projectNumber, actualsDataDate, qualifiedSubjobs, missingSUBJOBS, CurrencyConversion, showLoadingScreen);
                 else
+                {
                     burnedDataPoints = BluePrintsDataUtils.GetBurned(primeroUOW, projectNumber, actualsDataDate, qualifiedSubjobs, missingSUBJOBS, CurrencyConversion, showLoadingScreen);
+                    List<ExoDataPoint> burnedDataPointsWithNarrative = burnedDataPoints.Where(x => x.Narrative != null).ToList();
+                    foreach (IReportable reportable in summaryObject.Reportables)
+                    {
+                        List<ExoDataPoint> reportableBurnedData = burnedDataPointsWithNarrative.Where(x => x.Narrative.ToUpper() == reportable.Deliverable_Name).ToList();
+                        reportable.Stats.Burned.SetData(reportableBurnedData);
+                    }
+                }
 
                 DateTime previousPODataDate = new DateTime(poDataDate.Year, poDataDate.Month, 1);
                 previousPODataDate = previousPODataDate.AddDays(-1);
-                if(!timeOnly)
+                //retrieve material and possibly PO
+                if(dashboardEXOQueryType != DashboardEXOQueryType.TimeOnly)
                 {
-                    if (groupByMonths)
+                    if (isGroupByWBS)
                         materialDataPoints = BluePrintsDataUtils.GetMaterialsByMonth(primeroUOW, projectNumber, actualsDataDate, null, CurrencyConversion, showLoadingScreen);
                     else
                         materialDataPoints = BluePrintsDataUtils.GetMaterials(primeroUOW, projectNumber, actualsDataDate, null, CurrencyConversion, showLoadingScreen);
 
-                    if (groupByMonths)
+                    //only retrieve PO if all is specified
+                    if(dashboardEXOQueryType == DashboardEXOQueryType.All)
                     {
-                        poDataPoints = BluePrintsDataUtils.GetEXOPOByWBS(primeroUOW, projectNumber, poDataDate, null, showLoadingScreen);
-                        previousPODataPoints = BluePrintsDataUtils.GetEXOPOByWBS(primeroUOW, projectNumber, previousPODataDate, null, showLoadingScreen);
-                    }
-                    else
-                    {
-                        poDataPoints = BluePrintsDataUtils.GetEXOPO(primeroUOW, projectNumber, poDataDate, null, showLoadingScreen);
-                        previousPODataPoints = BluePrintsDataUtils.GetEXOPO(primeroUOW, projectNumber, previousPODataDate, null, showLoadingScreen);
-                    }
-                }
-                else
-                {
-                    List<ExoDataPoint> burnedDataPointsWithNarrative = burnedDataPoints.Where(x => x.Narrative != null).ToList();
-                    foreach(IReportable reportable in summaryObject.Reportables)
-                    {
-                        List<ExoDataPoint> reportableBurnedData = burnedDataPointsWithNarrative.Where(x => x.Narrative.ToUpper() == reportable.Deliverable_Name).ToList();
-                        reportable.Stats.Burned.SetData(reportableBurnedData);
+                        if (isGroupByWBS)
+                        {
+                            poDataPoints = BluePrintsDataUtils.GetEXOPOByWBS(primeroUOW, projectNumber, poDataDate, null, showLoadingScreen);
+                            previousPODataPoints = BluePrintsDataUtils.GetEXOPOByWBS(primeroUOW, projectNumber, previousPODataDate, null, showLoadingScreen);
+                        }
+                        else
+                        {
+                            poDataPoints = BluePrintsDataUtils.GetEXOPO(primeroUOW, projectNumber, poDataDate, null, showLoadingScreen);
+                            previousPODataPoints = BluePrintsDataUtils.GetEXOPO(primeroUOW, projectNumber, previousPODataDate, null, showLoadingScreen);
+                        }
                     }
                 }
 

@@ -15,7 +15,7 @@ namespace BluePrints.Common.ViewModel.Reporting
 {
     public interface IStatsSummarizer
     {
-        void Build(bool showLoadingScreen = true, bool isCosts = false, decimal weightingPortion = 1, List<StatsCalculationType> calcTypes = null, bool useProductivity = false);
+        void Build(bool showLoadingScreen = true, decimal weightingPortion = 1, List<StatsCalculationType> calcTypes = null, bool useProductivity = false);
         void Summarize();
     }
 
@@ -28,7 +28,7 @@ namespace BluePrints.Common.ViewModel.Reporting
             set { summaryObject = value; }
         }
 
-        public virtual void Build(bool showLoadingScreen = true, bool isCosts = false, decimal weightingPortion = 1, List<StatsCalculationType> calcTypes = null, bool useProductivity = false)
+        public virtual void Build(bool showLoadingScreen = true, decimal weightingPortion = 1, List<StatsCalculationType> calcTypes = null, bool useProductivity = false)
         {
             if(showLoadingScreen)
                 LoadingScreenManager.ShowLoadingScreen(GetAllMaxProgress(calcTypes));
@@ -424,12 +424,12 @@ namespace BluePrints.Common.ViewModel.Reporting
             FullStatsBuilder = fullStatsBuilder;
         }
 
-        public void BuildBurnedDataPoints(bool forceRetrieveAllJobs, bool forceRetrieveAllUnits, bool forceRetrieveAllPOs, bool showLoadingScreen = false, bool timeOnly = false, bool groupByMonths = false)
+        public void BuildBurnedDataPoints(DashboardEXOQueryType dashboardEXOQueryType = DashboardEXOQueryType.TimeAndMaterial, bool isGroupByWBS = false, bool showLoadingScreen = false, bool forceRetrieveAllJobs = false, bool forceRetrieveAllUnits = false, bool forceRetrieveAllPOs = false)
         {
             ProjectSummaryStats projectSummaryStats = this.SummaryStats as ProjectSummaryStats;
 
             if (projectSummaryStats != null)
-                FullStatsBuilder.BuildExoDataPoints(FullStatsBuilder.PrimeroUOW, projectSummaryStats, forceRetrieveAllJobs, forceRetrieveAllUnits, forceRetrieveAllPOs, showLoadingScreen, timeOnly, groupByMonths);
+                FullStatsBuilder.BuildExoDataPoints(FullStatsBuilder.PrimeroUOW, projectSummaryStats, dashboardEXOQueryType, isGroupByWBS, showLoadingScreen, forceRetrieveAllJobs, forceRetrieveAllUnits, forceRetrieveAllPOs);
         }
 
         public void RecalculateStats(bool isCosts)

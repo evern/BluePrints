@@ -54,7 +54,7 @@ namespace BluePrints.Common.Projections
             set { SetProperty(() => Stats, value); }
         }
 
-        public void BuildStats(bool showLoadingScreen = true, bool isCosts = false, decimal weightingPortion = 1, bool forceRetrieveAllJobs = false, bool forceRetrieveAllUnits = false, bool forceRetrieveAllPOs = false, List<StatsCalculationType> calcTypes = null, bool useProductivityFactorOnRemaining = false)
+        public void BuildStats(DashboardEXOQueryType dashboardEXOQueryType = DashboardEXOQueryType.TimeAndMaterial, bool showLoadingScreen = true, decimal weightingPortion = 1, bool forceRetrieveAllJobs = false, bool forceRetrieveAllUnits = false, bool forceRetrieveAllPOs = false, List<StatsCalculationType> calcTypes = null, bool useProductivityFactorOnRemaining = false)
         {
             if (projectSummarizer == null)
                 return;
@@ -62,11 +62,11 @@ namespace BluePrints.Common.Projections
             if (calcTypes == null)
                 calcTypes = BluePrintsDataUtils.AllCalcTypes;
 
-            projectSummarizer.Build(showLoadingScreen, isCosts, weightingPortion, calcTypes, useProductivityFactorOnRemaining);
+            projectSummarizer.Build(showLoadingScreen, weightingPortion, calcTypes, useProductivityFactorOnRemaining);
 
             if (calcTypes.Contains(StatsCalculationType.Burned))
                 //Build burned must come after build so that remaining can be retrieved for remaining actual
-                projectSummarizer.BuildBurnedDataPoints(forceRetrieveAllJobs, forceRetrieveAllUnits, forceRetrieveAllPOs, showLoadingScreen, false, true);
+                projectSummarizer.BuildBurnedDataPoints(dashboardEXOQueryType, true, showLoadingScreen, forceRetrieveAllJobs, forceRetrieveAllUnits, forceRetrieveAllPOs);
 
             this.RaisePropertiesChanged();
         }
@@ -193,7 +193,7 @@ namespace BluePrints.Common.Projections
                 };
 
                 if (buildStats)
-                    current_project_dashboard.BuildStats();
+                    current_project_dashboard.BuildStats(DashboardEXOQueryType.TimeAndMaterial, false);
 
                 project_dashboard.Add(current_project_dashboard);
             }

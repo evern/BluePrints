@@ -182,7 +182,7 @@ namespace BluePrints.ViewModels
             var argumentObject = (object[])e.Argument;
             var project = (PROJECT_Dashboard)argumentObject[0];
 
-            project.BuildStats(false);
+            project.BuildStats(DashboardEXOQueryType.TimeAndMaterial);
             project.RecalculateStats(false);
            // project.Subjob_TreeDashboards = DashboardHelpers.ProjectDashboardHierarchicalBuilder((ProjectSummaryStats)project.Stats, true);
             project.Update();

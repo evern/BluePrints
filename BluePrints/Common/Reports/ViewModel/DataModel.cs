@@ -186,7 +186,7 @@ namespace BluePrints.Common.ViewModel.Reporting
                 calcTypes = BluePrintsDataUtils.AllCalcTypes;
             }
 
-            StatSummarizer.Build(false, false, weightingPortion, calcTypes);
+            StatSummarizer.Build(false, weightingPortion, calcTypes);
         }
 
         public void BuildBudgetedStats(decimal weightingPortion = 1)

@@ -322,6 +322,7 @@ namespace BluePrints.ViewModels
             ForceRetrieveAllJobs = true; //force exo burned to retrieve subjobs that aren't defined
             ForceRetrieveAllUnits = true; //force exo burned to retrieve units that are beyond data date
             ForceRetrieveAllPOs = false; //force retrieve all EXO pos that are beyond data date
+            DashboardEXOQueryType = DashboardEXOQueryType.All;
             UseProductivityFactorOnRemaining = false; //calculate remaining costs using productivity factor
             IsLoadingForecast = true;
             IsLoading = true;

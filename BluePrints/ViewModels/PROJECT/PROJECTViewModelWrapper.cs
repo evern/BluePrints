@@ -84,6 +84,7 @@ namespace BluePrints.ViewModels
         public bool ForceRetrieveAllJobs { get; set; } //force exo burned to retrieve subjobs that aren't defined
         public bool ForceRetrieveAllUnits { get; set; } //force exo burned to retrieve units that are beyond data date
         public bool ForceRetrieveAllPOs { get; set; } //force exo burned to retrieve units that are beyond data date
+        public DashboardEXOQueryType DashboardEXOQueryType { get; set; } //define whether dashboard should query time, material or POs
         public bool UseProductivityFactorOnRemaining { get; set; } //calculate remaining costs using productivity factor
         public bool IsVariationSeparated { get; set; } //whether to split variation out from main job
         IBluePrintsEntitiesUnitOfWork bluePrintsUnitOfWork;
@@ -101,6 +102,7 @@ namespace BluePrints.ViewModels
             FixedStartDate = null;
             FixedDataDate = null;
 
+            DashboardEXOQueryType = DashboardEXOQueryType.TimeAndMaterial;
             delayedRefreshDispatcher = new DispatcherTimer();
             delayedRefreshDispatcher.Interval = new TimeSpan(0, 0, 0, 1);
             delayedRefreshDispatcher.Tick += delayedRefreshDispatcher_Tick;
@@ -293,7 +295,7 @@ namespace BluePrints.ViewModels
             
             if(project != null)
             {
-                project.BuildStats(ShowLoadingScreen, false, 1, ForceRetrieveAllJobs, ForceRetrieveAllUnits, ForceRetrieveAllPOs, getForecastTypes(), UseProductivityFactorOnRemaining);
+                project.BuildStats(DashboardEXOQueryType, ShowLoadingScreen, 1, ForceRetrieveAllJobs, ForceRetrieveAllUnits, ForceRetrieveAllPOs, getForecastTypes(), UseProductivityFactorOnRemaining);
                 project.RecalculateStats(false, true);
                 project.Subjob_Dashboards = getDashboardStructure(project, IsVariationSeparated, ForceRetrieveRemainingDataPoints);
                 project.Update();

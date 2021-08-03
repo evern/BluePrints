@@ -979,7 +979,7 @@ namespace BluePrints.Common.ViewModel.Utils
             return burnedDataPoints;
         }
 
-        public static List<ExoDataPoint> GetBurnedByMonth(IPrimeroEntitiesUnitOfWork primeroUOW, string projectNumber, DateTime dataDate, IEnumerable<string> qualifiedSubjobs = null, List<SUBJOB> missingSUBJOBS = null, decimal currencyConversion = 1, bool showLoadingScreen = false)
+        public static List<ExoDataPoint> GetBurnedByWBS(IPrimeroEntitiesUnitOfWork primeroUOW, string projectNumber, DateTime dataDate, IEnumerable<string> qualifiedSubjobs = null, List<SUBJOB> missingSUBJOBS = null, decimal currencyConversion = 1, bool showLoadingScreen = false)
         {
             List<ExoDataPoint> burnedDataPoints = new List<ExoDataPoint>();
             HashSet<string> missingSubJobNames = new HashSet<string>();
@@ -1437,8 +1437,8 @@ namespace BluePrints.Common.ViewModel.Utils
                     decimal remainingQty = orderQty - Convert.ToDecimal(po.TOTAL_SUP_QUANT);
                     poDataPoint.Units = remainingQty < 0 ? 0 : remainingQty;
                     poDataPoint.Costs = Convert.ToDecimal(po.TOTAL_OUTSTANDING_COSTS);
-                    poDataPoint.CostPerQty = poDataPoint.Costs / poDataPoint.Units;
-                    poDataPoint.TotalCosts = Convert.ToDecimal(po.LINETOTAL);
+                    poDataPoint.CostPerQty = poDataPoint.Units == 0 ? 0 : (poDataPoint.Costs / poDataPoint.Units);
+                    poDataPoint.TotalCosts = Convert.ToDecimal(po.TOTAL_COSTS);
                     poDataPoint.Subjob_Name = po.SUBJOB_CODE;
                     poDataPoint.Quantity = poDataPoint.Units;
                     poDataPoint.Discipline_Code = po.COST_GROUP;

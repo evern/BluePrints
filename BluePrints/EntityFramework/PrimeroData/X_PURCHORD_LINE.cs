@@ -38,6 +38,6 @@ namespace BluePrints.PrimeroData
 
         [Key]
         [Column(Order = 4)]
-        public double LINETOTAL { get; set; }
+        public double TOTAL_COSTS { get; set; }
     }
 }
