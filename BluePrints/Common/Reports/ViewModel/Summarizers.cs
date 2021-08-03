@@ -168,36 +168,26 @@ namespace BluePrints.Common.ViewModel.Reporting
         {
             using (BluePrintsEntities bluePrintDataContext = new BluePrintsEntities())
             {
-                List<Data.DataPoint> plannedDataPoints = bluePrintDataContext.QueryDeliverablePlannedDataPointsByProject(this.projectNumber, isForecast);
-                List<Data.DataPoint> plannedLateDataPoints = null;
-                if(buildLate)
-                    plannedLateDataPoints = bluePrintDataContext.QueryDeliverablePlannedLateDataPointsByProject(this.projectNumber);
-
                 if(isSummariseByWBS)
                 {
-                    List<DataPointsGroup> plannedDataPointsGroups;
-                    if(isVariationSeparated)
-                        plannedDataPointsGroups = plannedDataPoints.GroupBy(x => new { x.SubJobCode, x.DisciplineCode, x.CommodityCode, x.VariationCode }).Select(g => new DataPointsGroup(g.Key.SubJobCode, g.Key.DisciplineCode, g.Key.CommodityCode, g.Key.VariationCode, g)).ToList();
-                    else
-                        plannedDataPointsGroups = plannedDataPoints.GroupBy(x => new { x.SubJobCode, x.DisciplineCode, x.CommodityCode }).Select(g => new DataPointsGroup(g.Key.SubJobCode, g.Key.DisciplineCode, g.Key.CommodityCode, "", g)).ToList();
-
+                    List<DataPointsGroup> plannedDataPointsGroups = bluePrintDataContext.QueryDeliverablePlannedDataPointsGroupByProject(this.projectNumber, true, false, isForecast, false, isVariationSeparated);
                     foreach (WBSReportable reportableObject in ((WBSSummary)SummaryStats).WBSReportables)
                     {
                         reportableObject.AssignWBSReportableData(x => x.Budgeted.SetPlannedData, plannedDataPointsGroups, isVariationSeparated);
                         if(buildLate)
                         {
-                            List<DataPointsGroup> plannedLateDataPointsGroups;
-                            if(isVariationSeparated)
-                                plannedLateDataPointsGroups = plannedLateDataPoints.GroupBy(x => new { x.SubJobCode, x.DisciplineCode, x.CommodityCode, x.VariationCode }).Select(g => new DataPointsGroup(g.Key.SubJobCode, g.Key.DisciplineCode, g.Key.CommodityCode, g.Key.VariationCode, g)).ToList();
-                            else
-                                plannedLateDataPointsGroups = plannedLateDataPoints.GroupBy(x => new { x.SubJobCode, x.DisciplineCode, x.CommodityCode }).Select(g => new DataPointsGroup(g.Key.SubJobCode, g.Key.DisciplineCode, g.Key.CommodityCode, "", g)).ToList();
-
+                            List<DataPointsGroup> plannedLateDataPointsGroups = bluePrintDataContext.QueryDeliverablePlannedDataPointsGroupByProject(this.projectNumber, true, true, isForecast, false, isVariationSeparated);
                             reportableObject.AssignWBSReportableData(x => x.BudgetedLate.SetPlannedData, plannedLateDataPointsGroups, isVariationSeparated);
                         }
                     }
                 }
                 else
                 {
+                    List<Data.DataPoint> plannedDataPoints = bluePrintDataContext.QueryDeliverablePlannedDataPointsByProject(this.projectNumber, isForecast);
+                    List<Data.DataPoint> plannedLateDataPoints = null;
+                    if (buildLate)
+                        plannedLateDataPoints = bluePrintDataContext.QueryDeliverablePlannedLateDataPointsByProject(this.projectNumber);
+
                     foreach (IReportable reportableObject in ((SummaryStats)this.SummaryStats).Reportables)
                     {
                         assignDataPointsByGuid(reportableObject, x => x.Stats.Budgeted, plannedDataPoints, reportableObject.OriginalEntityKey);
@@ -248,16 +238,9 @@ namespace BluePrints.Common.ViewModel.Reporting
         {
             using (BluePrintsEntities bluePrintDataContext = new BluePrintsEntities())
             {
-                List<Data.DataPoint> currentDataPoints = bluePrintDataContext.QueryDeliverableCurrentDataPointsByProject(this.projectNumber);
-
                 if(isSummariseByWBS)
                 {
-                    List<DataPointsGroup> currentDataPointsGroups;
-                    if(isVariationSeparated)
-                        currentDataPointsGroups = currentDataPoints.GroupBy(x => new { x.SubJobCode, x.DisciplineCode, x.CommodityCode, x.VariationCode }).Select(g => new DataPointsGroup(g.Key.SubJobCode, g.Key.DisciplineCode, g.Key.CommodityCode, g.Key.VariationCode, g)).ToList();
-                    else
-                        currentDataPointsGroups = currentDataPoints.GroupBy(x => new { x.SubJobCode, x.DisciplineCode, x.CommodityCode }).Select(g => new DataPointsGroup(g.Key.SubJobCode, g.Key.DisciplineCode, g.Key.CommodityCode, "", g)).ToList();
-
+                    List<DataPointsGroup> currentDataPointsGroups = bluePrintDataContext.QueryDeliverablePlannedDataPointsGroupByProject(this.projectNumber, true, false, true, false, isVariationSeparated);
                     foreach (WBSReportable reportableObject in ((WBSSummary)SummaryStats).WBSReportables)
                     {
                         reportableObject.AssignWBSReportableData(x => x.Current.SetPlannedData, currentDataPointsGroups, isVariationSeparated);
@@ -266,6 +249,7 @@ namespace BluePrints.Common.ViewModel.Reporting
                 }
                 else
                 {
+                    List<Data.DataPoint> currentDataPoints = bluePrintDataContext.QueryDeliverableCurrentDataPointsByProject(this.projectNumber);
                     foreach (IReportable reportableObject in ((SummaryStats)this.SummaryStats).Reportables)
                     {
                         assignDataPointsByGuid(reportableObject, x => x.Stats.Current, currentDataPoints, reportableObject.OriginalEntityKey);
@@ -371,17 +355,9 @@ namespace BluePrints.Common.ViewModel.Reporting
         {
             using (BluePrintsEntities bluePrintDataContext = new BluePrintsEntities())
             {
-                List<Data.DataPoint> remainingDataPoints = bluePrintDataContext.QueryDeliverableRemainingDataPointsByProject(this.projectNumber, isForecast);
-                List<PROGRESS_ETC> projectProgressETCs = bluePrintDataContext.QueryProjectProgressETC(this.projectNumber);
-
                 if(isSummariseByWBS)
                 {
-                    List<DataPointsGroup> remainingDataPointsGroup;
-                    if(isVariationSeparated)
-                        remainingDataPointsGroup = remainingDataPoints.GroupBy(x => new { x.SubJobCode, x.DisciplineCode, x.CommodityCode, x.VariationCode }).Select(g => new DataPointsGroup(g.Key.SubJobCode, g.Key.DisciplineCode, g.Key.CommodityCode, g.Key.VariationCode, g)).ToList();
-                    else
-                        remainingDataPointsGroup = remainingDataPoints.GroupBy(x => new { x.SubJobCode, x.DisciplineCode, x.CommodityCode, x.VariationCode }).Select(g => new DataPointsGroup(g.Key.SubJobCode, g.Key.DisciplineCode, g.Key.CommodityCode, "", g)).ToList();
-
+                    List<DataPointsGroup> remainingDataPointsGroup = bluePrintDataContext.QueryDeliverablePlannedDataPointsGroupByProject(this.projectNumber, false, false, false, isForecast, isVariationSeparated);
                     foreach (WBSReportable reportableObject in ((WBSSummary)SummaryStats).WBSReportables)
                     {
                         DataPointsGroup dataPointsGroup;
@@ -398,6 +374,9 @@ namespace BluePrints.Common.ViewModel.Reporting
                 }
                 else
                 {
+                    List<Data.DataPoint> remainingDataPoints = bluePrintDataContext.QueryDeliverableRemainingDataPointsByProject(this.projectNumber, isForecast);
+                    List<PROGRESS_ETC> projectProgressETCs = bluePrintDataContext.QueryProjectProgressETC(this.projectNumber);
+
                     foreach (IReportable reportableObject in ((SummaryStats)this.SummaryStats).Reportables)
                     {
                         List<Data.DataPoint> dataPoints = remainingDataPoints.Where(x => x.Original_Guid == reportableObject.OriginalEntityKey).ToList();
@@ -439,19 +418,18 @@ namespace BluePrints.Common.ViewModel.Reporting
     public class FullSummarizer : PartialSummarizer
     {
         readonly FullStatsBuilder FullStatsBuilder;
-
         public FullSummarizer(ProjectSummaryStats summaryStats, FullStatsBuilder fullStatsBuilder, string projectNumber)
             : base(summaryStats, fullStatsBuilder, projectNumber)
         {
             FullStatsBuilder = fullStatsBuilder;
         }
 
-        public void BuildBurnedDataPoints(bool forceRetrieveAllJobs, bool forceRetrieveAllUnits, bool forceRetrieveAllPOs, bool showLoadingScreen = false, bool timeOnly = false)
+        public void BuildBurnedDataPoints(bool forceRetrieveAllJobs, bool forceRetrieveAllUnits, bool forceRetrieveAllPOs, bool showLoadingScreen = false, bool timeOnly = false, bool groupByMonths = false)
         {
             ProjectSummaryStats projectSummaryStats = this.SummaryStats as ProjectSummaryStats;
 
             if (projectSummaryStats != null)
-                FullStatsBuilder.BuildExoDataPoints(FullStatsBuilder.PrimeroUOW, projectSummaryStats, forceRetrieveAllJobs, forceRetrieveAllUnits, forceRetrieveAllPOs, showLoadingScreen, timeOnly);
+                FullStatsBuilder.BuildExoDataPoints(FullStatsBuilder.PrimeroUOW, projectSummaryStats, forceRetrieveAllJobs, forceRetrieveAllUnits, forceRetrieveAllPOs, showLoadingScreen, timeOnly, groupByMonths);
         }
 
         public void RecalculateStats(bool isCosts)

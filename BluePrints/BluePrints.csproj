@@ -912,6 +912,7 @@
     <Compile Include="Common\View\PrimaveraAffinityReport.xaml.cs">
       <DependentUpon>PrimaveraAffinityReport.xaml</DependentUpon>
     </Compile>
+    <Compile Include="EntityFramework\Annotations\PrimeroEntities.cs" />
     <Compile Include="EntityFramework\Annotations\CONSTRUCTION_STAGE.cs" />
     <Compile Include="EntityFramework\Annotations\DataPoint.cs" />
     <Compile Include="EntityFramework\Annotations\DISCIPLINE_DESC.cs" />
@@ -1132,6 +1133,7 @@
     <Compile Include="EntityFramework\PrimeroData\X_JOB_TIMESHEETS.cs" />
     <Compile Include="EntityFramework\PrimeroData\X_JOB_TRANSACTIONS_DETAIL_SeqNo.cs" />
     <Compile Include="EntityFramework\PrimeroData\X_JOB_TRANSACTIONS_DETAIL.cs" />
+    <Compile Include="EntityFramework\PrimeroData\X_PURCH_REQ_COMMENTS_FILES - Copy.cs" />
     <Compile Include="ViewModels\BASELINE_ITEM\DOCCONTROL_BASELINE_ITEMCollectionViewModelWrapper.cs" />
     <Compile Include="ViewModels\BASELINE_ITEM\BASELINE_ITEMWorkpackSchedulingViewModelWrapper.cs" />
     <Compile Include="ViewModels\BASELINE_ITEM\BASELINE_ITEMSchedulingViewModelWrapper.cs" />
@@ -1891,7 +1893,7 @@
     <Compile Include="EntityFramework\PrimeroData\X_HBIZ_PURCH_REQ_STATUS_VALUES.cs" />
     <Compile Include="EntityFramework\PrimeroData\X_HBIZ_PURCH_REQ_SUBSCRIPTIONS.cs" />
     <Compile Include="EntityFramework\PrimeroData\X_HBIZ_REPORTS_TO_STAFF.cs" />
-    <Compile Include="EntityFramework\PrimeroData\X_PURCH_REQ_COMMENTS_FILES.cs" />
+    <Compile Include="EntityFramework\PrimeroData\X_PURCHORD_LINE.cs" />
     <Compile Include="EntityFramework\PrimeroEntitiesDataModel\DesignTimePrimeroEntitiesUnitOfWork.cs" />
     <Compile Include="EntityFramework\PrimeroEntitiesDataModel\IPrimeroEntitiesUnitOfWork.cs" />
     <Compile Include="EntityFramework\PrimeroEntitiesDataModel\PrimeroEntitiesUnitOfWork.cs" />

@@ -111,5 +111,9 @@
 
         [NotMapped]
         public bool QtyEdited { get; set; }
+
+        public int X_WEEKNO { get; set; }
+
+        public int X_YEAR { get; set; }
     }
 }

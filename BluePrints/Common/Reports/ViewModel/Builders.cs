@@ -35,7 +35,7 @@ namespace BluePrints.Common.ViewModel.Reporting
             this.projectSUBJOBS = SUBJOBS;
         }
 
-        public void BuildExoDataPoints(IPrimeroEntitiesUnitOfWork primeroUOW, ProjectSummaryStats summaryObject, bool forceRetrieveAllJobs = false, bool forceRetrieveAllUnits = false, bool forceRetrieveAllPOs = false, bool showLoadingScreen = false, bool timeOnly = false)
+        public void BuildExoDataPoints(IPrimeroEntitiesUnitOfWork primeroUOW, ProjectSummaryStats summaryObject, bool forceRetrieveAllJobs = false, bool forceRetrieveAllUnits = false, bool forceRetrieveAllPOs = false, bool showLoadingScreen = false, bool timeOnly = false, bool groupByMonths = false)
         {
             try
             {
@@ -67,14 +67,30 @@ namespace BluePrints.Common.ViewModel.Reporting
                 List<DateTime> alignedDataDates = ChronologicalHelpers.GenerateAlignedDatesCollection(FirstAlignedDataDate, DateTime.Now.AddYears(1), ReportingInterval);
                 List<SUBJOB> missingSUBJOBS = new List<SUBJOB>();
 
-                burnedDataPoints = BluePrintsDataUtils.GetBurned(primeroUOW, projectNumber, actualsDataDate, qualifiedSubjobs, missingSUBJOBS, CurrencyConversion, showLoadingScreen);
+                if(groupByMonths)
+                    burnedDataPoints = BluePrintsDataUtils.GetBurnedByMonth(primeroUOW, projectNumber, actualsDataDate, qualifiedSubjobs, missingSUBJOBS, CurrencyConversion, showLoadingScreen);
+                else
+                    burnedDataPoints = BluePrintsDataUtils.GetBurned(primeroUOW, projectNumber, actualsDataDate, qualifiedSubjobs, missingSUBJOBS, CurrencyConversion, showLoadingScreen);
+
                 DateTime previousPODataDate = new DateTime(poDataDate.Year, poDataDate.Month, 1);
                 previousPODataDate = previousPODataDate.AddDays(-1);
                 if(!timeOnly)
                 {
-                    materialDataPoints = BluePrintsDataUtils.GetMaterials(primeroUOW, projectNumber, actualsDataDate, null, CurrencyConversion, showLoadingScreen);
-                    poDataPoints = BluePrintsDataUtils.GetEXOPO(primeroUOW, projectNumber, poDataDate, null, showLoadingScreen);
-                    previousPODataPoints = BluePrintsDataUtils.GetEXOPO(primeroUOW, projectNumber, previousPODataDate, null, showLoadingScreen);
+                    if (groupByMonths)
+                        materialDataPoints = BluePrintsDataUtils.GetMaterialsByMonth(primeroUOW, projectNumber, actualsDataDate, null, CurrencyConversion, showLoadingScreen);
+                    else
+                        materialDataPoints = BluePrintsDataUtils.GetMaterials(primeroUOW, projectNumber, actualsDataDate, null, CurrencyConversion, showLoadingScreen);
+
+                    if (groupByMonths)
+                    {
+                        poDataPoints = BluePrintsDataUtils.GetEXOPOByWBS(primeroUOW, projectNumber, poDataDate, null, showLoadingScreen);
+                        previousPODataPoints = BluePrintsDataUtils.GetEXOPOByWBS(primeroUOW, projectNumber, previousPODataDate, null, showLoadingScreen);
+                    }
+                    else
+                    {
+                        poDataPoints = BluePrintsDataUtils.GetEXOPO(primeroUOW, projectNumber, poDataDate, null, showLoadingScreen);
+                        previousPODataPoints = BluePrintsDataUtils.GetEXOPO(primeroUOW, projectNumber, previousPODataDate, null, showLoadingScreen);
+                    }
                 }
                 else
                 {

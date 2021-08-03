@@ -66,7 +66,7 @@ namespace BluePrints.Common.Projections
 
             if (calcTypes.Contains(StatsCalculationType.Burned))
                 //Build burned must come after build so that remaining can be retrieved for remaining actual
-                projectSummarizer.BuildBurnedDataPoints(forceRetrieveAllJobs, forceRetrieveAllUnits, forceRetrieveAllPOs, showLoadingScreen);
+                projectSummarizer.BuildBurnedDataPoints(forceRetrieveAllJobs, forceRetrieveAllUnits, forceRetrieveAllPOs, showLoadingScreen, false, true);
 
             this.RaisePropertiesChanged();
         }

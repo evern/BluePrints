@@ -1,6 +1,7 @@
 ﻿using BaseModel.DataModel.EntityFramework;
 using BaseModel.Misc;
 using BluePrints.Common;
+using BluePrints.Common.ViewModel.Reporting;
 using BluePrints.PrimeroData;
 using EntityFramework.Functions;
 using System;
@@ -91,6 +92,16 @@ namespace BluePrints.Data
         public List<DataPoint> QueryDeliverablePlannedDataPointsByProject(string projectNumber, bool isForecast = false)
         {
             return this.DataPoint.Where(x => x.ProjectNumber == projectNumber && x.IsPlanned == true && x.IsLate == false && x.IsCurrent == false && x.IsForecast == isForecast).ToList();
+        }
+
+        public List<DataPointsGroup> QueryDeliverablePlannedDataPointsGroupByProject(string projectNumber, bool isPlanned, bool isLate, bool isCurrent, bool isForecast = false, bool isVariationSeparated = false)
+        {
+            IEnumerable<DataPoint> dataPoints = this.DataPoint.Where(x => x.ProjectNumber == projectNumber && x.IsLate == isLate && x.IsCurrent == isCurrent && x.IsPlanned == isPlanned && x.IsForecast == isForecast);
+            if(isVariationSeparated)
+                return dataPoints.GroupBy(x => new { x.SubJobCode, x.DisciplineCode, x.CommodityCode, x.VariationCode }).Select(g => new DataPointsGroup(g.Key.SubJobCode, g.Key.DisciplineCode, g.Key.CommodityCode, g.Key.VariationCode, g)).ToList();
+            else
+                return dataPoints.GroupBy(x => new { x.SubJobCode, x.DisciplineCode, x.CommodityCode }).Select(g => new DataPointsGroup(g.Key.SubJobCode, g.Key.DisciplineCode, g.Key.CommodityCode, "", g)).ToList();
+
         }
 
         public List<DataPoint> QueryDeliverableCurrentDataPointsByProject(string projectNumber)
