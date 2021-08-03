@@ -483,7 +483,9 @@ namespace BluePrints.Common.Misc
             IEnumerable<ExoDataPoint> previousPODataPoints = projectSummaryStats.PreviousPO.GetData().Select(x => (ExoDataPoint)x);
             List<ExoDataPoint> allDataPoints = new List<ExoDataPoint>();
             allDataPoints.AddRange(burnedDataPoints);
-            allDataPoints.AddRange(actualDataPoints);
+
+            //actual is a duplicate of burned
+            //allDataPoints.AddRange(actualDataPoints);
             allDataPoints.AddRange(materialDataPoints);
             allDataPoints.AddRange(poDataPoints);
             allDataPoints.AddRange(previousPODataPoints);
@@ -506,6 +508,10 @@ namespace BluePrints.Common.Misc
 
             foreach (ExoDataPointsGroup exoDataPointsGroup in allActualsPointsGroups)
             {
+                string s;
+                if (exoDataPointsGroup.CommodityCode.ToUpper() == "UE")
+                    s = string.Empty;
+
                 WBSReportable findWBSReportable;
                 if (isVariationSeparated)
                     findWBSReportable = projectSummaryStats.WBSReportables.FirstOrDefault(x => x.SUBJOB_CODE == exoDataPointsGroup.SubJobCode && x.DISCIPLINE_CODE == exoDataPointsGroup.DisciplineCode && x.COMMODITY_CODE == exoDataPointsGroup.CommodityCode && x.VARIATION_CODE == exoDataPointsGroup.VariationCode);

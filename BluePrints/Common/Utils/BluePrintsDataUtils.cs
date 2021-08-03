@@ -1030,6 +1030,9 @@ namespace BluePrints.Common.ViewModel.Utils
                     {
                         if (qualifiedSubjobs == null || (jobTransaction.CommodityCode != null && (!jobTransaction.CommodityCode.Contains("G99") && !jobTransaction.CommodityCode.Contains("010"))))
                         {
+                            string s;
+                            if (jobTransaction.CommodityCode.ToUpper() == "UE")
+                                s = string.Empty;
                             ExoDataPoint burnedDataPoint = new ExoDataPoint();
                             burnedDataPoint.BudgetedUnits = 0;
                             burnedDataPoint.BudgetedCosts = 0;
