@@ -129,11 +129,9 @@ namespace BluePrints.Common.ViewModel.Reporting
         readonly string projectNumber;
         readonly bool isSummariseByWBS;
 
-        public PartialSummarizer(SummaryStats summarizableObject, PartialStatsBuilder partialStatsBuilder, string projectNumber)
+        public PartialSummarizer(SummaryStats summarizableObject, PartialStatsBuilder partialStatsBuilder, string projectNumber, bool isSummariseByWBS)
         {
-            if (summarizableObject is WBSSummary WBSSummarisable)
-                isSummariseByWBS = true;
-
+            this.isSummariseByWBS = isSummariseByWBS;
             SummaryStats = summarizableObject;
             this.partialStatsBuilder = partialStatsBuilder;
             this.projectNumber = projectNumber;
@@ -417,8 +415,8 @@ namespace BluePrints.Common.ViewModel.Reporting
     public class FullSummarizer : PartialSummarizer
     {
         readonly FullStatsBuilder FullStatsBuilder;
-        public FullSummarizer(ProjectSummaryStats summaryStats, FullStatsBuilder fullStatsBuilder, string projectNumber)
-            : base(summaryStats, fullStatsBuilder, projectNumber)
+        public FullSummarizer(ProjectSummaryStats summaryStats, FullStatsBuilder fullStatsBuilder, string projectNumber, bool isSummariseByWBS)
+            : base(summaryStats, fullStatsBuilder, projectNumber, isSummariseByWBS)
         {
             FullStatsBuilder = fullStatsBuilder;
         }

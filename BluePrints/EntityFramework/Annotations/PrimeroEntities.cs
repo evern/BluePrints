@@ -29,5 +29,29 @@ namespace BluePrints.PrimeroData
                 return purchaseOrderLines;
             }
         }
+
+        public static List<X_TIME_TRANSACTION> GetTimeSummary(string projectNumber, DateTime cutOffDate)
+        {
+            using (PrimeroEntities dbContext = new PrimeroEntities())
+            {
+                dbContext.Database.CommandTimeout = 5000;
+                SqlParameter projectNumberParameter = new SqlParameter("@ProjectNumber", projectNumber);
+                SqlParameter cutOffDateParameter = new SqlParameter("@CutOffDate", cutOffDate);
+                List<X_TIME_TRANSACTION> purchaseOrderLines = dbContext.Database.SqlQuery<X_TIME_TRANSACTION>("X_TIME_TRANSACTIONS @ProjectNumber, @CutOffDate", projectNumberParameter, cutOffDateParameter).ToList();
+                return purchaseOrderLines;
+            }
+        }
+
+        public static List<X_MATERIAL_TRANSACTION> GetMaterialSummary(string projectNumber, DateTime cutOffDate)
+        {
+            using (PrimeroEntities dbContext = new PrimeroEntities())
+            {
+                dbContext.Database.CommandTimeout = 5000;
+                SqlParameter projectNumberParameter = new SqlParameter("@ProjectNumber", projectNumber);
+                SqlParameter cutOffDateParameter = new SqlParameter("@CutOffDate", cutOffDate);
+                List<X_MATERIAL_TRANSACTION> purchaseOrderLines = dbContext.Database.SqlQuery<X_MATERIAL_TRANSACTION>("X_MATERIAL_TRANSACTIONS @ProjectNumber, @CutOffDate", projectNumberParameter, cutOffDateParameter).ToList();
+                return purchaseOrderLines;
+            }
+        }
     }
 }

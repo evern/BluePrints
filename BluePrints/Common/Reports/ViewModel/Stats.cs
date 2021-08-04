@@ -41,7 +41,6 @@ namespace BluePrints.Common.ViewModel.Reporting
         public readonly decimal BudgetedCosts;
         public readonly decimal TotalCosts;
         public bool StatsBuilt { get; set; }
-        readonly IEnumerable<VariationAdjustment> rawVariationAdjustments;
         readonly bool hideDataPointsBeforeDataDate;
         readonly bool forceRetrieveAllRemaining;
         readonly bool alwaysBenchmarkAgainstBudgeted;
@@ -67,12 +66,11 @@ namespace BluePrints.Common.ViewModel.Reporting
             this.reportInterval = summaryStats.ReportingInterval;
             //Always use weekly
             //this.reportInterval = new TimeSpan(1, 0, 0, 0);
-            this.rawVariationAdjustments = summaryStats.VariationAdjustments;
             this.hideDataPointsBeforeDataDate = hideDataPointsBeforeDataDate;
             this.forceRetrieveAllRemaining = forceRetrieveAllRemaining;
         }
 
-        public Stats(DateTime reportingDataDate, decimal budgetedUnits, decimal totalUnits, decimal budgetedQty, decimal totalQty, decimal budgetedCosts, decimal totalCosts, DateTime firstAlignedDataDate, TimeSpan reportInterval, IEnumerable<VariationAdjustment> rawVariationAdjustments = null, bool hideDataPointsBeforeDataDate = false, bool alwaysBenchmarkAgainstBudgeted = false, DateTime? extrapolateDate = null, bool forceRetrieveAllRemaining = false)
+        public Stats(DateTime reportingDataDate, decimal budgetedUnits, decimal totalUnits, decimal budgetedQty, decimal totalQty, decimal budgetedCosts, decimal totalCosts, DateTime firstAlignedDataDate, TimeSpan reportInterval, bool hideDataPointsBeforeDataDate = false, bool alwaysBenchmarkAgainstBudgeted = false, DateTime? extrapolateDate = null, bool forceRetrieveAllRemaining = false)
         {
             this.reportingDataDate = reportingDataDate;
             this.BudgetedUnits = budgetedUnits;
@@ -84,9 +82,6 @@ namespace BluePrints.Common.ViewModel.Reporting
             this.firstAlignedDataDate = firstAlignedDataDate;
             this.reportInterval = reportInterval;
             this.extrapolateDate = extrapolateDate;
-            //Always use weekly
-            //this.reportInterval = new TimeSpan(1, 0, 0, 0);
-            this.rawVariationAdjustments = rawVariationAdjustments;
             this.hideDataPointsBeforeDataDate = hideDataPointsBeforeDataDate;
             this.forceRetrieveAllRemaining = forceRetrieveAllRemaining;
 

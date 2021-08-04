@@ -41,7 +41,7 @@ namespace BluePrints.Common.Projections
             {
                 fullStatsBuilder = new FullStatsBuilder(project_number, currency_conversion, reporting_interval, (DateTime)earliest_first_aligned_data_date, SUBJOBS, (DateTime)latest_data_date, PrimeroUOW);
                 Stats = new ProjectSummaryStats(reportableItems, (DateTime)latest_data_date, reporting_interval, (DateTime)earliest_first_aligned_data_date, projectVariationAdjustments, null, forceRetrieveRemainingDataPoints, false);
-                projectSummarizer = new FullSummarizer((ProjectSummaryStats)Stats, fullStatsBuilder, project_number);
+                projectSummarizer = new FullSummarizer((ProjectSummaryStats)Stats, fullStatsBuilder, project_number, true);
             }
         }
 
@@ -160,7 +160,7 @@ namespace BluePrints.Common.Projections
                     }
 
                     IEnumerable<BASELINE_ITEMProgress> project_baseline_item_progresses = ProgressQueries.OffsiteDirectProgressItemTransformation(
-                    live_baseline_items.AsQueryable(), current_project, live_baseline_progress, project_rates, null, approved_project_variations, false, null, DeliverableInternalNumberMode.Default, true, null, USERCollection, BASELINE_ITEM_WORKCollection, null, null, null, null, null, null, null, null, showLoadingScreen).ToArray().AsEnumerable();
+                    live_baseline_items.AsQueryable(), current_project, live_baseline_progress).ToArray().AsEnumerable();
                     reportables.AddRange(project_baseline_item_progresses);
                     projectProgresses.Add(live_baseline_progress);
                 }

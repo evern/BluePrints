@@ -440,7 +440,7 @@ namespace BluePrints.Common.Base
             projectSummary = new ProjectSummaryStats(MainViewModel.Entities, DataDate, reportInterval, firstAlignedDataDate, projectVariationAdjustment, extrapolateDataDate ? DateTime.Now : (DateTime?)null);
             DateTime reporting_data_date = DataDate;
             FullStatsBuilder fullStatsBuilder = new FullStatsBuilder(loadPROJECT.NUMBER, loadPROJECT.CURRENCYCONVERSION, reportInterval, firstAlignedDataDate, SUBJOBCollection, reporting_data_date, primeroUnitOfWork);
-            fullSummarizer = new FullSummarizer(projectSummary, fullStatsBuilder, loadPROJECT.NUMBER);
+            fullSummarizer = new FullSummarizer(projectSummary, fullStatsBuilder, loadPROJECT.NUMBER, false);
         }
 
         protected abstract IEnumerable<IReportable> ReportableCollection { get; }
@@ -462,7 +462,7 @@ namespace BluePrints.Common.Base
             {
                 fullSummarizer.BuildBudgeted(1, 1, false, false);
                 //fullSummarizer.BuildEarned();
-                //fullSummarizer.BuildRemaining();
+                fullSummarizer.BuildRemaining();
                 fullSummarizer.BuildBurnedDataPoints(DashboardEXOQueryType.TimeOnly);
                 //fullSummarizer.Summarize();
                 //mainThreadDispatcher.BeginInvoke(new Action(() => BackgroundRefresh()));

@@ -47,7 +47,7 @@ namespace BluePrints.Common.ViewModel.Reporting
             {
                 DeliverableGuid = deliverableGuid,
                 TotalUnits = budgetedUnits,
-                TotalCosts = budgetedCosts,
+                 TotalCosts = budgetedCosts,
                 BudgetedUnits = budgetedUnits,
                 BudgetedCosts = budgetedCosts,
                 Units = 0,

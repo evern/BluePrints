@@ -68,7 +68,7 @@ namespace BluePrints.Common.ViewModel.Reporting
                 List<SUBJOB> missingSUBJOBS = new List<SUBJOB>();
 
                 if(isGroupByWBS)
-                    burnedDataPoints = BluePrintsDataUtils.GetBurnedByWBS(primeroUOW, projectNumber, actualsDataDate, qualifiedSubjobs, missingSUBJOBS, CurrencyConversion, showLoadingScreen);
+                    burnedDataPoints = BluePrintsDataUtils.GetTimeByWBS(primeroUOW, projectNumber, actualsDataDate, qualifiedSubjobs, missingSUBJOBS, CurrencyConversion, showLoadingScreen);
                 else
                 {
                     burnedDataPoints = BluePrintsDataUtils.GetBurned(primeroUOW, projectNumber, actualsDataDate, qualifiedSubjobs, missingSUBJOBS, CurrencyConversion, showLoadingScreen);
@@ -86,7 +86,7 @@ namespace BluePrints.Common.ViewModel.Reporting
                 if(dashboardEXOQueryType != DashboardEXOQueryType.TimeOnly)
                 {
                     if (isGroupByWBS)
-                        materialDataPoints = BluePrintsDataUtils.GetMaterialsByMonth(primeroUOW, projectNumber, actualsDataDate, null, CurrencyConversion, showLoadingScreen);
+                        materialDataPoints = BluePrintsDataUtils.GetMaterialsByWBS(primeroUOW, projectNumber, actualsDataDate, null, CurrencyConversion, showLoadingScreen);
                     else
                         materialDataPoints = BluePrintsDataUtils.GetMaterials(primeroUOW, projectNumber, actualsDataDate, null, CurrencyConversion, showLoadingScreen);
 

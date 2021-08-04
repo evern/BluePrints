@@ -307,64 +307,6 @@ namespace BluePrints.Common.Misc
             return export_data_by_type;
         }
 
-        public static int getSubDivideMaxProgress(this IDashboard dashboard, IEnumerable<ExoDataPoint> burned_data_points, IEnumerable<ExoDataPoint> material_data_point, IEnumerable<ExoDataPoint> po_data_point, Func<IReportable, string> reportable_selector, Func<ExoDataPoint, string> exo_selector)
-        {
-            IEnumerable<string> reportable_codes = dashboard.Summary.Reportables.Select(reportable_selector);
-            IEnumerable<string> exo_codes = burned_data_points.Select(exo_selector);
-            IEnumerable<string> material_codes = material_data_point.Select(exo_selector);
-            IEnumerable<string> po_codes = po_data_point.Select(exo_selector);
-            List<string> loop_codes = new List<string>(reportable_codes);
-            loop_codes.AddRange(exo_codes);
-            loop_codes.AddRange(material_codes);
-            loop_codes.AddRange(po_codes);
-            HashSet<string> unique_codes = new HashSet<string>(loop_codes);
-
-            return unique_codes.Count;
-        }
-
-        public static void SubDivideDashboardStats(this IDashboard dashboard, Func<IReportable, string> reportable_selector, Func<ExoDataPoint, string> exo_selector, bool forceRetrieveRemainingDataPoints = false)
-        {
-            IEnumerable<string> reportable_codes = dashboard.Summary.Reportables.Select(reportable_selector);
-            IEnumerable<ExoDataPoint> burnedDataPoints = dashboard.Summary.Burned.GetData().Select(x => (ExoDataPoint)x);
-            IEnumerable<string> exo_codes = burnedDataPoints.Select(exo_selector);
-            IEnumerable<ExoDataPoint> materialDataPoints = dashboard.Summary.Material.GetData().Select(x => (ExoDataPoint)x);
-            IEnumerable<string> material_codes = materialDataPoints.Select(exo_selector);
-            IEnumerable<ExoDataPoint> poDataPoints = dashboard.Summary.PO.GetData().Select(x => (ExoDataPoint)x);
-            IEnumerable<string> po_codes = poDataPoints.Select(exo_selector);
-
-            ConcurrentBag<string> loop_codes = new ConcurrentBag<string>(reportable_codes);
-            foreach(string reportableCode in reportable_codes)
-            {
-                loop_codes.Add(reportableCode);
-            }
-
-            foreach(string exoCodes in exo_codes)
-            {
-                loop_codes.Add(exoCodes);
-            }
-
-            foreach(string materialCodes in material_codes)
-            {
-                loop_codes.Add(materialCodes);
-            }
-
-            foreach (string poCodes in po_codes)
-            {
-                loop_codes.Add(poCodes);
-            }
-
-            HashSet<string> unique_codes = new HashSet<string>(loop_codes);
-            ConcurrentBag<DashboardTreeStructure> child_dashboard = new ConcurrentBag<DashboardTreeStructure>();
-            Parallel.ForEach(unique_codes.OrderBy(x => x), unique_code =>
-            {
-                DashboardTreeStructure new_dashboard = create_dashboard(dashboard, unique_code, dashboard.Summary, x => reportable_selector(x) == unique_code, x => exo_selector(x) == unique_code, forceRetrieveRemainingDataPoints);
-                if (new_dashboard != null)
-                    child_dashboard.Add(new_dashboard);
-            });
-
-            dashboard.Child_Dashboards = child_dashboard.Where(x => x.Stats != null).ToList();
-        }
-
         private static DashboardTreeStructure create_dashboard(IDashboard parent_dashboard, string code, SummaryStats summary_stats, Func<IReportable, bool> reportable_predicate, Func<ExoDataPoint, bool> exo_predicate, bool forceRetrieveRemainingDataPoints = false)
         {
             DashboardTreeStructure dashboard = new DashboardTreeStructure() { Code = code, Parent_Dashboard = parent_dashboard };
@@ -380,92 +322,6 @@ namespace BluePrints.Common.Misc
                 return null;
             
             return dashboard;
-        }
-        /// <summary>
-        /// Separate variation out from data points
-        /// </summary>
-        /// <param name="project_summary_stats">The summary stats to subdivide</param>
-        /// <param name="isVariationSeparated">Whether to separater variation</param>
-        /// <returns></returns>
-        public static List<DashboardTreeStructure> ProjectDashboardHierarchicalBuilder(ProjectSummaryStats project_summary_stats, bool showLoadingScreen, bool isVariationSeparated = false, bool forceRetrieveRemainingDataPoints = false)
-        {
-            if (project_summary_stats == null)
-                return new List<DashboardTreeStructure>();
-
-            DashboardTreeStructure project_dashboard = new DashboardTreeStructure();
-            project_dashboard.Summary = project_summary_stats;
-
-            //int maxProgress = project_dashboard.getSubDivideMaxProgress(burned_data_points, material_data_points, po_data_points, x => x.Subjob_Name, x => x.Subjob_Name);
-            project_dashboard.SubDivideDashboardStats(x => x.Subjob_Name, x => x.Subjob_Name, forceRetrieveRemainingDataPoints);
-            int maxProgress = project_dashboard.Child_Dashboards == null ? 0 : project_dashboard.Child_Dashboards.Count;
-
-            if(showLoadingScreen)
-                LoadingScreenManager.ShowLoadingScreen(maxProgress, false);
-            //child dashboards are now subdivided into subjob dashboard
-
-            Parallel.ForEach(
-            project_dashboard.Child_Dashboards,
-            subjob_dashboard =>
-            {
-                string loadingScreenMessage = string.Empty;
-                ConcurrentBag<DashboardTreeStructure> disciplineDashboards = new ConcurrentBag<DashboardTreeStructure>();
-                if (isVariationSeparated)
-                {
-                    loadingScreenMessage = "Dividing Variation from SubJob: " + subjob_dashboard.Code;
-
-                    if (showLoadingScreen)
-                        LoadingScreenManager.SetMessage(loadingScreenMessage);
-
-                    subjob_dashboard.SubDivideDashboardStats(x => x.Variation_Code, x => x.Variation_Code, forceRetrieveRemainingDataPoints);
-
-                    Parallel.ForEach(
-                    subjob_dashboard.Child_Dashboards,
-                    variation_dashboard =>
-                    {
-                        loadingScreenMessage = "Dividing Discipline from Variation: " + variation_dashboard.Code;
-
-                        if (showLoadingScreen)
-                            LoadingScreenManager.SetMessage(loadingScreenMessage);
-
-                        variation_dashboard.SubDivideDashboardStats(x => x.Discipline_Code, x => x.Discipline_Code, forceRetrieveRemainingDataPoints);
-
-                        foreach (var childDashboard in variation_dashboard.Child_Dashboards)
-                            disciplineDashboards.Add(childDashboard);
-                    });
-                }
-                else
-                {
-                    loadingScreenMessage = "Dividing Discipline from SubJob: " + subjob_dashboard.Code;
-
-                    if (showLoadingScreen)
-                        LoadingScreenManager.SetMessage(loadingScreenMessage);
-
-                    subjob_dashboard.SubDivideDashboardStats(x => x.Discipline_Code, x => x.Discipline_Code, forceRetrieveRemainingDataPoints);
-
-                    foreach (var childDashboard in subjob_dashboard.Child_Dashboards)
-                        disciplineDashboards.Add(childDashboard);
-                }
-
-                Parallel.ForEach(
-                disciplineDashboards,
-                discipline_dashboard =>
-                {
-                    loadingScreenMessage = "Dividing Commodity from Discipline: " + discipline_dashboard.Code;
-
-                    if (showLoadingScreen)
-                        LoadingScreenManager.SetMessage(loadingScreenMessage);
-                    //child dashboards are now subdivided into discipline dashboard
-                    discipline_dashboard.SubDivideDashboardStats(x => x.Commodity_Code, x => x.Commodity_Code, forceRetrieveRemainingDataPoints);
-                });
-
-                if (showLoadingScreen)
-                    LoadingScreenManager.Progress();
-            });
-
-            if (showLoadingScreen)
-                LoadingScreenManager.CloseLoadingScreen();
-
-            return project_dashboard.Child_Dashboards;
         }
 
         public static List<DashboardFlatStructure> ProjectDashboardSummaryBuilder(ProjectSummaryStats projectSummaryStats, IEnumerable<SUBJOB> SUBJOBCollection, bool showLoadingScreen, bool isVariationSeparated = false, bool forceRetrieveRemainingDataPoints = false, IEnumerable<DOCTYPE> DOCTYPECollection = null)
@@ -508,10 +364,6 @@ namespace BluePrints.Common.Misc
 
             foreach (ExoDataPointsGroup exoDataPointsGroup in allActualsPointsGroups)
             {
-                string s;
-                if (exoDataPointsGroup.CommodityCode.ToUpper() == "UE")
-                    s = string.Empty;
-
                 WBSReportable findWBSReportable;
                 if (isVariationSeparated)
                     findWBSReportable = projectSummaryStats.WBSReportables.FirstOrDefault(x => x.SUBJOB_CODE == exoDataPointsGroup.SubJobCode && x.DISCIPLINE_CODE == exoDataPointsGroup.DisciplineCode && x.COMMODITY_CODE == exoDataPointsGroup.CommodityCode && x.VARIATION_CODE == exoDataPointsGroup.VariationCode);
@@ -547,27 +399,6 @@ namespace BluePrints.Common.Misc
             }
             
             return flatDashboards;
-        }
-
-        private static void populateFlatDashboards(List<DashboardFlatStructure> masterDashboardFlat, DashboardTreeStructure subjobDashboard, string variationCode, string disciplineCode, string commodityCode, ProgressStats stats, IEnumerable<SUBJOB> designSubJobs, IEnumerable<SUBJOB> constructSubJobs, IEnumerable<DOCTYPE> DOCTYPECollection = null)
-        {
-            DashboardFlatStructure newDashboard = new DashboardFlatStructure();
-            newDashboard.SubjobCode = subjobDashboard.Code;
-            newDashboard.PhaseCode = newDashboard.SubjobCode.Length > 14 ? newDashboard.SubjobCode.Substring(13, 2) : string.Empty;
-            newDashboard.AreaCode = newDashboard.SubjobCode.Length > 9 ? newDashboard.SubjobCode.Substring(6, 3) : string.Empty;
-            newDashboard.SubAreaCode = newDashboard.SubjobCode.Length > 12 ? newDashboard.SubjobCode.Substring(10, 2) : string.Empty;
-            newDashboard.Phase = designSubJobs.Any(x => x.PHASE.INTERNAL_NUM == subjobDashboard.PhaseCodeFromSubJobCode) ? PhaseType.Design : constructSubJobs.Any(x => x.PHASE.INTERNAL_NUM == subjobDashboard.PhaseCodeFromSubJobCode) ? PhaseType.Construct : (PhaseType?)null;
-            newDashboard.DisciplineCode = disciplineCode;
-            newDashboard.CommodityCode = commodityCode;
-
-            DOCTYPE findDOCTYPE = DOCTYPECollection.FirstOrDefault(x => x.CODE == commodityCode);
-            if (findDOCTYPE != null)
-                newDashboard.DepartmentCode = findDOCTYPE.DEPARTMENT.CODE;
-
-            newDashboard.Variation_Code = variationCode;
-            newDashboard.Stats = stats;
-            newDashboard.ShouldHide = shouldHideSubjobDashboard(stats);
-            masterDashboardFlat.Add(newDashboard);
         }
 
         private static void populateFlatDashboards(List<DashboardFlatStructure> masterDashboardFlat, string subJobCode, string disciplineCode, string commodityCode, string variationCode, WBSReportable stats, IEnumerable<SUBJOB> designSubJobs, IEnumerable<SUBJOB> constructSubJobs, IEnumerable<DOCTYPE> DOCTYPECollection = null)

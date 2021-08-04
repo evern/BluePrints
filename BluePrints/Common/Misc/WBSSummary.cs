@@ -21,7 +21,7 @@ namespace BluePrints.Common.Misc
         /// <param name="projectVariationAdjustments">Project variation adjustments that will be matched against each deliverable projection</param>
         /// <param name="progressItemHaveStats">Deliverable projection stats area already generated</param>
         public WBSSummary(IEnumerable<IReportable> reportables, DateTime reportingDataDate, TimeSpan reportingInterval, DateTime firstAlignedDataDate, IEnumerable<VariationAdjustment> projectVariationAdjustments, bool forceRetrieveRemainingDataPoints = false, bool allowPercentageOnZeroTotalUnits = false)
-            : base(reportables, reportingDataDate, reportingInterval, firstAlignedDataDate, projectVariationAdjustments, forceRetrieveRemainingDataPoints, allowPercentageOnZeroTotalUnits)
+            : base(reportables, reportingDataDate, reportingInterval, firstAlignedDataDate, forceRetrieveRemainingDataPoints, allowPercentageOnZeroTotalUnits)
         {
             WBSReportables = reportables.GroupBy(x => new { x.Subjob_Name, x.Discipline_Code, x.Commodity_Code, x.Variation_Code }).Select(g => new WBSReportable(g.Key.Subjob_Name, g.Key.Discipline_Code, g.Key.Commodity_Code, g.Key.Variation_Code, g.ToList(), reportingDataDate, reportingInterval, firstAlignedDataDate, projectVariationAdjustments, forceRetrieveRemainingDataPoints, allowPercentageOnZeroTotalUnits)).ToList();
         }
@@ -35,7 +35,7 @@ namespace BluePrints.Common.Misc
     public class WBSReportable : SummaryStats, IHaveWBSCodeString
     {
         public WBSReportable(string SubJobCode, string DisciplineCode, string CommodityCode, string VariationCode, IEnumerable<IReportable> Reportables, DateTime reportingDataDate, TimeSpan reportingInterval, DateTime firstAlignedDataDate, IEnumerable<VariationAdjustment> projectVariationAdjustments, bool forceRetrieveRemainingDataPoints = false, bool allowPercentageOnZeroTotalUnits = false)
-            : base(Reportables, reportingDataDate, reportingInterval, firstAlignedDataDate, projectVariationAdjustments, forceRetrieveRemainingDataPoints, allowPercentageOnZeroTotalUnits)
+            : base(Reportables, reportingDataDate, reportingInterval, firstAlignedDataDate, forceRetrieveRemainingDataPoints, allowPercentageOnZeroTotalUnits)
         {
             this.Reportables = Reportables;
             this.SUBJOB_CODE = SubJobCode;

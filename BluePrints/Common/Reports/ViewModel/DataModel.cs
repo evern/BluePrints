@@ -172,7 +172,7 @@ namespace BluePrints.Common.ViewModel.Reporting
             decimal totalCosts = totalUnits * costsPerUnit;
 
             PartialStatsBuilder partialStatsBuilder = new PartialStatsBuilder(PROJECT.CURRENCYCONVERSION);
-            Stats = new ProgressStats(reporting_data_date, reporting_interval, first_aligned_data_date, entity.Budget_Units, totalUnits, entity.Budget_Quantity, totalQuantity, entity.Budget_Costs, totalCosts, ApprovedVariations, extrapolateDate, forceRetrieveRemainingDataPoints, allowPercentageOnZeroTotalUnits);
+            Stats = new ProgressStats(reporting_data_date, reporting_interval, first_aligned_data_date, entity.Budget_Units, totalUnits, entity.Budget_Quantity, totalQuantity, entity.Budget_Costs, totalCosts, extrapolateDate, forceRetrieveRemainingDataPoints, allowPercentageOnZeroTotalUnits);
             statsSummarizer = new SingleObjectSummarizer(this, partialStatsBuilder);
         }
 
