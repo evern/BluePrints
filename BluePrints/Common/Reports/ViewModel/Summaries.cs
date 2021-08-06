@@ -19,8 +19,8 @@ namespace BluePrints.Common.ViewModel.Reporting
             get { return (IEnumerable<BASELINE_ITEMProgress>)this.Reportables; }
         }
 
-        public DeliverableSummaryStats(IEnumerable<BASELINE_ITEMProgress> progressItem, DateTime reporting_data_date, TimeSpan reporting_interval, DateTime first_aligned_data_date, IEnumerable<VariationAdjustment> projectVariationAdjustments)
-            : base(progressItem, reporting_data_date, reporting_interval, first_aligned_data_date, projectVariationAdjustments)
+        public DeliverableSummaryStats(IEnumerable<BASELINE_ITEMProgress> progressItem, DateTime reporting_data_date, TimeSpan reporting_interval, DateTime first_aligned_data_date)
+            : base(progressItem, reporting_data_date, reporting_interval, first_aligned_data_date)
         {
             ProjectionHelpers.Initialize_Stats(progressItem, reporting_data_date, reporting_interval, first_aligned_data_date, false);
         }
@@ -35,8 +35,17 @@ namespace BluePrints.Common.ViewModel.Reporting
         public List<SUBJOB> ExoMissingSUBJOBS { get; private set; }
         #endregion
 
-        public ProjectSummaryStats(IEnumerable<IReportable> progressItem, DateTime reporting_data_date, TimeSpan reporting_interval, DateTime first_aligned_data_date, IEnumerable<VariationAdjustment> projectVariationAdjustments, DateTime? overrideLastProgressDate = null, bool forceRetrieveRemainingDataPoints = false, bool allowPercentageOnZeroTotalUnits = false)
-            : base(progressItem, reporting_data_date, reporting_interval, first_aligned_data_date, projectVariationAdjustments, forceRetrieveRemainingDataPoints, allowPercentageOnZeroTotalUnits)
+        public ProjectSummaryStats(IEnumerable<IReportable> progressItem, DateTime reporting_data_date, TimeSpan reporting_interval, DateTime first_aligned_data_date, bool forceRetrieveRemainingDataPoints = false, bool allowPercentageOnZeroTotalUnits = false)
+            : base(progressItem, reporting_data_date, reporting_interval, first_aligned_data_date, forceRetrieveRemainingDataPoints, allowPercentageOnZeroTotalUnits)
+        {
+            this.reporting_data_date = reporting_data_date;
+            this.reporting_interval = reporting_interval;
+            this.first_aligned_data_date = first_aligned_data_date;
+            ExoMissingSUBJOBS = new List<SUBJOB>();
+        }
+
+        public ProjectSummaryStats(List<WBSReportable> WBSReportables, DateTime reporting_data_date, TimeSpan reporting_interval, DateTime first_aligned_data_date, bool forceRetrieveRemainingDataPoints = false, bool allowPercentageOnZeroTotalUnits = false)
+            : base(WBSReportables, reporting_data_date, reporting_interval, first_aligned_data_date, forceRetrieveRemainingDataPoints, allowPercentageOnZeroTotalUnits)
         {
             this.reporting_data_date = reporting_data_date;
             this.reporting_interval = reporting_interval;
@@ -180,18 +189,27 @@ namespace BluePrints.Common.ViewModel.Reporting
         /// <param name="projectVariationAdjustments">Project variation adjustments that will be matched against each deliverable projection</param>
         /// <param name="progressItemHaveStats">Deliverable projection stats area already generated</param>
         public SummaryStats(IEnumerable<IReportable> progressItem, DateTime reporting_data_date, TimeSpan reporting_interval, DateTime first_aligned_data_date, bool forceRetrieveRemainingDataPoints = false, bool allowPercentageOnZeroTotalUnits = false)
-            : base(reporting_data_date, reporting_interval, first_aligned_data_date, progressItem.Sum(x => x.Budget_Units), progressItem.Sum(x => x.Total_Units), progressItem.Sum(x => x.Budget_Quantity), progressItem.Sum(x => x.Total_Quantity), progressItem.Sum(x => x.Budget_Costs), progressItem.Sum(x => x.Total_Costs), null, forceRetrieveRemainingDataPoints, allowPercentageOnZeroTotalUnits)
+            : this(reporting_data_date, reporting_interval, first_aligned_data_date, progressItem.Sum(x => x.Budget_Units), progressItem.Sum(x => x.Total_Units), progressItem.Sum(x => x.Budget_Quantity), progressItem.Sum(x => x.Total_Quantity), progressItem.Sum(x => x.Budget_Costs), progressItem.Sum(x => x.Total_Costs), forceRetrieveRemainingDataPoints, allowPercentageOnZeroTotalUnits)
         {
             Reportables = progressItem;
+        }
 
-            //Since this is only used by subjob to rolldown from project, progress already have stats
-            //ProjectionHelpers.Initialize_Stats(progressItem, projectVariationAdjustments, reporting_data_date, reporting_interval, first_aligned_data_date, true, null, false, allowPercentageOnZeroTotalUnits);
-            
-            Actual = new Stats(ReportingDataDate, BudgetedUnits, totalUnits, BudgetedQty, TotalQty, BudgetedCosts, totalCosts, FirstAlignedDataDate, ReportingInterval);
-            Material = new Stats(ReportingDataDate, BudgetedUnits, totalUnits, BudgetedQty, TotalQty, BudgetedCosts, totalCosts, FirstAlignedDataDate, ReportingInterval);
-            PO = new Stats(ReportingDataDate, BudgetedUnits, totalUnits, BudgetedQty, TotalQty, BudgetedCosts, totalCosts, FirstAlignedDataDate, ReportingInterval);
-            PreviousPO = new Stats(ReportingDataDate, BudgetedUnits, totalUnits, BudgetedQty, TotalQty, BudgetedCosts, totalCosts, FirstAlignedDataDate, ReportingInterval);
-            RemainingActual = new Stats(ReportingDataDate, BudgetedUnits, totalUnits, BudgetedQty, TotalQty, BudgetedCosts, totalCosts, FirstAlignedDataDate, ReportingInterval, !forceRetrieveRemainingDataPoints, false, null, forceRetrieveRemainingDataPoints);
+        /// <summary>
+        /// Initializes a standard summary from a collection of deliverable projection with progress
+        /// </summary>
+        /// <param name="progressItem">Deliverable projection with progress</param>
+        /// <param name="livePROGRESS">Live progress for reporting data date, generating first aligned data date and interval</param>
+        /// <param name="projectVariationAdjustments">Project variation adjustments that will be matched against each deliverable projection</param>
+        /// <param name="progressItemHaveStats">Deliverable projection stats area already generated</param>
+        public SummaryStats(DateTime reporting_data_date, TimeSpan reporting_interval, DateTime first_aligned_data_date, decimal budgetedUnits, decimal totalUnits, decimal budgetedQty, decimal totalQty, decimal budgetedCosts, decimal totalCosts, bool forceRetrieveRemainingDataPoints = false, bool allowPercentageOnZeroTotalUnits = false)
+            : base(reporting_data_date, reporting_interval, first_aligned_data_date, budgetedUnits, totalUnits, budgetedQty, totalQty, budgetedCosts, totalCosts, null, forceRetrieveRemainingDataPoints, allowPercentageOnZeroTotalUnits)
+        {
+            Reportables = new List<IReportable>();
+            Actual = new Stats(ReportingDataDate, BudgetedUnits, totalUnits, BudgetedQty, TotalQty, BudgetedCosts, TotalCosts, FirstAlignedDataDate, ReportingInterval);
+            Material = new Stats(ReportingDataDate, BudgetedUnits, totalUnits, BudgetedQty, TotalQty, BudgetedCosts, TotalCosts, FirstAlignedDataDate, ReportingInterval);
+            PO = new Stats(ReportingDataDate, BudgetedUnits, totalUnits, BudgetedQty, TotalQty, BudgetedCosts, TotalCosts, FirstAlignedDataDate, ReportingInterval);
+            PreviousPO = new Stats(ReportingDataDate, BudgetedUnits, totalUnits, BudgetedQty, TotalQty, BudgetedCosts, TotalCosts, FirstAlignedDataDate, ReportingInterval);
+            RemainingActual = new Stats(ReportingDataDate, BudgetedUnits, totalUnits, BudgetedQty, TotalQty, BudgetedCosts, TotalCosts, FirstAlignedDataDate, ReportingInterval, !forceRetrieveRemainingDataPoints, false, null, forceRetrieveRemainingDataPoints);
         }
 
         /// <summary>

@@ -177,5 +177,17 @@ namespace BluePrints.Data
                 var i = await returnTask;
             }
         }
+
+        public static List<X_REPORTABLES> GetReportablesSummary(string projectNumber, bool isForecast)
+        {
+            using (BluePrintsEntities dbContext = new BluePrintsEntities())
+            {
+                dbContext.Database.CommandTimeout = 5000;
+                SqlParameter projectNumberParameter = new SqlParameter("@PROJECT_NUMBER", projectNumber);
+                SqlParameter isForecastParameter = new SqlParameter("@IS_FORECAST", isForecast);
+                List<X_REPORTABLES> reportableLines = dbContext.Database.SqlQuery<X_REPORTABLES>("X_REPORTABLES @PROJECT_NUMBER, @IS_FORECAST", projectNumberParameter, isForecastParameter).ToList();
+                return reportableLines;
+            }
+        }
     }
 }

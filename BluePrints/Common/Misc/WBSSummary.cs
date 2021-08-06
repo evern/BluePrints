@@ -20,24 +20,46 @@ namespace BluePrints.Common.Misc
         /// <param name="livePROGRESS">Live progress for reporting data date, generating first aligned data date and interval</param>
         /// <param name="projectVariationAdjustments">Project variation adjustments that will be matched against each deliverable projection</param>
         /// <param name="progressItemHaveStats">Deliverable projection stats area already generated</param>
-        public WBSSummary(IEnumerable<IReportable> reportables, DateTime reportingDataDate, TimeSpan reportingInterval, DateTime firstAlignedDataDate, IEnumerable<VariationAdjustment> projectVariationAdjustments, bool forceRetrieveRemainingDataPoints = false, bool allowPercentageOnZeroTotalUnits = false)
+        public WBSSummary(IEnumerable<IReportable> reportables, DateTime reportingDataDate, TimeSpan reportingInterval, DateTime firstAlignedDataDate, bool forceRetrieveRemainingDataPoints = false, bool allowPercentageOnZeroTotalUnits = false)
             : base(reportables, reportingDataDate, reportingInterval, firstAlignedDataDate, forceRetrieveRemainingDataPoints, allowPercentageOnZeroTotalUnits)
         {
-            WBSReportables = reportables.GroupBy(x => new { x.Subjob_Name, x.Discipline_Code, x.Commodity_Code, x.Variation_Code }).Select(g => new WBSReportable(g.Key.Subjob_Name, g.Key.Discipline_Code, g.Key.Commodity_Code, g.Key.Variation_Code, g.ToList(), reportingDataDate, reportingInterval, firstAlignedDataDate, projectVariationAdjustments, forceRetrieveRemainingDataPoints, allowPercentageOnZeroTotalUnits)).ToList();
+            WBSReportables = reportables.GroupBy(x => new { x.Subjob_Name, x.Discipline_Code, x.Commodity_Code, x.Variation_Code }).Select(g => new WBSReportable(g.Key.Subjob_Name, g.Key.Discipline_Code, g.Key.Commodity_Code, g.Key.Variation_Code, g.ToList(), reportingDataDate, reportingInterval, firstAlignedDataDate, forceRetrieveRemainingDataPoints, allowPercentageOnZeroTotalUnits)).ToList();
+        }
+
+        /// <summary>
+        /// Initializes a standard summary from a collection of grouped WBS projection
+        /// </summary>
+        /// <param name="livePROGRESS">Live progress for reporting data date, generating first aligned data date and interval</param>
+        /// <param name="projectVariationAdjustments">Project variation adjustments that will be matched against each deliverable projection</param>
+        /// <param name="progressItemHaveStats">Deliverable projection stats area already generated</param>
+        public WBSSummary(List<WBSReportable> WBSReportables, DateTime reportingDataDate, TimeSpan reportingInterval, DateTime firstAlignedDataDate, bool forceRetrieveRemainingDataPoints = false, bool allowPercentageOnZeroTotalUnits = false)
+            : base(reportingDataDate, reportingInterval, firstAlignedDataDate, WBSReportables.Sum(x => x.BudgetedUnits), WBSReportables.Sum(x => x.BudgetedCosts), WBSReportables.Sum(x => x.BudgetedQty), WBSReportables.Sum(x => x.TotalQty), WBSReportables.Sum(x => x.BudgetedCosts), WBSReportables.Sum(x => x.TotalCosts), forceRetrieveRemainingDataPoints, allowPercentageOnZeroTotalUnits)
+        {
+            this.WBSReportables = WBSReportables;
         }
 
         public void AddMissingActualsWBSReportables(string SubJobCode, string DisciplineCode, string CommodityCode, string VariationCode)
         {
-            WBSReportables.Add(new WBSReportable(SubJobCode, DisciplineCode, CommodityCode, VariationCode, new List<IReportable>(), this.ReportingDataDate, this.ReportingInterval, this.FirstAlignedDataDate, new List<VariationAdjustment>(), false, false));
+            WBSReportables.Add(new WBSReportable(SubJobCode, DisciplineCode, CommodityCode, VariationCode, new List<IReportable>(), this.ReportingDataDate, this.ReportingInterval, this.FirstAlignedDataDate, false, false));
         }
     }
 
     public class WBSReportable : SummaryStats, IHaveWBSCodeString
     {
-        public WBSReportable(string SubJobCode, string DisciplineCode, string CommodityCode, string VariationCode, IEnumerable<IReportable> Reportables, DateTime reportingDataDate, TimeSpan reportingInterval, DateTime firstAlignedDataDate, IEnumerable<VariationAdjustment> projectVariationAdjustments, bool forceRetrieveRemainingDataPoints = false, bool allowPercentageOnZeroTotalUnits = false)
+        public WBSReportable(string SubJobCode, string DisciplineCode, string CommodityCode, string VariationCode, IEnumerable<IReportable> Reportables, DateTime reportingDataDate, TimeSpan reportingInterval, DateTime firstAlignedDataDate, bool forceRetrieveRemainingDataPoints = false, bool allowPercentageOnZeroTotalUnits = false)
             : base(Reportables, reportingDataDate, reportingInterval, firstAlignedDataDate, forceRetrieveRemainingDataPoints, allowPercentageOnZeroTotalUnits)
         {
             this.Reportables = Reportables;
+            this.SUBJOB_CODE = SubJobCode;
+            this.DISCIPLINE_CODE = DisciplineCode;
+            this.COMMODITY_CODE = CommodityCode;
+            this.VARIATION_CODE = VariationCode;
+        }
+
+        public WBSReportable(string SubJobCode, string DisciplineCode, string CommodityCode, string VariationCode, DateTime reportingDataDate, TimeSpan reportingInterval, DateTime firstAlignedDataDate, decimal budgetedUnits, decimal totalUnits, decimal budgetedQty, decimal totalQty, decimal budgetedCosts, decimal totalCosts, bool forceRetrieveRemainingDataPoints = false, bool allowPercentageOnZeroTotalUnits = false)
+            : base(reportingDataDate, reportingInterval, firstAlignedDataDate, budgetedUnits, totalUnits, budgetedQty, totalQty, budgetedCosts, totalCosts, forceRetrieveRemainingDataPoints, allowPercentageOnZeroTotalUnits)
+        {
+            this.Reportables = new List<IReportable>();
             this.SUBJOB_CODE = SubJobCode;
             this.DISCIPLINE_CODE = DisciplineCode;
             this.COMMODITY_CODE = CommodityCode;
