@@ -699,6 +699,8 @@ namespace BluePrints.ViewModels
             List<DataRow> saveDataRows = GridControlHelpers.PasteCellData(gridControl, gridTableView, RowData, basePasteData, out errorMessages);
             bulkSaveDataRows(saveDataRows);
             EntitiesUndoRedoManager.UnpauseActionId();
+
+            GridControlService.RefreshSummary();
         }
 
         private bool basePasteData(DataRow newRow, ColumnBase copyColumn, string pasteData, bool isLastRow, out List<ErrorMessage> errorMessages)
@@ -937,6 +939,7 @@ namespace BluePrints.ViewModels
             EntitiesUndoRedoManager.AddUndo(updateForecastJobFromDataRow(dataRowView.Row), fieldName, e.OldValue, e.Value, EntityMessageType.Changed);
             EntitiesUndoRedoManager.UnpauseActionId();
 
+            GridControlService.RefreshSummary();
             e.Handled = true;
         }
 

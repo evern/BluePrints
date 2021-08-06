@@ -187,7 +187,7 @@
                         </Style>
                     </dxa:AccordionControl.ItemContainerStyle>
                 </dxa:AccordionControl>
-                <dxdo:DockLayoutManager Name="dockLayoutManager" Margin="0" Padding="0" dx:DXSerializer.Enabled="False" FloatingMode="Desktop" BorderThickness="0" MDIMergeStyle="WhenChildActivated">
+                <dxdo:DockLayoutManager Name="dockLayoutManager" Margin="0" Padding="0" dx:DXSerializer.Enabled="False" FloatingMode="Desktop" BorderThickness="0" MDIMergeStyle="WhenChildActivated" dxdo:RestoreLayoutOptions.RemoveOldPanels="True" dxdo:RestoreLayoutOptions.RemoveOldLayoutGroups="True" dxdo:RestoreLayoutOptions.RemoveOldLayoutControlItems="True">
                     <dxdo:LayoutGroup Margin="0" Padding="0" BorderThickness="0" ItemHeight="*" Orientation="Horizontal">
                         <dxdo:LayoutGroup Margin="0" Padding="0" BorderThickness="0">
                             <!--<dxdo:LayoutPanel MaxWidth="300" ItemWidth="Auto">
