@@ -16,8 +16,7 @@ namespace BluePrints.Common.Filtering
     internal static class FiltersSettings {
         public static FilterTreeViewModel<BASELINE_ITEMProgress, Guid> GetBASELINE_ITEMProgressFilterTree(ISupportFiltering<BASELINE_ITEMProgress> parentViewModel, IEnumerable<BASELINE_ITEMProgress> entities)
         {
-            return FilterTreeViewModel<BASELINE_ITEMProgress, Guid>.Create(
-                new FilterTreeModelPageSpecificSettings<Settings>(Settings.Default, "Status", x => x.BASELINE_ITEMProgressStaticFilters, x => x.BASELINE_ITEMProgressCustomFilters
+            return FilterTreeViewModel<BASELINE_ITEMProgress, Guid>.Create(new FilterTreeModelPageSpecificSettings<Settings>(Settings.Default, "Status", x => x.BASELINE_ITEMProgressStaticFilters, x => x.BASELINE_ITEMProgressCustomFilters
             ), parentViewModel, entities).SetParentViewModel(parentViewModel);
         }
 
