@@ -1466,9 +1466,11 @@ namespace BluePrints.Common.ViewModel.Utils
             else if (earnedUnits > 0 && burnedUnits == 0)
                 return 1;
             else if (earnedUnits == 0 && burnedUnits > 0)
-                return defaultProductivity;
+                return 1;
+                //return defaultProductivity; //use only when user is ready for it
             else
-                return burnedUnits / earnedUnits;
+                return 1;
+                //return burnedUnits / earnedUnits; //use only when user is ready for it
         }
 
         /// <summary>
