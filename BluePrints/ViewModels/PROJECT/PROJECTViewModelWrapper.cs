@@ -96,7 +96,7 @@ namespace BluePrints.ViewModels
             isSuppressPropertyChange = true;
 
             selectAllDispatcher = new DispatcherTimer();
-            selectAllDispatcher.Interval = new TimeSpan(0, 0, 0, 0, 1);
+            selectAllDispatcher.Interval = new TimeSpan(0, 0, 0, 1);
             selectAllDispatcher.Tick += SelectAllDispatcher_Tick;
             HealthCheckIconName = "Apply";
             FixedStartDate = null;
@@ -1218,11 +1218,11 @@ namespace BluePrints.ViewModels
                 return;
 
             Selected_Dashboards.Clear();
+            isSuppressPropertyChange = false;
             foreach (DashboardFlatStructure subjob_dashboard in SingleProjectDashboards)
             {
                 Selected_Dashboards.Add(subjob_dashboard);
             }
-            RaiseSelectionChanged();
         }
 
         public bool CanSelectSubjob(BarCheckItem button)
@@ -1262,8 +1262,6 @@ namespace BluePrints.ViewModels
                     }
                 }
             }
-
-            RaiseSelectionChanged();
         }
 
         public IEnumerable<DashboardFlatStructure> SingleProjectDashboards

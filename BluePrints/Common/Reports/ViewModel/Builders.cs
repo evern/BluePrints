@@ -124,9 +124,14 @@ namespace BluePrints.Common.ViewModel.Reporting
                 projectSummaryStats.PO.SetData(poDataPoints);
                 projectSummaryStats.PreviousPO.SetData(previousPODataPoints);
 
-                projectSummaryStats.RemainingActual.SetRemainingActualData(projectSummaryStats.Reportables, projectSummaryStats.Burned.GetData());
 
-                if(showLoadingScreen)
+                if(!isGroupByWBS)
+                    projectSummaryStats.RemainingActual.SetRemainingActualData(projectSummaryStats.Reportables, projectSummaryStats.Burned.GetData());
+                //else
+                //burned isn't grouped here and will only be summarised in ProjectDashboardSummaryBuilder
+
+
+                if (showLoadingScreen)
                     LoadingScreenManager.CloseLoadingScreen();
             }
             catch (Exception e)

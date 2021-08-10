@@ -1,6 +1,8 @@
 ﻿using BaseModel.Data.Helpers;
 using BaseModel.DataModel;
 using BaseModel.Misc;
+using BluePrints.Common.Misc;
+using BluePrints.Common.Resources;
 using BluePrints.Common.ViewModel.Utils;
 using BluePrints.Data;
 using DevExpress.Mvvm;
@@ -93,6 +95,15 @@ namespace BluePrints.Common.ViewModel.Reporting
             this.rawDataPoints = rawDataPoints;
         }
 
+        public void AppendData(IEnumerable<DataPoint> rawDataPoints)
+        {
+            List<DataPoint> currentDataPoints = new List<DataPoint>();
+            currentDataPoints.AddRange(rawDataPoints);
+            currentDataPoints.AddRange(this.rawDataPoints);
+
+            this.rawDataPoints = currentDataPoints;
+        }
+
         public void SetAlignedDateData(IEnumerable<DataPoint> rawDataPoints)
         {
             List<DataPoint> dataPoints = new List<DataPoint>(rawDataPoints);
@@ -148,7 +159,11 @@ namespace BluePrints.Common.ViewModel.Reporting
 
         public void SetRemainingData(IEnumerable<Data.DataPoint> rawStoredProcedureDataPoints, IEnumerable<DataPoint> earnedDataPoints)
         {
-            List<DataPoint> convertedDataPoints = DataPointsHelpers.ConvertDbRemainingDataPointToReportingDataPoints(rawStoredProcedureDataPoints).ToList();
+            List<DataPoint> convertedDataPoints;
+            if (rawStoredProcedureDataPoints == null || rawStoredProcedureDataPoints.Count() == 0)
+                convertedDataPoints = new List<DataPoint>();
+            else
+                convertedDataPoints = DataPointsHelpers.ConvertDbRemainingDataPointToReportingDataPoints(rawStoredProcedureDataPoints).ToList();
 
             if (earnedDataPoints != null)
                 convertedDataPoints.AddRange(earnedDataPoints);
@@ -165,8 +180,7 @@ namespace BluePrints.Common.ViewModel.Reporting
         //use stock level productivity if deliverable has earned but not burned
         public class StockProductivity
         {
-            public decimal StockLevelProductivity { get; set; }
-            public bool IsOverrideProductivity { get; set; }
+            public decimal? OverrideProductivity { get; set; }
             public decimal EarnedUnits { get; set; }
             public decimal TotalUnits { get; set; }
         }
@@ -176,8 +190,8 @@ namespace BluePrints.Common.ViewModel.Reporting
             //establish remaining data points
             DateTime? lastBurnedDate = burnedDataPoints.Count() == 0 ? (DateTime?)null : burnedDataPoints.Max(x => x.ProgressDate);
             List<DataPoint> remainingDataPoints = new List<DataPoint>();
-
             List<StockProductivity> stockProductivities = new List<StockProductivity>();
+            decimal defaultProductivity = decimal.Parse(BluePrintsResources.Default_Productivity);
             //gather stock productivities
             foreach(IReportable reportable in groupedReportables)
             {
@@ -189,19 +203,17 @@ namespace BluePrints.Common.ViewModel.Reporting
 
                 IEnumerable<DataPoint> earnedDataPoints = reportable.Stats.Earned.GetData();
                 decimal earnedUnits = earnedDataPoints.Count() == 0 ? 0 : earnedDataPoints.Sum(x => x.Units);
-                bool isOverride = false;
-                decimal stockLevelProductivity = BluePrintsDataUtils.GetStockLevelProductivity(reportable, ref isOverride);
-                StockProductivity stockProductivity = new StockProductivity() { EarnedUnits = earnedUnits, StockLevelProductivity = stockLevelProductivity, TotalUnits = reportable.Total_Units, IsOverrideProductivity = isOverride };
+                StockProductivity stockProductivity = new StockProductivity() { OverrideProductivity = reportable.Override_Productivity, EarnedUnits = earnedUnits, TotalUnits = reportable.Total_Units };
                 stockProductivities.Add(stockProductivity);
             }
 
             decimal totalBurnedUnits = burnedDataPoints.Count() == 0 ? 0 : burnedDataPoints.Sum(x => x.Units);
             decimal totalEarnedUnits = stockProductivities.Sum(x => x.EarnedUnits);
-            decimal groupLevelProductivity = totalEarnedUnits == 0 ? 0 : totalBurnedUnits / totalEarnedUnits;
+            decimal groupLevelProductivity = BluePrintsDataUtils.GetProductivity(totalEarnedUnits, totalBurnedUnits);
             decimal totalStockUnits = stockProductivities.Sum(x => x.TotalUnits);
             decimal totalWeightedProductivity = 0;
 
-            //use default remaining units if productivity is 0
+            //use default remaining units if productivity is 0 to result in total units/costs of 0
             if (totalStockUnits == 0)
                 totalWeightedProductivity = 1;
             else
@@ -211,8 +223,8 @@ namespace BluePrints.Common.ViewModel.Reporting
                     decimal productivity = 0;
                     decimal weightProRate = stockProductivity.TotalUnits / totalStockUnits;
                     //when group level productivity is zero fallback on stock level productivity, also applies when user inputs an override
-                    if (groupLevelProductivity == 0 || stockProductivity.IsOverrideProductivity)
-                        productivity = stockProductivity.StockLevelProductivity;
+                    if (stockProductivity.OverrideProductivity != null)
+                        productivity = (decimal)stockProductivity.OverrideProductivity;
                     else
                         productivity = groupLevelProductivity;
 
@@ -244,7 +256,6 @@ namespace BluePrints.Common.ViewModel.Reporting
                     remainingAdjustDataPoints.Add(remainingAdjustDataPoint);
                 }
 
-                decimal totalRemaining = remainingAdjustDataPoints.Sum(x => x.Units);
                 remainingDataPoints.AddRange(remainingAdjustDataPoints);
             }
 
@@ -256,6 +267,43 @@ namespace BluePrints.Common.ViewModel.Reporting
                 SetFromP6();
 
             this.rawDataPoints = remainingDataPoints;
+            this.StatsBuilt = true;
+        }
+
+        public void SetRemainingActualData(WBSReportable WBSReportables, IEnumerable<DataPoint> burnedDataPoints)
+        {
+            //establish remaining data points
+            DateTime? lastBurnedDate = burnedDataPoints.Count() == 0 ? (DateTime?)null : burnedDataPoints.Max(x => x.ProgressDate);
+            IEnumerable<DataPoint> earnedDataPoints = WBSReportables.Earned.GetData();
+            IEnumerable<DataPoint> remainingDataPoints = WBSReportables.Remaining.GetData();
+            decimal totalEarnedUnits = earnedDataPoints.Count() == 0 ? 0 : earnedDataPoints.Sum(x => x.Units);
+            decimal totalBurnedUnits = burnedDataPoints.Count() == 0 ? 0 : burnedDataPoints.Sum(x => x.Units);
+            decimal productivity = totalEarnedUnits == 0 ? 1 : totalBurnedUnits / totalEarnedUnits;
+
+            //adjust remaining data points by productivity
+            List<DataPoint> baselineRemainingDataPoints = remainingDataPoints.Where(x => x.IsRemaining).ToList();
+            if (lastBurnedDate != null)
+                baselineRemainingDataPoints = baselineRemainingDataPoints.Where(x => x.ProgressDate > lastBurnedDate).ToList();
+
+            List<DataPoint> remainingAdjustDataPoints = new List<DataPoint>();
+            foreach (DataPoint remainingDataPoint in baselineRemainingDataPoints.Where(x => !x.IsProductivityInflated))
+            {
+                DataPoint remainingAdjustDataPoint = new DataPoint();
+                DataUtils.ShallowCopy(remainingAdjustDataPoint, remainingDataPoint);
+                remainingAdjustDataPoint.Units = remainingAdjustDataPoint.Units / productivity;
+                remainingAdjustDataPoint.Costs = remainingAdjustDataPoint.Costs / productivity;
+                remainingAdjustDataPoint.IsProductivityInflated = true;
+                remainingAdjustDataPoints.Add(remainingAdjustDataPoint);
+            }
+
+            //burned data points will be plotted before the data date
+            if (burnedDataPoints != null)
+                remainingAdjustDataPoints.AddRange(burnedDataPoints.ToList());
+
+            if (remainingDataPoints.All(x => x.IsFromP6))
+                SetFromP6();
+
+            this.rawDataPoints = remainingAdjustDataPoints;
             this.StatsBuilt = true;
         }
 

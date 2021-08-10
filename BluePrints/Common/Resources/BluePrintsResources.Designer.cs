@@ -268,6 +268,15 @@ namespace BluePrints.Common.Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to 1.
+        /// </summary>
+        internal static string Default_Productivity {
+            get {
+                return ResourceManager.GetString("Default_Productivity", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to 3.
         /// </summary>
         internal static string Default_Register_Numeric_Length {

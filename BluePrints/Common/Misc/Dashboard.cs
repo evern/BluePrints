@@ -347,11 +347,11 @@ namespace BluePrints.Common.Misc
             allDataPoints.AddRange(previousPODataPoints);
 
             List<ExoDataPointsGroup> allActualsPointsGroups;
-            List<ExoDataPointsGroup> burnedDataPointsGroups;
-            List<ExoDataPointsGroup> actualDataPointsGroups;
-            List<ExoDataPointsGroup> materialDataPointsGroups;
-            List<ExoDataPointsGroup> poDataPointsGroups;
-            List<ExoDataPointsGroup> previousPODataPointsGroups;
+            List<ExoDataPointsGroup> groupedBurnedDataPoints;
+            List<ExoDataPointsGroup> groupedActualDataPoints;
+            List<ExoDataPointsGroup> groupedMaterialDataPoints;
+            List<ExoDataPointsGroup> groupedPODataPoints;
+            List<ExoDataPointsGroup> groupedPreviousPODataPoints;
 
             Func<IEnumerable<ExoDataPoint>, List<ExoDataPointsGroup>> groupFunc;
             if(isVariationSeparated)
@@ -380,21 +380,21 @@ namespace BluePrints.Common.Misc
                 }
             }
 
-            burnedDataPointsGroups = groupFunc(burnedDataPoints);
-            actualDataPointsGroups = groupFunc(actualDataPoints);
-            materialDataPointsGroups = groupFunc(materialDataPoints);
-            poDataPointsGroups = groupFunc(poDataPoints);
-            previousPODataPointsGroups = groupFunc(previousPODataPoints);
+            groupedBurnedDataPoints = groupFunc(burnedDataPoints);
+            groupedActualDataPoints = groupFunc(actualDataPoints);
+            groupedMaterialDataPoints = groupFunc(materialDataPoints);
+            groupedPODataPoints = groupFunc(poDataPoints);
+            groupedPreviousPODataPoints = groupFunc(previousPODataPoints);
 
             foreach (WBSReportable wbsReportable in projectSummaryStats.WBSReportables)
             {
                 //assign actuals to reportables
-                wbsReportable.AssignWBSReportableData(x => x.Burned.SetData, burnedDataPointsGroups, isVariationSeparated);
-                wbsReportable.AssignWBSReportableData(x => x.Actual.SetData, actualDataPointsGroups, isVariationSeparated);
-                wbsReportable.AssignWBSReportableData(x => x.Material.SetData, materialDataPointsGroups, isVariationSeparated);
-                wbsReportable.AssignWBSReportableData(x => x.PO.SetData, poDataPointsGroups, isVariationSeparated);
-                wbsReportable.AssignWBSReportableData(x => x.PreviousPO.SetData, previousPODataPointsGroups, isVariationSeparated);
-
+                wbsReportable.AssignWBSReportableData(x => x.Burned.SetData, groupedBurnedDataPoints, isVariationSeparated);
+                wbsReportable.AssignWBSReportableData(x => x.Actual.SetData, groupedActualDataPoints, isVariationSeparated);
+                wbsReportable.AssignWBSReportableData(x => x.Material.SetData, groupedMaterialDataPoints, isVariationSeparated);
+                wbsReportable.AssignWBSReportableData(x => x.PO.SetData, groupedPODataPoints, isVariationSeparated);
+                wbsReportable.AssignWBSReportableData(x => x.PreviousPO.SetData, groupedPreviousPODataPoints, isVariationSeparated);
+                wbsReportable.SummariseRemainingActualData();
                 populateFlatDashboards(flatDashboards, wbsReportable.SUBJOB_CODE, wbsReportable.DISCIPLINE_CODE, wbsReportable.COMMODITY_CODE, wbsReportable.VARIATION_CODE, wbsReportable, designSubjobs, constructionSubjobs, DOCTYPECollection);
             }
             

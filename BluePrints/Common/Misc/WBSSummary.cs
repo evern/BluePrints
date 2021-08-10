@@ -1,5 +1,8 @@
-﻿using BluePrints.Common.Projections;
+﻿using BaseModel.Data.Helpers;
+using BluePrints.Common.Projections;
+using BluePrints.Common.Resources;
 using BluePrints.Common.ViewModel.Reporting;
+using BluePrints.Common.ViewModel.Utils;
 using BluePrints.Data;
 using System;
 using System.Collections.Generic;
@@ -73,26 +76,64 @@ namespace BluePrints.Common.Misc
 
         public void AssignWBSReportableData(Func<WBSReportable, Action<IEnumerable<Data.DataPoint>>> setProgressStatsFunc, IEnumerable<DataPointsGroup> dataPointsGroups, bool isVariationSeparated)
         {
-            DataPointsGroup dataPointsGroup;
-            if(isVariationSeparated)
-                dataPointsGroup = dataPointsGroups.FirstOrDefault(x => x.SubJobCode == this.SUBJOB_CODE && x.DisciplineCode == this.DISCIPLINE_CODE && x.CommodityCode == this.COMMODITY_CODE && x.VariationCode == this.VARIATION_CODE);
-            else
-                dataPointsGroup = dataPointsGroups.FirstOrDefault(x => x.SubJobCode == this.SUBJOB_CODE && x.DisciplineCode == this.DISCIPLINE_CODE && x.CommodityCode == this.COMMODITY_CODE);
+            IEnumerable<DataPointsGroup> filterDataPointsGroups = dataPointsGroups.Where(x => x.SubJobCode == this.SUBJOB_CODE && x.DisciplineCode == this.DISCIPLINE_CODE && x.CommodityCode == this.COMMODITY_CODE);
+            if (isVariationSeparated)
+                filterDataPointsGroups = filterDataPointsGroups.Where(x => x.VariationCode == this.VARIATION_CODE);
 
+            DataPointsGroup dataPointsGroup = filterDataPointsGroups.FirstOrDefault();
             if (dataPointsGroup != null)
                 setProgressStatsFunc(this)(dataPointsGroup.DataPoints);
         }
 
         public void AssignWBSReportableData(Func<WBSReportable, Action<IEnumerable<ExoDataPoint>>> setProgressStatsFunc, IEnumerable<ExoDataPointsGroup> dataPointsGroups, bool isVariationSeparated)
         {
-            ExoDataPointsGroup dataPointsGroup;
+            IEnumerable<ExoDataPointsGroup> filterDataPointsGroups = dataPointsGroups.Where(x => x.SubJobCode == this.SUBJOB_CODE && x.DisciplineCode == this.DISCIPLINE_CODE && x.CommodityCode == this.COMMODITY_CODE);
             if (isVariationSeparated)
-                dataPointsGroup = dataPointsGroups.FirstOrDefault(x => x.SubJobCode == this.SUBJOB_CODE && x.DisciplineCode == this.DISCIPLINE_CODE && x.CommodityCode == this.COMMODITY_CODE && x.VariationCode == this.VARIATION_CODE);
-            else
-                dataPointsGroup = dataPointsGroups.FirstOrDefault(x => x.SubJobCode == this.SUBJOB_CODE && x.DisciplineCode == this.DISCIPLINE_CODE && x.CommodityCode == this.COMMODITY_CODE);
+                filterDataPointsGroups = filterDataPointsGroups.Where(x => x.VariationCode == this.VARIATION_CODE);
 
+            ExoDataPointsGroup dataPointsGroup = filterDataPointsGroups.FirstOrDefault();
             if (dataPointsGroup != null)
                 setProgressStatsFunc(this)(dataPointsGroup.ExoDataPoints);
+        }
+
+        /// <summary>
+        /// Build remaining actual data by combining burned and remaining datapoints, using burned / earned for productivity. Requires burned, earned and remaining to already exist on WBS summary
+        /// </summary>
+        public void SummariseRemainingActualData()
+        {
+            decimal defaultProductivity = decimal.Parse(BluePrintsResources.Default_Productivity);
+            //establish remaining data points
+            IEnumerable<ViewModel.Reporting.DataPoint> burnedDataPoints = this.Burned.GetData();
+            IEnumerable<ViewModel.Reporting.DataPoint> earnedDataPoints = this.Earned.GetData();
+            IEnumerable<ViewModel.Reporting.DataPoint> remainingDataPoints = this.Remaining.GetData().Where(x => x.IsRemaining).ToList();
+            DateTime? lastBurnedDate = burnedDataPoints.Count() == 0 ? (DateTime?)null : burnedDataPoints.Max(x => x.ProgressDate);
+            decimal totalEarnedUnits = earnedDataPoints.Count() == 0 ? 0 : earnedDataPoints.Sum(x => x.Units);
+            decimal totalBurnedUnits = burnedDataPoints.Count() == 0 ? 0 : burnedDataPoints.Sum(x => x.Units);
+            decimal productivity = BluePrintsDataUtils.GetProductivity(totalEarnedUnits, totalBurnedUnits);
+            //adjust remaining data points by productivity
+            if (lastBurnedDate != null)
+                remainingDataPoints = remainingDataPoints.Where(x => x.ProgressDate > lastBurnedDate).ToList();
+
+            List<ViewModel.Reporting.DataPoint> remainingAdjustDataPoints = new List<ViewModel.Reporting.DataPoint>();
+            foreach (ViewModel.Reporting.DataPoint remainingDataPoint in remainingDataPoints.Where(x => !x.IsProductivityInflated))
+            {
+                ViewModel.Reporting.DataPoint remainingAdjustDataPoint = new ViewModel.Reporting.DataPoint();
+                DataUtils.ShallowCopy(remainingAdjustDataPoint, remainingDataPoint);
+                remainingAdjustDataPoint.Units = remainingAdjustDataPoint.Units / productivity;
+                remainingAdjustDataPoint.Costs = remainingAdjustDataPoint.Costs / productivity;
+                remainingAdjustDataPoint.IsProductivityInflated = true;
+                remainingAdjustDataPoints.Add(remainingAdjustDataPoint);
+            }
+
+            //burned data points will be plotted before the data date
+            if (burnedDataPoints != null && burnedDataPoints.Count() > 0)
+                remainingAdjustDataPoints.AddRange(burnedDataPoints.ToList());
+
+            if (remainingDataPoints.All(x => x.IsFromP6))
+                this.RemainingActual.SetFromP6();
+
+            this.RemainingActual.SetData(remainingAdjustDataPoints);
+            this.RemainingActual.StatsBuilt = true;
         }
     }
 }

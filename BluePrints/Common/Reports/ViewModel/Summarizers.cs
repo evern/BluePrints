@@ -36,7 +36,7 @@ namespace BluePrints.Common.ViewModel.Reporting
             if (calcTypes == null)
                 calcTypes = BluePrintsDataUtils.AllCalcTypes;
 
-            if(calcTypes.Contains(StatsCalculationType.Planned))
+            if (calcTypes.Contains(StatsCalculationType.Planned))
             {
                 if (showLoadingScreen)
                     LoadingScreenManager.SetMessage("Retrieving Planned Data...");
@@ -45,7 +45,7 @@ namespace BluePrints.Common.ViewModel.Reporting
                 SetCurrentDataPoints(weightingPortion);
             }
 
-            if(calcTypes.Contains(StatsCalculationType.Earned))
+            if (calcTypes.Contains(StatsCalculationType.Earned))
             {
                 if (showLoadingScreen)
                     LoadingScreenManager.SetMessage("Retrieving Earned Data...");
@@ -113,7 +113,7 @@ namespace BluePrints.Common.ViewModel.Reporting
         public abstract void SetEarnedDataPoints(decimal weightingPortion = 1, bool isVariationSeparated = false);
 
         public abstract int SetRemainingDataPointsProgress();
-        public abstract void SetRemainingDataPoints(decimal weightingPortion = 1, bool useProductivity = false, bool isForecast = false, bool isVariationSeparated = false);
+        public abstract void SetRemainingDataPoints(decimal weightingPortion = 1, bool isForecast = false, bool isVariationSeparated = false);
 
         public virtual void Summarize()
         {
@@ -348,7 +348,7 @@ namespace BluePrints.Common.ViewModel.Reporting
             return ((SummaryStats)this.SummaryStats).Reportables.Count();
         }
 
-        public override void SetRemainingDataPoints(decimal weightingPortion = 1, bool useProductivity = false, bool isForecast = false, bool isVariationSeparated = false)
+        public override void SetRemainingDataPoints(decimal weightingPortion = 1, bool isForecast = false, bool isVariationSeparated = false)
         {
             using (BluePrintsEntities bluePrintDataContext = new BluePrintsEntities())
             {
@@ -363,8 +363,11 @@ namespace BluePrints.Common.ViewModel.Reporting
                         else
                             dataPointsGroup = remainingDataPointsGroup.FirstOrDefault(x => x.SubJobCode == reportableObject.SUBJOB_CODE && x.DisciplineCode == reportableObject.DISCIPLINE_CODE && x.CommodityCode == reportableObject.COMMODITY_CODE);
 
+                        //null is checked in SetRemainingData and earned data needs to be set nevertheless
                         if (dataPointsGroup != null)
                             reportableObject.Remaining.SetRemainingData(dataPointsGroup.DataPoints, reportableObject.Earned.GetData());
+                        else
+                            reportableObject.Remaining.SetRemainingData(null, reportableObject.Earned.GetData());
 
                         LoadingScreenManager.Progress();
                     }
@@ -377,14 +380,6 @@ namespace BluePrints.Common.ViewModel.Reporting
                     foreach (IReportable reportableObject in ((SummaryStats)this.SummaryStats).Reportables)
                     {
                         List<Data.DataPoint> dataPoints = remainingDataPoints.Where(x => x.Original_Guid == reportableObject.OriginalEntityKey).ToList();
-                        if (useProductivity)
-                        {
-                            //not using this here but ref is required
-                            bool isOverride = false;
-                            decimal productivity = BluePrintsDataUtils.GetStockLevelProductivity(reportableObject, ref isOverride);
-                            dataPoints.ForEach(x => productivityInflation(x, productivity));
-                        }
-
                         reportableObject.Stats.Remaining.SetRemainingData(dataPoints, reportableObject.Stats.Earned.GetData());
                         if (isForecast)
                             reportableObject.SetProgressETCs(projectProgressETCs.Where(x => x.GUID_ORIBASEITEM == reportableObject.OriginalEntityKey).ToList());
@@ -491,7 +486,7 @@ namespace BluePrints.Common.ViewModel.Reporting
             return 1;
         }
 
-        public override void SetRemainingDataPoints(decimal weightingPortion = 1, bool useProductivity = false, bool isForecast = false, bool isVariationSeparated = false)
+        public override void SetRemainingDataPoints(decimal weightingPortion = 1, bool isForecast = false, bool isVariationSeparated = false)
         {
             PartialStatsBuilder.BuildRemainingDataPointsFromQuery(progressItem, weightingPortion, isForecast);
             LoadingScreenManager.Progress();

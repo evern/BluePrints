@@ -1458,14 +1458,17 @@ namespace BluePrints.Common.ViewModel.Utils
             return x.GUID == y.GUID;
         }
 
-        public static decimal GetStockLevelProductivity(IReportable reportable, ref bool isOverride)
+        public static decimal GetProductivity(decimal earnedUnits, decimal burnedUnits)
         {
-            decimal reportableProductivity = reportable.Override_Productivity == null ? reportable.Current_Productivity : (decimal)reportable.Override_Productivity;
-            if (reportableProductivity == 0)
-                reportableProductivity = 1;
-
-            isOverride = reportable.Override_Productivity != null;
-            return reportableProductivity;
+            decimal defaultProductivity = decimal.Parse(BluePrintsResources.Default_Productivity);
+            if (earnedUnits == 0 && burnedUnits == 0)
+                return 1;
+            else if (earnedUnits > 0 && burnedUnits == 0)
+                return 1;
+            else if (earnedUnits == 0 && burnedUnits > 0)
+                return defaultProductivity;
+            else
+                return burnedUnits / earnedUnits;
         }
 
         /// <summary>
