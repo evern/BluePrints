@@ -181,7 +181,7 @@
                         </Grid>
                     </dxlc:LayoutGroup>
                 </dxlc:LayoutControl>
-                <dxg:GridControl x:Name="GridControl" dxc:DXSerializer.SerializationID="GridControlBASELINE_ITEM" dxc:DXSerializer.StoreLayoutMode="All" DockPanel.Dock="Right" Style="{StaticResource DefaultGridControlTemplate}">
+                <dxg:GridControl x:Name="GridControl" dxc:DXSerializer.SerializationID="GridControlBASELINE_ITEM" DockPanel.Dock="Right" Style="{StaticResource DefaultGridControlTemplate}">
                     <dxmvvm:Interaction.Behaviors>
                         <dxmvvm:EventToCommand Command="{Binding CustomColumnDisplayTextCommand}" EventName="CustomColumnDisplayText" PassEventArgsToCommand="True" />
                     </dxmvvm:Interaction.Behaviors>
@@ -203,7 +203,7 @@
                                     <dxe:ComboBoxEditSettings AutoComplete="True" DisplayMember="INTERNAL_NUM" IsTextEditable="True" ItemsSource="{Binding SUBAREACollection}" ValueMember="GUID" />
                                 </dxg:GridColumn.EditSettings>
                             </dxg:GridColumn>
-                            <dxg:GridColumn FieldName="Entity.Entity.GUID_DISCIPLINE" Header="Discipline">
+                            <dxg:GridColumn FieldName="Entity.Entity.GUID_DISCIPLINE" ColumnFilterMode="DisplayText" Header="Discipline">
                                 <dxg:GridColumn.EditSettings>
                                     <dxe:ComboBoxEditSettings AutoComplete="True" DisplayMember="NAME" IsTextEditable="True" ItemsSource="{Binding DISCIPLINECollection}" ValueMember="GUID" />
                                 </dxg:GridColumn.EditSettings>

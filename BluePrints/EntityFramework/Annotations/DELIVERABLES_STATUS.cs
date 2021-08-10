@@ -50,7 +50,7 @@ namespace BluePrints.Data
         {
             List<DOCTYPE> stagedAssignedDocType;
             if (MultipleAssignedDocTypeObject == null)
-                stagedAssignedDocType = null;
+                stagedAssignedDocType = new List<DOCTYPE>();
             else if (MultipleAssignedDocTypeObject.GetType() == typeof(List<DOCTYPE>))
                 stagedAssignedDocType = (List<DOCTYPE>)MultipleAssignedDocTypeObject;
             else
