@@ -262,10 +262,10 @@ namespace BluePrints.ViewModels
 
         private void VerifyAndSaveDuplicateItems(IEnumerable<DELIVERABLES_STATUS> deliverableStatuses, out List<ErrorMessage> errorMessages, bool isCopyFrom = false)
         {
+            errorMessages = new List<ErrorMessage>();
             if (deliverableStatuses == null)
                 return;
 
-            errorMessages = new List<ErrorMessage>();
             List<DELIVERABLES_STATUS> newDeliverableStatuses = new List<DELIVERABLES_STATUS>();
             foreach (var entity in deliverableStatuses)
             {
