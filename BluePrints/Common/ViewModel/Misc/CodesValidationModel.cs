@@ -271,7 +271,7 @@ namespace BluePrints.Common.Projections
                         if (propertyName == exoBudgetPropertyName)
                         {
                             if (isLineExists && !ignoreBudgetError && Math.Round(exoBudget, 0) != Math.Round(budget, 0))
-                                info.ErrorText = "Exo budget doesn't equal to budget from deliverables list";
+                                info.ErrorText = "Exo budget doesn't match budget from deliverables list";
                         }
                     }
                 }

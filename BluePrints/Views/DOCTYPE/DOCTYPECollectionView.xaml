@@ -49,7 +49,7 @@
                                 <dxe:CheckEditSettings />
                             </dxg:GridColumn.EditSettings>
                         </dxg:GridColumn>
-                        <dxg:GridColumn Header="Is Indirect Only" FieldName="IS_INDIRECT_ONLY" HeaderToolTip="This restricts exo subjob pushing on indirect only.">
+                        <dxg:GridColumn Header="Is Indirect Only" FieldName="IS_INDIRECT_ONLY" HeaderToolTip="Deliverable with this doc type will be assigned to indirect phase if check, and design phase if unchecked">
                             <dxg:GridColumn.EditSettings>
                                 <dxe:CheckEditSettings />
                             </dxg:GridColumn.EditSettings>
