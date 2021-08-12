@@ -433,9 +433,13 @@ namespace BluePrints.Common.Projections
                     errorMessages.Add(new ErrorMessage(projection.ErrorMessageIdentificationCode, "Subjob code must be 15 characters"));
                     continue;
                 }
-                else if (projection.PhaseType != null && projection.PhaseType == PhaseType.Design && projection.CommodityIsIndirectOnly)
+                else if (projection.PhaseType != null)
                 {
-                    errorMessages.Add(new ErrorMessage(projection.ErrorMessageIdentificationCode, projection.CommodityCode + " can only be assigned to indirect subjobs, please change the subjob or assign a different commodity in the deliverable's list"));
+                    if(projection.PhaseType == PhaseType.Design && projection.CommodityIsIndirectOnly)
+                        errorMessages.Add(new ErrorMessage(projection.ErrorMessageIdentificationCode, projection.CommodityCode + " can only be assigned to indirect subjobs, please change the phase or assign a different commodity in the deliverable's list"));
+                    if (projection.PhaseType == PhaseType.Indirect && !projection.CommodityIsIndirectOnly)
+                        errorMessages.Add(new ErrorMessage(projection.ErrorMessageIdentificationCode, projection.CommodityCode + " can only be assigned to direct subjobs, please change the phase or assign a different commodity in the deliverable's list"));
+
                     continue;
                 }
                 else if(projection.VariationCode != null && projection.VariationCode.Length > 50)
