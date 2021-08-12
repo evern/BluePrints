@@ -23,10 +23,12 @@ using DevExpress.Mvvm;
 using DevExpress.Mvvm.POCO;
 using DevExpress.Xpf.Grid;
 using System;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Linq;
+using System.Threading.Tasks;
 
 namespace BluePrints.ViewModels
 {
@@ -908,31 +910,35 @@ namespace BluePrints.ViewModels
 
             List<TEntity> newBASELINE_ITEMS = new List<TEntity>();
 
-            LoadingScreenManager.ShowLoadingScreen(deliverables.Count());
             List<ExoSubJobProjection> exoVariations = new List<ExoSubJobProjection>();
 
             List<ErrorMessage> errorMessages = new List<ErrorMessage>();
-            foreach (var deliverable in deliverables)
-            {
-                if(variationStage == VariationStages.Unapprove)
-                {
-                    //BASELINE_ITEM.GUID_VARIATION != null only finds deliverable's that was added through variation, so we don't touch any deliverable that weren't added through variation
-                    var deliverableVariationQuery = from BASELINE_ITEM in bluePrintsUnitOfWork.BASELINE_ITEMS
-                                                    join BASELINE in bluePrintsUnitOfWork.BASELINES
-                                                    on BASELINE_ITEM.GUID_BASELINE equals BASELINE.GUID
-                                                    join VARIATION_ITEMS in bluePrintsUnitOfWork.VARIATION_ITEMS
-                                                    on BASELINE_ITEM.GUID_ORIGINAL equals VARIATION_ITEMS.GUID_ORIBASEITEM
-                                                    join VARIATIONS in bluePrintsUnitOfWork.VARIATIONS
-                                                    on VARIATION_ITEMS.GUID_VARIATION equals VARIATIONS.GUID
-                                                    where BASELINE.GUID == liveBASELINE.GUID && BASELINE_ITEM.GUID_ORIGINAL == deliverable.GUID_ORIGINAL && BASELINE_ITEM.GUID_VARIATION != null
-                                                    select new { BASELINE_ITEM, VARIATIONS };
 
-                    List<BASELINE_ITEM_VARIATIONContainer> deliverableVariations = deliverableVariationQuery.Select(x => new BASELINE_ITEM_VARIATIONContainer() { BASELINE_ITEM = x.BASELINE_ITEM, VARIATION = x.VARIATIONS }).ToList();
+            if (variationStage == VariationStages.Unapprove)
+            {
+                //BASELINE_ITEM.GUID_VARIATION != null only finds deliverable's that was added through variation, so we don't touch any deliverable that weren't added through variation
+                var deliverablesFromVariation = from BASELINE_ITEM in bluePrintsUnitOfWork.BASELINE_ITEMS
+                                                join BASELINE in bluePrintsUnitOfWork.BASELINES
+                                                on BASELINE_ITEM.GUID_BASELINE equals BASELINE.GUID
+                                                join VARIATION_ITEMS in bluePrintsUnitOfWork.VARIATION_ITEMS
+                                                on BASELINE_ITEM.GUID_ORIGINAL equals VARIATION_ITEMS.GUID_ORIBASEITEM
+                                                join VARIATIONS in bluePrintsUnitOfWork.VARIATIONS
+                                                on VARIATION_ITEMS.GUID_VARIATION equals VARIATIONS.GUID
+                                                where BASELINE.GUID == liveBASELINE.GUID && BASELINE_ITEM.GUID_VARIATION != null
+                                                select new { BASELINE_ITEM, VARIATIONS };
+
+                List<BASELINE_ITEM_VARIATIONContainer> variationDeliverables = deliverablesFromVariation.Select(x => new BASELINE_ITEM_VARIATIONContainer() { BASELINE_ITEM = x.BASELINE_ITEM, VARIATION = x.VARIATIONS }).ToList();
+
+                LoadingScreenManager.ShowLoadingScreen(deliverables.Count());
+                LoadingScreenManager.SetMessage("Removing deliverables added through this variation...");
+                foreach (ISupportVariation<TEntity> deliverable in deliverables)
+                {
+                    List<BASELINE_ITEM_VARIATIONContainer> currentDeliverableVariations = variationDeliverables.Where(x => x.BASELINE_ITEM.GUID_ORIGINAL == deliverable.OriginalEntityKey).ToList();
 
                     //only remove this deliverable is only the variation responsible of adding it exists
-                    if (deliverableVariations.Count > 0 && deliverableVariations.All(x => x.BASELINE_ITEM.GUID_VARIATION == SelectedEntity.GUID))
+                    if (currentDeliverableVariations.Count > 0 && currentDeliverableVariations.All(x => x.BASELINE_ITEM.GUID_VARIATION == SelectedEntity.GUID))
                     {
-                        BASELINE_ITEM removeDeliverable = deliverableVariations.First().BASELINE_ITEM;
+                        BASELINE_ITEM removeDeliverable = currentDeliverableVariations.First().BASELINE_ITEM;
                         BASELINE_ITEM variationDeliverable = bluePrintsUnitOfWork.BASELINE_ITEMS.FirstOrDefault(x => x.GUID_ORIGINAL == deliverable.GUID_ORIGINAL && x.GUID_BASELINE == null && x.GUID_VARIATION == removeDeliverable.GUID_VARIATION);
                         if (variationDeliverable != null)
                         {
@@ -948,32 +954,28 @@ namespace BluePrints.ViewModels
                         bluePrintsUnitOfWork.SaveChanges();
                     }
 
-                    //adjust variation units to accomodate earned
-                    //decimal updatedMaximumReducibleUnits = getDeliverableUpdatedMaximumReducibleUnits(bluePrintsUnitOfWork, deliverable);
-                    ////check whether unapproving current deliverable will cause it's total units to go below earned units
-                    //if (deliverable.VARIATION_ITEM.VARIATION_UNITS > updatedMaximumReducibleUnits)
-                    //{
-                    //    deliverable.VARIATION_ITEM.VARIATION_UNITS = updatedMaximumReducibleUnits;
-                    //    VARIATION_ITEMSViewModel.Save(deliverable.VARIATION_ITEM);
-                    //}
+                    LoadingScreenManager.Progress();
                 }
-                //}
-                //only revise when new baseline is created
-                else if(variationStage == VariationStages.Approve && revisedBaseline != null && revisedBaseline.GUID != Guid.Empty)
+
+                LoadingScreenManager.CloseLoadingScreen();
+            }
+            else if (variationStage == VariationStages.Approve && revisedBaseline != null && revisedBaseline.GUID != Guid.Empty)
+            {
+                List<Guid> trackCurrentBaselineDeliverableOriginalGuids = repository.Where(x => x.GUID_BASELINE == revisedBaseline.GUID).Select(x => x.GUID_ORIGINAL).ToList();
+
+                ConcurrentBag<TEntity> concurrentBagNewEntities = new ConcurrentBag<TEntity>();
+                Parallel.ForEach(deliverables, deliverable =>
                 {
                     VARIATION_ITEM updateVARIATION_ITEM = deliverable.VARIATION_ITEM;
                     decimal? variationUnits = null;
 
-                    //deliverable copieed from current baseline
-                    //TEntity copyDeliverable = null;
+                    //deliverable copied from current baseline
                     if (deliverable.DisplayVariationAction == VariationAction.Cancel)
                     {
                         if (deliverable.Earned_Units_Total == 0)
                             variationUnits = -1 * deliverable.Total_Units;
                         else
                             variationUnits = -1 * (deliverable.Total_Units - deliverable.Earned_Units_Total);
-
-                        //copyDeliverable = new TEntity();
                     }
                     else if (deliverable.DisplayVariationAction == VariationAction.Append)
                     {
@@ -994,26 +996,10 @@ namespace BluePrints.ViewModels
                     else if (deliverable.DisplayVariationAction == VariationAction.Add)
                     {
                         variationUnits = deliverable.DisplayVariationUnits;
-
-                        ////when the deliverable is approved by multiple variation and unapproved and re-approved on the variation that defines it as add
-                        ////multiple copies exists and we only want to process one copy and save it in historian
-                        //if (!repository.Any(x => x.GUID_BASELINE == revisedBaseline.GUID && x.GUID_ORIGINAL == deliverable.GUID_ORIGINAL))
-                        //    copyDeliverable = new TEntity();
-
-                        //when the deliverable is approved by multiple variation and reapproved on the variation that defines it as Add, dont' add the deliverable
-                        //if(!repository.Any(x => x.GUID_BASELINE == liveBASELINE.GUID && x.GUID_ORIGINAL == deliverable.GUID_ORIGINAL))
-                        //{
-                        //    TEntity newDeliverable = new TEntity();
-                        //    DataUtils.ShallowCopy(newDeliverable, deliverable.Entity);
-                        //    newDeliverable.GUID = Guid.Empty;
-                        //    newDeliverable.GUID_BASELINE = revisedBaseline.GUID;
-                        //    newDeliverable.GUID_VARIATION = DisplaySelectedEntity.GUID;
-                        //    repository.Add(newDeliverable);
-                        //}
                     }
 
-                    //when the deliverable is approved by multiple variation and reapproved on the variation that defines it as Add, dont' add the deliverable
-                    if (!repository.Any(x => x.GUID_BASELINE == revisedBaseline.GUID && x.GUID_ORIGINAL == deliverable.GUID_ORIGINAL))
+                    //when the deliverable is approved by multiple variation and reapproved on the variation that defines it as Add, don't add the deliverable
+                    if (!trackCurrentBaselineDeliverableOriginalGuids.Any(x => x == deliverable.GUID_ORIGINAL))
                     {
                         TEntity newDeliverable = new TEntity();
                         DataUtils.ShallowCopy(newDeliverable, deliverable.Entity);
@@ -1022,17 +1008,54 @@ namespace BluePrints.ViewModels
                         //remember deliverable that was added from variation so that when we delete we don't touch deliverable that weren't added from variation
                         if (deliverable.DisplayVariationAction == VariationAction.Add)
                             newDeliverable.GUID_VARIATION = SelectedEntity.GUID;
-                        repository.Add(newDeliverable);
+
+                        concurrentBagNewEntities.Add(newDeliverable);
                     }
 
                     //Save variation units for future viewing
-                    if(variationUnits != null)
+                    if (variationUnits != null && deliverable.VARIATION_ITEM != null)
                     {
                         deliverable.VARIATION_ITEM.VARIATION_UNITS = (decimal)variationUnits;
-                        VARIATION_ITEMSViewModel.Save(updateVARIATION_ITEM);
+                        //VARIATION_ITEMSViewModel.Save(updateVARIATION_ITEM);
                     }
+
+                    LoadingScreenManager.Progress();
+                });
+
+                LoadingScreenManager.ShowLoadingScreen(deliverables.Count());
+                LoadingScreenManager.SetMessage("Adding deliverables to baseline: " + revisedBaseline.Revision + "...");
+                int saveThreshold = 200;
+                int processCount = 0;
+                foreach(TEntity entity in concurrentBagNewEntities)
+                {
+                    repository.Add(entity);
+                    processCount += 1;
+                    if(processCount == saveThreshold)
+                    {
+                        //save changes for added deliverables
+                        unitOfWork.SaveChanges();
+                        processCount = 0;
+                    }
+
+                    LoadingScreenManager.Progress();
                 }
 
+                //save changes for added deliverables
+                unitOfWork.SaveChanges();
+                LoadingScreenManager.CloseLoadingScreen();
+
+                //foreach (ISupportVariation<TEntity> deliverable in deliverables)
+                //{
+
+                //}
+
+            }
+
+            LoadingScreenManager.ShowLoadingScreen(deliverables.Count());
+            LoadingScreenManager.SetMessage("Scraping deliverables list to determine EXO variation jobs...");
+            //construct EXO variation entry and calculate budget
+            foreach (var deliverable in deliverables)
+            {
                 //if its purely a scan to determine variation
                 if (SelectedEntity.Entity.TYPE == VariationType.External && (deliverable.DisplayVariationAction == VariationAction.Add || (deliverable.DisplayVariationAction == VariationAction.Append)) && variationCode != string.Empty)
                 {
@@ -1041,7 +1064,7 @@ namespace BluePrints.ViewModels
                     string commodityCode = deliverable.Commodity_Code;
 
                     decimal exoBudget = variationStage == VariationStages.Approve || variationStage == VariationStages.Update ? deliverable.Forecast_InternalCosts : 0;
-                    ExoSubJobProjection exoVariation = exoVariations.FirstOrDefault((x => x.SubJobCode == subJobCode && x.VariationCode == variationCode));
+                    ExoSubJobProjection exoVariation = exoVariations.FirstOrDefault(x => x.SubJobCode == subJobCode && x.VariationCode == variationCode);
                     if (exoVariation == null)
                     {
                         ExoSubJobProjection newVariationSubJob = new ExoSubJobProjection() { SubJobCode = subJobCode, VariationCode = variationCode, StockCode = BluePrintsResources.VariationStockCode, ExoBudget = exoBudget };
@@ -1055,51 +1078,55 @@ namespace BluePrints.ViewModels
 
                 LoadingScreenManager.Progress();
             }
+            LoadingScreenManager.CloseLoadingScreen();
 
-            if ((variationStage == VariationStages.Submit || variationStage == VariationStages.Unsubmit))
+            switch (variationStage)
             {
-                if (SelectedEntity.Entity.TYPE == VariationType.External)
-                    addVariationJobToExo(exoVariations, variationStage);
-                else if (variationStage == VariationStages.Submit)
-                    SubmitSelectedEntity();
-                else
-                    UnsubmitSelectedEntity();
-            }
-            //approve and unapprove
-            else
-            {
-                unitOfWork.SaveChanges();
-                if (variationStage == VariationStages.Unapprove)
-                {
-                    if (errorMessages.Count > 0)
-                    {
-                        DialogCollectionViewModel<ErrorMessage> viewModel = DialogCollectionViewModel<ErrorMessage>.Create(errorMessages, "Unapprove cannot continue because of the following error");
-                        ErrorMessagesDialogService.ShowDialog(MessageButton.OK, string.Empty, "ListErrorMessages", viewModel);
-                    }
+                case VariationStages.Submit:
+                case VariationStages.Unsubmit:
+                    if (SelectedEntity.Entity.TYPE == VariationType.External)
+                        addVariationJobToExo(exoVariations, variationStage);
+                    else if (variationStage == VariationStages.Submit)
+                        SubmitSelectedEntity();
                     else
+                        UnsubmitSelectedEntity();
+                    break;
+                default:
                     {
-                        SelectedEntity.Entity.ADJUSTMENT_TO_BUDGET = false;
-                        SelectedEntity.Entity.APPROVED = null;
-                        SelectedEntity.Entity.APPROVEDBY = null;
-                        SelectedEntity.Entity.GUID_ORIBASELINE = null;
-                        SelectedEntity.Entity.GUID_BASELINE = null;
-                        MainViewModel.Save(SelectedEntity);
+                        //save changes for added deliverables
+                        unitOfWork.SaveChanges();
+                        if (variationStage == VariationStages.Unapprove)
+                        {
+                            if (errorMessages.Count > 0)
+                            {
+                                DialogCollectionViewModel<ErrorMessage> viewModel = DialogCollectionViewModel<ErrorMessage>.Create(errorMessages, "Unapprove cannot continue because of the following error");
+                                ErrorMessagesDialogService.ShowDialog(MessageButton.OK, string.Empty, "ListErrorMessages", viewModel);
+                            }
+                            else
+                            {
+                                SelectedEntity.Entity.ADJUSTMENT_TO_BUDGET = false;
+                                SelectedEntity.Entity.APPROVED = null;
+                                SelectedEntity.Entity.APPROVEDBY = null;
+                                SelectedEntity.Entity.GUID_ORIBASELINE = null;
+                                SelectedEntity.Entity.GUID_BASELINE = null;
+                                MainViewModel.Save(SelectedEntity);
 
-                        //this will invoke unsubmit in the setter
-                        IsSubmitted = false;
+                                //this will invoke unsubmit in the setter
+                                IsSubmitted = false;
+                            }
+                        }
+                        else //if approving
+                            addVariationJobToExo(exoVariations, variationStage);
+
+                        //update deliverables DC_HOURS for PowerBi
+                        if (variationStage != VariationStages.Update)
+                            backwardCompatibilityDC_HOURS(liveBASELINE.GUID);
+
+                        //because live baseline has been changed, full refresh is required
+                        if (variationStage == VariationStages.Approve)
+                            FullRefresh();
+                        break;
                     }
-                }
-                else
-                    addVariationJobToExo(exoVariations, variationStage);
-
-                if(variationStage != VariationStages.Update)
-                    backwardCompatibilityDC_HOURS(liveBASELINE.GUID);
-
-                //because live baseline has been changed, full refresh is required
-                if (variationStage == VariationStages.Approve)
-                    FullRefresh();
-                //else
-                //    refreshSummary();
             }
 
             isSubmitting = false;
@@ -1145,26 +1172,31 @@ namespace BluePrints.ViewModels
             return earnedUnitsItems.Count == 0 ? 0 : earnedUnitsItems.Sum(x => x.PROGRESS_ITEM.EARNED_UNITS);
         }
 
-        //revise all DC units to comply with old standards of using DC_HOURS for variation instead of dynamically queried
+        //revise all DC units to comply with old standards of using DC_HOURS for PowerBi
         private void backwardCompatibilityDC_HOURS(Guid baselineGuid)
         {
             IBluePrintsEntitiesUnitOfWork bluePrintsUnitOfWork = bluePrintsUnitOfWorkFactory.CreateUnitOfWork();
             BASELINE reviseBASELINE = bluePrintsUnitOfWork.BASELINES.FirstOrDefault(x => x.GUID == baselineGuid);
             if(reviseBASELINE != null)
             {
-                foreach(BASELINE_ITEM deliverable in reviseBASELINE.BASELINE_ITEM)
-                {
-                    var queryVARIATION_UNITS = from VARIATION_ITEM in bluePrintsUnitOfWork.VARIATION_ITEMS
-                                               join VARIATION in bluePrintsUnitOfWork.VARIATIONS
-                                               on VARIATION_ITEM.GUID_VARIATION equals VARIATION.GUID
-                                               where VARIATION.APPROVED != null && VARIATION.ADJUSTMENT_TO_BUDGET == false && VARIATION_ITEM.GUID_ORIBASEITEM == deliverable.GUID_ORIGINAL
-                                               select VARIATION_ITEM;
+                LoadingScreenManager.ShowLoadingScreen(reviseBASELINE.BASELINE_ITEM.Count);
+                LoadingScreenManager.SetMessage("Update variation units for PowerBi...");
+                var approvedVARIATION_ITEMSQuery = from VARIATION_ITEM in bluePrintsUnitOfWork.VARIATION_ITEMS
+                                           join VARIATION in bluePrintsUnitOfWork.VARIATIONS
+                                           on VARIATION_ITEM.GUID_VARIATION equals VARIATION.GUID
+                                           where VARIATION.APPROVED != null && VARIATION.ADJUSTMENT_TO_BUDGET == false
+                                           select VARIATION_ITEM;
 
-                    List<VARIATION_ITEM> deliverableVariations = queryVARIATION_UNITS.ToList();
+                List<VARIATION_ITEM> approvedVARIATION_ITEMs = approvedVARIATION_ITEMSQuery.ToList();
+                foreach (BASELINE_ITEM deliverable in reviseBASELINE.BASELINE_ITEM)
+                {
+                    List<VARIATION_ITEM> deliverableVariations = approvedVARIATION_ITEMSQuery.Where(x => x.GUID_ORIBASEITEM == deliverable.GUID_ORIGINAL).ToList();
                     deliverable.DC_HOURS = deliverableVariations.Sum(x => x.VARIATION_UNITS);
+                    LoadingScreenManager.Progress();
                 }
 
                 bluePrintsUnitOfWork.SaveChanges();
+                LoadingScreenManager.CloseLoadingScreen();
             }
         }
 
