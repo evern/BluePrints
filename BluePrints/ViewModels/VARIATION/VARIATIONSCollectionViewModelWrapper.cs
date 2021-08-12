@@ -1016,7 +1016,7 @@ namespace BluePrints.ViewModels
                     if (variationUnits != null && deliverable.VARIATION_ITEM != null)
                     {
                         deliverable.VARIATION_ITEM.VARIATION_UNITS = (decimal)variationUnits;
-                        //VARIATION_ITEMSViewModel.Save(updateVARIATION_ITEM);
+                        //changes will be saved in unitOfWork.SaveChanges();
                     }
 
                     LoadingScreenManager.Progress();
