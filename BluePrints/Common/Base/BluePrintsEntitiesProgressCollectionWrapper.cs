@@ -458,7 +458,7 @@ namespace BluePrints.Common.Base
         {
             if (fullSummarizer != null)
             {
-                fullSummarizer.BuildBudgeted(1, 1, false, false);
+                fullSummarizer.BuildBudgeted(1, 1, false, false, false);
                 //fullSummarizer.BuildEarned();
                 fullSummarizer.BuildRemaining();
                 fullSummarizer.BuildBurnedDataPoints(DashboardEXOQueryType.TimeOnly);

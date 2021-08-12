@@ -1004,9 +1004,6 @@ namespace BluePrints.Common.ViewModel.Utils
                     {
                         if (qualifiedSubjobs == null || (jobTransaction.COST_TYPE != null && (!jobTransaction.COST_TYPE.Contains("G99") && !jobTransaction.COST_TYPE.Contains("010"))))
                         {
-                            string s;
-                            if (jobTransaction.COST_TYPE.ToUpper() == "UE")
-                                s = string.Empty;
                             ExoDataPoint burnedDataPoint = new ExoDataPoint();
                             burnedDataPoint.BudgetedUnits = 0;
                             burnedDataPoint.BudgetedCosts = 0;
@@ -1081,7 +1078,7 @@ namespace BluePrints.Common.ViewModel.Utils
                                    on STOCK_ITEMS.PURCH_GL_CODE equals GLP.ACCNO
                                    join GLCOS in primeroUOW.GLACCS
                                    on STOCK_ITEMS.COS_GL_CODE equals GLCOS.ACCNO
-                                   where X_JOB_TRANSACTIONS_DETAIL.linecharge == 0 && X_JOB_TRANSACTIONS_DETAIL.transtype == "C" && MASTER_JOB.JOBCODE == projectNumber && X_JOB_TRANSACTIONS_DETAIL.transdate <= invoiceCutOffDate
+                                   where X_JOB_TRANSACTIONS_DETAIL.linecharge == 0 && X_JOB_TRANSACTIONS_DETAIL.transtype == "C" && MASTER_JOB.JOBCODE == projectNumber && X_JOB_TRANSACTIONS_DETAIL.transdate <= invoiceCutOffDate && X_JOB_TRANSACTIONS_DETAIL.description == "CV-002 -"
                                    select new { X_JOB_TRANSACTIONS_DETAIL.jobno, X_JOB_TRANSACTIONS_DETAIL.EXCHRATE, X_JOB_TRANSACTIONS_DETAIL.master_jobno, SUBJOB_CODE = SUBJOB.JOBCODE, X_JOB_TRANSACTIONS_DETAIL.transdate, X_JOB_TRANSACTIONS_DETAIL.transtype, X_JOB_TRANSACTIONS_DETAIL.stockcode, X_JOB_TRANSACTIONS_DETAIL.description, X_JOB_TRANSACTIONS_DETAIL.quantity, X_JOB_TRANSACTIONS_DETAIL.unitcost, X_JOB_TRANSACTIONS_DETAIL.UNITPRICE, X_JOB_TRANSACTIONS_DETAIL.LINECOST, X_JOB_TRANSACTIONS_DETAIL.linecharge, X_JOB_TRANSACTIONS_DETAIL.LINETOTAL, X_JOB_TRANSACTIONS_DETAIL.LINETOTAL_INCTAX, X_JOB_TRANSACTIONS_DETAIL.LINETOTAL_TAX, X_JOB_TRANSACTIONS_DETAIL.LINE_STATUS, X_JOB_TRANSACTIONS_DETAIL.CostType, X_JOB_TRANSACTIONS_DETAIL.CostTypeDesc, X_JOB_TRANSACTIONS_DETAIL.Typeshortcode, X_JOB_TRANSACTIONS_DETAIL.COST_GROUP, X_JOB_TRANSACTIONS_DETAIL.CostGroupDesc, X_JOB_TRANSACTIONS_DETAIL.GroupShortcode, X_JOB_TRANSACTIONS_DETAIL.branchno, X_JOB_TRANSACTIONS_DETAIL.LINE_SOURCE, X_JOB_TRANSACTIONS_DETAIL.SOURCE_SEQNO, X_JOB_TRANSACTIONS_DETAIL.PO_LINESEQNO, X_JOB_TRANSACTIONS_DETAIL.POno, X_JOB_TRANSACTIONS_DETAIL.invseqno, X_JOB_TRANSACTIONS_DETAIL.refno, X_JOB_TRANSACTIONS_DETAIL.name, X_JOB_TRANSACTIONS_DETAIL.invno, X_JOB_TRANSACTIONS_DETAIL.INVOICED, X_JOB_TRANSACTIONS_DETAIL.INVOICEDATE, X_JOB_TRANSACTIONS_DETAIL.CostActual, X_JOB_TRANSACTIONS_DETAIL.glcode, X_JOB_TRANSACTIONS_DETAIL.accno, SUBJOB.QUOTEDATE, SUBJOB.STARTDATE, SUBJOB.DUEDATE, SUBJOB.CUSTORDNO, SUBJOB.TITLE, NAME_2 = DR_ACCS.NAME, MasterJobcode = MASTER_JOB.JOBCODE, STOCK_ITEMS.PURCH_GL_CODE, PurchGLName = GLP.NAME, STOCK_ITEMS.COS_GL_CODE, COSGlName = GLCOS.NAME, VariationCode = X_JOB_TRANSACTIONS_DETAIL.X_VARIATIONCODE };
 
                 if (showLoadingScreen)
@@ -1264,7 +1261,7 @@ namespace BluePrints.Common.ViewModel.Utils
                       join NARRATIVES in primeroUOW.NARRATIVES
                       on PURCHORD_LINES.NARRATIVE_SEQNO equals NARRATIVES.SEQNO into PONarratives
                       from PONarrate in PONarratives.DefaultIfEmpty()
-                      where JOBCOST_HDR2.JOBCODE == projectNumber && PURCHORD_HDR.ORDERDATE < poCutOffDate
+                      where JOBCOST_HDR2.JOBCODE == projectNumber && PURCHORD_HDR.ORDERDATE <= poCutOffDate
                       select new { PURCHORD_HDR.EXCHRATE, PURCHORD_LINES.POLINEID, PURCHORD_LINES.STOCKCODE, PURCHORD_LINES.DESCRIPTION, PONarrate.NARRATIVE, PURCHORD_HDR.SEQNO, PURCHORD_LINES.LINETOTAL, CR_ACCS.NAME, JOBCOST_HDR.JOBCODE, JOBCOST_HDR.TITLE, COSTTYPEDESC = JOB_COSTTYPES.COSTDESC, COSTGROUPDESC = JOB_COSTGROUPS.COSTDESC, GROUPSHORTCODE = JOB_COSTGROUPS.SHORTCODE, PURCHORD_LINES.ORD_QUANT, PURCHORD_LINES.SUP_QUANT, PURCHORD_LINES.UNITPRICE, PURCHORD_HDR.STATUS, PURCHORD_HDR.DUEDATE, PURCHORD_HDR.ORDERDATE, PURCHORD_HDR.LAST_UPDATED, PURCHORD_LINES.X_VARIATIONCODE, JOB_COSTTYPES.SHORTCODE };
 
             string equipmentHireStockCodeInitials = BluePrintsResources.EquipmentHireStockCodeInitials;
@@ -1290,7 +1287,7 @@ namespace BluePrints.Common.ViewModel.Utils
 
             foreach(var po in poList)
             {
-                if (po.COSTGROUPDESC != null && (po.COSTGROUPDESC.Length >= 3 && !po.COSTGROUPDESC.Substring(0, 3).Contains("G99") && !po.COSTGROUPDESC.Substring(0, 3).Contains("010")))
+                if (po.COSTGROUPDESC != null && (!po.COSTGROUPDESC.Contains("G99") && !po.COSTGROUPDESC.Contains("010")))
                 {
                     ExoDataPoint poDataPoint = new ExoDataPoint();
                     poDataPoint.BudgetedUnits = 0;
@@ -1298,7 +1295,7 @@ namespace BluePrints.Common.ViewModel.Utils
                     decimal orderQty = po.ORD_QUANT == null ? 0 : ((decimal)po.ORD_QUANT);
 
                     List<INWARDS_GOODS_LINES> allPOInwardGoods = inwardGoodsList.Where(x => x.PO_LINE_NUM == po.POLINEID).Where(x => x.QUANTITY != null).ToList();
-                    List<INWARDS_GOODS_LINES> currentPOInwardGoods = allPOInwardGoods.Where(x => x.INV_TRANSDATE < poCutOffDate).ToList();
+                    List<INWARDS_GOODS_LINES> currentPOInwardGoods = allPOInwardGoods.Where(x => x.INV_TRANSDATE <= poCutOffDate).ToList();
                     double supplyQty = currentPOInwardGoods.Sum(x => (double)x.QUANTITY);
 
                     //don't omit any PO where it's fully receipted but there are quantities being receipted after data date
@@ -1377,7 +1374,7 @@ namespace BluePrints.Common.ViewModel.Utils
 
             foreach (var po in purchaseOrderLines)
             {
-                if (po.COST_GROUP != null && (po.COST_GROUP.Length >= 3 && !po.COST_GROUP.Substring(0, 3).Contains("G99") && !po.COST_GROUP.Substring(0, 3).Contains("010")))
+                if (po.COST_GROUP != null && (!po.COST_GROUP.Contains("G99") && !po.COST_GROUP.Contains("010")))
                 {
                     ExoDataPoint poDataPoint = new ExoDataPoint();
                     poDataPoint.BudgetedUnits = 0;

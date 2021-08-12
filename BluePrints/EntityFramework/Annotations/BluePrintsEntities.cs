@@ -189,5 +189,17 @@ namespace BluePrints.Data
                 return reportableLines;
             }
         }
+
+        public static List<X_EARNED_QUERY> GetEarnedSummary(string projectNumber, DateTime cutOffDate)
+        {
+            using (BluePrintsEntities dbContext = new BluePrintsEntities())
+            {
+                dbContext.Database.CommandTimeout = 5000;
+                SqlParameter projectNumberParameter = new SqlParameter("@ProjectNumber", projectNumber);
+                SqlParameter cutOffDateParameter = new SqlParameter("@CutOffDate", cutOffDate);
+                List<X_EARNED_QUERY> earnedData = dbContext.Database.SqlQuery<X_EARNED_QUERY>("X_EARNED @ProjectNumber, @CutOffDate", projectNumberParameter, cutOffDateParameter).ToList();
+                return earnedData;
+            }
+        }
     }
 }

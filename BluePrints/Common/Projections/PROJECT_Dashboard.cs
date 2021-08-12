@@ -62,7 +62,7 @@ namespace BluePrints.Common.Projections
             set { SetProperty(() => Stats, value); }
         }
 
-        public void BuildStats(DashboardEXOQueryType dashboardEXOQueryType = DashboardEXOQueryType.TimeAndMaterial, bool showLoadingScreen = true, decimal weightingPortion = 1, bool forceRetrieveAllJobs = false, bool forceRetrieveAllUnits = false, bool forceRetrieveAllPOs = false, List<StatsCalculationType> calcTypes = null, bool useProductivityFactorOnRemaining = false)
+        public void BuildStats(DashboardEXOQueryType dashboardEXOQueryType = DashboardEXOQueryType.TimeAndMaterial, bool showLoadingScreen = true, decimal weightingPortion = 1, bool forceRetrieveAllJobs = false, bool forceRetrieveAllUnits = false, bool forceRetrieveAllPOs = false, List<StatsCalculationType> calcTypes = null, bool useProductivityFactorOnRemaining = false, bool isVariationSeparated = false)
         {
             if (projectSummarizer == null)
                 return;
@@ -70,7 +70,7 @@ namespace BluePrints.Common.Projections
             if (calcTypes == null)
                 calcTypes = BluePrintsDataUtils.AllCalcTypes;
 
-            projectSummarizer.Build(showLoadingScreen, weightingPortion, calcTypes, useProductivityFactorOnRemaining);
+            projectSummarizer.Build(showLoadingScreen, weightingPortion, calcTypes, isVariationSeparated, useProductivityFactorOnRemaining);
 
             if (calcTypes.Contains(StatsCalculationType.Burned))
                 //Build burned must come after build so that remaining can be retrieved for remaining actual

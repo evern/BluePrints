@@ -106,6 +106,7 @@ namespace BluePrints.Common.ViewModel.Misc
             if (actualStats.Count() > 0)
             {
                 actualDataPoints.AddRange(actualStats.SelectMany(x => x.Actual.ExoDataPoints.Where(y => y.ActualDate <= dataDate)));
+
                 IEnumerable<ExoDataPoint> actualDataPointsPostDD = actualStats.SelectMany(x => x.Actual.ExoDataPoints.Where(y => y.ActualDate > dataDate));
                 IEnumerable<ExoDataPoint> actualDataPointsPreviousDD = actualStats.SelectMany(x => x.Actual.ExoDataPoints.Where(y => y.ActualDate <= previousDataDate));
 
@@ -195,6 +196,7 @@ namespace BluePrints.Common.ViewModel.Misc
             if (remainingStats.Count() > 0)
             {
                 remainingDataPoints.AddRange(remainingStats.SelectMany(x => x.Remaining.RemainingOnlyDataPoints));
+
                 earnedDataPoints.AddRange(earnedStats.SelectMany(x => x.Earned.DataPoints));
                 decimal p6RemainingCosts = remainingDataPoints.Sum(x => x.Costs);
                 decimal p6RemainingUnits = remainingDataPoints.Sum(x => x.Units);
