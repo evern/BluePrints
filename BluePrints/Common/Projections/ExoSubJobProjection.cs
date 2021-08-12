@@ -436,11 +436,15 @@ namespace BluePrints.Common.Projections
                 else if (projection.PhaseType != null)
                 {
                     if(projection.PhaseType == PhaseType.Design && projection.CommodityIsIndirectOnly)
+                    {
                         errorMessages.Add(new ErrorMessage(projection.ErrorMessageIdentificationCode, projection.CommodityCode + " can only be assigned to indirect subjobs, please change the phase or assign a different commodity in the deliverable's list"));
+                        continue;
+                    }
                     if (projection.PhaseType == PhaseType.Indirect && !projection.CommodityIsIndirectOnly)
+                    {
                         errorMessages.Add(new ErrorMessage(projection.ErrorMessageIdentificationCode, projection.CommodityCode + " can only be assigned to direct subjobs, please change the phase or assign a different commodity in the deliverable's list"));
-
-                    continue;
+                        continue;
+                    }
                 }
                 else if(projection.VariationCode != null && projection.VariationCode.Length > 50)
                 {

@@ -194,6 +194,9 @@ namespace BluePrints.ViewModels
                     JOBCOST_LINES line = localPrimeroUnitOfWork.JOBCOST_LINES.First(x => x.SEQNO == projection.LineId);
                     if (line != null)
                     {
+                        if (line.ACTUAL_UNITCOST != null && line.ACTUAL_UNITCOST > 0)
+                            return "Cannot remove line in EXO because it already has a budget, please contact a cost controller to remove the line";
+
                         ExoMethods.UpdateJOBCOST_LINES_AUDIT(bluePrintsEntitiesUnitOfWork, projection, line, true);
                         localPrimeroUnitOfWork.JOBCOST_LINES.Remove(line);
                         localPrimeroUnitOfWork.SaveChanges();
