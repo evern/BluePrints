@@ -1093,7 +1093,7 @@ namespace BluePrints.Common.ViewModel.Utils
                       join NARRATIVES in primeroUOW.NARRATIVES
                       on PURCHORD_LINES.NARRATIVE_SEQNO equals NARRATIVES.SEQNO into PONarratives
                       from PONarrate in PONarratives.DefaultIfEmpty()
-                      where JOBCOST_HDR2.JOBCODE == projectNumber && PURCHORD_HDR.ORDERDATE < poCutOffDate
+                      where JOBCOST_HDR2.JOBCODE == projectNumber && PURCHORD_HDR.ORDERDATE <= poCutOffDate
                       select new { PURCHORD_HDR.EXCHRATE, PURCHORD_LINES.POLINEID, PURCHORD_LINES.STOCKCODE, PURCHORD_LINES.DESCRIPTION, PONarrate.NARRATIVE, PURCHORD_HDR.SEQNO, PURCHORD_LINES.LINETOTAL, CR_ACCS.NAME, JOBCOST_HDR.JOBCODE, JOBCOST_HDR.TITLE, COSTTYPEDESC = JOB_COSTTYPES.COSTDESC, COSTGROUPDESC = JOB_COSTGROUPS.COSTDESC, GROUPSHORTCODE = JOB_COSTGROUPS.SHORTCODE, PURCHORD_LINES.ORD_QUANT, PURCHORD_LINES.SUP_QUANT, PURCHORD_LINES.UNITPRICE, PURCHORD_HDR.STATUS, PURCHORD_HDR.DUEDATE, PURCHORD_HDR.ORDERDATE, PURCHORD_HDR.LAST_UPDATED, PURCHORD_LINES.X_VARIATIONCODE, JOB_COSTTYPES.SHORTCODE };
 
             var poList = pos.ToList();
@@ -1126,7 +1126,7 @@ namespace BluePrints.Common.ViewModel.Utils
                     decimal orderQty = po.ORD_QUANT == null ? 0 : ((decimal)po.ORD_QUANT);
 
                     List<INWARDS_GOODS_LINES> allPOInwardGoods = inwardGoodsList.Where(x => x.PO_LINE_NUM == po.POLINEID).Where(x => x.QUANTITY != null).ToList();
-                    List<INWARDS_GOODS_LINES> currentPOInwardGoods = allPOInwardGoods.Where(x => x.INV_TRANSDATE < poCutOffDate).ToList();
+                    List<INWARDS_GOODS_LINES> currentPOInwardGoods = allPOInwardGoods.Where(x => x.INV_TRANSDATE <= poCutOffDate).ToList();
                     double supplyQty = currentPOInwardGoods.Sum(x => (double)x.QUANTITY);
 
                     //don't omit any PO where it's fully receipted but there are quantities being receipted after data date
