@@ -372,7 +372,7 @@ namespace BluePrints.Common.Projections
             return false;
         }
 
-        public static IEnumerable<ExoSubJobProjection> CommitToExo(IEnumerable<ExoSubJobProjection> projections, IMessageBoxService MessageBoxService, JOBCOST_HDR masterJob, JOBCOST_LINES copyLine, PROJECT loadPROJECT, IEnumerable<USER> USERCollection, IPrimeroEntitiesUnitOfWork localPrimeroUnitOfWork, IBluePrintsEntitiesUnitOfWork bluePrintsEntitiesUnitOfWork, IDialogService BulkColumnEditDialogService, out List<ErrorMessage> errorMessages, bool updateBudgetIfExist = false, bool ignoreCostGroupCostType = false)
+        public static IEnumerable<ExoSubJobProjection> CommitToExo(IEnumerable<ExoSubJobProjection> projections, IMessageBoxService MessageBoxService, JOBCOST_HDR masterJob, JOBCOST_LINES copyLine, PROJECT loadPROJECT, IEnumerable<USER> USERCollection, IPrimeroEntitiesUnitOfWork localPrimeroUnitOfWork, IBluePrintsEntitiesUnitOfWork bluePrintsEntitiesUnitOfWork, IDialogService BulkColumnEditDialogService, out List<ErrorMessage> errorMessages, bool updateBudgetIfExist = false, bool ignoreCostGroupCostType = false, bool validateDesignDirectIndirect = false)
         {
             errorMessages = new List<ErrorMessage>();
             List<ExoSubJobProjection> addedProjections = new List<ExoSubJobProjection>();
@@ -433,7 +433,7 @@ namespace BluePrints.Common.Projections
                     errorMessages.Add(new ErrorMessage(projection.ErrorMessageIdentificationCode, "Subjob code must be 15 characters"));
                     continue;
                 }
-                else if (projection.PhaseType != null)
+                else if (validateDesignDirectIndirect && projection.PhaseType != null)
                 {
                     if(projection.PhaseType == PhaseType.Design && projection.CommodityIsIndirectOnly)
                     {

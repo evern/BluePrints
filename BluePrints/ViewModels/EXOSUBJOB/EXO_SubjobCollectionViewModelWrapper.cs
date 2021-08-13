@@ -86,6 +86,7 @@ namespace BluePrints.ViewModels
         public string SubJobRegex { get; set; }
         public string DisciplineRegex { get; set; }
         public bool IgnoreCostGroupCostType { get; set; }
+        public bool ValidateDesignDirectIndirect { get; set; }
         protected bool ignoreExoBudgetError { get; set; }
         #endregion
 
@@ -531,7 +532,7 @@ namespace BluePrints.ViewModels
         public IEnumerable<ExoSubJobProjection> CommitToExo(IEnumerable<ExoSubJobProjection> projections, bool updateBudgetIfExist = false)
         {
             List<ErrorMessage> errorMessages;
-            IEnumerable<ExoSubJobProjection> addedProjections = ExoMethods.CommitToExo(projections, MessageBoxService, masterJob, copyLine, loadPROJECT, USERCollection, localPrimeroUnitOfWork, bluePrintsEntitiesUnitOfWork, BulkColumnEditDialogService, out errorMessages, updateBudgetIfExist, IgnoreCostGroupCostType);
+            IEnumerable<ExoSubJobProjection> addedProjections = ExoMethods.CommitToExo(projections, MessageBoxService, masterJob, copyLine, loadPROJECT, USERCollection, localPrimeroUnitOfWork, bluePrintsEntitiesUnitOfWork, BulkColumnEditDialogService, out errorMessages, updateBudgetIfExist, IgnoreCostGroupCostType, ValidateDesignDirectIndirect);
 
             ShowErrorMessage("Errors", errorMessages);
             if (addedProjections.Count() > 0)

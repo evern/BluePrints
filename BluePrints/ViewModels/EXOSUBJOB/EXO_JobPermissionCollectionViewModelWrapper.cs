@@ -156,7 +156,7 @@ namespace BluePrints.ViewModels
         private bool uploadToExo()
         {
             List<ErrorMessage> errorMessages;
-            IEnumerable<ExoSubJobProjection> addedSubJobs = ExoMethods.CommitToExo(SelectedEntities, MessageBoxService, masterJob, copyLine, loadPROJECT, USERCollection, localPrimeroUnitOfWork, bluePrintsEntitiesUnitOfWork, BulkColumnEditDialogService, out errorMessages);
+            IEnumerable<ExoSubJobProjection> addedSubJobs = ExoMethods.CommitToExo(SelectedEntities, MessageBoxService, masterJob, copyLine, loadPROJECT, USERCollection, localPrimeroUnitOfWork, bluePrintsEntitiesUnitOfWork, BulkColumnEditDialogService, out errorMessages, false, false, true);
 
             if (errorMessages.Count > 0)
             {
