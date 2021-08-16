@@ -1768,15 +1768,15 @@ namespace BluePrints.Common.ViewModel.Utils
             if (PHASECollection == null)
                 return string.Empty;
 
-            if (PhaseType != null || ChargeType != null)
+            if (assignedPHASEKey != null)
+                phase = PHASECollection.FirstOrDefault(x => x.GUID == assignedPHASEKey);
+            else if(PhaseType != null || ChargeType != null)
             {
-                if(ChargeType == null)
+                if (ChargeType == null)
                     phase = PHASECollection.FirstOrDefault(x => x.PHASE_TYPE == PhaseType);
                 else
                     phase = PHASECollection.FirstOrDefault(x => x.PHASE_TYPE == PhaseType && x.CHARGE_TYPE == ChargeType);
             }
-            else if (assignedPHASEKey != null)
-                phase = PHASECollection.FirstOrDefault(x => x.GUID == assignedPHASEKey);
             else
                 return string.Empty;
 
