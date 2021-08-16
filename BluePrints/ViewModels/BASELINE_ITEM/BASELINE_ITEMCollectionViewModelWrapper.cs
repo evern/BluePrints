@@ -715,7 +715,7 @@ namespace BluePrints.ViewModels
                 phaseType = PhaseType.Design;
                 chargeType = ChargeType.Chargeable;
                 defaultPHASE = PHASECollection.FirstOrDefault(x => (x.PHASE_TYPE != null && x.PHASE_TYPE == PhaseType.Design) && (x.CHARGE_TYPE != null && x.CHARGE_TYPE == ChargeType.Chargeable));
-                if (defaultPHASE != null)
+                if (viewType != DeliverablesViewType.Both && defaultPHASE != null)
                     projection.Phase_Guid = defaultPHASE.GUID;
             }
             else if (viewType == DeliverablesViewType.Indirect)
@@ -890,7 +890,7 @@ namespace BluePrints.ViewModels
             }
             else if (fieldName == BindableBase.GetPropertyName(() => new BASELINE_ITEM().GUID_PHASE))
             {
-                if(newValue != null)
+                if(newValue != null) 
                 {
                     if (!isDocTypePhaseValid(entity.Entity.Entity.GUID_DOCTYPE, (Guid)newValue))
                     {

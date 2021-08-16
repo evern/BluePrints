@@ -23,8 +23,8 @@
     <UpdatePeriodically>false</UpdatePeriodically>
     <UpdateRequired>true</UpdateRequired>
     <MapFileExtensions>true</MapFileExtensions>
-    <MinimumRequiredVersion>1.0.7.79</MinimumRequiredVersion>
-    <ApplicationRevision>79</ApplicationRevision>
+    <MinimumRequiredVersion>1.0.7.86</MinimumRequiredVersion>
+    <ApplicationRevision>86</ApplicationRevision>
     <ApplicationVersion>1.0.7.%2a</ApplicationVersion>
     <UseApplicationTrust>false</UseApplicationTrust>
     <PublishWizardCompleted>true</PublishWizardCompleted>
@@ -111,7 +111,7 @@
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Perth_Release|AnyCPU' ">
     <AssemblyName>BluePrints</AssemblyName>
     <ApplicationIcon>Common\Images\Logo.ico</ApplicationIcon>
-    <PublishUrl>\\Fileserver\Data3\General\BLUEPRINTS\</PublishUrl>
+    <PublishUrl>\\Fileserver\Data3\General\BLUEPRINTS_DAVID\</PublishUrl>
     <OutputPath>bin\Perth_Release\</OutputPath>
     <DefineConstants>TRACE;RELEASE;PERTH</DefineConstants>
     <Optimize>true</Optimize>
