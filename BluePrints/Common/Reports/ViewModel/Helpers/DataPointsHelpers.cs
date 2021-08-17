@@ -1,6 +1,7 @@
 ﻿using BaseModel.Data.Helpers;
 using BluePrints.Common.Projections;
 using BluePrints.Common.Resources;
+using BluePrints.Data;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
@@ -394,6 +395,7 @@ namespace BluePrints.Common.ViewModel.Reporting
 
             return PeriodDataPointCollection;
         }
+
         public static IEnumerable<DataPoint> ConvertDbPlannedDataPointToReportingDataPoints(IEnumerable<Data.DataPoint> deliverablesDataPoints)
         {
             List<DataPoint> progressInfoConversion = new List<DataPoint>();
@@ -411,6 +413,23 @@ namespace BluePrints.Common.ViewModel.Reporting
                     ProgressDate = deliverablesDataPoint.UniversalPeriodEndDate,
                     IsFromP6 = deliverablesDataPoint.IsFromP6,
                     RemainingDuration = deliverablesDataPoint.RemainingDuration == null ? (decimal?)null : Convert.ToDecimal(deliverablesDataPoint.RemainingDuration)
+                });
+            }
+
+            return progressInfoConversion;
+        }
+
+        public static IEnumerable<DataPoint> ConvertDbDataPointToReportingDataPoints(IEnumerable<X_WBS_GROUPED_DATAPOINT> deliverablesDataPoints, bool isRemaining = false)
+        {
+            List<DataPoint> progressInfoConversion = new List<DataPoint>();
+            foreach (X_WBS_GROUPED_DATAPOINT deliverablesDataPoint in deliverablesDataPoints)
+            {
+                progressInfoConversion.Add(new DataPoint
+                {
+                    Costs = Convert.ToDecimal(deliverablesDataPoint.TotalCosts),
+                    Units = Convert.ToDecimal(deliverablesDataPoint.TotalUnits),
+                    ProgressDate = deliverablesDataPoint.UniversalPeriodEndDate,
+                    IsRemaining = isRemaining
                 });
             }
 

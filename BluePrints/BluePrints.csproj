@@ -1012,6 +1012,7 @@
     <Compile Include="EntityFramework\BluePrintsData\REGISTER_TQ_ATTACHMENT.cs" />
     <Compile Include="EntityFramework\BluePrintsData\X_REPORTABLES.cs" />
     <Compile Include="EntityFramework\BluePrintsData\X_EARNED_QUERY.cs" />
+    <Compile Include="EntityFramework\BluePrintsData\X_WBS_GROUPED_DATAPOINT.cs" />
     <Compile Include="EntityFramework\BluePrintsData\X_VARIATION_QUERY.cs" />
     <Compile Include="EntityFramework\BluePrintsData\JOBCOST_LINES_AUDIT.cs" />
     <Compile Include="EntityFramework\BluePrintsData\FORECAST_EAC.cs" />

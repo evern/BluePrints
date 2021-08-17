@@ -201,5 +201,20 @@ namespace BluePrints.Data
                 return earnedData;
             }
         }
+
+        public static List<X_WBS_GROUPED_DATAPOINT> GetWBSGroupedDataPointsSummary(string projectNumber, bool isPlanned, bool isLate, bool isCurrent, bool isForecast)
+        {
+            using (BluePrintsEntities dbContext = new BluePrintsEntities())
+            {
+                dbContext.Database.CommandTimeout = 5000;
+                SqlParameter projectNumberParameter = new SqlParameter("@PROJECT_NUMBER", projectNumber);
+                SqlParameter isPlannedParameter = new SqlParameter("@IS_PLANNED", isPlanned);
+                SqlParameter isLateParameter = new SqlParameter("@IS_LATE", isLate);
+                SqlParameter isCurrentParameter = new SqlParameter("@IS_CURRENT", isCurrent);
+                SqlParameter isForecastParameter = new SqlParameter("@IS_FORECAST", isForecast);
+                List<X_WBS_GROUPED_DATAPOINT> wbsGroupedDataPoints = dbContext.Database.SqlQuery<X_WBS_GROUPED_DATAPOINT>("X_WBS_GROUPED_DATAPOINT @PROJECT_NUMBER, @IS_PLANNED, @IS_LATE, @IS_CURRENT, @IS_FORECAST", projectNumberParameter, isPlannedParameter, isLateParameter, isCurrentParameter, isForecastParameter).ToList();
+                return wbsGroupedDataPoints;
+            }
+        }
     }
 }

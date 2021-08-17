@@ -169,15 +169,15 @@ namespace BluePrints.Common.ViewModel.Reporting
             {
                 if(isSummariseByWBS)
                 {
-                    List<DataPointsGroup> plannedDataPointsGroups = bluePrintDataContext.QueryDeliverablePlannedDataPointsGroupByProject(this.projectNumber, true, false, isForecast, false, isVariationSeparated);
-                    List<DataPointsGroup> plannedLateDataPointsGroups = new List<DataPointsGroup>();
+                    List<X_WBS_GROUPED_DATAPOINT> budgetedWBSDataPoints = BluePrintsContextHelper.GetWBSGroupedDataPointsSummary(projectNumber, true, false, false, isForecast);
+                    List<X_WBS_GROUPED_DATAPOINT> budgetedLateWBSDataPoints = new List<X_WBS_GROUPED_DATAPOINT>();
                     if(buildLate)
-                        plannedLateDataPointsGroups = bluePrintDataContext.QueryDeliverablePlannedDataPointsGroupByProject(this.projectNumber, true, true, isForecast, false, isVariationSeparated);
+                        budgetedLateWBSDataPoints = BluePrintsContextHelper.GetWBSGroupedDataPointsSummary(this.projectNumber, true, true, false, isForecast);
 
                     foreach (WBSReportable reportableObject in ((WBSSummary)SummaryStats).WBSReportables)
                     {
-                        reportableObject.AssignWBSReportableData(x => x.Budgeted.SetPlannedData, plannedDataPointsGroups, isVariationSeparated);
-                        reportableObject.AssignWBSReportableData(x => x.BudgetedLate.SetPlannedData, plannedLateDataPointsGroups, isVariationSeparated);
+                        reportableObject.AssignWBSReportableData(x => x.Budgeted.SetPlannedData, budgetedWBSDataPoints, isVariationSeparated);
+                        reportableObject.AssignWBSReportableData(x => x.BudgetedLate.SetPlannedData, budgetedLateWBSDataPoints, isVariationSeparated);
                     }
                 }
                 else
@@ -238,10 +238,10 @@ namespace BluePrints.Common.ViewModel.Reporting
             {
                 if(isSummariseByWBS)
                 {
-                    List<DataPointsGroup> currentDataPointsGroups = bluePrintDataContext.QueryDeliverablePlannedDataPointsGroupByProject(this.projectNumber, true, false, true, false, isVariationSeparated);
+                    List<X_WBS_GROUPED_DATAPOINT> budgetedWBSDataPoints = BluePrintsContextHelper.GetWBSGroupedDataPointsSummary(projectNumber, true, false, false, false);
                     foreach (WBSReportable reportableObject in ((WBSSummary)SummaryStats).WBSReportables)
                     {
-                        reportableObject.AssignWBSReportableData(x => x.Current.SetPlannedData, currentDataPointsGroups, isVariationSeparated);
+                        reportableObject.AssignWBSReportableData(x => x.Current.SetPlannedData, budgetedWBSDataPoints, isVariationSeparated);
                         LoadingScreenManager.Progress();
                     }
                 }
@@ -355,21 +355,16 @@ namespace BluePrints.Common.ViewModel.Reporting
             {
                 if(isSummariseByWBS)
                 {
-                    List<DataPointsGroup> remainingDataPointsGroup = bluePrintDataContext.QueryDeliverablePlannedDataPointsGroupByProject(this.projectNumber, false, false, false, isForecast, isVariationSeparated);
+                    List<X_WBS_GROUPED_DATAPOINT> remainingWBSDataPoints = BluePrintsContextHelper.GetWBSGroupedDataPointsSummary(projectNumber, false, false, false, isForecast);
                     foreach (WBSReportable reportableObject in ((WBSSummary)SummaryStats).WBSReportables)
                     {
-                        DataPointsGroup dataPointsGroup;
-                        if(isVariationSeparated)
-                            dataPointsGroup = remainingDataPointsGroup.FirstOrDefault(x => x.SubJobCode == reportableObject.SUBJOB_CODE && x.DisciplineCode == reportableObject.DISCIPLINE_CODE && x.CommodityCode == reportableObject.COMMODITY_CODE && x.VariationCode == reportableObject.VARIATION_CODE);
+                        IEnumerable<X_WBS_GROUPED_DATAPOINT> findRemainingWBSDataPoints;
+                        if (isVariationSeparated)
+                            findRemainingWBSDataPoints = remainingWBSDataPoints.Where(x => x.SubJobCode == reportableObject.SUBJOB_CODE && x.DisciplineCode == reportableObject.DISCIPLINE_CODE && x.CommodityCode == reportableObject.COMMODITY_CODE && x.VariationCode == reportableObject.VARIATION_CODE);
                         else
-                            dataPointsGroup = remainingDataPointsGroup.FirstOrDefault(x => x.SubJobCode == reportableObject.SUBJOB_CODE && x.DisciplineCode == reportableObject.DISCIPLINE_CODE && x.CommodityCode == reportableObject.COMMODITY_CODE);
+                            findRemainingWBSDataPoints = remainingWBSDataPoints.Where(x => x.SubJobCode == reportableObject.SUBJOB_CODE && x.DisciplineCode == reportableObject.DISCIPLINE_CODE && x.CommodityCode == reportableObject.COMMODITY_CODE);
 
-                        //null is checked in SetRemainingData and earned data needs to be set nevertheless
-                        if (dataPointsGroup != null)
-                            reportableObject.Remaining.SetRemainingData(dataPointsGroup.DataPoints, reportableObject.Earned.GetData());
-                        else
-                            reportableObject.Remaining.SetRemainingData(null, reportableObject.Earned.GetData());
-
+                        reportableObject.Remaining.SetRemainingData(findRemainingWBSDataPoints, reportableObject.Earned.GetData());
                         LoadingScreenManager.Progress();
                     }
                 }

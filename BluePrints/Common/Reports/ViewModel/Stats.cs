@@ -157,6 +157,14 @@ namespace BluePrints.Common.ViewModel.Reporting
             this.StatsBuilt = true;
         }
 
+        public void SetPlannedData(IEnumerable<X_WBS_GROUPED_DATAPOINT> rawStoredProcedureDataPoints)
+        {
+            List<DataPoint> convertedDataPoints = DataPointsHelpers.ConvertDbDataPointToReportingDataPoints(rawStoredProcedureDataPoints).ToList();
+
+            this.rawDataPoints = convertedDataPoints;
+            this.StatsBuilt = true;
+        }
+
         public void SetRemainingData(IEnumerable<Data.DataPoint> rawStoredProcedureDataPoints, IEnumerable<DataPoint> earnedDataPoints)
         {
             List<DataPoint> convertedDataPoints;
@@ -171,6 +179,24 @@ namespace BluePrints.Common.ViewModel.Reporting
             if (convertedDataPoints.All(x => x.IsFromP6))
                 SetFromP6();
             
+            this.rawDataPoints = convertedDataPoints;
+            this.StatsBuilt = true;
+        }
+
+        public void SetRemainingData(IEnumerable<X_WBS_GROUPED_DATAPOINT> dbDataPoints, IEnumerable<DataPoint> earnedDataPoints)
+        {
+            List<DataPoint> convertedDataPoints;
+            if (dbDataPoints == null || dbDataPoints.Count() == 0)
+                convertedDataPoints = new List<DataPoint>();
+            else
+                convertedDataPoints = DataPointsHelpers.ConvertDbDataPointToReportingDataPoints(dbDataPoints, true).ToList();
+
+            if (earnedDataPoints != null)
+                convertedDataPoints.AddRange(earnedDataPoints);
+
+            if (convertedDataPoints.All(x => x.IsFromP6))
+                SetFromP6();
+
             this.rawDataPoints = convertedDataPoints;
             this.StatsBuilt = true;
         }

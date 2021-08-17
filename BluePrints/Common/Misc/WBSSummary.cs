@@ -85,6 +85,15 @@ namespace BluePrints.Common.Misc
                 setProgressStatsFunc(this)(dataPointsGroup.DataPoints);
         }
 
+        public void AssignWBSReportableData(Func<WBSReportable, Action<IEnumerable<X_WBS_GROUPED_DATAPOINT>>> setProgressStatsFunc, IEnumerable<X_WBS_GROUPED_DATAPOINT> dataPointsGroups, bool isVariationSeparated)
+        {
+            IEnumerable<X_WBS_GROUPED_DATAPOINT> filterDataPointsGroups = dataPointsGroups.Where(x => x.SubJobCode == this.SUBJOB_CODE && x.DisciplineCode == this.DISCIPLINE_CODE && x.CommodityCode == this.COMMODITY_CODE);
+            if (isVariationSeparated)
+                filterDataPointsGroups = filterDataPointsGroups.Where(x => x.VariationCode == this.VARIATION_CODE);
+
+            setProgressStatsFunc(this)(filterDataPointsGroups);
+        }
+
         public void AssignWBSReportableData(Func<WBSReportable, Action<IEnumerable<ExoDataPoint>>> setProgressStatsFunc, IEnumerable<ExoDataPointsGroup> dataPointsGroups, bool isVariationSeparated)
         {
             IEnumerable<ExoDataPointsGroup> filterDataPointsGroups = dataPointsGroups.Where(x => x.SubJobCode == this.SUBJOB_CODE && x.DisciplineCode == this.DISCIPLINE_CODE && x.CommodityCode == this.COMMODITY_CODE);
