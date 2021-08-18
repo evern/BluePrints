@@ -41,9 +41,9 @@ namespace BluePrints.BluePrintsEntitiesDataModel
             get { return GetRepository(x => x.Set<CONSTRUCTION_CONFIG>(), (CONSTRUCTION_CONFIG x) => x.GUID); }
         }
 
-        IRepository<STOCK_GROUP, Guid> IBluePrintsEntitiesUnitOfWork.STOCK_GROUPS
+        IRepository<CONSTRUCTION_STAGE, Guid> IBluePrintsEntitiesUnitOfWork.CONSTRUCTION_STAGES
         {
-            get { return GetRepository(x => x.Set<STOCK_GROUP>(), (STOCK_GROUP x) => x.GUID); }
+            get { return GetRepository(x => x.Set<CONSTRUCTION_STAGE>(), (CONSTRUCTION_STAGE x) => x.GUID); }
         }
 
         IRepository<COMMODITY_CODE, Guid> IBluePrintsEntitiesUnitOfWork.COMMODITY_CODES
@@ -119,6 +119,11 @@ namespace BluePrints.BluePrintsEntitiesDataModel
         IRepository<FORECAST, Guid> IBluePrintsEntitiesUnitOfWork.FORECASTS
         {
             get { return GetRepository(x => x.Set<FORECAST>(), (FORECAST x) => x.GUID); }
+        }
+
+        IRepository<FORECAST_CACHE, Guid> IBluePrintsEntitiesUnitOfWork.FORECAST_CACHES
+        {
+            get { return GetRepository(x => x.Set<FORECAST_CACHE>(), (FORECAST_CACHE x) => x.GUID); }
         }
 
         IRepository<FORECAST_EAC, Guid> IBluePrintsEntitiesUnitOfWork.FORECAST_EACS
@@ -381,11 +386,6 @@ namespace BluePrints.BluePrintsEntitiesDataModel
             get { return GetRepository(x => x.Set<SETTINGS_GLOBAL>(), (SETTINGS_GLOBAL x) => x.GUID); }
         }
 
-        IRepository<STOCK_CODE, Guid> IBluePrintsEntitiesUnitOfWork.STOCK_CODES
-        {
-            get { return GetRepository(x => x.Set<STOCK_CODE>(), (STOCK_CODE x) => x.GUID); }
-        }
-
         IRepository<TENDER_PROFILE, Guid> IBluePrintsEntitiesUnitOfWork.TENDER_PROFILES
         {
             get { return GetRepository(x => x.Set<TENDER_PROFILE>(), (TENDER_PROFILE x) => x.GUID); }
@@ -499,6 +499,11 @@ namespace BluePrints.BluePrintsEntitiesDataModel
         IRepository<X_VARIATION_QUERY, Guid> IBluePrintsEntitiesUnitOfWork.X_VARIATION_QUERY
         {
             get { return GetRepository(x => x.Set<X_VARIATION_QUERY>(), (X_VARIATION_QUERY x) => x.GUID); }
+        }
+
+        IRepository<X_EARNED_QUERY, Guid> IBluePrintsEntitiesUnitOfWork.X_EARNED_QUERY
+        {
+            get { return GetRepository(x => x.Set<X_EARNED_QUERY>(), (X_EARNED_QUERY x) => x.DummyId); }
         }
     }
 }

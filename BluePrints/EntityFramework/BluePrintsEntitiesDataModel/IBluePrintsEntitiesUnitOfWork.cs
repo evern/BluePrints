@@ -38,9 +38,9 @@ namespace BluePrints.BluePrintsEntitiesDataModel
         IRepository<CONSTRUCTION_CONFIG, Guid> CONSTRUCTION_CONFIGS { get; }
 
         /// <summary>
-        /// The STOCK_GROUP entities repository.
+        /// The CONSTRUCTION_STAGE entities repository.
         /// </summary>
-        IRepository<STOCK_GROUP, Guid> STOCK_GROUPS { get; }
+        IRepository<CONSTRUCTION_STAGE, Guid> CONSTRUCTION_STAGES { get; }
 
         /// <summary>
         /// The DEPARTMENT entities repository.
@@ -111,6 +111,11 @@ namespace BluePrints.BluePrintsEntitiesDataModel
         /// The FORECAST entities repository.
         /// </summary>
         IRepository<FORECAST, Guid> FORECASTS { get; }
+
+        /// <summary>
+        /// The FORECAST_CACHE entities repository.
+        /// </summary>
+        IRepository<FORECAST_CACHE, Guid> FORECAST_CACHES { get; }
 
         /// <summary>
         /// The FORECAST_EAC entities repository.
@@ -373,11 +378,6 @@ namespace BluePrints.BluePrintsEntitiesDataModel
         IRepository<SETTINGS_GLOBAL, Guid> SETTINGS_GLOBALS { get; }
 
         /// <summary>
-        /// The STOCK_CODES entities repository.
-        /// </summary>
-        IRepository<STOCK_CODE, Guid> STOCK_CODES { get; }
-
-        /// <summary>
         /// The TENDER_PROFILE entities repository.
         /// </summary>
         IRepository<TENDER_PROFILE, Guid> TENDER_PROFILES { get; }
@@ -496,5 +496,10 @@ namespace BluePrints.BluePrintsEntitiesDataModel
         /// The X_VARIATION_QUERY entities repository.
         /// </summary>
         IRepository<X_VARIATION_QUERY, Guid> X_VARIATION_QUERY { get; }
+
+        /// <summary>
+        /// The X_EARNED_QUERY entities repository.
+        /// </summary>
+        IRepository<X_EARNED_QUERY, Guid> X_EARNED_QUERY { get; }
     }
 }

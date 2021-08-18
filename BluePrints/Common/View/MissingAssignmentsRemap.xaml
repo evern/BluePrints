@@ -13,7 +13,7 @@
         <dxlc:LayoutGroup Name="LayoutGroupMain" View="Group" Header="Edit Value" Orientation="Vertical">
             <dxlc:LayoutGroup Name="LayoutGroupContent" View="Group" Orientation="Horizontal">
                 <dxlc:LayoutItem Height="600">
-                    <custom:GridControlEx x:Name="GridControl" ItemsSource="{Binding SourceObjects}" SelectionMode="Row">
+                    <dxg:GridControl x:Name="GridControl" ItemsSource="{Binding SourceObjects}" SelectionMode="Row">
                         <dxg:GridControl.Columns>
                             <dxg:GridColumn FieldName="P6_OLD_ACTIVITY" ReadOnly="True" />
                             <dxg:GridColumn FieldName="OLD_ACTIVITY_DESCRIPTION" ReadOnly="True" />
@@ -31,7 +31,7 @@
                                 </dxmvvm:Interaction.Behaviors>
                             </dxg:TableView>
                         </dxg:GridControl.View>
-                    </custom:GridControlEx>
+                    </dxg:GridControl>
                 </dxlc:LayoutItem>
             </dxlc:LayoutGroup>
             <dxlc:LayoutGroup Name="LayoutGroupSelection" View="Group" Orientation="Horizontal">

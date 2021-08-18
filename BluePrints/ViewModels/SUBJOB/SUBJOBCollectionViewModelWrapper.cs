@@ -56,6 +56,9 @@ namespace BluePrints.ViewModels
         {
             var PROJECTParameter = (EntitiesParameter<PROJECT>) parameter;
             loadPROJECT = PROJECTParameter.GetEntity();
+
+            //skip message so that deliverableRates won't be cleared on entity change
+            AlwaysSkipMessage = true;
         }
 
         protected override void addEntitiesLoader()

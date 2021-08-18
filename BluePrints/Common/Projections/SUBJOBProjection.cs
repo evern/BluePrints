@@ -65,9 +65,9 @@ namespace BluePrints.Common.Projections
 
         public decimal Budget_Units => Reportables == null ? 0 : Reportables.Sum(x => x.Budget_Units);
 
-        public decimal Budget_Quantity => 0;
+        public decimal Budget_Quantity => Budget_Units / UnitsPerQuantity;
 
-        public decimal Total_Quantity => 0;
+        public decimal Total_Quantity => Total_Units / UnitsPerQuantity;
 
         public decimal Budget_ItemRate => Reportables == null ? 0 : Reportables.Sum(x => x.Budget_ItemRate);
 
@@ -156,6 +156,12 @@ namespace BluePrints.Common.Projections
         public decimal Remaining_Units_ToDate => Total_Units - Earned_Units_ToDate;
 
         public List<VariationAdjustment> ApprovedVariations => Reportables == null ? new List<VariationAdjustment>() : Reportables.SelectMany(x => x.ApprovedVariations).ToList();
+
+        public decimal UnitsPerQuantity => 1;
+
+        public string UOM => "h";
+
+        public decimal Variation_Quantity => Variation_Units / UnitsPerQuantity;
 
         public void AppendProgressItem(PROGRESS_ITEM currentProgress)
         {

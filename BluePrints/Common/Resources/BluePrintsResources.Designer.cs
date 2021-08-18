@@ -268,6 +268,15 @@ namespace BluePrints.Common.Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to 1.
+        /// </summary>
+        internal static string Default_Productivity {
+            get {
+                return ResourceManager.GetString("Default_Productivity", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to 3.
         /// </summary>
         internal static string Default_Register_Numeric_Length {
@@ -435,6 +444,15 @@ namespace BluePrints.Common.Resources {
         internal static string Entity_New {
             get {
                 return ResourceManager.GetString("Entity_New", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to EH.
+        /// </summary>
+        internal static string EquipmentHireStockCodeInitials {
+            get {
+                return ResourceManager.GetString("EquipmentHireStockCodeInitials", resourceCulture);
             }
         }
         

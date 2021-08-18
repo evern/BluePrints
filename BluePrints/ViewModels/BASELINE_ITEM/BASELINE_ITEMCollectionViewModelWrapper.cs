@@ -578,7 +578,7 @@ namespace BluePrints.ViewModels
 
                 errorMessages.Add(new ErrorMessage(projection.Deliverable_Name, "Variations exists: " + variations));
             }
-            else if (projection.PROGRESS_ITEMS.Count > 0 && projection.PROGRESS_ITEMS.Sum(x => x.EARNED_UNITS) > 0)
+            else if (projection.PROGRESS_ITEMS.Count > 0 && projection.PROGRESS_ITEMS.Sum(x => x.EarnedUnits) > 0)
                 errorMessages.Add(new ErrorMessage(projection.Deliverable_Name, "Has been progressed"));
 
             return OperationInterceptMode.Continue;

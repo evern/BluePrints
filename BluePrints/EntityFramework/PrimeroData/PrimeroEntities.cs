@@ -393,6 +393,7 @@ namespace BluePrints.PrimeroData
         public virtual DbSet<X_JOB_TRANSACTIONS_DETAIL_SeqNo> X_JOB_TRANSACTIONS_DETAIL_SeqNo { get; set; }
         public virtual DbSet<X_JOB_TIMESHEETS> X_JOB_TIMESHEETS { get; set; }
 
+
         protected override void OnModelCreating(DbModelBuilder modelBuilder)
         {
             Database.SetInitializer<PrimeroEntities>(null);

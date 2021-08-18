@@ -848,15 +848,15 @@ namespace BluePrints.ViewModels
                                     {
                                         if (totalUnitsToReduce > 0)
                                         {
-                                            if (deliverablePROGRESS.EARNED_UNITS >= totalUnitsToReduce)
+                                            if (deliverablePROGRESS.EarnedUnits >= totalUnitsToReduce)
                                             {
-                                                deliverablePROGRESS.EARNED_UNITS -= totalUnitsToReduce;
+                                                deliverablePROGRESS.EarnedUnits -= totalUnitsToReduce;
                                                 totalUnitsToReduce = 0;
                                             }
                                             else
                                             {
-                                                totalUnitsToReduce -= deliverablePROGRESS.EARNED_UNITS;
-                                                deliverablePROGRESS.EARNED_UNITS = 0;
+                                                totalUnitsToReduce -= deliverablePROGRESS.EarnedUnits;
+                                                deliverablePROGRESS.EarnedUnits = 0;
                                             }
                                         }
                                         else
@@ -1169,7 +1169,7 @@ namespace BluePrints.ViewModels
                                    select new { PROGRESS_ITEM };
 
             var earnedUnitsItems = earnedUnitsQuery.ToList();
-            return earnedUnitsItems.Count == 0 ? 0 : earnedUnitsItems.Sum(x => x.PROGRESS_ITEM.EARNED_UNITS);
+            return earnedUnitsItems.Count == 0 ? 0 : earnedUnitsItems.Sum(x => x.PROGRESS_ITEM.EarnedUnits);
         }
 
         //revise all DC units to comply with old standards of using DC_HOURS for PowerBi

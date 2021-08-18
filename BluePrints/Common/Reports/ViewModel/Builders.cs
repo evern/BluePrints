@@ -35,7 +35,7 @@ namespace BluePrints.Common.ViewModel.Reporting
             this.projectSUBJOBS = SUBJOBS;
         }
 
-        public void BuildExoDataPoints(IPrimeroEntitiesUnitOfWork primeroUOW, ProjectSummaryStats summaryObject, bool forceRetrieveAllJobs = false, bool forceRetrieveAllUnits = false, bool forceRetrieveAllPOs = false, bool showLoadingScreen = false, bool timeOnly = false)
+        public void BuildExoDataPoints(IPrimeroEntitiesUnitOfWork primeroUOW, ProjectSummaryStats summaryObject, DashboardEXOQueryType dashboardEXOQueryType = DashboardEXOQueryType.All, bool isGroupByWBS = false, bool showLoadingScreen = false, bool forceRetrieveAllJobs = false, bool forceRetrieveAllUnits = false, bool forceRetrieveAllPOs = false)
         {
             try
             {
@@ -67,22 +67,42 @@ namespace BluePrints.Common.ViewModel.Reporting
                 List<DateTime> alignedDataDates = ChronologicalHelpers.GenerateAlignedDatesCollection(FirstAlignedDataDate, DateTime.Now.AddYears(1), ReportingInterval);
                 List<SUBJOB> missingSUBJOBS = new List<SUBJOB>();
 
-                burnedDataPoints = BluePrintsDataUtils.GetBurned(primeroUOW, projectNumber, actualsDataDate, qualifiedSubjobs, missingSUBJOBS, CurrencyConversion, showLoadingScreen);
-                DateTime previousPODataDate = new DateTime(poDataDate.Year, poDataDate.Month, 1);
-                previousPODataDate = previousPODataDate.AddDays(-1);
-                if(!timeOnly)
-                {
-                    materialDataPoints = BluePrintsDataUtils.GetMaterials(primeroUOW, projectNumber, actualsDataDate, null, CurrencyConversion, showLoadingScreen);
-                    poDataPoints = BluePrintsDataUtils.GetEXOPO(primeroUOW, projectNumber, poDataDate, null, showLoadingScreen);
-                    previousPODataPoints = BluePrintsDataUtils.GetEXOPO(primeroUOW, projectNumber, previousPODataDate, null, showLoadingScreen);
-                }
+                if(isGroupByWBS)
+                    burnedDataPoints = BluePrintsDataUtils.GetTimeByWBS(primeroUOW, projectNumber, actualsDataDate, qualifiedSubjobs, missingSUBJOBS, CurrencyConversion, showLoadingScreen);
                 else
                 {
+                    burnedDataPoints = BluePrintsDataUtils.GetBurned(primeroUOW, projectNumber, actualsDataDate, qualifiedSubjobs, missingSUBJOBS, CurrencyConversion, showLoadingScreen);
                     List<ExoDataPoint> burnedDataPointsWithNarrative = burnedDataPoints.Where(x => x.Narrative != null).ToList();
-                    foreach(IReportable reportable in summaryObject.Reportables)
+                    foreach (IReportable reportable in summaryObject.Reportables)
                     {
                         List<ExoDataPoint> reportableBurnedData = burnedDataPointsWithNarrative.Where(x => x.Narrative.ToUpper() == reportable.Deliverable_Name).ToList();
                         reportable.Stats.Burned.SetData(reportableBurnedData);
+                    }
+                }
+
+                DateTime previousPODataDate = new DateTime(poDataDate.Year, poDataDate.Month, 1);
+                previousPODataDate = previousPODataDate.AddDays(-1);
+                //retrieve material and possibly PO
+                if(dashboardEXOQueryType != DashboardEXOQueryType.TimeOnly)
+                {
+                    if (isGroupByWBS)
+                        materialDataPoints = BluePrintsDataUtils.GetMaterialsByWBS(primeroUOW, projectNumber, actualsDataDate, null, CurrencyConversion, showLoadingScreen);
+                    else
+                        materialDataPoints = BluePrintsDataUtils.GetMaterials(primeroUOW, projectNumber, actualsDataDate, null, CurrencyConversion, showLoadingScreen);
+
+                    //only retrieve PO if all is specified
+                    if(dashboardEXOQueryType == DashboardEXOQueryType.All)
+                    {
+                        if (isGroupByWBS)
+                        {
+                            poDataPoints = BluePrintsDataUtils.GetEXOPOByWBS(primeroUOW, projectNumber, poDataDate, null, showLoadingScreen);
+                            previousPODataPoints = BluePrintsDataUtils.GetEXOPOByWBS(primeroUOW, projectNumber, previousPODataDate, null, showLoadingScreen);
+                        }
+                        else
+                        {
+                            poDataPoints = BluePrintsDataUtils.GetEXOPO(primeroUOW, projectNumber, poDataDate, null, showLoadingScreen);
+                            previousPODataPoints = BluePrintsDataUtils.GetEXOPO(primeroUOW, projectNumber, previousPODataDate, null, showLoadingScreen);
+                        }
                     }
                 }
 
@@ -104,9 +124,14 @@ namespace BluePrints.Common.ViewModel.Reporting
                 projectSummaryStats.PO.SetData(poDataPoints);
                 projectSummaryStats.PreviousPO.SetData(previousPODataPoints);
 
-                projectSummaryStats.RemainingActual.SetRemainingActualData(projectSummaryStats.Reportables, projectSummaryStats.Burned.GetData());
 
-                if(showLoadingScreen)
+                if(!isGroupByWBS)
+                    projectSummaryStats.RemainingActual.SetRemainingActualData(projectSummaryStats.Reportables, projectSummaryStats.Burned.GetData());
+                //else
+                //burned isn't grouped here and will only be summarised in ProjectDashboardSummaryBuilder
+
+
+                if (showLoadingScreen)
                     LoadingScreenManager.CloseLoadingScreen();
             }
             catch (Exception e)
@@ -161,20 +186,20 @@ namespace BluePrints.Common.ViewModel.Reporting
 
 
             //adjust set earned data should only be performed at this level (lowest level), summary dashboard entity will just use set data
-            reportable.Stats.Earned.SetData(new ObservableCollection<DataPoint>(progressItemEarnedDataPoints));
-            reportable.Stats.TenderEarned.SetData(new ObservableCollection<DataPoint>(progressItemEarnedDataPoints));
+            reportable.Stats.Earned.SetData(progressItemEarnedDataPoints);
+            reportable.Stats.TenderEarned.SetData(progressItemEarnedDataPoints);
         }
 
         public void BuildPlannedDataPointsFromQuery(IReportable reportable, decimal weightingPortion = 1, bool isForecast = false)
         {
             using (BluePrintsEntities bluePrintDataContext = new BluePrintsEntities())
             {
-                List<StoredProcedure_PlannedDataPoint> plannedDataPoints = bluePrintDataContext.QueryDeliverablePlannedDataPoints(reportable.GUID, isForecast);
+                List<Data.DataPoint> plannedDataPoints = bluePrintDataContext.QueryDeliverablePlannedDataPoints(reportable.GUID, isForecast);
                 Double weightingPortionDbl = Convert.ToDouble(weightingPortion);
-                foreach (StoredProcedure_PlannedDataPoint plannedDataPoint in plannedDataPoints)
+                foreach (Data.DataPoint plannedDataPoint in plannedDataPoints)
                 {
-                    plannedDataPoint.PeriodPlannedUnits *= weightingPortionDbl;
-                    plannedDataPoint.PeriodPlannedPrice *= weightingPortionDbl;
+                    plannedDataPoint.PeriodUnits *= weightingPortionDbl;
+                    plannedDataPoint.PeriodPrice *= weightingPortionDbl;
                 }
 
                 reportable.Stats.Budgeted.SetPlannedData(plannedDataPoints);
@@ -186,12 +211,12 @@ namespace BluePrints.Common.ViewModel.Reporting
         {
             using (BluePrintsEntities bluePrintDataContext = new BluePrintsEntities())
             {
-                List<StoredProcedure_RemainingDataPoint> RemainingDataPoints = bluePrintDataContext.QueryDeliverableRemainingDataPoints(reportable.GUID, isForecast);
+                List<Data.DataPoint> RemainingDataPoints = bluePrintDataContext.QueryDeliverableRemainingDataPoints(reportable.GUID, isForecast);
                 Double weightingPortionDbl = Convert.ToDouble(weightingPortion);
-                foreach (StoredProcedure_RemainingDataPoint remainingDataPoint in RemainingDataPoints)
+                foreach (Data.DataPoint remainingDataPoint in RemainingDataPoints)
                 {
-                    remainingDataPoint.PeriodRemainingUnits *= weightingPortionDbl;
-                    remainingDataPoint.PeriodRemainingPrice *= weightingPortionDbl;
+                    remainingDataPoint.PeriodUnits *= weightingPortionDbl;
+                    remainingDataPoint.PeriodPrice *= weightingPortionDbl;
                 }
 
                 reportable.Stats.Remaining.SetRemainingData(RemainingDataPoints, reportable.Stats.Earned.GetData());

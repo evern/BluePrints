@@ -118,7 +118,7 @@
                                     <dxe:ComboBoxEditSettings AutoComplete="True" DisplayMember="NAME" IsTextEditable="True" ItemsSource="{Binding DISCIPLINECollection}" NullValueButtonPlacement="EditBox" ValueMember="MappingEntityKey" />
                                 </dxg:GridColumn.EditSettings>
                             </dxg:GridColumn>
-                            <dxg:GridColumn FieldName="GUID_DEPARTMENT" Header="Department" HeaderToolTip="Which department the current rate will be applied to">
+                            <dxg:GridColumn FieldName="GUID_DEPARTMENT" Header="Department" Visible="{Binding IsConstructionPhase, Converter={dxmvvm:BooleanNegationConverter}}" HeaderToolTip="Which department the current rate will be applied to">
                                 <dxg:GridColumn.EditSettings>
                                     <dxe:ComboBoxEditSettings AutoComplete="True" DisplayMember="NAME" IsTextEditable="True" ItemsSource="{Binding DEPARTMENTCollection}" NullValueButtonPlacement="EditBox" ValueMember="MappingEntityKey" />
                                 </dxg:GridColumn.EditSettings>
