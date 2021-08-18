@@ -33,10 +33,12 @@ namespace BluePrints.Data
         public virtual DbSet<DELIVERABLES_STATUS> DELIVERABLES_STATUS { get; set; }
         public virtual DbSet<DEPARTMENT> DEPARTMENT { get; set; }
         public virtual DbSet<DISCIPLINE> DISCIPLINE { get; set; }
+        public virtual DbSet<DISCIPLINE_DESC> DISCIPLINE_DESC { get; set; }
         public virtual DbSet<DOCTYPE> DOCTYPE { get; set; }
         public virtual DbSet<ESTIMATE> ESTIMATE { get; set; }
         public virtual DbSet<ESTIMATE_ITEM> ESTIMATE_ITEM { get; set; }
         public virtual DbSet<FORECAST_PO> FORECAST_PO { get; set; }
+        public virtual DbSet<FORECAST_CACHE> FORECAST_CACHE { get; set; }
         public virtual DbSet<FORECAST_JOB> FORECAST_JOB { get; set; }
         public virtual DbSet<FORECAST_JOB_SETTING> FORECAST_JOB_SETTING { get; set; }
         public virtual DbSet<FORECAST> FORECAST { get; set; }
@@ -98,6 +100,7 @@ namespace BluePrints.Data
         public virtual DbSet<VARIATION_CONSTRUCTION_ITEM> VARIATION_CONSTRUCTION_ITEM { get; set; }
         public virtual DbSet<VARIATION_CONSTRUCTION_IMPACT> VARIATION_CONSTRUCTION_IMPACT { get; set; }
         public virtual DbSet<X_VARIATION_QUERY> X_VARIATION_QUERY { get; set; }
+        public virtual DbSet<X_EARNED_QUERY> X_EARNED_QUERY { get; set; }
 
         protected override void OnModelCreating(DbModelBuilder modelBuilder)
         {
@@ -560,7 +563,19 @@ namespace BluePrints.Data
                 .HasForeignKey(e => e.GUID_PROJECT);
 
             modelBuilder.Entity<PROJECT>()
+                .HasMany(e => e.DISCIPLINE_DESC)
+                .WithRequired(e => e.PROJECT)
+                .HasForeignKey(e => e.GUID_PROJECT)
+                .WillCascadeOnDelete(false);
+
+            modelBuilder.Entity<PROJECT>()
                 .HasMany(e => e.ESTIMATE)
+                .WithRequired(e => e.PROJECT)
+                .HasForeignKey(e => e.GUID_PROJECT)
+                .WillCascadeOnDelete(false);
+
+            modelBuilder.Entity<PROJECT>()
+                .HasMany(e => e.FORECAST_CACHE)
                 .WithRequired(e => e.PROJECT)
                 .HasForeignKey(e => e.GUID_PROJECT)
                 .WillCascadeOnDelete(false);
@@ -1043,6 +1058,10 @@ namespace BluePrints.Data
                 .HasMany(e => e.ESTIMATE_ITEM)
                 .WithOptional(e => e.WORKPACK)
                 .HasForeignKey(e => e.GUID_WORKPACK);
+
+            modelBuilder.Entity<X_EARNED_QUERY>()
+                .Property(e => e.EARNED_UNITS)
+                .HasPrecision(18, 7);
         }
     }
 

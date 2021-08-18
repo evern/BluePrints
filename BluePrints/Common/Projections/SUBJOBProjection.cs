@@ -202,26 +202,26 @@ namespace BluePrints.Common.Projections
         {
             throw new NotImplementedException();
         }
+
+        #region View Components - Used in SUBJOBCollectionView to allow null value to be detected in template selector to show progress bar
+        public decimal? ViewBudget_Units => Reportables == null ? (decimal?)null : Budget_Units;
+
+        public decimal? ViewTotal_Units => Reportables == null ? (decimal?)null : Total_Units;
+
+        public decimal? ViewBudget_Costs => Reportables == null ? (decimal?)null : Budget_Costs;
+
+        public decimal? ViewTotal_Costs => Reportables == null ? (decimal?)null : Total_Costs;
+        #endregion
     }
 
     public static class SUBJOBProjectionQueries
     {
-        public static IQueryable<SUBJOBProjection> IDeliverable_Rates_Group_Transformation(
-            IQueryable<SUBJOB> SUBJOBS, IEnumerable<BASELINE_ITEM> BASELINE_ITEMS, PROJECT PROJECT, PROGRESS PROGRESS, BASELINE BASELINE,
-            IEnumerable<PROGRESS_ITEM> PROGRESS_ITEMS, IEnumerable<RATE> RATES, IEnumerable<VARIATION> VARIATIONS)
+        public static IQueryable<SUBJOBProjection> IDeliverable_Rates_Group_Transformation(IQueryable<SUBJOB> SUBJOBS)
         {
-            IQueryable<BASELINE_ITEMProgress> baseline_rateProjection;
-            if (PROGRESS == null)
-                baseline_rateProjection = new List<BASELINE_ITEMProgress>().AsQueryable();
-            else
-                baseline_rateProjection = ProgressQueries.OffsiteDirectProgressItemTransformation(BASELINE_ITEMS.AsQueryable(), PROJECT, PROGRESS, RATES, PROGRESS_ITEMS, VARIATIONS);
-
-            var reportingDate = PROGRESS == null ? new DateTime() : PROGRESS.DATA_DATE;
             return
                 SUBJOBS.ToArray().Select(x => new SUBJOBProjection()
                 {
-                    Entity = x,
-                    DeliverableRates = baseline_rateProjection.Where(rateProjection => rateProjection.Subjob_Guid == x.GUID)
+                    Entity = x
                 }).AsQueryable();
         }
     }

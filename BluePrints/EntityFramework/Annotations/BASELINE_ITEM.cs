@@ -144,7 +144,7 @@ namespace BluePrints.Data
                 if (GUID_DOCTYPE == null)
                     return true;
 
-                DOCTYPE findDOCTYPE = DOC_TYPES.FirstOrDefault(x => x.GUID == GUID_DOCTYPE);
+                DOCTYPE findDOCTYPE = DOCTYPE == null ? DOC_TYPES.FirstOrDefault(x => x.GUID == GUID_DOCTYPE) : DOCTYPE;
                 if (findDOCTYPE == null)
                     return true;
 
@@ -189,7 +189,7 @@ namespace BluePrints.Data
 
         [NotMapped]
         private List<DOCTYPE> validDocTypesByCommodityCode { get; set; }
-        private List<DOCTYPE> validDocTypesByDeliverableTypeAndCommodityCode { get; set; }
+        private HashSet<string> uniqueValidCommodityCode { get; set; }
         public IEnumerable<DOCTYPE> ValidDOCTYPES
         {
             get
@@ -199,9 +199,12 @@ namespace BluePrints.Data
 
                 if (GUID_DISCIPLINE != null)
                 {
-                    List<string> validCommodityCodeByDiscipline = COMMODITY_CODES.Where(x => x.GUID_DISCIPLINE == this.GUID_DISCIPLINE || x.GUID_DISCIPLINE == null).Select(x => x.CODE).ToList();
-                    HashSet<string> uniqueValidCommodityCode = new HashSet<string>(validCommodityCodeByDiscipline);
-                    validDocTypesByCommodityCode = DOC_TYPES.Where(x => uniqueValidCommodityCode.Any(y => y == x.CODE)).ToList();
+                    if(validDocTypesByCommodityCode == null || uniqueValidCommodityCode == null)
+                    {
+                        List<string> validCommodityCodeByDiscipline = COMMODITY_CODES.Where(x => x.GUID_DISCIPLINE == this.GUID_DISCIPLINE || x.GUID_DISCIPLINE == null).Select(x => x.CODE).ToList();
+                        uniqueValidCommodityCode = new HashSet<string>(validCommodityCodeByDiscipline);
+                        validDocTypesByCommodityCode = DOC_TYPES.Where(x => uniqueValidCommodityCode.Any(y => y == x.CODE)).ToList();
+                    }
                 }
 
                 return DOC_TYPES;
@@ -210,7 +213,8 @@ namespace BluePrints.Data
 
         public void ResetValidDocTypes()
         {
-            validDocTypesByDeliverableTypeAndCommodityCode = null;
+            validDocTypesByCommodityCode = null;
+            uniqueValidCommodityCode = null;
             Update();
         }
 
@@ -327,9 +331,6 @@ namespace BluePrints.Data
 
         [NotMapped]
         public Guid? Workpack_Guid { get => GUID_WORKPACK; set => GUID_WORKPACK = value; }
-
-        [NotMapped]
-        public bool IsByDuration { get => BY_DURATION; set => BY_DURATION = value; }
 
         public Guid OriginalEntityKey => GUID_ORIGINAL;
 

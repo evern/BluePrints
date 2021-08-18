@@ -392,14 +392,7 @@ namespace BluePrints.ViewModels
         {
             rate.SetLookupProperties(CombinedCommodityCodeCollection, DISCIPLINECollection, SUBAREACollection);
 
-            if (loadCostType == CostType.Charge)
-            {
-                if (loadChargeType == ChargeType.NotChargeable)
-                    rate.PHASE_TYPE = PhaseType.Indirect;
-                else
-                    rate.PHASE_TYPE = PhaseType.Design;
-            }
-
+            rate.PHASE_TYPE = loadPhaseType;
             rate.COST_TYPE = loadCostType;
             rate.CHARGE_TYPE = loadChargeType;
             return true;

@@ -107,6 +107,11 @@
                     </dxmvvm:Interaction.Behaviors>
                     <dxg:GridControl.Bands>
                         <dxg:GridControlBand Header="Properties (Read Only)">
+                            <dxg:GridColumn FieldName="Entity.Entity.GUID_PHASE" Header="Phase" AllowBestFit="false" Width="50" HeaderToolTip="Automatically assigned field. Changing this will affect subjob name">
+                                <dxg:GridColumn.EditSettings>
+                                    <dxe:ComboBoxEditSettings AutoComplete="True" DisplayMember="INTERNAL_NUM" IsTextEditable="True" ItemsSource="{Binding PHASECollection}" ValueMember="GUID" />
+                                </dxg:GridColumn.EditSettings>
+                            </dxg:GridColumn>
                             <dxg:GridColumn FieldName="Entity.Entity.GUID_AREA" Header="Area" AllowBestFit="false" Width="50" ReadOnly="True">
                                 <dxg:GridColumn.EditSettings>
                                     <dxe:ComboBoxEditSettings AutoComplete="True" DisplayMember="INTERNAL_NUM" IsTextEditable="True" ItemsSource="{Binding AREACollection}" ValueMember="GUID" />
@@ -126,6 +131,11 @@
                             <dxg:GridColumn FieldName="Entity.Entity.GUID_DISCIPLINE" Header="Discipline" ReadOnly="True">
                                 <dxg:GridColumn.EditSettings>
                                     <dxe:ComboBoxEditSettings AutoComplete="True" DisplayMember="NAME" IsTextEditable="True" ItemsSource="{Binding DISCIPLINECollection}" ValueMember="GUID" />
+                                </dxg:GridColumn.EditSettings>
+                            </dxg:GridColumn>
+                            <dxg:GridColumn FieldName="Entity.Entity.DISCIPLINE_NUM" Header="Discipline Number" AllowBestFit="false" Width="60">
+                                <dxg:GridColumn.EditSettings>
+                                    <dxe:SpinEditSettings Increment="1" IsFloatValue="False" IsTextEditable="True" Mask="n0" MaskType="Numeric" MaskUseAsDisplayFormat="True" MaxValue="99" MinValue="1" />
                                 </dxg:GridColumn.EditSettings>
                             </dxg:GridColumn>
                             <dxg:GridColumn FieldName="Entity.Entity.GUID_DOCTYPE" Header="Document Type" ReadOnly="True">
@@ -330,17 +340,17 @@
                                     <dxe:SpinEditSettings Mask="p" MaskType="Numeric" MaskUseAsDisplayFormat="True" />
                                 </dxg:GridColumn.EditSettings>
                             </dxg:GridColumn>
-                            <dxg:GridColumn FieldName="StartDate" Header="Start Date" AllowBestFit="false" Width="80" HeaderToolTip="Date obtained from subjob or P6" IsEnabled="False" ReadOnly="True">
+                            <dxg:GridColumn FieldName="ViewStartDate" Header="Start Date" AllowBestFit="false" Width="80" HeaderToolTip="Planned start date obtained from subjob or P6" IsEnabled="False" ReadOnly="True">
                                 <dxg:GridColumn.EditSettings>
                                     <dxe:DateEditSettings />
                                 </dxg:GridColumn.EditSettings>
                             </dxg:GridColumn>
-                            <dxg:GridColumn FieldName="DueDate" Header="Due Date" AllowBestFit="false" Width="80" HeaderToolTip="Date obtained from subjob or P6" IsEnabled="False" ReadOnly="True">
+                            <dxg:GridColumn FieldName="ViewDueDate" Header="Due Date" AllowBestFit="false" Width="80" HeaderToolTip="Planned due date obtained from subjob or P6" IsEnabled="False" ReadOnly="True">
                                 <dxg:GridColumn.EditSettings>
                                     <dxe:DateEditSettings />
                                 </dxg:GridColumn.EditSettings>
                             </dxg:GridColumn>
-                            <dxg:GridColumn FieldName="ForecastDate" Header="Forecast Finish Date" AllowBestFit="false" Width="80" HeaderToolTip="Date obtained from subjob or P6. Calculated by 1.0 productivity by default and can be overridden by Override Productivity column" IsEnabled="False" ReadOnly="True">
+                            <dxg:GridColumn FieldName="ViewForecastDate" Header="Forecast Finish Date" AllowBestFit="false" Width="80" HeaderToolTip="Date obtained from P6" IsEnabled="False" ReadOnly="True">
                                 <dxg:GridColumn.EditSettings>
                                     <dxe:DateEditSettings />
                                 </dxg:GridColumn.EditSettings>

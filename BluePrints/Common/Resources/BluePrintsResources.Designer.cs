@@ -268,6 +268,15 @@ namespace BluePrints.Common.Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to 1.
+        /// </summary>
+        internal static string Default_Productivity {
+            get {
+                return ResourceManager.GetString("Default_Productivity", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to 3.
         /// </summary>
         internal static string Default_Register_Numeric_Length {
@@ -732,6 +741,15 @@ namespace BluePrints.Common.Resources {
         internal static string OfficePerth {
             get {
                 return ResourceManager.GetString("OfficePerth", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to USA.
+        /// </summary>
+        internal static string OfficeUSA {
+            get {
+                return ResourceManager.GetString("OfficeUSA", resourceCulture);
             }
         }
         

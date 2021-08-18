@@ -1,4 +1,5 @@
-﻿using BluePrints.Common.Resources;
+﻿using BaseModel.DataModel;
+using BluePrints.Common.Resources;
 using BluePrints.Common.ViewModel.Misc;
 using BluePrints.Common.ViewModel.Reporting;
 using BluePrints.Common.ViewModel.Utils;
@@ -13,7 +14,7 @@ using System.Threading.Tasks;
 
 namespace BluePrints.Common.Projections
 {
-    public class ForecastJobData
+    public class ForecastJobData : EntityBase, IHaveDisciplineDesc
     {
         public ForecastJobData()
         {
@@ -115,7 +116,9 @@ namespace BluePrints.Common.Projections
         public decimal OriginalUncommitted { get; set; }
         public decimal Uncommitted { get; set; }
         public decimal CurrentUncommitted { get; set; }
+        public decimal FirstEAC { get; set; }
         public decimal PreviousEAC { get; set; }
+        public decimal BudgetVariance => FirstEAC - Budget;
         public decimal EstimateToComplete => Outstanding + Uncommitted;
         public decimal OriginalEstimateAtCompletion => ActualCosts + Outstanding + OriginalUncommitted;
         public decimal EstimateAtCompletion => ActualCosts + Outstanding + Uncommitted;
@@ -258,6 +261,19 @@ namespace BluePrints.Common.Projections
                 return isCommodityCodeError;
             }
         }
+
+        public string DisciplineCode
+        {
+            get
+            {
+                if (Projection == null)
+                    return string.Empty;
+
+                return Projection.DisciplineCode;
+            }
+        }
+
+        public string DisciplineDesc { get; set; }
         #endregion
     }
 

@@ -243,16 +243,7 @@ namespace BluePrints.Data
         }
 
         [NotMapped]
-        public decimal Total_Units
-        {
-            get
-            {
-                if (IsByDuration)
-                    return BluePrintsConstants.DurationBasedTotalUnits;
-
-                return Budget_Units + Variation_Units;
-            }
-        }
+        public decimal Total_Units => Budget_Units + Variation_Units;
 
         public decimal Variation_Units
         {
@@ -317,9 +308,6 @@ namespace BluePrints.Data
         public Guid? Workpack_Guid { get => GUID_WORKPACK; set => GUID_WORKPACK = value; }
 
         public PhaseType? Phase => PHASE == null ? null : PHASE.PHASE_TYPE;
-
-        [NotMapped]
-        public bool IsByDuration { get => BY_DURATION; set => BY_DURATION = value; }
 
         [NotMapped]
         public ChargeType? Charge => PHASE == null ? null : PHASE.CHARGE_TYPE;

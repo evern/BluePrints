@@ -126,7 +126,7 @@ namespace BluePrints.ViewModels
 
         protected void initializeCompulsoryViewProperties(Data.PROJECT project)
         {
-            localPrimeroUnitOfWorkFactory = PrimeroEntitiesUnitOfWorkSource.GetUnitOfWorkFactory(loadPROJECT.OfficeNameForExo == BluePrintsResources.OfficeMontreal);
+            localPrimeroUnitOfWorkFactory = PrimeroEntitiesUnitOfWorkSource.GetUnitOfWorkFactory(loadPROJECT.OfficeNameForExo);
             localPrimeroUnitOfWork = localPrimeroUnitOfWorkFactory.CreateUnitOfWork();
 
             masterJob = ExoQueries.GetProjectSubJob(localPrimeroUnitOfWork, project.NUMBER);
@@ -474,8 +474,6 @@ namespace BluePrints.ViewModels
                 {
                     if (new_value.ToString() == null || new_value.ToString() == string.Empty)
                         return "Stock code not assigned";
-                    else if (new_value.ToString().Length > 4)
-                        return "Stock code cannot be more than 4 characters";
                     if (!projection.IsValidStockCode(new_value.ToString()))
                         return "Invalid stock code. Validity can be maintained in Data -> Commodity Codes";
                 }

@@ -1,6 +1,7 @@
 ﻿using BaseModel.DataModel.EntityFramework;
 using BaseModel.Misc;
 using BluePrints.Common;
+using BluePrints.Common.ViewModel.Reporting;
 using BluePrints.PrimeroData;
 using EntityFramework.Functions;
 using System;
@@ -78,100 +79,44 @@ namespace BluePrints.Data
             Entry(entity).Reload();
         }
 
-        public List<StoredProcedure_PlannedDataPoint> QueryDeliverablePlannedDataPoints(Guid deliverable_guid, bool isForecast = false)
+        public List<DataPoint> QueryDeliverablePlannedDataPoints(Guid deliverable_guid, bool isForecast = false)
         {
-            return this.DataPoint.Where(x => x.Deliverable_Guid == deliverable_guid && x.IsPlanned == true && x.IsLate == false && x.IsForecast == isForecast).ToList()
-                .Select(x => new StoredProcedure_PlannedDataPoint()
-                {
-                    Deliverable_Guid = x.Deliverable_Guid,
-                    IsFromP6 = x.IsFromP6,
-                    Original_Guid = x.Original_Guid,
-                    PeriodPlannedPrice = x.PeriodPrice,
-                    PeriodPlannedUnits = x.PeriodUnits,
-                    UniversalPeriodEndDate = x.UniversalPeriodEndDate,
-                    UniversalPeriodStartDate = x.UniversalPeriodStartDate,
-                    RemainingDuration = x.RemainingDuration
-                }).ToList();
+            return this.DataPoint.Where(x => x.Deliverable_Guid == deliverable_guid && x.IsPlanned == true && x.IsLate == false && x.IsForecast == isForecast).ToList();
         }
 
-        public List<StoredProcedure_RemainingDataPoint> QueryDeliverableRemainingDataPoints(Guid deliverable_guid, bool isForecast = false)
+        public List<DataPoint> QueryDeliverableRemainingDataPoints(Guid deliverable_guid, bool isForecast = false)
         {
-            return this.DataPoint.Where(x => x.Deliverable_Guid == deliverable_guid && x.IsPlanned == false && x.IsLate == false && x.IsForecast == isForecast).ToList()
-                .Select(x => new StoredProcedure_RemainingDataPoint()
-                {
-                    Deliverable_Guid = x.Deliverable_Guid,
-                    IsFromP6 = x.IsFromP6,
-                    Original_Guid = x.Original_Guid,
-                    PeriodRemainingPrice = x.PeriodPrice,
-                    PeriodRemainingUnits = x.PeriodUnits,
-                    UniversalPeriodEndDate = x.UniversalPeriodEndDate,
-                    UniversalPeriodStartDate = x.UniversalPeriodStartDate,
-                    RemainingDuration = x.RemainingDuration
-                }).ToList();
+            return this.DataPoint.Where(x => x.Deliverable_Guid == deliverable_guid && x.IsPlanned == false && x.IsLate == false && x.IsForecast == isForecast).ToList();
         }
 
-        public List<StoredProcedure_PlannedDataPoint> QueryDeliverablePlannedDataPointsByProject(string projectNumber, bool isForecast = false)
+        public List<DataPoint> QueryDeliverablePlannedDataPointsByProject(string projectNumber, bool isForecast = false)
         {
-            return this.DataPoint.Where(x => x.ProjectNumber == projectNumber && x.IsPlanned == true && x.IsLate == false && x.IsCurrent == false && x.IsForecast == isForecast).ToList()
-                .Select(x => new StoredProcedure_PlannedDataPoint()
-                {
-                    Deliverable_Guid = x.Deliverable_Guid,
-                    IsFromP6 = x.IsFromP6,
-                    Original_Guid = x.Original_Guid,
-                    PeriodPlannedPrice = x.PeriodPrice,
-                    PeriodPlannedUnits = x.PeriodUnits,
-                    UniversalPeriodEndDate = x.UniversalPeriodEndDate,
-                    UniversalPeriodStartDate = x.UniversalPeriodStartDate, 
-                    RemainingDuration = x.RemainingDuration
-                }).ToList();
+            return this.DataPoint.Where(x => x.ProjectNumber == projectNumber && x.IsPlanned == true && x.IsLate == false && x.IsCurrent == false && x.IsForecast == isForecast).ToList();
         }
 
-        public List<StoredProcedure_PlannedDataPoint> QueryDeliverableCurrentDataPointsByProject(string projectNumber)
+        public List<DataPointsGroup> QueryDeliverablePlannedDataPointsGroupByProject(string projectNumber, bool isPlanned, bool isLate, bool isCurrent, bool isForecast = false, bool isVariationSeparated = false)
         {
-            return this.DataPoint.Where(x => x.ProjectNumber == projectNumber && x.IsPlanned == true && x.IsLate == false && x.IsCurrent == true & !x.IsForecast).ToList()
-                .Select(x => new StoredProcedure_PlannedDataPoint()
-                {
-                    Deliverable_Guid = x.Deliverable_Guid,
-                    IsFromP6 = x.IsFromP6,
-                    Original_Guid = x.Original_Guid,
-                    PeriodPlannedPrice = x.PeriodPrice,
-                    PeriodPlannedUnits = x.PeriodUnits,
-                    UniversalPeriodEndDate = x.UniversalPeriodEndDate,
-                    UniversalPeriodStartDate = x.UniversalPeriodStartDate,
-                    RemainingDuration = x.RemainingDuration
-                }).ToList();
+            IEnumerable<DataPoint> dataPoints = this.DataPoint.Where(x => x.ProjectNumber == projectNumber && x.IsLate == isLate && x.IsCurrent == isCurrent && x.IsPlanned == isPlanned && x.IsForecast == isForecast);
+            if(isVariationSeparated)
+                return dataPoints.GroupBy(x => new { x.SubJobCode, x.DisciplineCode, x.CommodityCode, x.VariationCode }).Select(g => new DataPointsGroup(g.Key.SubJobCode, g.Key.DisciplineCode, g.Key.CommodityCode, g.Key.VariationCode, g)).ToList();
+            else
+                return dataPoints.GroupBy(x => new { x.SubJobCode, x.DisciplineCode, x.CommodityCode }).Select(g => new DataPointsGroup(g.Key.SubJobCode, g.Key.DisciplineCode, g.Key.CommodityCode, "", g)).ToList();
+
         }
 
-        public List<StoredProcedure_PlannedDataPoint> QueryDeliverablePlannedLateDataPointsByProject(string projectNumber)
+        public List<DataPoint> QueryDeliverableCurrentDataPointsByProject(string projectNumber)
         {
-            return this.DataPoint.Where(x => x.ProjectNumber == projectNumber && x.IsPlanned == true && x.IsLate == true && x.IsCurrent == false & !x.IsForecast).ToList()
-                .Select(x => new StoredProcedure_PlannedDataPoint()
-                {
-                    Deliverable_Guid = x.Deliverable_Guid,
-                    IsFromP6 = x.IsFromP6,
-                    Original_Guid = x.Original_Guid,
-                    PeriodPlannedPrice = x.PeriodPrice,
-                    PeriodPlannedUnits = x.PeriodUnits,
-                    UniversalPeriodEndDate = x.UniversalPeriodEndDate,
-                    UniversalPeriodStartDate = x.UniversalPeriodStartDate,
-                    RemainingDuration = x.RemainingDuration
-                }).ToList();
+            return this.DataPoint.Where(x => x.ProjectNumber == projectNumber && x.IsPlanned == true && x.IsLate == false && x.IsCurrent == true & !x.IsForecast).ToList();
         }
 
-        public List<StoredProcedure_RemainingDataPoint> QueryDeliverableRemainingDataPointsByProject(string projectNumber, bool isForecast = false)
+        public List<DataPoint> QueryDeliverablePlannedLateDataPointsByProject(string projectNumber)
         {
-            return this.DataPoint.Where(x => x.ProjectNumber == projectNumber && x.IsPlanned == false && x.IsLate == false && x.IsCurrent == false && x.IsForecast == isForecast).ToList()
-                .Select(x => new StoredProcedure_RemainingDataPoint()
-                {
-                    Deliverable_Guid = x.Deliverable_Guid,
-                    IsFromP6 = x.IsFromP6,
-                    Original_Guid = x.Original_Guid,
-                    PeriodRemainingPrice = x.PeriodPrice,
-                    PeriodRemainingUnits = x.PeriodUnits,
-                    UniversalPeriodEndDate = x.UniversalPeriodEndDate,
-                    UniversalPeriodStartDate = x.UniversalPeriodStartDate,
-                    RemainingDuration = x.RemainingDuration
-                }).ToList();
+            return this.DataPoint.Where(x => x.ProjectNumber == projectNumber && x.IsPlanned == true && x.IsLate == true && x.IsCurrent == false & !x.IsForecast).ToList();
+        }
+
+        public List<DataPoint> QueryDeliverableRemainingDataPointsByProject(string projectNumber, bool isForecast = false)
+        {
+            return this.DataPoint.Where(x => x.ProjectNumber == projectNumber && x.IsPlanned == false && x.IsLate == false && x.IsCurrent == false && x.IsForecast == isForecast).ToList();
         }
 
         public List<PROGRESS_ETC> QueryProjectProgressETC(string projectNumber)
@@ -179,47 +124,9 @@ namespace BluePrints.Data
             return this.PROGRESS_ETC.Where(x => x.PROGRESS.PROJECT.NUMBER == projectNumber).Where(x => x.PROGRESS.STATUS == ProgressStatus.Live).ToList();
         }
 
-        public List<StoredProcedure_RemainingDataPoint> QueryDeliverableRemainingLateDataPointsByProject(string projectNumber)
+        public List<DataPoint> QueryDeliverableRemainingLateDataPointsByProject(string projectNumber)
         {
-            return this.DataPoint.Where(x => x.ProjectNumber == projectNumber && x.IsPlanned == false && x.IsLate == true && x.IsCurrent == false & !x.IsForecast).ToList()
-                .Select(x => new StoredProcedure_RemainingDataPoint()
-                {
-                    Deliverable_Guid = x.Deliverable_Guid,
-                    IsFromP6 = x.IsFromP6,
-                    Original_Guid = x.Original_Guid,
-                    PeriodRemainingPrice = x.PeriodPrice,
-                    PeriodRemainingUnits = x.PeriodUnits,
-                    UniversalPeriodEndDate = x.UniversalPeriodEndDate,
-                    UniversalPeriodStartDate = x.UniversalPeriodStartDate,
-                    RemainingDuration = x.RemainingDuration
-                }).ToList();
-        }
-
-        [ComplexType]
-        public class StoredProcedure_PlannedDataPoint
-        {
-            public Guid Deliverable_Guid { get; set; }
-            public Guid Original_Guid { get; set; }
-            public DateTime UniversalPeriodStartDate { get; set; }
-            public DateTime UniversalPeriodEndDate { get; set; }
-            public double PeriodPlannedQuantity { get; set; }
-            public double PeriodPlannedUnits { get; set; }
-            public double PeriodPlannedPrice { get; set; }
-            public bool IsFromP6 { get; set; }
-            public double? RemainingDuration { get; set; }
-        }
-
-        [ComplexType]
-        public class StoredProcedure_RemainingDataPoint
-        {
-            public Guid Deliverable_Guid { get; set; }
-            public Guid Original_Guid { get; set; }
-            public DateTime UniversalPeriodStartDate { get; set; }
-            public DateTime UniversalPeriodEndDate { get; set; }
-            public double PeriodRemainingUnits { get; set; }
-            public double PeriodRemainingPrice { get; set; }
-            public bool IsFromP6 { get; set; }
-            public double? RemainingDuration { get; set; }
+            return this.DataPoint.Where(x => x.ProjectNumber == projectNumber && x.IsPlanned == false && x.IsLate == true && x.IsCurrent == false & !x.IsForecast).ToList();
         }
     }
 
@@ -268,6 +175,45 @@ namespace BluePrints.Data
                 SqlParameter isForecastParameter = new SqlParameter("@ISFORECAST", isForecast ? 1 : 0);
                 Task<int> returnTask = dbContext.Database.ExecuteSqlCommandAsync("RefreshDeliverablesRemainingDataPointsByProject @PROJECT_NUMBER, @ISFORECAST", projectNumberParameter, isForecastParameter);
                 var i = await returnTask;
+            }
+        }
+
+        public static List<X_REPORTABLES> GetReportablesSummary(string projectNumber, bool isForecast)
+        {
+            using (BluePrintsEntities dbContext = new BluePrintsEntities())
+            {
+                dbContext.Database.CommandTimeout = 5000;
+                SqlParameter projectNumberParameter = new SqlParameter("@PROJECT_NUMBER", projectNumber);
+                SqlParameter isForecastParameter = new SqlParameter("@IS_FORECAST", isForecast);
+                List<X_REPORTABLES> reportableLines = dbContext.Database.SqlQuery<X_REPORTABLES>("X_REPORTABLES @PROJECT_NUMBER, @IS_FORECAST", projectNumberParameter, isForecastParameter).ToList();
+                return reportableLines;
+            }
+        }
+
+        public static List<X_EARNED_QUERY> GetEarnedSummary(string projectNumber, DateTime cutOffDate)
+        {
+            using (BluePrintsEntities dbContext = new BluePrintsEntities())
+            {
+                dbContext.Database.CommandTimeout = 5000;
+                SqlParameter projectNumberParameter = new SqlParameter("@ProjectNumber", projectNumber);
+                SqlParameter cutOffDateParameter = new SqlParameter("@CutOffDate", cutOffDate);
+                List<X_EARNED_QUERY> earnedData = dbContext.Database.SqlQuery<X_EARNED_QUERY>("X_EARNED @ProjectNumber, @CutOffDate", projectNumberParameter, cutOffDateParameter).ToList();
+                return earnedData;
+            }
+        }
+
+        public static List<X_WBS_GROUPED_DATAPOINT> GetWBSGroupedDataPointsSummary(string projectNumber, bool isPlanned, bool isLate, bool isCurrent, bool isForecast)
+        {
+            using (BluePrintsEntities dbContext = new BluePrintsEntities())
+            {
+                dbContext.Database.CommandTimeout = 5000;
+                SqlParameter projectNumberParameter = new SqlParameter("@PROJECT_NUMBER", projectNumber);
+                SqlParameter isPlannedParameter = new SqlParameter("@IS_PLANNED", isPlanned);
+                SqlParameter isLateParameter = new SqlParameter("@IS_LATE", isLate);
+                SqlParameter isCurrentParameter = new SqlParameter("@IS_CURRENT", isCurrent);
+                SqlParameter isForecastParameter = new SqlParameter("@IS_FORECAST", isForecast);
+                List<X_WBS_GROUPED_DATAPOINT> wbsGroupedDataPoints = dbContext.Database.SqlQuery<X_WBS_GROUPED_DATAPOINT>("X_WBS_GROUPED_DATAPOINT @PROJECT_NUMBER, @IS_PLANNED, @IS_LATE, @IS_CURRENT, @IS_FORECAST", projectNumberParameter, isPlannedParameter, isLateParameter, isCurrentParameter, isForecastParameter).ToList();
+                return wbsGroupedDataPoints;
             }
         }
     }

@@ -10,6 +10,12 @@ using System.Threading.Tasks;
 
 namespace BluePrints.Common.ViewModel.Reporting
 {
+    public interface IHaveDisciplineDesc : ICanUpdate
+    {
+        string DisciplineCode { get; }
+        string DisciplineDesc { get; set; }
+    }
+
     public interface IHaveWBSCodeString
     {
         string SUBJOB_CODE { get; set; }
@@ -57,6 +63,7 @@ namespace BluePrints.Common.ViewModel.Reporting
 
     public interface IDeliverable_Rates : IDeliverable, IHaveCosts, IHaveVariation
     {
+        bool IsByDuration { get; }
         IEnumerable<User_Weight> AssignedUsers { get; }
     }
 
@@ -78,7 +85,6 @@ namespace BluePrints.Common.ViewModel.Reporting
         Guid? Discipline_Guid { get; }
         decimal Discipline_Number { get; }
         Guid? Workpack_Guid { get; set; }
-        bool IsByDuration { get; set; }
     }
 
     public interface IHaveProcurementSubjob
@@ -205,12 +211,27 @@ namespace BluePrints.Common.ViewModel.Reporting
         decimal Budget_ItemInternalRate { get; }
         decimal Budget_InternalCost { get; }
     }
-    
+
+    public interface IHaveStockCode
+    {
+        string Estimate_UOM { get; }
+        string Estimate_Stock_Code_Type { get; }
+        string Estimate_Stock_Code_Spec { get; }
+        string Estimate_Stock_Code_Description { get; }
+    }
+
+    public interface IHaveTrueP6Dates : ICanUpdate
+    {
+        DateTime? TrueP6PlannedStartDate { get; set; }
+        DateTime? TrueP6PlannedEndDate { get; set; }
+        DateTime? TrueP6RemainingEndDate { get; set; }
+        List<P6_ASSIGNMENT> P6_Assignments { get; }
+    }
+
     public interface IHaveDBProductivityOverride
     {
         decimal? DB_Productivity_Override { get; set; }
     }
-   
     public interface IHaveCommodity_Code
     {
         string Commodity_Code { get; }

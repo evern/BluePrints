@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?>
+﻿<?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="12.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
   <PropertyGroup>
@@ -23,8 +23,8 @@
     <UpdatePeriodically>false</UpdatePeriodically>
     <UpdateRequired>true</UpdateRequired>
     <MapFileExtensions>true</MapFileExtensions>
-    <MinimumRequiredVersion>1.0.7.46</MinimumRequiredVersion>
-    <ApplicationRevision>46</ApplicationRevision>
+    <MinimumRequiredVersion>1.0.7.18</MinimumRequiredVersion>
+    <ApplicationRevision>18</ApplicationRevision>
     <ApplicationVersion>1.0.7.%2a</ApplicationVersion>
     <UseApplicationTrust>false</UseApplicationTrust>
     <PublishWizardCompleted>true</PublishWizardCompleted>
@@ -152,10 +152,10 @@
     <Prefer32Bit>true</Prefer32Bit>
   </PropertyGroup>
   <PropertyGroup>
-    <AssemblyName>BluePrints TEST</AssemblyName>
+    <AssemblyName>BluePrints</AssemblyName>
   </PropertyGroup>
   <PropertyGroup>
-    <ApplicationIcon>Common\Images\LogoBeta.ico</ApplicationIcon>
+    <ApplicationIcon>Common\Images\Logo.ico</ApplicationIcon>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Debug|x64'">
     <DebugSymbols>true</DebugSymbols>
@@ -616,6 +616,7 @@
     <Compile Include="Common\Misc\ProjectUnitOfWorkContext.cs" />
     <Compile Include="Common\Misc\RiskMatrix.cs" />
     <Compile Include="Common\Misc\VariationApprovalAction.cs" />
+    <Compile Include="Common\Misc\WBSSummary.cs" />
     <Compile Include="Common\Projections\BASELINE_ITEMProgress.cs" />
     <Compile Include="Common\Projections\BUDGET_ITEMProjection.cs" />
     <Compile Include="Common\Projections\DesignTimesheet.cs" />
@@ -826,6 +827,7 @@
     <Compile Include="Common\ViewModel\GanttChart\P6_Activity.cs" />
     <Compile Include="Common\ViewModel\Misc\CodesValidationModel.cs" />
     <Compile Include="Common\ViewModel\Misc\ListImportDocumentsViewModel.cs" />
+    <Compile Include="Common\ViewModel\Misc\NullValueTemplateSelector.cs" />
     <Compile Include="Common\ViewModel\Misc\VariationApprovalViewModel.cs" />
     <Compile Include="Common\ViewModel\Misc\TenderProfileItemEditModel.cs" />
     <Compile Include="Common\ViewModel\Misc\TenderProfileItemEditConfirmationViewModel.cs" />
@@ -910,8 +912,12 @@
     <Compile Include="Common\View\PrimaveraAffinityReport.xaml.cs">
       <DependentUpon>PrimaveraAffinityReport.xaml</DependentUpon>
     </Compile>
+    <Compile Include="EntityFramework\Annotations\PrimeroEntities.cs" />
     <Compile Include="EntityFramework\Annotations\CONSTRUCTION_STAGE.cs" />
+    <Compile Include="EntityFramework\Annotations\DataPoint.cs" />
+    <Compile Include="EntityFramework\Annotations\DISCIPLINE_DESC.cs" />
     <Compile Include="EntityFramework\Annotations\FORECAST_HISTORY.cs" />
+    <Compile Include="EntityFramework\Annotations\FORECAST_CACHE.cs" />
     <Compile Include="EntityFramework\Annotations\PROGRESS_ETC.cs" />
     <Compile Include="EntityFramework\Annotations\REGISTER_CHANGE_ATTACHMENT.cs" />
     <Compile Include="EntityFramework\Annotations\REGISTER_CLARIFICATION.cs" />
@@ -919,6 +925,7 @@
     <Compile Include="EntityFramework\Annotations\REGISTER_TQ_ATTACHMENT.cs" />
     <Compile Include="EntityFramework\Annotations\JOBCOST_HDR.cs" />
     <Compile Include="EntityFramework\Annotations\X_DEPARTMENT.cs" />
+    <Compile Include="EntityFramework\Annotations\X_EARNED_QUERY.cs" />
     <Compile Include="EntityFramework\Annotations\X_VARIATION_QUERY.cs" />
     <Compile Include="EntityFramework\Annotations\JOBCOST_LINES_AUDIT.cs" />
     <Compile Include="EntityFramework\Annotations\JOB_TIMESHEETS.cs" />
@@ -995,12 +1002,16 @@
     <Compile Include="EntityFramework\Annotations\X_JOB_TIMESHEETS.cs" />
     <Compile Include="EntityFramework\Annotations\X_JOB_TRANSACTIONS_DETAIL_SeqNo.cs" />
     <Compile Include="EntityFramework\BluePrintsData\CONSTRUCTION_STAGE.cs" />
+    <Compile Include="EntityFramework\BluePrintsData\DISCIPLINE_DESC.cs" />
     <Compile Include="EntityFramework\BluePrintsData\FORECAST_HISTORY.cs" />
+    <Compile Include="EntityFramework\BluePrintsData\FORECAST_CACHE.cs" />
     <Compile Include="EntityFramework\BluePrintsData\PROGRESS_ETC.cs" />
     <Compile Include="EntityFramework\BluePrintsData\REGISTER_CLARIFICATION.cs" />
     <Compile Include="EntityFramework\BluePrintsData\REGISTER_TQ.cs" />
     <Compile Include="EntityFramework\BluePrintsData\REGISTER_CHANGE_ATTACHMENT.cs" />
     <Compile Include="EntityFramework\BluePrintsData\REGISTER_TQ_ATTACHMENT.cs" />
+    <Compile Include="EntityFramework\BluePrintsData\X_REPORTABLES.cs" />
+    <Compile Include="EntityFramework\BluePrintsData\X_EARNED_QUERY.cs" />
     <Compile Include="EntityFramework\BluePrintsData\X_VARIATION_QUERY.cs" />
     <Compile Include="EntityFramework\BluePrintsData\JOBCOST_LINES_AUDIT.cs" />
     <Compile Include="EntityFramework\BluePrintsData\FORECAST_EAC.cs" />
@@ -1123,6 +1134,9 @@
     <Compile Include="EntityFramework\PrimeroData\X_JOB_TIMESHEETS.cs" />
     <Compile Include="EntityFramework\PrimeroData\X_JOB_TRANSACTIONS_DETAIL_SeqNo.cs" />
     <Compile Include="EntityFramework\PrimeroData\X_JOB_TRANSACTIONS_DETAIL.cs" />
+    <Compile Include="EntityFramework\PrimeroData\X_MATERIAL_TRANSACTION.cs" />
+    <Compile Include="EntityFramework\PrimeroData\X_PURCH_REQ_COMMENTS_FILES.cs" />
+    <Compile Include="EntityFramework\PrimeroData\X_TIME_TRANSACTION.cs" />
     <Compile Include="ViewModels\BASELINE_ITEM\DOCCONTROL_BASELINE_ITEMCollectionViewModelWrapper.cs" />
     <Compile Include="ViewModels\BASELINE_ITEM\BASELINE_ITEMWorkpackSchedulingViewModelWrapper.cs" />
     <Compile Include="ViewModels\BASELINE_ITEM\BASELINE_ITEMSchedulingViewModelWrapper.cs" />
@@ -1130,6 +1144,7 @@
     <Compile Include="ViewModels\BUDGET_ITEM\BUDGET_ITEMWorkpackSchedulingViewModelWrapper.cs" />
     <Compile Include="ViewModels\CLIENT\CLIENTCollectionViewModelWrapper.cs" />
     <Compile Include="ViewModels\CONSTRUCTION_STAGE\CONSTRUCTION_STAGECollectionViewModelWrapper.cs" />
+    <Compile Include="ViewModels\DISCIPLINE\DISCIPLINE_DESCCollectionViewModelWrapper.cs" />
     <Compile Include="ViewModels\EXOSUBJOB\EXO_JobHistoryCollectionViewModelWrapper.cs" />
     <Compile Include="ViewModels\EXOSUBJOB\EXO_ConstructionSubjobCollectionViewModelWrapper.cs" />
     <Compile Include="ViewModels\EXOSUBJOB\EXO_ResourcesCollectionViewModelWrapper.cs" />
@@ -1211,6 +1226,9 @@
     </Compile>
     <Compile Include="Views\CONSTRUCTION_STAGE\CONSTRUCTION_STAGECollectionView.xaml.cs">
       <DependentUpon>CONSTRUCTION_STAGECollectionView.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Views\DISCIPLINE\DISCIPLINE_DESCCollectionView.xaml.cs">
+      <DependentUpon>DISCIPLINE_DESCCollectionView.xaml</DependentUpon>
     </Compile>
     <Compile Include="Views\EXOSUBJOB\EXO_JobHistoryCollectionView.xaml.cs">
       <DependentUpon>EXO_JobHistoryCollectionView.xaml</DependentUpon>
@@ -1878,7 +1896,7 @@
     <Compile Include="EntityFramework\PrimeroData\X_HBIZ_PURCH_REQ_STATUS_VALUES.cs" />
     <Compile Include="EntityFramework\PrimeroData\X_HBIZ_PURCH_REQ_SUBSCRIPTIONS.cs" />
     <Compile Include="EntityFramework\PrimeroData\X_HBIZ_REPORTS_TO_STAFF.cs" />
-    <Compile Include="EntityFramework\PrimeroData\X_PURCH_REQ_COMMENTS_FILES.cs" />
+    <Compile Include="EntityFramework\PrimeroData\X_PURCHORD_LINE.cs" />
     <Compile Include="EntityFramework\PrimeroEntitiesDataModel\DesignTimePrimeroEntitiesUnitOfWork.cs" />
     <Compile Include="EntityFramework\PrimeroEntitiesDataModel\IPrimeroEntitiesUnitOfWork.cs" />
     <Compile Include="EntityFramework\PrimeroEntitiesDataModel\PrimeroEntitiesUnitOfWork.cs" />
@@ -2180,6 +2198,10 @@
       <SubType>Designer</SubType>
     </Page>
     <Page Include="Views\CONSTRUCTION_STAGE\CONSTRUCTION_STAGECollectionView.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Views\DISCIPLINE\DISCIPLINE_DESCCollectionView.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>
@@ -5382,6 +5404,9 @@
   </ItemGroup>
   <ItemGroup>
     <Content Include="Common\BluePrintsSQL.sql" />
+    <Resource Include="Common\Images\Australia-Flag.ico" />
+    <Resource Include="Common\Images\Canada-Flag.png" />
+    <Resource Include="Common\Images\USA-Flag.ico" />
     <Content Include="DatabaseScript.sql" />
   </ItemGroup>
   <ItemGroup>

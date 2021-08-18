@@ -71,7 +71,7 @@ namespace BluePrints.ViewModels
             loadPROGRESS = receiveParameter.GetSecondEntity();
             scoreCardDiscipline = (ScoreCardDiscipline)receiveParameter.GetThirdEntity();
 
-            primeroUnitOfWork = PrimeroEntitiesUnitOfWorkSource.GetUnitOfWorkFactory(loadPROJECT.OfficeNameForExo == BluePrintsResources.OfficeMontreal).CreateUnitOfWork();
+            primeroUnitOfWork = PrimeroEntitiesUnitOfWorkSource.GetUnitOfWorkFactory(BluePrintsResources.OfficeMontreal).CreateUnitOfWork();
 
             gridRefreshDispatcherTimer = new DispatcherTimer();
             gridRefreshDispatcherTimer.Interval = new TimeSpan(0, 0, 0, 0, 100);
@@ -161,7 +161,7 @@ namespace BluePrints.ViewModels
         protected override Func<IRepositoryQuery<ESTIMATE_ITEM>, IQueryable<ESTIMATE_ITEMProgress>>
             specifyMainViewModelProjection()
         {
-            return query => ESTIMATE_ITEMProjectionQueries.IDeliverable_Progress_Transformation(query.Where(x => x.ESTIMATE.GUID_PROJECT == loadPROJECT.GUID && x.ESTIMATE.STATUS == BaselineStatus.Live).Where(x => x.DISCIPLINE.SCORE_CARD_DISCIPLINE == scoreCardDiscipline), loadPROJECT, loaderCollection.GetCollection<RATE>(), loadPROGRESS, PROGRESS_ITEMCollection, false, null, false, P6_ASSIGNMENTCollection, false, COMMODITY_CODECollection, false, CONSTRUCTION_STAGECollection);
+            return query => ESTIMATE_ITEMProjectionQueries.IDeliverable_Progress_Transformation(query.Where(x => x.ESTIMATE.GUID_PROJECT == loadPROJECT.GUID && x.ESTIMATE.STATUS == BaselineStatus.Live).Where(x => x.DISCIPLINE.SCORE_CARD_DISCIPLINE == scoreCardDiscipline), loadPROJECT, loaderCollection.GetCollection<RATE>(), loadPROGRESS, PROGRESS_ITEMCollection, false, null, false, P6_ASSIGNMENTCollection, false, COMMODITY_CODECollection, false);
         }
 
         protected override void AssignCallBacksAndRaisePropertyChange(IEnumerable<ESTIMATE_ITEMProgress> entities)

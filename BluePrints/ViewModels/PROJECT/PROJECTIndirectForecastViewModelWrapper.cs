@@ -113,7 +113,7 @@ namespace BluePrints.ViewModels
         {
             var PROJECTParameter = (EntitiesParameter<PROJECT>)parameter;
             LoadPROJECT = PROJECTParameter.GetEntity();
-            primeroUnitOfWorkFactory = PrimeroEntitiesUnitOfWorkSource.GetUnitOfWorkFactory(LoadPROJECT.OfficeNameForExo == BluePrintsResources.OfficeMontreal);
+            primeroUnitOfWorkFactory = PrimeroEntitiesUnitOfWorkSource.GetUnitOfWorkFactory(LoadPROJECT.OfficeNameForExo);
             primeroEntitiesUnitOfWork = primeroUnitOfWorkFactory.CreateUnitOfWork();
             IsWeeks = true;
             IsLoading = true;

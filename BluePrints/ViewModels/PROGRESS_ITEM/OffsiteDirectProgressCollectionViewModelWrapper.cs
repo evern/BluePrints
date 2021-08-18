@@ -143,14 +143,18 @@ namespace BluePrints.ViewModels
 
         protected override void OnAfterAssignedCallbackAndRaisePropertyChanged()
         {
-            //progress items needs to get notified for view to reflect update
-            PROGRESS_ITEMSCollectionViewModel.AlwaysSkipMessage = false;
+            //avoid crash when this is disposed
+            if(PROGRESS_ITEMSCollectionViewModel != null)
+            {
+                //progress items needs to get notified for view to reflect update
+                PROGRESS_ITEMSCollectionViewModel.AlwaysSkipMessage = false;
 
-            //only respond to message from same key
-            PROGRESS_ITEMSCollectionViewModel.RefreshOnlyOnSameSenderKey = true;
+                //only respond to message from same key
+                PROGRESS_ITEMSCollectionViewModel.RefreshOnlyOnSameSenderKey = true;
 
-            if (PROJECT_REPORTCollectionViewModel != null)
-                PROJECT_REPORTCollectionViewModel.AlwaysSkipMessage = false;
+                if (PROJECT_REPORTCollectionViewModel != null)
+                    PROJECT_REPORTCollectionViewModel.AlwaysSkipMessage = false;
+            }
 
             base.OnAfterAssignedCallbackAndRaisePropertyChanged();
         }
@@ -173,6 +177,8 @@ namespace BluePrints.ViewModels
         public override void UnifiedCellValueChanged(string field_name, object old_value, object new_value, BASELINE_ITEMProgress projection, bool isNew)
         {
             if (field_name == BindableBase.GetPropertyName(() => new BASELINE_ITEMProgress().DeliverableStatusProgressGuid))
+                projection.ShouldSave = true;
+            if (field_name.Contains(BindableBase.GetPropertyName(() => new BASELINE_ITEMProgress().Entity.Entity.DISCIPLINE_NUM)))
                 projection.ShouldSave = true;
 
             base.UnifiedCellValueChanged(field_name, old_value, new_value, projection, isNew);
@@ -214,7 +220,7 @@ namespace BluePrints.ViewModels
         public override string ViewName
         {
             //get { return "OffsiteDirectProgressViewModelWrapper" + view_project_specific_affix; }
-            get { return "OffsiteDirectProgressViewModelWrapper_v6"; }
+            get { return "OffsiteDirectProgressViewModelWrapper_v7"; }
         }
 
         public bool IsDataDateChangeVisible => canDateBackwardForward;
@@ -410,16 +416,19 @@ namespace BluePrints.ViewModels
 
             TimeSpan reportInterval = ChronologicalHelpers.ConvertProgressIntervalToPeriod(loadPROGRESS);
             DateTime firstAlignedDataDate = ChronologicalHelpers.GenerateFirstAlignedDataDate(loadPROGRESS);
-            List<VariationAdjustment> projectVariationAdjustment = ProjectionHelpers.BuildProjectVariationAdjustments(VARIATIONCollection.AsQueryable(), ReportableCollection);
 
             DateTime reporting_data_date = DataDate;
             TimeSpan reporting_interval = ChronologicalHelpers.ConvertProgressIntervalToPeriod(loadPROGRESS);
             DateTime first_aligned_data_date = ChronologicalHelpers.GenerateFirstAlignedDataDate(loadPROGRESS);
-            DeliverableSummaryStats projectSummary = new DeliverableSummaryStats(MainViewModel.Entities, reporting_data_date, reporting_interval, first_aligned_data_date, projectVariationAdjustment);
+            DeliverableSummaryStats projectSummary = new DeliverableSummaryStats(MainViewModel.Entities, reporting_data_date, reporting_interval, first_aligned_data_date);
             FullStatsBuilder fullStatsBuilder = new FullStatsBuilder(loadPROJECT.NUMBER, loadPROJECT.CURRENCYCONVERSION, reporting_interval, first_aligned_data_date, SUBJOBCollection, reporting_data_date, primeroUnitOfWork);
-            fullSummarizer = new FullSummarizer(projectSummary, fullStatsBuilder, loadPROJECT.NUMBER);
-            fullSummarizer.BuildBurnedDataPoints(false, false, false, false, true);
-            fullSummarizer.Build();
+            fullSummarizer = new FullSummarizer(projectSummary, fullStatsBuilder, loadPROJECT.NUMBER, false);
+            fullSummarizer.BuildBurnedDataPoints(DashboardEXOQueryType.TimeOnly, false, true);
+            List<StatsCalculationType> statsCalcType = new List<StatsCalculationType>();
+            statsCalcType.Add(StatsCalculationType.Planned);
+            statsCalcType.Add(StatsCalculationType.Earned);
+            statsCalcType.Add(StatsCalculationType.Remaining);
+            fullSummarizer.Build(true, 1, statsCalcType);
 
             progressReport.AssignProperties(projectSummary, DataDate, loadPROGRESS.PROJECT.NAME);
             var previewWindow = new DocumentPreviewWindow();

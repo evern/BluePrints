@@ -86,7 +86,6 @@ namespace BluePrints.ViewModels
             is_load_p6_task = true;
             bluePrintsUOW = bluePrintsUnitOfWorkFactory.CreateUnitOfWork();
 
-            extrapolateDataDate = true;
             focusLastColumnTimer.Interval = 1000;
             focusLastColumnTimer.Elapsed += FocusLastColumnTimer_Elapsed;
             GlobalMethods.SetAccordionExpandedState?.Invoke(false);
@@ -94,6 +93,7 @@ namespace BluePrints.ViewModels
             gridRefreshDispatcherTimer = new DispatcherTimer();
             gridRefreshDispatcherTimer.Interval = new TimeSpan(0, 0, 0, 1);
 
+            skipExoDataLoading = true;
             base.resolveParameters(parameter);
         }
 
@@ -166,7 +166,7 @@ namespace BluePrints.ViewModels
         protected override Func<IRepositoryQuery<BASELINE_ITEM>, IQueryable<BASELINE_ITEMProgress>>
             specifyMainViewModelProjection()
         {
-            return query => ProgressQueries.OffsiteDirectProgressItemTransformation(query.Where(x => x.GUID_BASELINE == loadBASELINE.GUID), loadPROJECT, loadPROGRESS, RATECollection, PROGRESS_ITEMCollection, VARIATIONCollection, false, P6_ASSIGNMENTCollection, DeliverableInternalNumberMode.Default, false, P6TASKCollection, null, null, DateTime.Now.Date, null, DELIVERABLES_STATUSCollection, DSTATUS_DOCTYPECollection);
+            return query => ProgressQueries.OffsiteDirectProgressItemTransformation(query.Where(x => x.GUID_BASELINE == loadBASELINE.GUID), loadPROJECT, loadPROGRESS, RATECollection, PROGRESS_ITEMCollection, VARIATIONCollection, false, P6_ASSIGNMENTCollection, DeliverableInternalNumberMode.Default, false, P6TASKCollection, null, null, DateTime.Now.Date, null, DELIVERABLES_STATUSCollection, DSTATUS_DOCTYPECollection, null, null, null, null, false, true);
         }
 
         bool isBestFitApplied;
@@ -249,7 +249,7 @@ namespace BluePrints.ViewModels
         #endregion
 
         #endregion
-
+        
         #region View Properties
         public override void FullRefresh()
         {
@@ -630,11 +630,11 @@ namespace BluePrints.ViewModels
 
         private void updatePercentage(BASELINE_ITEMProgress entity, string fieldName, object oldValue, object newValue, out ErrorMessage errorMessage)
         {
-            if (entity.Total_Units == 0)
-            {
-                errorMessage = new ErrorMessage(entity.Deliverable_Name, "Deliverable doesn't have any units to progress");
-                return;
-            }
+            //if (entity.Total_Units == 0)
+            //{
+            //    errorMessage = new ErrorMessage(entity.Deliverable_Name, "Deliverable doesn't have any units to progress");
+            //    return;
+            //}
 
             errorMessage = null;
             DateTime columnDate;
@@ -692,17 +692,14 @@ namespace BluePrints.ViewModels
                         {
                             totalUnitsDifferences = -1 * currentPeriodPROGRESS_ITEM.EarnedUnits;
                             postEditUnits = 0;
-                            errorMessage = new ErrorMessage(entity.Deliverable_Name, "Cannot go below currently assigned units, hence current % is set to lowest possible %. Please check past progress to reduce % further");
+                            //errorMessage = new ErrorMessage(entity.Deliverable_Name, "Cannot go below currently assigned units, hence current % is set to lowest possible %. Please check past progress to reduce % further");
                         }
-                        else
-                        {
-                            decimal oldProgressValue = currentPeriodPROGRESS_ITEM.EarnedUnits;
-                            currentPeriodPROGRESS_ITEM.EarnedUnits = postEditUnits;
-                            //use this to fix time issue
-                            currentPeriodPROGRESS_ITEM.EARNED_DATE = currentProgressDate;
-                            PROGRESS_ITEMSCollectionViewModel.EntitiesUndoRedoManager.AddUndo(currentPeriodPROGRESS_ITEM, earnedUnitsFieldName, oldProgressValue, postEditUnits, EntityMessageType.Changed);
-                            progressToSave.Add(currentPeriodPROGRESS_ITEM);
-                        }
+                        decimal oldProgressValue = currentPeriodPROGRESS_ITEM.EARNED_UNITS;
+                        currentPeriodPROGRESS_ITEM.EARNED_UNITS = postEditUnits;
+                        //use this to fix time issue
+                        currentPeriodPROGRESS_ITEM.EARNED_DATE = currentProgressDate;
+                        PROGRESS_ITEMSCollectionViewModel.EntitiesUndoRedoManager.AddUndo(currentPeriodPROGRESS_ITEM, earnedUnitsFieldName, oldProgressValue, postEditUnits, EntityMessageType.Changed);
+                        progressToSave.Add(currentPeriodPROGRESS_ITEM);
                     }
                     else
                     {
@@ -815,6 +812,9 @@ namespace BluePrints.ViewModels
             //else if (deliverable.Stats.Budgeted.CurrentPeriodDataPoint != null && deliverable.Stats.Budgeted.CumulativeDataPoints.Count > 0)
             //    return deliverable.Stats.Budgeted.CumulativeDataPoints.Last().BudgetedUnits;
             //else
+            if (deliverable.Total_Units == 0)
+                return BluePrintsConstants.DurationBasedTotalUnits;
+
             return deliverable.Total_Units;
         }
 
@@ -1179,16 +1179,19 @@ namespace BluePrints.ViewModels
 
             TimeSpan reportInterval = ChronologicalHelpers.ConvertProgressIntervalToPeriod(loadPROGRESS);
             DateTime firstAlignedDataDate = ChronologicalHelpers.GenerateFirstAlignedDataDate(loadPROGRESS);
-            List<VariationAdjustment> projectVariationAdjustment = ProjectionHelpers.BuildProjectVariationAdjustments(VARIATIONCollection.AsQueryable(), ReportableCollection);
 
             DateTime reporting_data_date = loadPROGRESS.DATA_DATE;
             TimeSpan reporting_interval = ChronologicalHelpers.ConvertProgressIntervalToPeriod(loadPROGRESS);
             DateTime first_aligned_data_date = ChronologicalHelpers.GenerateFirstAlignedDataDate(loadPROGRESS);
-            DeliverableSummaryStats projectSummary = new DeliverableSummaryStats(MainViewModel.Entities, reporting_data_date, reporting_interval, first_aligned_data_date, projectVariationAdjustment);
+            DeliverableSummaryStats projectSummary = new DeliverableSummaryStats(MainViewModel.Entities, reporting_data_date, reporting_interval, first_aligned_data_date);
             FullStatsBuilder fullStatsBuilder = new FullStatsBuilder(loadPROJECT.NUMBER, loadPROJECT.CURRENCYCONVERSION, reporting_interval, first_aligned_data_date, SUBJOBCollection, reporting_data_date, primeroUnitOfWork);
-            fullSummarizer = new FullSummarizer(projectSummary, fullStatsBuilder, loadPROJECT.NUMBER);
-            fullSummarizer.BuildBurnedDataPoints(false, false, false, false, true);
-            fullSummarizer.Build();
+            fullSummarizer = new FullSummarizer(projectSummary, fullStatsBuilder, loadPROJECT.NUMBER, false);
+            fullSummarizer.BuildBurnedDataPoints(DashboardEXOQueryType.TimeOnly, false, true);
+            List<StatsCalculationType> statsCalcType = new List<StatsCalculationType>();
+            statsCalcType.Add(StatsCalculationType.Planned);
+            statsCalcType.Add(StatsCalculationType.Earned);
+            statsCalcType.Add(StatsCalculationType.Remaining);
+            fullSummarizer.Build(true, 1, statsCalcType);
 
             progressReport.AssignProperties(projectSummary, loadPROGRESS.DATA_DATE, loadPROGRESS.PROJECT.NAME);
             var previewWindow = new DocumentPreviewWindow();

@@ -9,12 +9,13 @@ using System.Diagnostics;
 using BaseModel.Data.Helpers;
 using BluePrints.Common.ViewModel.Utils;
 using BluePrints.PrimeroData.PrimeroEntitiesDataModel;
+using BluePrints.Common.Misc;
 
 namespace BluePrints.Common.ViewModel.Reporting
 {
     public interface IStatsSummarizer
     {
-        void Build(bool showLoadingScreen = true, bool isCosts = false, decimal weightingPortion = 1, List<StatsCalculationType> calcTypes = null, bool useProductivity = false);
+        void Build(bool showLoadingScreen = true, decimal weightingPortion = 1, List<StatsCalculationType> calcTypes = null, bool isVariationSeparated = false, bool useProductivity = false);
         void Summarize();
     }
 
@@ -27,7 +28,7 @@ namespace BluePrints.Common.ViewModel.Reporting
             set { summaryObject = value; }
         }
 
-        public virtual void Build(bool showLoadingScreen = true, bool isCosts = false, decimal weightingPortion = 1, List<StatsCalculationType> calcTypes = null, bool useProductivity = false)
+        public virtual void Build(bool showLoadingScreen = true, decimal weightingPortion = 1, List<StatsCalculationType> calcTypes = null, bool isVariationSeparated = false, bool useProductivity = false)
         {
             if(showLoadingScreen)
                 LoadingScreenManager.ShowLoadingScreen(GetAllMaxProgress(calcTypes));
@@ -35,21 +36,22 @@ namespace BluePrints.Common.ViewModel.Reporting
             if (calcTypes == null)
                 calcTypes = BluePrintsDataUtils.AllCalcTypes;
 
-            if(calcTypes.Contains(StatsCalculationType.Planned))
+            if (calcTypes.Contains(StatsCalculationType.Planned))
             {
                 if (showLoadingScreen)
                     LoadingScreenManager.SetMessage("Retrieving Planned Data...");
 
-                SetBudgetDataPoints(weightingPortion);
-                SetCurrentDataPoints(weightingPortion);
+                //forecast doesn't use budget so IsForecast is false
+                SetBudgetDataPoints(weightingPortion, false, false, isVariationSeparated);
+                SetCurrentDataPoints(weightingPortion, isVariationSeparated);
             }
 
-            if(calcTypes.Contains(StatsCalculationType.Earned))
+            if (calcTypes.Contains(StatsCalculationType.Earned))
             {
                 if (showLoadingScreen)
                     LoadingScreenManager.SetMessage("Retrieving Earned Data...");
 
-                SetEarnedDataPoints(weightingPortion);
+                SetEarnedDataPoints(weightingPortion, isVariationSeparated);
             }
 
             if (calcTypes.Contains(StatsCalculationType.Remaining))
@@ -57,7 +59,7 @@ namespace BluePrints.Common.ViewModel.Reporting
                 if (showLoadingScreen)
                     LoadingScreenManager.SetMessage("Retrieving Remaining Data...");
 
-                SetRemainingDataPoints(weightingPortion, useProductivity);
+                SetRemainingDataPoints(weightingPortion, false, isVariationSeparated);
             }
 
             if (calcTypes.Contains(StatsCalculationType.Forecast))
@@ -65,8 +67,8 @@ namespace BluePrints.Common.ViewModel.Reporting
                 if (showLoadingScreen)
                     LoadingScreenManager.SetMessage("Retrieving Forecast Data...");
 
-                SetBudgetDataPoints(weightingPortion, true);
-                SetRemainingDataPoints(weightingPortion, useProductivity, true);
+                SetBudgetDataPoints(weightingPortion, true, false, isVariationSeparated);
+                SetRemainingDataPoints(weightingPortion, true, isVariationSeparated);
             }
 
             Summarize();
@@ -103,16 +105,16 @@ namespace BluePrints.Common.ViewModel.Reporting
         }
         
         public abstract int SetBudgetDataPointsProgress();
-        public abstract void SetBudgetDataPoints(decimal weightingPortion = 1, bool isForecast = false, bool buildLate = true);
+        public abstract void SetBudgetDataPoints(decimal weightingPortion = 1, bool isForecast = false, bool buildLate = true, bool isVariationSeparated = false);
 
         public abstract int SetCurrentDataPointsProgress();
-        public abstract void SetCurrentDataPoints(decimal weightingPortion = 1);
+        public abstract void SetCurrentDataPoints(decimal weightingPortion = 1, bool isVariationSeparated = false);
 
         public abstract int SetEarnedDataPointsProgress();
-        public abstract void SetEarnedDataPoints(decimal weightingPortion = 1);
+        public abstract void SetEarnedDataPoints(decimal weightingPortion = 1, bool isVariationSeparated = false);
 
         public abstract int SetRemainingDataPointsProgress();
-        public abstract void SetRemainingDataPoints(decimal weightingPortion = 1, bool useProductivity = false, bool isForecast = false);
+        public abstract void SetRemainingDataPoints(decimal weightingPortion = 1, bool isForecast = false, bool isVariationSeparated = false);
 
         public virtual void Summarize()
         {
@@ -126,104 +128,103 @@ namespace BluePrints.Common.ViewModel.Reporting
     {
         readonly PartialStatsBuilder partialStatsBuilder;
         readonly string projectNumber;
+        readonly bool isSummariseByWBS;
 
-        public PartialSummarizer(SummaryStats summarizableObject, PartialStatsBuilder partialStatsBuilder, string projectNumber)
+        public PartialSummarizer(SummaryStats summarizableObject, PartialStatsBuilder partialStatsBuilder, string projectNumber, bool isSummariseByWBS)
         {
+            this.isSummariseByWBS = isSummariseByWBS;
             SummaryStats = summarizableObject;
             this.partialStatsBuilder = partialStatsBuilder;
             this.projectNumber = projectNumber;
         }
 
-        public void BuildBudgeted(decimal weightingPortion = 1, decimal unitsPerQty = 1, bool buildCurrent = true, bool buildLate = true)
+        public void BuildBudgeted(decimal weightingPortion = 1, decimal unitsPerQty = 1, bool buildCurrent = true, bool buildLate = true, bool isVariationSeparated = false)
         {
-            SetBudgetDataPoints(weightingPortion, false, buildLate);
+            SetBudgetDataPoints(weightingPortion, false, buildLate, isVariationSeparated);
             if(buildCurrent)
                 SetCurrentDataPoints(weightingPortion);
         }
 
-        public void BuildEarned(decimal weightingPortion = 1)
+        public void BuildEarned(decimal weightingPortion = 1, bool isVariationSeparated = false)
         {
-            SetEarnedDataPoints(weightingPortion);
+            SetEarnedDataPoints(weightingPortion, isVariationSeparated);
         }
 
-        public void BuildRemaining(decimal weightingPortion = 1, bool isForecast = false)
+        public void BuildRemaining(decimal weightingPortion = 1, bool isForecast = false, bool isVariationSeparated = false)
         {
-            SetRemainingDataPoints(weightingPortion, isForecast);
+            SetRemainingDataPoints(weightingPortion, isForecast, isVariationSeparated);
         }
 
         public override int SetBudgetDataPointsProgress()
         {
-            return ((SummaryStats)this.SummaryStats).Reportables.Count();
+            if (isSummariseByWBS)
+                return ((WBSSummary)this.SummaryStats).WBSReportables.Count;
+            else
+                return ((SummaryStats)this.SummaryStats).Reportables.Count();
         }
 
-        public override void SetBudgetDataPoints(decimal weightingPortion = 1, bool isForecast = false, bool buildLate = true)
+        public override void SetBudgetDataPoints(decimal weightingPortion = 1, bool isForecast = false, bool buildLate = true, bool isVariationSeparated = false)
         {
             using (BluePrintsEntities bluePrintDataContext = new BluePrintsEntities())
             {
-                List<StoredProcedure_PlannedDataPoint> plannedDataPoints = bluePrintDataContext.QueryDeliverablePlannedDataPointsByProject(this.projectNumber, isForecast);
-                List<StoredProcedure_PlannedDataPoint> plannedLateDataPoints = null;
-                if(buildLate)
-                    plannedLateDataPoints = bluePrintDataContext.QueryDeliverablePlannedLateDataPointsByProject(this.projectNumber);
-
-                foreach (IReportable reportableObject in ((SummaryStats)this.SummaryStats).Reportables)
+                if(isSummariseByWBS)
                 {
-                    double qtyPerUnit = reportableObject.Total_Units == 0 ? 0 : Convert.ToDouble(reportableObject.Total_Quantity / reportableObject.Total_Units);
-                    List<StoredProcedure_PlannedDataPoint> weightedPlannedDataPoints = new List<StoredProcedure_PlannedDataPoint>();
-                    foreach (StoredProcedure_PlannedDataPoint plannedDataPoint in plannedDataPoints.Where(x => x.Original_Guid == reportableObject.OriginalEntityKey))
+                    List<X_WBS_GROUPED_DATAPOINT> budgetedWBSDataPoints = BluePrintsContextHelper.GetWBSGroupedDataPointsSummary(projectNumber, true, false, false, isForecast);
+                    List<X_WBS_GROUPED_DATAPOINT> budgetedLateWBSDataPoints = new List<X_WBS_GROUPED_DATAPOINT>();
+                    if(buildLate)
+                        budgetedLateWBSDataPoints = BluePrintsContextHelper.GetWBSGroupedDataPointsSummary(this.projectNumber, true, true, false, isForecast);
+
+                    foreach (WBSReportable reportableObject in ((WBSSummary)SummaryStats).WBSReportables)
                     {
-                        if(reportableObject.AssignedUsers.Count() > 0)
-                        {
-                            foreach (User_Weight user in reportableObject.AssignedUsers)
-                            {
-                                StoredProcedure_PlannedDataPoint weightedPlannedDataPoint = new StoredProcedure_PlannedDataPoint();
-                                DataUtils.ShallowCopy(weightedPlannedDataPoint, plannedDataPoint);
-                                weightedPlannedDataPoint.PeriodPlannedUnits *= user.AggregateWeightDbl;
-                                weightedPlannedDataPoint.PeriodPlannedPrice *= user.AggregateWeightDbl;
-                                weightedPlannedDataPoint.PeriodPlannedQuantity = weightedPlannedDataPoint.PeriodPlannedUnits * qtyPerUnit;
-                                weightedPlannedDataPoints.Add(weightedPlannedDataPoint);
-                            }
-                        }
-                        else
-                        {
-                            plannedDataPoint.PeriodPlannedQuantity = plannedDataPoint.PeriodPlannedUnits * qtyPerUnit;
-                            weightedPlannedDataPoints.Add(plannedDataPoint);
-                        }
+                        reportableObject.AssignWBSReportableData(x => x.Budgeted.SetPlannedData, budgetedWBSDataPoints, isVariationSeparated);
+                        reportableObject.AssignWBSReportableData(x => x.BudgetedLate.SetPlannedData, budgetedLateWBSDataPoints, isVariationSeparated);
+                    }
+                }
+                else
+                {
+                    List<Data.DataPoint> plannedDataPoints = bluePrintDataContext.QueryDeliverablePlannedDataPointsByProject(this.projectNumber, isForecast);
+                    List<Data.DataPoint> plannedLateDataPoints = new List<Data.DataPoint>();
+                    if (buildLate)
+                        plannedLateDataPoints = bluePrintDataContext.QueryDeliverablePlannedLateDataPointsByProject(this.projectNumber);
 
-                        reportableObject.Stats.Budgeted.SetPlannedData(weightedPlannedDataPoints);
-
-                        if(buildLate)
-                        {
-                            List<StoredProcedure_PlannedDataPoint> weightedPlannedLateDataPoints = new List<StoredProcedure_PlannedDataPoint>();
-                            foreach (StoredProcedure_PlannedDataPoint plannedLateDataPoint in plannedLateDataPoints.Where(x => x.Original_Guid == reportableObject.OriginalEntityKey))
-                            {
-                                if (reportableObject.AssignedUsers.Count() > 0)
-                                {
-                                    foreach (User_Weight user in reportableObject.AssignedUsers)
-                                    {
-                                        StoredProcedure_PlannedDataPoint weightedPlannedLateDataPoint = new StoredProcedure_PlannedDataPoint();
-                                        DataUtils.ShallowCopy(weightedPlannedLateDataPoint, plannedLateDataPoint);
-                                        weightedPlannedLateDataPoint.PeriodPlannedUnits *= user.AggregateWeightDbl;
-                                        weightedPlannedLateDataPoint.PeriodPlannedPrice *= user.AggregateWeightDbl;
-                                        weightedPlannedLateDataPoint.PeriodPlannedQuantity = weightedPlannedLateDataPoint.PeriodPlannedUnits * qtyPerUnit;
-                                        weightedPlannedLateDataPoints.Add(weightedPlannedLateDataPoint);
-                                    }
-                                }
-                                else
-                                {
-                                    plannedLateDataPoint.PeriodPlannedQuantity = plannedLateDataPoint.PeriodPlannedUnits * qtyPerUnit;
-                                    weightedPlannedLateDataPoints.Add(plannedLateDataPoint);
-                                }
-                            }
-
-                            reportableObject.Stats.BudgetedLate.SetPlannedData(weightedPlannedLateDataPoints);
-                        }
+                    foreach (IReportable reportableObject in ((SummaryStats)this.SummaryStats).Reportables)
+                    {
+                        assignDataPointsByGuid(reportableObject, x => x.Stats.Budgeted, plannedDataPoints, reportableObject.OriginalEntityKey);
+                        assignDataPointsByGuid(reportableObject, x => x.Stats.BudgetedLate, plannedDataPoints, reportableObject.OriginalEntityKey);
 
                         reportableObject.Update();
+                        LoadingScreenManager.Progress();
                     }
-
-                    LoadingScreenManager.Progress();
                 }
             }
+        }
+
+        private void assignDataPointsByGuid(IReportable reportableObject, Func<IReportable, Stats> getProgressStatsFunc, IEnumerable<Data.DataPoint> dataPoints, Guid originalGuid)
+        {
+            double qtyPerUnit = reportableObject.Total_Units == 0 ? 0 : Convert.ToDouble(reportableObject.Total_Quantity / reportableObject.Total_Units);
+            List<Data.DataPoint> weightedDataPoints = new List<Data.DataPoint>();
+            foreach (Data.DataPoint dataPoint in dataPoints.Where(x => x.Original_Guid == originalGuid))
+            {
+                if (reportableObject.AssignedUsers.Count() > 0)
+                {
+                    foreach (User_Weight user in reportableObject.AssignedUsers)
+                    {
+                        Data.DataPoint weightedPlannedLateDataPoint = new Data.DataPoint();
+                        DataUtils.ShallowCopy(weightedPlannedLateDataPoint, dataPoint);
+                        weightedPlannedLateDataPoint.PeriodUnits *= user.AggregateWeightDbl;
+                        weightedPlannedLateDataPoint.PeriodPrice *= user.AggregateWeightDbl;
+                        weightedPlannedLateDataPoint.PeriodQuantity = weightedPlannedLateDataPoint.PeriodUnits * qtyPerUnit;
+                        weightedDataPoints.Add(weightedPlannedLateDataPoint);
+                    }
+                }
+                else
+                {
+                    dataPoint.PeriodQuantity = dataPoint.PeriodUnits * qtyPerUnit;
+                    weightedDataPoints.Add(dataPoint);
+                }
+            }
+
+            getProgressStatsFunc(reportableObject).SetPlannedData(weightedDataPoints);
         }
 
         public override int SetCurrentDataPointsProgress()
@@ -231,65 +232,115 @@ namespace BluePrints.Common.ViewModel.Reporting
             return 0;
         }
 
-        public override void SetCurrentDataPoints(decimal weightingPortion = 1)
+        public override void SetCurrentDataPoints(decimal weightingPortion = 1, bool isVariationSeparated = false)
         {
             using (BluePrintsEntities bluePrintDataContext = new BluePrintsEntities())
             {
-                List<StoredProcedure_PlannedDataPoint> currentDataPoints = bluePrintDataContext.QueryDeliverableCurrentDataPointsByProject(this.projectNumber);
-
-                foreach (IReportable reportableObject in ((SummaryStats)this.SummaryStats).Reportables)
+                if(isSummariseByWBS)
                 {
-                    List<StoredProcedure_PlannedDataPoint> weightedPlannedDataPoints = new List<StoredProcedure_PlannedDataPoint>();
-                    foreach (StoredProcedure_PlannedDataPoint plannedDataPoint in currentDataPoints.Where(x => x.Original_Guid == reportableObject.OriginalEntityKey))
+                    List<X_WBS_GROUPED_DATAPOINT> budgetedWBSDataPoints = BluePrintsContextHelper.GetWBSGroupedDataPointsSummary(projectNumber, true, false, false, false);
+                    foreach (WBSReportable reportableObject in ((WBSSummary)SummaryStats).WBSReportables)
                     {
-                        if (reportableObject.AssignedUsers.Count() > 0)
-                        {
-                            foreach (User_Weight user in reportableObject.AssignedUsers)
-                            {
-                                StoredProcedure_PlannedDataPoint weightedPlannedDataPoint = new StoredProcedure_PlannedDataPoint();
-                                DataUtils.ShallowCopy(weightedPlannedDataPoint, plannedDataPoint);
-                                weightedPlannedDataPoint.PeriodPlannedUnits *= user.AggregateWeightDbl;
-                                weightedPlannedDataPoint.PeriodPlannedPrice *= user.AggregateWeightDbl;
-                                weightedPlannedDataPoints.Add(weightedPlannedDataPoint);
-                            }
-                        }
-                        else
-                        {
-                            StoredProcedure_PlannedDataPoint weightedPlannedDataPoint = new StoredProcedure_PlannedDataPoint();
-                            DataUtils.ShallowCopy(weightedPlannedDataPoint, plannedDataPoint);
-                            weightedPlannedDataPoints.Add(weightedPlannedDataPoint);
-                        }
+                        reportableObject.AssignWBSReportableData(x => x.Current.SetPlannedData, budgetedWBSDataPoints, isVariationSeparated);
+                        LoadingScreenManager.Progress();
                     }
-
-                    reportableObject.Stats.Current.SetPlannedData(weightedPlannedDataPoints);
-                    reportableObject.Update();
-
-                    LoadingScreenManager.Progress();
+                }
+                else
+                {
+                    List<Data.DataPoint> currentDataPoints = bluePrintDataContext.QueryDeliverableCurrentDataPointsByProject(this.projectNumber);
+                    foreach (IReportable reportableObject in ((SummaryStats)this.SummaryStats).Reportables)
+                    {
+                        assignDataPointsByGuid(reportableObject, x => x.Stats.Current, currentDataPoints, reportableObject.OriginalEntityKey);
+                        reportableObject.Update();
+                        LoadingScreenManager.Progress();
+                    }
                 }
             }
         }
 
-        private void SummarizeRemainingDataPointsFromQuery(string ProjectNumber)
-        {
-
-        }
-
         public override int SetEarnedDataPointsProgress()
         {
-            return ((SummaryStats)this.SummaryStats).Reportables.Count();
+            if (isSummariseByWBS)
+                return ((WBSSummary)this.SummaryStats).WBSReportables.Count;
+            else
+                return ((SummaryStats)this.SummaryStats).Reportables.Count();
         }
 
         /// <summary>
         /// Calculates each baselineItem earned data point while populating aggregate non cumulative earned data points
         /// </summary>
         /// <returns>Non cumulative earned progress data points</returns>
-        public override void SetEarnedDataPoints(decimal weightingPortion = 1)
+        public override void SetEarnedDataPoints(decimal weightingPortion = 1, bool isVariationSeparated = false)
         {
-            foreach (IReportable progressItemStat in ((SummaryStats)this.SummaryStats).Reportables)
+            if(isSummariseByWBS)
             {
-                decimal qtyPerUnit = progressItemStat.Total_Units == 0 ? 0 : progressItemStat.Total_Quantity / progressItemStat.Total_Units;
-                partialStatsBuilder.BuildEarnedDataPoints(progressItemStat, qtyPerUnit);
-                LoadingScreenManager.Progress();
+                using (BluePrintsEntities bluePrintDataContext = new BluePrintsEntities())
+                {
+                    List<X_EARNED_QUERY> earnedQueries = BluePrintsContextHelper.GetEarnedSummary(projectNumber, SummaryStats.ReportingDataDate);
+                    List<EarnedQueriesGroup> earnedQueriesGroups;
+                    if(isVariationSeparated)
+                        earnedQueriesGroups = earnedQueries.GroupBy(x => new { x.SubJobCode, x.DisciplineCode, x.CommodityCode, x.VariationCode }).Select(g => new EarnedQueriesGroup(g.Key.SubJobCode, g.Key.DisciplineCode, g.Key.CommodityCode, g.Key.VariationCode, g)).ToList();
+                    else
+                        earnedQueriesGroups = earnedQueries.GroupBy(x => new { x.SubJobCode, x.DisciplineCode, x.CommodityCode, x.VariationCode }).Select(g => new EarnedQueriesGroup(g.Key.SubJobCode, g.Key.DisciplineCode, g.Key.CommodityCode, "", g)).ToList();
+
+                    foreach (WBSReportable reportableObject in ((WBSSummary)SummaryStats).WBSReportables)
+                    {
+                        decimal qtyPerUnit = reportableObject.TotalUnits == 0 ? 0 : reportableObject.TotalQty / reportableObject.TotalUnits;
+                        EarnedQueriesGroup earnedQueriesGroup;
+                        if(isVariationSeparated)
+                            earnedQueriesGroup = earnedQueriesGroups.FirstOrDefault(x => x.SubJobCode == reportableObject.SUBJOB_CODE && x.DisciplineCode == reportableObject.DISCIPLINE_CODE && x.CommodityCode == reportableObject.COMMODITY_CODE && x.VariationCode == reportableObject.VARIATION_CODE);
+                        else
+                            earnedQueriesGroup = earnedQueriesGroups.FirstOrDefault(x => x.SubJobCode == reportableObject.SUBJOB_CODE && x.DisciplineCode == reportableObject.DISCIPLINE_CODE && x.CommodityCode == reportableObject.COMMODITY_CODE);
+
+                        if (earnedQueriesGroup != null)
+                        {
+                            List<DataPoint> progressItemEarnedDataPoints;
+                            if (reportableObject.AllowPercentageOnZeroTotalUnits)
+                            {
+                                progressItemEarnedDataPoints = earnedQueriesGroup.EarnedQueries.Select(x => new DataPoint()
+                                {
+                                    TotalUnits = reportableObject.TotalUnits == 0 ? BluePrintsConstants.DurationBasedTotalUnits : reportableObject.TotalUnits,
+                                    TotalCosts = reportableObject.TotalCosts,
+                                    BudgetedUnits = reportableObject.BudgetedUnits,
+                                    BudgetedCosts = reportableObject.BudgetedCosts,
+                                    Units = x.EARNED_UNITS,
+                                    Quantity = x.EARNED_UNITS * qtyPerUnit,
+                                    Costs = x.EarnedPrice,
+                                    ProgressDate = x.EARNED_DATE,
+                                }).ToList();
+                            }
+                            else
+                            {
+                                progressItemEarnedDataPoints = earnedQueriesGroup.EarnedQueries.Select(x => new DataPoint()
+                                {
+                                    TotalUnits = reportableObject.TotalUnits,
+                                    TotalCosts = reportableObject.TotalCosts,
+                                    BudgetedUnits = reportableObject.BudgetedUnits,
+                                    BudgetedCosts = reportableObject.BudgetedCosts,
+                                    Units = x.ReportingEarnedUnits,
+                                    Quantity = x.ReportingEarnedUnits * qtyPerUnit,
+                                    Costs = x.EarnedPrice,
+                                    ProgressDate = x.EARNED_DATE,
+                                }).ToList();
+                            }
+
+                            //adjust set earned data should only be performed at this level (lowest level), summary dashboard entity will just use set data
+                            reportableObject.Earned.SetData(progressItemEarnedDataPoints);
+                            reportableObject.TenderEarned.SetData(progressItemEarnedDataPoints);
+                        }
+
+                        LoadingScreenManager.Progress();
+                    }
+                }
+            }
+            else
+            {
+                foreach (IReportable progressItemStat in ((SummaryStats)this.SummaryStats).Reportables)
+                {
+                    decimal qtyPerUnit = progressItemStat.Total_Units == 0 ? 0 : progressItemStat.Total_Quantity / progressItemStat.Total_Units;
+                    partialStatsBuilder.BuildEarnedDataPoints(progressItemStat, qtyPerUnit);
+                    LoadingScreenManager.Progress();
+                }
             }
         }
 
@@ -298,43 +349,52 @@ namespace BluePrints.Common.ViewModel.Reporting
             return ((SummaryStats)this.SummaryStats).Reportables.Count();
         }
 
-        public override void SetRemainingDataPoints(decimal weightingPortion = 1, bool useProductivity = false, bool isForecast = false)
+        public override void SetRemainingDataPoints(decimal weightingPortion = 1, bool isForecast = false, bool isVariationSeparated = false)
         {
             using (BluePrintsEntities bluePrintDataContext = new BluePrintsEntities())
             {
-                List<StoredProcedure_RemainingDataPoint> remainingDataPoints = bluePrintDataContext.QueryDeliverableRemainingDataPointsByProject(this.projectNumber, isForecast);
-                List<PROGRESS_ETC> projectProgressETCs = bluePrintDataContext.QueryProjectProgressETC(this.projectNumber);
-
-                foreach (IReportable reportableObject in ((SummaryStats)this.SummaryStats).Reportables)
+                if(isSummariseByWBS)
                 {
-                    List<StoredProcedure_RemainingDataPoint> storedProcedure_RemainingDataPoints = remainingDataPoints.Where(x => x.Original_Guid == reportableObject.OriginalEntityKey).ToList();
-                    if (useProductivity)
+                    List<X_WBS_GROUPED_DATAPOINT> remainingWBSDataPoints = BluePrintsContextHelper.GetWBSGroupedDataPointsSummary(projectNumber, false, false, false, isForecast);
+                    foreach (WBSReportable reportableObject in ((WBSSummary)SummaryStats).WBSReportables)
                     {
-                        //not using this here but ref is required
-                        bool isOverride = false;
-                        decimal productivity = BluePrintsDataUtils.GetStockLevelProductivity(reportableObject, ref isOverride);
-                        storedProcedure_RemainingDataPoints.ForEach(x => productivityInflation(x, productivity));
+                        IEnumerable<X_WBS_GROUPED_DATAPOINT> findRemainingWBSDataPoints;
+                        if (isVariationSeparated)
+                            findRemainingWBSDataPoints = remainingWBSDataPoints.Where(x => x.SubJobCode == reportableObject.SUBJOB_CODE && x.DisciplineCode == reportableObject.DISCIPLINE_CODE && x.CommodityCode == reportableObject.COMMODITY_CODE && x.VariationCode == reportableObject.VARIATION_CODE);
+                        else
+                            findRemainingWBSDataPoints = remainingWBSDataPoints.Where(x => x.SubJobCode == reportableObject.SUBJOB_CODE && x.DisciplineCode == reportableObject.DISCIPLINE_CODE && x.CommodityCode == reportableObject.COMMODITY_CODE);
+
+                        reportableObject.Remaining.SetRemainingData(findRemainingWBSDataPoints, reportableObject.Earned.GetData());
+                        LoadingScreenManager.Progress();
                     }
-
-                    reportableObject.Stats.Remaining.SetRemainingData(storedProcedure_RemainingDataPoints, reportableObject.Stats.Earned.GetData());
-                    if (isForecast)
-                        reportableObject.SetProgressETCs(projectProgressETCs.Where(x => x.GUID_ORIBASEITEM == reportableObject.OriginalEntityKey).ToList());
-
-                    reportableObject.Update();
                 }
+                else
+                {
+                    List<Data.DataPoint> remainingDataPoints = bluePrintDataContext.QueryDeliverableRemainingDataPointsByProject(this.projectNumber, isForecast);
+                    List<PROGRESS_ETC> projectProgressETCs = bluePrintDataContext.QueryProjectProgressETC(this.projectNumber);
 
-                LoadingScreenManager.Progress();
+                    foreach (IReportable reportableObject in ((SummaryStats)this.SummaryStats).Reportables)
+                    {
+                        List<Data.DataPoint> dataPoints = remainingDataPoints.Where(x => x.Original_Guid == reportableObject.OriginalEntityKey).ToList();
+                        reportableObject.Stats.Remaining.SetRemainingData(dataPoints, reportableObject.Stats.Earned.GetData());
+                        if (isForecast)
+                            reportableObject.SetProgressETCs(projectProgressETCs.Where(x => x.GUID_ORIBASEITEM == reportableObject.OriginalEntityKey).ToList());
+
+                        reportableObject.Update();
+                        LoadingScreenManager.Progress();
+                    }
+                }
             }
         }
 
         /// <summary>
         /// Inflate datapoint's units and price by a factor
         /// </summary>
-        private void productivityInflation(StoredProcedure_RemainingDataPoint dataPoint, decimal productivity)
+        private void productivityInflation(Data.DataPoint dataPoint, decimal productivity)
         {
             double dblProductivity = Convert.ToDouble(productivity);
-            dataPoint.PeriodRemainingUnits = dataPoint.PeriodRemainingUnits / dblProductivity;
-            dataPoint.PeriodRemainingPrice = dataPoint.PeriodRemainingPrice / dblProductivity;
+            dataPoint.PeriodUnits = dataPoint.PeriodUnits / dblProductivity;
+            dataPoint.PeriodPrice = dataPoint.PeriodPrice / dblProductivity;
         }
 
         public override void Summarize()
@@ -346,19 +406,18 @@ namespace BluePrints.Common.ViewModel.Reporting
     public class FullSummarizer : PartialSummarizer
     {
         readonly FullStatsBuilder FullStatsBuilder;
-
-        public FullSummarizer(ProjectSummaryStats summaryStats, FullStatsBuilder fullStatsBuilder, string projectNumber)
-            : base(summaryStats, fullStatsBuilder, projectNumber)
+        public FullSummarizer(ProjectSummaryStats summaryStats, FullStatsBuilder fullStatsBuilder, string projectNumber, bool isSummariseByWBS)
+            : base(summaryStats, fullStatsBuilder, projectNumber, isSummariseByWBS)
         {
             FullStatsBuilder = fullStatsBuilder;
         }
 
-        public void BuildBurnedDataPoints(bool forceRetrieveAllJobs, bool forceRetrieveAllUnits, bool forceRetrieveAllPOs, bool showLoadingScreen = false, bool timeOnly = false)
+        public void BuildBurnedDataPoints(DashboardEXOQueryType dashboardEXOQueryType = DashboardEXOQueryType.TimeAndMaterial, bool isGroupByWBS = false, bool showLoadingScreen = false, bool forceRetrieveAllJobs = false, bool forceRetrieveAllUnits = false, bool forceRetrieveAllPOs = false)
         {
             ProjectSummaryStats projectSummaryStats = this.SummaryStats as ProjectSummaryStats;
 
             if (projectSummaryStats != null)
-                FullStatsBuilder.BuildExoDataPoints(FullStatsBuilder.PrimeroUOW, projectSummaryStats, forceRetrieveAllJobs, forceRetrieveAllUnits, forceRetrieveAllPOs, showLoadingScreen, timeOnly);
+                FullStatsBuilder.BuildExoDataPoints(FullStatsBuilder.PrimeroUOW, projectSummaryStats, dashboardEXOQueryType, isGroupByWBS, showLoadingScreen, forceRetrieveAllJobs, forceRetrieveAllUnits, forceRetrieveAllPOs);
         }
 
         public void RecalculateStats(bool isCosts)
@@ -390,7 +449,7 @@ namespace BluePrints.Common.ViewModel.Reporting
             return 1;
         }
 
-        public override void SetBudgetDataPoints(decimal weightingPortion = 1, bool isForecast = false, bool buildLate = true)
+        public override void SetBudgetDataPoints(decimal weightingPortion = 1, bool isForecast = false, bool buildLate = true, bool isVariationSeparated = false)
         {
             PartialStatsBuilder.BuildPlannedDataPointsFromQuery(this.progressItem, weightingPortion, isForecast);
             LoadingScreenManager.Progress();
@@ -401,7 +460,7 @@ namespace BluePrints.Common.ViewModel.Reporting
             return 0;
         }
 
-        public override void SetCurrentDataPoints(decimal weightingPortion = 1)
+        public override void SetCurrentDataPoints(decimal weightingPortion = 1, bool isVariationSeparated = false)
         {
 
         }
@@ -411,7 +470,7 @@ namespace BluePrints.Common.ViewModel.Reporting
             return 1;
         }
 
-        public override void SetEarnedDataPoints(decimal weightingPortion = 1)
+        public override void SetEarnedDataPoints(decimal weightingPortion = 1, bool isVariationSeparated = false)
         {
             decimal qtyPerUnit = progressItem.Total_Units == 0 ? 0 : progressItem.Total_Quantity / progressItem.Total_Units;
             PartialStatsBuilder.BuildEarnedDataPoints(progressItem, qtyPerUnit);
@@ -423,7 +482,7 @@ namespace BluePrints.Common.ViewModel.Reporting
             return 1;
         }
 
-        public override void SetRemainingDataPoints(decimal weightingPortion = 1, bool useProductivity = false, bool isForecast = false)
+        public override void SetRemainingDataPoints(decimal weightingPortion = 1, bool isForecast = false, bool isVariationSeparated = false)
         {
             PartialStatsBuilder.BuildRemainingDataPointsFromQuery(progressItem, weightingPortion, isForecast);
             LoadingScreenManager.Progress();

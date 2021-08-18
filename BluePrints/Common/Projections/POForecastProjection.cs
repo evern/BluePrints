@@ -1,4 +1,5 @@
-﻿using BaseModel.Misc;
+﻿using BaseModel.DataModel;
+using BaseModel.Misc;
 using BluePrints.BluePrintsEntitiesDataModel;
 using BluePrints.Common.ViewModel.Reporting;
 using BluePrints.Common.ViewModel.Utils;
@@ -26,7 +27,6 @@ namespace BluePrints.Common.Projections
         public decimal TotalForecast => FORECAST_POs.Where(x => x.FORECAST_DATE > ActualCutOffDate).Where(x => x.FORECAST_VALUE != null).Sum(x => (decimal)x.FORECAST_VALUE);
         public decimal Unforecasted => (PO_RemainingPrice - TotalForecast);
         public bool IsPOError => Math.Round(Unforecasted) != 0;
-
         public decimal ErrorImageWidth => IsPOError ? 15 : 0;
 
         public POForecastProjection()

@@ -33,7 +33,7 @@ namespace BluePrints.Common.ViewModel.Reporting
                     foreach (User_Weight userWeight in projection.AssignedUsers)
                     {
                         BASELINE_ITEMProgress userProjection = new BASELINE_ITEMProgress(project, live_progress, projection.Entity, new List<VariationAdjustment>(), false);
-                        userProjection.Stats = new ProgressStats(projection.Stats.ReportingDataDate, projection.Stats.ReportingInterval, projection.Stats.FirstAlignedDataDate, projection.Stats.BudgetedUnits * userWeight.AggregateWeight, projection.Stats.TotalUnits * userWeight.AggregateWeight, projection.Stats.BudgetedQty * userWeight.AggregateWeight, projection.Stats.TotalQty * userWeight.AggregateWeight, projection.Stats.BudgetedCosts * userWeight.AggregateWeight, projection.Stats.TotalCosts * userWeight.AggregateWeight, new List<VariationAdjustment>());
+                        userProjection.Stats = new ProgressStats(projection.Stats.ReportingDataDate, projection.Stats.ReportingInterval, projection.Stats.FirstAlignedDataDate, projection.Stats.BudgetedUnits * userWeight.AggregateWeight, projection.Stats.TotalUnits * userWeight.AggregateWeight, projection.Stats.BudgetedQty * userWeight.AggregateWeight, projection.Stats.TotalQty * userWeight.AggregateWeight, projection.Stats.BudgetedCosts * userWeight.AggregateWeight, projection.Stats.TotalCosts * userWeight.AggregateWeight);
                         DataUtils.ShallowCopy(userProjection, projection);
                         userProjection.Entity = projection.Entity;
                         userProjection.User_Name = userWeight.UserName;
@@ -180,11 +180,11 @@ namespace BluePrints.Common.ViewModel.Reporting
         public static IQueryable<BASELINE_ITEMProgress> OffsiteDirectProgressItemTransformation(
             IQueryable<BASELINE_ITEM> BASELINE_ITEMS,
             PROJECT PROJECT,
-            PROGRESS PROGRESS = null,
+            PROGRESS PROGRESS,
             IEnumerable<RATE> RATES = null,
             IEnumerable<PROGRESS_ITEM> PROGRESS_ITEMS = null,
             IEnumerable<VARIATION> VARIATIONS = null, bool buildStats = false, IEnumerable<P6_ASSIGNMENT> P6_ASSIGNMENTS = null, DeliverableInternalNumberMode internalNumberMode = DeliverableInternalNumberMode.Default, bool useReportDate = false, IEnumerable<P6Data.TASK> P6_TASKS = null, IEnumerable<USER> USERCollection = null, IEnumerable<BASELINE_ITEM_WORK> BASELINE_ITEM_WORKCollection = null, DateTime? forceExtrapolateDate = null, IEnumerable<REGISTER_HOLD_REF> REGISTER_HOLD_REFCollection = null, IEnumerable<DELIVERABLES_STATUS> DELIVERABLES_STATUSCollection = null, IEnumerable<DSTATUS_DOCTYPE> DSTATUS_DOCTYPECollection = null, Guid? ProjectGuidForDeliverablesStatus = null, IEnumerable<DOCTYPE> DOCTYPECollection = null, IEnumerable<COMMODITY_CODE> COMMODITY_CODECollection = null,
-            IEnumerable<PROGRESS_ETC> PROGRESS_ETCS = null, bool showLoadingScreen = false)
+            IEnumerable<PROGRESS_ETC> PROGRESS_ETCS = null, bool showLoadingScreen = false, bool allowPercentageOnZeroTotalUnits = false)
         {
             IQueryable<BASELINE_ITEMProjection> baseline_item_queryable;
 
@@ -255,7 +255,7 @@ namespace BluePrints.Common.ViewModel.Reporting
                 extrapolateDate = alignedExtrapolateDate;
             }
 
-            List<BASELINE_ITEMProgress> progresses = projections.Select(x => new BASELINE_ITEMProgress(PROJECT, PROGRESS, x, projectVariationAdjustments, useReportDate, extrapolateDate)
+            List<BASELINE_ITEMProgress> progresses = projections.Select(x => new BASELINE_ITEMProgress(PROJECT, PROGRESS, x, projectVariationAdjustments, useReportDate, extrapolateDate, allowPercentageOnZeroTotalUnits)
             {
                 Entity = x,
                 Live_PROGRESS = PROGRESS,

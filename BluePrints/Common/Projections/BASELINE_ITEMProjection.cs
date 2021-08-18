@@ -97,7 +97,7 @@ namespace BluePrints.Common.Projections
 
         public Guid? Workpack_Guid { get => Entity.Workpack_Guid; set => Entity.Workpack_Guid = value; }
 
-        public bool IsByDuration { get => Entity.IsByDuration; set => Entity.IsByDuration = value; }
+        public bool IsByDuration => Total_Units == 0;
 
         public string Commodity_Code => Entity.Commodity_Code;
 
@@ -160,11 +160,11 @@ namespace BluePrints.Common.Projections
 
         public string Variation_Code => string.Empty;
 
-        public decimal Variation_Units => Entity.DC_HOURS;
+        public decimal Variation_Units => throw new NotImplementedException();
 
         public decimal Variation_Costs => 0;
 
-        public decimal Total_Units => Entity.Budget_Units + Entity.DC_HOURS;
+        public decimal Total_Units => Budget_Units + Variation_Units;
 
         public decimal Total_Costs => 0;
 
@@ -252,7 +252,7 @@ namespace BluePrints.Common.Projections
                             docTypeCode = findDOCTYPE.CODE;
                     }
 
-                    if (baseline_item.PHASE.PHASE_TYPE != null)
+                    if (baseline_item.PHASE != null && baseline_item.PHASE.PHASE_TYPE != null)
                     {
                         RATE findRATE = BluePrintsDataUtils.CascadeRateSearch(baseline_item.GUID_AREA, baseline_item.GUID_SUBAREA, baseline_item.GUID_DISCIPLINE, baseline_item.GUID_DEPARTMENT, docTypeCode, string.Empty, RATES, CostType.Charge, (PhaseType)baseline_item.PHASE.PHASE_TYPE);
                         if (findRATE != null)

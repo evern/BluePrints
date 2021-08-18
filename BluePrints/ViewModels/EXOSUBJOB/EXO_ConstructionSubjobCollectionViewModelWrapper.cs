@@ -90,7 +90,7 @@ namespace BluePrints.ViewModels
 
         protected new void initializeCompulsoryViewProperties(Data.PROJECT project)
         {
-            localPrimeroUnitOfWorkFactory = PrimeroEntitiesUnitOfWorkSource.GetUnitOfWorkFactory(loadPROJECT.OfficeNameForExo == BluePrintsResources.OfficeMontreal);
+            localPrimeroUnitOfWorkFactory = PrimeroEntitiesUnitOfWorkSource.GetUnitOfWorkFactory(loadPROJECT.OfficeNameForExo);
             localPrimeroUnitOfWork = localPrimeroUnitOfWorkFactory.CreateUnitOfWork();
         }
 

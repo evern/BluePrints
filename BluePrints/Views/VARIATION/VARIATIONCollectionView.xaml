@@ -29,6 +29,8 @@
                 <dxb:BarCheckItem x:Name="biSubmit" Content="Submit" IsChecked="{Binding IsSubmitted}" IsEnabled="{Binding IsLoading, Converter={dxmvvm:BooleanNegationConverter}}" Glyph="{dx:DXImage Image=BOOrderItem_16x16.png}" LargeGlyph="{dx:DXImage Image=BOOrderItem_32x32.png}" />
                 <dxb:BarCheckItem x:Name="biApprove" Content="Approve" IsChecked="{Binding IsApproved}" IsEnabled="{Binding IsLoading, Converter={dxmvvm:BooleanNegationConverter}}" Glyph="{dx:DXImage Image=BOProduct_16x16.png}" LargeGlyph="{dx:DXImage Image=BOProduct_32x32.png}" />
                 <dxb:BarCheckItem x:Name="biClientApprove" Content="Client Approve" IsChecked="{Binding IsClientApproved}" IsEnabled="{Binding IsLoading, Converter={dxmvvm:BooleanNegationConverter}}" Glyph="{dx:DXImage Image=BOSaleItem_16x16.png}" LargeGlyph="{dx:DXImage Image=BOSaleItem_32x32.png}" />
+                <dxb:BarButtonItem x:Name="biAddToExo" Command="{Binding AddToExoCommand}" Content="Add Variation Code to Exo" LargeGlyph="{dx:DXImage SvgImages/RichEdit/TrackingChanges_Next.svg}" ToolTip="Add selected variation code to EXO" Glyph="{dx:DXImage SvgImages/RichEdit/TrackingChanges_Next.svg}" />
+                <dxb:BarButtonItem x:Name="biRemoveFromExo" Command="{Binding RemoveFromExoCommand}" Content="Remove Variation Code from Exo" ToolTip="Remove selected variation code from EXO" Glyph="{dx:DXImage SvgImages/RichEdit/TrackingChanges_Previous.svg}" LargeGlyph="{dx:DXImage SvgImages/RichEdit/TrackingChanges_Previous.svg}" />
             </dxb:BarManager.Items>
             <DockPanel>
                 <dxr:RibbonControl Style="{StaticResource DefaultRibbonControlStyle}">
@@ -56,6 +58,7 @@
                                 <dxb:BarCheckItemLink BarItemName="biApprove" />
                                 <dxb:BarCheckItemLink BarItemName="biClientApprove" />
                                 <dxb:BarButtonItemLink BarItemName="biUpdateBudget" />
+                                <dxb:BarButtonItemLink BarItemName="biAddToExo" />
                             </dxr:RibbonPageGroup>
                         </dxr:RibbonPage>
                     </dxr:RibbonDefaultPageCategory>
@@ -145,6 +148,8 @@
                                 <dxb:BarCheckItemLink BarItemName="biApprove" />
                                 <dxb:BarCheckItemLink BarItemName="biClientApprove" />
                                 <dxb:BarButtonItemLink BarItemName="biUpdateBudget" />
+                                <dxb:BarItemLinkSeparator />
+                                <dxb:BarButtonItemLink BarItemName="biAddToExo" />
                                 <dxb:BarItemLinkSeparator />
                                 <dxb:BarButtonItemLink BarItemName="biBulkDelete1" />
                                 <dxb:BarButtonItemLink BarItemName="biFullRefresh1" />

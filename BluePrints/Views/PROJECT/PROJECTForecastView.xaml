@@ -311,6 +311,7 @@
                 <dxb:BarButtonItem x:Name="biResetForecast" Command="{Binding ResetCellContentCommand}" Content="Reset Forecast" Glyph="{dx:DXImage Image=Reset_16x16.png}" LargeGlyph="{dx:DXImage Image=Reset_32x32.png}" RibbonStyle="SmallWithText" ToolTip="Reset forecast costs to it's underlying immutable values (PO, indirect, actuals, materials). Shortcut: [Delete] Key" />
                 <dxb:BarButtonItem x:Name="biApplyPF" Command="{Binding ApplyCurrentPFCommand}" Content="Apply PF" Glyph="{dxc:DXImage Images/People/PublicFix_32x32.png}" LargeGlyph="{dx:DXImage Images/People/PublicFix_16x16.png}" RibbonStyle="SmallWithText" ToolTip="Apply current PF to selected rows" />
                 <dxb:BarButtonItem x:Name="biUpdatePF" Command="{Binding UpdateCurrentPFCommand}" Content="Update All PF" Glyph="{dxc:DXImage Images/RichEdit/UpdateTableOfContents_32x32.png}" LargeGlyph="{dx:DXImage Images/RichEdit/UpdateTableOfContents_16x16.png}" RibbonStyle="SmallWithText" ToolTip="Update PF for all jobs that had current PF applied before, to verify which job will get updated, right click on columns, find Show Column Chooser and tick Floating PF" />
+                <dxb:BarButtonItem x:Name="biFirstEAC" Command="{Binding SaveFirstEACCommand}" Content="Save Rev 0" LargeGlyph="{dxc:DXImage Images/Function Library/Financial_32x32.png}" ToolTip="Save current EAC to Rev 0 Budget" Glyph="{dxc:DXImage Images/Function Library/Financial_16x16.png}" />
                 <dxb:BarButtonItem x:Name="biSaveEAC" Command="{Binding SaveCurrentMonthEACCommand}" Content="Save EAC" Glyph="{dxc:DXImage Image=Save_16x16.png}" LargeGlyph="{dxc:DXImage Image=Save_32x32.png}" ToolTip="Save current EAC to compare next time" />
                 <dxb:BarCheckItem x:Name="biWeeks" Content="Weeks" Glyph="{dxc:DXImage Images/Scheduling/Calendar_16x16.png}" IsChecked="{Binding IsWeeks, Mode=TwoWay}" IsEnabled="{Binding IsLoading, Converter={StaticResource BooleanNegationConverter}}" LargeGlyph="{dxc:DXImage Images/Scheduling/Calendar_32x32.png}" RibbonStyle="SmallWithText" ToolTip="Change forecast to weeks" />
                 <dxb:BarEditItem x:Name="beFixedDataDate" Content="Data Date" IsEnabled="{Binding IsLoading, Converter={StaticResource BooleanNegationConverter}}" Glyph="{dxc:DXImage Image=Calendar_16x16.png}" LargeGlyph="{dxc:DXImage Image=Calendar_32x32.png}" EditValue="{Binding FixedDataDate}" ToolTip="Data date">
@@ -365,6 +366,7 @@
                                 <dxb:BarCheckItemLink BarItemName="biShowActuals" />
                             </dxr:RibbonPageGroup>
                             <dxr:RibbonPageGroup MergeType="Replace" Caption="Forecast Tools">
+                                <dxb:BarButtonItemLink BarItemName="biFirstEAC" />
                                 <dxb:BarButtonItemLink BarItemName="biSaveEAC" />
                                 <dxb:BarButtonItemLink BarItemName="biSaveSummary" />
                                 <dxb:BarEditItemLink BarItemName="beFixedDataDate" />
@@ -474,6 +476,7 @@
                                         <dxg:GridControlBand Header="General">
                                             <dxg:GridColumn BestFitWidth="100" Width="150" FieldName="Subjob_Name" Header="Subjob" ReadOnly="True" SortIndex="12" VisibleIndex="12" />
                                             <dxg:GridColumn BestFitWidth="60" FieldName="Discipline_Code" Header="Discipline" ReadOnly="True" SortIndex="20" VisibleIndex="20" />
+                                            <dxg:GridColumn BestFitWidth="100" FieldName="DisciplineDesc" Header="Package" ReadOnly="True" VisibleIndex="25" />
                                             <dxg:GridColumn BestFitWidth="60" FieldName="Commodity_Code" Header="Commodity" ReadOnly="True" SortIndex="30" VisibleIndex="30" />
                                             <dxg:GridColumn BestFitWidth="60" FieldName="StockCode" Header="Stock" ReadOnly="True" SortIndex="35" VisibleIndex="35" />
                                             <dxg:GridColumn FieldName="Variation_Code" Header="Variation" ReadOnly="True" SortIndex="40" Visible="True" VisibleIndex="40" />

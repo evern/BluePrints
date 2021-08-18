@@ -93,6 +93,11 @@ namespace BluePrints.BluePrintsEntitiesDataModel
         IRepository<DISCIPLINE, Guid> DISCIPLINES { get; }
 
         /// <summary>
+        /// The DISCIPLINE_DESC entities repository.
+        /// </summary>
+        IRepository<DISCIPLINE_DESC, Guid> DISCIPLINE_DESCS { get; }
+
+        /// <summary>
         /// The DOCTYPE entities repository.
         /// </summary>
         IRepository<DOCTYPE, Guid> DOCTYPES { get; }
@@ -106,6 +111,11 @@ namespace BluePrints.BluePrintsEntitiesDataModel
         /// The FORECAST entities repository.
         /// </summary>
         IRepository<FORECAST, Guid> FORECASTS { get; }
+
+        /// <summary>
+        /// The FORECAST_CACHE entities repository.
+        /// </summary>
+        IRepository<FORECAST_CACHE, Guid> FORECAST_CACHES { get; }
 
         /// <summary>
         /// The FORECAST_EAC entities repository.
@@ -486,5 +496,10 @@ namespace BluePrints.BluePrintsEntitiesDataModel
         /// The X_VARIATION_QUERY entities repository.
         /// </summary>
         IRepository<X_VARIATION_QUERY, Guid> X_VARIATION_QUERY { get; }
+
+        /// <summary>
+        /// The X_EARNED_QUERY entities repository.
+        /// </summary>
+        IRepository<X_EARNED_QUERY, Guid> X_EARNED_QUERY { get; }
     }
 }

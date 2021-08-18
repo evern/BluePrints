@@ -117,6 +117,9 @@ namespace BluePrints.ViewModels
             loaderCollection.AddLoaderDescription(bluePrintsUnitOfWorkFactory, x => x.FORECAST_JOB_SETTINGS, FORECAST_JOB_SETTINGProjectionFunc);
             loaderCollection.AddLoaderDescription(bluePrintsUnitOfWorkFactory, x => x.VARIATION_CONSTRUCTIONS, VARIATION_CONSTRUCTIONProjectionFunc);
             loaderCollection.AddLoaderDescription<JOB_COSTTYPES, JOB_COSTTYPES, int, IPrimeroEntitiesUnitOfWork>(primeroUnitOfWorkFactory, x => x.JOB_COSTTYPES);
+            loaderCollection.AddLoaderDescription(bluePrintsUnitOfWorkFactory, x => x.DISCIPLINE_DESCS, DISCIPLINE_DESCProjectionFunc);
+            loaderCollection.AddLoaderDescription<JOB_COSTGROUPS, JOB_COSTGROUPS, int, IPrimeroEntitiesUnitOfWork>(primeroUnitOfWorkFactory, x => x.JOB_COSTGROUPS);
+            loaderCollection.AddLoaderDescription(bluePrintsUnitOfWorkFactory, x => x.FORECAST_CACHES, FORECAST_CACHEProjectionFunc);
         }
 
         private void setProject(Data.PROJECT project)
@@ -207,7 +210,17 @@ namespace BluePrints.ViewModels
             return query => query.Where(x => x.GUID_PROJECT == LoadPROJECT.GUID);
         }
 
+        protected virtual Func<IRepositoryQuery<FORECAST_CACHE>, IQueryable<FORECAST_CACHE>> FORECAST_CACHEProjectionFunc()
+        {
+            return query => query.Where(x => x.GUID_PROJECT == LoadPROJECT.GUID);
+        }
+
         protected virtual Func<IRepositoryQuery<FORECAST_PO>, IQueryable<FORECAST_PO>> FORECAST_POProjectionFunc()
+        {
+            return query => query.Where(x => x.GUID_PROJECT == LoadPROJECT.GUID);
+        }
+
+        protected virtual Func<IRepositoryQuery<DISCIPLINE_DESC>, IQueryable<DISCIPLINE_DESC>> DISCIPLINE_DESCProjectionFunc()
         {
             return query => query.Where(x => x.GUID_PROJECT == LoadPROJECT.GUID);
         }
@@ -237,23 +250,6 @@ namespace BluePrints.ViewModels
         DispatcherTimer delayedEditValueChangeSetTimer;
         DispatcherTimer delayedDateChangeMessageBoxTimer;
         BackgroundWorker projectSavingBackgroundWorker = new BackgroundWorker();
-
-
-        protected int spreadSheetPhaseIndex = 0;
-        protected int spreadSheetAreaIndex = 1;
-        protected int spreadSheetSubAreaIndex = 2;
-        protected int spreadSheetSubJobIndex = 3;
-        protected int spreadSheetSubJobTitleIndex = 4;
-        protected int spreadSheetVariationIndex = 5;
-        protected int spreadSheetDisciplineIndex = 6;
-        protected int spreadSheetDisciplineNameIndex = 7;
-        protected int spreadSheetCommodityIndex = 8;
-        protected int spreadSheetCommodityNameIndex = 9;
-        protected int spreadSheetCommodityDescriptionIndex = 10;
-        protected int spreadSheetCommodityUOMIndex = 11;
-        protected int spreadSheetRateIndex = 12;
-        protected int spreadSheetBudgetIndex = 13;
-        protected int spreadSheetDateStartIndex = 14;
 
         bool isWeeks;
         public bool IsWeeks
@@ -320,12 +316,13 @@ namespace BluePrints.ViewModels
         protected override void resolveParameters(object parameter)
         {
             base.resolveParameters(parameter);
-            primeroEntitiesUnitOfWork = PrimeroEntitiesUnitOfWorkSource.GetUnitOfWorkFactory(LoadPROJECT.OfficeNameForExo == BluePrintsResources.OfficeMontreal).CreateUnitOfWork();
+            primeroEntitiesUnitOfWork = PrimeroEntitiesUnitOfWorkSource.GetUnitOfWorkFactory(LoadPROJECT.OfficeNameForExo).CreateUnitOfWork();
             bluePrintsUnitOfWork = BluePrintsEntitiesUnitOfWorkSource.GetUnitOfWorkFactory().CreateUnitOfWork();
             ForecastSummary = new ForecastSummary();
             ForceRetrieveAllJobs = true; //force exo burned to retrieve subjobs that aren't defined
             ForceRetrieveAllUnits = true; //force exo burned to retrieve units that are beyond data date
             ForceRetrieveAllPOs = false; //force retrieve all EXO pos that are beyond data date
+            DashboardEXOQueryType = DashboardEXOQueryType.All;
             UseProductivityFactorOnRemaining = false; //calculate remaining costs using productivity factor
             IsLoadingForecast = true;
             IsLoading = true;
@@ -354,14 +351,14 @@ namespace BluePrints.ViewModels
 
         private void loadExoMethodsData()
         {
-            IPrimeroEntitiesUnitOfWork threadSafePrimeroEntitiesUnitOfWork = PrimeroEntitiesUnitOfWorkSource.GetUnitOfWorkFactory(LoadPROJECT.OfficeNameForExo == BluePrintsResources.OfficeMontreal).CreateUnitOfWork();
+            IPrimeroEntitiesUnitOfWork threadSafePrimeroEntitiesUnitOfWork = PrimeroEntitiesUnitOfWorkSource.GetUnitOfWorkFactory(LoadPROJECT.OfficeNameForExo).CreateUnitOfWork();
             masterJob = ExoQueries.GetProjectSubJob(threadSafePrimeroEntitiesUnitOfWork, LoadPROJECT.NUMBER, LoadPROJECT.NUMBER);
             copyLine = ExoQueries.GetAnyProjectLineByJobNumber(threadSafePrimeroEntitiesUnitOfWork, LoadPROJECT.NUMBER);
         }
 
         private void loadSummaryStats()
         {
-            IPrimeroEntitiesUnitOfWork threadSafePrimeroEntitiesUnitOfWork = PrimeroEntitiesUnitOfWorkSource.GetUnitOfWorkFactory(LoadPROJECT.OfficeNameForExo == BluePrintsResources.OfficeMontreal).CreateUnitOfWork();
+            IPrimeroEntitiesUnitOfWork threadSafePrimeroEntitiesUnitOfWork = PrimeroEntitiesUnitOfWorkSource.GetUnitOfWorkFactory(LoadPROJECT.OfficeNameForExo).CreateUnitOfWork();
             List<ExoTimeAuthorisation> jobLines = new List<ExoTimeAuthorisation>(); 
             queryJobs = ExoQueries.GetNativeExoSubJobProjection(threadSafePrimeroEntitiesUnitOfWork, LoadPROJECT, ref jobLines);
             queryJobLines = jobLines;
@@ -731,6 +728,12 @@ namespace BluePrints.ViewModels
             if (commodityJobs == null)
             {
                 List<ExoSubJobProjection> unifiedJobList = ForecastHelper.ConstructUnifiedJobList(queryJobLines, COMMODITY_CODECollection, allDataPoints, JOB_COSTTYPESCollection, ShowLoadingScreen, AllProjectDashboards);
+                //update discipline description a.k.a package no
+                foreach(ExoDataPoint dataPoint in allDataPoints)
+                {
+                    dataPoint.PopulateDisciplineDesc(DISCIPLINE_DESCCollection, JOB_COSTGROUPCollection);
+                }
+
                 DetailedData.AddRange(allDataPoints);
 
                 commodityJobs = ForecastHelper.CreateCommodityProjections(unifiedJobList, queryJobLines, AllProjectDashboards, FORECAST_POCollection, FORECAST_EACCollection, FORECAST_EACPreviousCommitmentCollection, FORECAST_JOBCollection, FORECAST_JOB_SETTINGCollection, COMMODITY_CODECollection, alignedDataDateCollection, (DateTime)FixedDataDate, isWeeks, ShowLoadingScreen);
@@ -742,6 +745,7 @@ namespace BluePrints.ViewModels
                 LoadingScreenManager.ShowLoadingScreen(commodityJobs.Count);
                 LoadingScreenManager.SetMessage("Preparing View...");
             }
+
             //construct data points table
             dataPointsTable.Columns.Add(columnEntity, typeof(ForecastJobData));
             dataPointsTable.Columns.Add(columnCompare, typeof(DataTable));
@@ -755,6 +759,7 @@ namespace BluePrints.ViewModels
             foreach (ForecastJobData commodityJob in commodityJobs)
             {
                 ForecastHelper.PopulateEAC(commodityJob, FORECAST_EACCollection, PreviousEACDataDate);
+                ForecastHelper.PopulateFirstEAC(commodityJob, FORECAST_EACFirstEACCollection);
                 updateAdditionalJobInfo(commodityJob);
                 
                 DataRow commodityRow = updateDataTable(commodityJob, isNewData);
@@ -875,6 +880,9 @@ namespace BluePrints.ViewModels
             List<string> uniqueIndirectStockCodes = new List<string>();
             List<string> uniqueMaterialStockCodes = new List<string>();
             List<string> uniqueActualStockCodes = new List<string>();
+
+            //update discipline desc
+            commodityJob.PopulateDisciplineDesc(DISCIPLINE_DESCCollection, JOB_COSTGROUPCollection);
 
             if (commodityJob.DateCosts.Count > 0)
             {
@@ -1078,11 +1086,16 @@ namespace BluePrints.ViewModels
                 columns.Add(new ColumnDescriptor() { FieldName = "Entity.Projection.SubJobTitle", ReadOnly = true, Header = "Subjob Title", Visible = false, Fixed = FixedStyle.Left, Width = 95, Settings = SettingsType.Default });
                 columns.Add(new ColumnDescriptor() { FieldName = "Entity.Projection.AreaCode", ReadOnly = true, Visible = false, Header = "Area", Fixed = FixedStyle.Left, Width = 60, Settings = SettingsType.Default });
                 columns.Add(new ColumnDescriptor() { FieldName = "Entity.Projection.DisciplineCode", ReadOnly = true, Header = "Discipline", Fixed = FixedStyle.Left, Width = 38, Settings = SettingsType.Default });
+                columns.Add(new ColumnDescriptor() { FieldName = "Entity.DisciplineDesc", ReadOnly = true, Header = "Package", Fixed = FixedStyle.Left, Width = 100, Settings = SettingsType.Default });
                 columns.Add(new ColumnDescriptor() { FieldName = "Entity.Projection.CommodityCode", ReadOnly = true, Header = "Commodity", Fixed = FixedStyle.Left, Width = 35, Settings = SettingsType.CommodityCode });
                 columns.Add(new ColumnDescriptor() { FieldName = "Entity.Projection.CommodityName", ReadOnly = true, Header = "Commodity Name", Fixed = FixedStyle.Left, Width = 50, Settings = SettingsType.Default });
                 columns.Add(new ColumnDescriptor() { FieldName = "Entity.Projection.VariationCode", ReadOnly = true, Header = "Variation", Fixed = FixedStyle.Left, Width = 60, Settings = SettingsType.Default });
+                columns.Add(new ColumnDescriptor() { FieldName = "Entity.FirstEAC", ReadOnly = true, Header = "Rev 0 Budget (H)", Fixed = FixedStyle.Left, Width = 75, Settings = SettingsType.Number, Mask = "c0", HeaderToolTip = "First estimate at completion" });
+                summaries.Add(new SummaryDescriptor() { FieldName = "Entity.FirstEAC", DisplayFormat = "c0", Type = SummaryItemType.Sum });
                 columns.Add(new ColumnDescriptor() { FieldName = "Entity.Budget", ReadOnly = false, Header = "Budget (A)", Increment = 1, Fixed = FixedStyle.Left, Width = 75, Settings = SettingsType.Budget, HeaderToolTip = "Original budgeted cost at contract award" });
                 summaries.Add(new SummaryDescriptor() { FieldName = "Entity.Budget", DisplayFormat = "c0", Type = SummaryItemType.Sum });
+                columns.Add(new ColumnDescriptor() { FieldName = "Entity.BudgetVariance", ReadOnly = true, Header = "Rev 0 Variance (I) (H - A)", Fixed = FixedStyle.Left, Width = 75, Settings = SettingsType.Number, Mask = "c0", HeaderToolTip = "Budget variance from first EAC" });
+                summaries.Add(new SummaryDescriptor() { FieldName = "Entity.BudgetVariance", DisplayFormat = "c0", Type = SummaryItemType.Sum });
                 columns.Add(new ColumnDescriptor() { FieldName = "Entity.DeliverableUnits", ReadOnly = true, Visible = false, Header = "Deliverable Budget Units", Mask = "###,##0h", Increment = 1, Fixed = FixedStyle.Left, Width = 75, Settings = SettingsType.Number, HeaderToolTip = "Total hours including variation, available for design only" });
                 summaries.Add(new SummaryDescriptor() { FieldName = "Entity.DeliverableUnits", DisplayFormat = "###,##0h", Type = SummaryItemType.Sum });
                 columns.Add(new ColumnDescriptor() { FieldName = "Entity.P6BudgetedUnits", ReadOnly = true, Visible = false, Header = "P6 Budget Units", Mask = "###,##0h", Increment = 1, Fixed = FixedStyle.Left, Width = 75, Settings = SettingsType.Number, HeaderToolTip = "Total hours from P6" });
@@ -1126,8 +1139,11 @@ namespace BluePrints.ViewModels
                 summaries.Add(new SummaryDescriptor() { FieldName = "Entity.CurrentUncommitted", DisplayFormat = "c0", Type = SummaryItemType.Sum });
                 columns.Add(new ColumnDescriptor() { FieldName = "Entity.EstimateToComplete", ReadOnly = true, Visible = false, Header = "ETC", Fixed = FixedStyle.Left, Width = 70, Settings = SettingsType.Number, Mask = "c0", HeaderToolTip = "Estimate to Complete (or costs to complete) - equal to forecasted costs, plus open commitments (outstanding purchase order)" });
                 summaries.Add(new SummaryDescriptor() { FieldName = "Entity.EstimateToComplete", DisplayFormat = "c0", Type = SummaryItemType.Sum });
+
                 columns.Add(new ColumnDescriptor() { FieldName = "Entity.PreviousEAC", ReadOnly = isPreviousEACReadOnly, Header = "Prev. EAC (F)", Fixed = FixedStyle.Left, Width = 70, Settings = SettingsType.Number, Mask = "c0", HeaderToolTip = "Previous estimate at completion" });
                 summaries.Add(new SummaryDescriptor() { FieldName = "Entity.PreviousEAC", DisplayFormat = "c0", Type = SummaryItemType.Sum });
+
+
                 columns.Add(new ColumnDescriptor() { FieldName = "Entity.EstimateAtCompletion", ReadOnly = true, Header = "EAC (E) (B + C + D)", Fixed = FixedStyle.Left, Width = 70, Settings = SettingsType.Number, Mask = "c0", HeaderToolTip = "Estimate at complete, forecasted costs + open commitments + accruals" });
                 summaries.Add(new SummaryDescriptor() { FieldName = "Entity.EstimateAtCompletion", DisplayFormat = "c0", Type = SummaryItemType.Sum });
                 columns.Add(new ColumnDescriptor() { FieldName = "Entity.Variance", ReadOnly = true, Header = "Variance (A - E)", Fixed = FixedStyle.Left, Width = 70, Settings = SettingsType.Number, Mask = "c0", HeaderToolTip = "Variance to budget" });
@@ -1244,6 +1260,32 @@ namespace BluePrints.ViewModels
             relevantFORECAST_JOB_SETTING.IS_FLOATING_PRODUCTIVITY = isFloatingProductivity;
             job.IsProductivityFloating = isFloatingProductivity;
             FORECAST_JOB_SETTINGCollectionViewModel.Save(relevantFORECAST_JOB_SETTING);
+        }
+
+        private void findExistingOrAddNewForecastCache(DataRow updateRow)
+        {
+            ForecastJobData job = ((ForecastJobData)updateRow[columnEntity]);
+            ExoSubJobProjection projection = job.Projection;
+            FORECAST_CACHE relevantFORECAST_CACHE = FORECAST_CACHECollection.FirstOrDefault(x => x.SUBJOB_CODE == projection.SubJobCode && x.DISCIPLINE_CODE == projection.DisciplineCode && x.COMMODITY_CODE == projection.CommodityCode && x.VARIATION_CODE == projection.VariationCode);
+            if (relevantFORECAST_CACHE == null)
+            {
+                FORECAST_CACHE newFORECAST_JOB_SETTING = new FORECAST_CACHE();
+                newFORECAST_JOB_SETTING.GUID_PROJECT = LoadPROJECT.GUID;
+                newFORECAST_JOB_SETTING.SUBJOB_CODE = projection.SubJobCode;
+                newFORECAST_JOB_SETTING.DISCIPLINE_CODE = DataUtils.NormalizeString(projection.DisciplineCode);
+                newFORECAST_JOB_SETTING.COMMODITY_CODE = DataUtils.NormalizeString(projection.CommodityCode);
+
+                if (projection.VariationCode != null && projection.VariationCode != string.Empty)
+                    newFORECAST_JOB_SETTING.VARIATION_CODE = projection.VariationCode;
+                else
+                    newFORECAST_JOB_SETTING.VARIATION_CODE = string.Empty;
+
+                relevantFORECAST_CACHE = newFORECAST_JOB_SETTING;
+            }
+
+            //relevantFORECAST_CACHE.IS_FLOATING_PRODUCTIVITY = isFloatingProductivity;
+            //job.IsProductivityFloating = isFloatingProductivity;
+            //FORECAST_JOB_SETTINGCollectionViewModel.Save(relevantFORECAST_CACHE);
         }
 
         private void establishCurrentProductivity(ForecastJobData job)
@@ -1823,6 +1865,10 @@ namespace BluePrints.ViewModels
                 entity.ForecastErrorString = string.Empty;
 
                 forecastJobData.RaisePropertiesChanged();
+            }
+            else if(fieldName == BindableBase.GetPropertyName(() => new ForecastJobData().DisciplineDesc))
+            {
+                forecastJobData.FindExistingOrAddDisciplineDesc(DISCIPLINE_DESCCollectionViewModel, LoadPROJECT.GUID);
             }
             else if(fieldName == BindableBase.GetPropertyName(() => new ForecastJobData().PreviousEAC))
             {
@@ -2437,18 +2483,8 @@ namespace BluePrints.ViewModels
 
         public void SaveCurrentMonthEAC()
         {
-            if (LoginCredentials.getPermissionStatus(DataUtils.GetNameOf(() => NavigationResources.Permission_Forecast_SaveEAC)) == LoginCredentials.PermissionStatus.None)
-            {
-                MessageBoxService.ShowMessage("You are not authorised to use this function", "Not Authorised", MessageButton.OK, MessageIcon.Exclamation);
+            if (!checkSaveEACPermission())
                 return;
-            }
-
-            List<ForecastJobData> jobs = getJobDataFromDatatable();
-            if(jobs.Any(x => x.IsPOError))
-            {
-                MessageBoxService.ShowMessage("Some PO forecast aren't completed yet or misaligned\nPlease go to PO forecast and click Align Actuals\nThen refresh this screen", "Error", MessageButton.OK, MessageIcon.Exclamation);
-                return;
-            }
 
             LoadingScreenManager.ShowLoadingScreen(DataPointsTable.Rows.Count);
 
@@ -2460,7 +2496,7 @@ namespace BluePrints.ViewModels
                 findExistingOrAddNewEAC(FixedDataDateMonthEnd, entity, bluePrintsUnitOfWork, entity.EstimateAtCompletion, false, ForecastEACType.EAC);
                 findExistingOrAddNewEAC(FixedDataDateMonthEnd, entity, bluePrintsUnitOfWork, entity.TotalCommitment, false, ForecastEACType.PreviousCommitment);
                 decimal firstForecastDateValue = (decimal)masterRow[firstForecastDate.ToString(BluePrintsResources.ColumnDateFormat)];
-                
+
                 FORECAST findFORECASTS = bluePrintsUnitOfWork.FORECASTS.FirstOrDefault(x => x.FORECAST_TYPE == ForecastDataType.DataDateForecast && x.FORECAST_DATE == firstForecastDate && x.SUBJOB_CODE == projection.SubJobCode && x.DISCIPLINE_CODE == projection.DisciplineCode && x.COMMODITY_CODE == projection.CommodityCode && x.VARIATION_CODE == projection.VariationCode);
                 if (findFORECASTS != null)
                     findFORECASTS.FORECAST_UNITS = firstForecastDateValue;
@@ -2493,6 +2529,53 @@ namespace BluePrints.ViewModels
             FixedDataDate = FixedDataDateMonthEnd.AddMonths(1);
             LoadDataDate = FixedDataDate;
             SaveDateAndRefresh();
+        }
+
+        public bool CanSaveFirstEAC()
+        {
+            return !IsLoading;
+        }
+
+        public void SaveFirstEAC()
+        {
+            if (!checkSaveEACPermission())
+                return;
+
+            LoadingScreenManager.ShowLoadingScreen(DataPointsTable.Rows.Count);
+
+            foreach (DataRow masterRow in DataPointsTable.Rows)
+            {
+                ForecastJobData entity = (ForecastJobData)masterRow[columnEntity];
+                findExistingOrAddNewEAC(FixedDataDateMonthEnd, entity, bluePrintsUnitOfWork, entity.EstimateAtCompletion, false, ForecastEACType.FirstEAC);
+                entity.FirstEAC = entity.EstimateAtCompletion;
+                LoadingScreenManager.Progress();
+            }
+
+            LoadingScreenManager.CloseLoadingScreen();
+            LoadingScreenManager.ShowLoadingScreen(1);
+            LoadingScreenManager.SetMessage("Saving changes...");
+            bluePrintsUnitOfWork.SaveChanges();
+            LoadingScreenManager.CloseLoadingScreen();
+            GridControlService.RefreshData();
+            MessageBoxService.ShowMessage("Rev 0 budget is saved", "Rev 0 Budget Saved", MessageButton.OK, MessageIcon.Information);
+        }
+
+        private bool checkSaveEACPermission()
+        {
+            if (LoginCredentials.getPermissionStatus(DataUtils.GetNameOf(() => NavigationResources.Permission_Forecast_SaveEAC)) == LoginCredentials.PermissionStatus.None)
+            {
+                MessageBoxService.ShowMessage("You are not authorised to use this function", "Not Authorised", MessageButton.OK, MessageIcon.Exclamation);
+                return false;
+            }
+
+            List<ForecastJobData> jobs = getJobDataFromDatatable();
+            if (jobs.Any(x => x.IsPOError))
+            {
+                MessageBoxService.ShowMessage("Some PO forecast aren't completed yet or misaligned\nPlease go to PO forecast and click Align Actuals\nThen refresh this screen", "Error", MessageButton.OK, MessageIcon.Exclamation);
+                return false;
+            }
+
+            return true;
         }
 
         public bool CanSaveSummary()
@@ -2532,9 +2615,13 @@ namespace BluePrints.ViewModels
                 return;
 
             string normalizedVariationCode = DataUtils.NormalizeString(projection.VariationCode);
-            FORECAST_EAC forecast_EAC = bluePrintsEntitiesUnitOfWork.FORECAST_EACS.FirstOrDefault(x => x.FORECAST_DATE == forecastDate.Date && 
-            x.GUID_PROJECT == LoadPROJECT.GUID && x.SUBJOB_CODE == projection.SubJobCode && 
-            x.DISCIPLINE_CODE == projection.DisciplineCode && x.COMMODITY_CODE == projection.CommodityCode && x.VARIATION_CODE == normalizedVariationCode && x.TYPE == forecastEACType);
+
+            IQueryable<FORECAST_EAC> jobFORECAST_EACs = bluePrintsEntitiesUnitOfWork.FORECAST_EACS.Where(x => x.GUID_PROJECT == LoadPROJECT.GUID && x.SUBJOB_CODE == projection.SubJobCode && x.DISCIPLINE_CODE == projection.DisciplineCode && x.COMMODITY_CODE == projection.CommodityCode && x.VARIATION_CODE == normalizedVariationCode && x.TYPE == forecastEACType);
+            FORECAST_EAC forecast_EAC;
+            if(forecastEACType == ForecastEACType.FirstEAC)
+                forecast_EAC = jobFORECAST_EACs.FirstOrDefault(x => x.TYPE == forecastEACType);
+            else
+                forecast_EAC = jobFORECAST_EACs.FirstOrDefault(x => x.FORECAST_DATE == forecastDate.Date && x.TYPE == forecastEACType);
 
             if(forecast_EAC != null)
             {
@@ -2904,6 +2991,39 @@ namespace BluePrints.ViewModels
         #endregion
 
         #region Entity Wrapper Properties
+        public IEnumerable<JOB_COSTGROUPS> JOB_COSTGROUPCollection
+        {
+            get
+            {
+                var collection = GetEntities<JOB_COSTGROUPS>();
+                if (collection != null)
+                    collection = collection.OrderBy(x => x.SHORTCODE);
+                return collection;
+            }
+        }
+
+        public IEnumerable<DISCIPLINE_DESC> DISCIPLINE_DESCCollection
+        {
+            get
+            {
+                var collection = GetEntities<DISCIPLINE_DESC>();
+                if (collection != null)
+                    collection = collection.OrderBy(x => x.NAME);
+                return collection;
+            }
+        }
+
+        public CollectionViewModel<DISCIPLINE_DESC, DISCIPLINE_DESC, Guid, IBluePrintsEntitiesUnitOfWork> DISCIPLINE_DESCCollectionViewModel
+        {
+            get
+            {
+                if (MainViewModel == null)
+                    return null;
+
+                return (CollectionViewModel<DISCIPLINE_DESC, DISCIPLINE_DESC, Guid, IBluePrintsEntitiesUnitOfWork>)loaderCollection.GetViewModel<DISCIPLINE_DESC>();
+            }
+        }
+
         public IEnumerable<PROJWBS> P6PROJECTSCollection
         {
             get
@@ -3017,6 +3137,14 @@ namespace BluePrints.ViewModels
             }
         }
 
+        public IEnumerable<FORECAST_EAC> FORECAST_EACFirstEACCollection
+        {
+            get
+            {
+                return GetEntities<FORECAST_EAC>().Where(x => x.TYPE == ForecastEACType.FirstEAC);
+            }
+        }
+
         public IEnumerable<FORECAST_EAC> FORECAST_EACPreviousCommitmentCollection
         {
             get
@@ -3030,6 +3158,14 @@ namespace BluePrints.ViewModels
             get
             {
                 return GetEntities<COMMODITY_CODE>();
+            }
+        }
+
+        public IEnumerable<FORECAST_CACHE> FORECAST_CACHECollection
+        {
+            get
+            {
+                return GetEntities<FORECAST_CACHE>();
             }
         }
 
@@ -3119,6 +3255,17 @@ namespace BluePrints.ViewModels
                     return null;
 
                 return (CollectionViewModel<FORECAST_JOB_SETTING, FORECAST_JOB_SETTING, Guid, IBluePrintsEntitiesUnitOfWork>)loaderCollection.GetViewModel<FORECAST_JOB_SETTING>();
+            }
+        }
+
+        public CollectionViewModel<FORECAST_CACHE, FORECAST_CACHE, Guid, IBluePrintsEntitiesUnitOfWork> FORECAST_CACHECollectionViewModel
+        {
+            get
+            {
+                if (MainViewModel == null)
+                    return null;
+
+                return (CollectionViewModel<FORECAST_CACHE, FORECAST_CACHE, Guid, IBluePrintsEntitiesUnitOfWork>)loaderCollection.GetViewModel<FORECAST_CACHE>();
             }
         }
 

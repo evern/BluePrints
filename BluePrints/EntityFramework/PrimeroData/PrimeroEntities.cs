@@ -1,6 +1,21 @@
 namespace BluePrints.PrimeroData
 {
     using System.Data.Entity;
+    public partial class PUSAEntities : PrimeroEntities
+    {
+        public PUSAEntities()
+            : base("name=PUSAEntities")
+        {
+        }
+
+
+        protected override void OnModelCreating(DbModelBuilder modelBuilder)
+        {
+            Database.SetInitializer<PUSAEntities>(null);
+            Database.CommandTimeout = 100000;
+            base.OnModelCreating(modelBuilder);
+        }
+    }
 
     public partial class PGAEntities : PrimeroEntities
     {
@@ -377,6 +392,7 @@ namespace BluePrints.PrimeroData
         public virtual DbSet<X_JOB_TRANSACTIONS_DETAIL> X_JOB_TRANSACTIONS_DETAIL { get; set; }
         public virtual DbSet<X_JOB_TRANSACTIONS_DETAIL_SeqNo> X_JOB_TRANSACTIONS_DETAIL_SeqNo { get; set; }
         public virtual DbSet<X_JOB_TIMESHEETS> X_JOB_TIMESHEETS { get; set; }
+
 
         protected override void OnModelCreating(DbModelBuilder modelBuilder)
         {

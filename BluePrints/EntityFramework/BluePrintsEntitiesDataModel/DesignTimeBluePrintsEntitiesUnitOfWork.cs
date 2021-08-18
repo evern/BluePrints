@@ -99,6 +99,11 @@ namespace BluePrints.BluePrintsEntitiesDataModel
             get { return GetRepository((DISCIPLINE x) => x.GUID); }
         }
 
+        IRepository<DISCIPLINE_DESC, Guid> IBluePrintsEntitiesUnitOfWork.DISCIPLINE_DESCS
+        {
+            get { return GetRepository((DISCIPLINE_DESC x) => x.GUID); }
+        }
+
         IRepository<DOCTYPE, Guid> IBluePrintsEntitiesUnitOfWork.DOCTYPES
         {
             get { return GetRepository((DOCTYPE x) => x.GUID); }
@@ -117,6 +122,11 @@ namespace BluePrints.BluePrintsEntitiesDataModel
         IRepository<FORECAST, Guid> IBluePrintsEntitiesUnitOfWork.FORECASTS
         {
             get { return GetRepository((FORECAST x) => x.GUID); }
+        }
+
+        IRepository<FORECAST_CACHE, Guid> IBluePrintsEntitiesUnitOfWork.FORECAST_CACHES
+        {
+            get { return GetRepository((FORECAST_CACHE x) => x.GUID); }
         }
 
         IRepository<FORECAST_EAC, Guid> IBluePrintsEntitiesUnitOfWork.FORECAST_EACS
@@ -492,6 +502,11 @@ namespace BluePrints.BluePrintsEntitiesDataModel
         IRepository<X_VARIATION_QUERY, Guid> IBluePrintsEntitiesUnitOfWork.X_VARIATION_QUERY
         {
             get { return GetRepository((X_VARIATION_QUERY x) => x.GUID); }
+        }
+
+        IRepository<X_EARNED_QUERY, Guid> IBluePrintsEntitiesUnitOfWork.X_EARNED_QUERY
+        {
+            get { return GetRepository((X_EARNED_QUERY x) => x.DummyId); }
         }
     }
 }

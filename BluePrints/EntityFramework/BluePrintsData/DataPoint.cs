@@ -39,5 +39,17 @@ namespace BluePrints.Data
         public bool IsLate { get; set; }
 
         public bool IsCurrent { get; set; }
+
+        [StringLength(15)]
+        public string SubJobCode { get; set; }
+
+        [StringLength(10)]
+        public string DisciplineCode { get; set; }
+
+        [StringLength(5)]
+        public string CommodityCode { get; set; }
+
+        [StringLength(100)]
+        public string VariationCode { get; set; }
     }
 }

@@ -46,7 +46,7 @@ namespace BluePrints.ViewModels
         {            
             var receiveParameter = (DualEntitiesParameter<PROJECT, VARIATION>)parameter;
             loadPROJECT = receiveParameter.GetFirstEntity();
-            primeroUnitOfWorkFactory = PrimeroEntitiesUnitOfWorkSource.GetUnitOfWorkFactory(loadPROJECT.OfficeNameForExo == BluePrintsResources.OfficeMontreal);
+            primeroUnitOfWorkFactory = PrimeroEntitiesUnitOfWorkSource.GetUnitOfWorkFactory(loadPROJECT.OfficeNameForExo);
             primeroUnitOfWork = primeroUnitOfWorkFactory.CreateUnitOfWork();
             bluePrintsUnitOfWork = BluePrintsEntitiesUnitOfWorkSource.GetUnitOfWorkFactory().CreateUnitOfWork();
             loadVARIATION = receiveParameter.GetSecondEntity();
@@ -146,8 +146,6 @@ namespace BluePrints.ViewModels
             //budgeted hours field is disabled but just in case
             if (field_name.Contains(BindableBase.GetPropertyName(() => new BASELINE_ITEMProgress().DisplayVariationUnits)))
             {
-                if (projection.Entity.Entity.BY_DURATION && ((decimal)newValue) > 0)
-                    return "Cannot set variation hours when deliverable is by duration";
                 if (!projection.IsSubmitted && !projection.IsApproved)
                     return string.Empty;
             }

@@ -35,7 +35,7 @@ namespace BluePrints.Common.ViewModel.Reporting
                 endOfWeek = BluePrintsUtils.GetTrueDayOfWeek((int)getProgressDataDate(designPROGRESS).DayOfWeek);
 
             //when construction progress have an earlier data date it'll skew the day of week of the weekly progress thats responsible of retrieving period data point, so always use the weekly one and make sure all weekly falls on the same day of week
-            foreach (PROGRESS PROGRESS in PROGRESSES)
+            foreach (PROGRESS PROGRESS in PROGRESSES.Where(x => x.INTERVAL_TYPE == ProgressIntervalType.Weekly))
             {
                 if (latestDataDate == null)
                     latestDataDate = getProgressDataDate(PROGRESS);

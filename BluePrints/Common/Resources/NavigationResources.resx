@@ -373,7 +373,7 @@
     <value>Move forecast data date forward and backward</value>
   </data>
   <data name="Permission_Forecast_SaveEAC" xml:space="preserve">
-    <value>Save forecast EAC</value>
+    <value>Save forecast current EAC and Rev 0 Budget</value>
   </data>
   <data name="Permission_Forecast_EditPreviousEAC" xml:space="preserve">
     <value>Edit previous EAC</value>
@@ -426,8 +426,8 @@
   <data name="Menu_Project_DesignVariationQuery" xml:space="preserve">
     <value>Query design variation breakdown</value>
   </data>
-  <data name="Menu_TransactionsYearToDate" xml:space="preserve">
-    <value>Show all EXO transactions year to date</value>
+  <data name="Menu_TransactionsMontrealYearToDate" xml:space="preserve">
+    <value>Show all Montreal EXO transactions year to date</value>
   </data>
   <data name="Menu_Project_Pipelines" xml:space="preserve">
     <value>Project pipelines maintenance menu</value>
@@ -441,34 +441,49 @@
   <data name="Menu_Project_Register_Clarification" xml:space="preserve">
     <value>Project Clarification Register</value>
   </data>
-  <data name="Menu_Project_ConstructionStage" xml:space="preserve">
+	<data name="Menu_Project_ConstructionStage" xml:space="preserve">
     <value>Project construction stage maintenance menu</value>
   </data>
-  <data name="Menu_Project_ConstructProgress_Concrete" xml:space="preserve">
+	<data name="Menu_Project_ConstructProgress_Concrete" xml:space="preserve">
     <value>Project construction progress maintenance menu</value>
   </data>
-  <data name="Menu_Project_ConstructProgress_Electrical" xml:space="preserve">
+	<data name="Menu_Project_ConstructProgress_Electrical" xml:space="preserve">
     <value>Project electrical construction progress maintenance menu</value>
   </data>
-  <data name="Menu_Project_ConstructProgress_Mechanical" xml:space="preserve">
+	<data name="Menu_Project_ConstructProgress_Mechanical" xml:space="preserve">
     <value>Project mechanical construction progress maintenance menu</value>
   </data>
-  <data name="Menu_Project_ConstructProgress_Piping" xml:space="preserve">
+	<data name="Menu_Project_ConstructProgress_Piping" xml:space="preserve">
     <value>Project piping construction progress maintenance menu</value>
   </data>
-  <data name="Menu_Project_ConstructProgress_Structural" xml:space="preserve">
+	<data name="Menu_Project_ConstructProgress_Structural" xml:space="preserve">
     <value>Project structural construction progress maintenance menu</value>
   </data>
-  <data name="Category_Project_Construct_Progress" xml:space="preserve">
+	<data name="Category_Project_Construct_Progress" xml:space="preserve">
     <value>Construction progress category</value>
   </data>
-  <data name="Menu_Project_Forecast_Flat_PO" xml:space="preserve">
+	<data name="Menu_Project_Forecast_Flat_PO" xml:space="preserve">
     <value>Project equipment hire PO forecast maintenance menu</value>
   </data>
-  <data name="Menu_Project_ConstructionDirectChargeRate" xml:space="preserve">
+	<data name="Menu_Project_ConstructionDirectChargeRate" xml:space="preserve">
     <value>Project construction direct charge rate maintenance</value>
   </data>
-  <data name="Category_Project_Construct_Rate" xml:space="preserve">
+	<data name="Category_Project_Construct_Rate" xml:space="preserve">
     <value>Project construct rates category</value>
+  </data>
+	<data name="Menu_TransactionsPerth2020ToDate" xml:space="preserve">
+    <value>Show all Perth EXO transactions from 2020 onwards</value>
+  </data>
+	<data name="Menu_TransactionsMontreal2020ToDate" xml:space="preserve">
+    <value>Show all Montreal EXO transactions from 2020 onwards</value>
+  </data>
+	<data name="Menu_TransactionsPerthYearToDate" xml:space="preserve">
+    <value>Show all Perth EXO transactions from 2020 onwards</value>
+  </data>
+	<data name="Menu_TransactionsUSAYearToDate" xml:space="preserve">
+    <value>Show all USA EXO transactions year to date</value>
+  </data>
+	<data name="Menu_Project_DisciplineDescription" xml:space="preserve">
+    <value>Discipline description a.k.a package name maintenance menu</value>
   </data>
 </root>

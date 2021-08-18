@@ -68,7 +68,7 @@ namespace BluePrints.ViewModels
             loadPROJECT = PROJECTParameter.GetEntity();
 
             bluePrintsEntitiesUnitOfWork = BluePrintsEntitiesUnitOfWorkSource.GetUnitOfWorkFactory().CreateUnitOfWork();
-            localPrimeroUnitOfWorkFactory = PrimeroEntitiesUnitOfWorkSource.GetUnitOfWorkFactory(loadPROJECT.OfficeNameForExo == BluePrintsResources.OfficeMontreal);
+            localPrimeroUnitOfWorkFactory = PrimeroEntitiesUnitOfWorkSource.GetUnitOfWorkFactory(loadPROJECT.OfficeNameForExo);
             localPrimeroUnitOfWork = localPrimeroUnitOfWorkFactory.CreateUnitOfWork();
         }
 
@@ -332,7 +332,7 @@ namespace BluePrints.ViewModels
 
         private void loadExoMethodsData()
         {
-            IPrimeroEntitiesUnitOfWork threadSafePrimeroEntitiesUnitOfWork = PrimeroEntitiesUnitOfWorkSource.GetUnitOfWorkFactory(loadPROJECT.OfficeNameForExo == BluePrintsResources.OfficeMontreal).CreateUnitOfWork();
+            IPrimeroEntitiesUnitOfWork threadSafePrimeroEntitiesUnitOfWork = PrimeroEntitiesUnitOfWorkSource.GetUnitOfWorkFactory(loadPROJECT.OfficeNameForExo).CreateUnitOfWork();
             masterJob = ExoQueries.GetProjectSubJob(threadSafePrimeroEntitiesUnitOfWork, loadPROJECT.NUMBER, loadPROJECT.NUMBER);
             copyLine = ExoQueries.GetAnyProjectLineByJobNumber(threadSafePrimeroEntitiesUnitOfWork, loadPROJECT.NUMBER);
         }

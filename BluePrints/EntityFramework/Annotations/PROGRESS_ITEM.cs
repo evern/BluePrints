@@ -2,6 +2,7 @@ namespace BluePrints.Data
 {
     using BaseModel.DataModel;
     using BaseModel.Misc;
+    using BluePrints.Common;
     using BluePrints.Common.Base;
     using DevExpress.Mvvm;
     using DevExpress.Mvvm.POCO;
@@ -38,6 +39,7 @@ namespace BluePrints.Data
             }
         }
 
+        public decimal ReportingEarnedUnits => EARNED_UNITS <= BluePrintsConstants.DurationBasedTotalUnits ? 0 : EARNED_UNITS;
         public string Office => this.PROGRESS.PROJECT.NUMBER + " " + this.PROGRESS.PROJECT.OfficeName;
     }
 }

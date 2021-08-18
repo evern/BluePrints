@@ -102,7 +102,7 @@ namespace BluePrints.Common.Base
             bool? allowSummaryCalculationOnUpdatePreference = LoginCredentials.GetUserPreferenceBool(DataUtils.GetNameOf(() => UserPreferences.DesignProgress_AllowSummaryUpdate));
             allowSummaryCalculationOnUpdate = allowSummaryCalculationOnUpdatePreference == null ? true : (bool)allowSummaryCalculationOnUpdatePreference;
 
-            primeroUnitOfWork = PrimeroEntitiesUnitOfWorkSource.GetUnitOfWorkFactory(loadPROJECT.OfficeNameForExo == BluePrintsResources.OfficeMontreal).CreateUnitOfWork();
+            primeroUnitOfWork = PrimeroEntitiesUnitOfWorkSource.GetUnitOfWorkFactory(loadPROJECT.OfficeNameForExo).CreateUnitOfWork();
             if (loadPROJECT != null)
                 isQueryForLiveStatus = true;
         }
@@ -271,7 +271,7 @@ namespace BluePrints.Common.Base
             if (projectContexts == null)
             {
                 IPrimeroEntitiesUnitOfWork perthUOW = PrimeroEntitiesUnitOfWorkSource.GetUnitOfWorkFactory().CreateUnitOfWork();
-                IPrimeroEntitiesUnitOfWork montrealUOW = PrimeroEntitiesUnitOfWorkSource.GetUnitOfWorkFactory(true).CreateUnitOfWork();
+                IPrimeroEntitiesUnitOfWork montrealUOW = PrimeroEntitiesUnitOfWorkSource.GetUnitOfWorkFactory(BluePrintsResources.OfficeMontreal).CreateUnitOfWork();
                 projectContexts = new List<ProjectUnitOfWorkContext>();
                 foreach (var entity in MainViewModel.Entities)
                 {
@@ -427,7 +427,6 @@ namespace BluePrints.Common.Base
             }
         }
 
-        protected bool extrapolateDataDate = false;
         protected virtual void InitializeSummarizer()
         {
             //when view is closed too fast
@@ -436,11 +435,10 @@ namespace BluePrints.Common.Base
 
             TimeSpan reportInterval = ChronologicalHelpers.ConvertProgressIntervalToPeriod(loadPROGRESS);
             DateTime firstAlignedDataDate = ChronologicalHelpers.GenerateFirstAlignedDataDate(loadPROGRESS);
-            List<VariationAdjustment> projectVariationAdjustment = ProjectionHelpers.BuildProjectVariationAdjustments(VARIATIONCollection.AsQueryable(), ReportableCollection);
-            projectSummary = new ProjectSummaryStats(MainViewModel.Entities, DataDate, reportInterval, firstAlignedDataDate, projectVariationAdjustment, extrapolateDataDate ? DateTime.Now : (DateTime?)null);
+            projectSummary = new ProjectSummaryStats(MainViewModel.Entities, DataDate, reportInterval, firstAlignedDataDate);
             DateTime reporting_data_date = DataDate;
             FullStatsBuilder fullStatsBuilder = new FullStatsBuilder(loadPROJECT.NUMBER, loadPROJECT.CURRENCYCONVERSION, reportInterval, firstAlignedDataDate, SUBJOBCollection, reporting_data_date, primeroUnitOfWork);
-            fullSummarizer = new FullSummarizer(projectSummary, fullStatsBuilder, loadPROJECT.NUMBER);
+            fullSummarizer = new FullSummarizer(projectSummary, fullStatsBuilder, loadPROJECT.NUMBER, false);
         }
 
         protected abstract IEnumerable<IReportable> ReportableCollection { get; }
@@ -460,10 +458,10 @@ namespace BluePrints.Common.Base
         {
             if (fullSummarizer != null)
             {
-                fullSummarizer.BuildBudgeted(1, 1, false, false);
+                fullSummarizer.BuildBudgeted(1, 1, false, false, false);
                 //fullSummarizer.BuildEarned();
-                //fullSummarizer.BuildRemaining();
-                fullSummarizer.BuildBurnedDataPoints(false, false, false, false, true);
+                fullSummarizer.BuildRemaining();
+                fullSummarizer.BuildBurnedDataPoints(DashboardEXOQueryType.TimeOnly);
                 //fullSummarizer.Summarize();
                 //mainThreadDispatcher.BeginInvoke(new Action(() => BackgroundRefresh()));
 

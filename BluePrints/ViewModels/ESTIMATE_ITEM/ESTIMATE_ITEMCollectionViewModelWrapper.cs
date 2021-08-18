@@ -86,7 +86,7 @@ namespace BluePrints.ViewModels
             loadPROJECT = receiveParameter.GetFirstEntity();
             loadESTIMATE = (ESTIMATE)receiveParameter.GetSecondEntity();
 
-            primeroUnitOfWork = PrimeroEntitiesUnitOfWorkSource.GetUnitOfWorkFactory(loadPROJECT.OfficeNameForExo == BluePrintsResources.OfficeMontreal).CreateUnitOfWork();
+            primeroUnitOfWork = PrimeroEntitiesUnitOfWorkSource.GetUnitOfWorkFactory(loadPROJECT.OfficeNameForExo).CreateUnitOfWork();
             bluePrintsUnitOfWork = BluePrintsEntitiesUnitOfWorkSource.GetUnitOfWorkFactory().CreateUnitOfWork();
             exoLines = ExoQueries.GetProjectLines(primeroUnitOfWork, loadPROJECT.NUMBER);
             IsProcurementSubjobVisible = false;
@@ -582,7 +582,8 @@ namespace BluePrints.ViewModels
             projection.Entity.Entity.GUID_ESTIMATE = load_context_guid;
 
             BluePrintsDataUtils.OnBeforeSavedGenerateAndAssignSubjob(loadPROJECT, PHASECollection, AREACollection, SUBAREACollection, projection, bluePrintsUnitOfWork, PhaseType.Construct, ChargeType.Chargeable);
-            BluePrintsDataUtils.OnBeforeSavedGenerateAndAssignWorkpack(projection, WORKPACKSCollectionViewModel, SUBJOBCollection, DISCIPLINECollection);
+            BluePrintsDataUtils.OnBeforeSavedGenerateAndAssignWorkpack(loadPROJECT, projection, WORKPACKSCollectionViewModel, SUBJOBCollection, DISCIPLINECollection);
+
             return base.OnBeforeProjectionSaveIsContinue(projection, out isNew);
         }
 

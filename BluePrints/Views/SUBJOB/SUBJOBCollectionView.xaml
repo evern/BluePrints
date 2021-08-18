@@ -1,6 +1,21 @@
-﻿<UserControl x:Class="BluePrints.Views.SUBJOBCollectionView" xmlns="http://schemas.microsoft.com/netfx/2009/xaml/presentation" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" xmlns:common="clr-namespace:BluePrints.Common" xmlns:custom="clr-namespace:BaseModel.Misc;assembly=BaseModel" xmlns:d="http://schemas.microsoft.com/expression/blend/2008" xmlns:dx="http://schemas.devexpress.com/winfx/2008/xaml/core" xmlns:dxb="http://schemas.devexpress.com/winfx/2008/xaml/bars" xmlns:dxe="http://schemas.devexpress.com/winfx/2008/xaml/editors" xmlns:dxg="http://schemas.devexpress.com/winfx/2008/xaml/grid" xmlns:dxlc="http://schemas.devexpress.com/winfx/2008/xaml/layoutcontrol" xmlns:dxmvvm="http://schemas.devexpress.com/winfx/2008/xaml/mvvm" xmlns:dxr="http://schemas.devexpress.com/winfx/2008/xaml/ribbon" xmlns:dxrudex="http://schemas.devexpress.com/winfx/2008/xaml/reports/userdesignerextensions" xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" xmlns:view="clr-namespace:BluePrints.Views" xmlns:viewmodel="clr-namespace:BluePrints.ViewModels" x:Name="userControl" d:DesignHeight="400" d:DesignWidth="600" DataContext="{dxmvvm:ViewModelSource viewmodel:SUBJOBCollectionViewModelWrapper}" mc:Ignorable="d">
+﻿<UserControl x:Class="BluePrints.Views.SUBJOBCollectionView" xmlns="http://schemas.microsoft.com/netfx/2009/xaml/presentation" xmlns:viewmisc="clr-namespace:BluePrints.Common.ViewModel.Misc" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" xmlns:common="clr-namespace:BluePrints.Common" xmlns:custom="clr-namespace:BaseModel.Misc;assembly=BaseModel" xmlns:d="http://schemas.microsoft.com/expression/blend/2008" xmlns:dx="http://schemas.devexpress.com/winfx/2008/xaml/core" xmlns:dxb="http://schemas.devexpress.com/winfx/2008/xaml/bars" xmlns:dxe="http://schemas.devexpress.com/winfx/2008/xaml/editors" xmlns:dxg="http://schemas.devexpress.com/winfx/2008/xaml/grid" xmlns:dxlc="http://schemas.devexpress.com/winfx/2008/xaml/layoutcontrol" xmlns:dxmvvm="http://schemas.devexpress.com/winfx/2008/xaml/mvvm" xmlns:dxr="http://schemas.devexpress.com/winfx/2008/xaml/ribbon" xmlns:dxrudex="http://schemas.devexpress.com/winfx/2008/xaml/reports/userdesignerextensions" xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" xmlns:view="clr-namespace:BluePrints.Views" xmlns:viewmodel="clr-namespace:BluePrints.ViewModels" x:Name="userControl" d:DesignHeight="400" d:DesignWidth="600" DataContext="{dxmvvm:ViewModelSource viewmodel:SUBJOBCollectionViewModelWrapper}" mc:Ignorable="d">
     <UserControl.Resources>
         <ResourceDictionary>
+            <DataTemplate x:Key="CurrencyEditor" >
+                <dxe:TextEdit x:Name="PART_Editor" Mask="c0" MaskType="Numeric" MaskUseAsDisplayFormat="True" />
+            </DataTemplate>
+            <DataTemplate x:Key="NumberEditor" >
+                <dxe:TextEdit x:Name="PART_Editor" Mask="n0" MaskType="Numeric" MaskUseAsDisplayFormat="True" />
+            </DataTemplate>
+            <DataTemplate x:Key="ProgressEditor" x:Name="PART_Editor">
+                <dxe:ProgressBarEdit x:Name="PART_Editor" Grid.Row="1" 
+                             HorizontalAlignment="Center" VerticalAlignment="Center" 
+                             Width="100" Height="15">
+                    <dxe:ProgressBarEdit.StyleSettings>
+                        <dxe:ProgressBarMarqueeStyleSettings/>
+                    </dxe:ProgressBarEdit.StyleSettings>
+                </dxe:ProgressBarEdit>
+            </DataTemplate>
             <ResourceDictionary.MergedDictionaries>
                 <ResourceDictionary Source="pack://application:,,,/BaseModel;component/View/ResourceDictionaries/DefaultControlResourceDictionary.xaml" />
                 <ResourceDictionary Source="pack://application:,,,/Common/View/ResourceDictionaries/DefaultBluePrintsResourceDictionary.xaml" />
@@ -96,17 +111,25 @@
                                 <dxe:ComboBoxEditSettings AutoComplete="True" IsTextEditable="True" ItemsSource="{dxe:EnumItemsSource EnumType={x:Type common:BellCurveShape}}" NullValueButtonPlacement="EditBox" />
                             </dxg:GridColumn.EditSettings>
                         </dxg:GridColumn>
-                        <dxg:GridColumn FieldName="Budget_Units" AllowBestFit="false" Width="90" HeaderToolTip="Estimated units from all assigned deliverables" ReadOnly="True" />
-                        <dxg:GridColumn FieldName="Total_Units" AllowBestFit="false" Width="90" HeaderToolTip="Total units includes variation from all assigned deliverables" ReadOnly="True" />
-                        <dxg:GridColumn FieldName="Budget_Costs" AllowBestFit="false" Width="90" HeaderToolTip="Estimated costs from all assigned deliverables" ReadOnly="True">
-                            <dxg:GridColumn.EditSettings>
-                                <dxe:SpinEditSettings Mask="c" MaskType="Numeric" MaskUseAsDisplayFormat="True" />
-                            </dxg:GridColumn.EditSettings>
+                        <dxg:GridColumn FieldName="ViewBudget_Units" Header="Budget Units" AllowBestFit="false" Width="90" HeaderToolTip="Estimated units from all assigned deliverables" ReadOnly="True" >
+                            <dxg:GridColumn.CellTemplateSelector>
+                                <viewmisc:NullValueTemplateSelector DefaultEditorTemplateName="NumberEditor" />
+                            </dxg:GridColumn.CellTemplateSelector>
                         </dxg:GridColumn>
-                        <dxg:GridColumn FieldName="Total_Costs" AllowBestFit="false" Width="90" HeaderToolTip="Total costs includes variation from all assigned deliverables" ReadOnly="True">
-                            <dxg:GridColumn.EditSettings>
-                                <dxe:SpinEditSettings Mask="c" MaskType="Numeric" MaskUseAsDisplayFormat="True" />
-                            </dxg:GridColumn.EditSettings>
+                        <dxg:GridColumn FieldName="ViewTotal_Units" Header="Total Units" AllowBestFit="false" Width="90" HeaderToolTip="Total units includes variation from all assigned deliverables" ReadOnly="True" >
+                            <dxg:GridColumn.CellTemplateSelector>
+                                <viewmisc:NullValueTemplateSelector DefaultEditorTemplateName="NumberEditor" />
+                            </dxg:GridColumn.CellTemplateSelector>
+                        </dxg:GridColumn>
+                        <dxg:GridColumn FieldName="ViewBudget_Costs" Header="Budget Costs" AllowBestFit="false" Width="90" HeaderToolTip="Estimated costs from all assigned deliverables" ReadOnly="True">
+                            <dxg:GridColumn.CellTemplateSelector>
+                                <viewmisc:NullValueTemplateSelector DefaultEditorTemplateName="CurrencyEditor" />
+                            </dxg:GridColumn.CellTemplateSelector>
+                        </dxg:GridColumn>
+                        <dxg:GridColumn FieldName="ViewTotal_Costs" Header="Total Costs" AllowBestFit="false" Width="90" HeaderToolTip="Total costs includes variation from all assigned deliverables" ReadOnly="True">
+                            <dxg:GridColumn.CellTemplateSelector>
+                                <viewmisc:NullValueTemplateSelector DefaultEditorTemplateName="CurrencyEditor" />
+                            </dxg:GridColumn.CellTemplateSelector>
                         </dxg:GridColumn>
                     </dxg:GridControl.Columns>
                     <dxg:GridControl.TotalSummary>

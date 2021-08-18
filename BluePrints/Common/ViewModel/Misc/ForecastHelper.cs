@@ -106,8 +106,10 @@ namespace BluePrints.Common.ViewModel.Misc
             if (actualStats.Count() > 0)
             {
                 actualDataPoints.AddRange(actualStats.SelectMany(x => x.Actual.ExoDataPoints.Where(y => y.ActualDate <= dataDate)));
+
                 IEnumerable<ExoDataPoint> actualDataPointsPostDD = actualStats.SelectMany(x => x.Actual.ExoDataPoints.Where(y => y.ActualDate > dataDate));
                 IEnumerable<ExoDataPoint> actualDataPointsPreviousDD = actualStats.SelectMany(x => x.Actual.ExoDataPoints.Where(y => y.ActualDate <= previousDataDate));
+
                 jobForecastSummary.ActualUnits = actualDataPoints.Sum(x => x.Units);
                 jobForecastSummary.ActualUnitsPostDataDate = actualDataPointsPostDD.Sum(x => x.Units);
                 jobForecastSummary.ActualCostsPostDataDate = actualDataPointsPostDD.Sum(x => x.Costs);
@@ -194,6 +196,7 @@ namespace BluePrints.Common.ViewModel.Misc
             if (remainingStats.Count() > 0)
             {
                 remainingDataPoints.AddRange(remainingStats.SelectMany(x => x.Remaining.RemainingOnlyDataPoints));
+
                 earnedDataPoints.AddRange(earnedStats.SelectMany(x => x.Earned.DataPoints));
                 decimal p6RemainingCosts = remainingDataPoints.Sum(x => x.Costs);
                 decimal p6RemainingUnits = remainingDataPoints.Sum(x => x.Units);
@@ -267,7 +270,7 @@ namespace BluePrints.Common.ViewModel.Misc
         public static void PopulateEAC(ForecastJobData forecastProjection, IEnumerable<FORECAST_EAC> FORECAST_EACCollection, DateTime previousEACDataDate)
         {
             //populate previous estimate to completion
-            FORECAST_EAC previousEAC = FORECAST_EACCollection.FirstOrDefault(x => x.SUBJOB_CODE == forecastProjection.Projection.SubJobCode && x.DISCIPLINE_CODE == forecastProjection.Projection.DisciplineCode && x.COMMODITY_CODE == forecastProjection.Projection.CommodityCode && x.VARIATION_CODE == forecastProjection.Projection.VariationCode && x.FORECAST_DATE.Date == previousEACDataDate.Date);
+            FORECAST_EAC previousEAC = FORECAST_EACCollection.FirstOrDefault(x => x.SUBJOB_CODE == forecastProjection.Projection.SubJobCode && x.DISCIPLINE_CODE == forecastProjection.Projection.DisciplineCode && x.COMMODITY_CODE == forecastProjection.Projection.CommodityCode && x.VARIATION_CODE == forecastProjection.Projection.VariationCode && x.FORECAST_DATE.Date == previousEACDataDate.Date && x.TYPE == ForecastEACType.EAC);
             if (previousEAC != null)
             {
                 if (previousEAC.FORECAST_COSTS != null)
@@ -276,6 +279,21 @@ namespace BluePrints.Common.ViewModel.Misc
             else
             {
                 forecastProjection.PreviousEAC = 0.00m;
+            }
+        }
+
+        public static void PopulateFirstEAC(ForecastJobData forecastProjection, IEnumerable<FORECAST_EAC> FORECAST_EACFirstEACCollection)
+        {
+            //populate previous estimate to completion
+            FORECAST_EAC previousEAC = FORECAST_EACFirstEACCollection.FirstOrDefault(x => x.SUBJOB_CODE == forecastProjection.Projection.SubJobCode && x.DISCIPLINE_CODE == forecastProjection.Projection.DisciplineCode && x.COMMODITY_CODE == forecastProjection.Projection.CommodityCode && x.VARIATION_CODE == forecastProjection.Projection.VariationCode);
+            if (previousEAC != null)
+            {
+                if (previousEAC.FORECAST_COSTS != null)
+                    forecastProjection.FirstEAC = (decimal)previousEAC.FORECAST_COSTS;
+            }
+            else
+            {
+                forecastProjection.FirstEAC = 0.00m;
             }
         }
 

@@ -13,14 +13,14 @@ using System.Threading.Tasks;
 namespace BluePrints.Common.Projections
 {
     [BulkEditDisabledAttributes("DeliverableStatusProgressGuid, DeliverableStatusGuid")]
-    public class BASELINE_ITEMProgress : BluePrintsProgressableProjectionBase<BASELINE_ITEMProjection>, ICanAssignP6, ISupportVariation<BASELINE_ITEM>, IHaveDBProductivityOverride, IEntityNumber, IBookable, IDXDataErrorInfo
+    public class BASELINE_ITEMProgress : BluePrintsProgressableProjectionBase<BASELINE_ITEMProjection>, ICanAssignP6, ISupportVariation<BASELINE_ITEM>, IHaveDBProductivityOverride, IEntityNumber, IBookable, IDXDataErrorInfo, IHaveTrueP6Dates
     {
         public BASELINE_ITEMProgress()
         {
         }
 
-        public BASELINE_ITEMProgress(PROJECT PROJECT, PROGRESS LivePROGRESS, IDeliverable_Rates entity, IEnumerable<VariationAdjustment> projectVariationAdjustments, bool useReportDate, DateTime? extrapolateDate = null)
-            : base(PROJECT, LivePROGRESS, entity, projectVariationAdjustments, useReportDate, extrapolateDate)
+        public BASELINE_ITEMProgress(PROJECT PROJECT, PROGRESS LivePROGRESS, IDeliverable_Rates entity, IEnumerable<VariationAdjustment> projectVariationAdjustments, bool useReportDate, DateTime? extrapolateDate = null, bool allowPercentageOnZeroTotalUnits = false)
+            : base(PROJECT, LivePROGRESS, entity, projectVariationAdjustments, useReportDate, extrapolateDate, false, allowPercentageOnZeroTotalUnits)
         {
         }
 
@@ -76,21 +76,21 @@ namespace BluePrints.Common.Projections
 
         private VariationAction? committedVariationAction => VARIATION_ITEM == null ? (VariationAction?)null : VARIATION_ITEM.ACTION;
 
-        public bool AdjustUnitsReadOnly => DisplayVariationAction == VariationAction.Cancel || (IsSubmitted || IsByDuration);
+        public bool AdjustUnitsReadOnly => DisplayVariationAction == VariationAction.Cancel || (IsSubmitted);
 
         public bool IsSubmitted => SubmittedDate != null;
 
         public bool IsApproved => ApprovedDate != null;
 
-        public decimal DisplayTotalUnits => IsByDuration ? 0 : IsApproved ? (base.Budget_Units + Variation_Units) : (base.Budget_Units + Variation_Units + Forecast_Units);
+        public decimal DisplayTotalUnits => IsApproved ? (base.Budget_Units + Variation_Units) : (base.Budget_Units + Variation_Units + Forecast_Units);
 
-        public virtual decimal Forecast_Total_Costs => IsByDuration ? 0 : (base.Budget_Units + Variation_Units + Forecast_Units) * Budget_ItemRate;
+        public virtual decimal Forecast_Total_Costs => (base.Budget_Units + Variation_Units + Forecast_Units) * Budget_ItemRate;
 
-        public virtual decimal Forecast_Costs => IsByDuration ? 0 : Forecast_Units * base.Entity.Budget_ItemRate;
+        public virtual decimal Forecast_Costs => Forecast_Units * base.Entity.Budget_ItemRate;
 
-        public virtual decimal Forecast_Total_InternalCosts => IsByDuration ? 0 : (base.Budget_Units + Variation_Units + Forecast_Units) * Budget_ItemInternalRate;
+        public virtual decimal Forecast_Total_InternalCosts => (base.Budget_Units + Variation_Units + Forecast_Units) * Budget_ItemInternalRate;
 
-        public virtual decimal Forecast_InternalCosts => IsByDuration ? 0 : Forecast_Units * base.Entity.Budget_ItemInternalRate;
+        public virtual decimal Forecast_InternalCosts => Forecast_Units * base.Entity.Budget_ItemInternalRate;
 
         public decimal Forecast_Units => DisplayVariationUnits;
 
@@ -196,7 +196,7 @@ namespace BluePrints.Common.Projections
         {
             get
             {
-                if (Stats == null || Stats.Budgeted == null || Stats.Remaining.CumulativeDataPoints == null || Stats.Remaining.CumulativeDataPoints.Count == 0 || Stats.Remaining.CumulativeDataPoints.Where(x => x.Units > 0).Count() == 0)
+                if (Stats == null || Stats.Remaining == null || Stats.Remaining.CumulativeDataPoints == null || Stats.Remaining.CumulativeDataPoints.Count == 0 || Stats.Remaining.CumulativeDataPoints.Where(x => x.Units > 0).Count() == 0)
                     return null;
 
                 return Stats.Remaining.CumulativeDataPoints.Where(x => x.Units > 0).Max(x => x.ProgressDate);
@@ -370,6 +370,15 @@ namespace BluePrints.Common.Projections
         #region User Report
         public string User_Name { get; set; }
         public string User_Role { get; set; }
+        #endregion
+
+        #region IHaveTrueP6Dates
+        public DateTime? ViewStartDate => TrueP6PlannedStartDate == null ? StartDate : TrueP6PlannedStartDate;
+        public DateTime? ViewDueDate => TrueP6PlannedEndDate == null ? DueDate : TrueP6PlannedEndDate;
+        public DateTime? ViewForecastDate => TrueP6RemainingEndDate == null ? ForecastDate : TrueP6RemainingEndDate;
+        public DateTime? TrueP6PlannedStartDate { get; set; }
+        public DateTime? TrueP6PlannedEndDate { get; set; }
+        public DateTime? TrueP6RemainingEndDate { get; set; }
         #endregion
     }
 }

@@ -25,6 +25,16 @@ namespace BluePrints.Common
         public static DateTime DefaultLastDay = new DateTime(2099, 1, 1);
     }
 
+    public enum DashboardEXOQueryType
+    {
+        [Display(Name = "All")]
+        All,
+        [Display(Name = "TimeOnly")]
+        TimeOnly,
+        [Display(Name = "TimeAndMaterial")]
+        TimeAndMaterial
+    }
+
     public enum ScoreCardDiscipline
     {
         [Display(Name = "Concrete")]
@@ -46,6 +56,13 @@ namespace BluePrints.Common
         All = 3
     }
 
+    public enum DatabaseLocale
+    {
+        Default,
+        Perth,
+        Montreal,
+        USA
+    }
     public enum RowEditAction
     {
         [Display(Name = "Add")]
@@ -1035,7 +1052,9 @@ namespace BluePrints.Common
         [Display(Name = "EAC")]
         EAC = 0,
         [Display(Name = "Previous Commitment")]
-        PreviousCommitment = 1
+        PreviousCommitment = 1,
+        [Display(Name = "First EAc")]
+        FirstEAC = 2
     }
 
     public class ReportingEnum

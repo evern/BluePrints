@@ -274,7 +274,7 @@ namespace BluePrints.ViewModels
         {
             var receiveParameter = (TripleEntitiesParameter<PROJECT, IAmBaseline, object>)parameter;
             loadPROJECT = receiveParameter.GetFirstEntity();
-            primeroUnitOfWorkFactory = PrimeroEntitiesUnitOfWorkSource.GetUnitOfWorkFactory(loadPROJECT.OfficeNameForExo == BluePrintsResources.OfficeMontreal);
+            primeroUnitOfWorkFactory = PrimeroEntitiesUnitOfWorkSource.GetUnitOfWorkFactory(loadPROJECT.OfficeNameForExo);
             primeroUnitOfWork = primeroUnitOfWorkFactory.CreateUnitOfWork();
             bluePrintsUnitOfWork = BluePrintsEntitiesUnitOfWorkSource.GetUnitOfWorkFactory().CreateUnitOfWork();
 
@@ -287,6 +287,7 @@ namespace BluePrints.ViewModels
             allowSubJobDeletion = false;
             allowWorkpackDeletion = false;
             Allow_Drag_Drop = false;
+            AlwaysSkipMessage = true;
         }
 
         //#region Interface Delegates
@@ -703,17 +704,17 @@ namespace BluePrints.ViewModels
                 projection.Entity.Entity.GUID_OFFICE = loadPROJECT.GUID_OFFICE;
 
             //this context is inherited by variation and is used to save newly added variation
-            if(projection.Entity.Entity.GUID_VARIATION == null)
+            if(projection.Entity.Entity.GUID_BASELINE == null && projection.Entity.Entity.GUID_VARIATION == null)
                 projection.Entity.Entity.GUID_BASELINE = loadBASELINE.GUID;
 
             PhaseType? phaseType = null;
             ChargeType? chargeType = null;
-
-            PHASE defaultPHASE = PHASECollection.FirstOrDefault(x => (x.PHASE_TYPE != null && x.PHASE_TYPE == PhaseType.Design) && (x.CHARGE_TYPE != null && x.CHARGE_TYPE == ChargeType.Chargeable));
+            PHASE defaultPHASE;
             if (viewType == DeliverablesViewType.Direct)
             {
                 phaseType = PhaseType.Design;
                 chargeType = ChargeType.Chargeable;
+                defaultPHASE = PHASECollection.FirstOrDefault(x => (x.PHASE_TYPE != null && x.PHASE_TYPE == PhaseType.Design) && (x.CHARGE_TYPE != null && x.CHARGE_TYPE == ChargeType.Chargeable));
                 if (defaultPHASE != null)
                     projection.Phase_Guid = defaultPHASE.GUID;
             }
@@ -725,9 +726,11 @@ namespace BluePrints.ViewModels
                 if (indirectPHASE != null)
                     projection.Phase_Guid = indirectPHASE.GUID;
             }
-            else if (projection.Phase_Guid == null && defaultPHASE != null)
+            else if (projection.Phase_Guid == null)
             {
-                projection.Phase_Guid = defaultPHASE.GUID;
+                defaultPHASE = PHASECollection.FirstOrDefault(x => (x.PHASE_TYPE != null && x.PHASE_TYPE == PhaseType.Design) && (x.CHARGE_TYPE != null && x.CHARGE_TYPE == ChargeType.Chargeable));
+                if(defaultPHASE != null)
+                    projection.Phase_Guid = defaultPHASE.GUID;
             }
 
             string errorMessage = string.Empty;
@@ -735,7 +738,7 @@ namespace BluePrints.ViewModels
                 projection.Entity.Entity.INTERNAL_NUM = generateInternalNumber(projection, out errorMessage);
 
             BluePrintsDataUtils.OnBeforeSavedGenerateAndAssignSubjob(loadPROJECT, PHASECollection, AREACollection, SUBAREACollection, projection, bluePrintsUnitOfWork, phaseType, chargeType, false, allowSubJobDeletion);
-            BluePrintsDataUtils.OnBeforeSavedGenerateAndAssignWorkpack(projection, WORKPACKSCollectionViewModel, SUBJOBCollection, DISCIPLINECollection, allowWorkpackDeletion);
+            BluePrintsDataUtils.OnBeforeSavedGenerateAndAssignWorkpack(loadPROJECT, projection, WORKPACKSCollectionViewModel, SUBJOBCollection, DISCIPLINECollection, allowWorkpackDeletion);
             projection.Update();
             return base.OnBeforeProjectionSaveIsContinue(projection, out isNew);
         }
@@ -852,15 +855,8 @@ namespace BluePrints.ViewModels
             //budget hours field is disabled but just in case
             if (fieldName == BindableBase.GetPropertyName(() => new BASELINE_ITEM().BUDGET_HOURS))
             {
-                if (entity.Entity.Entity.BY_DURATION && ((decimal)newValue) > 0)
-                    return "Cannot set budgeted hours when deliverables is by duration";
-                else if ((decimal)newValue < entity.MinEstimateUnits)
+                if ((decimal)newValue < entity.MinEstimateUnits)
                     return "Budgeted hours cannot be less than " + entity.MinEstimateUnits.ToString();
-            }
-            else if (fieldName == BindableBase.GetPropertyName(() => new BASELINE_ITEM().BY_DURATION))
-            {
-                if (entity.Earned_Units_Total > 0)
-                    return "Cannot set budgeted hours when deliverables is by duration";
             }
             else if (fieldName == BindableBase.GetPropertyName(() => new BASELINE_ITEM().INTERNAL_NUM))
             {
@@ -1982,7 +1978,6 @@ namespace BluePrints.ViewModels
                 return (CollectionViewModel<BASELINE, BASELINE, Guid, IBluePrintsEntitiesUnitOfWork>)loaderCollection.GetViewModel<BASELINE>();
             }
         }
-
 
         public CollectionViewModel<BASELINE_ITEM_WORK, BASELINE_ITEM_WORK, Guid, IBluePrintsEntitiesUnitOfWork> BASELINE_ITEM_WORKCollectionViewModel
         {

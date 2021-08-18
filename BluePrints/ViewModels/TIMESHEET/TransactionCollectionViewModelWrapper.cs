@@ -97,27 +97,34 @@ namespace BluePrints.ViewModels
         private IPrimeroEntitiesUnitOfWork primeroUnitOfWork;
         JOBCOST_HDR loadJOBCOST_HDR;
         bool isYearToDate = false;
+        bool is2020Onwards = false;
         public bool IsYearToDate => isYearToDate;
-
+        public bool Is2020Onwards => is2020Onwards;
+        public string officeName;
         protected override void resolveParameters(object parameter)
         {
-            var PROJECTParameter = (EntitiesParameter<Data.PROJECT>)parameter;
-            loadPROJECT = PROJECTParameter.GetEntity();
-            if (loadPROJECT == null)
+            var PROJECTParameter = (TripleEntitiesParameter<Data.PROJECT, object, object>)parameter;
+            loadPROJECT = PROJECTParameter.GetFirstEntity();
+
+            if(loadPROJECT == null)
             {
                 IsReadOnly = true;
                 isYearToDate = true;
+                is2020Onwards = (bool)PROJECTParameter.GetSecondEntity();
                 isUsePreloadMode = false;
-            }
 
-            if(loadPROJECT == null)
-#if PERTH
-                primeroUnitOfWorkFactory = PrimeroEntitiesUnitOfWorkSource.GetUnitOfWorkFactory();
-#else
-                primeroUnitOfWorkFactory = PrimeroEntitiesUnitOfWorkSource.GetUnitOfWorkFactory(true);
-#endif
+                DatabaseLocale dbLocale = (DatabaseLocale)PROJECTParameter.GetThirdEntity();
+                if (dbLocale == DatabaseLocale.Perth)
+                    officeName = BluePrintsResources.OfficePerth;
+                else if (dbLocale == DatabaseLocale.Montreal)
+                    officeName = BluePrintsResources.OfficeMontreal;
+                else
+                    officeName = BluePrintsResources.OfficeUSA;
+
+                primeroUnitOfWorkFactory = PrimeroEntitiesUnitOfWorkSource.GetUnitOfWorkFactory(officeName);
+            }
             else
-                primeroUnitOfWorkFactory = PrimeroEntitiesUnitOfWorkSource.GetUnitOfWorkFactory(loadPROJECT.OfficeNameForExo == BluePrintsResources.OfficeMontreal);
+                primeroUnitOfWorkFactory = PrimeroEntitiesUnitOfWorkSource.GetUnitOfWorkFactory(loadPROJECT.OfficeNameForExo);
 
             primeroUnitOfWork = primeroUnitOfWorkFactory.CreateUnitOfWork();
         }
@@ -160,9 +167,17 @@ namespace BluePrints.ViewModels
         protected override Func<IRepositoryQuery<X_JOB_TRANSACTIONS_DETAIL_SeqNo>, IQueryable<X_JOB_TRANSACTIONS_DETAIL_SeqNo>> specifyMainViewModelProjection()
         {
             if (isYearToDate)
-                return query => query.Where(x => x.transdate != null);
+            {
+                if(Is2020Onwards)
+                {
+                    DateTime date2020FirstDay = new DateTime(2020, 1, 1);
+                    return query => query.Where(x => x.transdate != null && ((DateTime)x.transdate) >= date2020FirstDay && x.LINE_STATUS != "x");
+                }
+                else
+                    return query => query.Where(x => x.transdate != null && x.LINE_STATUS != "x");
+            }
             else
-                return query => query.Where(x => x.master_jobno == loadJOBCOST_HDR.MASTER_JOBNO);
+                return query => query.Where(x => x.master_jobno == loadJOBCOST_HDR.MASTER_JOBNO && x.LINE_STATUS != "x");
         }
 
         protected override void InstantFeedbackOtherUnitOfWorkSaveChanges()
@@ -243,7 +258,7 @@ namespace BluePrints.ViewModels
         public override string ViewName
         {
             //get { return "OffsiteDirectProgressViewModelWrapper" + view_project_specific_affix; }
-            get { return "TransactionEntryViewModelWrapper_v2" + view_project_specific_affix; }
+            get { return "TransactionEntryViewModelWrapper_v2" + view_project_specific_affix + officeName; }
         }
 
         private DevExpress.Mvvm.IDialogService DateFromToDialogService

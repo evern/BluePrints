@@ -51,7 +51,7 @@ namespace BluePrints.ViewModels
         #region Database Operations
         private IUnitOfWorkFactory<IBluePrintsEntitiesUnitOfWork> bluePrintsUnitOfWorkFactory = BluePrintsEntitiesUnitOfWorkSource.GetUnitOfWorkFactory();
         private IUnitOfWorkFactory<IPrimeroEntitiesUnitOfWork> primeroUnitOfWorkFactory = PrimeroEntitiesUnitOfWorkSource.GetUnitOfWorkFactory();
-        private IUnitOfWorkFactory<IPrimeroEntitiesUnitOfWork> pgaUnitOfWorkFactory = PrimeroEntitiesUnitOfWorkSource.GetUnitOfWorkFactory(true);
+        private IUnitOfWorkFactory<IPrimeroEntitiesUnitOfWork> pgaUnitOfWorkFactory = PrimeroEntitiesUnitOfWorkSource.GetUnitOfWorkFactory(BluePrintsResources.OfficeMontreal);
         IPrimeroEntitiesUnitOfWork primeroUnitOfWork;
         IPrimeroEntitiesUnitOfWork pgaUnitOfWork;
         IBluePrintsEntitiesUnitOfWork bluePrintsUnitOfWork;
@@ -99,7 +99,7 @@ namespace BluePrints.ViewModels
         public IQueryable<USER> USERCollectionPopulation(IQueryable<USER> USERS)
         {
             //DbContext cannot support parallel operation, load it up first in cache
-            PROJECT_PERMISSIONCollection.ToList();
+            //PROJECT_PERMISSIONCollection.ToList();
             HashSet<USER> users = new HashSet<USER>(USERS);
             Parallel.ForEach(users, user =>
             {
@@ -175,7 +175,6 @@ namespace BluePrints.ViewModels
             }
 
             saveProjectAssignments(entity);
-            resetProjectPermision();
             base.OnAfterProjectionSave(projection, entity, isNew);
         }
         #endregion
@@ -183,32 +182,32 @@ namespace BluePrints.ViewModels
         #region Token Saving Behavior
         private void saveProjectAssignments(USER entity)
         {
+            List<PROJECT_PERMISSION> addPermissions = new List<PROJECT_PERMISSION>();
+            List<PROJECT_PERMISSION> removePermissions = new List<PROJECT_PERMISSION>();
             if (entity.Project_Assignments != null)
             {
-                List<PROJECT_PERMISSION> remove_projects = new List<PROJECT_PERMISSION>();
-                foreach (PROJECT_PERMISSION assignment in bluePrintsUnitOfWork.PROJECT_PERMISSIONS.Where(x => x.GUID_USER == entity.GUID))
+                foreach (PROJECT_PERMISSION assignment in PROJECT_PERMISSIONCollection.Where(x => x.GUID_USER == entity.GUID))
                 {
                     if (!entity.Project_Assignments.Any(x => x.GUID == assignment.GUID_PROJECT))
-                        bluePrintsUnitOfWork.PROJECT_PERMISSIONS.Remove(assignment);
+                        removePermissions.Add(assignment);
                 }
 
-                List<PROJECT_PERMISSION> add_projects = new List<PROJECT_PERMISSION>();
                 foreach (PROJECT project in entity.Project_Assignments)
                 {
-                    if (!bluePrintsUnitOfWork.PROJECT_PERMISSIONS.Where(x => x.GUID_USER == entity.GUID).Any(x => x.GUID_PROJECT == project.GUID))
-                        bluePrintsUnitOfWork.PROJECT_PERMISSIONS.Add(new PROJECT_PERMISSION() { GUID_PROJECT = project.GUID, GUID_USER = entity.GUID });
+                    if (!PROJECT_PERMISSIONCollection.Where(x => x.GUID_USER == entity.GUID).Any(x => x.GUID_PROJECT == project.GUID))
+                        addPermissions.Add(new PROJECT_PERMISSION() { GUID_PROJECT = project.GUID, GUID_USER = entity.GUID });
                 }
             }
             else
             {
-                List<PROJECT_PERMISSION> remove_projects = new List<PROJECT_PERMISSION>();
-                foreach (PROJECT_PERMISSION assignment in bluePrintsUnitOfWork.PROJECT_PERMISSIONS.Where(x => x.GUID_USER == entity.GUID))
+                foreach (PROJECT_PERMISSION assignment in PROJECT_PERMISSIONCollection.Where(x => x.GUID_USER == entity.GUID))
                 {
-                    bluePrintsUnitOfWork.PROJECT_PERMISSIONS.Remove(assignment);
+                    removePermissions.Add(assignment);
                 }
             }
 
-            bluePrintsUnitOfWork.SaveChanges();
+            PROJECT_PERMISSIONCollectionViewModel.BaseBulkSave(addPermissions);
+            PROJECT_PERMISSIONCollectionViewModel.BaseBulkDelete(removePermissions);
         }
         #endregion
 
@@ -499,23 +498,23 @@ namespace BluePrints.ViewModels
             }
         }
 
-        List<PROJECT_PERMISSION> projectPermissionCollection;
-        public List<PROJECT_PERMISSION> PROJECT_PERMISSIONCollection
+        public IEnumerable<PROJECT_PERMISSION> PROJECT_PERMISSIONCollection
         {
             get
             {
-                if(bluePrintsUnitOfWork != null && projectPermissionCollection == null)
-                {
-                    projectPermissionCollection = bluePrintsUnitOfWork.PROJECT_PERMISSIONS.ToList();
-                }
-
-                return projectPermissionCollection;
+                return GetEntities<PROJECT_PERMISSION>();
             }
         }
 
-        private void resetProjectPermision()
+        public CollectionViewModel<PROJECT_PERMISSION, PROJECT_PERMISSION, Guid, IBluePrintsEntitiesUnitOfWork> PROJECT_PERMISSIONCollectionViewModel
         {
-            projectPermissionCollection = null;
+            get
+            {
+                if (MainViewModel == null)
+                    return null;
+
+                return (CollectionViewModel<PROJECT_PERMISSION, PROJECT_PERMISSION, Guid, IBluePrintsEntitiesUnitOfWork>)loaderCollection.GetViewModel<PROJECT_PERMISSION>();
+            }
         }
         #endregion
 
