@@ -42,9 +42,6 @@
                             <dxg:GridColumn.CellTemplate>
                                 <DataTemplate>
                                     <dxg:LookUpEdit Name="PART_Editor" AutoComplete="True" AutoPopulateColumns="False" DisplayMember="STOCKCODE" IncrementalFiltering="True" IsTextEditable="true" ItemsSource="{Binding DataContext.STOCK_ITEMSCollection, ElementName=userControl}" NullValueButtonPlacement="Popup" PopupMinWidth="500" ValueMember="STOCKCODE">
-                                        <dxmvvm:Interaction.Behaviors>
-                                            <dxmvvm:EventToCommand Command="{Binding DataContext.StockCodePopupOpeningCommand, ElementName=userControl}" EventName="PopupOpening" PassEventArgsToCommand="True" />
-                                        </dxmvvm:Interaction.Behaviors>
                                         <dxg:LookUpEdit.StyleSettings>
                                             <dxg:SearchLookUpEditStyleSettings />
                                         </dxg:LookUpEdit.StyleSettings>
