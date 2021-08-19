@@ -556,6 +556,15 @@ namespace BluePrints.Common.Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Stock item sell prices for rates job.
+        /// </summary>
+        internal static string Menu_Project_EXO_SellPrices {
+            get {
+                return ResourceManager.GetString("Menu_Project_EXO_SellPrices", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Project EXO timesheet maintenance menu.
         /// </summary>
         internal static string Menu_Project_EXO_Timesheets {

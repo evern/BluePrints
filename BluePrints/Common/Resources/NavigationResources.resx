@@ -459,4 +459,7 @@
   <data name="Permission_Forecast_SaveProjectBudget" xml:space="preserve">
     <value>Save forecast project budget</value>
   </data>
+  <data name="Menu_Project_EXO_SellPrices" xml:space="preserve">
+    <value>Stock item sell prices for rates job</value>
+  </data>
 </root>

@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?>
+﻿<?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="12.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
   <PropertyGroup>
@@ -913,6 +913,7 @@
       <DependentUpon>PrimaveraAffinityReport.xaml</DependentUpon>
     </Compile>
     <Compile Include="EntityFramework\Annotations\DISCIPLINE_DESC.cs" />
+    <Compile Include="EntityFramework\Annotations\DR_PRICES.cs" />
     <Compile Include="EntityFramework\Annotations\FORECAST_HISTORY.cs" />
     <Compile Include="EntityFramework\Annotations\PROGRESS_ETC.cs" />
     <Compile Include="EntityFramework\Annotations\REGISTER_CHANGE_ATTACHMENT.cs" />
@@ -1136,6 +1137,7 @@
     <Compile Include="ViewModels\BUDGET_ITEM\BUDGET_ITEMWorkpackSchedulingViewModelWrapper.cs" />
     <Compile Include="ViewModels\CLIENT\CLIENTCollectionViewModelWrapper.cs" />
     <Compile Include="ViewModels\DISCIPLINE\DISCIPLINE_DESCCollectionViewModelWrapper.cs" />
+    <Compile Include="ViewModels\EXOSUBJOB\EXO_PricesCollectionViewModelWrapper.cs" />
     <Compile Include="ViewModels\EXOSUBJOB\EXO_JobHistoryCollectionViewModelWrapper.cs" />
     <Compile Include="ViewModels\EXOSUBJOB\EXO_ConstructionSubjobCollectionViewModelWrapper.cs" />
     <Compile Include="ViewModels\EXOSUBJOB\EXO_ResourcesCollectionViewModelWrapper.cs" />
@@ -1217,6 +1219,9 @@
     </Compile>
     <Compile Include="Views\DISCIPLINE\DISCIPLINE_DESCCollectionView.xaml.cs">
       <DependentUpon>DISCIPLINE_DESCCollectionView.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Views\EXOSUBJOB\EXO_PricesCollectionView.xaml.cs">
+      <DependentUpon>EXO_PricesCollectionView.xaml</DependentUpon>
     </Compile>
     <Compile Include="Views\EXOSUBJOB\EXO_JobHistoryCollectionView.xaml.cs">
       <DependentUpon>EXO_JobHistoryCollectionView.xaml</DependentUpon>
@@ -2189,6 +2194,10 @@
       <SubType>Designer</SubType>
     </Page>
     <Page Include="Views\DISCIPLINE\DISCIPLINE_DESCCollectionView.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Views\EXOSUBJOB\EXO_PricesCollectionView.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>
