@@ -832,6 +832,11 @@ namespace BluePrints.ViewModels
             {
                 Data.PHASE ratePHASE = PHASECollection.FirstOrDefault(x => x.INTERNAL_NUM == commodityJob.Projection.PhaseCode);
                 string disciplineCode = commodityJob.Projection.DisciplineCode != null && commodityJob.Projection.DisciplineCode.Length > 2 ? commodityJob.Projection.DisciplineCode.Substring(0, 2) : commodityJob.Projection.DisciplineCode;
+                string disciplineNum = commodityJob.Projection.DisciplineCode != null && commodityJob.Projection.DisciplineCode.Length == 4 ? commodityJob.Projection.DisciplineCode.Substring(2, 2) : "1";
+                int disciplineNumInt = 1;
+                if (!Int32.TryParse(disciplineNum, out disciplineNumInt))
+                    disciplineNumInt = 1;
+
                 //fallback rate cannot be searched by department because department doesn't exists in WBS code structure
                 DISCIPLINE rateDISCIPLINE = DISCIPLINECollection.FirstOrDefault(x => x.CODE == disciplineCode);
                 if (ratePHASE != null && rateDISCIPLINE != null)
@@ -854,7 +859,7 @@ namespace BluePrints.ViewModels
                         commodityCode = rateCOMMODITY.CODE;
 
                     if(ratePHASE.PHASE_TYPE != null)
-                        commodityJob.FallBackRate = BluePrintsDataUtils.CascadeRateSearch(areaGUID, subAreaGUID, rateDISCIPLINE.GUID, null, commodityCode, commodityJob.Projection.VariationCode, RATECollection, CostType.Cost, (PhaseType)ratePHASE.PHASE_TYPE);
+                        commodityJob.FallBackRate = BluePrintsDataUtils.CascadeRateSearch(areaGUID, subAreaGUID, rateDISCIPLINE.GUID, disciplineNumInt, null, commodityCode, commodityJob.Projection.VariationCode, RATECollection, CostType.Cost, (PhaseType)ratePHASE.PHASE_TYPE);
                 }
             }
             #endregion

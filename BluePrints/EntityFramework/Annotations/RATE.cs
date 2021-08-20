@@ -186,6 +186,8 @@ namespace BluePrints.Data
                     constraint += GUID_SUBAREA.ToString();
                 if (GUID_DISCIPLINE != null)
                     constraint += GUID_DISCIPLINE.ToString();
+                if (DISCIPLINE_NUM != null)
+                    constraint += DISCIPLINE_NUM.ToString();
                 if (GUID_DEPARTMENT != null)
                     constraint += GUID_DEPARTMENT.ToString();
                 if (COMMODITY_CODE != null)

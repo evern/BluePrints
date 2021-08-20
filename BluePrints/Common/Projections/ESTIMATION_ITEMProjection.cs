@@ -245,12 +245,12 @@ namespace BluePrints.Common.Projections
                 {
                     if (estimate_item.PHASE.PHASE_TYPE != null)
                     {
-                        RATE findRATE = BluePrintsDataUtils.CascadeRateSearch(estimate_item.GUID_AREA, estimate_item.GUID_SUBAREA, estimate_item.GUID_DISCIPLINE, estimate_item.GUID_DEPARTMENT, estimate_item.Commodity_Code, string.Empty, RATES, CostType.Charge, (PhaseType)estimate_item.PHASE.PHASE_TYPE);
+                        RATE findRATE = BluePrintsDataUtils.CascadeRateSearch(estimate_item.GUID_AREA, estimate_item.GUID_SUBAREA, estimate_item.GUID_DISCIPLINE, estimate_item.DISCIPLINE_NUM, estimate_item.GUID_DEPARTMENT, estimate_item.Commodity_Code, string.Empty, RATES, CostType.Charge, (PhaseType)estimate_item.PHASE.PHASE_TYPE);
                         if (findRATE != null)
                             newESTIMATE_ITEM.RATE = findRATE;
 
                         //Not available at this moment
-                        RATE findInternalRate = BluePrintsDataUtils.CascadeRateSearch(estimate_item.GUID_AREA, estimate_item.GUID_SUBAREA, estimate_item.GUID_DISCIPLINE, estimate_item.GUID_DEPARTMENT, estimate_item.Commodity_Code, string.Empty, RATES, CostType.Cost, (PhaseType)estimate_item.PHASE.PHASE_TYPE);
+                        RATE findInternalRate = BluePrintsDataUtils.CascadeRateSearch(estimate_item.GUID_AREA, estimate_item.GUID_SUBAREA, estimate_item.GUID_DISCIPLINE, estimate_item.DISCIPLINE_NUM, estimate_item.GUID_DEPARTMENT, estimate_item.Commodity_Code, string.Empty, RATES, CostType.Cost, (PhaseType)estimate_item.PHASE.PHASE_TYPE);
                         if (findInternalRate != null)
                             newESTIMATE_ITEM.INTERNAL_RATE = findInternalRate;
                     }

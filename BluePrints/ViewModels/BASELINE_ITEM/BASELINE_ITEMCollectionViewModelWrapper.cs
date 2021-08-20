@@ -2113,13 +2113,14 @@ namespace BluePrints.ViewModels
         {
             var groupByDepartmentDisciplineDeliverables = (from entity in Entities
                                                            where entity.Entity.Entity.GUID_DEPARTMENT != null && entity.Entity.Entity.GUID_DISCIPLINE != null
-                                                           group entity by new { entity.Entity.Entity.GUID_PHASE, entity.Entity.Entity.GUID_AREA, entity.Entity.Entity.GUID_DEPARTMENT, entity.Entity.Entity.GUID_DISCIPLINE, entity.Entity.Entity.GUID_DOCTYPE }
+                                                           group entity by new { entity.Entity.Entity.GUID_PHASE, entity.Entity.Entity.GUID_AREA, entity.Entity.Entity.GUID_DEPARTMENT, entity.Entity.Entity.GUID_DISCIPLINE, entity.Entity.Entity.DISCIPLINE_NUM, entity.Entity.Entity.GUID_DOCTYPE }
                                                            into entitiesGroup
                                                            select new
                                                            {
                                                                entitiesGroup.Key.GUID_PHASE,
                                                                entitiesGroup.Key.GUID_DEPARTMENT,
                                                                entitiesGroup.Key.GUID_DISCIPLINE,
+                                                               entitiesGroup.Key.DISCIPLINE_NUM,
                                                                entitiesGroup.Key.GUID_DOCTYPE,
                                                                Hours = entitiesGroup.Sum(x => x.Total_Units)
                                                            }).ToList();
@@ -2135,7 +2136,7 @@ namespace BluePrints.ViewModels
                 {
                     string errorName = "Department: " + findDEPARTMENT.NAME + ", Discipline: " + findDISCIPLINE.NAME;
                     DOCTYPE findDOCTYPE = DOCTYPECollection.FirstOrDefault(x => x.GUID == deliverable.GUID_DOCTYPE);
-                    RATE findRATE = BluePrintsDataUtils.CascadeRateSearch(null, null, deliverable.GUID_DISCIPLINE, deliverable.GUID_DEPARTMENT, findDOCTYPE == null ? string.Empty : findDOCTYPE.CODE, string.Empty, RATECollection, CostType.Charge, PhaseType.Design);
+                    RATE findRATE = BluePrintsDataUtils.CascadeRateSearch(null, null, deliverable.GUID_DISCIPLINE, deliverable.DISCIPLINE_NUM, deliverable.GUID_DEPARTMENT, findDOCTYPE == null ? string.Empty : findDOCTYPE.CODE, string.Empty, RATECollection, CostType.Charge, PhaseType.Design);
                     if(findRATE != null && findRATE.RATE1 != null)
                     {
                         if(findRATE.IsUsingGangRate)

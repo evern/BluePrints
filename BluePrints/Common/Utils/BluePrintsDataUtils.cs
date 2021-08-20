@@ -1939,14 +1939,15 @@ namespace BluePrints.Common.ViewModel.Utils
         /// Searches rate cascadingly for IRATE interface
         /// </summary>
         /// <returns></returns>
-        public static RATE CascadeRateSearch(Guid? areaGuid, Guid? subAreaGuid, Guid? disciplineGuid, Guid? departmentGuid, string commodityCode, string variationCode, IEnumerable<RATE> RATECollection, CostType costType, PhaseType phaseType)
+        public static RATE CascadeRateSearch(Guid? areaGuid, Guid? subAreaGuid, Guid? disciplineGuid, int? disciplineNum, Guid? departmentGuid, string commodityCode, string variationCode, IEnumerable<RATE> RATECollection, CostType costType, PhaseType phaseType)
         {
             IEnumerable<RATE> rateByPhase = RATECollection.Where(y => y.COST_TYPE == costType && y.Phase_Type == phaseType);
             //order by descending places null GUID's at the end, so First() won't pick it up
             IEnumerable<RATE> rateByVariations = rateByPhase.Where(y => (y.VARIATION_CODE == variationCode) || (y.VARIATION_CODE == string.Empty || y.VARIATION_CODE == null)).OrderByDescending(y => y.COMMODITY_CODE);
             IEnumerable<RATE> rateByCommodities = rateByVariations.Where(y => (y.COMMODITY_CODE == commodityCode) || (y.COMMODITY_CODE == string.Empty || y.COMMODITY_CODE == null)).OrderByDescending(y => y.COMMODITY_CODE);
             IEnumerable<RATE> rateByDiscipline = rateByCommodities.Where(y => (y.GUID_DISCIPLINE == disciplineGuid) || (y.GUID_DISCIPLINE == null)).OrderByDescending(y => y.GUID_DISCIPLINE);
-            IEnumerable<RATE> rateByDepartment = rateByDiscipline.Where(y => (y.GUID_DEPARTMENT == departmentGuid) || (y.GUID_DEPARTMENT == null)).OrderByDescending(y => y.GUID_DEPARTMENT);
+            IEnumerable<RATE> rateByDisciplineNum = rateByDiscipline.Where(y => (y.DISCIPLINE_NUM == disciplineNum) || (y.DISCIPLINE_NUM == null)).OrderByDescending(y => y.DISCIPLINE_NUM);
+            IEnumerable<RATE> rateByDepartment = rateByDisciplineNum.Where(y => (y.GUID_DEPARTMENT == departmentGuid) || (y.GUID_DEPARTMENT == null)).OrderByDescending(y => y.GUID_DEPARTMENT);
             IEnumerable<RATE> rateBySubArea = rateByDepartment.Where(y => (y.GUID_SUBAREA == subAreaGuid) || (y.GUID_SUBAREA == null)).OrderByDescending(y => y.GUID_SUBAREA);
             IEnumerable<RATE> rateByArea = rateBySubArea.Where(y => (y.GUID_AREA == areaGuid) || (y.GUID_AREA == null)).OrderByDescending(y => y.GUID_AREA);
 
