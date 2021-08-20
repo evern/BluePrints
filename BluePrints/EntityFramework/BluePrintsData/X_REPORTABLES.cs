@@ -26,7 +26,7 @@ namespace BluePrints.Data
 
         [Key]
         [Column(Order = 2)]
-        public decimal RATE { get; set; }
+        public double? RATE { get; set; }
 
         [Key]
         [Column(Order = 3)]

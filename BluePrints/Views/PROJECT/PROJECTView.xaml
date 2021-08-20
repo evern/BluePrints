@@ -154,13 +154,6 @@
                                     <dxb:BarButtonItemLink BarItemName="biExportRemaining" />
                                 </dxr:RibbonPageGroup>
                             </dxr:RibbonPage>
-                            <dxr:RibbonPage MergeType="Replace" Caption="Troubleshooting">
-                                <dxr:RibbonPageGroup MergeType="Replace" Caption="Troubleshooting">
-                                    <dxb:BarButtonItemLink BarItemName="biShowP6Errors" />
-                                    <dxb:BarButtonItemLink BarItemName="biShowExoErrors" />
-                                    <dxb:BarButtonItemLink BarItemName="biHealthCheck" />
-                                </dxr:RibbonPageGroup>
-                            </dxr:RibbonPage>
                             <dxr:RibbonPage MergeType="Replace" Caption="Project Detail">
                                 <dxr:RibbonPageGroup MergeType="Replace" Caption="Project Detail">
                                     <dxb:BarButtonItemLink BarItemName="biEditArea" />

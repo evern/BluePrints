@@ -27,7 +27,7 @@ namespace BluePrints.Data
         [StringLength(100)]
         public string VariationCode { get; set; }
 
-        public decimal? RATE { get; set; }
+        public double? RATE { get; set; }
 
         public Guid GUID { get; set; }
 

@@ -620,7 +620,8 @@ namespace BluePrints.ViewModels
         #region View Behavior
         protected override void executeFirstLoadedActions()
         {
-            doHealthCheck();
+            //remove health check because it's heavy
+            //doHealthCheck();
             ChartControlService?.Animate();
 
             base.executeFirstLoadedActions();
