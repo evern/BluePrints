@@ -43,6 +43,9 @@ namespace BluePrints.Data
         public virtual DbSet<FORECAST> FORECAST { get; set; }
         public virtual DbSet<FORECAST_EAC> FORECAST_EAC { get; set; }
         public virtual DbSet<FORECAST_HISTORY> FORECAST_HISTORY { get; set; }
+        public virtual DbSet<FORECAST_JOB_HOUR_SNAPSHOT> FORECAST_JOB_HOUR_SNAPSHOT { get; set; }
+        public virtual DbSet<FORECAST_JOB_SNAPSHOT> FORECAST_JOB_SNAPSHOT { get; set; }
+        public virtual DbSet<FORECAST_SUMMARY_SNAPSHOT> FORECAST_SUMMARY_SNAPSHOT { get; set; }
         public virtual DbSet<JOBCOST_LINES_AUDIT> JOBCOST_LINES_AUDIT { get; set; }
         public virtual DbSet<HSE> HSE { get; set; }
         public virtual DbSet<HSE_INCIDENT> HSE_INCIDENT { get; set; }
