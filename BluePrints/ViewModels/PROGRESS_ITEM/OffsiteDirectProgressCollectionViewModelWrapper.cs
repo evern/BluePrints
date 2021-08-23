@@ -180,6 +180,10 @@ namespace BluePrints.ViewModels
                 projection.ShouldSave = true;
             if (field_name.Contains(BindableBase.GetPropertyName(() => new BASELINE_ITEMProgress().Entity.Entity.DISCIPLINE_NUM)))
                 projection.ShouldSave = true;
+            if (field_name.Contains(BindableBase.GetPropertyName(() => new BASELINE_ITEMProgress().Entity.Entity.FORECAST_START_DATE)))
+                projection.ShouldSave = true;
+            if (field_name.Contains(BindableBase.GetPropertyName(() => new BASELINE_ITEMProgress().Entity.Entity.TARGET_DATE)))
+                projection.ShouldSave = true;
 
             base.UnifiedCellValueChanged(field_name, old_value, new_value, projection, isNew);
         }
