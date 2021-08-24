@@ -187,12 +187,12 @@
                     </dxmvvm:Interaction.Behaviors>
                     <dxg:GridControl.Bands>
                         <dxg:GridControlBand Header="Properties">
-                            <dxg:GridColumn Tag="True;True;Populate from Sub Job" FieldName="Entity.Entity.GUID_AREA" AllowBestFit="false" Width="50" Header="Area" HeaderToolTip="Changing this field may affect subjob name, see internal number mode default, editable, manual on the ribbon">
+                            <dxg:GridColumn Tag="True;True;Populate from Sub Job" FieldName="Entity.Entity.GUID_AREA" AllowBestFit="false" Width="50" Header="Area" HeaderToolTip="Changing this field may affect subjob name, see internal number mode default, editable, manual on the ribbon" SortMode="Custom">
                                 <dxg:GridColumn.EditSettings>
                                     <dxe:ComboBoxEditSettings AutoComplete="True" DisplayMember="INTERNAL_NUM" IsTextEditable="True" ItemsSource="{Binding AREACollection}" ValueMember="GUID" />
                                 </dxg:GridColumn.EditSettings>
                             </dxg:GridColumn>
-                            <dxg:GridColumn Tag="True;True;Populate from Sub Job" AllowBestFit="false" Width="50" FieldName="Entity.Entity.SubAreaGuid" Header="Sub Area" HeaderToolTip="Changing this field may affect subjob name, see internal number mode default, editable, manual on the ribbon">
+                            <dxg:GridColumn Tag="True;True;Populate from Sub Job" AllowBestFit="false" Width="50" FieldName="Entity.Entity.SubAreaGuid" Header="Sub Area" HeaderToolTip="Changing this field may affect subjob name, see internal number mode default, editable, manual on the ribbon" SortMode="Custom">
                                 <dxg:GridColumn.CellTemplate>
                                     <DataTemplate>
                                         <dxe:ComboBoxEdit x:Name="PART_Editor" DisplayMember="INTERNAL_NUM" ImmediatePopup="True" IncrementalFiltering="True" ItemsSource="{Binding RowData.Row.Entity.Entity.SubAreaCollection}" NullValueButtonPlacement="Popup" ValidateOnEnterKeyPressed="True" ValidateOnTextInput="True" ValueMember="GUID" />
@@ -203,7 +203,7 @@
                                     <dxe:ComboBoxEditSettings AutoComplete="True" DisplayMember="INTERNAL_NUM" IsTextEditable="True" ItemsSource="{Binding SUBAREACollection}" ValueMember="GUID" />
                                 </dxg:GridColumn.EditSettings>
                             </dxg:GridColumn>
-                            <dxg:GridColumn FieldName="Entity.Entity.GUID_DISCIPLINE" ColumnFilterMode="DisplayText" Header="Discipline">
+                            <dxg:GridColumn FieldName="Entity.Entity.GUID_DISCIPLINE" ColumnFilterMode="DisplayText" Header="Discipline" SortMode="Custom">
                                 <dxg:GridColumn.EditSettings>
                                     <dxe:ComboBoxEditSettings AutoComplete="True" DisplayMember="NAME" IsTextEditable="True" ItemsSource="{Binding DISCIPLINECollection}" ValueMember="GUID" />
                                 </dxg:GridColumn.EditSettings>
@@ -213,7 +213,7 @@
                                     <dxe:SpinEditSettings Increment="1" IsFloatValue="False" IsTextEditable="True" Mask="n0" MaskType="Numeric" MaskUseAsDisplayFormat="True" MaxValue="99" MinValue="1" />
                                 </dxg:GridColumn.EditSettings>
                             </dxg:GridColumn>
-                            <dxg:GridColumn FieldName="Entity.Entity.GUID_DOCTYPE" Header="Document Type" HeaderToolTip="Discipline must be entered for this field to work">
+                            <dxg:GridColumn FieldName="Entity.Entity.GUID_DOCTYPE" Header="Document Type" HeaderToolTip="Discipline must be entered for this field to work" SortMode="Custom">
                                 <dxg:GridColumn.CellTemplate>
                                     <DataTemplate>
                                         <dxe:ComboBoxEdit x:Name="PART_Editor" DisplayMember="NAME" AutoComplete="True" ImmediatePopup="True" IncrementalFiltering="True" ItemsSource="{Binding RowData.Row.Entity.Entity.ValidDOCTYPES}" NullValueButtonPlacement="Popup" ValidateOnEnterKeyPressed="True" ValidateOnTextInput="True" ValueMember="GUID" />
@@ -224,12 +224,12 @@
                                     <dxe:ComboBoxEditSettings AutoComplete="True" DisplayMember="NAME" IsTextEditable="True" ItemsSource="{Binding DOCTYPECollection}" NullValueButtonPlacement="EditBox" ValueMember="GUID" />
                                 </dxg:GridColumn.EditSettings>
                             </dxg:GridColumn>
-                            <dxg:GridColumn FieldName="Entity.Entity.DELIVERABLE_TYPE" Header="Deliverable Type">
+                            <dxg:GridColumn FieldName="Entity.Entity.DELIVERABLE_TYPE" Header="Deliverable Type" SortMode="Custom">
                                 <dxg:GridColumn.EditSettings>
                                     <dxe:ComboBoxEditSettings AutoComplete="True" IsTextEditable="True" ItemsSource="{dxe:EnumItemsSource EnumType={x:Type common:DeliverableType}}" />
                                 </dxg:GridColumn.EditSettings>
                             </dxg:GridColumn>
-                            <dxg:GridColumn FieldName="Entity.Entity.GUID_DEPARTMENT" Header="Department" HeaderToolTip="Default value can be populated by document type selection">
+                            <dxg:GridColumn FieldName="Entity.Entity.GUID_DEPARTMENT" Header="Department" HeaderToolTip="Default value can be populated by document type selection" SortMode="Custom">
                                 <dxg:GridColumn.EditSettings>
                                     <dxe:ComboBoxEditSettings AutoComplete="True" DisplayMember="NAME" IsTextEditable="True" ItemsSource="{Binding DEPARTMENTCollection}" ValueMember="GUID" />
                                 </dxg:GridColumn.EditSettings>
@@ -242,7 +242,7 @@
                                     </DataTemplate>
                                 </dxg:GridColumn.CellTemplate>
                             </dxg:GridColumn>
-                            <dxg:GridColumn FieldName="Entity.Entity.INTERNALNUM_STATUS" Header="Internal Number Status" ReadOnly="True">
+                            <dxg:GridColumn FieldName="Entity.Entity.INTERNALNUM_STATUS" Header="Internal Number Status" ReadOnly="True" SortMode="Custom">
                                 <dxg:GridColumn.EditSettings>
                                     <dxe:ComboBoxEditSettings AutoComplete="True" IsTextEditable="True" ItemsSource="{dxe:EnumItemsSource EnumType={x:Type common:DocumentNumberStatus}}" />
                                 </dxg:GridColumn.EditSettings>
@@ -256,7 +256,7 @@
                                     </DataTemplate>
                                 </dxg:GridColumn.CellTemplate>
                             </dxg:GridColumn>
-                            <dxg:GridColumn FieldName="Entity.Entity.CLIENTNUM_STATUS" Header="Client Number Status" ReadOnly="True">
+                            <dxg:GridColumn FieldName="Entity.Entity.CLIENTNUM_STATUS" Header="Client Number Status" ReadOnly="True" SortMode="Custom">
                                 <dxg:GridColumn.EditSettings>
                                     <dxe:ComboBoxEditSettings AutoComplete="True" IsTextEditable="True" ItemsSource="{dxe:EnumItemsSource EnumType={x:Type common:DocumentNumberStatus}}" />
                                 </dxg:GridColumn.EditSettings>
@@ -265,7 +265,7 @@
                             <dxg:GridColumn FieldName="Entity.Entity.PRIMARY_TITLE" Header="Primary Title" />
                             <dxg:GridColumn FieldName="Entity.Entity.SECONDARY_TITLE" Header="Secondary Title" />
                             <dxg:GridColumn FieldName="Entity.Entity.COMMENTS" Header="Comments" />
-                            <dxg:GridColumn FieldName="Entity.Entity.DeliverableStatusGuid" Header="Status" HeaderToolTip="Changing this field may affect progress if [Update % by Status] button is click in progress">
+                            <dxg:GridColumn FieldName="Entity.Entity.DeliverableStatusGuid" Header="Status" HeaderToolTip="Changing this field may affect progress if [Update % by Status] button is click in progress" SortMode="Custom">
                                 <dxg:GridColumn.CellTemplate>
                                     <DataTemplate>
                                         <dxe:ComboBoxEdit x:Name="PART_Editor" DisplayMember="NAME" ImmediatePopup="True" IncrementalFiltering="True" ItemsSource="{Binding RowData.Row.Entity.Entity.DeliverableStatusCollection}" NullValueButtonPlacement="Popup" ValidateOnEnterKeyPressed="True" ValidateOnTextInput="True" ValueMember="GUID" />
@@ -276,7 +276,7 @@
                                     <dxe:ComboBoxEditSettings AutoComplete="True" DisplayMember="NAME" IsTextEditable="True" ItemsSource="{Binding DELIVERABLES_STATUSCollection}" NullValueButtonPlacement="EditBox" ValueMember="GUID" />
                                 </dxg:GridColumn.EditSettings>
                             </dxg:GridColumn>
-                            <dxg:GridColumn FieldName="Entity.Entity.GUID_USER" Header="Resource">
+                            <dxg:GridColumn FieldName="Entity.Entity.GUID_USER" Header="Resource" SortMode="Custom">
                                 <dxg:GridColumn.CellTemplate>
                                     <DataTemplate>
                                         <dxg:LookUpEdit Name="PART_Editor" AutoComplete="True" AutoPopulateColumns="False" DisplayMember="Full_Name" IncrementalFiltering="True" IsTextEditable="true" ItemsSource="{Binding View.DataContext.USERCollection}" NullValueButtonPlacement="Popup" PopupWidth="500" ValueMember="GUID">
@@ -467,7 +467,7 @@
                                     <dxe:DateEditSettings DisplayFormat="dd-MMM-yyyy HH:mm" />
                                 </dxg:GridColumn.EditSettings>
                             </dxg:GridColumn>
-                            <dxg:GridColumn AllowSearchPanel="False" FieldName="Entity.Entity.CREATEDBY" Header="Created By" ReadOnly="True" Visible="False">
+                            <dxg:GridColumn AllowSearchPanel="False" FieldName="Entity.Entity.CREATEDBY" Header="Created By" ReadOnly="True" Visible="False" SortMode="Custom">
                                 <dxg:GridColumn.EditSettings>
                                     <dxe:ComboBoxEditSettings AutoComplete="True" DisplayMember="NAME" IsTextEditable="True" ItemsSource="{Binding USERCollection}" ValueMember="GUID" />
                                 </dxg:GridColumn.EditSettings>
@@ -477,29 +477,29 @@
                                     <dxe:DateEditSettings DisplayFormat="dd-MMM-yyyy HH:mm" />
                                 </dxg:GridColumn.EditSettings>
                             </dxg:GridColumn>
-                            <dxg:GridColumn AllowSearchPanel="False" FieldName="Entity.Entity.UPDATEDBY" FilterPopupMode="DateAlt" Header="Updated By" ReadOnly="True" Visible="False">
+                            <dxg:GridColumn AllowSearchPanel="False" FieldName="Entity.Entity.UPDATEDBY" FilterPopupMode="DateAlt" Header="Updated By" ReadOnly="True" Visible="False" SortMode="Custom">
                                 <dxg:GridColumn.EditSettings>
                                     <dxe:ComboBoxEditSettings AutoComplete="True" DisplayMember="NAME" IsTextEditable="True" ItemsSource="{Binding USERCollection}" ValueMember="GUID" />
                                 </dxg:GridColumn.EditSettings>
                             </dxg:GridColumn>
                         </dxg:GridControlBand>
                         <dxg:GridControlBand Header="Auto Populated">
-                            <dxg:GridColumn FieldName="Entity.Entity.GUID_OFFICE" Header="Office" AllowBestFit="false" Width="60">
+                            <dxg:GridColumn FieldName="Entity.Entity.GUID_OFFICE" Header="Office" AllowBestFit="false" Width="60" SortMode="Custom">
                                 <dxg:GridColumn.EditSettings>
-                                    <dxe:ComboBoxEditSettings AutoComplete="True" DisplayMember="NAME" IsTextEditable="True" ItemsSource="{Binding OFFICECollection}" ValueMember="GUID" />
+                                    <dxe:ComboBoxEditSettings AutoComplete="True" DisplayMember="NAME" IsTextEditable="True" ItemsSource="{Binding OFFICECollection}" ValueMember="GUID"/>
                                 </dxg:GridColumn.EditSettings>
                             </dxg:GridColumn>
-                            <dxg:GridColumn Tag="True;True;Populate from Doc Type" FieldName="Entity.Entity.GUID_PHASE" Header="Phase" AllowBestFit="false" Width="50" HeaderToolTip="Automatically assigned field. Changing this will affect subjob name">
+                            <dxg:GridColumn Tag="True;True;Populate from Doc Type" FieldName="Entity.Entity.GUID_PHASE" Header="Phase" AllowBestFit="false" Width="50" HeaderToolTip="Automatically assigned field. Changing this will affect subjob name" SortMode="Custom">
                                 <dxg:GridColumn.EditSettings>
                                     <dxe:ComboBoxEditSettings AutoComplete="True" DisplayMember="INTERNAL_NUM" IsTextEditable="True" ItemsSource="{Binding PHASECollection}" ValueMember="GUID" />
                                 </dxg:GridColumn.EditSettings>
                             </dxg:GridColumn>
-                            <dxg:GridColumn Tag="True;True;Populate from Area and Sub Area" ReadOnly="True" AllowBestFit="false" Width="110" FieldName="Entity.Entity.GUID_SUBJOB" Header="Sub Job (Read Only)" HeaderToolTip="Automatically assigned field. Right click and select 'Populate' to update" Visible="true">
+                            <dxg:GridColumn Tag="True;True;Populate from Area and Sub Area" ReadOnly="True" AllowBestFit="false" Width="110" FieldName="Entity.Entity.GUID_SUBJOB" Header="Sub Job (Read Only)" HeaderToolTip="Automatically assigned field. Right click and select 'Populate' to update" Visible="true" SortMode="Custom">
                                 <dxg:GridColumn.EditSettings>
                                     <dxe:ComboBoxEditSettings AutoComplete="True" DisplayMember="INTERNAL_NAME1" IsTextEditable="True" ItemsSource="{Binding SUBJOBCollection}" ValueMember="GUID" />
                                 </dxg:GridColumn.EditSettings>
                             </dxg:GridColumn>
-                            <dxg:GridColumn Tag="True;True;Populate from Discipline and Discipline Number" Visible="False" FieldName="Entity.Entity.GUID_WORKPACK" Header="Workpack" HeaderToolTip="Automatically assigned field. Must match Exo subjob to produce a summary of burned">
+                            <dxg:GridColumn Tag="True;True;Populate from Discipline and Discipline Number" Visible="False" FieldName="Entity.Entity.GUID_WORKPACK" Header="Workpack" HeaderToolTip="Automatically assigned field. Must match Exo subjob to produce a summary of burned" SortMode="Custom">
                                 <dxg:GridColumn.EditSettings>
                                     <dxe:ComboBoxEditSettings AutoComplete="True" DisplayMember="NAME" IsTextEditable="True" ItemsSource="{Binding WORKPACKCollection}" ValueMember="GUID" />
                                 </dxg:GridColumn.EditSettings>

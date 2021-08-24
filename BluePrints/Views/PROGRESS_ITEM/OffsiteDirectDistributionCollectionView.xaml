@@ -212,22 +212,22 @@
                                 <dxmvvm:EventToCommand Command="{Binding Grid_MouseWheelCommand}" EventName="PreviewMouseWheel" PassEventArgsToCommand="True" />
                             </dxmvvm:Interaction.Behaviors>
                             <dxg:GridControl.Columns>
-                                <dxg:GridColumn FieldName="Entity.Entity.Entity.GUID_AREA" Width="50" Fixed="Left" Header="Area" ReadOnly="True">
+                                <dxg:GridColumn FieldName="Entity.Entity.Entity.GUID_AREA" Width="50" Fixed="Left" Header="Area" ReadOnly="True" SortMode="Custom">
                                     <dxg:GridColumn.EditSettings>
                                         <dxe:ComboBoxEditSettings AutoComplete="True" DisplayMember="INTERNAL_NUM" IsTextEditable="True" ItemsSource="{Binding AREACollection}" ValueMember="GUID" />
                                     </dxg:GridColumn.EditSettings>
                                 </dxg:GridColumn>
-                                <dxg:GridColumn FieldName="Entity.Entity.Entity.GUID_DOCTYPE" Fixed="Left" Header="Document Type" ReadOnly="True">
+                                <dxg:GridColumn FieldName="Entity.Entity.Entity.GUID_DOCTYPE" Fixed="Left" Header="Document Type" ReadOnly="True" SortMode="Custom">
                                     <dxg:GridColumn.EditSettings>
                                         <dxe:ComboBoxEditSettings AutoComplete="True" DisplayMember="NAME" IsTextEditable="True" ItemsSource="{Binding DOCTYPECollection}" ValueMember="GUID" />
                                     </dxg:GridColumn.EditSettings>
                                 </dxg:GridColumn>
-                                <dxg:GridColumn FieldName="Entity.Entity.Entity.GUID_DISCIPLINE" Fixed="Left" Header="Discipline" ReadOnly="True">
+                                <dxg:GridColumn FieldName="Entity.Entity.Entity.GUID_DISCIPLINE" Fixed="Left" Header="Discipline" ReadOnly="True" SortMode="Custom">
                                     <dxg:GridColumn.EditSettings>
                                         <dxe:ComboBoxEditSettings AutoComplete="True" DisplayMember="NAME" IsTextEditable="True" ItemsSource="{Binding DISCIPLINECollection}" ValueMember="GUID" />
                                     </dxg:GridColumn.EditSettings>
                                 </dxg:GridColumn>
-                                <dxg:GridColumn FieldName="Entity.Entity.Entity.GUID_DEPARTMENT" Fixed="Left" Header="Department" ReadOnly="True">
+                                <dxg:GridColumn FieldName="Entity.Entity.Entity.GUID_DEPARTMENT" Fixed="Left" Header="Department" ReadOnly="True" SortMode="Custom">
                                     <dxg:GridColumn.EditSettings>
                                         <dxe:ComboBoxEditSettings AutoComplete="True" DisplayMember="NAME" IsTextEditable="True" ItemsSource="{Binding DEPARTMENTCollection}" ValueMember="GUID" />
                                     </dxg:GridColumn.EditSettings>
@@ -260,7 +260,7 @@
                                         <dxe:SpinEditSettings Mask="n" MaskType="Numeric" MaskUseAsDisplayFormat="True" />
                                     </dxg:GridColumn.EditSettings>
                                 </dxg:GridColumn>
-                                <dxg:GridColumn UnboundType="Object" FieldName="ProgressId" Fixed="Left" Header="Gates" HeaderToolTip="From deliverables status table. Changing this value will increase current % only if the status has a higher percentage than previously earned %">
+                                <dxg:GridColumn UnboundType="Object" FieldName="ProgressId" Fixed="Left" Header="Gates" HeaderToolTip="From deliverables status table. Changing this value will increase current % only if the status has a higher percentage than previously earned %" SortMode="Custom">
                                     <dxg:GridColumn.CellTemplate>
                                         <DataTemplate>
                                             <dxe:ComboBoxEdit x:Name="PART_Editor" DisplayMember="NAME" ImmediatePopup="True" IncrementalFiltering="True" ItemsSource="{Binding RowData.Row.Entity.Entity.Entity.DeliverableStatusCollection}" ValidateOnEnterKeyPressed="True" NullValueButtonPlacement="Popup" ValidateOnTextInput="True" ValueMember="GUID" />
@@ -271,7 +271,7 @@
                                         <dxe:ComboBoxEditSettings AutoComplete="True" DisplayMember="NAME" IsTextEditable="True" ItemsSource="{Binding DELIVERABLES_STATUSCollection}" ValueMember="GUID" />
                                     </dxg:GridColumn.EditSettings>
                                 </dxg:GridColumn>
-                                <dxg:GridColumn FieldName="Entity.Entity.Entity.GUID_SUBJOB" Width="110" Fixed="Left" Header="Subjob" ReadOnly="True" Visible="False">
+                                <dxg:GridColumn FieldName="Entity.Entity.Entity.GUID_SUBJOB" Width="110" Fixed="Left" Header="Subjob" ReadOnly="True" Visible="False" SortMode="Custom">
                                     <dxg:GridColumn.EditSettings>
                                         <dxe:ComboBoxEditSettings DisplayMember="INTERNAL_NAME1" IsTextEditable="False" ItemsSource="{Binding SUBJOBCollection}" ValueMember="GUID" />
                                     </dxg:GridColumn.EditSettings>
