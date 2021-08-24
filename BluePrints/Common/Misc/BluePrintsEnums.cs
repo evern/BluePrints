@@ -53,6 +53,22 @@ namespace BluePrints.Common
         ZeroBudget
     }
 
+    public enum ForecastSnapshotValueType
+    {
+        [Display(Name = "Actual")]
+        Actual,
+        [Display(Name = "Material")]
+        Material,
+        [Display(Name = "Indirect")]
+        Indirect,
+        [Display(Name = "PO")]
+        PO,
+        [Display(Name = "P6")]
+        P6,
+        [Display(Name = "Discretionary")]
+        Discretionary
+    }
+
     public enum ForecastDataType
     {
         [Display(Name = "Cost")]

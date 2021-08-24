@@ -335,7 +335,9 @@ namespace BluePrints.Common.Projections
 
         //not using this as a measure because user can override it
         public decimal ActualCosts => CurrentPeriodActualDataPoints.Sum(x => x.Costs);
+        public decimal ActualUnits => CurrentPeriodActualDataPoints.Sum(x => x.Quantity);
         public decimal MaterialCosts => CurrentPeriodMaterialDataPoints.Sum(x => x.Costs);
+        public decimal MaterialQuantity => CurrentPeriodMaterialDataPoints.Sum(x => x.Quantity);
         public decimal P6Hours => CurrentPeriodP6DataPoints.Sum(x => x.Units);
         public decimal P6Costs => CurrentPeriodP6DataPoints.Sum(x => x.Costs);
         public decimal POForecastCosts => CurrentPeriodForecastPOs.Sum(x => (decimal)x.FORECAST_VALUE);

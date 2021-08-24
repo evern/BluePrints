@@ -23,11 +23,17 @@ namespace BluePrints.Data
 
         public Guid GUID_FORECAST_JOB_SNAPSHOT { get; set; }
 
-        public DateTime SNAPSHOT_TYPE { get; set; }
+        [Required]
+        [StringLength(50)]
+        public string STOCK_CODE { get; set; }
+
+        public ForecastSnapshotValueType SNAPSHOT_TYPE { get; set; }
 
         public DateTime FORECAST_DATE { get; set; }
 
-        public decimal? FORECAST_HOUR { get; set; }
+        public decimal FORECAST_QTY { get; set; }
+
+        public decimal FORECAST_COSTS { get; set; }
 
         public DateTime CREATED { get; set; }
 

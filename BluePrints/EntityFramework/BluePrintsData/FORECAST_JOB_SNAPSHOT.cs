@@ -43,6 +43,8 @@ namespace BluePrints.Data
         [StringLength(250)]
         public string VARIATION_CODE { get; set; }
 
+        public DateTime DATA_DATE { get; set; }
+
         public decimal TENDER_BUDGET { get; set; }
 
         public decimal PROJECT_BUDGET { get; set; }

@@ -877,14 +877,7 @@ namespace BluePrints.ViewModels
             //update discipline desc
             commodityJob.PopulateDisciplineDesc(DISCIPLINE_DESCCollection, JOB_COSTGROUPCollection);
 
-            if (commodityJob.DateCosts.Count > 0)
-            {
-                ForecastDateCost commodityDateCost = commodityJob.DateCosts.First();
-                uniquePOStockCodes = commodityDateCost.RelevantForecastPOs.Where(x => x.ViewStockCode != null).Select(x => x.ViewStockCode).Distinct().ToList();
-                uniqueIndirectStockCodes = commodityDateCost.RelevantIndirectCosts.Where(x => x.ViewStockCode != null).Select(x => x.ViewStockCode).Distinct().ToList();
-                uniqueMaterialStockCodes = commodityDateCost.RelevantMaterialDataPoints.Where(x => x.StockCode != null).Select(x => x.StockCode).Distinct().ToList();
-                uniqueActualStockCodes = commodityDateCost.RelevantActualDataPoints.Where(x => x.StockCode != null).Select(x => x.StockCode).Distinct().ToList();
-            }
+            ForecastHelper.GetUniqueDateCostStockCodes(commodityJob, out uniquePOStockCodes, out uniqueIndirectStockCodes, out uniqueMaterialStockCodes, out uniqueActualStockCodes);
 
             compareChildDataTable = dataPointsTable.Clone();
             compareChildDataTable.TableName = BluePrintsResources.ForecastCompareChildTableName;
@@ -2653,6 +2646,17 @@ namespace BluePrints.ViewModels
             IBluePrintsEntitiesUnitOfWork bluePrintsEntitiesUnitOfWork = BluePrintsEntitiesUnitOfWorkSource.GetUnitOfWorkFactory().CreateUnitOfWork();
             findExistingOrAddNewEACHistory(FixedDataDateMonthEnd, ForecastSummary, bluePrintsEntitiesUnitOfWork);
             MessageBoxService.ShowMessage("Summary saved for excel for data date " + FixedDataDateMonthEnd.ToShortDateString(), "Excel Data Saved", MessageButton.OK);
+        }
+
+        public bool CanSaveView()
+        {
+            return !IsLoading;
+        }
+
+        public void SaveView()
+        {
+            ForecastHelper.SaveSnapshot(LoadPROJECT.GUID, FixedDataDateMonthEnd, bluePrintsUnitOfWork, commodityJobs, FORECASTCollection);
+            MessageBoxService.ShowMessage("Forecast Snapshot Saved");
         }
 
         private FORECAST_EAC createNewEAC(DateTime forecastDate, ExoSubJobProjection projection, decimal newPreviousEAC, ForecastEACType forecastEACType)

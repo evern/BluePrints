@@ -1,4 +1,5 @@
 ﻿using BaseModel.Data.Helpers;
+using BluePrints.BluePrintsEntitiesDataModel;
 using BluePrints.Common.Misc;
 using BluePrints.Common.Projections;
 using BluePrints.Common.Resources;
@@ -10,6 +11,7 @@ using DevExpress.Mvvm.POCO;
 using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
+using System.Data;
 using System.Diagnostics;
 using System.Linq;
 using System.Text;
@@ -430,6 +432,158 @@ namespace BluePrints.Common.ViewModel.Misc
             else if (!combinedSubJobs.Any(x => x.SubJobCode == subJobCode && x.DisciplineCode == disciplineCode && x.CommodityCode == commodityCode && x.VariationCode == variationCode))
             {
                 combinedSubJobs.Add(new ExoSubJobProjection() { ForecastErrorString = possibleErrorMessage, SubJobCode = subJobCode, SubJobTitle = subJobTitle, DisciplineCode = NormalizeCode(disciplineCode), DisciplineName = disciplineName, CommodityCode = NormalizeCode(commodityCode), CommodityName = commodityCodeName, CommodityDescription = commodityCodeDescription, CommodityUOM = commodityCodeUOM, VariationCode = NormalizeCode(variationCode) });
+            }
+        }
+
+        public static void SaveSnapshot(Guid projectGuid, DateTime dataDate, IBluePrintsEntitiesUnitOfWork bluePrintsEntitiesUnitOfWork, IEnumerable<ForecastJobData> jobs, IEnumerable<FORECAST> AllFORECASTCollection)
+        {
+            foreach(ForecastJobData job in jobs)
+            {
+                ExoSubJobProjection projection = job.Projection;
+                if (projection == null)
+                    continue;
+
+                FORECAST_JOB_SNAPSHOT forecastJobSnapshot = FindExistingOrAddForecastJobSnapshot(bluePrintsEntitiesUnitOfWork, projectGuid, projection.SubJobCode, projection.DisciplineCode, projection.CommodityCode, job.Projection.VariationCode, job.Projection.Budget, job.TenderBudget, dataDate, true);
+
+                //get unique stock code values for each date cost categories
+                List<string> uniquePOStockCodes = new List<string>();
+                List<string> uniqueIndirectStockCodes = new List<string>();
+                List<string> uniqueMaterialStockCodes = new List<string>();
+                List<string> uniqueActualStockCodes = new List<string>();
+                ForecastHelper.GetUniqueDateCostStockCodes(job, out uniquePOStockCodes, out uniqueIndirectStockCodes, out uniqueMaterialStockCodes, out uniqueActualStockCodes);
+
+                //establish the forecasts related to this job
+                List<FORECAST> relevantFORECASTS = AllFORECASTCollection.Where(x => x.SUBJOB_CODE == projection.SubJobCode && x.DISCIPLINE_CODE == projection.DisciplineCode && x.COMMODITY_CODE == projection.CommodityCode && x.VARIATION_CODE == projection.VariationCode).ToList();
+
+                //Guid is available now for job hours
+                foreach (ForecastDateCost dateCost in job.DateCosts)
+                {
+                    #region Commodity Code Level
+                    //discretionary overrides
+                    List<FORECAST> forecastOverridesOnDate = relevantFORECASTS.Where(x => x.FORECAST_UNITS != null && x.FORECAST_DATE >= dateCost.FloorDate && x.FORECAST_DATE <= dateCost.CeilingDate).ToList();
+                    List<FORECAST> forecastP6UnitsOverridesOnDate = forecastOverridesOnDate.Where(x => x.FORECAST_TYPE == ForecastDataType.P6).ToList();
+                    List<FORECAST> forecastDiscretionaryCostsOverridesOnDate = forecastOverridesOnDate.Where(x => x.FORECAST_TYPE == ForecastDataType.Cost).ToList();
+
+                    if (forecastP6UnitsOverridesOnDate.Count > 0 && dateCost != job.DateCosts.First())
+                    {
+                        //save p6 overrides or p6 values, skip when date is actual date
+                        decimal p6OverrideQty = forecastP6UnitsOverridesOnDate.Sum(x => (decimal)x.FORECAST_UNITS);
+                        decimal p6OverrideCosts = p6OverrideQty * job.P6NominalRate;
+                        FindExistingOrAddForecastJobHourSnapshot(bluePrintsEntitiesUnitOfWork, forecastJobSnapshot.GUID, ForecastSnapshotValueType.P6, "", dateCost.Date, p6OverrideQty, p6OverrideCosts);
+                    }
+                    else
+                        FindExistingOrAddForecastJobHourSnapshot(bluePrintsEntitiesUnitOfWork, forecastJobSnapshot.GUID, ForecastSnapshotValueType.P6, "", dateCost.Date, dateCost.P6Hours, dateCost.P6Costs);
+
+                    //save discretionary cost overrides
+                    if (forecastDiscretionaryCostsOverridesOnDate.Count > 0 && dateCost != job.DateCosts.First())
+                    {
+                        //units is actually costs
+                        decimal overrideCosts = forecastDiscretionaryCostsOverridesOnDate.Sum(x => (decimal)x.FORECAST_UNITS);
+                        FindExistingOrAddForecastJobHourSnapshot(bluePrintsEntitiesUnitOfWork, forecastJobSnapshot.GUID, ForecastSnapshotValueType.Discretionary, "", dateCost.Date, 0, overrideCosts);
+                    }
+
+                    #endregion
+                    #region Stock Code Level
+                    //save actuals
+                    foreach (string uniqueActualStockCode in uniqueActualStockCodes)
+                    {
+                        FindExistingOrAddForecastJobHourSnapshot(bluePrintsEntitiesUnitOfWork, forecastJobSnapshot.GUID, ForecastSnapshotValueType.Actual, uniqueActualStockCode, dateCost.Date, dateCost.ActualUnits, dateCost.ActualCosts);
+                    }
+
+                    //save material
+                    foreach (string uniqueMaterialStockCode in uniqueMaterialStockCodes)
+                    {
+                        FindExistingOrAddForecastJobHourSnapshot(bluePrintsEntitiesUnitOfWork, forecastJobSnapshot.GUID, ForecastSnapshotValueType.Material, uniqueMaterialStockCode, dateCost.Date, dateCost.MaterialQuantity, dateCost.MaterialCosts);
+                    }
+
+                    //save indirects
+                    foreach (string uniqueIndirectStockCode in uniqueIndirectStockCodes)
+                    {
+                        FindExistingOrAddForecastJobHourSnapshot(bluePrintsEntitiesUnitOfWork, forecastJobSnapshot.GUID, ForecastSnapshotValueType.Indirect, uniqueIndirectStockCode, dateCost.Date, 0, dateCost.IndirectForecastCosts);
+                    }
+
+                    //save pos
+                    foreach (string uniquePOStockCode in uniquePOStockCodes)
+                    {
+                        FindExistingOrAddForecastJobHourSnapshot(bluePrintsEntitiesUnitOfWork, forecastJobSnapshot.GUID, ForecastSnapshotValueType.PO, uniquePOStockCode, dateCost.Date, 0, dateCost.POForecastCosts);
+                    } 
+                    #endregion
+                }
+
+                bluePrintsEntitiesUnitOfWork.SaveChanges();
+            }
+        }
+
+        public static FORECAST_JOB_HOUR_SNAPSHOT FindExistingOrAddForecastJobHourSnapshot(IBluePrintsEntitiesUnitOfWork bluePrintsEntitiesUnitOfWork, Guid forecastJobSnapshotGuid, ForecastSnapshotValueType forecastSnapshotType, string stockCode, DateTime date, decimal quantity, decimal costs, bool commitToDb = false)
+        {
+            FORECAST_JOB_HOUR_SNAPSHOT findForecastJobHourSnapshot = bluePrintsEntitiesUnitOfWork.FORECAST_JOB_HOUR_SNAPSHOTS.Where(x => x.GUID_FORECAST_JOB_SNAPSHOT == forecastJobSnapshotGuid).FirstOrDefault(x => x.SNAPSHOT_TYPE == forecastSnapshotType && x.STOCK_CODE == stockCode && x.FORECAST_DATE == date);
+
+            if (findForecastJobHourSnapshot != null)
+            {
+                findForecastJobHourSnapshot.FORECAST_COSTS = costs;
+                findForecastJobHourSnapshot.FORECAST_QTY = quantity;
+
+                if (commitToDb)
+                    bluePrintsEntitiesUnitOfWork.SaveChanges();
+
+                return findForecastJobHourSnapshot;
+            }
+            else
+            {
+                FORECAST_JOB_HOUR_SNAPSHOT newForecastJobHourSnapshot = new FORECAST_JOB_HOUR_SNAPSHOT();
+                newForecastJobHourSnapshot.GUID_FORECAST_JOB_SNAPSHOT = newForecastJobHourSnapshot.GUID;
+                newForecastJobHourSnapshot.SNAPSHOT_TYPE = forecastSnapshotType;
+                newForecastJobHourSnapshot.STOCK_CODE = stockCode;
+                newForecastJobHourSnapshot.FORECAST_DATE = date;
+                newForecastJobHourSnapshot.FORECAST_COSTS = costs;
+                newForecastJobHourSnapshot.FORECAST_QTY = quantity;
+
+                if(commitToDb)
+                    bluePrintsEntitiesUnitOfWork.SaveChanges();
+
+                return newForecastJobHourSnapshot;
+            }
+        }
+
+        public static FORECAST_JOB_SNAPSHOT FindExistingOrAddForecastJobSnapshot(IBluePrintsEntitiesUnitOfWork bluePrintsEntitiesUnitOfWork, Guid projectGuid, string subJobCode, string disciplineCode, string commodityCode, string variationCode, decimal budget, decimal tenderBudget, DateTime dataDate, bool commitToDb = false)
+        {
+            FORECAST_JOB_SNAPSHOT findForecastJobSnapshot = bluePrintsEntitiesUnitOfWork.FORECAST_JOB_SNAPSHOTS.Where(x => x.GUID_PROJECT == projectGuid).FirstOrDefault(x => x.SUBJOB_CODE == subJobCode && x.DISCIPLINE_CODE == disciplineCode && x.COMMODITY_CODE == commodityCode && x.VARIATION_CODE == variationCode && x.DATA_DATE == dataDate);
+            if (findForecastJobSnapshot != null)
+                return findForecastJobSnapshot;
+            else
+            {
+                FORECAST_JOB_SNAPSHOT newForecastJobSnapshot = new FORECAST_JOB_SNAPSHOT();
+                newForecastJobSnapshot.SUBJOB_CODE = subJobCode;
+                newForecastJobSnapshot.DISCIPLINE_CODE = disciplineCode;
+                newForecastJobSnapshot.COMMODITY_CODE = commodityCode;
+                newForecastJobSnapshot.VARIATION_CODE = variationCode;
+                newForecastJobSnapshot.PROJECT_BUDGET = budget;
+                newForecastJobSnapshot.TENDER_BUDGET = tenderBudget;
+                newForecastJobSnapshot.GUID_PROJECT = projectGuid;
+                newForecastJobSnapshot.DATA_DATE = dataDate;
+                bluePrintsEntitiesUnitOfWork.FORECAST_JOB_SNAPSHOTS.Add(newForecastJobSnapshot);
+                if(commitToDb)
+                    bluePrintsEntitiesUnitOfWork.SaveChanges();
+                return newForecastJobSnapshot;
+            }
+        }
+
+        public static void GetUniqueDateCostStockCodes(ForecastJobData forecastJobData, out List<string> uniquePOStockCodes, out List<string> uniqueIndirectStockCodes, out List<string> uniqueMaterialStockCodes, out List<string> uniqueActualStockCodes)
+        {
+            if (forecastJobData.DateCosts.Count > 0)
+            {
+                ForecastDateCost commodityDateCost = forecastJobData.DateCosts.First();
+                uniquePOStockCodes = commodityDateCost.RelevantForecastPOs.Where(x => x.ViewStockCode != null).Select(x => x.ViewStockCode).Distinct().ToList();
+                uniqueIndirectStockCodes = commodityDateCost.RelevantIndirectCosts.Where(x => x.ViewStockCode != null).Select(x => x.ViewStockCode).Distinct().ToList();
+                uniqueMaterialStockCodes = commodityDateCost.RelevantMaterialDataPoints.Where(x => x.StockCode != null).Select(x => x.StockCode).Distinct().ToList();
+                uniqueActualStockCodes = commodityDateCost.RelevantActualDataPoints.Where(x => x.StockCode != null).Select(x => x.StockCode).Distinct().ToList();
+            }
+            else
+            {
+                uniquePOStockCodes = new List<string>();
+                uniqueIndirectStockCodes = new List<string>();
+                uniqueMaterialStockCodes = new List<string>();
+                uniqueActualStockCodes = new List<string>();
             }
         }
     }
