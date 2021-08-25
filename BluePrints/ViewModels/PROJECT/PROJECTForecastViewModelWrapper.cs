@@ -2655,6 +2655,12 @@ namespace BluePrints.ViewModels
 
         public void SaveView()
         {
+            if(IsShowActualsHistory)
+            {
+                MessageBoxService.ShowMessage("View cannot be saved in view actuals history mode");
+                return;
+            }
+
             ForecastHelper.SaveSnapshot(LoadPROJECT.GUID, FixedDataDateMonthEnd, bluePrintsUnitOfWork, commodityJobs, FORECASTCollection, ForecastSummary);
             MessageBoxService.ShowMessage("Forecast Snapshot Saved");
         }

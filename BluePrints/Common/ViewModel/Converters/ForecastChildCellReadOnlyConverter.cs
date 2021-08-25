@@ -1,4 +1,5 @@
 ﻿using BluePrints.Common.Projections;
+using BluePrints.Common.ViewModel.Reporting;
 using System;
 using System.Data;
 using System.Windows;
@@ -20,7 +21,7 @@ namespace BluePrints.Common.ViewModel.Converters
 
             if (dataRow["Entity"] != DBNull.Value)
             {
-                ForecastJobData jobData = (ForecastJobData)dataRow["Entity"];
+                IForecastViewModel jobData = (IForecastViewModel)dataRow["Entity"];
                 return !jobData.IsP6HoursRow;
             }
 

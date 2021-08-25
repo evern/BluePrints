@@ -59,14 +59,18 @@ namespace BluePrints.Common
         Actual,
         [Display(Name = "Material")]
         Material,
-        [Display(Name = "Indirect")]
-        Indirect,
-        [Display(Name = "PO")]
-        PO,
-        [Display(Name = "P6")]
-        P6,
-        [Display(Name = "Discretionary")]
-        Discretionary
+        [Display(Name = "Indirect Forecast")]
+        IndirectForecast,
+        [Display(Name = "PO Forecast")]
+        POForecast,
+        //P6 original values, exists for all dates
+        [Display(Name = "P6 Original")]
+        P6Original,
+        //P6 view values, exists for all dates but can be retrieved from override
+        [Display(Name = "P6 Override")]
+        P6Override,
+        [Display(Name = "Discretionary Total")]
+        DiscretionaryTotal
     }
 
     public enum ForecastDataType

@@ -14,7 +14,7 @@ using System.Threading.Tasks;
 
 namespace BluePrints.Common.Projections
 {
-    public class ForecastJobData : EntityBase, IHaveDisciplineDesc
+    public class ForecastJobData : EntityBase, IHaveDisciplineDesc, IForecastViewModel
     {
         public ForecastJobData()
         {
@@ -47,6 +47,8 @@ namespace BluePrints.Common.Projections
         public ExoSubJobProjection Projection { get; set; }
 
         public List<ForecastDateCost> DateCosts { get; set; }
+
+        public IEnumerable<IForecastDateCostViewModel> ForecastDateCosts => DateCosts;
 
         public List<ForecastJobData> CommodityJobs { get; set; }
 
@@ -277,7 +279,7 @@ namespace BluePrints.Common.Projections
         #endregion
     }
 
-    public class ForecastDateCost
+    public class ForecastDateCost : IForecastDateCostViewModel
     {
         public readonly DateTime FloorDate;
         public readonly DateTime CeilingDate;

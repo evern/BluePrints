@@ -10,6 +10,20 @@ using System.Threading.Tasks;
 
 namespace BluePrints.Common.ViewModel.Reporting
 {
+    public interface IForecastViewModel
+    {
+        bool IsP6HoursRow { get; }
+        string CompareMask { get; }
+        IEnumerable<IForecastDateCostViewModel> ForecastDateCosts { get; }
+    }
+
+    public interface IForecastDateCostViewModel
+    {
+        decimal P6Costs { get; }
+        decimal TotalCosts { get;}
+        DateTime Date { get; }
+    }
+
     public interface IHaveDisciplineDesc : ICanUpdate
     {
         string DisciplineCode { get; }

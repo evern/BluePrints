@@ -1,4 +1,5 @@
 ﻿using BluePrints.Common.Projections;
+using BluePrints.Common.ViewModel.Reporting;
 using System;
 using System.Data;
 using System.Globalization;
@@ -27,7 +28,7 @@ namespace BluePrints.Common.ViewModel.Converters
 
                 if (dataRow["Entity"] != DBNull.Value)
                 {
-                    ForecastJobData job = (ForecastJobData)dataRow["Entity"];
+                    IForecastViewModel job = (IForecastViewModel)dataRow["Entity"];
                     return job.CompareMask;
                 }
             }
