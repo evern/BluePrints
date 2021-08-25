@@ -379,6 +379,12 @@ namespace BluePrints.Data
                 .HasForeignKey(e => e.GUID_HSE)
                 .WillCascadeOnDelete(false);
 
+            modelBuilder.Entity<FORECAST_JOB_SNAPSHOT>()
+                .HasMany(e => e.FORECAST_JOB_HOUR_SNAPSHOT)
+                .WithRequired(e => e.FORECAST_JOB_SNAPSHOT)
+                .HasForeignKey(e => e.GUID_FORECAST_JOB_SNAPSHOT)
+                .WillCascadeOnDelete(false);
+
             modelBuilder.Entity<MEETING>()
                 .HasMany(e => e.MEETING_USER)
                 .WithRequired(e => e.MEETING)

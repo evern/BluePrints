@@ -339,6 +339,7 @@
                 <dxb:BarButtonItem x:Name="biReloadP6" Command="{Binding ReloadP6ForecastCommand}" Content="Calculate Forecast" Glyph="{dx:DXImage Image=Reset2_16x16.png}" LargeGlyph="{dx:DXImage Image=Reset2_32x32.png}" ToolTip="Reload from P6. Must be performed after pressing F9 in P6" />
                 <dxb:BarCheckItem x:Name="biShowActuals" Content="Show Actuals History" Glyph="{dxc:DXImage Images/Scheduling/SwitchTimeScalesTo_16x16.png}" IsChecked="{Binding IsShowActualsHistory, Mode=TwoWay}" IsEnabled="{Binding IsLoading, Converter={StaticResource BooleanNegationConverter}}" LargeGlyph="{dxc:DXImage Images/Scheduling/SwitchTimeScalesTo_32x32.png}" RibbonStyle="SmallWithText" ToolTip="Toggle historical actuals visibility" />
                 <dxb:BarButtonItem x:Name="biSaveSummary" Command="{Binding SaveSummaryCommand}" Content="Save Excel Summary" Glyph="{dx:DXImage Image=SpreadsheetInsertTable_16x16.png}" LargeGlyph="{dx:DXImage Image=SpreadsheetInsertTable_32x32.png}" RibbonStyle="SmallWithText" ToolTip="Saves the summary for excel macro to retrieve values" />
+                <dxb:BarButtonItem x:Name="biSaveSnapshot" Command="{Binding SaveViewCommand}" Content="Save Snapshot" LargeGlyph="{dx:DXImage Images/Toolbox Items/PictureBox_32x32.png}" RibbonStyle="SmallWithText" ToolTip="Saves the summary for excel macro to retrieve values" Glyph="{dxc:DXImage Images/Toolbox Items/PictureBox_16x16.png}" />
             </dxb:BarManager.Items>
             <DockPanel>
                 <dxr:RibbonControl Style="{StaticResource DefaultRibbonControlStyle}">
@@ -369,6 +370,7 @@
                                 <dxb:BarButtonItemLink BarItemName="biBaselineBudget" />
                                 <dxb:BarButtonItemLink BarItemName="biSaveEAC" />
                                 <dxb:BarButtonItemLink BarItemName="biSaveSummary" />
+                                <dxb:BarButtonItemLink BarItemName="biSaveSnapshot" />
                                 <dxb:BarEditItemLink BarItemName="beFixedDataDate" />
                                 <dxb:BarEditItemLink BarItemName="beFixedEndDate" />
                                 <dxb:BarButtonItemLink BarItemName="biSaveDateAndRefresh" />

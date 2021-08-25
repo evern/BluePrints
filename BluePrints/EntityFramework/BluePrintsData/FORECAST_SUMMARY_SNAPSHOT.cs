@@ -31,8 +31,6 @@ namespace BluePrints.Data
 
         public DateTime DATA_DATE { get; set; }
 
-        public DateTime END_DATE { get; set; }
-
         public DateTime CREATED { get; set; }
 
         public Guid CREATEDBY { get; set; }

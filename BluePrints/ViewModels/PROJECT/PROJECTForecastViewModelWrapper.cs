@@ -2655,7 +2655,7 @@ namespace BluePrints.ViewModels
 
         public void SaveView()
         {
-            ForecastHelper.SaveSnapshot(LoadPROJECT.GUID, FixedDataDateMonthEnd, bluePrintsUnitOfWork, commodityJobs, FORECASTCollection);
+            ForecastHelper.SaveSnapshot(LoadPROJECT.GUID, FixedDataDateMonthEnd, bluePrintsUnitOfWork, commodityJobs, FORECASTCollection, ForecastSummary);
             MessageBoxService.ShowMessage("Forecast Snapshot Saved");
         }
 

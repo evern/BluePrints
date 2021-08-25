@@ -23,7 +23,6 @@ namespace BluePrints.Data
 
         public Guid GUID_FORECAST_JOB_SNAPSHOT { get; set; }
 
-        [Required]
         [StringLength(50)]
         public string STOCK_CODE { get; set; }
 
@@ -33,7 +32,7 @@ namespace BluePrints.Data
 
         public decimal FORECAST_QTY { get; set; }
 
-        public decimal FORECAST_COSTS { get; set; }
+        public decimal FORECAST_COST { get; set; }
 
         public DateTime CREATED { get; set; }
 

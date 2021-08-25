@@ -209,9 +209,6 @@ namespace BluePrints.Common.Projections
         {
             get
             {
-                if (SubJobId == null || DisciplineId == null || CommodityId == null)
-                    return string.Empty;
-
                 string fullCode = SubJobCode + "-" + DisciplineCode + "-" + CommodityCode;
                 if (VariationCode != string.Empty && VariationCode != null)
                     fullCode += "-" + VariationCode;
