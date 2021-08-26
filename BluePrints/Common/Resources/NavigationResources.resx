@@ -462,4 +462,7 @@
   <data name="Menu_Project_EXO_SellPrices" xml:space="preserve">
     <value>Stock item sell prices for rates job</value>
   </data>
+  <data name="Menu_Project_Forecast_ReadOnly" xml:space="preserve">
+    <value>Project read-only forecast menu</value>
+  </data>
 </root>

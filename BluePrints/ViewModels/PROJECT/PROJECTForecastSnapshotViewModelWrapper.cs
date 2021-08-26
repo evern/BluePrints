@@ -62,6 +62,7 @@ namespace BluePrints.ViewModels
 
         protected override void addEntitiesLoader()
         {
+            loaderCollection.AddLoaderDescription(bluePrintsUnitOfWorkFactory, x => x.FORECAST_JOB_HOUR_SNAPSHOTS, FORECAST_JOB_HOUR_SNAPSHOTProjectionFunc);
             loaderCollection.AddLoaderDescription(bluePrintsUnitOfWorkFactory, x => x.FORECAST_SUMMARY_SNAPSHOTS, FORECAST_SUMMARY_SNAPSHOTProjectionFunc, x => setDataDate(x));
             loaderCollection.AddLoaderDescription(bluePrintsUnitOfWorkFactory, x => x.FORECAST_JOB_SNAPSHOTS, FORECAST_JOB_SNAPSHOTProjectionFunc);
             loaderCollection.AddLoaderDescription(bluePrintsUnitOfWorkFactory, x => x.DISCIPLINE_DESCS, DISCIPLINE_DESCProjectionFunc);
@@ -71,6 +72,11 @@ namespace BluePrints.ViewModels
         protected virtual Func<IRepositoryQuery<FORECAST_SUMMARY_SNAPSHOT>, IQueryable<FORECAST_SUMMARY_SNAPSHOT>> FORECAST_SUMMARY_SNAPSHOTProjectionFunc()
         {
             return query => query.Where(x => x.GUID_PROJECT == loadPROJECT.GUID).OrderByDescending(x => x.DATA_DATE);
+        }
+
+        protected virtual Func<IRepositoryQuery<FORECAST_JOB_HOUR_SNAPSHOT>, IQueryable<FORECAST_JOB_HOUR_SNAPSHOT>> FORECAST_JOB_HOUR_SNAPSHOTProjectionFunc()
+        {
+            return query => query.Where(x => x.FORECAST_JOB_SNAPSHOT.GUID_PROJECT == loadPROJECT.GUID);
         }
 
         protected virtual Func<IRepositoryQuery<FORECAST_JOB_SNAPSHOT>, IQueryable<FORECAST_JOB_SNAPSHOT>> FORECAST_JOB_SNAPSHOTProjectionFunc()
@@ -174,11 +180,13 @@ namespace BluePrints.ViewModels
                 forecastSnapshotData.SubJobCode = forecastJobSnapshot.SUBJOB_CODE;
                 forecastSnapshotData.DisciplineCode = forecastJobSnapshot.DISCIPLINE_CODE;
                 forecastSnapshotData.CommodityCode = forecastJobSnapshot.COMMODITY_CODE;
+                forecastSnapshotData.TenderBudget = forecastJobSnapshot.TENDER_BUDGET;
+                forecastSnapshotData.Budget = forecastJobSnapshot.PROJECT_BUDGET;
 
-                foreach(DateTime alignedDataDate in alignedDataDateCollection)
+                foreach (DateTime alignedDataDate in alignedDataDateCollection)
                 {
                     IEnumerable<FORECAST_JOB_HOUR_SNAPSHOT> currentMonthFORECAST_JOB_HOUR_SNAPSHOTS = forecastJobSnapshot.FORECAST_JOB_HOUR_SNAPSHOT.Where(x => x.FORECAST_DATE.Date == alignedDataDate.Date);
-                    ForecastDateSnapshot forecastDateSnapshot = new ForecastDateSnapshot(forecastJobSnapshot.FORECAST_JOB_HOUR_SNAPSHOT.Where(x => x.FORECAST_DATE.Date == alignedDataDate.Date).ToList());
+                    ForecastDateSnapshot forecastDateSnapshot = new ForecastDateSnapshot(forecastJobSnapshot.FORECAST_JOB_HOUR_SNAPSHOT, alignedDataDate.Date);
                     forecastSnapshotData.DateCosts.Add(forecastDateSnapshot);
                 }
 
@@ -190,7 +198,7 @@ namespace BluePrints.ViewModels
             GridControlService.GridControl.EndDataUpdate();
             LoadingScreenManager.CloseLoadingScreen();
 
-            ForecastSummary.Reset();
+            //ForecastSummary.Reset();
 
             //calculate project summary, needs to be done after uncommitted is calculated
             //ForecastSummary.Budget_Cost = commodityJobs.Sum(x => x.Budget);
@@ -225,12 +233,7 @@ namespace BluePrints.ViewModels
             compareP6UnitsRemainingRow = compareDataTable.NewRow();
 
             compareP6UnitsRemainingRow[columnEntity] = ViewModelSource.Create(() => new ForecastJobSnapshot() { DropDownPhase = "P6 Hours", DateCosts = job.DateCosts, IsP6HoursRow = true });
-            compareP6CostsRemainingRow[columnEntity] = ViewModelSource.Create(() => new ForecastJobData() { DropDownPhase = "P6 $", CompareMask = "c0" });
-
-            List<string> uniquePOStockCodes = FORECAST_JOB_HOUR_SNAPSHOTCollection.Where(x => x.SNAPSHOT_TYPE == Common.ForecastSnapshotValueType.POForecast).Select(x => x.STOCK_CODE).Distinct().ToList();
-            List<string> uniqueIndirectStockCodes = FORECAST_JOB_HOUR_SNAPSHOTCollection.Where(x => x.SNAPSHOT_TYPE == Common.ForecastSnapshotValueType.IndirectForecast).Select(x => x.STOCK_CODE).Distinct().ToList();
-            List<string> uniqueMaterialStockCodes = FORECAST_JOB_HOUR_SNAPSHOTCollection.Where(x => x.SNAPSHOT_TYPE == Common.ForecastSnapshotValueType.Material).Select(x => x.STOCK_CODE).Distinct().ToList();
-            List<string> uniqueActualStockCodes = FORECAST_JOB_HOUR_SNAPSHOTCollection.Where(x => x.SNAPSHOT_TYPE == Common.ForecastSnapshotValueType.POForecast).Select(x => x.STOCK_CODE).Distinct().ToList();
+            compareP6CostsRemainingRow[columnEntity] = ViewModelSource.Create(() => new ForecastJobSnapshot() { DropDownPhase = "P6 $", CompareMask = "c0" });
 
             //update discipline desc
             job.PopulateDisciplineDesc(DISCIPLINE_DESCCollection, JOB_COSTGROUPCollection);
@@ -251,7 +254,7 @@ namespace BluePrints.ViewModels
 
             //add uncommitted row irregardless, needs to be added here because it's always the third row
             DataRow compareUncommittedRow = compareDataTable.NewRow();
-            compareUncommittedRow[columnEntity] = ViewModelSource.Create(() => new ForecastJobData() { DropDownPhase = BluePrintsResources.ForecastCompare_UncommittedRowPhase + " $", CompareMask = "c0" });
+            compareUncommittedRow[columnEntity] = ViewModelSource.Create(() => new ForecastJobSnapshot() { DropDownPhase = BluePrintsResources.ForecastCompare_UncommittedRowPhase + " $", CompareMask = "c0" });
             compareDataTable.Rows.Add(compareUncommittedRow);
 
             //create rows based on unique codes for each type
@@ -264,7 +267,7 @@ namespace BluePrints.ViewModels
             foreach (KeyValuePair<string, decimal> uniquePOStockCodeAttrbutes in job.POStockCodeAttributes)
             {
                 DataRow comparePOForecastRow = compareDataTable.NewRow();
-                comparePOForecastRow[columnEntity] = ViewModelSource.Create(() => new ForecastJobData() { DropDownPhase = BluePrintsResources.ForecastCompare_PORowPhase + " [" + uniquePOStockCodeAttrbutes + "] $", CompareMask = "c0", DropDownIndirectBudget = uniquePOStockCodeAttrbutes.Value });
+                comparePOForecastRow[columnEntity] = ViewModelSource.Create(() => new ForecastJobSnapshot() { DropDownPhase = BluePrintsResources.ForecastCompare_PORowPhase + " [" + uniquePOStockCodeAttrbutes + "] $", CompareMask = "c0", DropDownIndirectBudget = uniquePOStockCodeAttrbutes.Value });
                 poForecastRows.Add(uniquePOStockCodeAttrbutes.Key, comparePOForecastRow);
                 compareDataTable.Rows.Add(comparePOForecastRow);
             }
@@ -273,7 +276,7 @@ namespace BluePrints.ViewModels
             foreach (KeyValuePair<string, decimal> uniqueIndirectStockCode in job.IndirectStockCodeAttributes)
             {
                 DataRow compareIndirectRemainingRow = compareDataTable.NewRow();
-                compareIndirectRemainingRow[columnEntity] = ViewModelSource.Create(() => new ForecastJobData() { DropDownPhase = BluePrintsResources.ForecastCompare_IndirectRowPhase + " [" + uniqueIndirectStockCode + "] $", DropDownIndirectBudget = uniqueIndirectStockCode.Value, CompareMask = "c0" });
+                compareIndirectRemainingRow[columnEntity] = ViewModelSource.Create(() => new ForecastJobSnapshot() { DropDownPhase = BluePrintsResources.ForecastCompare_IndirectRowPhase + " [" + uniqueIndirectStockCode + "] $", DropDownIndirectBudget = uniqueIndirectStockCode.Value, CompareMask = "c0" });
                 indirectForecastRows.Add(uniqueIndirectStockCode.Key, compareIndirectRemainingRow);
                 compareDataTable.Rows.Add(compareIndirectRemainingRow);
             }
@@ -282,7 +285,7 @@ namespace BluePrints.ViewModels
             foreach (KeyValuePair<string, decimal> uniqueMaterialStockCode in job.MaterialStockCodeAttributes)
             {
                 DataRow compareMaterialRemainingRow = compareDataTable.NewRow();
-                compareMaterialRemainingRow[columnEntity] = ViewModelSource.Create(() => new ForecastJobData() { DropDownPhase = BluePrintsResources.ForecastCompare_MaterialRowPhase + " [" + uniqueMaterialStockCode + "] $", DropDownIndirectBudget = uniqueMaterialStockCode.Value, CompareMask = "c0" });
+                compareMaterialRemainingRow[columnEntity] = ViewModelSource.Create(() => new ForecastJobSnapshot() { DropDownPhase = BluePrintsResources.ForecastCompare_MaterialRowPhase + " [" + uniqueMaterialStockCode + "] $", DropDownIndirectBudget = uniqueMaterialStockCode.Value, CompareMask = "c0" });
                 materialForecastRows.Add(uniqueMaterialStockCode.Key, compareMaterialRemainingRow);
                 compareDataTable.Rows.Add(compareMaterialRemainingRow);
             }
@@ -291,7 +294,7 @@ namespace BluePrints.ViewModels
             foreach (KeyValuePair<string, decimal> uniqueActualStockCode in job.ActualStockCodeAttributes)
             {
                 DataRow compareActualRemainingRow = compareDataTable.NewRow();
-                compareActualRemainingRow[columnEntity] = ViewModelSource.Create(() => new ForecastJobData() { DropDownPhase = BluePrintsResources.ForecastCompare_ActualRowPhase + " [" + uniqueActualStockCode + "] $", DropDownIndirectBudget = uniqueActualStockCode.Value, CompareMask = "c0" });
+                compareActualRemainingRow[columnEntity] = ViewModelSource.Create(() => new ForecastJobSnapshot() { DropDownPhase = BluePrintsResources.ForecastCompare_ActualRowPhase + " [" + uniqueActualStockCode + "] $", DropDownIndirectBudget = uniqueActualStockCode.Value, CompareMask = "c0" });
                 actualForecastRows.Add(uniqueActualStockCode.Key, compareActualRemainingRow);
                 compareDataTable.Rows.Add(compareActualRemainingRow);
             }
@@ -305,29 +308,29 @@ namespace BluePrints.ViewModels
                 foreach (FORECAST_JOB_HOUR_SNAPSHOT poForecastSnapshot in dateCost.POForecastSnapshots)
                 {
                     //finds the unique row based on stock code
-                    DataRow poStockCodeDataRow = poForecastRows.First(x => x.Key == poForecastSnapshot.STOCK_CODE).Value;
-                    poStockCodeDataRow[dateCost.Date.ToString(BluePrintsResources.ColumnDateFormat)] = poForecastSnapshot.FORECAST_COST;
+                    DataRow poForecastRow = poForecastRows.First(x => x.Key == poForecastSnapshot.STOCK_CODE).Value;
+                    poForecastRow[dateCost.Date.ToString(BluePrintsResources.ColumnDateFormat)] = poForecastSnapshot.FORECAST_COST;
                 }
 
                 foreach (FORECAST_JOB_HOUR_SNAPSHOT indirectForecastSnapshot in dateCost.IndirectForecastSnapshots)
                 {
                     //finds the unique row based on stock code
-                    DataRow poStockCodeDataRow = poForecastRows.First(x => x.Key == indirectForecastSnapshot.STOCK_CODE).Value;
-                    poStockCodeDataRow[dateCost.Date.ToString(BluePrintsResources.ColumnDateFormat)] = indirectForecastSnapshot.FORECAST_COST;
+                    DataRow indirectForecastRow = indirectForecastRows.First(x => x.Key == indirectForecastSnapshot.STOCK_CODE).Value;
+                    indirectForecastRow[dateCost.Date.ToString(BluePrintsResources.ColumnDateFormat)] = indirectForecastSnapshot.FORECAST_COST;
                 }
 
                 foreach (FORECAST_JOB_HOUR_SNAPSHOT actualForecastSnapshot in dateCost.ActualForecastSnapshots)
                 {
                     //finds the unique row based on stock code
-                    DataRow poStockCodeDataRow = poForecastRows.First(x => x.Key == actualForecastSnapshot.STOCK_CODE).Value;
-                    poStockCodeDataRow[dateCost.Date.ToString(BluePrintsResources.ColumnDateFormat)] = actualForecastSnapshot.FORECAST_COST;
+                    DataRow actualForecastRow = actualForecastRows.First(x => x.Key == actualForecastSnapshot.STOCK_CODE).Value;
+                    actualForecastRow[dateCost.Date.ToString(BluePrintsResources.ColumnDateFormat)] = actualForecastSnapshot.FORECAST_COST;
                 }
 
                 foreach (FORECAST_JOB_HOUR_SNAPSHOT materialForecastSnapshot in dateCost.MaterialForecastSnapshots)
                 {
                     //finds the unique row based on stock code
-                    DataRow poStockCodeDataRow = poForecastRows.First(x => x.Key == materialForecastSnapshot.STOCK_CODE).Value;
-                    poStockCodeDataRow[dateCost.Date.ToString(BluePrintsResources.ColumnDateFormat)] = materialForecastSnapshot.FORECAST_COST;
+                    DataRow materialForecastRow = materialForecastRows.First(x => x.Key == materialForecastSnapshot.STOCK_CODE).Value;
+                    materialForecastRow[dateCost.Date.ToString(BluePrintsResources.ColumnDateFormat)] = materialForecastSnapshot.FORECAST_COST;
                 }
 
                 //retrieve original p6 values
@@ -426,15 +429,13 @@ namespace BluePrints.ViewModels
 
             if (!isChild)
             {
-                columns.Add(new ColumnDescriptor() { FieldName = "Entity.Projection.PhaseCode", ReadOnly = true, Header = "Phase", Fixed = FixedStyle.Left, Width = 50, Settings = SettingsType.Default });
-                columns.Add(new ColumnDescriptor() { FieldName = "Entity.Projection.SubJobCode", ReadOnly = true, Header = "Subjob", Fixed = FixedStyle.Left, Width = 110, Settings = SettingsType.JobError });
-                columns.Add(new ColumnDescriptor() { FieldName = "Entity.Projection.SubJobTitle", ReadOnly = true, Header = "Subjob Title", Visible = false, Fixed = FixedStyle.Left, Width = 95, Settings = SettingsType.Default });
-                columns.Add(new ColumnDescriptor() { FieldName = "Entity.Projection.AreaCode", ReadOnly = true, Visible = false, Header = "Area", Fixed = FixedStyle.Left, Width = 60, Settings = SettingsType.Default });
-                columns.Add(new ColumnDescriptor() { FieldName = "Entity.Projection.DisciplineCode", ReadOnly = true, Header = "Discipline", Fixed = FixedStyle.Left, Width = 38, Settings = SettingsType.Default });
+                columns.Add(new ColumnDescriptor() { FieldName = "Entity.PhaseCode", ReadOnly = true, Header = "Phase", Fixed = FixedStyle.Left, Width = 50, Settings = SettingsType.Default });
+                columns.Add(new ColumnDescriptor() { FieldName = "Entity.SubJobCode", ReadOnly = true, Header = "Subjob", Fixed = FixedStyle.Left, Width = 110, Settings = SettingsType.JobError });
+                columns.Add(new ColumnDescriptor() { FieldName = "Entity.AreaCode", ReadOnly = true, Visible = false, Header = "Area", Fixed = FixedStyle.Left, Width = 60, Settings = SettingsType.Default });
+                columns.Add(new ColumnDescriptor() { FieldName = "Entity.DisciplineCode", ReadOnly = true, Header = "Discipline", Fixed = FixedStyle.Left, Width = 38, Settings = SettingsType.Default });
                 columns.Add(new ColumnDescriptor() { FieldName = "Entity.DisciplineDesc", ReadOnly = true, Header = "Package", Fixed = FixedStyle.Left, Width = 100, Settings = SettingsType.Default });
-                columns.Add(new ColumnDescriptor() { FieldName = "Entity.Projection.CommodityCode", ReadOnly = true, Header = "Commodity", Fixed = FixedStyle.Left, Width = 35, Settings = SettingsType.CommodityCode });
-                columns.Add(new ColumnDescriptor() { FieldName = "Entity.Projection.CommodityName", ReadOnly = true, Header = "Commodity Name", Fixed = FixedStyle.Left, Width = 50, Settings = SettingsType.Default });
-                columns.Add(new ColumnDescriptor() { FieldName = "Entity.Projection.VariationCode", ReadOnly = true, Header = "Variation", Fixed = FixedStyle.Left, Width = 60, Settings = SettingsType.Default });
+                columns.Add(new ColumnDescriptor() { FieldName = "Entity.CommodityCode", ReadOnly = true, Header = "Commodity", Fixed = FixedStyle.Left, Width = 35, Settings = SettingsType.CommodityCode });
+                columns.Add(new ColumnDescriptor() { FieldName = "Entity.VariationCode", ReadOnly = true, Header = "Variation", Fixed = FixedStyle.Left, Width = 60, Settings = SettingsType.Default });
                 columns.Add(new ColumnDescriptor() { FieldName = "Entity.TenderBudget", ReadOnly = false, Header = "Tender Budget (H)", Increment = 1, Fixed = FixedStyle.Left, Width = 75, Settings = SettingsType.Budget, Mask = "c0", HeaderToolTip = "Budget saved here during Roll Over" });
                 summaries.Add(new SummaryDescriptor() { FieldName = "Entity.TenderBudget", DisplayFormat = "c0", Type = SummaryItemType.Sum });
                 columns.Add(new ColumnDescriptor() { FieldName = "Entity.Budget", ReadOnly = false, Header = "Project Budget (A)", Increment = 1, Fixed = FixedStyle.Left, Width = 75, Settings = SettingsType.Budget, HeaderToolTip = "EAC saved here during Roll Over" });

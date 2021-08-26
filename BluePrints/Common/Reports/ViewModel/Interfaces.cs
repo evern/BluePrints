@@ -12,6 +12,7 @@ namespace BluePrints.Common.ViewModel.Reporting
 {
     public interface IForecastViewModel
     {
+        //used by detailed rows so that only P6 hour row can be edited
         bool IsP6HoursRow { get; }
         string CompareMask { get; }
         IEnumerable<IForecastDateCostViewModel> ForecastDateCosts { get; }

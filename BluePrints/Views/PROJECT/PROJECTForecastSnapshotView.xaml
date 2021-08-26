@@ -178,13 +178,13 @@
                                             <Binding ElementName="PART_Editor" Path="EditValue" />
                                         </MultiBinding>
                                     </dxe:SpinEdit.Background>
-                                    <dxe:SpinEdit.ToolTip>
+                                    <!--<dxe:SpinEdit.ToolTip>
                                         <MultiBinding Converter="{StaticResource ForecastFutureCellToolTipConverter}">
                                             <Binding Path="RowData.Row.Row" />
                                             <Binding Path="Column.FieldName" />
                                             <Binding ElementName="PART_Editor" Path="EditValue" />
                                         </MultiBinding>
-                                    </dxe:SpinEdit.ToolTip>
+                                    </dxe:SpinEdit.ToolTip>-->
                                 </dxe:SpinEdit>
                             </DataTemplate>
                         </dxg:GridColumn.CellTemplate>

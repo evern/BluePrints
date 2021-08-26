@@ -16,11 +16,37 @@ namespace BluePrints.Common.Projections
 {
     public class ForecastJobSnapshot : EntityBase, IHaveDisciplineDesc, IForecastViewModel
     {
-        public IEnumerable<IForecastDateCostViewModel> ForecastDateCosts => DateCosts;
         public List<ForecastDateSnapshot> DateCosts { get; set; }
         public ForecastJobSnapshot()
         {
             DateCosts = new List<ForecastDateSnapshot>();
+        }
+        public string PhaseCode => BluePrintsDataUtils.GetPhaseCode(SubJobCode);
+
+        public string AreaCode
+        {
+            get
+            {
+                if (SubJobCode == string.Empty)
+                    return string.Empty;
+                else if (SubJobCode.Length < 15)
+                    return string.Empty;
+
+                return SubJobCode.Substring(6, 3);
+            }
+        }
+
+        public string SubAreaCode
+        {
+            get
+            {
+                if (SubJobCode == string.Empty)
+                    return string.Empty;
+                else if (SubJobCode.Length < 15)
+                    return string.Empty;
+
+                return SubJobCode.Substring(10, 2);
+            }
         }
 
         public string SubJobCode { get; set; }
@@ -33,9 +59,18 @@ namespace BluePrints.Common.Projections
 
         public string DropDownPhase { get; set; }
 
+        public decimal TenderBudget { get; set; }
+
+        public decimal Budget { get; set; }
+
         public string CompareMask { get; set; }
+
+        #region IForecastViewModel
         //used by detailed rows so that only P6 hour row can be edited
         public bool IsP6HoursRow { get; set; }
+        public decimal DropDownIndirectBudget { get; set; }
+        public IEnumerable<IForecastDateCostViewModel> ForecastDateCosts => DateCosts; 
+        #endregion
 
         Dictionary<string, decimal> poStockCodeAttributes = null;
         public Dictionary<string, decimal> POStockCodeAttributes
@@ -44,6 +79,7 @@ namespace BluePrints.Common.Projections
             {
                 if (poStockCodeAttributes == null)
                 {
+                    poStockCodeAttributes = new Dictionary<string, decimal>();
                     var groupByStockCodeSnapshots = DateCosts.SelectMany(x => x.POForecastSnapshots).GroupBy(x => x.STOCK_CODE).Select(group => new { StockCode = group.Key, Budget = group.First().PROJECT_BUDGET });
                     foreach (var groupByStockCodeSnapshot in groupByStockCodeSnapshots)
                     {
@@ -51,7 +87,7 @@ namespace BluePrints.Common.Projections
                     }
                 }
 
-                return POStockCodeAttributes;
+                return poStockCodeAttributes;
             }
         }
 
@@ -63,6 +99,7 @@ namespace BluePrints.Common.Projections
             {
                 if (indirectStockCodeAttributes == null)
                 {
+                    indirectStockCodeAttributes = new Dictionary<string, decimal>();
                     var groupByStockCodeSnapshots = DateCosts.SelectMany(x => x.IndirectForecastSnapshots).GroupBy(x => x.STOCK_CODE).Select(group => new { StockCode = group.Key, Budget = group.First().PROJECT_BUDGET });
                     foreach (var groupByStockCodeSnapshot in groupByStockCodeSnapshots)
                     {
@@ -82,6 +119,7 @@ namespace BluePrints.Common.Projections
             {
                 if (materialStockCodeAttributes == null)
                 {
+                    materialStockCodeAttributes = new Dictionary<string, decimal>();
                     var groupByStockCodeSnapshots = DateCosts.SelectMany(x => x.MaterialForecastSnapshots).GroupBy(x => x.STOCK_CODE).Select(group => new { StockCode = group.Key, Budget = group.First().PROJECT_BUDGET });
                     foreach (var groupByStockCodeSnapshot in groupByStockCodeSnapshots)
                     {
@@ -101,6 +139,7 @@ namespace BluePrints.Common.Projections
             {
                 if (actualStockCodeAttributes == null)
                 {
+                    actualStockCodeAttributes = new Dictionary<string, decimal>();
                     var groupByStockCodeSnapshots = DateCosts.SelectMany(x => x.ActualForecastSnapshots).GroupBy(x => x.STOCK_CODE).Select(group => new { StockCode = group.Key, Budget = group.First().PROJECT_BUDGET });
                     foreach (var groupByStockCodeSnapshot in groupByStockCodeSnapshots)
                     {
@@ -115,19 +154,20 @@ namespace BluePrints.Common.Projections
 
     public class ForecastDateSnapshot : IForecastDateCostViewModel
     {
-        readonly IEnumerable<FORECAST_JOB_HOUR_SNAPSHOT> forecastJobHourSnapshot;
-        public ForecastDateSnapshot(IEnumerable<FORECAST_JOB_HOUR_SNAPSHOT> forecastJobHourSnapshot)
+        readonly IEnumerable<FORECAST_JOB_HOUR_SNAPSHOT> byDateForecastJobHourSnapshots;
+        public ForecastDateSnapshot(IEnumerable<FORECAST_JOB_HOUR_SNAPSHOT> byDateForecastJobHourSnapshots, DateTime date)
         {
-            this.forecastJobHourSnapshot = forecastJobHourSnapshot;
+            Date = date;
+            this.byDateForecastJobHourSnapshots = byDateForecastJobHourSnapshots.Where(x => x.FORECAST_DATE.Date == Date.Date);
         }
 
-        public IEnumerable<FORECAST_JOB_HOUR_SNAPSHOT> POForecastSnapshots => forecastJobHourSnapshot.Where(x => x.SNAPSHOT_TYPE == Common.ForecastSnapshotValueType.POForecast);
-        public IEnumerable<FORECAST_JOB_HOUR_SNAPSHOT> IndirectForecastSnapshots => forecastJobHourSnapshot.Where(x => x.SNAPSHOT_TYPE == Common.ForecastSnapshotValueType.IndirectForecast);
-        public IEnumerable<FORECAST_JOB_HOUR_SNAPSHOT> MaterialForecastSnapshots => forecastJobHourSnapshot.Where(x => x.SNAPSHOT_TYPE == Common.ForecastSnapshotValueType.Material);
-        public IEnumerable<FORECAST_JOB_HOUR_SNAPSHOT> ActualForecastSnapshots => forecastJobHourSnapshot.Where(x => x.SNAPSHOT_TYPE == Common.ForecastSnapshotValueType.Actual);
-        public IEnumerable<FORECAST_JOB_HOUR_SNAPSHOT> P6Snapshots => forecastJobHourSnapshot.Where(x => x.SNAPSHOT_TYPE == Common.ForecastSnapshotValueType.P6Original);
-        public IEnumerable<FORECAST_JOB_HOUR_SNAPSHOT> P6OverrideSnapshots => forecastJobHourSnapshot.Where(x => x.SNAPSHOT_TYPE == Common.ForecastSnapshotValueType.P6Override);
-        public IEnumerable<FORECAST_JOB_HOUR_SNAPSHOT> ViewOverrideSnapshots => forecastJobHourSnapshot.Where(x => x.SNAPSHOT_TYPE == Common.ForecastSnapshotValueType.DiscretionaryTotal);
+        public IEnumerable<FORECAST_JOB_HOUR_SNAPSHOT> POForecastSnapshots => byDateForecastJobHourSnapshots.Where(x => x.SNAPSHOT_TYPE == Common.ForecastSnapshotValueType.POForecast);
+        public IEnumerable<FORECAST_JOB_HOUR_SNAPSHOT> IndirectForecastSnapshots => byDateForecastJobHourSnapshots.Where(x => x.SNAPSHOT_TYPE == Common.ForecastSnapshotValueType.IndirectForecast);
+        public IEnumerable<FORECAST_JOB_HOUR_SNAPSHOT> MaterialForecastSnapshots => byDateForecastJobHourSnapshots.Where(x => x.SNAPSHOT_TYPE == Common.ForecastSnapshotValueType.Material);
+        public IEnumerable<FORECAST_JOB_HOUR_SNAPSHOT> ActualForecastSnapshots => byDateForecastJobHourSnapshots.Where(x => x.SNAPSHOT_TYPE == Common.ForecastSnapshotValueType.Actual);
+        public IEnumerable<FORECAST_JOB_HOUR_SNAPSHOT> P6Snapshots => byDateForecastJobHourSnapshots.Where(x => x.SNAPSHOT_TYPE == Common.ForecastSnapshotValueType.P6Original);
+        public IEnumerable<FORECAST_JOB_HOUR_SNAPSHOT> P6OverrideSnapshots => byDateForecastJobHourSnapshots.Where(x => x.SNAPSHOT_TYPE == Common.ForecastSnapshotValueType.P6Override);
+        public IEnumerable<FORECAST_JOB_HOUR_SNAPSHOT> ViewOverrideSnapshots => byDateForecastJobHourSnapshots.Where(x => x.SNAPSHOT_TYPE == Common.ForecastSnapshotValueType.DiscretionaryTotal);
 
         public DateTime Date { get; set; }
         public decimal POForecastCosts => POForecastSnapshots.Sum(x => x.FORECAST_COST);
