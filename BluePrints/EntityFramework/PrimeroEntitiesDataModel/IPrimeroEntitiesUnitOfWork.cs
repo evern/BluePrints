@@ -1724,6 +1724,11 @@ namespace BluePrints.PrimeroData.PrimeroEntitiesDataModel
         IRepository<X_JOB_TRANSACTIONS_DETAIL_SeqNo, int> X_JOB_TRANSACTIONS_DETAIL_SeqNos { get; }
 
         /// <summary>
+        /// The X_JOB_TRANSACTIONS_DETAIL_V2 entities repository.
+        /// </summary>
+        IRepository<X_JOB_TRANSACTIONS_DETAIL_V2, int> X_JOB_TRANSACTIONS_DETAIL_V2 { get; }
+
+        /// <summary>
         /// The X_DEPARTMENT entities repository.
         /// </summary>
         IRepository<X_DEPARTMENT, int> X_DEPARTMENTS { get; }

@@ -313,6 +313,7 @@ namespace BluePrints.ViewModels
         bool canEditConstructionUncommitted = false;
         protected IPrimeroEntitiesUnitOfWork primeroEntitiesUnitOfWork;
         BackgroundWorker exoLoadingBackgroundWorker = new BackgroundWorker();
+        InstantFeedbackForecastDetailsCollectionViewModelWrapper instantFeedbackForecastDetailViewModel = InstantFeedbackForecastDetailsCollectionViewModelWrapper.Create();
         protected override void resolveParameters(object parameter)
         {
             base.resolveParameters(parameter);
@@ -615,6 +616,9 @@ namespace BluePrints.ViewModels
 
             IsLoading = false;
             this.RaisePropertyChanged(x => x.IsLoading);
+
+            //so filters will show transactions, as it is not shown during load, RaisePropertyChanged on ActualDetails will allow the grid to start showing data
+            instantFeedbackForecastDetailViewModel.OnParameterChange(LoadPROJECT);
             CommonMethods.AddSaveLayoutHandler(GridControlService.GetGridColumns());
             return true;
         }
@@ -1211,8 +1215,6 @@ namespace BluePrints.ViewModels
             }
         }
 
-        public IEnumerable<ExoDataPoint> ActualsDetail => DetailedData;
-
         public List<ExoDataPoint> DetailedData { get; set; }
 
         private void resetViewRemainingOnJob(DataRow updateRow, string fieldName, bool addUndo)
@@ -1418,6 +1420,7 @@ namespace BluePrints.ViewModels
             setFilter((DataRowView)e.Row, e.Column);
         }
 
+        public IListSource ActualsDetail => instantFeedbackForecastDetailViewModel.InstantFeedbackEntities;
         public bool IsPOColumnsVisible { get; set; }
         private bool isDetailBestFitApplied { get; set; }
         private void setFilter(DataRowView dataRowView, GridColumn gridColumn)
@@ -1437,23 +1440,25 @@ namespace BluePrints.ViewModels
                 else
                     StartSelectionDate = new DateTime(EndSelectionDate.Year, EndSelectionDate.Month, 1);
 
-                if(parseEndDate.Date == alignedDataDateCollection.First().Date)
+                if (parseEndDate.Date == alignedDataDateCollection.First().Date)
                 {
-                    if(entity.CommodityCode != string.Empty)
-                        FilterCriteria = CriteriaOperator.Parse("[Subjob_Name] = '" + entity.SubJobCode + "' And [Discipline_Code] = '" + entity.DisciplineCode + "' And [Variation_Code] = '" + entity.VariationCode + "' And [Commodity_Code] = '" + entity.CommodityCode + "' And [IsPO] = 'False'" + " And [ActualDate] <= #" + EndSelectionDate.Year + "-" + EndSelectionDate.Month + "-" + EndSelectionDate.Day + "#");
+                    if (entity.CommodityCode != string.Empty)
+                        FilterCriteria = CriteriaOperator.Parse("[SUBJOB_CODE] = '" + entity.SubJobCode + "' And [DISCIPLINE_CODE] = '" + entity.DisciplineCode + "' And [X_VARIATIONCODE] = '" + entity.VariationCode + "' And [COMMODITY_CODE] = '" + entity.CommodityCode + "' And [TRANSDATE] <= #" + EndSelectionDate.Year + "-" + EndSelectionDate.Month + "-" + EndSelectionDate.Day + "#");
                     else
-                        FilterCriteria = CriteriaOperator.Parse("[Subjob_Name] = '" + entity.SubJobCode + "' And [Discipline_Code] = '" + entity.DisciplineCode + "' And [Variation_Code] = '" + entity.VariationCode + "' And [IsPO] = 'False'" + " And [ActualDate] <= #" + EndSelectionDate.Year + "-" + EndSelectionDate.Month + "-" + EndSelectionDate.Day + "#");
+                        FilterCriteria = CriteriaOperator.Parse("[SUBJOB_CODE] = '" + entity.SubJobCode + "' And [DISCIPLINE_CODE] = '" + entity.DisciplineCode + "' And [X_VARIATIONCODE] = '" + entity.VariationCode + "' And [TRANSDATE] <= #" + EndSelectionDate.Year + "-" + EndSelectionDate.Month + "-" + EndSelectionDate.Day + "#");
                 }
                 else
                 {
-                    if(entity.CommodityCode != string.Empty)
-                        FilterCriteria = CriteriaOperator.Parse("[Subjob_Name] = '" + entity.SubJobCode + "' And [Discipline_Code] = '" + entity.DisciplineCode + "' And [Variation_Code] = '" + entity.VariationCode + "' And [Commodity_Code] = '" + entity.CommodityCode + "' And [IsPO] = 'False'" + " And [ActualDate] >= #" + StartSelectionDate.Year + "-" + StartSelectionDate.Month + "-" + StartSelectionDate.Day + "# And [ActualDate] <= #" + EndSelectionDate.Year + "-" + EndSelectionDate.Month + "-" + EndSelectionDate.Day + "#");
+                    if (entity.CommodityCode != string.Empty)
+                        FilterCriteria = CriteriaOperator.Parse("[SUBJOB_CODE] = '" + entity.SubJobCode + "' And [DISCIPLINE_CODE] = '" + entity.DisciplineCode + "' And [X_VARIATIONCODE] = '" + entity.VariationCode + "' And [COMMODITY_CODE] = '" + entity.CommodityCode + "' And [TRANSDATE] >= #" + StartSelectionDate.Year + "-" + StartSelectionDate.Month + "-" + StartSelectionDate.Day + "# And [TRANSDATE] <= #" + EndSelectionDate.Year + "-" + EndSelectionDate.Month + "-" + EndSelectionDate.Day + "#");
                     else
-                        FilterCriteria = CriteriaOperator.Parse("[Subjob_Name] = '" + entity.SubJobCode + "' And [Discipline_Code] = '" + entity.DisciplineCode + "' And [Variation_Code] = '" + entity.VariationCode + "' And [IsPO] = 'False'" + " And [ActualDate] >= #" + StartSelectionDate.Year + "-" + StartSelectionDate.Month + "-" + StartSelectionDate.Day + "# And [ActualDate] <= #" + EndSelectionDate.Year + "-" + EndSelectionDate.Month + "-" + EndSelectionDate.Day + "#");
+                        FilterCriteria = CriteriaOperator.Parse("[SUBJOB_CODE] = '" + entity.SubJobCode + "' And [DISCIPLINE_CODE] = '" + entity.DisciplineCode + "' And [X_VARIATIONCODE] = '" + entity.VariationCode + "' And [TRANSDATE] >= #" + StartSelectionDate.Year + "-" + StartSelectionDate.Month + "-" + StartSelectionDate.Day + "# And [TRANSDATE] <= #" + EndSelectionDate.Year + "-" + EndSelectionDate.Month + "-" + EndSelectionDate.Day + "#");
                 }
 
                 IsHidden = false;
                 IsPOColumnsVisible = false;
+
+                this.RaisePropertyChanged(x => x.ActualsDetail);
                 this.RaisePropertyChanged(x => x.FilterCriteria);
                 this.RaisePropertyChanged(x => x.IsPOColumnsVisible);
             }
@@ -1462,9 +1467,9 @@ namespace BluePrints.ViewModels
                 DateTime dataDate = (DateTime)FixedDataDate;
                 ExoSubJobProjection entity = ((ForecastJobData)dataRowView[columnEntity]).Projection;
                 if (entity.CommodityCode != string.Empty)
-                    FilterCriteria = CriteriaOperator.Parse("[Subjob_Name] = '" + entity.SubJobCode + "' And [Discipline_Code] = '" + entity.DisciplineCode + "' And [Variation_Code] = '" + entity.VariationCode + "' And [Commodity_Code] = '" + entity.CommodityCode + "' And [IsPO] = 'False'" + " And [ActualDate] > #" + dataDate.Year + "-" + dataDate.Month + "-" + dataDate.Day + "#");
+                    FilterCriteria = CriteriaOperator.Parse("[SUBJOB_CODE] = '" + entity.SubJobCode + "' And [DISCIPLINE_CODE] = '" + entity.DisciplineCode + "' And [X_VARIATIONCODE] = '" + entity.VariationCode + "' And [COMMODITY_CODE] = '" + entity.CommodityCode + "' And [TRANSDATE] > #" + dataDate.Year + "-" + dataDate.Month + "-" + dataDate.Day + "#");
                 else
-                    FilterCriteria = CriteriaOperator.Parse("[Subjob_Name] = '" + entity.SubJobCode + "' And [Discipline_Code] = '" + entity.DisciplineCode + "' And [Variation_Code] = '" + entity.VariationCode + "' And [IsPO] = 'False'" + " And [ActualDate] > #" + dataDate.Year + "-" + dataDate.Month + "-" + dataDate.Day + "#");
+                    FilterCriteria = CriteriaOperator.Parse("[SUBJOB_CODE] = '" + entity.SubJobCode + "' And [DISCIPLINE_CODE] = '" + entity.DisciplineCode + "' And [X_VARIATIONCODE] = '" + entity.VariationCode + "' And [TRANSDATE] > #" + dataDate.Year + "-" + dataDate.Month + "-" + dataDate.Day + "#");
 
                 IsHidden = false;
                 IsPOColumnsVisible = false;
@@ -1475,13 +1480,14 @@ namespace BluePrints.ViewModels
             {
                 DateTime dataDate = (DateTime)FixedDataDate;
                 ExoSubJobProjection entity = ((ForecastJobData)dataRowView[columnEntity]).Projection;
-                if(entity.CommodityCode != string.Empty)
-                    FilterCriteria = CriteriaOperator.Parse("[Subjob_Name] = '" + entity.SubJobCode + "' And [Discipline_Code] = '" + entity.DisciplineCode + "' And [Variation_Code] = '" + entity.VariationCode + "' And [Commodity_Code] = '" + entity.CommodityCode + "' And [IsPO] = 'False'" + " And [ActualDate] <= #" + dataDate.Year + "-" + dataDate.Month + "-" + dataDate.Day + "#");
+                if (entity.CommodityCode != string.Empty)
+                    FilterCriteria = CriteriaOperator.Parse("[SUBJOB_CODE] = '" + entity.SubJobCode + "' And [DISCIPLINE_CODE] = '" + entity.DisciplineCode + "' And [X_VARIATIONCODE] = '" + entity.VariationCode + "' And [COMMODITY_CODE] = '" + entity.CommodityCode + "' And [TRANSDATE] <= #" + dataDate.Year + "-" + dataDate.Month + "-" + dataDate.Day + "#");
                 else
-                    FilterCriteria = CriteriaOperator.Parse("[Subjob_Name] = '" + entity.SubJobCode + "' And [Discipline_Code] = '" + entity.DisciplineCode + "' And [Variation_Code] = '" + entity.VariationCode + "' And [IsPO] = 'False'" + " And [ActualDate] <= #" + dataDate.Year + "-" + dataDate.Month + "-" + dataDate.Day + "#");
+                    FilterCriteria = CriteriaOperator.Parse("[SUBJOB_CODE] = '" + entity.SubJobCode + "' And [DISCIPLINE_CODE] = '" + entity.DisciplineCode + "' And [X_VARIATIONCODE] = '" + entity.VariationCode + "' And [TRANSDATE] <= #" + dataDate.Year + "-" + dataDate.Month + "-" + dataDate.Day + "#");
 
                 IsHidden = false;
                 IsPOColumnsVisible = false;
+                this.RaisePropertyChanged(x => x.ActualsDetail);
                 this.RaisePropertyChanged(x => x.FilterCriteria);
                 this.RaisePropertyChanged(x => x.IsPOColumnsVisible);
             }
@@ -1489,25 +1495,27 @@ namespace BluePrints.ViewModels
             {
                 ExoSubJobProjection entity = ((ForecastJobData)dataRowView[columnEntity]).Projection;
                 if (entity.CommodityCode != string.Empty)
-                    FilterCriteria = CriteriaOperator.Parse("[Subjob_Name] = '" + entity.SubJobCode + "' And [Discipline_Code] = '" + entity.DisciplineCode + "' And [Variation_Code] = '" + entity.VariationCode + "' And [Commodity_Code] = '" + entity.CommodityCode + "' And [IsPO] = 'False' AND [InvoiceAmount] > 0.0m");
+                    FilterCriteria = CriteriaOperator.Parse("[SUBJOB_CODE] = '" + entity.SubJobCode + "' And [DISCIPLINE_CODE] = '" + entity.DisciplineCode + "' And [X_VARIATIONCODE] = '" + entity.VariationCode + "' And [COMMODITY_CODE] = '" + entity.CommodityCode + "' AND [InvoiceAmount] > 0.0m");
                 else
-                    FilterCriteria = CriteriaOperator.Parse("[Subjob_Name] = '" + entity.SubJobCode + "' And [Discipline_Code] = '" + entity.DisciplineCode + "' And [Variation_Code] = '" + entity.VariationCode + "' And [IsPO] = 'False' AND [InvoiceAmount] > 0.0m");
+                    FilterCriteria = CriteriaOperator.Parse("[SUBJOB_CODE] = '" + entity.SubJobCode + "' And [DISCIPLINE_CODE] = '" + entity.DisciplineCode + "' And [X_VARIATIONCODE] = '" + entity.VariationCode + "' AND [InvoiceAmount] > 0.0m");
 
                 IsHidden = false;
                 IsPOColumnsVisible = false;
+                this.RaisePropertyChanged(x => x.ActualsDetail);
                 this.RaisePropertyChanged(x => x.FilterCriteria);
                 this.RaisePropertyChanged(x => x.IsPOColumnsVisible);
             }
-            else if(gridColumn.FieldName.ToUpper().Contains("OUTSTANDING"))
+            else if (gridColumn.FieldName.ToUpper().Contains("OUTSTANDING"))
             {
                 ExoSubJobProjection entity = ((ForecastJobData)dataRowView[columnEntity]).Projection;
                 if (entity.CommodityCode != string.Empty)
-                    FilterCriteria = CriteriaOperator.Parse("[Subjob_Name] = '" + entity.SubJobCode + "' And [Discipline_Code] = '" + entity.DisciplineCode + "' And [Variation_Code] = '" + entity.VariationCode + "' And [Commodity_Code] = '" + entity.CommodityCode + "' And [IsPO] = 'True'");
+                    FilterCriteria = CriteriaOperator.Parse("[SUBJOB_CODE] = '" + entity.SubJobCode + "' And [DISCIPLINE_CODE] = '" + entity.DisciplineCode + "' And [X_VARIATIONCODE] = '" + entity.VariationCode + "' And [COMMODITY_CODE] = '" + entity.CommodityCode + "'");
                 else
-                    FilterCriteria = CriteriaOperator.Parse("[Subjob_Name] = '" + entity.SubJobCode + "' And [Discipline_Code] = '" + entity.DisciplineCode + "' And [Variation_Code] = '" + entity.VariationCode + "' And [IsPO] = 'True'");
+                    FilterCriteria = CriteriaOperator.Parse("[SUBJOB_CODE] = '" + entity.SubJobCode + "' And [DISCIPLINE_CODE] = '" + entity.DisciplineCode + "' And [X_VARIATIONCODE] = '" + entity.VariationCode + "'");
                 IsHidden = false;
 
                 IsPOColumnsVisible = true;
+                this.RaisePropertyChanged(x => x.ActualsDetail);
                 this.RaisePropertyChanged(x => x.FilterCriteria);
                 this.RaisePropertyChanged(x => x.IsPOColumnsVisible);
             }
@@ -1517,11 +1525,16 @@ namespace BluePrints.ViewModels
             }
 
             //apply only once because it's resource consuming
-            if(!isDetailBestFitApplied)
+            if (!isDetailBestFitApplied)
             {
                 DetailTableViewService.ApplyBestFit();
                 isDetailBestFitApplied = true;
             }
+        }
+
+        private void refreshInstantFeedbackViewModel(Data.PROJECT loadPROJECT)
+        {
+            instantFeedbackForecastDetailViewModel.InstantFeedbackRefresh();
         }
 
         public void DetailGridKeyDown(System.Windows.Input.KeyEventArgs e)
