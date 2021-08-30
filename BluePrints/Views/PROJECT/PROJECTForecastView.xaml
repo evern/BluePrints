@@ -503,7 +503,7 @@
                                         <dxg:GridColumn AllowBestFit="False" Width="*" FieldName="NARRATIVE" Header="Narrative" ReadOnly="True" />
                                     </dxg:GridControl.Columns>
                                     <dxg:GridControl.GroupSummary>
-                                        <dxg:GridSummaryItem DisplayFormat="Record(s): {0:n0}" FieldName="SUBJOB_CODE" SummaryType="Count" />
+                                        <dxg:GridSummaryItem DisplayFormat="Record(s): {0:n0}" FieldName="SUB_JOBCODE" SummaryType="Count" />
                                         <dxg:GridSummaryItem DisplayFormat="n2" FieldName="QUANTITY" SummaryType="Sum" />
                                         <dxg:GridSummaryItem DisplayFormat="c2" FieldName="LINECOST" SummaryType="Sum" />
                                     </dxg:GridControl.GroupSummary>
@@ -565,7 +565,7 @@
                                         </dxg:GridColumn>
                                     </dxg:GridControl.Columns>
                                     <dxg:GridControl.GroupSummary>
-                                        <dxg:GridSummaryItem DisplayFormat="Record(s): {0:n0}" FieldName="SUBJOB_CODE" SummaryType="Count" />
+                                        <dxg:GridSummaryItem DisplayFormat="Record(s): {0:n0}" FieldName="SUB_JOBCODE" SummaryType="Count" />
                                         <dxg:GridSummaryItem DisplayFormat="n2" FieldName="ORDER_QTY" SummaryType="Sum" />
                                         <dxg:GridSummaryItem DisplayFormat="n2" FieldName="SUPPLIED_QTY" SummaryType="Sum" />
                                         <dxg:GridSummaryItem DisplayFormat="c2" FieldName="LINETOTAL" SummaryType="Sum" />
