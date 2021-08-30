@@ -48,21 +48,21 @@ namespace BluePrints.ViewModels
     /// <summary>
     /// Represents the single PROGRESS object view model.
     /// </summary>
-    public partial class InstantFeedbackForecastDetailsCollectionViewModelWrapper : BluePrintsEntitiesCollectionWrapper<X_JOB_TRANSACTIONS_DETAIL_V2, X_JOB_TRANSACTIONS_DETAIL_V2, int, IPrimeroEntitiesUnitOfWork>
+    public partial class InstantFeedbackActualDetailsCollectionViewModelWrapper : BluePrintsEntitiesCollectionWrapper<X_JOB_TRANSACTIONS_DETAIL_V2, X_JOB_TRANSACTIONS_DETAIL_V2, int, IPrimeroEntitiesUnitOfWork>
     {
         /// <summary>
         /// Creates a new instance of PROGRESS_ITEMSViewModelWrapper as a POCO view model.
         /// </summary>
         /// <param name="unitOfWorkFactory">A factory used to create a unit of work instance.</param>
-        public static InstantFeedbackForecastDetailsCollectionViewModelWrapper Create()
+        public static InstantFeedbackActualDetailsCollectionViewModelWrapper Create()
         {
-            return ViewModelSource.Create(() => new InstantFeedbackForecastDetailsCollectionViewModelWrapper());
+            return ViewModelSource.Create(() => new InstantFeedbackActualDetailsCollectionViewModelWrapper());
         }
 
         public bool IsCostsVisible { get; set; }
         public bool CanEditQuantity { get; set; }
         protected override string readOnlyMessage => "Cells are read only because you do not have authority to edit transactions";
-        protected InstantFeedbackForecastDetailsCollectionViewModelWrapper()
+        protected InstantFeedbackActualDetailsCollectionViewModelWrapper()
         {
             IsInstantFeedbackMode = true;
         }
@@ -99,9 +99,9 @@ namespace BluePrints.ViewModels
         protected override Func<IRepositoryQuery<X_JOB_TRANSACTIONS_DETAIL_V2>, IQueryable<X_JOB_TRANSACTIONS_DETAIL_V2>> specifyMainViewModelProjection()
         {
             if(loadPROJECT == null)
-                return query => query.Where(x => x.MASTERJOB_CODE == "X");
+                return query => query.Where(x => x.MASTER_JOBCODE == "X");
             else
-                return query => query.Where(x => x.MASTERJOB_CODE == loadPROJECT.NUMBER);
+                return query => query.Where(x => x.MASTER_JOBCODE == loadPROJECT.NUMBER);
         }
 
         public override void FullRefresh()
@@ -122,7 +122,7 @@ namespace BluePrints.ViewModels
         public override string ViewName
         {
             //get { return "OffsiteDirectProgressViewModelWrapper" + view_project_specific_affix; }
-            get { return "InstantFeedbackForecastDetailsCollectionViewModelWrapper_v1" + view_project_specific_affix; }
+            get { return "InstantFeedbackActualDetailsCollectionViewModelWrapper_v1" + view_project_specific_affix; }
         }
 
         private DevExpress.Mvvm.IDialogService DateFromToDialogService

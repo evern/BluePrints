@@ -1,5 +1,6 @@
 ﻿using BaseModel.DataModel;
 using System;
+using System.Data.Entity;
 
 namespace BluePrints.PrimeroData.PrimeroEntitiesDataModel
 {
@@ -8,6 +9,8 @@ namespace BluePrints.PrimeroData.PrimeroEntitiesDataModel
     /// </summary>
     public interface IPrimeroEntitiesUnitOfWork : IUnitOfWork
     {
+        DbContext DbContext { get; }
+
         /// <summary>
         /// The ACCS_BALANCE entities repository.
         /// </summary>

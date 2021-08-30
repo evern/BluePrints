@@ -11,11 +11,11 @@ namespace BluePrints.PrimeroData
         [DatabaseGenerated(DatabaseGeneratedOption.None)]
         public long Id { get; set; }
 
-        public string SUBJOB_CODE { get; set; }
+        public string SUB_JOBCODE { get; set; }
 
-        public string COST_GROUP { get; set; }
+        public string DISCIPLINE_CODE { get; set; }
 
-        public string COST_TYPE { get; set; }
+        public string COMMODITY_CODE { get; set; }
 
         public string VARIATION_CODE { get; set; }
 

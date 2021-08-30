@@ -11,13 +11,13 @@ namespace BluePrints.PrimeroData
         public long Id { get; set; }
 
         [StringLength(15)]
-        public string SUBJOB_CODE { get; set; }
+        public string SUB_JOBCODE { get; set; }
 
         [StringLength(4)]
-        public string COST_GROUP { get; set; }
+        public string DISCIPLINE_CODE { get; set; }
 
         [StringLength(4)]
-        public string COST_TYPE { get; set; }
+        public string COMMODITY_CODE { get; set; }
 
         [StringLength(50)]
         public string VARIATION_CODE { get; set; }

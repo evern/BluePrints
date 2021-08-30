@@ -1,6 +1,7 @@
 ﻿using BaseModel.DataModel;
 using BaseModel.DataModel.EntityFramework;
 using System;
+using System.Data.Entity;
 
 namespace BluePrints.PrimeroData.PrimeroEntitiesDataModel
 {
@@ -13,6 +14,8 @@ namespace BluePrints.PrimeroData.PrimeroEntitiesDataModel
             : base(contextFactory)
         {
         }
+
+        public DbContext DbContext => this.Context;
 
         IRepository<ACCS_BALANCE, int> IPrimeroEntitiesUnitOfWork.ACCS_BALANCE
         {

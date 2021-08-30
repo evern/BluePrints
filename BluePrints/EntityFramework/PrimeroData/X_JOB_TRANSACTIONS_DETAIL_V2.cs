@@ -14,10 +14,10 @@
         public int SEQNO { get; set; }
 
         [StringLength(15)]
-        public string MASTERJOB_CODE { get; set; }
+        public string MASTER_JOBCODE { get; set; }
 
         [StringLength(15)]
-        public string SUBJOB_CODE { get; set; }
+        public string SUB_JOBCODE { get; set; }
 
         [StringLength(50)]
         public string DEPARTMENT_NAME { get; set; }
@@ -31,7 +31,7 @@
         [Key]
         [Column(Order = 1)]
         [StringLength(50)]
-        public string X_VARIATIONCODE { get; set; }
+        public string VARIATION_CODE { get; set; }
 
         [StringLength(23)]
         public string STOCKCODE { get; set; }
@@ -51,7 +51,7 @@
         public double? LINECOST { get; set; }
 
         [StringLength(50)]
-        public string COSTTYPEDESC { get; set; }
+        public string COMMODITY_CODE_DESC { get; set; }
 
         [Key]
         [Column(Order = 2)]

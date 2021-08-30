@@ -1,6 +1,7 @@
 ﻿using BaseModel.DataModel;
 using BaseModel.DataModel.DesignTime;
 using System;
+using System.Data.Entity;
 
 namespace BluePrints.PrimeroData.PrimeroEntitiesDataModel
 {
@@ -15,6 +16,8 @@ namespace BluePrints.PrimeroData.PrimeroEntitiesDataModel
         public PrimeroEntitiesDesignTimeUnitOfWork()
         {
         }
+
+        public DbContext DbContext => throw new NotImplementedException();
 
         IRepository<ACCS_BALANCE, int> IPrimeroEntitiesUnitOfWork.ACCS_BALANCE
         {

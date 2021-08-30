@@ -988,7 +988,7 @@ namespace BluePrints.Common.ViewModel.Utils
             primeroUOW.AutoDetectChangesEnabled(false);
             using (var t = new TransactionScope(TransactionScopeOption.Required, new TransactionOptions { IsolationLevel = System.Transactions.IsolationLevel.ReadUncommitted }))
             {
-                List<X_TIME_TRANSACTION> timeLines = PrimeroEntities.GetTimeSummary(projectNumber, dataDate);
+                List<X_TIME_TRANSACTION> timeLines = PrimeroEntities.GetTimeSummary(primeroUOW, projectNumber, dataDate);
                 if (showLoadingScreen)
                 {
                     LoadingScreenManager.ShowLoadingScreen(timeLines.Count());
@@ -1150,7 +1150,7 @@ namespace BluePrints.Common.ViewModel.Utils
 
             using (var t = new TransactionScope(TransactionScopeOption.Required, new TransactionOptions { IsolationLevel = System.Transactions.IsolationLevel.ReadUncommitted }))
             {
-                List<X_MATERIAL_TRANSACTION> materialLines = PrimeroEntities.GetMaterialSummary(projectNumber, invoiceCutOffDate);
+                List<X_MATERIAL_TRANSACTION> materialLines = PrimeroEntities.GetMaterialSummary(primeroUOW, projectNumber, invoiceCutOffDate);
                 if (showLoadingScreen)
                 {
                     LoadingScreenManager.ShowLoadingScreen(materialLines.Count());
@@ -1165,7 +1165,7 @@ namespace BluePrints.Common.ViewModel.Utils
                     if (jobMaterial == null)
                         continue;
 
-                    if (jobMaterial.COST_GROUP != null && !jobMaterial.COST_GROUP.Contains("G99") && !jobMaterial.COST_GROUP.Contains("010"))
+                    if (jobMaterial.DISCIPLINE_CODE != null && !jobMaterial.DISCIPLINE_CODE.Contains("G99") && !jobMaterial.DISCIPLINE_CODE.Contains("010"))
                     {
                         ExoDataPoint materialDataPoint = new ExoDataPoint();
                         materialDataPoint.BudgetedUnits = 0;
@@ -1181,14 +1181,14 @@ namespace BluePrints.Common.ViewModel.Utils
                             materialDataPoint.ProgressDate = alignedDataDates.FirstOrDefault(dates => dates.Date >= jobMaterial.FIRST_WEEK_DATE);
 
                         materialDataPoint.ActualDate = jobMaterial.FIRST_WEEK_DATE;
-                        materialDataPoint.Subjob_Name = jobMaterial.SUBJOB_CODE;
+                        materialDataPoint.Subjob_Name = jobMaterial.SUB_JOBCODE;
                         materialDataPoint.ResourceName = string.Empty;
                         materialDataPoint.Quantity = qty;
                         materialDataPoint.Description = string.Empty;
                         materialDataPoint.Supplier = string.Empty;
                         materialDataPoint.InvoiceNo = string.Empty;
-                        materialDataPoint.Discipline_Code = jobMaterial.COST_GROUP;
-                        materialDataPoint.Commodity_Code = jobMaterial.COST_TYPE;
+                        materialDataPoint.Discipline_Code = jobMaterial.DISCIPLINE_CODE;
+                        materialDataPoint.Commodity_Code = jobMaterial.COMMODITY_CODE;
                         materialDataPoint.StockCode = jobMaterial.STOCK_CODE;
                         materialDataPoint.Cost_GLName = string.Empty;
                         materialDataPoint.Purchase_GLName = string.Empty;
@@ -1287,7 +1287,7 @@ namespace BluePrints.Common.ViewModel.Utils
 
             foreach(var po in poList)
             {
-                if (po.COSTGROUPDESC != null && (!po.COSTGROUPDESC.Contains("G99") && !po.COSTGROUPDESC.Contains("010")))
+                if (po.COSTGROUPDESC != null && !po.COSTGROUPDESC.Contains("G99") && !po.COSTGROUPDESC.Contains("010"))
                 {
                     ExoDataPoint poDataPoint = new ExoDataPoint();
                     poDataPoint.BudgetedUnits = 0;
@@ -1363,7 +1363,7 @@ namespace BluePrints.Common.ViewModel.Utils
             }
 
             DateTime poCutOffDate = queryDate.Date.AddDays(1).AddMinutes(-1);
-            List<X_PURCHORD_LINE> purchaseOrderLines = PrimeroEntities.GetPurchaseOrdersSummary(projectNumber, poCutOffDate);
+            List<X_PURCHORD_LINE> purchaseOrderLines = PrimeroEntities.GetPurchaseOrdersSummary(primeroUOW, projectNumber, poCutOffDate);
 
             if (showLoadingScreen)
             {
@@ -1374,7 +1374,7 @@ namespace BluePrints.Common.ViewModel.Utils
 
             foreach (var po in purchaseOrderLines)
             {
-                if (po.COST_GROUP != null && (!po.COST_GROUP.Contains("G99") && !po.COST_GROUP.Contains("010")))
+                if (po.DISCIPLINE_CODE != null && (!po.DISCIPLINE_CODE.Contains("G99") && !po.DISCIPLINE_CODE.Contains("010")))
                 {
                     ExoDataPoint poDataPoint = new ExoDataPoint();
                     poDataPoint.BudgetedUnits = 0;
@@ -1387,10 +1387,10 @@ namespace BluePrints.Common.ViewModel.Utils
                     poDataPoint.Costs = Convert.ToDecimal(po.TOTAL_OUTSTANDING_COSTS);
                     poDataPoint.CostPerQty = poDataPoint.Units == 0 ? 0 : (poDataPoint.Costs / poDataPoint.Units);
                     poDataPoint.TotalCosts = Convert.ToDecimal(po.TOTAL_COSTS);
-                    poDataPoint.Subjob_Name = po.SUBJOB_CODE;
+                    poDataPoint.Subjob_Name = po.SUB_JOBCODE;
                     poDataPoint.Quantity = poDataPoint.Units;
-                    poDataPoint.Discipline_Code = po.COST_GROUP;
-                    poDataPoint.Commodity_Code = po.COST_TYPE;
+                    poDataPoint.Discipline_Code = po.DISCIPLINE_CODE;
+                    poDataPoint.Commodity_Code = po.COMMODITY_CODE;
                     poDataPoint.IsPO = true;
                     poDataPoint.POOrderQty = orderQty;
                     poDataPoint.POSuppliedQty = Convert.ToDecimal(po.TOTAL_SUP_QUANT);
