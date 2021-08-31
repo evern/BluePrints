@@ -241,8 +241,6 @@ namespace BluePrints.ViewModels
         IEnumerable<ExoSubJobProjection> queryJobs;
         List<string> hiddenColumnFieldNames = new List<string>();
         protected List<DateTime> alignedDataDateCollection;
-        protected virtual IGridControlService DetailGridControlService { get { return this.GetService<IGridControlService>("DetailGridControlService"); } }
-        protected virtual ITableViewService DetailTableViewService { get { return this.GetService<ITableViewService>("DetailTableViewService"); } }
         IBluePrintsEntitiesUnitOfWork bluePrintsUnitOfWork;
         DispatcherTimer delayedProjectSaveTimer;
         DispatcherTimer delayedUpdateFloatingProjectSummaryTimer;
@@ -762,14 +760,16 @@ namespace BluePrints.ViewModels
                 string columnFieldName = alignedDataDate.Date.ToString(BluePrintsResources.ColumnDateFormat);
                 dataPointsTable.Columns.Add(columnFieldName, typeof(decimal));
             }
-            
+
+            //preload the forecast collection
+            FORECASTCollection.ToList();
             //child data table is used to record original value of actuals + committed + remaining values before it is overridden by forecasts
             foreach (ForecastJobData commodityJob in commodityJobs)
             {
                 ForecastHelper.PopulateEAC(commodityJob, FORECAST_EACCollection, PreviousEACDataDate);
                 ForecastHelper.PopulateTenderBudget(commodityJob, FORECAST_EACTenderBudgetCollection);
                 updateAdditionalJobInfo(commodityJob);
-                
+
                 DataRow commodityRow = updateDataTable(commodityJob, isNewData);
                 LoadingScreenManager.Progress();
             }
@@ -834,8 +834,16 @@ namespace BluePrints.ViewModels
         {
             DataRow commodityRow = dataPointsTable.NewRow();
             commodityRow[columnEntity] = commodityJob;
+
+            //For Debugging
+            //string s;
+            //if (commodityJob.Projection.SubJobCode == "15671-000-00-P1" && commodityJob.DisciplineCode == "EL01" && commodityJob.Projection.CommodityCode == "E30" && commodityJob.Projection.VariationCode == string.Empty)
+            //    s = string.Empty;
+            //else
+            //    return commodityRow;
+
             #region fallback rate search
-            //rate already present during update
+                //rate already present during update
             if (isNew)
             {
                 Data.PHASE ratePHASE = PHASECollection.FirstOrDefault(x => x.INTERNAL_NUM == commodityJob.Projection.PhaseCode);
@@ -1025,7 +1033,7 @@ namespace BluePrints.ViewModels
                 compareChildP6CostsRemainingRow[dateCost.Date.ToString(BluePrintsResources.ColumnDateFormat)] = dateCost.P6Costs;
                 compareChildP6UnitsRemainingRow[dateCost.Date.ToString(BluePrintsResources.ColumnDateFormat)] = dateCost.P6Hours;
 
-                List<FORECAST> forecastOverrides = relevantFORECASTS.Where(x => x.FORECAST_UNITS != null && x.FORECAST_DATE >= dateCost.FloorDate && x.FORECAST_DATE <= dateCost.CeilingDate).ToList();
+                IEnumerable<FORECAST> forecastOverrides = relevantFORECASTS.Where(x => x.FORECAST_UNITS != null && x.FORECAST_DATE >= dateCost.FloorDate && x.FORECAST_DATE <= dateCost.CeilingDate);
                 List<FORECAST> forecastCostsOverrides = forecastOverrides.Where(x => x.FORECAST_TYPE == ForecastDataType.Cost).ToList();
                 List<FORECAST> forecastUnitsOverrides = forecastOverrides.Where(x => x.FORECAST_TYPE == ForecastDataType.P6).ToList();
                 List<FORECAST> forecastJobHourOverrides = forecastOverrides.Where(x => x.FORECAST_TYPE == ForecastDataType.Hour).ToList();
@@ -1169,7 +1177,7 @@ namespace BluePrints.ViewModels
             else
             {
                 columns.Add(new ColumnDescriptor() { FieldName = "Entity.DropDownPhase", Header = "", Fixed = FixedStyle.Left, Width = 50, Settings = SettingsType.Default, HeaderToolTip = "Source of forecasted costs/hours type" });
-                columns.Add(new ColumnDescriptor() { FieldName = "Entity.DropDownIndirectBudget", ReadOnly = true, Header = "Budget (A)", Increment = 1, Fixed = FixedStyle.Left, Width = 50, Settings = SettingsType.Budget, HeaderToolTip = "Indirect budget from Exo" });
+                columns.Add(new ColumnDescriptor() { FieldName = "Entity.DropDownIndirectBudget", ReadOnly = true, Header = "Project Budget (A)", Increment = 1, Fixed = FixedStyle.Left, Width = 50, Settings = SettingsType.Budget, HeaderToolTip = "Indirect budget from Exo" });
             }
 
             foreach (DateTime alignedDate in alignedDates)
@@ -1529,12 +1537,6 @@ namespace BluePrints.ViewModels
 
             this.RaisePropertyChanged(x => x.ActualDetailsVisibility);
             this.RaisePropertyChanged(x => x.PODetailsVisibility);
-            //apply only once because it's resource consuming
-            if (!isDetailBestFitApplied)
-            {
-                DetailTableViewService.ApplyBestFit();
-                isDetailBestFitApplied = true;
-            }
         }
 
         public void DetailGridKeyDown(System.Windows.Input.KeyEventArgs e)
@@ -2287,9 +2289,9 @@ namespace BluePrints.ViewModels
             //this is definitely present because the view is generated from datecost model
             ForecastDateCost dateCost = job.DateCosts.First(x => x.Date == forecastDate.Date);
 
-            IQueryable<FORECAST> findFORECASTS = FORECASTCollection.Where(x => x.FORECAST_DATE >= dateCost.FloorDate && x.FORECAST_DATE <= dateCost.CeilingDate && x.SUBJOB_CODE == entity.SubJobCode && x.DISCIPLINE_CODE == entity.DisciplineCode && x.COMMODITY_CODE == entity.CommodityCode && x.VARIATION_CODE == entity.VariationCode);
-            IQueryable<FORECAST> findCostFORECASTS = findFORECASTS.Where(x => x.FORECAST_TYPE == ForecastDataType.Cost);
-            IQueryable<FORECAST> findP6FORECASTS = findFORECASTS.Where(x => x.FORECAST_TYPE == ForecastDataType.P6);
+            IEnumerable<FORECAST> findFORECASTS = FORECASTCollection.Where(x => x.FORECAST_DATE >= dateCost.FloorDate && x.FORECAST_DATE <= dateCost.CeilingDate && x.SUBJOB_CODE == entity.SubJobCode && x.DISCIPLINE_CODE == entity.DisciplineCode && x.COMMODITY_CODE == entity.CommodityCode && x.VARIATION_CODE == entity.VariationCode);
+            IEnumerable<FORECAST> findCostFORECASTS = findFORECASTS.Where(x => x.FORECAST_TYPE == ForecastDataType.Cost);
+            IEnumerable<FORECAST> findP6FORECASTS = findFORECASTS.Where(x => x.FORECAST_TYPE == ForecastDataType.P6);
 
             List<FORECAST> costFORECASTS = findCostFORECASTS.Where(x => x.FORECAST_DATE == forecastDate.Date).ToList();
             List<FORECAST> p6FORECASTS = findP6FORECASTS.Where(x => x.FORECAST_DATE == forecastDate.Date).ToList();
@@ -2999,11 +3001,6 @@ namespace BluePrints.ViewModels
             refreshGridData();
         }
 
-        public void CopyDetailWithHeader()
-        {
-            DetailGridControlService.CopyWithHeader();
-        }
-
         ObservableCollection<DataRowView> selectedDataRows { get; set; }
         public ObservableCollection<DataRowView> SelectedDataRows
         {
@@ -3207,14 +3204,19 @@ namespace BluePrints.ViewModels
             }
         }
 
-        public IQueryable<FORECAST> FORECASTCollection
+        List<FORECAST> forecastCollection;
+        public List<FORECAST> FORECASTCollection
         {
             get
             {
-                return bluePrintsUnitOfWork.FORECASTS.Where(x => x.GUID_PROJECT == LoadPROJECT.GUID);
+                if(forecastCollection == null)
+                {
+                    forecastCollection = bluePrintsUnitOfWork.FORECASTS.Where(x => x.GUID_PROJECT == LoadPROJECT.GUID).ToList();
+                }
+
+                return forecastCollection;
             }
         }
-
         public IQueryable<FORECAST_HISTORY> FORECAST_HISTORYCollection
         {
             get

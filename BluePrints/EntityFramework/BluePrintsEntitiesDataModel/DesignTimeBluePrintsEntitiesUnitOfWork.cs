@@ -503,10 +503,5 @@ namespace BluePrints.BluePrintsEntitiesDataModel
         {
             get { return GetRepository((X_VARIATION_QUERY x) => x.GUID); }
         }
-
-        IRepository<X_EARNED_QUERY, Guid> IBluePrintsEntitiesUnitOfWork.X_EARNED_QUERY
-        {
-            get { return GetRepository((X_EARNED_QUERY x) => x.DummyId); }
-        }
     }
 }

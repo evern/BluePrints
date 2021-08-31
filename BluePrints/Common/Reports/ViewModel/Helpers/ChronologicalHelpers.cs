@@ -43,12 +43,13 @@ namespace BluePrints.Common.ViewModel.Reporting
                     latestDataDate = getProgressDataDate(PROGRESS);
             }
 
-            if (latestDataDate != null)
-            {
-                int dataDateDayOfWeek = BluePrintsUtils.GetTrueDayOfWeek((int)((DateTime)latestDataDate).DayOfWeek);
-                DateTime endOfLatestDataDateWeek = DateTime.Today.Date.AddDays(endOfWeek - dataDateDayOfWeek).AddDays(1).AddSeconds(-1);
-                latestDataDate = endOfLatestDataDateWeek;
-            }
+            //don't use end of week as data date or else CurrentPeriodDataPoint will not show anything
+            //if (latestDataDate != null)
+            //{
+            //    int dataDateDayOfWeek = BluePrintsUtils.GetTrueDayOfWeek((int)((DateTime)latestDataDate).DayOfWeek);
+            //    DateTime endOfLatestDataDateWeek = DateTime.Today.Date.AddDays(endOfWeek - dataDateDayOfWeek).AddDays(1).AddSeconds(-1);
+            //    latestDataDate = endOfLatestDataDateWeek;
+            //}
 
             return latestDataDate;
         }

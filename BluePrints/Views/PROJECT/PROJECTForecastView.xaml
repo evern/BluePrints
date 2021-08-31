@@ -293,8 +293,6 @@
                     </Style>
                 </dxc:DialogService.DialogStyle>
             </dxc:DialogService>
-            <services:GridControlService x:Name="DetailGridControlService" GridControl="{Binding ElementName=gridControlDetail}" />
-            <services:TableViewService x:Name="DetailTableViewService" TableView="{Binding ElementName=tableViewDetail}" />
             <dxc:FilteringBehavior x:Name="filteringBehavior" SourceType="{x:Type viewmodel:CostFilteringViewModel}" />
             <dxc:DialogService x:Name="DistributionDialogService">
                 <dxc:DialogService.DialogStyle>
@@ -476,6 +474,11 @@
                                         <dxg:GridColumn BestFitWidth="100" Width="100" FieldName="SUB_JOBCODE" Header="Subjob" ReadOnly="True" SortIndex="1" />
                                         <dxg:GridColumn BestFitWidth="75" Width="75" FieldName="DEPARTMENT_NAME" Header="Department" ReadOnly="True" SortIndex="2" />
                                         <dxg:GridColumn BestFitWidth="50" Width="50" FieldName="DISCIPLINE_CODE" Header="Discipline" ReadOnly="True" SortIndex="3" />
+                                        <dxg:GridColumn BestFitWidth="100" Width="100" FieldName="DISCIPLINE_CODE" Header="Package" ReadOnly="True" >
+                                            <dxg:GridColumn.EditSettings>
+                                                <dxe:ComboBoxEditSettings AutoComplete="True" DisplayMember="DESCRIPTION" IsTextEditable="True" ItemsSource="{Binding DISCIPLINE_DESCCollection}" ValueMember="NAME" />
+                                            </dxg:GridColumn.EditSettings>
+                                        </dxg:GridColumn>
                                         <dxg:GridColumn BestFitWidth="50" Width="50" FieldName="COMMODITY_CODE" Header="Commodity" ReadOnly="True" SortIndex="4" />
                                         <dxg:GridColumn BestFitWidth="150" Width="150" FieldName="COMMODITY_CODE_DESC" Header="Commodity Desc" ReadOnly="True" />
                                         <dxg:GridColumn BestFitWidth="250" Width="250" FieldName="VARIATION_CODE" Header="Variation" ReadOnly="True" SortIndex="5" />
@@ -514,9 +517,6 @@
                                     </dxg:GridControl.TotalSummary>
                                     <dxg:GridControl.View>
                                         <dxg:TableView x:Name="tableViewActualDetail" GroupSummaryDisplayMode="AlignByColumns" TotalSummaryContentStyle="{StaticResource TotalSummaryStyle}" GroupColumnSummaryContentStyle="{StaticResource GroupSummaryStyle}" ColumnHeaderTemplate="{StaticResource ForecastHeaderTemplate}" NewItemRowPosition="None" ShowGroupedColumns="False" ShowTotalSummary="True" Style="{StaticResource DefaultMinimalTableViewTemplate}" >
-                                            <dxg:TableView.RowCellMenuCustomizations>
-                                                <dxb:BarButtonItemLink BarItemName="biCopyDetailWithHeader1" />
-                                            </dxg:TableView.RowCellMenuCustomizations>
                                         </dxg:TableView>
                                     </dxg:GridControl.View>
                                 </dxg:GridControl>
@@ -529,6 +529,11 @@
                                     <dxg:GridControl.Columns>
                                         <dxg:GridColumn BestFitWidth="100" Width="100" FieldName="SUB_JOBCODE" Header="Subjob" ReadOnly="True" SortIndex="1" />
                                         <dxg:GridColumn BestFitWidth="50" Width="50" FieldName="DISCIPLINE_CODE" Header="Discipline" ReadOnly="True" SortIndex="2" />
+                                        <dxg:GridColumn BestFitWidth="100" Width="100" FieldName="DISCIPLINE_CODE" Header="Package" ReadOnly="True" >
+                                            <dxg:GridColumn.EditSettings>
+                                                <dxe:ComboBoxEditSettings AutoComplete="True" DisplayMember="DESCRIPTION" IsTextEditable="True" ItemsSource="{Binding DISCIPLINE_DESCCollection}" ValueMember="NAME" />
+                                            </dxg:GridColumn.EditSettings>
+                                        </dxg:GridColumn>
                                         <dxg:GridColumn BestFitWidth="50" Width="50" FieldName="COMMODITY_CODE" Header="Commodity" ReadOnly="True" SortIndex="3"  />
                                         <dxg:GridColumn BestFitWidth="150" Width="150" FieldName="COMMODITY_CODE_DESC" Header="Commodity Desc" ReadOnly="True" />
                                         <dxg:GridColumn BestFitWidth="250" Width="250" FieldName="VARIATION_CODE" Header="Variation" ReadOnly="True" SortIndex="4" />
@@ -580,9 +585,6 @@
                                     </dxg:GridControl.TotalSummary>
                                     <dxg:GridControl.View>
                                         <dxg:TableView x:Name="tableViewPODetail" GroupSummaryDisplayMode="AlignByColumns" TotalSummaryContentStyle="{StaticResource TotalSummaryStyle}" GroupColumnSummaryContentStyle="{StaticResource GroupSummaryStyle}" ColumnHeaderTemplate="{StaticResource ForecastHeaderTemplate}" NewItemRowPosition="None" ShowGroupedColumns="False" ShowTotalSummary="True" Style="{StaticResource DefaultMinimalTableViewTemplate}" >
-                                            <dxg:TableView.RowCellMenuCustomizations>
-                                                <dxb:BarButtonItemLink BarItemName="biCopyDetailWithHeader1" />
-                                            </dxg:TableView.RowCellMenuCustomizations>
                                         </dxg:TableView>
                                     </dxg:GridControl.View>
                                 </dxg:GridControl>

@@ -73,6 +73,16 @@ namespace BluePrints.Common.ViewModel.Reporting
             if(!ExoMissingSUBJOBS.Any(x => x.INTERNAL_NAME1 == SUBJOB.INTERNAL_NAME1))
                 ExoMissingSUBJOBS.Add(SUBJOB);
         }
+
+        public override void GenerateSummary()
+        {
+            this.Budgeted.SetData(WBSReportables.SelectMany(x => x.Budgeted.GetData()));
+            this.BudgetedLate.SetData(WBSReportables.SelectMany(x => x.BudgetedLate.GetData()));
+            this.Current.SetData(WBSReportables.SelectMany(x => x.Current.GetData()));
+            this.Earned.SetData(WBSReportables.SelectMany(x => x.Earned.GetData()));
+            this.TenderEarned.SetData(WBSReportables.SelectMany(x => x.TenderEarned.GetData()));
+            this.Remaining.SetData(WBSReportables.SelectMany(x => x.Remaining.GetData()));
+        }
     }
 
     public static class SummaryStatsHelpers
@@ -270,7 +280,7 @@ namespace BluePrints.Common.ViewModel.Reporting
                 RemainingActual.SetData(summaryStats.RemainingActual.GetData().Where(x => x.ProgressDate < endDate).ToList());
         }
 
-        public void GenerateSummary()
+        public virtual void GenerateSummary()
         {
             this.Budgeted.SetData(Reportables.SelectMany(x => x.Stats.Budgeted.GetData()));
             this.BudgetedLate.SetData(Reportables.SelectMany(x => x.Stats.BudgetedLate.GetData()));
