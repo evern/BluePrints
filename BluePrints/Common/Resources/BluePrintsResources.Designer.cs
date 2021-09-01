@@ -403,6 +403,15 @@ namespace BluePrints.Common.Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Office2019Colorful.
+        /// </summary>
+        internal static string DefaultThemeName {
+            get {
+                return ResourceManager.GetString("DefaultThemeName", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to D.
         /// </summary>
         internal static string DesignPhaseCode {

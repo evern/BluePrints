@@ -92,8 +92,8 @@ namespace BluePrints.ViewModels
         public void OnLoaded()
         {
             string themeName = Properties.Settings.Default["ThemeName"] as string;
-            if (themeName == "")
-                themeName = "Office2019Colorful";
+            if (themeName == "" || themeName == "Win10Light")
+                themeName = BluePrintsResources.DefaultThemeName;
             ApplicationThemeHelper.ApplicationThemeName = themeName;
             delayedConnectDispatcher.Start();
         }

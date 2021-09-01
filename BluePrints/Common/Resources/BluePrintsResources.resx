@@ -408,4 +408,7 @@
   <data name="Default_Productivity" xml:space="preserve">
     <value>1</value>
   </data>
+  <data name="DefaultThemeName" xml:space="preserve">
+    <value>Office2019Colorful</value>
+  </data>
 </root>
