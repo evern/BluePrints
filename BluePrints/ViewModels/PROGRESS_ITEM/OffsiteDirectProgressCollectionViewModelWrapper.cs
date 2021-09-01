@@ -420,16 +420,19 @@ namespace BluePrints.ViewModels
 
             TimeSpan reportInterval = ChronologicalHelpers.ConvertProgressIntervalToPeriod(loadPROGRESS);
             DateTime firstAlignedDataDate = ChronologicalHelpers.GenerateFirstAlignedDataDate(loadPROGRESS);
-            List<VariationAdjustment> projectVariationAdjustment = ProjectionHelpers.BuildProjectVariationAdjustments(VARIATIONCollection.AsQueryable(), ReportableCollection);
 
             DateTime reporting_data_date = DataDate;
             TimeSpan reporting_interval = ChronologicalHelpers.ConvertProgressIntervalToPeriod(loadPROGRESS);
             DateTime first_aligned_data_date = ChronologicalHelpers.GenerateFirstAlignedDataDate(loadPROGRESS);
-            DeliverableSummaryStats projectSummary = new DeliverableSummaryStats(MainViewModel.Entities, reporting_data_date, reporting_interval, first_aligned_data_date, projectVariationAdjustment);
+            DeliverableSummaryStats projectSummary = new DeliverableSummaryStats(MainViewModel.Entities, reporting_data_date, reporting_interval, first_aligned_data_date);
             FullStatsBuilder fullStatsBuilder = new FullStatsBuilder(loadPROJECT.NUMBER, loadPROJECT.CURRENCYCONVERSION, reporting_interval, first_aligned_data_date, SUBJOBCollection, reporting_data_date, primeroUnitOfWork);
-            fullSummarizer = new FullSummarizer(projectSummary, fullStatsBuilder, loadPROJECT.NUMBER);
-            fullSummarizer.BuildBurnedDataPoints(false, false, false, false, true);
-            fullSummarizer.Build();
+            fullSummarizer = new FullSummarizer(projectSummary, fullStatsBuilder, loadPROJECT.NUMBER, false);
+            fullSummarizer.BuildBurnedDataPoints(DashboardEXOQueryType.TimeOnly, false, true);
+            List<StatsCalculationType> statsCalcType = new List<StatsCalculationType>();
+            statsCalcType.Add(StatsCalculationType.Planned);
+            statsCalcType.Add(StatsCalculationType.Earned);
+            statsCalcType.Add(StatsCalculationType.Remaining);
+            fullSummarizer.Build(true, 1, statsCalcType);
 
             progressReport.AssignProperties(projectSummary, DataDate, loadPROGRESS.PROJECT.NAME);
             var previewWindow = new DocumentPreviewWindow();

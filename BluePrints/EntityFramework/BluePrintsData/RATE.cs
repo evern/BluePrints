@@ -32,6 +32,8 @@ namespace BluePrints.Data
 
         public Guid? GUID_DISCIPLINE { get; set; }
 
+        public int? DISCIPLINE_NUM { get; set; }
+
         [PasteSkipAttribute("ANY")]
         public string COMMODITY_CODE { get; set; }
 

@@ -124,16 +124,10 @@ namespace BluePrints.ViewModels
         protected override Func<IRepositoryQuery<PROJECT>, IQueryable<PROJECT_Dashboard>>
             specifyMainViewModelProjection()
         {
-            var BASELINES = loaderCollection.GetCollection<BASELINE>();
-            var ESTIMATES = loaderCollection.GetCollection<ESTIMATE>();
             var PROGRESSES = loaderCollection.GetCollection<PROGRESS>();
-            var PROGRESS_ITEMS = loaderCollection.GetCollection<PROGRESS_ITEM>();
-            var RATES = loaderCollection.GetCollection<RATE>();
-            var VARIATIONS = loaderCollection.GetCollection<VARIATION>();
-            var DELIVERABLE_STATUSES = loaderCollection.GetCollection<DELIVERABLES_STATUS>();
 
             return
-                query => DashboardQueries.Multiple_Project_DashboardTransformation(query.OrderBy(x => x.NUMBER), BASELINES, ESTIMATES, PROGRESSES, PROGRESS_ITEMS, RATES, VARIATIONS);
+                query => DashboardQueries.Multiple_Project_DashboardTransformation(query.OrderBy(x => x.NUMBER), PROGRESSES);
         }
 
         protected override bool OnMainViewModelLoaded(IEnumerable<PROJECT_Dashboard> entities)
@@ -182,9 +176,9 @@ namespace BluePrints.ViewModels
             var argumentObject = (object[])e.Argument;
             var project = (PROJECT_Dashboard)argumentObject[0];
 
-            project.BuildStats(false);
+            project.BuildStats(DashboardEXOQueryType.TimeAndMaterial);
             project.RecalculateStats(false);
-            project.Subjob_TreeDashboards = DashboardHelpers.ProjectDashboardHierarchicalBuilder((ProjectSummaryStats)project.Stats, true);
+           // project.Subjob_TreeDashboards = DashboardHelpers.ProjectDashboardHierarchicalBuilder((ProjectSummaryStats)project.Stats, true);
             project.Update();
 
             if (((BackgroundWorker)sender).CancellationPending)

@@ -55,6 +55,7 @@
             <dxb:BarManager.Items>
                 <dxb:BarSubItem ItemLinksSource="{StaticResource RibbonDefaultGridButtons}" />
                 <dxb:BarButtonItem x:Name="biRemoveDuplicates" Command="{Binding RemoveDuplicatesCommand}" Content="Remove Duplicates" Glyph="{dx:DXImage Image=Wizard_16x16.png}" LargeGlyph="{dxc:DXImage Image=Wizard_32x32.png}" ToolTip="Copy 2 columns from excel with the left being internal number and the right being client number, then paste it in here" />
+                <dxb:BarStaticItem x:Name="biLabel" LargeGlyph="{dxc:DXImage Images/Status/Warning_16x16.png}" Content="Rows Highlighted in Red Indicates Duplication" Glyph="{dxc:DXImage Images/Status/Warning_32x32.png}" />
             </dxb:BarManager.Items>
             <DockPanel>
                 <dxr:RibbonControl Style="{StaticResource DefaultRibbonControlStyle}">
@@ -74,6 +75,7 @@
                                 <dxb:BarButtonItemLink BarItemName="biCollapseAllGroups1" />
                                 <dxb:BarButtonItemLink BarItemName="biExportToExcel1" />
                                 <dxb:BarButtonItemLink BarItemName="biExportToPDF1" />
+                                <dxb:BarStaticItemLink BarItemName="biLabel" />
                             </dxr:RibbonPageGroup>
                             <dxr:RibbonPageGroup MergeType="Replace" Caption="Tools">
                                 <dxb:BarButtonItemLink BarItemName="biRemoveDuplicates" />
@@ -113,12 +115,17 @@
                                     <dxe:ComboBoxEditSettings AutoComplete="True" DisplayMember="INTERNAL_NUM" IsTextEditable="True" ItemsSource="{Binding SUBAREACollection}" ValueMember="GUID" />
                                 </dxg:GridColumn.EditSettings>
                             </dxg:GridColumn>
-                            <dxg:GridColumn FieldName="GUID_DISCIPLINE" Header="Discipline" HeaderToolTip="Which discipline the current rate will be applied to">
+                            <dxg:GridColumn FieldName="GUID_DISCIPLINE" AllowBestFit="false" Width="100" Header="Discipline" HeaderToolTip="Which discipline the current rate will be applied to">
                                 <dxg:GridColumn.EditSettings>
                                     <dxe:ComboBoxEditSettings AutoComplete="True" DisplayMember="NAME" IsTextEditable="True" ItemsSource="{Binding DISCIPLINECollection}" NullValueButtonPlacement="EditBox" ValueMember="MappingEntityKey" />
                                 </dxg:GridColumn.EditSettings>
                             </dxg:GridColumn>
-                            <dxg:GridColumn FieldName="GUID_DEPARTMENT" Header="Department" HeaderToolTip="Which department the current rate will be applied to">
+                            <dxg:GridColumn FieldName="DISCIPLINE_NUM" AllowBestFit="false" Width="70" Header="Discipline Num" HeaderToolTip="Which discipline num the current rate will be applied to">
+                                <dxg:GridColumn.EditSettings>
+                                    <dxe:SpinEditSettings Increment="1" IsFloatValue="False" IsTextEditable="True" Mask="n0" MaskType="Numeric" MaskUseAsDisplayFormat="True" MaxValue="99" MinValue="1" NullValueButtonPlacement="EditBox"/>
+                                </dxg:GridColumn.EditSettings>
+                            </dxg:GridColumn>
+                            <dxg:GridColumn FieldName="GUID_DEPARTMENT" Header="Department" Visible="{Binding IsConstructionPhase, Converter={dxmvvm:BooleanNegationConverter}}" HeaderToolTip="Which department the current rate will be applied to">
                                 <dxg:GridColumn.EditSettings>
                                     <dxe:ComboBoxEditSettings AutoComplete="True" DisplayMember="NAME" IsTextEditable="True" ItemsSource="{Binding DEPARTMENTCollection}" NullValueButtonPlacement="EditBox" ValueMember="MappingEntityKey" />
                                 </dxg:GridColumn.EditSettings>

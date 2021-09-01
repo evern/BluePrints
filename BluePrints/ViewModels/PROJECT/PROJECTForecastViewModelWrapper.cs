@@ -119,6 +119,7 @@ namespace BluePrints.ViewModels
             loaderCollection.AddLoaderDescription<JOB_COSTTYPES, JOB_COSTTYPES, int, IPrimeroEntitiesUnitOfWork>(primeroUnitOfWorkFactory, x => x.JOB_COSTTYPES);
             loaderCollection.AddLoaderDescription(bluePrintsUnitOfWorkFactory, x => x.DISCIPLINE_DESCS, DISCIPLINE_DESCProjectionFunc);
             loaderCollection.AddLoaderDescription<JOB_COSTGROUPS, JOB_COSTGROUPS, int, IPrimeroEntitiesUnitOfWork>(primeroUnitOfWorkFactory, x => x.JOB_COSTGROUPS);
+            loaderCollection.AddLoaderDescription(bluePrintsUnitOfWorkFactory, x => x.FORECAST_CACHES, FORECAST_CACHEProjectionFunc);
         }
 
         private void setProject(Data.PROJECT project)
@@ -209,6 +210,11 @@ namespace BluePrints.ViewModels
             return query => query.Where(x => x.GUID_PROJECT == LoadPROJECT.GUID);
         }
 
+        protected virtual Func<IRepositoryQuery<FORECAST_CACHE>, IQueryable<FORECAST_CACHE>> FORECAST_CACHEProjectionFunc()
+        {
+            return query => query.Where(x => x.GUID_PROJECT == LoadPROJECT.GUID);
+        }
+
         protected virtual Func<IRepositoryQuery<FORECAST_PO>, IQueryable<FORECAST_PO>> FORECAST_POProjectionFunc()
         {
             return query => query.Where(x => x.GUID_PROJECT == LoadPROJECT.GUID);
@@ -223,7 +229,8 @@ namespace BluePrints.ViewModels
         public bool IsHidden { get; set; }
         public bool IsJobForecast;
         public ForecastSummary ForecastSummary { get; set; }
-        public CriteriaOperator FilterCriteria { get; set; }
+        public CriteriaOperator ActualFilterCriteria { get; set; }
+        public CriteriaOperator POFilterCriteria { get; set; }
         public virtual DateTime EndSelectionDate { get; set; }
         public virtual DateTime StartSelectionDate { get; set; }
         public virtual IEnumerable<string> Subjobs { get; set; }
@@ -234,8 +241,6 @@ namespace BluePrints.ViewModels
         IEnumerable<ExoSubJobProjection> queryJobs;
         List<string> hiddenColumnFieldNames = new List<string>();
         protected List<DateTime> alignedDataDateCollection;
-        protected virtual IGridControlService DetailGridControlService { get { return this.GetService<IGridControlService>("DetailGridControlService"); } }
-        protected virtual ITableViewService DetailTableViewService { get { return this.GetService<ITableViewService>("DetailTableViewService"); } }
         IBluePrintsEntitiesUnitOfWork bluePrintsUnitOfWork;
         DispatcherTimer delayedProjectSaveTimer;
         DispatcherTimer delayedUpdateFloatingProjectSummaryTimer;
@@ -307,6 +312,8 @@ namespace BluePrints.ViewModels
         bool canEditConstructionUncommitted = false;
         protected IPrimeroEntitiesUnitOfWork primeroEntitiesUnitOfWork;
         BackgroundWorker exoLoadingBackgroundWorker = new BackgroundWorker();
+        InstantFeedbackActualDetailsCollectionViewModelWrapper instantFeedbackActualDetailViewModel = InstantFeedbackActualDetailsCollectionViewModelWrapper.Create();
+        List<X_PURCHORD_LINE_DETAIL> X_PURCHORD_LINE_DETAILS;
         protected override void resolveParameters(object parameter)
         {
             base.resolveParameters(parameter);
@@ -316,6 +323,7 @@ namespace BluePrints.ViewModels
             ForceRetrieveAllJobs = true; //force exo burned to retrieve subjobs that aren't defined
             ForceRetrieveAllUnits = true; //force exo burned to retrieve units that are beyond data date
             ForceRetrieveAllPOs = false; //force retrieve all EXO pos that are beyond data date
+            DashboardEXOQueryType = DashboardEXOQueryType.All;
             UseProductivityFactorOnRemaining = false; //calculate remaining costs using productivity factor
             IsLoadingForecast = true;
             IsLoading = true;
@@ -339,6 +347,7 @@ namespace BluePrints.ViewModels
             exoLoadingBackgroundWorker.DoWork += exoLoadingBackgroundWorker_DoWork;
             exoLoadingBackgroundWorker.RunWorkerCompleted += exoLoadingBackgroundWorker_RunWorkerCompleted;
             exoLoadingBackgroundWorker.WorkerSupportsCancellation = true;
+
             this.RaisePropertiesChanged();
         }
 
@@ -347,6 +356,7 @@ namespace BluePrints.ViewModels
             IPrimeroEntitiesUnitOfWork threadSafePrimeroEntitiesUnitOfWork = PrimeroEntitiesUnitOfWorkSource.GetUnitOfWorkFactory(LoadPROJECT.OfficeNameForExo).CreateUnitOfWork();
             masterJob = ExoQueries.GetProjectSubJob(threadSafePrimeroEntitiesUnitOfWork, LoadPROJECT.NUMBER, LoadPROJECT.NUMBER);
             copyLine = ExoQueries.GetAnyProjectLineByJobNumber(threadSafePrimeroEntitiesUnitOfWork, LoadPROJECT.NUMBER);
+            X_PURCHORD_LINE_DETAILS = PrimeroEntities.GetPurchaseOrdersDetail(primeroEntitiesUnitOfWork, LoadPROJECT.NUMBER, FixedDataDateMonthEnd);
         }
 
         private void loadSummaryStats()
@@ -608,6 +618,9 @@ namespace BluePrints.ViewModels
 
             IsLoading = false;
             this.RaisePropertyChanged(x => x.IsLoading);
+
+            //so filters will show transactions, as it is not shown during load, RaisePropertyChanged on ActualDetails will allow the grid to start showing data
+            instantFeedbackActualDetailViewModel.OnParameterChange(LoadPROJECT);
             CommonMethods.AddSaveLayoutHandler(GridControlService.GetGridColumns());
             return true;
         }
@@ -747,14 +760,16 @@ namespace BluePrints.ViewModels
                 string columnFieldName = alignedDataDate.Date.ToString(BluePrintsResources.ColumnDateFormat);
                 dataPointsTable.Columns.Add(columnFieldName, typeof(decimal));
             }
-            
+
+            //preload the forecast collection
+            FORECASTCollection.ToList();
             //child data table is used to record original value of actuals + committed + remaining values before it is overridden by forecasts
             foreach (ForecastJobData commodityJob in commodityJobs)
             {
                 ForecastHelper.PopulateEAC(commodityJob, FORECAST_EACCollection, PreviousEACDataDate);
                 ForecastHelper.PopulateTenderBudget(commodityJob, FORECAST_EACTenderBudgetCollection);
                 updateAdditionalJobInfo(commodityJob);
-                
+
                 DataRow commodityRow = updateDataTable(commodityJob, isNewData);
                 LoadingScreenManager.Progress();
             }
@@ -819,12 +834,25 @@ namespace BluePrints.ViewModels
         {
             DataRow commodityRow = dataPointsTable.NewRow();
             commodityRow[columnEntity] = commodityJob;
+
+            //For Debugging
+            //string s;
+            //if (commodityJob.Projection.SubJobCode == "15671-000-00-P1" && commodityJob.DisciplineCode == "EL01" && commodityJob.Projection.CommodityCode == "E30" && commodityJob.Projection.VariationCode == string.Empty)
+            //    s = string.Empty;
+            //else
+            //    return commodityRow;
+
             #region fallback rate search
-            //rate already present during update
+                //rate already present during update
             if (isNew)
             {
                 Data.PHASE ratePHASE = PHASECollection.FirstOrDefault(x => x.INTERNAL_NUM == commodityJob.Projection.PhaseCode);
                 string disciplineCode = commodityJob.Projection.DisciplineCode != null && commodityJob.Projection.DisciplineCode.Length > 2 ? commodityJob.Projection.DisciplineCode.Substring(0, 2) : commodityJob.Projection.DisciplineCode;
+                string disciplineNum = commodityJob.Projection.DisciplineCode != null && commodityJob.Projection.DisciplineCode.Length == 4 ? commodityJob.Projection.DisciplineCode.Substring(2, 2) : "1";
+                int disciplineNumInt = 1;
+                if (!Int32.TryParse(disciplineNum, out disciplineNumInt))
+                    disciplineNumInt = 1;
+
                 //fallback rate cannot be searched by department because department doesn't exists in WBS code structure
                 DISCIPLINE rateDISCIPLINE = DISCIPLINECollection.FirstOrDefault(x => x.CODE == disciplineCode);
                 if (ratePHASE != null && rateDISCIPLINE != null)
@@ -847,7 +875,7 @@ namespace BluePrints.ViewModels
                         commodityCode = rateCOMMODITY.CODE;
 
                     if(ratePHASE.PHASE_TYPE != null)
-                        commodityJob.FallBackRate = BluePrintsDataUtils.CascadeRateSearch(areaGUID, subAreaGUID, rateDISCIPLINE.GUID, null, commodityCode, commodityJob.Projection.VariationCode, RATECollection, CostType.Cost, (PhaseType)ratePHASE.PHASE_TYPE);
+                        commodityJob.FallBackRate = BluePrintsDataUtils.CascadeRateSearch(areaGUID, subAreaGUID, rateDISCIPLINE.GUID, disciplineNumInt, null, commodityCode, commodityJob.Projection.VariationCode, RATECollection, CostType.Cost, (PhaseType)ratePHASE.PHASE_TYPE);
                 }
             }
             #endregion
@@ -1005,7 +1033,7 @@ namespace BluePrints.ViewModels
                 compareChildP6CostsRemainingRow[dateCost.Date.ToString(BluePrintsResources.ColumnDateFormat)] = dateCost.P6Costs;
                 compareChildP6UnitsRemainingRow[dateCost.Date.ToString(BluePrintsResources.ColumnDateFormat)] = dateCost.P6Hours;
 
-                List<FORECAST> forecastOverrides = relevantFORECASTS.Where(x => x.FORECAST_UNITS != null && x.FORECAST_DATE >= dateCost.FloorDate && x.FORECAST_DATE <= dateCost.CeilingDate).ToList();
+                IEnumerable<FORECAST> forecastOverrides = relevantFORECASTS.Where(x => x.FORECAST_UNITS != null && x.FORECAST_DATE >= dateCost.FloorDate && x.FORECAST_DATE <= dateCost.CeilingDate);
                 List<FORECAST> forecastCostsOverrides = forecastOverrides.Where(x => x.FORECAST_TYPE == ForecastDataType.Cost).ToList();
                 List<FORECAST> forecastUnitsOverrides = forecastOverrides.Where(x => x.FORECAST_TYPE == ForecastDataType.P6).ToList();
                 List<FORECAST> forecastJobHourOverrides = forecastOverrides.Where(x => x.FORECAST_TYPE == ForecastDataType.Hour).ToList();
@@ -1149,7 +1177,7 @@ namespace BluePrints.ViewModels
             else
             {
                 columns.Add(new ColumnDescriptor() { FieldName = "Entity.DropDownPhase", Header = "", Fixed = FixedStyle.Left, Width = 50, Settings = SettingsType.Default, HeaderToolTip = "Source of forecasted costs/hours type" });
-                columns.Add(new ColumnDescriptor() { FieldName = "Entity.DropDownIndirectBudget", ReadOnly = true, Header = "Budget (A)", Increment = 1, Fixed = FixedStyle.Left, Width = 50, Settings = SettingsType.Budget, HeaderToolTip = "Indirect budget from Exo" });
+                columns.Add(new ColumnDescriptor() { FieldName = "Entity.DropDownIndirectBudget", ReadOnly = true, Header = "Project Budget (A)", Increment = 1, Fixed = FixedStyle.Left, Width = 50, Settings = SettingsType.Budget, HeaderToolTip = "Indirect budget from Exo" });
             }
 
             foreach (DateTime alignedDate in alignedDates)
@@ -1198,8 +1226,6 @@ namespace BluePrints.ViewModels
                     dataRow[columnName] = test ? 1000m : 0.00m;
             }
         }
-
-        public IEnumerable<ExoDataPoint> ActualsDetail => DetailedData;
 
         public List<ExoDataPoint> DetailedData { get; set; }
 
@@ -1253,6 +1279,32 @@ namespace BluePrints.ViewModels
             relevantFORECAST_JOB_SETTING.IS_FLOATING_PRODUCTIVITY = isFloatingProductivity;
             job.IsProductivityFloating = isFloatingProductivity;
             FORECAST_JOB_SETTINGCollectionViewModel.Save(relevantFORECAST_JOB_SETTING);
+        }
+
+        private void findExistingOrAddNewForecastCache(DataRow updateRow)
+        {
+            ForecastJobData job = ((ForecastJobData)updateRow[columnEntity]);
+            ExoSubJobProjection projection = job.Projection;
+            FORECAST_CACHE relevantFORECAST_CACHE = FORECAST_CACHECollection.FirstOrDefault(x => x.SUBJOB_CODE == projection.SubJobCode && x.DISCIPLINE_CODE == projection.DisciplineCode && x.COMMODITY_CODE == projection.CommodityCode && x.VARIATION_CODE == projection.VariationCode);
+            if (relevantFORECAST_CACHE == null)
+            {
+                FORECAST_CACHE newFORECAST_JOB_SETTING = new FORECAST_CACHE();
+                newFORECAST_JOB_SETTING.GUID_PROJECT = LoadPROJECT.GUID;
+                newFORECAST_JOB_SETTING.SUBJOB_CODE = projection.SubJobCode;
+                newFORECAST_JOB_SETTING.DISCIPLINE_CODE = DataUtils.NormalizeString(projection.DisciplineCode);
+                newFORECAST_JOB_SETTING.COMMODITY_CODE = DataUtils.NormalizeString(projection.CommodityCode);
+
+                if (projection.VariationCode != null && projection.VariationCode != string.Empty)
+                    newFORECAST_JOB_SETTING.VARIATION_CODE = projection.VariationCode;
+                else
+                    newFORECAST_JOB_SETTING.VARIATION_CODE = string.Empty;
+
+                relevantFORECAST_CACHE = newFORECAST_JOB_SETTING;
+            }
+
+            //relevantFORECAST_CACHE.IS_FLOATING_PRODUCTIVITY = isFloatingProductivity;
+            //job.IsProductivityFloating = isFloatingProductivity;
+            //FORECAST_JOB_SETTINGCollectionViewModel.Save(relevantFORECAST_CACHE);
         }
 
         private void establishCurrentProductivity(ForecastJobData job)
@@ -1380,7 +1432,11 @@ namespace BluePrints.ViewModels
             setFilter((DataRowView)e.Row, e.Column);
         }
 
-        public bool IsPOColumnsVisible { get; set; }
+        public IListSource ActualsDetail => instantFeedbackActualDetailViewModel.InstantFeedbackEntities;
+        public List<X_PURCHORD_LINE_DETAIL> PODetail => X_PURCHORD_LINE_DETAILS;
+        public Visibility ActualDetailsVisibility => !IsPoDetailsVisible ? Visibility.Visible : Visibility.Collapsed;
+        public Visibility PODetailsVisibility => IsPoDetailsVisible ? Visibility.Visible : Visibility.Collapsed;
+        public bool IsPoDetailsVisible { get; set; }
         private bool isDetailBestFitApplied { get; set; }
         private void setFilter(DataRowView dataRowView, GridColumn gridColumn)
         {
@@ -1399,91 +1455,88 @@ namespace BluePrints.ViewModels
                 else
                     StartSelectionDate = new DateTime(EndSelectionDate.Year, EndSelectionDate.Month, 1);
 
-                if(parseEndDate.Date == alignedDataDateCollection.First().Date)
+                if (parseEndDate.Date == alignedDataDateCollection.First().Date)
                 {
-                    if(entity.CommodityCode != string.Empty)
-                        FilterCriteria = CriteriaOperator.Parse("[Subjob_Name] = '" + entity.SubJobCode + "' And [Discipline_Code] = '" + entity.DisciplineCode + "' And [Variation_Code] = '" + entity.VariationCode + "' And [Commodity_Code] = '" + entity.CommodityCode + "' And [IsPO] = 'False'" + " And [ActualDate] <= #" + EndSelectionDate.Year + "-" + EndSelectionDate.Month + "-" + EndSelectionDate.Day + "#");
+                    if (entity.CommodityCode != string.Empty)
+                        ActualFilterCriteria = CriteriaOperator.Parse("[SUB_JOBCODE] = '" + entity.SubJobCode + "' And [DISCIPLINE_CODE] = '" + entity.DisciplineCode + "' And [VARIATION_CODE] = '" + entity.VariationCode + "' And [COMMODITY_CODE] = '" + entity.CommodityCode + "' And [TRANSDATE] <= #" + EndSelectionDate.Year + "-" + EndSelectionDate.Month + "-" + EndSelectionDate.Day + "#");
                     else
-                        FilterCriteria = CriteriaOperator.Parse("[Subjob_Name] = '" + entity.SubJobCode + "' And [Discipline_Code] = '" + entity.DisciplineCode + "' And [Variation_Code] = '" + entity.VariationCode + "' And [IsPO] = 'False'" + " And [ActualDate] <= #" + EndSelectionDate.Year + "-" + EndSelectionDate.Month + "-" + EndSelectionDate.Day + "#");
+                        ActualFilterCriteria = CriteriaOperator.Parse("[SUB_JOBCODE] = '" + entity.SubJobCode + "' And [DISCIPLINE_CODE] = '" + entity.DisciplineCode + "' And [VARIATION_CODE] = '" + entity.VariationCode + "' And [TRANSDATE] <= #" + EndSelectionDate.Year + "-" + EndSelectionDate.Month + "-" + EndSelectionDate.Day + "#");
                 }
                 else
                 {
-                    if(entity.CommodityCode != string.Empty)
-                        FilterCriteria = CriteriaOperator.Parse("[Subjob_Name] = '" + entity.SubJobCode + "' And [Discipline_Code] = '" + entity.DisciplineCode + "' And [Variation_Code] = '" + entity.VariationCode + "' And [Commodity_Code] = '" + entity.CommodityCode + "' And [IsPO] = 'False'" + " And [ActualDate] >= #" + StartSelectionDate.Year + "-" + StartSelectionDate.Month + "-" + StartSelectionDate.Day + "# And [ActualDate] <= #" + EndSelectionDate.Year + "-" + EndSelectionDate.Month + "-" + EndSelectionDate.Day + "#");
+                    if (entity.CommodityCode != string.Empty)
+                        ActualFilterCriteria = CriteriaOperator.Parse("[SUB_JOBCODE] = '" + entity.SubJobCode + "' And [DISCIPLINE_CODE] = '" + entity.DisciplineCode + "' And [VARIATION_CODE] = '" + entity.VariationCode + "' And [COMMODITY_CODE] = '" + entity.CommodityCode + "' And [TRANSDATE] >= #" + StartSelectionDate.Year + "-" + StartSelectionDate.Month + "-" + StartSelectionDate.Day + "# And [TRANSDATE] <= #" + EndSelectionDate.Year + "-" + EndSelectionDate.Month + "-" + EndSelectionDate.Day + "#");
                     else
-                        FilterCriteria = CriteriaOperator.Parse("[Subjob_Name] = '" + entity.SubJobCode + "' And [Discipline_Code] = '" + entity.DisciplineCode + "' And [Variation_Code] = '" + entity.VariationCode + "' And [IsPO] = 'False'" + " And [ActualDate] >= #" + StartSelectionDate.Year + "-" + StartSelectionDate.Month + "-" + StartSelectionDate.Day + "# And [ActualDate] <= #" + EndSelectionDate.Year + "-" + EndSelectionDate.Month + "-" + EndSelectionDate.Day + "#");
+                        ActualFilterCriteria = CriteriaOperator.Parse("[SUB_JOBCODE] = '" + entity.SubJobCode + "' And [DISCIPLINE_CODE] = '" + entity.DisciplineCode + "' And [VARIATION_CODE] = '" + entity.VariationCode + "' And [TRANSDATE] >= #" + StartSelectionDate.Year + "-" + StartSelectionDate.Month + "-" + StartSelectionDate.Day + "# And [TRANSDATE] <= #" + EndSelectionDate.Year + "-" + EndSelectionDate.Month + "-" + EndSelectionDate.Day + "#");
                 }
 
                 IsHidden = false;
-                IsPOColumnsVisible = false;
-                this.RaisePropertyChanged(x => x.FilterCriteria);
-                this.RaisePropertyChanged(x => x.IsPOColumnsVisible);
+                IsPoDetailsVisible = false;
+
+                this.RaisePropertyChanged(x => x.ActualsDetail);
+                this.RaisePropertyChanged(x => x.ActualFilterCriteria);
             }
             else if (gridColumn.FieldName.ToUpper().Contains("POSTDATADATE"))
             {
                 DateTime dataDate = (DateTime)FixedDataDate;
                 ExoSubJobProjection entity = ((ForecastJobData)dataRowView[columnEntity]).Projection;
                 if (entity.CommodityCode != string.Empty)
-                    FilterCriteria = CriteriaOperator.Parse("[Subjob_Name] = '" + entity.SubJobCode + "' And [Discipline_Code] = '" + entity.DisciplineCode + "' And [Variation_Code] = '" + entity.VariationCode + "' And [Commodity_Code] = '" + entity.CommodityCode + "' And [IsPO] = 'False'" + " And [ActualDate] > #" + dataDate.Year + "-" + dataDate.Month + "-" + dataDate.Day + "#");
+                    ActualFilterCriteria = CriteriaOperator.Parse("[SUB_JOBCODE] = '" + entity.SubJobCode + "' And [DISCIPLINE_CODE] = '" + entity.DisciplineCode + "' And [VARIATION_CODE] = '" + entity.VariationCode + "' And [COMMODITY_CODE] = '" + entity.CommodityCode + "' And [TRANSDATE] > #" + dataDate.Year + "-" + dataDate.Month + "-" + dataDate.Day + "#");
                 else
-                    FilterCriteria = CriteriaOperator.Parse("[Subjob_Name] = '" + entity.SubJobCode + "' And [Discipline_Code] = '" + entity.DisciplineCode + "' And [Variation_Code] = '" + entity.VariationCode + "' And [IsPO] = 'False'" + " And [ActualDate] > #" + dataDate.Year + "-" + dataDate.Month + "-" + dataDate.Day + "#");
+                    ActualFilterCriteria = CriteriaOperator.Parse("[SUB_JOBCODE] = '" + entity.SubJobCode + "' And [DISCIPLINE_CODE] = '" + entity.DisciplineCode + "' And [VARIATION_CODE] = '" + entity.VariationCode + "' And [TRANSDATE] > #" + dataDate.Year + "-" + dataDate.Month + "-" + dataDate.Day + "#");
 
                 IsHidden = false;
-                IsPOColumnsVisible = false;
-                this.RaisePropertyChanged(x => x.FilterCriteria);
-                this.RaisePropertyChanged(x => x.IsPOColumnsVisible);
+                IsPoDetailsVisible = false;
+                this.RaisePropertyChanged(x => x.ActualsDetail);
+                this.RaisePropertyChanged(x => x.ActualFilterCriteria);
             }
             else if (gridColumn.FieldName.ToUpper().Contains("ACTUAL"))
             {
                 DateTime dataDate = (DateTime)FixedDataDate;
                 ExoSubJobProjection entity = ((ForecastJobData)dataRowView[columnEntity]).Projection;
-                if(entity.CommodityCode != string.Empty)
-                    FilterCriteria = CriteriaOperator.Parse("[Subjob_Name] = '" + entity.SubJobCode + "' And [Discipline_Code] = '" + entity.DisciplineCode + "' And [Variation_Code] = '" + entity.VariationCode + "' And [Commodity_Code] = '" + entity.CommodityCode + "' And [IsPO] = 'False'" + " And [ActualDate] <= #" + dataDate.Year + "-" + dataDate.Month + "-" + dataDate.Day + "#");
+                if (entity.CommodityCode != string.Empty)
+                    ActualFilterCriteria = CriteriaOperator.Parse("[SUB_JOBCODE] = '" + entity.SubJobCode + "' And [DISCIPLINE_CODE] = '" + entity.DisciplineCode + "' And [VARIATION_CODE] = '" + entity.VariationCode + "' And [COMMODITY_CODE] = '" + entity.CommodityCode + "' And [TRANSDATE] <= #" + dataDate.Year + "-" + dataDate.Month + "-" + dataDate.Day + "#");
                 else
-                    FilterCriteria = CriteriaOperator.Parse("[Subjob_Name] = '" + entity.SubJobCode + "' And [Discipline_Code] = '" + entity.DisciplineCode + "' And [Variation_Code] = '" + entity.VariationCode + "' And [IsPO] = 'False'" + " And [ActualDate] <= #" + dataDate.Year + "-" + dataDate.Month + "-" + dataDate.Day + "#");
+                    ActualFilterCriteria = CriteriaOperator.Parse("[SUB_JOBCODE] = '" + entity.SubJobCode + "' And [DISCIPLINE_CODE] = '" + entity.DisciplineCode + "' And [VARIATION_CODE] = '" + entity.VariationCode + "' And [TRANSDATE] <= #" + dataDate.Year + "-" + dataDate.Month + "-" + dataDate.Day + "#");
 
                 IsHidden = false;
-                IsPOColumnsVisible = false;
-                this.RaisePropertyChanged(x => x.FilterCriteria);
-                this.RaisePropertyChanged(x => x.IsPOColumnsVisible);
+                IsPoDetailsVisible = false;
+                this.RaisePropertyChanged(x => x.ActualsDetail);
+                this.RaisePropertyChanged(x => x.ActualFilterCriteria);
             }
             else if (gridColumn.FieldName.ToUpper().Contains("INVOICED"))
             {
                 ExoSubJobProjection entity = ((ForecastJobData)dataRowView[columnEntity]).Projection;
                 if (entity.CommodityCode != string.Empty)
-                    FilterCriteria = CriteriaOperator.Parse("[Subjob_Name] = '" + entity.SubJobCode + "' And [Discipline_Code] = '" + entity.DisciplineCode + "' And [Variation_Code] = '" + entity.VariationCode + "' And [Commodity_Code] = '" + entity.CommodityCode + "' And [IsPO] = 'False' AND [InvoiceAmount] > 0.0m");
+                    ActualFilterCriteria = CriteriaOperator.Parse("[SUB_JOBCODE] = '" + entity.SubJobCode + "' And [DISCIPLINE_CODE] = '" + entity.DisciplineCode + "' And [VARIATION_CODE] = '" + entity.VariationCode + "' And [COMMODITY_CODE] = '" + entity.CommodityCode + "' AND [InvoiceAmount] > 0.0m");
                 else
-                    FilterCriteria = CriteriaOperator.Parse("[Subjob_Name] = '" + entity.SubJobCode + "' And [Discipline_Code] = '" + entity.DisciplineCode + "' And [Variation_Code] = '" + entity.VariationCode + "' And [IsPO] = 'False' AND [InvoiceAmount] > 0.0m");
+                    ActualFilterCriteria = CriteriaOperator.Parse("[SUB_JOBCODE] = '" + entity.SubJobCode + "' And [DISCIPLINE_CODE] = '" + entity.DisciplineCode + "' And [VARIATION_CODE] = '" + entity.VariationCode + "' AND [InvoiceAmount] > 0.0m");
 
                 IsHidden = false;
-                IsPOColumnsVisible = false;
-                this.RaisePropertyChanged(x => x.FilterCriteria);
-                this.RaisePropertyChanged(x => x.IsPOColumnsVisible);
+                IsPoDetailsVisible = false;
+                this.RaisePropertyChanged(x => x.ActualsDetail);
+                this.RaisePropertyChanged(x => x.ActualFilterCriteria);
             }
-            else if(gridColumn.FieldName.ToUpper().Contains("OUTSTANDING"))
+            else if (gridColumn.FieldName.ToUpper().Contains("OUTSTANDING"))
             {
                 ExoSubJobProjection entity = ((ForecastJobData)dataRowView[columnEntity]).Projection;
                 if (entity.CommodityCode != string.Empty)
-                    FilterCriteria = CriteriaOperator.Parse("[Subjob_Name] = '" + entity.SubJobCode + "' And [Discipline_Code] = '" + entity.DisciplineCode + "' And [Variation_Code] = '" + entity.VariationCode + "' And [Commodity_Code] = '" + entity.CommodityCode + "' And [IsPO] = 'True'");
+                    POFilterCriteria = CriteriaOperator.Parse("[SUB_JOBCODE] = '" + entity.SubJobCode + "' And [DISCIPLINE_CODE] = '" + entity.DisciplineCode + "' And [VARIATION_CODE] = '" + entity.VariationCode + "' And [COMMODITY_CODE] = '" + entity.CommodityCode + "'");
                 else
-                    FilterCriteria = CriteriaOperator.Parse("[Subjob_Name] = '" + entity.SubJobCode + "' And [Discipline_Code] = '" + entity.DisciplineCode + "' And [Variation_Code] = '" + entity.VariationCode + "' And [IsPO] = 'True'");
+                    POFilterCriteria = CriteriaOperator.Parse("[SUB_JOBCODE] = '" + entity.SubJobCode + "' And [DISCIPLINE_CODE] = '" + entity.DisciplineCode + "' And [VARIATION_CODE] = '" + entity.VariationCode + "'");
                 IsHidden = false;
 
-                IsPOColumnsVisible = true;
-                this.RaisePropertyChanged(x => x.FilterCriteria);
-                this.RaisePropertyChanged(x => x.IsPOColumnsVisible);
+                IsPoDetailsVisible = true;
+                this.RaisePropertyChanged(x => x.PODetail);
+                this.RaisePropertyChanged(x => x.POFilterCriteria);
             }
             else
             {
                 IsHidden = true;
             }
 
-            //apply only once because it's resource consuming
-            if(!isDetailBestFitApplied)
-            {
-                DetailTableViewService.ApplyBestFit();
-                isDetailBestFitApplied = true;
-            }
+            this.RaisePropertyChanged(x => x.ActualDetailsVisibility);
+            this.RaisePropertyChanged(x => x.PODetailsVisibility);
         }
 
         public void DetailGridKeyDown(System.Windows.Input.KeyEventArgs e)
@@ -1500,17 +1553,20 @@ namespace BluePrints.ViewModels
         private void clearFilter()
         {
             IsHidden = false;
-            IsPOColumnsVisible = false;
 
             //workaround for when detail grid doesn't show anything when it's first loaded, bug on devexpress
-            FilterCriteria = CriteriaOperator.Parse("[Subjob_Name] = '000'");
-            this.RaisePropertyChanged(x => x.FilterCriteria);
+            ActualFilterCriteria = CriteriaOperator.Parse("[SUB_JOBCODE] = 'x'");
+            POFilterCriteria = CriteriaOperator.Parse("[SUB_JOBCODE] = 'x'");
+            this.RaisePropertyChanged(x => x.ActualFilterCriteria);
+            this.RaisePropertyChanged(x => x.POFilterCriteria);
 
-            FilterCriteria = CriteriaOperator.Parse("");
+            ActualFilterCriteria = CriteriaOperator.Parse("");
+            POFilterCriteria = CriteriaOperator.Parse("");
             this.RaisePropertyChanged(x => x.IsHidden);
-            this.RaisePropertyChanged(x => x.FilterCriteria);
-            this.RaisePropertyChanged(x => x.IsPOColumnsVisible);
+            this.RaisePropertyChanged(x => x.ActualFilterCriteria);
+            this.RaisePropertyChanged(x => x.POFilterCriteria);
             this.RaisePropertyChanged(x => x.ActualsDetail);
+            this.RaisePropertyChanged(x => x.PODetail);
         }
 
         private bool gridSummaryItemExists(GridSummaryItemCollection gridSummaryItems, string fieldName)
@@ -2233,9 +2289,9 @@ namespace BluePrints.ViewModels
             //this is definitely present because the view is generated from datecost model
             ForecastDateCost dateCost = job.DateCosts.First(x => x.Date == forecastDate.Date);
 
-            IQueryable<FORECAST> findFORECASTS = FORECASTCollection.Where(x => x.FORECAST_DATE >= dateCost.FloorDate && x.FORECAST_DATE <= dateCost.CeilingDate && x.SUBJOB_CODE == entity.SubJobCode && x.DISCIPLINE_CODE == entity.DisciplineCode && x.COMMODITY_CODE == entity.CommodityCode && x.VARIATION_CODE == entity.VariationCode);
-            IQueryable<FORECAST> findCostFORECASTS = findFORECASTS.Where(x => x.FORECAST_TYPE == ForecastDataType.Cost);
-            IQueryable<FORECAST> findP6FORECASTS = findFORECASTS.Where(x => x.FORECAST_TYPE == ForecastDataType.P6);
+            IEnumerable<FORECAST> findFORECASTS = FORECASTCollection.Where(x => x.FORECAST_DATE >= dateCost.FloorDate && x.FORECAST_DATE <= dateCost.CeilingDate && x.SUBJOB_CODE == entity.SubJobCode && x.DISCIPLINE_CODE == entity.DisciplineCode && x.COMMODITY_CODE == entity.CommodityCode && x.VARIATION_CODE == entity.VariationCode);
+            IEnumerable<FORECAST> findCostFORECASTS = findFORECASTS.Where(x => x.FORECAST_TYPE == ForecastDataType.Cost);
+            IEnumerable<FORECAST> findP6FORECASTS = findFORECASTS.Where(x => x.FORECAST_TYPE == ForecastDataType.P6);
 
             List<FORECAST> costFORECASTS = findCostFORECASTS.Where(x => x.FORECAST_DATE == forecastDate.Date).ToList();
             List<FORECAST> p6FORECASTS = findP6FORECASTS.Where(x => x.FORECAST_DATE == forecastDate.Date).ToList();
@@ -2945,11 +3001,6 @@ namespace BluePrints.ViewModels
             refreshGridData();
         }
 
-        public void CopyDetailWithHeader()
-        {
-            DetailGridControlService.CopyWithHeader();
-        }
-
         ObservableCollection<DataRowView> selectedDataRows { get; set; }
         public ObservableCollection<DataRowView> SelectedDataRows
         {
@@ -3153,14 +3204,19 @@ namespace BluePrints.ViewModels
             }
         }
 
-        public IQueryable<FORECAST> FORECASTCollection
+        List<FORECAST> forecastCollection;
+        public List<FORECAST> FORECASTCollection
         {
             get
             {
-                return bluePrintsUnitOfWork.FORECASTS.Where(x => x.GUID_PROJECT == LoadPROJECT.GUID);
+                if(forecastCollection == null)
+                {
+                    forecastCollection = bluePrintsUnitOfWork.FORECASTS.Where(x => x.GUID_PROJECT == LoadPROJECT.GUID).ToList();
+                }
+
+                return forecastCollection;
             }
         }
-
         public IQueryable<FORECAST_HISTORY> FORECAST_HISTORYCollection
         {
             get
@@ -3222,6 +3278,14 @@ namespace BluePrints.ViewModels
             get
             {
                 return GetEntities<COMMODITY_CODE>();
+            }
+        }
+
+        public IEnumerable<FORECAST_CACHE> FORECAST_CACHECollection
+        {
+            get
+            {
+                return GetEntities<FORECAST_CACHE>();
             }
         }
 
@@ -3311,6 +3375,17 @@ namespace BluePrints.ViewModels
                     return null;
 
                 return (CollectionViewModel<FORECAST_JOB_SETTING, FORECAST_JOB_SETTING, Guid, IBluePrintsEntitiesUnitOfWork>)loaderCollection.GetViewModel<FORECAST_JOB_SETTING>();
+            }
+        }
+
+        public CollectionViewModel<FORECAST_CACHE, FORECAST_CACHE, Guid, IBluePrintsEntitiesUnitOfWork> FORECAST_CACHECollectionViewModel
+        {
+            get
+            {
+                if (MainViewModel == null)
+                    return null;
+
+                return (CollectionViewModel<FORECAST_CACHE, FORECAST_CACHE, Guid, IBluePrintsEntitiesUnitOfWork>)loaderCollection.GetViewModel<FORECAST_CACHE>();
             }
         }
 

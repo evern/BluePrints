@@ -76,6 +76,12 @@ namespace BluePrints.Common.ViewModel.Misc
         public static void PopulateProjection(ForecastJobData jobForecastSummary, IEnumerable<DashboardFlatStructure> DashboardCollection, IEnumerable<FORECAST_PO> FORECAST_POCollection, IEnumerable<FORECAST_EAC> FORECAST_EACCollection, IEnumerable<FORECAST_EAC> FORECAST_EACPreviousCommitmentCollection, IEnumerable<FORECAST_JOB> FORECAST_JOBCollection, IEnumerable<FORECAST_JOB_SETTING> FORECAST_JOB_SETTINGCollection, List<DateTime> dates, bool isWeeks, bool isDataFiltered, DateTime dataDate)
         {
             ExoSubJobProjection projection = jobForecastSummary.Projection;
+
+            //For Debugging
+            //string s;
+            //if (projection.SubJobCode == "15671-000-00-P1" && projection.DisciplineCode == "EL01" && projection.CommodityCode == "E30" && projection.VariationCode == string.Empty)
+            //    s = string.Empty;
+
             List<DashboardFlatStructure> relevantDashboards;
             if (!isDataFiltered)
                 relevantDashboards = DashboardCollection.Where(x => x.SubjobCode == projection.SubJobCode && x.DisciplineCode == projection.DisciplineCode && x.CommodityCode == projection.CommodityCode && x.Variation_Code == projection.VariationCode).ToList();
@@ -106,8 +112,10 @@ namespace BluePrints.Common.ViewModel.Misc
             if (actualStats.Count() > 0)
             {
                 actualDataPoints.AddRange(actualStats.SelectMany(x => x.Actual.ExoDataPoints.Where(y => y.ActualDate <= dataDate)));
+
                 IEnumerable<ExoDataPoint> actualDataPointsPostDD = actualStats.SelectMany(x => x.Actual.ExoDataPoints.Where(y => y.ActualDate > dataDate));
                 IEnumerable<ExoDataPoint> actualDataPointsPreviousDD = actualStats.SelectMany(x => x.Actual.ExoDataPoints.Where(y => y.ActualDate <= previousDataDate));
+
                 jobForecastSummary.ActualUnits = actualDataPoints.Sum(x => x.Units);
                 jobForecastSummary.ActualUnitsPostDataDate = actualDataPointsPostDD.Sum(x => x.Units);
                 jobForecastSummary.ActualCostsPostDataDate = actualDataPointsPostDD.Sum(x => x.Costs);
@@ -150,10 +158,10 @@ namespace BluePrints.Common.ViewModel.Misc
 
                 //group the pos into PO numbers group to get the total remaining cost
                 //costs is remaining cost in this case
-                var poItems = poDataPoints.GroupBy(x => new { x.PONumber, x.Subjob_Name, x.Discipline_Code, x.Commodity_Code, x.Variation_Code }).Select(g => new { g.Key.PONumber, g.Key.Subjob_Name, g.Key.Discipline_Code, g.Key.Commodity_Code, g.Key.Variation_Code }).ToList();
+                var poItems = poDataPoints.GroupBy(x => new { x.Subjob_Name, x.Discipline_Code, x.Commodity_Code, x.Variation_Code }).Select(g => new { g.Key.Subjob_Name, g.Key.Discipline_Code, g.Key.Commodity_Code, g.Key.Variation_Code }).ToList();
                 foreach (var poItem in poItems)
                 {
-                    currentJobPOForecasts.AddRange(FORECAST_POCollection.Where(x => x.PONO == poItem.PONumber && x.JOB_CODE == poItem.Subjob_Name && x.DISCIPLINE_CODE == poItem.Discipline_Code && x.COMMODITY_CODE == poItem.Commodity_Code && x.VARIATION_CODE == poItem.Variation_Code));
+                    currentJobPOForecasts.AddRange(FORECAST_POCollection.Where(x => x.JOB_CODE == poItem.Subjob_Name && x.DISCIPLINE_CODE == poItem.Discipline_Code && x.COMMODITY_CODE == poItem.Commodity_Code && x.VARIATION_CODE == poItem.Variation_Code));
                 }
 
                 jobForecastSummary.PORemainingCosts = currentJobPOForecasts.Where(x => x.FORECAST_VALUE != null).Sum(x => (decimal)x.FORECAST_VALUE);
@@ -194,6 +202,7 @@ namespace BluePrints.Common.ViewModel.Misc
             if (remainingStats.Count() > 0)
             {
                 remainingDataPoints.AddRange(remainingStats.SelectMany(x => x.Remaining.RemainingOnlyDataPoints));
+
                 earnedDataPoints.AddRange(earnedStats.SelectMany(x => x.Earned.DataPoints));
                 decimal p6RemainingCosts = remainingDataPoints.Sum(x => x.Costs);
                 decimal p6RemainingUnits = remainingDataPoints.Sum(x => x.Units);

@@ -223,11 +223,6 @@ namespace BluePrints.ViewModels
         #endregion
 
         #region IEntityNumber
-        protected override string GetEntityNumberFieldName()
-        {
-            return BindableBase.GetPropertyName(() => new REGISTER_CHANGE().NUMBER);
-        }
-
         protected override int DefaultNumericFieldLength()
         {
             return Int32.Parse(BluePrintsResources.Default_Register_Numeric_Length);
@@ -494,6 +489,11 @@ namespace BluePrints.ViewModels
             }
 
             selectedDesignChangeNoticeGuids.Clear();
+        }
+
+        protected override string GetEntityNumberFieldName()
+        {
+            throw new NotImplementedException();
         }
 
         public IEnumerable<AREA> AREACollection

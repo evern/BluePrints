@@ -76,7 +76,6 @@ namespace BluePrints.ViewModels
         public Action<AREACollectionViewModelWrapper> AssignAREADelegates;
         public Action<RATECollectionViewModelWrapper> AssignRATEDelegates;
         private DispatcherTimer selectAllDispatcher;
-        protected List<DashboardTreeStructure> hierarchicalDashboard = null;
         protected IUnitOfWorkFactory<IBluePrintsEntitiesUnitOfWork> bluePrintsUnitOfWorkFactory = BluePrintsEntitiesUnitOfWorkSource.GetUnitOfWorkFactory();
         protected IUnitOfWorkFactory<IPrimeroEntitiesUnitOfWork> primeroUnitOfWorkFactory = PrimeroEntitiesUnitOfWorkSource.GetUnitOfWorkFactory();
         protected IUnitOfWorkFactory<IP6EntitiesUnitOfWork> p6UnitOfWorkFactory = P6EntitiesUnitOfWorkSource.GetUnitOfWorkFactory();
@@ -85,6 +84,7 @@ namespace BluePrints.ViewModels
         public bool ForceRetrieveAllJobs { get; set; } //force exo burned to retrieve subjobs that aren't defined
         public bool ForceRetrieveAllUnits { get; set; } //force exo burned to retrieve units that are beyond data date
         public bool ForceRetrieveAllPOs { get; set; } //force exo burned to retrieve units that are beyond data date
+        public DashboardEXOQueryType DashboardEXOQueryType { get; set; } //define whether dashboard should query time, material or POs
         public bool UseProductivityFactorOnRemaining { get; set; } //calculate remaining costs using productivity factor
         public bool IsVariationSeparated { get; set; } //whether to split variation out from main job
         IBluePrintsEntitiesUnitOfWork bluePrintsUnitOfWork;
@@ -96,12 +96,13 @@ namespace BluePrints.ViewModels
             isSuppressPropertyChange = true;
 
             selectAllDispatcher = new DispatcherTimer();
-            selectAllDispatcher.Interval = new TimeSpan(0, 0, 0, 0, 1);
+            selectAllDispatcher.Interval = new TimeSpan(0, 0, 0, 1);
             selectAllDispatcher.Tick += SelectAllDispatcher_Tick;
             HealthCheckIconName = "Apply";
             FixedStartDate = null;
             FixedDataDate = null;
 
+            DashboardEXOQueryType = DashboardEXOQueryType.TimeAndMaterial;
             delayedRefreshDispatcher = new DispatcherTimer();
             delayedRefreshDispatcher.Interval = new TimeSpan(0, 0, 0, 1);
             delayedRefreshDispatcher.Tick += delayedRefreshDispatcher_Tick;
@@ -154,29 +155,15 @@ namespace BluePrints.ViewModels
 
         protected override void addEntitiesLoader()
         {
-            loaderCollection.AddLoaderDescription(bluePrintsUnitOfWorkFactory, x => x.BASELINES, BASELINEProjectionFunc);
-            loaderCollection.AddLoaderDescription(bluePrintsUnitOfWorkFactory, x => x.ESTIMATES, ESTIMATEProjectionFunc);
             loaderCollection.AddLoaderDescription(bluePrintsUnitOfWorkFactory, x => x.PROGRESSES, PROGRESSProjectionFunc);
-            loaderCollection.AddLoaderDescription(bluePrintsUnitOfWorkFactory, x => x.PROGRESS_ITEMS, PROGRESS_ITEMProjectionFunc);
-            loaderCollection.AddLoaderDescription(bluePrintsUnitOfWorkFactory, x => x.RATES, RATEProjectionFunc);
-            loaderCollection.AddLoaderDescription(bluePrintsUnitOfWorkFactory, x => x.VARIATIONS, VARIATIONProjectionFunc);
             loaderCollection.AddLoaderDescription(bluePrintsUnitOfWorkFactory, x => x.SUBJOBS, SUBJOBProjectionFunc);
             loaderCollection.AddLoaderDescription(bluePrintsUnitOfWorkFactory, x => x.PROJECT_REPORTS, PROJECT_REPORTProjectionFunc, null, true);
-            loaderCollection.AddLoaderDescription<DELIVERABLES_STATUS, DELIVERABLES_STATUS, Guid, IBluePrintsEntitiesUnitOfWork>(bluePrintsUnitOfWorkFactory, x => x.DELIVERABLES_STATUSES);
-            loaderCollection.AddLoaderDescription<USER, USER, Guid, IBluePrintsEntitiesUnitOfWork>(bluePrintsUnitOfWorkFactory, x => x.USERS);
-            loaderCollection.AddLoaderDescription(bluePrintsUnitOfWorkFactory, x => x.BASELINE_ITEM_WORKS, BASELINE_ITEM_WORKProjectionFunc);
-            loaderCollection.AddLoaderDescription(bluePrintsUnitOfWorkFactory, x => x.STOCK_CODES, STOCK_CODEProjectionFunc);
             loaderCollection.AddLoaderDescription<DOCTYPE, DOCTYPE, Guid, IBluePrintsEntitiesUnitOfWork>(bluePrintsUnitOfWorkFactory, x => x.DOCTYPES);
         }
 
         private Func<IRepositoryQuery<BASELINE>, IQueryable<BASELINE>> BASELINEProjectionFunc()
         {
             return query => query.Where(x => x.STATUS == BaselineStatus.Live && x.GUID_PROJECT == LoadPROJECT.GUID).OrderBy(x => x.REVISION);
-        }
-
-        private Func<IRepositoryQuery<STOCK_CODE>, IQueryable<STOCK_CODE>> STOCK_CODEProjectionFunc()
-        {
-            return query => query.Include(x => x.PROJECT);
         }
 
         private Func<IRepositoryQuery<ESTIMATE>, IQueryable<ESTIMATE>> ESTIMATEProjectionFunc()
@@ -234,15 +221,10 @@ namespace BluePrints.ViewModels
         public bool ShowLoadingScreen = true;
         protected override Func<IRepositoryQuery<PROJECT>, IQueryable<PROJECT_Dashboard>> specifyMainViewModelProjection()
         {
-            var BASELINE = loaderCollection.GetObject<BASELINE>();
-            var ESTIMATE = loaderCollection.GetObject<ESTIMATE>();
             var PROGRESSES = loaderCollection.GetCollection<PROGRESS>();
-            var PROGRESS_ITEMS = loaderCollection.GetCollection<PROGRESS_ITEM>();
-            var RATES = loaderCollection.GetCollection<RATE>();
-            var VARIATIONS = loaderCollection.GetCollection<VARIATION>();
 
             List<PROJECT_Dashboard> project_dashboards = new List<PROJECT_Dashboard>();
-            PROJECT_Dashboard project_dashboard = DashboardQueries.Single_Project_DashboardTransformation(LoadPROJECT, BASELINE, ESTIMATE, PROGRESSES, PROGRESS_ITEMS, RATES, VARIATIONS, false, USERCollection, BASELINE_ITEM_WORKCollection, STOCK_CODECollection, FixedStartDate, FixedDataDate, ForceRetrieveRemainingDataPoints, ShowLoadingScreen);
+            PROJECT_Dashboard project_dashboard = DashboardQueries.Single_Project_DashboardTransformation(LoadPROJECT, PROGRESSES, FixedStartDate, FixedDataDate, ForceRetrieveRemainingDataPoints, IsVariationSeparated);
 
             IsLoading = true;
             project_dashboards.Add(project_dashboard);
@@ -300,7 +282,7 @@ namespace BluePrints.ViewModels
             
             if(project != null)
             {
-                project.BuildStats(ShowLoadingScreen, false, 1, ForceRetrieveAllJobs, ForceRetrieveAllUnits, ForceRetrieveAllPOs, getForecastTypes(), UseProductivityFactorOnRemaining);
+                project.BuildStats(DashboardEXOQueryType, ShowLoadingScreen, 1, ForceRetrieveAllJobs, ForceRetrieveAllUnits, ForceRetrieveAllPOs, getForecastTypes(), UseProductivityFactorOnRemaining, IsVariationSeparated);
                 project.RecalculateStats(false, true);
                 project.Subjob_Dashboards = getDashboardStructure(project, IsVariationSeparated, ForceRetrieveRemainingDataPoints);
                 project.Update();
@@ -329,7 +311,7 @@ namespace BluePrints.ViewModels
 
         protected virtual List<DashboardFlatStructure> getDashboardStructure(PROJECT_Dashboard project, bool isVariationSeparated, bool forceRetrieveRemainingDataPoints = false)
         {
-            return DashboardHelpers.ProjectDashboardSummaryBuilder((ProjectSummaryStats)project.Stats, out hierarchicalDashboard, SUBJOBCollection, ShowLoadingScreen, isVariationSeparated, forceRetrieveRemainingDataPoints, DOCTYPECollection);
+            return DashboardHelpers.ProjectDashboardSummaryBuilder((ProjectSummaryStats)project.Stats, SUBJOBCollection, ShowLoadingScreen, isVariationSeparated, forceRetrieveRemainingDataPoints, DOCTYPECollection);
         }
 
         private void summaryBackgroundWorker_RunWorkerCompleted(object sender, RunWorkerCompletedEventArgs e)
@@ -377,12 +359,10 @@ namespace BluePrints.ViewModels
 
         private void dashboardExcelFomatting()
         {
-            if (hierarchicalDashboard == null)
-                return;
-
             LoadingScreenManager.ShowLoadingScreen(1);
             PROJECT_Dashboard dashboard = Entities.First();
-            dashboard.Export_Data = DashboardHelpers.BuildExportData(hierarchicalDashboard, DOCTYPECollection);
+            dashboard.Export_Data = DashboardHelpers.BuildExportData(((ProjectSummaryStats)Entities.First().Stats).WBSReportables, DOCTYPECollection);
+
             IsExportInternalNameVisible = false;
             this.RaisePropertyChanged(x => x.IsExportInternalNameVisible);
             this.RaisePropertyChanged(x => x.ExcelExportData);
@@ -433,9 +413,6 @@ namespace BluePrints.ViewModels
 
         private void export(StatsType statsType)
         {
-            if (hierarchicalDashboard == null)
-                return;
-
             LoadingScreenManager.ShowLoadingScreen(1);
             PROJECT_Dashboard dashboard = Entities.First();
             dashboard.Export_Data = DashboardHelpers.BuildExportDataByType(statsType, LoadPROJECT.NUMBER, dashboard);
@@ -643,7 +620,8 @@ namespace BluePrints.ViewModels
         #region View Behavior
         protected override void executeFirstLoadedActions()
         {
-            doHealthCheck();
+            //remove health check because it's heavy
+            //doHealthCheck();
             ChartControlService?.Animate();
 
             base.executeFirstLoadedActions();
@@ -1241,11 +1219,11 @@ namespace BluePrints.ViewModels
                 return;
 
             Selected_Dashboards.Clear();
+            isSuppressPropertyChange = false;
             foreach (DashboardFlatStructure subjob_dashboard in SingleProjectDashboards)
             {
                 Selected_Dashboards.Add(subjob_dashboard);
             }
-            RaiseSelectionChanged();
         }
 
         public bool CanSelectSubjob(BarCheckItem button)
@@ -1285,8 +1263,6 @@ namespace BluePrints.ViewModels
                     }
                 }
             }
-
-            RaiseSelectionChanged();
         }
 
         public IEnumerable<DashboardFlatStructure> SingleProjectDashboards
@@ -1686,14 +1662,6 @@ namespace BluePrints.ViewModels
                     return "N/A";
                 else
                     return ((DateTime)constructDataDate).ToString("dd-MMM-yy");
-            }
-        }
-        public IEnumerable<STOCK_CODE> STOCK_CODECollection
-        {
-            get
-            {
-                var collection = GetEntities<STOCK_CODE>();
-                return collection;
             }
         }
 
