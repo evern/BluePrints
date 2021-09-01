@@ -93,7 +93,7 @@ namespace BluePrints.ViewModels
         {
             string themeName = Properties.Settings.Default["ThemeName"] as string;
             if (themeName == "")
-                themeName = "Win10Light";
+                themeName = "Office2019Colorful";
             ApplicationThemeHelper.ApplicationThemeName = themeName;
             delayedConnectDispatcher.Start();
         }

@@ -548,7 +548,7 @@
                                                 <dxe:TextEditSettings Mask="n2" MaskType="Numeric" MaskUseAsDisplayFormat="True" />
                                             </dxg:GridColumn.EditSettings>
                                         </dxg:GridColumn>
-                                        <dxg:GridColumn BestFitWidth="150" Width="150" FieldName="SUPPLIED_QTY" Header="Supplied Qty To Date" ReadOnly="True">
+                                        <dxg:GridColumn BestFitWidth="150" Width="150" FieldName="CUT_OFF_SUPPLIED" Header="Supplied Qty To Data Date" HeaderToolTip="Supplied qty cut off on data date" ReadOnly="True">
                                             <dxg:GridColumn.EditSettings>
                                                 <dxe:TextEditSettings Mask="n2" MaskType="Numeric" MaskUseAsDisplayFormat="True" />
                                             </dxg:GridColumn.EditSettings>
@@ -563,7 +563,7 @@
                                                 <dxe:TextEditSettings Mask="c2" MaskType="Numeric" MaskUseAsDisplayFormat="True" />
                                             </dxg:GridColumn.EditSettings>
                                         </dxg:GridColumn>
-                                        <dxg:GridColumn BestFitWidth="150" Width="150" FieldName="OUTSTANDING_COSTS" Header="Outstanding Cost To Date" ReadOnly="True">
+                                        <dxg:GridColumn BestFitWidth="150" Width="150" FieldName="OUTSTANDING_COSTS" Header="Outstanding Cost On Data Date" HeaderToolTip="Outstandingcost cut off on data date" ReadOnly="True">
                                             <dxg:GridColumn.EditSettings>
                                                 <dxe:TextEditSettings Mask="c2" MaskType="Numeric" MaskUseAsDisplayFormat="True" />
                                             </dxg:GridColumn.EditSettings>
