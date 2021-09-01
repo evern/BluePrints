@@ -4,6 +4,7 @@ using BaseModel.DataModel.EntityFramework;
 using BluePrints.Common;
 using BluePrints.Common.Resources;
 using DevExpress.Mvvm;
+using System.Data.Entity;
 
 namespace BluePrints.PrimeroData.PrimeroEntitiesDataModel
 {

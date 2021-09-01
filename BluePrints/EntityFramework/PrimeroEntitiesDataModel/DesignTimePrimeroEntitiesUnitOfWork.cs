@@ -1,6 +1,7 @@
 ﻿using BaseModel.DataModel;
 using BaseModel.DataModel.DesignTime;
 using System;
+using System.Data.Entity;
 
 namespace BluePrints.PrimeroData.PrimeroEntitiesDataModel
 {
@@ -15,6 +16,8 @@ namespace BluePrints.PrimeroData.PrimeroEntitiesDataModel
         public PrimeroEntitiesDesignTimeUnitOfWork()
         {
         }
+
+        public DbContext DbContext => throw new NotImplementedException();
 
         IRepository<ACCS_BALANCE, int> IPrimeroEntitiesUnitOfWork.ACCS_BALANCE
         {
@@ -1779,6 +1782,11 @@ namespace BluePrints.PrimeroData.PrimeroEntitiesDataModel
         IRepository<X_JOB_TRANSACTIONS_DETAIL_SeqNo, int> IPrimeroEntitiesUnitOfWork.X_JOB_TRANSACTIONS_DETAIL_SeqNos
         {
             get { return GetRepository((X_JOB_TRANSACTIONS_DETAIL_SeqNo x) => x.SEQNO); }
+        }
+
+        IRepository<X_JOB_TRANSACTIONS_DETAIL_V2, int> IPrimeroEntitiesUnitOfWork.X_JOB_TRANSACTIONS_DETAIL_V2
+        {
+            get { return GetRepository((X_JOB_TRANSACTIONS_DETAIL_V2 x) => x.SEQNO); }
         }
 
         IRepository<X_JOB_TIMESHEETS, Guid> IPrimeroEntitiesUnitOfWork.X_JOB_TIMESHEETS

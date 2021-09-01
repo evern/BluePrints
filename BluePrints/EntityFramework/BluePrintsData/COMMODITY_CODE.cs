@@ -13,8 +13,6 @@ namespace BluePrints.Data
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2214:DoNotCallOverridableMethodsInConstructors")]
         public COMMODITY_CODE()
         {
-            ESTIMATE_ITEM = new HashSet<ESTIMATE_ITEM>();
-            STOCK_CODE = new HashSet<STOCK_CODE>();
         }
 
         [Key]
@@ -60,12 +58,5 @@ namespace BluePrints.Data
         public bool IS_STANDARD { get; set; }
 
         public virtual DISCIPLINE DISCIPLINE { get; set; }
-
-        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
-        public virtual ICollection<ESTIMATE_ITEM> ESTIMATE_ITEM { get; set; }
-
-        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
-        public virtual ICollection<STOCK_CODE> STOCK_CODE { get; set; }
-
     }
 }

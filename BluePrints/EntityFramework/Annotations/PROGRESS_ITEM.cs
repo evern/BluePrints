@@ -18,10 +18,28 @@ namespace BluePrints.Data
             set { CREATED = value; }
         }
 
-        //use reporting EarnedUnits in S-Curve so it doesn't skew S-Curve when earned units is based on DurationBasedTotalUnits when total units is zero
+        //because EARNED_UNITS can be quantity
         [NotMapped]
-        public decimal ReportingEarnedUnits => EARNED_UNITS <= BluePrintsConstants.DurationBasedTotalUnits ? 0 : EARNED_UNITS;
+        public decimal EarnedUnits
+        {
+            get
+            {
+                if (BUDGET_INSTALL_HOURS_PER_QTY == null || STAGE_WEIGHT == null)
+                    return EARNED_UNITS;
 
+                return EARNED_UNITS * (decimal)STAGE_WEIGHT * (decimal)BUDGET_INSTALL_HOURS_PER_QTY;
+            }
+            set
+            {
+                if (BUDGET_INSTALL_HOURS_PER_QTY == null || STAGE_WEIGHT == null)
+                    EARNED_UNITS = value;
+                else
+                    //convert to qty
+                    EARNED_UNITS = value / (decimal)STAGE_WEIGHT / (decimal)BUDGET_INSTALL_HOURS_PER_QTY;
+            }
+        }
+
+        public decimal ReportingEarnedUnits => EARNED_UNITS <= BluePrintsConstants.DurationBasedTotalUnits ? 0 : EARNED_UNITS;
         public string Office => this.PROGRESS.PROJECT.NUMBER + " " + this.PROGRESS.PROJECT.OfficeName;
     }
 }

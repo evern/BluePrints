@@ -21,6 +21,7 @@ using DevExpress.Xpf.Grid;
 using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
+using System.Data.Entity.SqlServer;
 using System.Deployment.Application;
 using System.Linq;
 using System.Security.Cryptography;
@@ -162,8 +163,25 @@ namespace BluePrints.Common.ViewModel.Utils
 
             if (navigationType == DateNavigationType.Current)
             {
+                if(loadPROGRESS.INTERVAL_TYPE == ProgressIntervalType.Daily)
+                {
+                    bool shouldSave = false;
+                    if (isReportDate && !loadPROGRESS.DISABLE_AUTO_REPORT_DATE)
+                    {
+                        loadPROGRESS.REPORT_DATE = endOfDayToday;
+                        shouldSave = true;
+                    }
+
+                    if (loadPROGRESS.DATA_DATE != endOfDayToday)
+                    {
+                        loadPROGRESS.DATA_DATE = endOfDayToday;
+                        shouldSave = true;
+                    }
+
+                    return shouldSave;
+                }
                 //for users that always uses report date
-                if(isReportDate && !loadPROGRESS.DISABLE_AUTO_REPORT_DATE)
+                else if(isReportDate && !loadPROGRESS.DISABLE_AUTO_REPORT_DATE)
                 {
                     //rewind the data one week when progress is updated for the current week but reporting is done on the previous week
                     //will be saved when data date is saved
@@ -962,7 +980,84 @@ namespace BluePrints.Common.ViewModel.Utils
             return burnedDataPoints;
         }
 
-        public static List<ExoDataPoint> GetMaterials(IPrimeroEntitiesUnitOfWork primeroUOW, string projectNumber, DateTime dataDate, List<DateTime> alignedDataDates = null, decimal currencyConversion = 1, bool showLoadingScreen = false)
+        public static List<ExoDataPoint> GetTimeByWBS(IPrimeroEntitiesUnitOfWork primeroUOW, string projectNumber, DateTime dataDate, IEnumerable<string> qualifiedSubjobs = null, List<SUBJOB> missingSUBJOBS = null, decimal currencyConversion = 1, bool showLoadingScreen = false)
+        {
+            List<ExoDataPoint> burnedDataPoints = new List<ExoDataPoint>();
+            HashSet<string> missingSubJobNames = new HashSet<string>();
+
+            primeroUOW.AutoDetectChangesEnabled(false);
+            using (var t = new TransactionScope(TransactionScopeOption.Required, new TransactionOptions { IsolationLevel = System.Transactions.IsolationLevel.ReadUncommitted }))
+            {
+                List<X_TIME_TRANSACTION> timeLines = PrimeroEntities.GetTimeSummary(primeroUOW, projectNumber, dataDate);
+                if (showLoadingScreen)
+                {
+                    LoadingScreenManager.ShowLoadingScreen(timeLines.Count());
+                    LoadingScreenManager.SetMessage("Loading Actuals...");
+                }
+
+                foreach (var jobTransaction in timeLines)
+                {
+                    if (jobTransaction == null)
+                        continue;
+
+                    if (qualifiedSubjobs == null || qualifiedSubjobs.Contains(jobTransaction.SUBJOB_CODE))
+                    {
+                        if (qualifiedSubjobs == null || (jobTransaction.COST_TYPE != null && (!jobTransaction.COST_TYPE.Contains("G99") && !jobTransaction.COST_TYPE.Contains("010"))))
+                        {
+                            ExoDataPoint burnedDataPoint = new ExoDataPoint();
+                            burnedDataPoint.BudgetedUnits = 0;
+                            burnedDataPoint.BudgetedCosts = 0;
+                            burnedDataPoint.Units = Convert.ToDecimal(jobTransaction.TOTAL_HOURS);
+                            burnedDataPoint.Costs = Convert.ToDecimal(jobTransaction.TOTAL_COSTS);
+                            burnedDataPoint.CostPerQty = burnedDataPoint.Units == 0 ? 0 : burnedDataPoint.Costs / burnedDataPoint.Units;
+                            burnedDataPoint.ActualDate = jobTransaction.FIRST_WEEK_DATE;
+                            burnedDataPoint.ProgressDate = burnedDataPoint.ActualDate;
+                            burnedDataPoint.Subjob_Name = jobTransaction.SUBJOB_CODE;
+                            burnedDataPoint.ResourceName = string.Empty;
+                            burnedDataPoint.Description = string.Empty;
+                            burnedDataPoint.Quantity = burnedDataPoint.Units;
+                            burnedDataPoint.Role = string.Empty;
+                            burnedDataPoint.CostGroup = jobTransaction.COST_GROUP;
+                            burnedDataPoint.Discipline_Code = jobTransaction.COST_GROUP;
+                            burnedDataPoint.CostType = jobTransaction.COST_TYPE;
+                            burnedDataPoint.Commodity_Code = jobTransaction.COST_TYPE;
+                            //stock code is not required for time since it indicates person booked to it
+                            //burnedDataPoint.StockCode = jobTransaction.StockCode;
+                            burnedDataPoint.Narrative = string.Empty;
+                            burnedDataPoint.Variation_Code = jobTransaction.VARIATION_CODE;
+                            burnedDataPoint.InvoiceNo = string.Empty;
+                            burnedDataPoint.InvoiceAmount = 0;
+                            burnedDataPoint.InvoiceDate = null;
+
+                            burnedDataPoints.Add(burnedDataPoint);
+                        }
+                    }
+                    else
+                        missingSubJobNames.Add(jobTransaction.SUBJOB_CODE);
+
+                    if (showLoadingScreen)
+                        LoadingScreenManager.Progress();
+                }
+
+                if (missingSUBJOBS != null)
+                    foreach (string missingSubJobName in missingSubJobNames)
+                    {
+                        SUBJOB missingSUBJOB = new SUBJOB();
+                        missingSUBJOB.INTERNAL_NAME1 = missingSubJobName;
+                        missingSUBJOB.MissingQuantity = Convert.ToDecimal(timeLines.Where(x => x.SUBJOB_CODE == missingSubJobName).Sum(x => x.TOTAL_HOURS));
+                        missingSUBJOBS.Add(missingSUBJOB);
+                    }
+
+                if (showLoadingScreen)
+                    LoadingScreenManager.CloseLoadingScreen();
+
+                primeroUOW.AutoDetectChangesEnabled(true);
+            }
+
+            return burnedDataPoints;
+        }
+
+        public static List<ExoDataPoint> GetMaterials(IPrimeroEntitiesUnitOfWork primeroUOW, string projectNumber, DateTime dataDate, List<DateTime> alignedDataDates = null, decimal currencyConversion = 1, bool showLoadingScreen = false, ExoQueryType materialQueryType = ExoQueryType.All, bool groupByMonth = false)
         {
             List<ExoDataPoint> materialDataPoints = new List<ExoDataPoint>();
             primeroUOW.AutoDetectChangesEnabled(false);
@@ -970,21 +1065,9 @@ namespace BluePrints.Common.ViewModel.Utils
 
             using (var t = new TransactionScope(TransactionScopeOption.Required, new TransactionOptions { IsolationLevel = System.Transactions.IsolationLevel.ReadUncommitted }))
             {
-                var jobMaterials = from X_JOB_TRANSACTIONS_DETAIL in primeroUOW.X_JOB_TRANSACTIONS_DETAIL_SeqNos
-                                   join JOBCOST_HDR in primeroUOW.JOBCOST_HDR
-                                   on X_JOB_TRANSACTIONS_DETAIL.jobno equals JOBCOST_HDR.JOBNO
-                                   join MASTER_JOB in primeroUOW.JOBCOST_HDR
-                                   on JOBCOST_HDR.MASTER_JOBNO equals MASTER_JOB.JOBNO
-                                   join DR_ACCS in primeroUOW.DR_ACCS
-                                   on JOBCOST_HDR.ACCNO equals DR_ACCS.ACCNO
-                                   join STOCK_ITEMS in primeroUOW.STOCK_ITEMS
-                                   on X_JOB_TRANSACTIONS_DETAIL.stockcode equals STOCK_ITEMS.STOCKCODE
-                                   join GLP in primeroUOW.GLACCS
-                                   on STOCK_ITEMS.PURCH_GL_CODE equals GLP.ACCNO
-                                   join GLCOS in primeroUOW.GLACCS
-                                   on STOCK_ITEMS.COS_GL_CODE equals GLCOS.ACCNO
-                                   where X_JOB_TRANSACTIONS_DETAIL.linecharge == 0 && X_JOB_TRANSACTIONS_DETAIL.transtype == "C" && MASTER_JOB.JOBCODE == projectNumber && X_JOB_TRANSACTIONS_DETAIL.transdate <= invoiceCutOffDate
-                                   select new { X_JOB_TRANSACTIONS_DETAIL.jobno, X_JOB_TRANSACTIONS_DETAIL.EXCHRATE, X_JOB_TRANSACTIONS_DETAIL.master_jobno, JOBCOST_HDR.JOBCODE, X_JOB_TRANSACTIONS_DETAIL.transdate, X_JOB_TRANSACTIONS_DETAIL.transtype, X_JOB_TRANSACTIONS_DETAIL.stockcode, X_JOB_TRANSACTIONS_DETAIL.description, X_JOB_TRANSACTIONS_DETAIL.quantity, X_JOB_TRANSACTIONS_DETAIL.unitcost, X_JOB_TRANSACTIONS_DETAIL.UNITPRICE, X_JOB_TRANSACTIONS_DETAIL.LINECOST, X_JOB_TRANSACTIONS_DETAIL.linecharge, X_JOB_TRANSACTIONS_DETAIL.LINETOTAL, X_JOB_TRANSACTIONS_DETAIL.LINETOTAL_INCTAX, X_JOB_TRANSACTIONS_DETAIL.LINETOTAL_TAX, X_JOB_TRANSACTIONS_DETAIL.LINE_STATUS, X_JOB_TRANSACTIONS_DETAIL.CostType, X_JOB_TRANSACTIONS_DETAIL.CostTypeDesc, X_JOB_TRANSACTIONS_DETAIL.Typeshortcode, X_JOB_TRANSACTIONS_DETAIL.COST_GROUP, X_JOB_TRANSACTIONS_DETAIL.CostGroupDesc, X_JOB_TRANSACTIONS_DETAIL.GroupShortcode, X_JOB_TRANSACTIONS_DETAIL.branchno, X_JOB_TRANSACTIONS_DETAIL.LINE_SOURCE, X_JOB_TRANSACTIONS_DETAIL.SOURCE_SEQNO, X_JOB_TRANSACTIONS_DETAIL.PO_LINESEQNO, X_JOB_TRANSACTIONS_DETAIL.POno, X_JOB_TRANSACTIONS_DETAIL.invseqno, X_JOB_TRANSACTIONS_DETAIL.refno, X_JOB_TRANSACTIONS_DETAIL.name, X_JOB_TRANSACTIONS_DETAIL.invno, X_JOB_TRANSACTIONS_DETAIL.INVOICED, X_JOB_TRANSACTIONS_DETAIL.INVOICEDATE, X_JOB_TRANSACTIONS_DETAIL.CostActual, X_JOB_TRANSACTIONS_DETAIL.glcode, X_JOB_TRANSACTIONS_DETAIL.accno, JOBCOST_HDR.QUOTEDATE, JOBCOST_HDR.STARTDATE, JOBCOST_HDR.DUEDATE, JOBCOST_HDR.CUSTORDNO, JOBCOST_HDR.TITLE, NAME_2 = DR_ACCS.NAME, MasterJobcode = MASTER_JOB.JOBCODE, STOCK_ITEMS.PURCH_GL_CODE, PurchGLName = GLP.NAME, STOCK_ITEMS.COS_GL_CODE, COSGlName = GLCOS.NAME, VariationCode = X_JOB_TRANSACTIONS_DETAIL.X_VARIATIONCODE };
+                var jobMaterials = from X_JOB_TRANSACTIONS_DETAIL in primeroUOW.X_JOB_TRANSACTIONS_DETAIL_V2
+                                   where X_JOB_TRANSACTIONS_DETAIL.TRANSTYPE == "C" && X_JOB_TRANSACTIONS_DETAIL.MASTER_JOBCODE == projectNumber && X_JOB_TRANSACTIONS_DETAIL.TRANSDATE <= invoiceCutOffDate
+                                   select X_JOB_TRANSACTIONS_DETAIL;
 
                 if (showLoadingScreen)
                 {
@@ -992,42 +1075,115 @@ namespace BluePrints.Common.ViewModel.Utils
                     LoadingScreenManager.SetMessage("Loading Materials...");
                 }
 
-                var jobMaterialsList = jobMaterials.ToList();
+                string equipmentHireStockCodeInitials = BluePrintsResources.EquipmentHireStockCodeInitials;
+                var jobMaterialsList = materialQueryType == ExoQueryType.All ? jobMaterials.ToList() : materialQueryType == ExoQueryType.EquipmentHireOnly ? jobMaterials.Where(x => x.STOCKCODE.StartsWith(equipmentHireStockCodeInitials)).ToList() : jobMaterials.Where(x => !x.STOCKCODE.StartsWith(equipmentHireStockCodeInitials)).ToList();
+
                 foreach (var jobMaterial in jobMaterialsList)
                 {
-                    if (jobMaterial.CostGroupDesc != null && ((!jobMaterial.GroupShortcode.Contains("G99") && !jobMaterial.GroupShortcode.Contains("010"))))
+                    if (jobMaterial.DISCIPLINE_CODE != null && !jobMaterial.DISCIPLINE_CODE.Contains("G99") && !jobMaterial.DISCIPLINE_CODE.Contains("010"))
                     {
                         ExoDataPoint materialDataPoint = new ExoDataPoint();
                         materialDataPoint.BudgetedUnits = 0;
                         materialDataPoint.BudgetedCosts = 0;
 
-                        decimal qty = jobMaterial.quantity == null ? 0 : (decimal)jobMaterial.quantity;
+                        decimal qty = jobMaterial.QUANTITY == null ? 0 : (decimal)jobMaterial.QUANTITY;
                         decimal lineCost = jobMaterial.LINECOST == null ? 0 : (decimal)jobMaterial.LINECOST;
+                        materialDataPoint.Units = qty;
+                        materialDataPoint.Costs = lineCost;
+                        materialDataPoint.CostPerQty = jobMaterial.UNITPRICE == null ? 0 : (decimal)jobMaterial.UNITPRICE;
+
+                        if (alignedDataDates != null)
+                            materialDataPoint.ProgressDate = alignedDataDates.FirstOrDefault(dates => dates.Date >= jobMaterial.TRANSDATE);
+
+                        materialDataPoint.ActualDate = jobMaterial.TRANSDATE == null ? DateTime.Now : (DateTime)jobMaterial.TRANSDATE;
+                        materialDataPoint.Subjob_Name = jobMaterial.SUB_JOBCODE;
+                        materialDataPoint.ResourceName = string.Empty;
+                        materialDataPoint.Quantity = qty;
+                        materialDataPoint.Description = jobMaterial.DESCRIPTION;
+                        materialDataPoint.Supplier = jobMaterial.SUPPLIER_NAME;
+                        materialDataPoint.InvoiceNo = jobMaterial.INVSEQNO.ToString();
+                        materialDataPoint.CostGroup = jobMaterial.DISCIPLINE_CODE;
+                        materialDataPoint.Discipline_Code = jobMaterial.DISCIPLINE_CODE;
+                        materialDataPoint.CostType = jobMaterial.COMMODITY_CODE;
+                        materialDataPoint.Commodity_Code = jobMaterial.COMMODITY_CODE;
+                        materialDataPoint.StockCode = jobMaterial.STOCKCODE;
+                        materialDataPoint.Cost_GLName = jobMaterial.COST_GL_NAME;
+                        materialDataPoint.Purchase_GLName = jobMaterial.PURCH_GL_NAME;
+                        materialDataPoint.Variation_Code = normalizeVariationCode(jobMaterial.VARIATION_CODE);
+                        materialDataPoint.InvoiceAmount = Convert.ToDecimal(jobMaterial.INVOICED);
+                        materialDataPoint.InvoiceDate = jobMaterial.INVOICEDATE;
+                        materialDataPoint.PONumber = jobMaterial.PO_NUMBER.ToString();
+
+                        materialDataPoints.Add(materialDataPoint);
+                    }
+
+                    if (showLoadingScreen)
+                        LoadingScreenManager.Progress();
+                }
+
+                if (showLoadingScreen)
+                    LoadingScreenManager.CloseLoadingScreen();
+
+                primeroUOW.AutoDetectChangesEnabled(true);
+            }
+
+            return materialDataPoints;
+        }
+
+        public static List<ExoDataPoint> GetMaterialsByWBS(IPrimeroEntitiesUnitOfWork primeroUOW, string projectNumber, DateTime dataDate, List<DateTime> alignedDataDates = null, decimal currencyConversion = 1, bool showLoadingScreen = false, ExoQueryType materialQueryType = ExoQueryType.All, bool groupByMonth = false)
+        {
+            List<ExoDataPoint> materialDataPoints = new List<ExoDataPoint>();
+            primeroUOW.AutoDetectChangesEnabled(false);
+            DateTime invoiceCutOffDate = dataDate.Date.AddDays(1).AddHours(-1);
+
+            using (var t = new TransactionScope(TransactionScopeOption.Required, new TransactionOptions { IsolationLevel = System.Transactions.IsolationLevel.ReadUncommitted }))
+            {
+                List<X_MATERIAL_TRANSACTION> materialLines = PrimeroEntities.GetMaterialSummary(primeroUOW, projectNumber, invoiceCutOffDate);
+                if (showLoadingScreen)
+                {
+                    LoadingScreenManager.ShowLoadingScreen(materialLines.Count());
+                    LoadingScreenManager.SetMessage("Loading Materials...");
+                }
+
+                string equipmentHireStockCodeInitials = BluePrintsResources.EquipmentHireStockCodeInitials;
+                var jobMaterialsList = materialQueryType == ExoQueryType.All ? materialLines.ToList() : materialQueryType == ExoQueryType.EquipmentHireOnly ? materialLines.Where(x => x.STOCK_CODE.StartsWith(equipmentHireStockCodeInitials)).ToList() : materialLines.Where(x => !x.STOCK_CODE.StartsWith(equipmentHireStockCodeInitials)).ToList();
+
+                foreach (var jobMaterial in jobMaterialsList)
+                {
+                    if (jobMaterial == null)
+                        continue;
+
+                    if (jobMaterial.DISCIPLINE_CODE != null && !jobMaterial.DISCIPLINE_CODE.Contains("G99") && !jobMaterial.DISCIPLINE_CODE.Contains("010"))
+                    {
+                        ExoDataPoint materialDataPoint = new ExoDataPoint();
+                        materialDataPoint.BudgetedUnits = 0;
+                        materialDataPoint.BudgetedCosts = 0;
+
+                        decimal qty = Convert.ToDecimal(jobMaterial.TOTAL_QUANTITY);
+                        decimal lineCost = Convert.ToDecimal(jobMaterial.TOTAL_COSTS);
                         materialDataPoint.Units = qty;
                         materialDataPoint.Costs = lineCost * currencyConversion;
                         materialDataPoint.CostPerQty = materialDataPoint.Units == 0 ? 0 : materialDataPoint.Costs / materialDataPoint.Units;
 
                         if (alignedDataDates != null)
-                            materialDataPoint.ProgressDate = alignedDataDates.FirstOrDefault(dates => dates.Date >= jobMaterial.transdate);
+                            materialDataPoint.ProgressDate = alignedDataDates.FirstOrDefault(dates => dates.Date >= jobMaterial.FIRST_WEEK_DATE);
 
-                        materialDataPoint.ActualDate = jobMaterial.transdate == null ? DateTime.Now : (DateTime)jobMaterial.transdate;
-                        materialDataPoint.Subjob_Name = jobMaterial.JOBCODE;
+                        materialDataPoint.ActualDate = jobMaterial.FIRST_WEEK_DATE;
+                        materialDataPoint.Subjob_Name = jobMaterial.SUB_JOBCODE;
                         materialDataPoint.ResourceName = string.Empty;
                         materialDataPoint.Quantity = qty;
-                        materialDataPoint.Description = jobMaterial.description;
-                        materialDataPoint.Supplier = jobMaterial.name;
-                        materialDataPoint.InvoiceNo = jobMaterial.invno;
-                        materialDataPoint.CostGroup = jobMaterial.CostGroupDesc;
-                        materialDataPoint.Discipline_Code = jobMaterial.GroupShortcode;
-                        materialDataPoint.CostType = jobMaterial.CostTypeDesc;
-                        materialDataPoint.Commodity_Code = jobMaterial.Typeshortcode;
-                        materialDataPoint.StockCode = jobMaterial.stockcode;
-                        materialDataPoint.Cost_GLName = jobMaterial.COSGlName;
-                        materialDataPoint.Purchase_GLName = jobMaterial.PurchGLName;
-                        materialDataPoint.Variation_Code = normalizeVariationCode(jobMaterial.VariationCode);
-                        materialDataPoint.InvoiceAmount = Convert.ToDecimal(jobMaterial.INVOICED);
-                        materialDataPoint.InvoiceDate = jobMaterial.INVOICEDATE;
-                        materialDataPoint.PONumber = jobMaterial.POno == null ? string.Empty : ((int)jobMaterial.POno).ToString();
+                        materialDataPoint.Description = string.Empty;
+                        materialDataPoint.Supplier = string.Empty;
+                        materialDataPoint.InvoiceNo = string.Empty;
+                        materialDataPoint.Discipline_Code = jobMaterial.DISCIPLINE_CODE;
+                        materialDataPoint.Commodity_Code = jobMaterial.COMMODITY_CODE;
+                        materialDataPoint.StockCode = jobMaterial.STOCK_CODE;
+                        materialDataPoint.Cost_GLName = string.Empty;
+                        materialDataPoint.Purchase_GLName = string.Empty;
+                        materialDataPoint.Variation_Code = jobMaterial.VARIATION_CODE;
+                        materialDataPoint.InvoiceAmount = 0;
+                        materialDataPoint.InvoiceDate = null;
+                        materialDataPoint.PONumber = string.Empty;
 
                         materialDataPoints.Add(materialDataPoint);
                     }
@@ -1066,7 +1222,7 @@ namespace BluePrints.Common.ViewModel.Utils
             return variationCode;
         }
 
-        public static List<ExoDataPoint> GetEXOPO(IPrimeroEntitiesUnitOfWork primeroUOW, string projectNumber, DateTime queryDate, List<DateTime> alignedDataDates = null, bool showLoadingScreen = false)
+        public static List<ExoDataPoint> GetEXOPO(IPrimeroEntitiesUnitOfWork primeroUOW, string projectNumber, DateTime queryDate, List<DateTime> alignedDataDates = null, bool showLoadingScreen = false, ExoQueryType exoQueryType = ExoQueryType.All)
         {
             List<ExoDataPoint> poDataPoints = new List<ExoDataPoint>();
 
@@ -1096,8 +1252,9 @@ namespace BluePrints.Common.ViewModel.Utils
                       where JOBCOST_HDR2.JOBCODE == projectNumber && PURCHORD_HDR.ORDERDATE <= poCutOffDate
                       select new { PURCHORD_HDR.EXCHRATE, PURCHORD_LINES.POLINEID, PURCHORD_LINES.STOCKCODE, PURCHORD_LINES.DESCRIPTION, PONarrate.NARRATIVE, PURCHORD_HDR.SEQNO, PURCHORD_LINES.LINETOTAL, CR_ACCS.NAME, JOBCOST_HDR.JOBCODE, JOBCOST_HDR.TITLE, COSTTYPEDESC = JOB_COSTTYPES.COSTDESC, COSTGROUPDESC = JOB_COSTGROUPS.COSTDESC, GROUPSHORTCODE = JOB_COSTGROUPS.SHORTCODE, PURCHORD_LINES.ORD_QUANT, PURCHORD_LINES.SUP_QUANT, PURCHORD_LINES.UNITPRICE, PURCHORD_HDR.STATUS, PURCHORD_HDR.DUEDATE, PURCHORD_HDR.ORDERDATE, PURCHORD_HDR.LAST_UPDATED, PURCHORD_LINES.X_VARIATIONCODE, JOB_COSTTYPES.SHORTCODE };
 
-            var poList = pos.ToList();
-
+            string equipmentHireStockCodeInitials = BluePrintsResources.EquipmentHireStockCodeInitials;
+            var poList = exoQueryType == ExoQueryType.All ? pos.ToList() : exoQueryType == ExoQueryType.EquipmentHireOnly ? pos.Where(x => x.STOCKCODE.StartsWith(equipmentHireStockCodeInitials)).ToList() : pos.Where(x => !x.STOCKCODE.StartsWith(equipmentHireStockCodeInitials)).ToList();
+            //var poList = pos.ToList();
             IQueryable<INWARDS_GOODS_LINES> inwardGoods = from INWARDS_GOODS_LINES in primeroUOW.INWARDS_GOODS_LINES
                                                           join PURCHORD_LINES in primeroUOW.PURCHORD_LINES
                                                           on INWARDS_GOODS_LINES.PO_LINE_NUM equals PURCHORD_LINES.POLINEID
@@ -1118,7 +1275,7 @@ namespace BluePrints.Common.ViewModel.Utils
 
             foreach(var po in poList)
             {
-                if (po.COSTGROUPDESC != null && (po.COSTGROUPDESC.Length >= 3 && !po.COSTGROUPDESC.Substring(0, 3).Contains("G99") && !po.COSTGROUPDESC.Substring(0, 3).Contains("010")))
+                if (po.COSTGROUPDESC != null && !po.COSTGROUPDESC.Contains("G99") && !po.COSTGROUPDESC.Contains("010"))
                 {
                     ExoDataPoint poDataPoint = new ExoDataPoint();
                     poDataPoint.BudgetedUnits = 0;
@@ -1183,6 +1340,62 @@ namespace BluePrints.Common.ViewModel.Utils
             return poDataPoints.ToList();
         }
 
+        public static List<ExoDataPoint> GetEXOPOByWBS(IPrimeroEntitiesUnitOfWork primeroUOW, string projectNumber, DateTime queryDate, List<DateTime> alignedDataDates = null, bool showLoadingScreen = false, ExoQueryType exoQueryType = ExoQueryType.All)
+        {
+            List<ExoDataPoint> poDataPoints = new List<ExoDataPoint>();
+
+            if (showLoadingScreen)
+            {
+                LoadingScreenManager.ShowLoadingScreen(1);
+                LoadingScreenManager.SetMessage("Loading POs...");
+            }
+
+            DateTime poCutOffDate = queryDate.Date.AddDays(1).AddMinutes(-1);
+            List<X_PURCHORD_LINE> purchaseOrderLines = PrimeroEntities.GetPurchaseOrdersSummary(primeroUOW, projectNumber, poCutOffDate);
+
+            if (showLoadingScreen)
+            {
+                LoadingScreenManager.CloseLoadingScreen();
+                LoadingScreenManager.ShowLoadingScreen(purchaseOrderLines.Count());
+                LoadingScreenManager.SetMessage("Loading POs...");
+            }
+
+            foreach (var po in purchaseOrderLines)
+            {
+                if (po.DISCIPLINE_CODE != null && (!po.DISCIPLINE_CODE.Contains("G99") && !po.DISCIPLINE_CODE.Contains("010")))
+                {
+                    ExoDataPoint poDataPoint = new ExoDataPoint();
+                    poDataPoint.BudgetedUnits = 0;
+                    poDataPoint.BudgetedCosts = 0;
+                    decimal orderQty = Convert.ToDecimal(po.TOTAL_ORD_QUANT);
+                    poDataPoint.TotalUnits = orderQty;
+
+                    decimal remainingQty = orderQty - Convert.ToDecimal(po.TOTAL_SUP_QUANT);
+                    poDataPoint.Units = remainingQty < 0 ? 0 : remainingQty;
+                    poDataPoint.Costs = Convert.ToDecimal(po.TOTAL_OUTSTANDING_COSTS);
+                    poDataPoint.CostPerQty = poDataPoint.Units == 0 ? 0 : (poDataPoint.Costs / poDataPoint.Units);
+                    poDataPoint.TotalCosts = Convert.ToDecimal(po.TOTAL_COSTS);
+                    poDataPoint.Subjob_Name = po.SUB_JOBCODE;
+                    poDataPoint.Quantity = poDataPoint.Units;
+                    poDataPoint.Discipline_Code = po.DISCIPLINE_CODE;
+                    poDataPoint.Commodity_Code = po.COMMODITY_CODE;
+                    poDataPoint.IsPO = true;
+                    poDataPoint.POOrderQty = orderQty;
+                    poDataPoint.POSuppliedQty = Convert.ToDecimal(po.TOTAL_SUP_QUANT);
+                    poDataPoint.Variation_Code = normalizeVariationCode(po.VARIATION_CODE);
+                    poDataPoints.Add(poDataPoint);
+                }
+
+                if (showLoadingScreen)
+                    LoadingScreenManager.Progress();
+            }
+
+            if (showLoadingScreen)
+                LoadingScreenManager.CloseLoadingScreen();
+
+            return poDataPoints.ToList();
+        }
+
         public static List<PURCHORD_LINES> GetAllNativeEXOPO(IPrimeroEntitiesUnitOfWork primeroUOW, IRepositoryQuery<PURCHORD_LINES> PURCHORD_LINESCollection, string projectNumber)
         {
             var pos = from PURCHORD_LINES in PURCHORD_LINESCollection
@@ -1230,14 +1443,19 @@ namespace BluePrints.Common.ViewModel.Utils
             return x.GUID == y.GUID;
         }
 
-        public static decimal GetStockLevelProductivity(IReportable reportable, ref bool isOverride)
+        public static decimal GetProductivity(decimal earnedUnits, decimal burnedUnits)
         {
-            decimal reportableProductivity = reportable.Override_Productivity == null ? reportable.Current_Productivity : (decimal)reportable.Override_Productivity;
-            if (reportableProductivity == 0)
-                reportableProductivity = 1;
-
-            isOverride = reportable.Override_Productivity != null;
-            return reportableProductivity;
+            decimal defaultProductivity = decimal.Parse(BluePrintsResources.Default_Productivity);
+            if (earnedUnits == 0 && burnedUnits == 0)
+                return 1;
+            else if (earnedUnits > 0 && burnedUnits == 0)
+                return 1;
+            else if (earnedUnits == 0 && burnedUnits > 0)
+                return 1;
+                //return defaultProductivity; //use only when user is ready for it
+            else
+                return 1;
+                //return burnedUnits / earnedUnits; //use only when user is ready for it
         }
 
         /// <summary>
@@ -1709,14 +1927,15 @@ namespace BluePrints.Common.ViewModel.Utils
         /// Searches rate cascadingly for IRATE interface
         /// </summary>
         /// <returns></returns>
-        public static RATE CascadeRateSearch(Guid? areaGuid, Guid? subAreaGuid, Guid? disciplineGuid, Guid? departmentGuid, string commodityCode, string variationCode, IEnumerable<RATE> RATECollection, CostType costType, PhaseType phaseType)
+        public static RATE CascadeRateSearch(Guid? areaGuid, Guid? subAreaGuid, Guid? disciplineGuid, int? disciplineNum, Guid? departmentGuid, string commodityCode, string variationCode, IEnumerable<RATE> RATECollection, CostType costType, PhaseType phaseType)
         {
             IEnumerable<RATE> rateByPhase = RATECollection.Where(y => y.COST_TYPE == costType && y.Phase_Type == phaseType);
             //order by descending places null GUID's at the end, so First() won't pick it up
             IEnumerable<RATE> rateByVariations = rateByPhase.Where(y => (y.VARIATION_CODE == variationCode) || (y.VARIATION_CODE == string.Empty || y.VARIATION_CODE == null)).OrderByDescending(y => y.COMMODITY_CODE);
             IEnumerable<RATE> rateByCommodities = rateByVariations.Where(y => (y.COMMODITY_CODE == commodityCode) || (y.COMMODITY_CODE == string.Empty || y.COMMODITY_CODE == null)).OrderByDescending(y => y.COMMODITY_CODE);
             IEnumerable<RATE> rateByDiscipline = rateByCommodities.Where(y => (y.GUID_DISCIPLINE == disciplineGuid) || (y.GUID_DISCIPLINE == null)).OrderByDescending(y => y.GUID_DISCIPLINE);
-            IEnumerable<RATE> rateByDepartment = rateByDiscipline.Where(y => (y.GUID_DEPARTMENT == departmentGuid) || (y.GUID_DEPARTMENT == null)).OrderByDescending(y => y.GUID_DEPARTMENT);
+            IEnumerable<RATE> rateByDisciplineNum = rateByDiscipline.Where(y => (y.DISCIPLINE_NUM == disciplineNum) || (y.DISCIPLINE_NUM == null)).OrderByDescending(y => y.DISCIPLINE_NUM);
+            IEnumerable<RATE> rateByDepartment = rateByDisciplineNum.Where(y => (y.GUID_DEPARTMENT == departmentGuid) || (y.GUID_DEPARTMENT == null)).OrderByDescending(y => y.GUID_DEPARTMENT);
             IEnumerable<RATE> rateBySubArea = rateByDepartment.Where(y => (y.GUID_SUBAREA == subAreaGuid) || (y.GUID_SUBAREA == null)).OrderByDescending(y => y.GUID_SUBAREA);
             IEnumerable<RATE> rateByArea = rateBySubArea.Where(y => (y.GUID_AREA == areaGuid) || (y.GUID_AREA == null)).OrderByDescending(y => y.GUID_AREA);
 
@@ -1847,12 +2066,12 @@ namespace BluePrints.Common.ViewModel.Utils
                         List<PROGRESS_ITEM> progressesByDate = deliverable.PROGRESS_ITEMS.OrderBy(x => x.EARNED_DATE).ToList();
                         foreach (PROGRESS_ITEM progressByDate in progressesByDate)
                         {
-                            decimal postProgressEarnedUnit = (iterateEarnedUnits + progressByDate.EARNED_UNITS);
-                            decimal oldProgressEarnUnit = progressByDate.EARNED_UNITS;
+                            decimal postProgressEarnedUnit = (iterateEarnedUnits + progressByDate.EarnedUnits);
+                            decimal oldProgressEarnUnit = progressByDate.EarnedUnits;
                             if (postProgressEarnedUnit > maxAllowableEarnedUnit)
                             {
                                 decimal newProgressEarnUnit = (maxAllowableEarnedUnit - iterateEarnedUnits);
-                                progressByDate.EARNED_UNITS = newProgressEarnUnit < 0 ? 0 : newProgressEarnUnit;
+                                progressByDate.EarnedUnits = newProgressEarnUnit < 0 ? 0 : newProgressEarnUnit;
                                 updateProgress.Add(progressByDate);
                             }
 
@@ -1938,6 +2157,18 @@ namespace BluePrints.Common.ViewModel.Utils
             PROJECTCollectionViewModel.Save(project);
             ChangedStartDataDate = saveDateTime;
             LoadDataDate = saveDateTime;
+        }
+
+        public static string GetPhaseCodeFromSubJobCode(string SubJobCode)
+        {
+            if (SubJobCode == null || SubJobCode == string.Empty)
+                return string.Empty;
+
+            List<string> codePartition = SubJobCode.Split('-').ToList();
+            if (codePartition.Count < 4)
+                return string.Empty;
+
+            return codePartition[3];
         }
 
         public static string GetPreferredDocumentTypeName(string preferenceName)

@@ -19,7 +19,6 @@ namespace BluePrints.Data
         public ESTIMATE_ITEM()
         {
             DISCIPLINE_NUM = 1;
-            PROGRESS_TYPE = 0;
         }
 
         [NotMapped]
@@ -59,14 +58,21 @@ namespace BluePrints.Data
         }
 
         [NotMapped]
+        public IEnumerable<AREA> NewItemRowSubAREACollection { get; set; }
+
+        [NotMapped]
         public IEnumerable<AREA> SubAreaCollection
         {
             get
             {
-                if (AREA == null)
+                //when it's in read only mode we can use navigational properties to get sub areas
+                if (AREA != null)
+                    return AREA.AREA1;
+
+                if (GUID_AREA == null || NewItemRowSubAREACollection == null)
                     return null;
 
-                return AREA.AREA1;
+                return NewItemRowSubAREACollection.Where(x => x.GUID_PARENT == GUID_AREA);
             }
         }
 
@@ -88,6 +94,9 @@ namespace BluePrints.Data
         public PhaseType? PhaseType =>  CachedPHASE != null ? CachedPHASE.PHASE_TYPE : PHASE != null ? PHASE.PHASE_TYPE : null;
 
         [NotMapped]
+        public IEnumerable<ExoTimeAuthorisation> ExoLines { get; set; }
+
+        [NotMapped]
         public IEnumerable<COMMODITY_CODE> FullCOMMODITY_CODECollection;
         public IEnumerable<COMMODITY_CODE> CommodityCodeCollection
         {
@@ -97,6 +106,17 @@ namespace BluePrints.Data
                     return null;
 
                 return FullCOMMODITY_CODECollection.Where(x => x.PHASE_TYPE == PhaseType && x.GUID_DISCIPLINE == GUID_DISCIPLINE).OrderBy(x => x.CODE);
+            }
+        }
+
+        public IEnumerable<COMMODITY_CODE> StockCodeCollection
+        {
+            get
+            {
+                if (PhaseType == null || FullCOMMODITY_CODECollection == null || GUID_DISCIPLINE == null || (COMMODITY_CODE == null || COMMODITY_CODE == string.Empty))
+                    return null;
+
+                return FullCOMMODITY_CODECollection.Where(x => x.PHASE_TYPE == PhaseType && x.GUID_DISCIPLINE == GUID_DISCIPLINE).Where(x => x.CODE == COMMODITY_CODE).OrderBy(x => x.DEFAULT_STOCKCODE);
             }
         }
 
@@ -198,12 +218,6 @@ namespace BluePrints.Data
             get
             {
                 return COMMODITY_CODE;
-                //if (COMMODITY_CODES != null)
-                //    return COMMODITY_CODES.CODE;
-                //else if (CachedCOMMODITY_CODE != null)
-                //    return CachedCOMMODITY_CODE.CODE;
-                //else
-                //    return string.Empty;
             }
         }
 
@@ -221,19 +235,10 @@ namespace BluePrints.Data
         {
             get
             {
-                //if (IsByDuration)
-                //    return BluePrintsConstants.DurationBasedTotalUnits;
-
-                //temporarily removed for forecast phase 1 implementation so that schedule hours can be visualized in schedule mapping
-                //if (STOCK_CODE == null)
-                //    return 0;
-
-                if (BUDGET_QUANTITY == null)
+                if (BUDGET_HOURS == null)
                     return 0;
 
-                //temporarily removed for forecast phase 1 implementation so that schedule hours can be visualized in schedule mapping
-                //return (decimal)BUDGET_QUANTITY * STOCK_CODE.HOURS_INSTALL;
-                return (decimal)BUDGET_QUANTITY;
+                return (decimal)BUDGET_HOURS;
             }
         }
 
@@ -244,10 +249,7 @@ namespace BluePrints.Data
         {
             get
             {
-                if (STOCK_CODE == null)
-                    return 0;
-                else
-                    return DC_QUANTITY * STOCK_CODE.HOURS_INSTALL;
+                return 0;
             }
         }
 
@@ -262,9 +264,6 @@ namespace BluePrints.Data
 
         [NotMapped]
         public decimal Estimated_Value { get => BUDGET_QUANTITY == null ? 0 : (decimal)BUDGET_QUANTITY; set => BUDGET_QUANTITY = value; }
-
-        [NotMapped]
-        public decimal DC_Value { get => DC_QUANTITY; set => DC_QUANTITY = value; }
 
         [NotMapped]
         public string Subjob_Name
@@ -317,7 +316,7 @@ namespace BluePrints.Data
         public decimal Budget_Quantity => BUDGET_QUANTITY == null ? 0 : (decimal)BUDGET_QUANTITY;
 
         [NotMapped]
-        public decimal Total_Quantity => DC_QUANTITY + Budget_Quantity;
+        public decimal Total_Quantity => Budget_Quantity;
 
         public string Variation_Code
         {
@@ -356,8 +355,10 @@ namespace BluePrints.Data
             }
         }
 
-        public decimal Variation_Quantity => throw new NotImplementedException();
+        public decimal Variation_Quantity => Variation_Units / UnitsPerQuantity;
 
         public decimal Unadjusted_Budget_Units => Budget_Units;
+
+        public decimal UnitsPerQuantity => Total_Units / Total_Quantity;
     }
 }

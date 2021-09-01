@@ -2,6 +2,7 @@ namespace BluePrints.Data
 {
     using BaseModel.Attributes;
     using BaseModel.DataModel;
+    using BaseModel.Helpers;
     using BaseModel.Misc;
     using BluePrints.Common;
     using BluePrints.Common.Base;
@@ -26,7 +27,26 @@ namespace BluePrints.Data
         public string EntityNumber
         {
             get { return NUMBER; }
-            set { NUMBER = value; }
+            //set sort number to null so it refreshes the next time get is called
+            set { NUMBER = value; entitySortNumber = null; }
+        }
+
+        long? entitySortNumber;
+        public long EntitySortNumber
+        {
+            get
+            {
+                if (entitySortNumber == null)
+                {
+                    long sortNumber = 0;
+                    int dummyFieldLength = 0;
+                    string dummyString;
+                    dummyString = StringFormatUtils.ParseStringIntoComponents(this.EntityNumber, out dummyFieldLength, out sortNumber);
+                    entitySortNumber = sortNumber;
+                }
+
+                return (long)entitySortNumber;
+            }
         }
 
         [NotMapped]

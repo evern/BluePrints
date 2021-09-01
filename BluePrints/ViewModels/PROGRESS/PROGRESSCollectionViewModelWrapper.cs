@@ -239,7 +239,12 @@ namespace BluePrints.ViewModels
         {
             string viewName;
             if (loadPROJECT.USE_WORKPACKS)
-                viewName = "BASELINE_ITEMWorkpackSchedulingView";
+            {
+                if (SelectedEntity.TYPE == PhaseType.Construct)
+                    viewName = "BUDGET_ITEMWorkpackSchedulingView";
+                else
+                    viewName = "BASELINE_ITEMWorkpackSchedulingView";
+            }
             else
             {
                 if (SelectedEntity.TYPE == PhaseType.Construct)
@@ -294,7 +299,7 @@ namespace BluePrints.ViewModels
                 if (otherPROGRESSES.Any(x => x.STATUS == ProgressStatus.Live) && newStatus == ProgressStatus.Live)
                     return "There can be only one live progress";
             }
-            else if (field_name == BindableBase.GetPropertyName(() => new PROGRESS().DATA_DATE) && new_value != null)
+            else if (projection.TYPE == PhaseType.Design && field_name == BindableBase.GetPropertyName(() => new PROGRESS().DATA_DATE) && new_value != null)
             {
                 if(projection.PROGRESS_ITEM != null && projection.PROGRESS_ITEM.Count > 0)
                 {
@@ -347,7 +352,7 @@ namespace BluePrints.ViewModels
                             if (backwardDate == null || forwardDate == null)
                                 return "Some earned dates cannot be readjusted";
 
-                            EarnedDataDateRealignModel earnedDataDateRealignModel = new EarnedDataDateRealignModel() { Guid = progress_item.GUID, EarnedUnits = progress_item.EARNED_UNITS, CurrentEarnedDate = progress_item.EARNED_DATE, BackwardEarnedDate = (DateTime)backwardDate, ForwardEarnedDate = (DateTime)forwardDate };
+                            EarnedDataDateRealignModel earnedDataDateRealignModel = new EarnedDataDateRealignModel() { Guid = progress_item.GUID, EarnedUnits = progress_item.EarnedUnits, CurrentEarnedDate = progress_item.EARNED_DATE, BackwardEarnedDate = (DateTime)backwardDate, ForwardEarnedDate = (DateTime)forwardDate };
                             earnedDataDateRealignModels.Add(earnedDataDateRealignModel);
                         }
 

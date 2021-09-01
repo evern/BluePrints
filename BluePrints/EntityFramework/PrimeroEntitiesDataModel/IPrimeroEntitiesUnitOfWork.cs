@@ -1,5 +1,6 @@
 ﻿using BaseModel.DataModel;
 using System;
+using System.Data.Entity;
 
 namespace BluePrints.PrimeroData.PrimeroEntitiesDataModel
 {
@@ -8,6 +9,8 @@ namespace BluePrints.PrimeroData.PrimeroEntitiesDataModel
     /// </summary>
     public interface IPrimeroEntitiesUnitOfWork : IUnitOfWork
     {
+        DbContext DbContext { get; }
+
         /// <summary>
         /// The ACCS_BALANCE entities repository.
         /// </summary>
@@ -1722,6 +1725,11 @@ namespace BluePrints.PrimeroData.PrimeroEntitiesDataModel
         /// The X_JOB_TRANSACTIONS_DETAIL entities repository.
         /// </summary>
         IRepository<X_JOB_TRANSACTIONS_DETAIL_SeqNo, int> X_JOB_TRANSACTIONS_DETAIL_SeqNos { get; }
+
+        /// <summary>
+        /// The X_JOB_TRANSACTIONS_DETAIL_V2 entities repository.
+        /// </summary>
+        IRepository<X_JOB_TRANSACTIONS_DETAIL_V2, int> X_JOB_TRANSACTIONS_DETAIL_V2 { get; }
 
         /// <summary>
         /// The X_DEPARTMENT entities repository.

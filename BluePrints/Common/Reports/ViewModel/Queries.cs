@@ -33,7 +33,7 @@ namespace BluePrints.Common.ViewModel.Reporting
                     foreach (User_Weight userWeight in projection.AssignedUsers)
                     {
                         BASELINE_ITEMProgress userProjection = new BASELINE_ITEMProgress(project, live_progress, projection.Entity, new List<VariationAdjustment>(), false);
-                        userProjection.Stats = new ProgressStats(projection.Stats.ReportingDataDate, projection.Stats.ReportingInterval, projection.Stats.FirstAlignedDataDate, projection.Stats.BudgetedUnits * userWeight.AggregateWeight, projection.Stats.TotalUnits * userWeight.AggregateWeight, projection.Stats.BudgetedQty * userWeight.AggregateWeight, projection.Stats.TotalQty * userWeight.AggregateWeight, projection.Stats.BudgetedCosts * userWeight.AggregateWeight, projection.Stats.TotalCosts * userWeight.AggregateWeight, new List<VariationAdjustment>());
+                        userProjection.Stats = new ProgressStats(projection.Stats.ReportingDataDate, projection.Stats.ReportingInterval, projection.Stats.FirstAlignedDataDate, projection.Stats.BudgetedUnits * userWeight.AggregateWeight, projection.Stats.TotalUnits * userWeight.AggregateWeight, projection.Stats.BudgetedQty * userWeight.AggregateWeight, projection.Stats.TotalQty * userWeight.AggregateWeight, projection.Stats.BudgetedCosts * userWeight.AggregateWeight, projection.Stats.TotalCosts * userWeight.AggregateWeight);
                         DataUtils.ShallowCopy(userProjection, projection);
                         userProjection.Entity = projection.Entity;
                         userProjection.User_Name = userWeight.UserName;
@@ -180,7 +180,7 @@ namespace BluePrints.Common.ViewModel.Reporting
         public static IQueryable<BASELINE_ITEMProgress> OffsiteDirectProgressItemTransformation(
             IQueryable<BASELINE_ITEM> BASELINE_ITEMS,
             PROJECT PROJECT,
-            PROGRESS PROGRESS = null,
+            PROGRESS PROGRESS,
             IEnumerable<RATE> RATES = null,
             IEnumerable<PROGRESS_ITEM> PROGRESS_ITEMS = null,
             IEnumerable<VARIATION> VARIATIONS = null, bool buildStats = false, IEnumerable<P6_ASSIGNMENT> P6_ASSIGNMENTS = null, DeliverableInternalNumberMode internalNumberMode = DeliverableInternalNumberMode.Default, bool useReportDate = false, IEnumerable<P6Data.TASK> P6_TASKS = null, IEnumerable<USER> USERCollection = null, IEnumerable<BASELINE_ITEM_WORK> BASELINE_ITEM_WORKCollection = null, DateTime? forceExtrapolateDate = null, IEnumerable<REGISTER_HOLD_REF> REGISTER_HOLD_REFCollection = null, IEnumerable<DELIVERABLES_STATUS> DELIVERABLES_STATUSCollection = null, IEnumerable<DSTATUS_DOCTYPE> DSTATUS_DOCTYPECollection = null, Guid? ProjectGuidForDeliverablesStatus = null, IEnumerable<DOCTYPE> DOCTYPECollection = null, IEnumerable<COMMODITY_CODE> COMMODITY_CODECollection = null,
@@ -196,7 +196,7 @@ namespace BluePrints.Common.ViewModel.Reporting
 
             //commented out because multiple resources and weighting isn't used
             //need to cast to list if not AssignUserObject won't stick
-            List<BASELINE_ITEMProjection> projections = baseline_item_queryable.ToList();
+            List<BASELINE_ITEMProjection> projections = baseline_item_queryable.Select(x => (BASELINE_ITEMProjection)x).ToList();
 
             //holds population
             if (REGISTER_HOLD_REFCollection != null)
@@ -333,46 +333,6 @@ namespace BluePrints.Common.ViewModel.Reporting
                 return P6ASSIGNMENTCollection.Where(x => x.GUID_ORIGINAL == baseline_item.Workpack_Guid).ToList();
 
             return P6ASSIGNMENTCollection.Where(x => x.GUID_ORIGINAL == baseline_item.OriginalEntityKey).ToList();
-        }
-
-        public static IQueryable<ReportablesDisplay> SiteDirectProgressItemTransformation(
-            IQueryable<ESTIMATE_ITEM> ESTIMATE_ITEMS, PROJECT PROJECT, PROGRESS PROGRESS, IEnumerable<PROGRESS_ITEM> PROGRESS_ITEMS, IEnumerable<STOCK_GROUP> STOCK_GROUPS, IEnumerable<STOCK_CODE> projectSTOCK_CODES, IEnumerable<RATE> projectRATES, bool useReportDate)
-        {
-            IEnumerable<PROGRESS_ITEM> arrPROGRESS_ITEMS = PROGRESS_ITEMS.ToArray();
-            List<ReportablesDisplay> display_items = new List<ReportablesDisplay>();
-
-            IEnumerable<ESTIMATE_ITEMProgress> estimation_direct_item_progresses =
-                ESTIMATE_ITEMProjectionQueries.IDeliverable_Progress_Transformation(ESTIMATE_ITEMS, PROJECT, projectRATES, PROGRESS, PROGRESS_ITEMS, false, 
-                                                                                    projectSTOCK_CODES,
-                                                                                    STOCK_GROUPS).AsEnumerable();
-
-            var estimationItemsByParent = estimation_direct_item_progresses.Where(x => x.Entity.Progress_Type != EstimateProgressType.Standalone)
-                .GroupBy(x => x.Entity.Entity.GUID_PARENT).Select(group => new { ParentGuid = group.Key, deliverables = group.ToList() });
-
-            DateTime reportDateToUse = useReportDate ? PROGRESS.REPORT_DATE != null ? (DateTime)PROGRESS.REPORT_DATE : PROGRESS.DATA_DATE : PROGRESS.DATA_DATE;
-            foreach (var estimationItemByParent in estimationItemsByParent)
-            {
-                ESTIMATE_ITEMProgress parentEstimate = estimation_direct_item_progresses.FirstOrDefault(x => x.OriginalEntityKey == estimationItemByParent.ParentGuid);
-                if(parentEstimate != null)
-                {
-                    List<ESTIMATE_ITEMProgress> estimate_items = new List<ESTIMATE_ITEMProgress>();
-                    estimate_items.AddRange(estimationItemByParent.deliverables);
-                    estimate_items.Add(parentEstimate);
-
-                    STOCK_GROUPProgress newStockGroup = new STOCK_GROUPProgress();
-                    newStockGroup.Live_PROGRESS = PROGRESS;
-                    newStockGroup.Reportables = estimate_items;
-                    newStockGroup.Entity.Deliverables = estimate_items.Select(x => x.Entity);
-                    newStockGroup.SetReportingDataDate(reportDateToUse);
-                    ReportablesDisplay newProgressDisplay = new ReportablesDisplay();
-                    newProgressDisplay.ProgressItem = new DisplayQuantityReportableGroup(newStockGroup);
-                    display_items.Add(newProgressDisplay);
-                }
-            }
-
-            display_items.AddRange(estimation_direct_item_progresses.Where(x => x.Progress_Type == EstimateProgressType.Standalone).Select(x => new ReportablesDisplay() { ProgressItem = new DisplayQuantityReportable(x, false) }));
-
-            return display_items.AsQueryable();
         }
 
         public static void SetReportablePROGRESS_ITEM(IReportable reportable, IEnumerable<dynamic> PROGRESS_ITEMSByOriginalGuid)

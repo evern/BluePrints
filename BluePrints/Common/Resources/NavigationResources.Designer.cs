@@ -97,11 +97,38 @@ namespace BluePrints.Common.Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Construction progress category.
+        /// </summary>
+        internal static string Category_Project_Construct_Progress {
+            get {
+                return ResourceManager.GetString("Category_Project_Construct_Progress", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Project construct rates category.
+        /// </summary>
+        internal static string Category_Project_Construct_Rate {
+            get {
+                return ResourceManager.GetString("Category_Project_Construct_Rate", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Project design category.
         /// </summary>
         internal static string Category_Project_Design {
             get {
                 return ResourceManager.GetString("Category_Project_Design", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Project design rates category.
+        /// </summary>
+        internal static string Category_Project_Design_Rate {
+            get {
+                return ResourceManager.GetString("Category_Project_Design_Rate", resourceCulture);
             }
         }
         
@@ -120,15 +147,6 @@ namespace BluePrints.Common.Resources {
         internal static string Category_Project_Forecast {
             get {
                 return ResourceManager.GetString("Category_Project_Forecast", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Project rates category.
-        /// </summary>
-        internal static string Category_Project_Rate {
-            get {
-                return ResourceManager.GetString("Category_Project_Rate", resourceCulture);
             }
         }
         
@@ -367,6 +385,15 @@ namespace BluePrints.Common.Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Project construction direct charge rate maintenance.
+        /// </summary>
+        internal static string Menu_Project_ConstructionDirectChargeRate {
+            get {
+                return ResourceManager.GetString("Menu_Project_ConstructionDirectChargeRate", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Project construction direct cost rate maintenance.
         /// </summary>
         internal static string Menu_Project_ConstructionDirectCostRate {
@@ -394,11 +421,65 @@ namespace BluePrints.Common.Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Project construction stage maintenance menu.
+        /// </summary>
+        internal static string Menu_Project_ConstructionStage {
+            get {
+                return ResourceManager.GetString("Menu_Project_ConstructionStage", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Project construction variation maintenance menu.
         /// </summary>
         internal static string Menu_Project_ConstructionVariation {
             get {
                 return ResourceManager.GetString("Menu_Project_ConstructionVariation", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Project construction progress maintenance menu.
+        /// </summary>
+        internal static string Menu_Project_ConstructProgress_Concrete {
+            get {
+                return ResourceManager.GetString("Menu_Project_ConstructProgress_Concrete", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Project electrical construction progress maintenance menu.
+        /// </summary>
+        internal static string Menu_Project_ConstructProgress_Electrical {
+            get {
+                return ResourceManager.GetString("Menu_Project_ConstructProgress_Electrical", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Project mechanical construction progress maintenance menu.
+        /// </summary>
+        internal static string Menu_Project_ConstructProgress_Mechanical {
+            get {
+                return ResourceManager.GetString("Menu_Project_ConstructProgress_Mechanical", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Project piping construction progress maintenance menu.
+        /// </summary>
+        internal static string Menu_Project_ConstructProgress_Piping {
+            get {
+                return ResourceManager.GetString("Menu_Project_ConstructProgress_Piping", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Project structural construction progress maintenance menu.
+        /// </summary>
+        internal static string Menu_Project_ConstructProgress_Structural {
+            get {
+                return ResourceManager.GetString("Menu_Project_ConstructProgress_Structural", resourceCulture);
             }
         }
         
@@ -615,6 +696,15 @@ namespace BluePrints.Common.Resources {
         internal static string Menu_Project_Forecast_Claims {
             get {
                 return ResourceManager.GetString("Menu_Project_Forecast_Claims", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Project equipment hire PO forecast maintenance menu.
+        /// </summary>
+        internal static string Menu_Project_Forecast_Flat_PO {
+            get {
+                return ResourceManager.GetString("Menu_Project_Forecast_Flat_PO", resourceCulture);
             }
         }
         
