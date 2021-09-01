@@ -8,6 +8,10 @@
 
     public partial class X_JOB_TRANSACTIONS_DETAIL_V2
     {
+        public int? MASTER_JOBNO { get; set; }
+
+        public int? JOBNO { get; set; }
+
         [Key]
         [Column(Order = 0)]
         [DatabaseGenerated(DatabaseGeneratedOption.None)]
@@ -19,14 +23,18 @@
         [StringLength(15)]
         public string SUB_JOBCODE { get; set; }
 
-        [StringLength(50)]
-        public string DEPARTMENT_NAME { get; set; }
-
         [StringLength(4)]
         public string DISCIPLINE_CODE { get; set; }
 
+        public int? COST_GROUP_NO { get; set; }
+
         [StringLength(4)]
         public string COMMODITY_CODE { get; set; }
+
+        public int? COST_TYPE_NO { get; set; }
+
+        [StringLength(50)]
+        public string DEPARTMENT_NAME { get; set; }
 
         [Key]
         [Column(Order = 1)]
@@ -46,6 +54,8 @@
 
         public double? QUANTITY { get; set; }
 
+        public double? UNITCOST { get; set; }
+
         public double? UNITPRICE { get; set; }
 
         public double? LINECOST { get; set; }
@@ -62,7 +72,7 @@
         public string NARRATIVE { get; set; }
 
         [StringLength(60)]
-        public string NAME { get; set; }
+        public string SUPPLIER_NAME { get; set; }
 
         [Key]
         [Column(Order = 3)]
@@ -74,6 +84,21 @@
         public double INVOICED { get; set; }
 
         public DateTime? INVOICEDATE { get; set; }
+
+        [StringLength(30)]
+        public string RESOURCE_TITLE { get; set; }
+
+        public int? ACCNO { get; set; }
+
+        public int? PURCH_GL_NO { get; set; }
+
+        [StringLength(40)]
+        public string PURCH_GL_NAME { get; set; }
+
+        public int? COST_GL_NO { get; set; }
+
+        [StringLength(40)]
+        public string COST_GL_NAME { get; set; }
 
         public int? Q_WEEKNO { get; set; }
 
