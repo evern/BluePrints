@@ -203,7 +203,8 @@ namespace BluePrints.ViewModels
         public void CommodityCodePopupOpening(OpenPopupEventArgs e)
         {
             DevExpress.Xpf.Grid.LookUp.LookUpEdit sender = e.Source as DevExpress.Xpf.Grid.LookUp.LookUpEdit;
-            sender.ItemsSource = SelectedEntity.TaggedValidCommodityCodes;
+            if(SelectedEntity != null)
+                sender.ItemsSource = SelectedEntity.TaggedValidCommodityCodes;
         }
 
         //only populate lookup edit items source with validated entries during pop up opening to reduce memory footprint
