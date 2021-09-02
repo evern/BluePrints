@@ -64,7 +64,7 @@ namespace BluePrints.PrimeroData
 
         public DateTime? ORDERDATE { get; set; }
 
-        public double? LINETOTAL { get; set; }
+        public DateTime? LAST_UPDATED { get; set; }
 
         [Key]
         [Column(Order = 8)]
@@ -74,8 +74,24 @@ namespace BluePrints.PrimeroData
         [Column(Order = 9)]
         public double FUTURE_SUPPLY { get; set; }
 
+        public double? LINETOTAL { get; set; }
+
+        public int? STATUS { get; set; }
+
         [Key]
         [Column(Order = 10)]
-        public double OUTSTANDING_COSTS { get; set; }
+        public double NormalizeOrderQty { get; set; }
+
+        [Key]
+        [Column(Order = 11)]
+        public double NormalizeSupplyQty { get; set; }
+
+        public double? NormalizeUnitPrice { get; set; }
+
+        [Key]
+        [Column(Order = 12)]
+        public double RemainingQty { get; set; }
+
+        public double? OUTSTANDING_COSTS { get; set; }
     }
 }

@@ -337,6 +337,7 @@
                 <dxb:BarButtonItem x:Name="biReloadP6" Command="{Binding ReloadP6ForecastCommand}" Content="Calculate Forecast" Glyph="{dx:DXImage Image=Reset2_16x16.png}" LargeGlyph="{dx:DXImage Image=Reset2_32x32.png}" ToolTip="Reload from P6. Must be performed after pressing F9 in P6" />
                 <dxb:BarCheckItem x:Name="biShowActuals" Content="Show Actuals History" Glyph="{dxc:DXImage Images/Scheduling/SwitchTimeScalesTo_16x16.png}" IsChecked="{Binding IsShowActualsHistory, Mode=TwoWay}" IsEnabled="{Binding IsLoading, Converter={StaticResource BooleanNegationConverter}}" LargeGlyph="{dxc:DXImage Images/Scheduling/SwitchTimeScalesTo_32x32.png}" RibbonStyle="SmallWithText" ToolTip="Toggle historical actuals visibility" />
                 <dxb:BarButtonItem x:Name="biSaveSummary" Command="{Binding SaveSummaryCommand}" Content="Save Excel Summary" Glyph="{dx:DXImage Image=SpreadsheetInsertTable_16x16.png}" LargeGlyph="{dx:DXImage Image=SpreadsheetInsertTable_32x32.png}" RibbonStyle="SmallWithText" ToolTip="Saves the summary for excel macro to retrieve values" />
+                <dxb:BarCheckItem x:Name="biAutoHideSummary" Content="Hide Summary" IsChecked="{Binding IsAutoHideSummary, Mode=TwoWay}" IsEnabled="{Binding IsLoading, Converter={StaticResource BooleanNegationConverter}}" LargeGlyph="{dxc:DXImage Images/Actions/Hide_32x32.png}" RibbonStyle="SmallWithText" ToolTip="Toggle summary auto hidden preference" Glyph="{dxc:DXImage Images/Actions/Hide_16x16.png}" />
             </dxb:BarManager.Items>
             <DockPanel>
                 <dxr:RibbonControl Style="{StaticResource DefaultRibbonControlStyle}">
@@ -360,8 +361,6 @@
                                     <dxb:BarButtonItemLink BarItemName="biApplyPF" />
                                     <dxb:BarButtonItemLink BarItemName="biUpdatePF" />
                                 </dxb:BarSubItem>
-                                <dxb:BarCheckItemLink BarItemName="biWeeks" />
-                                <dxb:BarCheckItemLink BarItemName="biShowActuals" />
                             </dxr:RibbonPageGroup>
                             <dxr:RibbonPageGroup MergeType="Replace" Caption="Forecast Tools">
                                 <dxb:BarButtonItemLink BarItemName="biBaselineBudget" />
@@ -376,13 +375,18 @@
                                 <dxb:BarEditItemLink BarItemName="beLastRefreshed" />
                                 <dxb:BarButtonItemLink BarItemName="biReloadP6" />
                             </dxr:RibbonPageGroup>
+                            <dxr:RibbonPageGroup MergeType="Replace" Caption="View Preference">
+                                <dxb:BarCheckItemLink BarItemName="biWeeks" />
+                                <dxb:BarCheckItemLink BarItemName="biShowActuals" />
+                                <dxb:BarCheckItemLink BarItemName="biAutoHideSummary" />
+                            </dxr:RibbonPageGroup>
                         </dxr:RibbonPage>
                     </dxr:RibbonDefaultPageCategory>
                 </dxr:RibbonControl>
                 <dxdo:DockLayoutManager Name="dockLayoutManager" Margin="0" Padding="0" BorderThickness="0" FloatingMode="Desktop" MDIMergeStyle="WhenChildActivated">
                     <dxdo:LayoutGroup Margin="0" Padding="0" BorderThickness="0" ItemHeight="*" Orientation="Horizontal">
                         <dxdo:LayoutGroup Margin="0" Padding="0" BorderThickness="0" ItemHeight="*" Orientation="Vertical">
-                            <dxdo:LayoutPanel>
+                            <dxdo:LayoutPanel x:Name="Forecast" ShowHideButton="False" ShowCloseButton="False">
                                 <local:GridControlEx x:Name="GridControl" FontFamily="Calibri" FontSize="12" 
                                         TotalSummarySource="{Binding ParentSummaries}"
                                         TotalSummaryGeneratorTemplate="{StaticResource SummaryTemplate}"
@@ -465,7 +469,7 @@
                             <dxdo:LayoutPanel FontFamily="Calibri" FontSize="12" ItemHeight="30" ShowControlBox="False" ShowCloseButton="False" ShowCollapseButton="False" ShowPinButton="False">
                                 <dxlc:LayoutItem HorizontalAlignment="Center" Label="Click anywhere on the table below and press CTRL + F to clear filter and search for any actuals and POs" LabelPosition="Left" />
                             </dxdo:LayoutPanel>
-                            <dxdo:LayoutPanel x:Name="layoutActualDetails" dx:DXSerializer.Enabled="False" AutoHidden="False" ShowHideButton="True" Visibility="{Binding ActualDetailsVisibility}">
+                            <dxdo:LayoutPanel x:Name="Actual_Details" dx:DXSerializer.Enabled="False" AutoHidden="False" ShowHideButton="True" ShowCloseButton="False" Visibility="{Binding ActualDetailsVisibility}">
                                 <dxg:GridControl x:Name="gridControlActualDetails" FontFamily="Calibri" FontSize="12" ShowAllTableValuesInCheckedFilterPopup="False" AutoGenerateColumns="None" FilterCriteria="{Binding ActualFilterCriteria, Mode=TwoWay}" ItemsSource="{Binding ActualsDetail}" SelectionMode="Row" ShowLoadingPanel="{Binding IsLoading}">
                                     <dxmvvm:Interaction.Behaviors>
                                         <dxmvvm:EventToCommand EventName="KeyDown" Command="{Binding DetailGridKeyDownCommand}" PassEventArgsToCommand="True" />
@@ -523,7 +527,7 @@
                                     </dxg:GridControl.View>
                                 </dxg:GridControl>
                             </dxdo:LayoutPanel>
-                            <dxdo:LayoutPanel x:Name="layoutPODetails" dx:DXSerializer.Enabled="False" AutoHidden="False" ShowHideButton="True" Visibility="{Binding PODetailsVisibility}">
+                            <dxdo:LayoutPanel x:Name="PO_Details" dx:DXSerializer.Enabled="False" AutoHidden="False"  ShowHideButton="True" ShowCloseButton="False" Visibility="{Binding PODetailsVisibility}">
                                 <dxg:GridControl x:Name="gridControlPODetails" dx:DXSerializer.Enabled="False" FontFamily="Calibri" FontSize="12" ShowAllTableValuesInCheckedFilterPopup="False" AutoGenerateColumns="None" FilterCriteria="{Binding POFilterCriteria, Mode=TwoWay}" ItemsSource="{Binding PODetail}" SelectionMode="Row" ShowLoadingPanel="{Binding IsLoading}">
                                     <dxmvvm:Interaction.Behaviors>
                                         <dxmvvm:EventToCommand EventName="KeyDown" Command="{Binding DetailGridKeyDownCommand}" PassEventArgsToCommand="True" />
@@ -593,7 +597,7 @@
                             </dxdo:LayoutPanel>
                         </dxdo:LayoutGroup>
                         <dxdo:LayoutGroup FontFamily="Calibri" FontSize="12" MaxWidth="450" Margin="0" Padding="5" BorderThickness="0" ItemHeight="*" ItemWidth="275" Orientation="Vertical">
-                            <dxdo:LayoutPanel AutoHidden="False" ItemWidth="275" ShowHideButton="True">
+                            <dxdo:LayoutPanel x:Name="Summary" ItemWidth="275" ShowHideButton="False" ShowCloseButton="False" Visibility="{Binding SummaryVisibility, Mode=OneWay}">
                                 <dx:LoadingDecorator HorizontalAlignment="Stretch" x:Name="summaryLoadingDecorator" dx:DXSerializer.StoreLayoutMode="None" IsSplashScreenShown="{Binding IsLoading}">
                                     <dxlc:LayoutControl Padding="0" Background="Transparent" Orientation="Vertical" IsEnabled="{Binding IsLoading, Converter={StaticResource BooleanNegationConverter}}" >
                                         <dxlc:LayoutGroup Orientation="Vertical" Header="Summary" View="GroupBox">

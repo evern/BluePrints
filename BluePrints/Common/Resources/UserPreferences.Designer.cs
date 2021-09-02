@@ -97,6 +97,15 @@ namespace BluePrints.Common.Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Auto hide summary on forecast.
+        /// </summary>
+        internal static string Forecast_AutoHideSummary {
+            get {
+                return ResourceManager.GetString("Forecast_AutoHideSummary", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Show actuals on forecast.
         /// </summary>
         internal static string Forecast_ShowActuals {

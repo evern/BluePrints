@@ -94,7 +94,9 @@ namespace BluePrints.ViewModels
             projectSavingBackgroundWorker.WorkerSupportsCancellation = true;
 
             bool? isShowActualsHistoryPreference = LoginCredentials.GetUserPreferenceBool(DataUtils.GetNameOf(() => UserPreferences.Forecast_ShowActuals));
+            bool? isAutoHideSummaryPreference = LoginCredentials.GetUserPreferenceBool(DataUtils.GetNameOf(() => UserPreferences.Forecast_AutoHideSummary));
             isShowActualsHistory = isShowActualsHistoryPreference == null ? false : (bool)isShowActualsHistoryPreference;
+            isAutoHideSummary = isAutoHideSummaryPreference == null ? false : (bool)isAutoHideSummaryPreference;
             canEditConstructionUncommitted = LoginCredentials.getPermissionStatus(DataUtils.GetNameOf(() => NavigationResources.Permission_ConstructionUncommitted)) == LoginCredentials.PermissionStatus.All;
         }
 
@@ -285,6 +287,20 @@ namespace BluePrints.ViewModels
                 mainThreadDispatcher.BeginInvoke(new Action(() => loadDataPointsTable()));
             }
         }
+
+        bool isAutoHideSummary;
+        public bool IsAutoHideSummary
+        {
+            get => isAutoHideSummary;
+            set
+            {
+                isAutoHideSummary = value;
+                BluePrintsDataUtils.SaveUserPreference(DataUtils.GetNameOf(() => UserPreferences.Forecast_AutoHideSummary), value ? UserPreferences.PreferenceTrueValue : UserPreferences.PreferenceFalseValue);
+                this.RaisePropertyChanged(x => x.SummaryVisibility);
+            }
+        }
+
+        public Visibility SummaryVisibility => IsAutoHideSummary ? Visibility.Collapsed : Visibility.Visible;
 
         public bool IsManualApprovedVariationRevenue
         {

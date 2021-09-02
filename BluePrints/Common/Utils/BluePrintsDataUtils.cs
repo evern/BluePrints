@@ -1232,103 +1232,57 @@ namespace BluePrints.Common.ViewModel.Utils
                 LoadingScreenManager.SetMessage("Loading POs...");
             }
 
-            DateTime poCutOffDate = queryDate.Date.AddDays(1).AddMinutes(-1);
-            var pos = from PURCHORD_LINES in primeroUOW.PURCHORD_LINES
-                      join PURCHORD_HDR in primeroUOW.PURCHORD_HDR
-                      on PURCHORD_LINES.HDR_SEQNO equals PURCHORD_HDR.SEQNO
-                      join CR_ACCS in primeroUOW.CR_ACCS
-                      on PURCHORD_HDR.ACCNO equals CR_ACCS.ACCNO
-                      join JOBCOST_HDR in primeroUOW.JOBCOST_HDR
-                      on PURCHORD_LINES.JOBNO equals JOBCOST_HDR.JOBNO
-                      join JOBCOST_HDR2 in primeroUOW.JOBCOST_HDR
-                      on JOBCOST_HDR.MASTER_JOBNO equals JOBCOST_HDR2.JOBNO
-                      join JOB_COSTTYPES in primeroUOW.JOB_COSTTYPES
-                      on PURCHORD_LINES.COSTTYPE equals JOB_COSTTYPES.SEQNO
-                      join JOB_COSTGROUPS in primeroUOW.JOB_COSTGROUPS
-                      on PURCHORD_LINES.COSTGROUP equals JOB_COSTGROUPS.SEQNO
-                      join NARRATIVES in primeroUOW.NARRATIVES
-                      on PURCHORD_LINES.NARRATIVE_SEQNO equals NARRATIVES.SEQNO into PONarratives
-                      from PONarrate in PONarratives.DefaultIfEmpty()
-                      where JOBCOST_HDR2.JOBCODE == projectNumber && PURCHORD_HDR.ORDERDATE <= poCutOffDate
-                      select new { PURCHORD_HDR.EXCHRATE, PURCHORD_LINES.POLINEID, PURCHORD_LINES.STOCKCODE, PURCHORD_LINES.DESCRIPTION, PONarrate.NARRATIVE, PURCHORD_HDR.SEQNO, PURCHORD_LINES.LINETOTAL, CR_ACCS.NAME, JOBCOST_HDR.JOBCODE, JOBCOST_HDR.TITLE, COSTTYPEDESC = JOB_COSTTYPES.COSTDESC, COSTGROUPDESC = JOB_COSTGROUPS.COSTDESC, GROUPSHORTCODE = JOB_COSTGROUPS.SHORTCODE, PURCHORD_LINES.ORD_QUANT, PURCHORD_LINES.SUP_QUANT, PURCHORD_LINES.UNITPRICE, PURCHORD_HDR.STATUS, PURCHORD_HDR.DUEDATE, PURCHORD_HDR.ORDERDATE, PURCHORD_HDR.LAST_UPDATED, PURCHORD_LINES.X_VARIATIONCODE, JOB_COSTTYPES.SHORTCODE };
-
+            List<X_PURCHORD_LINE_DETAIL> X_PURCHORD_LINE_DETAILS = PrimeroEntities.GetPurchaseOrdersDetail(primeroUOW, projectNumber, queryDate);
             string equipmentHireStockCodeInitials = BluePrintsResources.EquipmentHireStockCodeInitials;
-            var poList = exoQueryType == ExoQueryType.All ? pos.ToList() : exoQueryType == ExoQueryType.EquipmentHireOnly ? pos.Where(x => x.STOCKCODE.StartsWith(equipmentHireStockCodeInitials)).ToList() : pos.Where(x => !x.STOCKCODE.StartsWith(equipmentHireStockCodeInitials)).ToList();
-            //var poList = pos.ToList();
-            IQueryable<INWARDS_GOODS_LINES> inwardGoods = from INWARDS_GOODS_LINES in primeroUOW.INWARDS_GOODS_LINES
-                                                          join PURCHORD_LINES in primeroUOW.PURCHORD_LINES
-                                                          on INWARDS_GOODS_LINES.PO_LINE_NUM equals PURCHORD_LINES.POLINEID
-                                                          join SUBJOB in primeroUOW.JOBCOST_HDR
-                                                          on PURCHORD_LINES.JOBNO equals SUBJOB.JOBNO
-                                                          join MASTERJOB in primeroUOW.JOBCOST_HDR
-                                                          on SUBJOB.MASTER_JOBNO equals MASTERJOB.JOBNO
-                                                          where MASTERJOB.JOBCODE == projectNumber
-                                                          select INWARDS_GOODS_LINES;
+            X_PURCHORD_LINE_DETAILS = exoQueryType == ExoQueryType.All ? X_PURCHORD_LINE_DETAILS : exoQueryType == ExoQueryType.EquipmentHireOnly ? X_PURCHORD_LINE_DETAILS.Where(x => x.STOCKCODE.StartsWith(equipmentHireStockCodeInitials)).ToList() : X_PURCHORD_LINE_DETAILS.Where(x => !x.STOCKCODE.StartsWith(equipmentHireStockCodeInitials)).ToList();
 
-            List<INWARDS_GOODS_LINES> inwardGoodsList = inwardGoods.ToList();
             if (showLoadingScreen)
             {
                 LoadingScreenManager.CloseLoadingScreen();
-                LoadingScreenManager.ShowLoadingScreen(poList.Count);
+                LoadingScreenManager.ShowLoadingScreen(X_PURCHORD_LINE_DETAILS.Count);
                 LoadingScreenManager.SetMessage("Loading POs...");
             }
 
-            foreach(var po in poList)
+            foreach(var po in X_PURCHORD_LINE_DETAILS)
             {
-                if (po.COSTGROUPDESC != null && !po.COSTGROUPDESC.Contains("G99") && !po.COSTGROUPDESC.Contains("010"))
-                {
-                    ExoDataPoint poDataPoint = new ExoDataPoint();
-                    poDataPoint.BudgetedUnits = 0;
-                    poDataPoint.BudgetedCosts = 0;
-                    decimal orderQty = po.ORD_QUANT == null ? 0 : ((decimal)po.ORD_QUANT);
+                ExoDataPoint poDataPoint = new ExoDataPoint();
+                poDataPoint.BudgetedUnits = 0;
+                poDataPoint.BudgetedCosts = 0;
+                decimal orderQty = ((decimal)po.ORDER_QTY);
 
-                    List<INWARDS_GOODS_LINES> allPOInwardGoods = inwardGoodsList.Where(x => x.PO_LINE_NUM == po.POLINEID).Where(x => x.QUANTITY != null).ToList();
-                    List<INWARDS_GOODS_LINES> currentPOInwardGoods = allPOInwardGoods.Where(x => x.INV_TRANSDATE <= poCutOffDate).ToList();
-                    double supplyQty = currentPOInwardGoods.Sum(x => (double)x.QUANTITY);
+                decimal unitPrice = po.UNIT_PRICE == null ? 0 : ((decimal)po.UNIT_PRICE);
+                poDataPoint.TotalUnits = orderQty;
 
-                    //don't omit any PO where it's fully receipted but there are quantities being receipted after data date
-                    //this is because status 2 could mean cancelled
-                    if (po.STATUS == 2)
-                    {
-                        List<INWARDS_GOODS_LINES> POInwardGoodsAfterDataDate = allPOInwardGoods.Where(x => x.INV_TRANSDATE > poCutOffDate).ToList();
-                        if (POInwardGoodsAfterDataDate.Count() == 0)
-                            continue;
-                    }
+                decimal remainingQty = Convert.ToDecimal(po.RemainingQty);
+                poDataPoint.Units = remainingQty < 0 ? 0 : remainingQty;
+                poDataPoint.Costs = poDataPoint.Units * unitPrice;
+                poDataPoint.CostPerQty = unitPrice;
+                poDataPoint.TotalCosts = po.LINETOTAL == null ? 0 : (decimal)po.LINETOTAL;
+                if (alignedDataDates != null)
+                    poDataPoint.ProgressDate = alignedDataDates.FirstOrDefault(dates => dates.Date >= (DateTime)po.ORDERDATE);
 
-                    decimal unitPrice = po.UNITPRICE == null ? 0 : po.EXCHRATE == null || po.EXCHRATE == 0 ? ((decimal)po.UNITPRICE) : ((decimal)po.UNITPRICE) / ((decimal)po.EXCHRATE);
-                    poDataPoint.TotalUnits = orderQty;
-
-                    decimal remainingQty = orderQty - (decimal)supplyQty;
-                    poDataPoint.Units = remainingQty < 0 ? 0 : remainingQty;
-                    poDataPoint.Costs = poDataPoint.Units * unitPrice;
-                    poDataPoint.CostPerQty = unitPrice;
-                    poDataPoint.TotalCosts = po.LINETOTAL == null ? 0 : (decimal)po.LINETOTAL;
-                    if (alignedDataDates != null)
-                        poDataPoint.ProgressDate = alignedDataDates.FirstOrDefault(dates => dates.Date >= (DateTime)po.ORDERDATE);
-
-                    poDataPoint.ActualDate = po.ORDERDATE == null ? DateTime.Now : (DateTime)po.ORDERDATE;
-                    poDataPoint.PURCHORD_HDRLastUpdated = po.LAST_UPDATED;
-                    poDataPoint.Subjob_Name = po.JOBCODE;
-                    poDataPoint.ResourceName = string.Empty;
-                    poDataPoint.Quantity = poDataPoint.Units;
-                    poDataPoint.Description = po.DESCRIPTION;
-                    poDataPoint.Narrative = po.NARRATIVE;
-                    poDataPoint.Supplier = po.NAME;
-                    poDataPoint.InvoiceNo = string.Empty;
-                    poDataPoint.CostGroup = po.COSTGROUPDESC;
-                    poDataPoint.Discipline_Code = po.GROUPSHORTCODE;
-                    poDataPoint.CostType = po.COSTTYPEDESC;
-                    poDataPoint.Commodity_Code = po.SHORTCODE;
-                    poDataPoint.StockCode = po.STOCKCODE;
-                    poDataPoint.Cost_GLName = string.Empty;
-                    poDataPoint.Purchase_GLName = string.Empty;
-                    poDataPoint.IsPO = true;
-                    poDataPoint.PONumber = po.SEQNO.ToString();
-                    poDataPoint.POOrderQty = po.ORD_QUANT == null ? 0 : Convert.ToDecimal((double)po.ORD_QUANT);
-                    poDataPoint.POSuppliedQty = po.SUP_QUANT == null ? 0 : Convert.ToDecimal((double)po.SUP_QUANT);
-                    poDataPoint.Variation_Code = normalizeVariationCode(po.X_VARIATIONCODE);
-                    poDataPoints.Add(poDataPoint);
-                }
+                poDataPoint.ActualDate = po.ORDERDATE == null ? DateTime.Now : (DateTime)po.ORDERDATE;
+                poDataPoint.PURCHORD_HDRLastUpdated = po.LAST_UPDATED;
+                poDataPoint.Subjob_Name = po.SUB_JOBCODE;
+                poDataPoint.ResourceName = string.Empty;
+                poDataPoint.Quantity = poDataPoint.Units;
+                poDataPoint.Description = po.DESCRIPTION;
+                poDataPoint.Narrative = po.NARRATIVE;
+                poDataPoint.Supplier = po.SUPPLIER_NAME;
+                poDataPoint.InvoiceNo = string.Empty;
+                poDataPoint.CostGroup = po.DISCIPLINE_CODE;
+                poDataPoint.Discipline_Code = po.DISCIPLINE_CODE;
+                poDataPoint.CostType = po.COMMODITY_CODE_DESC;
+                poDataPoint.Commodity_Code = po.COMMODITY_CODE;
+                poDataPoint.StockCode = po.STOCKCODE;
+                poDataPoint.Cost_GLName = string.Empty;
+                poDataPoint.Purchase_GLName = string.Empty;
+                poDataPoint.IsPO = true;
+                poDataPoint.PONumber = po.PO_NUMBER.ToString();
+                poDataPoint.POOrderQty = Convert.ToDecimal((double)po.ORDER_QTY);
+                poDataPoint.POSuppliedQty = Convert.ToDecimal((double)po.CUT_OFF_SUPPLIED);
+                poDataPoint.Variation_Code = po.VARIATION_CODE;
+                poDataPoints.Add(poDataPoint);
 
                 if (showLoadingScreen)
                     LoadingScreenManager.Progress();
