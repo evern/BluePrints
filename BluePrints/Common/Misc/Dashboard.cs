@@ -229,6 +229,9 @@ namespace BluePrints.Common.Misc
 
                     if (WBSReportable.RemainingActual != null)
                         export_data.AddRange(buildExportDataByType(WBSReportable, StatsType.RemainingActual, WBSReportable.RemainingActual.DataPoints, null, DOCTYPECollection));
+
+                    if (WBSReportable.Burned != null)
+                        export_data.AddRange(buildExportDataByType(WBSReportable, StatsType.Burned, WBSReportable.Burned.DataPoints, null, DOCTYPECollection));
                 }
             }
 

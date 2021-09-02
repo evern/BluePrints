@@ -42,7 +42,7 @@ namespace BluePrints.Common.ViewModel.Reporting
                     LoadingScreenManager.SetMessage("Retrieving Planned Data...");
 
                 //forecast doesn't use budget so IsForecast is false
-                SetBudgetDataPoints(weightingPortion, false, false, isVariationSeparated);
+                SetBudgetDataPoints(weightingPortion, false, true, isVariationSeparated);
                 SetCurrentDataPoints(weightingPortion, isVariationSeparated);
             }
 
