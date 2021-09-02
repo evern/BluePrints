@@ -423,6 +423,9 @@
                                                             <dxg:FormatCondition FieldName="Entity.PercentagePeriodMovement" Value1="0" ValueRule="Less">
                                                                 <dxc:Format Background="#FFFF9B98" />
                                                             </dxg:FormatCondition>
+                                                            <dxg:FormatCondition FieldName="Entity.BudgetVariance" Value1="0" ValueRule="Less">
+                                                                <dxc:Format Background="#FFFF9B98" />
+                                                            </dxg:FormatCondition>
                                                         </dxg:TableView.FormatConditions>
                                                     </dxg:TableView>
                                                 </dxg:GridControl.View>
