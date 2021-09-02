@@ -40,7 +40,7 @@
                 <custom:GridControlEx IsInstantFeedbackMode="{Binding IsInstantFeedbackMode}" x:Name="GridControl" dxc:DXSerializer.SerializationID="GridControlTransaction" dxc:DXSerializer.StoreLayoutMode="All" Style="{StaticResource InstantFeedbackGridControlTemplate}">
                     <dxg:GridControl.Bands>
                         <dxg:GridControlBand Header="{Binding BandHeaderName}">
-                            <custom:EditableColumn RealFieldName="jobno" AllowBestFit="false" Width="110" Header="Sub Job" UnboundType="Integer" UnboundExpression="[jobno]">
+                            <custom:EditableColumn RealFieldName="JOBNO" AllowBestFit="false" Width="110" Header="Sub Job" UnboundType="Integer" UnboundExpression="[JOBNO]">
                                 <dxg:GridColumn.CellTemplate>
                                     <DataTemplate>
                                         <dxg:LookUpEdit Name="PART_Editor" AutoComplete="True" AutoPopulateColumns="False" DisplayMember="JOBCODE" IncrementalFiltering="True" IsTextEditable="true" ItemsSource="{Binding View.DataContext.JOBCOST_HDRCollection}" NullValueButtonPlacement="None" PopupWidth="500" ValueMember="JOBNO">
@@ -68,7 +68,7 @@
                                     <dxe:ComboBoxEditSettings AutoComplete="True" DisplayMember="JOBCODE" IsTextEditable="True" ItemsSource="{Binding JOBCOST_HDRCollection}" ValueMember="JOBNO" />
                                 </dxg:GridColumn.EditSettings>
                             </custom:EditableColumn>
-                            <custom:EditableColumn RealFieldName="COST_GROUP" AllowBestFit="false" Header="Discipline Code" Width="50" UnboundType="Integer" UnboundExpression="[COST_GROUP]">
+                            <custom:EditableColumn RealFieldName="COST_GROUP_NO" AllowBestFit="false" Header="Discipline Code" Width="50" UnboundType="Integer" UnboundExpression="[COST_GROUP_NO]">
                                 <dxg:GridColumn.CellTemplate>
                                     <DataTemplate>
                                         <dxg:LookUpEdit Name="PART_Editor" AutoComplete="True" AutoPopulateColumns="False" DisplayMember="SHORTCODE" IncrementalFiltering="True" IsTextEditable="true" ItemsSource="{Binding View.DataContext.JOB_COSTGROUPSCollection}" NullValueButtonPlacement="None" PopupWidth="500" ValueMember="SEQNO">
@@ -96,7 +96,7 @@
                                     <dxe:ComboBoxEditSettings AutoComplete="True" DisplayMember="SHORTCODE" IsTextEditable="True" ItemsSource="{Binding JOB_COSTGROUPSCollection}" ValueMember="SEQNO" />
                                 </dxg:GridColumn.EditSettings>
                             </custom:EditableColumn>
-                            <custom:EditableColumn RealFieldName="CostType" AllowBestFit="false" Width="50" Header="Commodity Code" UnboundType="Integer" UnboundExpression="[CostType]">
+                            <custom:EditableColumn RealFieldName="COST_TYPE_NO" AllowBestFit="false" Width="50" Header="Commodity Code" UnboundType="Integer" UnboundExpression="[COST_TYPE_NO]">
                                 <dxg:GridColumn.CellTemplate>
                                     <DataTemplate>
                                         <dxg:LookUpEdit Name="PART_Editor" AutoComplete="True" AutoPopulateColumns="False" DisplayMember="SHORTCODE" IncrementalFiltering="True" IsTextEditable="true" ItemsSource="{Binding View.DataContext.JOB_COSTTYPESCollection}" NullValueButtonPlacement="Popup" PopupWidth="500" ValueMember="SEQNO">
@@ -124,7 +124,7 @@
                                     <dxe:ComboBoxEditSettings AutoComplete="True" DisplayMember="SHORTCODE" IsTextEditable="True" ItemsSource="{Binding JOB_COSTTYPESCollection}" NullValueButtonPlacement="EditBox" ValueMember="SEQNO" />
                                 </dxg:GridColumn.EditSettings>
                             </custom:EditableColumn>
-                            <custom:EditableColumn RealFieldName="stockcode" Header="Stock Code" UnboundType="String" UnboundExpression="[stockcode]">
+                            <custom:EditableColumn RealFieldName="STOCKCODE" Header="Stock Code" UnboundType="String" UnboundExpression="[STOCKCODE]">
                                 <dxg:GridColumn.CellTemplate>
                                     <DataTemplate>
                                         <dxg:LookUpEdit Name="PART_Editor" AutoComplete="True" AutoPopulateColumns="False" DisplayMember="STOCKCODE" IncrementalFiltering="True" IsTextEditable="true" ItemsSource="{Binding View.DataContext.STOCK_ITEMCollection}" NullValueButtonPlacement="Popup" PopupWidth="500" ValueMember="STOCKCODE">
@@ -152,39 +152,38 @@
                                     <dxe:ComboBoxEditSettings AutoComplete="True" DisplayMember="STOCKCODE" IsTextEditable="True" ItemsSource="{Binding STOCK_ITEMCollection}" NullValueButtonPlacement="EditBox" ValueMember="STOCKCODE" />
                                 </dxg:GridColumn.EditSettings>
                             </custom:EditableColumn>
-                            <custom:EditableColumn RealFieldName="X_VARIATIONCODE" AllowBestFit="false" Width="150" Header="Variation Code" UnboundType="String" UnboundExpression="[X_VARIATIONCODE]" />
-                            <custom:EditableColumn RealFieldName="description" Width="300" AllowBestFit="false" Header="Description" UnboundType="String" UnboundExpression="[description]" />
+                            <custom:EditableColumn RealFieldName="VARIATION_CODE" AllowBestFit="false" Width="150" Header="Variation Code" UnboundType="String" UnboundExpression="[VARIATION_CODE]" />
+                            <custom:EditableColumn RealFieldName="DESCRIPTION" Width="300" AllowBestFit="false" Header="Description" UnboundType="String" UnboundExpression="[DESCRIPTION]" />
                         </dxg:GridControlBand>
                         <dxg:GridControlBand Header="Read Only (Any changes will be updated on refresh)" >
-                            <dxg:GridColumn FieldName="DepartmentName" Width="100" AllowBestFit="false" Header="Department" ReadOnly="True" />
-                            <dxg:GridColumn FieldName="CostTypeDesc" AllowBestFit="false" Width="100" Header="Commodity Code Desc" ReadOnly="True" />
-                            <dxg:GridColumn FieldName="accno" Header="Resource" AllowBestFit="false" Width="150" ReadOnly="true" >
+                            <dxg:GridColumn FieldName="DEPARTMENT_NAME" Width="100" AllowBestFit="false" Header="Department" ReadOnly="True" />
+                            <dxg:GridColumn FieldName="COMMODITY_CODE_DESC" AllowBestFit="false" Width="100" Header="Commodity Code Desc" ReadOnly="True" />
+                            <dxg:GridColumn FieldName="ACCNO" Header="Resource" AllowBestFit="false" Width="150" ReadOnly="true" >
                                 <dxg:GridColumn.EditSettings>
                                     <dxe:ComboBoxEditSettings AutoComplete="True" DisplayMember="RESOURCENAME" IsTextEditable="True" ItemsSource="{Binding JOBCOST_RESOURCECollection}" ValueMember="SEQNO" />
                                 </dxg:GridColumn.EditSettings>
                             </dxg:GridColumn>
-                            <dxg:GridColumn FieldName="TITLE" Width="150" AllowBestFit="false" Header="Title" ReadOnly="True" />
-                            <dxg:GridColumn FieldName="transdate" AllowBestFit="false" Width="80" Header="Transdate" ReadOnly="True" FilterPopupMode="DateAlt"/>
-                            <dxg:GridColumn FieldName="quantity" AllowBestFit="false" Width="100" Header="Quantity" ReadOnly="{Binding CanEditQuantity, Converter={StaticResource BooleanNegationConverter}}" >
+                            <dxg:GridColumn FieldName="RESOURCE_TITLE" Width="150" AllowBestFit="false" Header="Title" ReadOnly="True" />
+                            <dxg:GridColumn FieldName="TRANSDATE" AllowBestFit="false" Width="80" Header="Transdate" ReadOnly="True" FilterPopupMode="DateAlt"/>
+                            <dxg:GridColumn FieldName="QUANTITY" AllowBestFit="false" Width="100" Header="Quantity" ReadOnly="{Binding CanEditQuantity, Converter={StaticResource BooleanNegationConverter}}" >
                                 <dxg:GridColumn.EditSettings>
                                     <dxe:SpinEditSettings Mask="n" MaskType="Numeric" MaskUseAsDisplayFormat="True" />
                                 </dxg:GridColumn.EditSettings>
                             </dxg:GridColumn>
-                            <dxg:GridColumn FieldName="unitcost" Visible="{Binding IsCostsVisible}" ShowInColumnChooser="False" Header="Unit Rate" ReadOnly="True" >
+                            <dxg:GridColumn FieldName="UNITPRICE" Visible="{Binding IsCostsVisible}" ShowInColumnChooser="False" Header="Unit Rate" ReadOnly="True" >
                                 <dxg:GridColumn.EditSettings>
                                     <dxe:SpinEditSettings Mask="c0" MaskType="Numeric" MaskUseAsDisplayFormat="True" />
                                 </dxg:GridColumn.EditSettings>
                             </dxg:GridColumn>
-                            <dxg:GridColumn FieldName="CostActual" Visible="{Binding IsCostsVisible}" ShowInColumnChooser="False" Header="Cost" ReadOnly="True" >
+                            <dxg:GridColumn FieldName="LINECOST" Visible="{Binding IsCostsVisible}" ShowInColumnChooser="False" Header="Cost" ReadOnly="True" >
                                 <dxg:GridColumn.EditSettings>
                                     <dxe:SpinEditSettings Mask="c0" MaskType="Numeric" MaskUseAsDisplayFormat="True" />
                                 </dxg:GridColumn.EditSettings>
                             </dxg:GridColumn>
-                            <dxg:GridColumn FieldName="LINE_STATUS" AllowBestFit="false" Width="50" Header="Status" ReadOnly="True" />
-                            <dxg:GridColumn FieldName="name" AllowBestFit="false" Width="200" Header="Supplier" ReadOnly="True" />
-                            <dxg:GridColumn FieldName="POno" Header="PO Number" AllowBestFit="false" Width="70" ReadOnly="True" />
-                            <dxg:GridColumn FieldName="invno" Header="Invoice Number" AllowBestFit="false" Width="150" ReadOnly="True" />
-                            <dxg:GridColumn FieldName="transtype" Header="Trans Type" AllowBestFit="false" Width="50" ReadOnly="True" />
+                            <dxg:GridColumn FieldName="RESOURCE_SUPPLIER_NAME" AllowBestFit="false" Width="200" Header="Supplier" ReadOnly="True" />
+                            <dxg:GridColumn FieldName="PO_NUMBER" Header="PO Number" AllowBestFit="false" Width="70" ReadOnly="True" />
+                            <dxg:GridColumn FieldName="INVNO" Header="Invoice Number" AllowBestFit="false" Width="150" ReadOnly="True" />
+                            <dxg:GridColumn FieldName="TRANSTYPE" Header="Trans Type" AllowBestFit="false" Width="50" ReadOnly="True" />
                             <dxg:GridColumn FieldName="NARRATIVE" Width="200" AllowBestFit="false" Header="Narrative" ReadOnly="True" >
                                 <dxg:GridColumn.CellTemplate>
                                     <DataTemplate>
