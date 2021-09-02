@@ -484,7 +484,7 @@
                                         <dxg:GridColumn BestFitWidth="250" Width="250" FieldName="VARIATION_CODE" Header="Variation" ReadOnly="True" SortIndex="5" />
                                         <dxg:GridColumn BestFitWidth="75" Width="75" FieldName="STOCKCODE" Header="Stock Code" ReadOnly="True" SortIndex="6" />
                                         <dxg:GridColumn BestFitWidth="85" Width="85" FieldName="TRANSDATE" Header="Date" ReadOnly="True" SortIndex="7" />
-                                        <dxg:GridColumn BestFitWidth="200" Width="200" FieldName="NAME" Header="Name" ReadOnly="True"  />
+                                        <dxg:GridColumn BestFitWidth="200" Width="200" FieldName="RESOURCE_SUPPLIER_NAME" Header="Name" ReadOnly="True"  />
                                         <dxg:GridColumn BestFitWidth="150" Width="150" FieldName="QUANTITY" Header="Quantity" ReadOnly="True">
                                             <dxg:GridColumn.EditSettings>
                                                 <dxe:TextEditSettings Mask="n2" MaskType="Numeric" MaskUseAsDisplayFormat="True" />
@@ -496,7 +496,7 @@
                                             </dxg:GridColumn.EditSettings>
                                         </dxg:GridColumn>
                                         <dxg:GridColumn BestFitWidth="100" Width="100" FieldName="PO_NUMBER" Header="PO Number" ReadOnly="True" />
-                                        <dxg:GridColumn BestFitWidth="100" Width="100" FieldName="INVSEQNO" Header="Invoice Number" ReadOnly="True" />
+                                        <dxg:GridColumn BestFitWidth="100" Width="100" FieldName="INVNO" Header="Invoice Number" ReadOnly="True" />
                                         <dxg:GridColumn BestFitWidth="150" Width="150" FieldName="INVOICED" Header="Invoiced" ReadOnly="True" >
                                             <dxg:GridColumn.EditSettings>
                                                 <dxe:TextEditSettings Mask="c2" MaskType="Numeric" MaskUseAsDisplayFormat="True" />

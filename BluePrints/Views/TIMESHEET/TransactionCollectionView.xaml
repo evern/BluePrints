@@ -208,9 +208,9 @@
                                     <dxe:SpinEditSettings Mask="c0" MaskType="Numeric" MaskUseAsDisplayFormat="True" />
                                 </dxg:GridColumn.EditSettings>
                             </dxg:GridColumn>
-                            <dxg:GridColumn FieldName="SUPPLIER_NAME" AllowBestFit="false" Width="200" Header="Supplier" ReadOnly="True" />
+                            <dxg:GridColumn FieldName="RESOURCE_SUPPLIER_NAME" AllowBestFit="false" Width="200" Header="Supplier" ReadOnly="True" />
                             <dxg:GridColumn FieldName="PO_NUMBER" Header="PO Number" AllowBestFit="false" Width="70" ReadOnly="True" />
-                            <dxg:GridColumn FieldName="INVSEQNO" Header="Invoice Number" AllowBestFit="false" Width="150" ReadOnly="True" />
+                            <dxg:GridColumn FieldName="INVNO" Header="Invoice Number" AllowBestFit="false" Width="150" ReadOnly="True" />
                             <dxg:GridColumn FieldName="TRANSTYPE" Header="Trans Type" AllowBestFit="false" Width="50" ReadOnly="True" />
                             <dxg:GridColumn FieldName="NARRATIVE" Width="200" AllowBestFit="false" Header="Narrative" ReadOnly="True" >
                                 <dxg:GridColumn.CellTemplate>

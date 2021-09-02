@@ -63,24 +63,19 @@
         [StringLength(50)]
         public string COMMODITY_CODE_DESC { get; set; }
 
-        [Key]
-        [Column(Order = 2)]
-        [DatabaseGenerated(DatabaseGeneratedOption.None)]
-        public int PO_NUMBER { get; set; }
+        public int? PO_NUMBER { get; set; }
 
         [StringLength(4096)]
         public string NARRATIVE { get; set; }
 
         [StringLength(60)]
-        public string SUPPLIER_NAME { get; set; }
+        public string RESOURCE_SUPPLIER_NAME { get; set; }
+
+        [StringLength(20)]
+        public string INVNO { get; set; }
 
         [Key]
-        [Column(Order = 3)]
-        [DatabaseGenerated(DatabaseGeneratedOption.None)]
-        public int INVSEQNO { get; set; }
-
-        [Key]
-        [Column(Order = 4)]
+        [Column(Order = 2)]
         public double INVOICED { get; set; }
 
         public DateTime? INVOICEDATE { get; set; }
