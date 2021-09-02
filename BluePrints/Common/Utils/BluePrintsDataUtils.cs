@@ -1002,7 +1002,7 @@ namespace BluePrints.Common.ViewModel.Utils
 
                     if (qualifiedSubjobs == null || qualifiedSubjobs.Contains(jobTransaction.SUBJOB_CODE))
                     {
-                        if (qualifiedSubjobs == null || (jobTransaction.COST_TYPE != null && (!jobTransaction.COST_TYPE.Contains("G99") && !jobTransaction.COST_TYPE.Contains("010"))))
+                        if (qualifiedSubjobs == null || jobTransaction.COST_TYPE != null && !jobTransaction.COST_TYPE.Contains("G99") && !jobTransaction.COST_TYPE.Contains("010"))
                         {
                             ExoDataPoint burnedDataPoint = new ExoDataPoint();
                             burnedDataPoint.BudgetedUnits = 0;

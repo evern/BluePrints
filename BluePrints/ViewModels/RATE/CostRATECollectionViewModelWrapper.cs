@@ -87,7 +87,8 @@ namespace BluePrints.ViewModels
             if (actualDataPoints == null)
             {
                 actualDataPoints = new List<ExoDataPoint>();
-                List<ExoDataPoint> burnedDataPoints = BluePrintsDataUtils.GetTimeByWBS(primeroUnitOfWork, loadPROJECT.NUMBER, DateTime.Now, null, null, 1, true);
+                List<ExoDataPoint> burnedDataPoints = BluePrintsDataUtils.GetBurned(primeroUnitOfWork, loadPROJECT.NUMBER, DateTime.Now, null, null, 1, true);
+
                 actualDataPoints.AddRange(burnedDataPoints);
                 queryTransactionRates = actualDataPoints.GroupBy(x => new { x.PhaseCode, x.AreaCode, x.SubAreaCode, DisciplineCode = x.Discipline_Code, CommodityCode = x.Commodity_Code, x.Variation_Code }).Select(group => new TransactionRate() { RawPhaseCode = group.Key.PhaseCode, RawAreaCode = group.Key.AreaCode, RawSubAreaCode = group.Key.SubAreaCode, RawDisciplineCode = group.Key.DisciplineCode, RawCommodityCode = group.Key.CommodityCode, RawVariationCode =group.Key.Variation_Code, Transactions = group.ToList() }).ToList();
                 groupedUncommittedTransactionRates = actualDataPoints.GroupBy(x => new { x.PhaseCode, DisciplineCode = x.Discipline_Code, CommodityCode = x.Commodity_Code }).Select(group => new TransactionRate() { RawPhaseCode = group.Key.PhaseCode, RawDisciplineCode = group.Key.DisciplineCode, RawCommodityCode = group.Key.CommodityCode, Transactions = group.ToList() }).ToList();
