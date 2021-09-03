@@ -416,7 +416,7 @@
             this.xrTableCell6.StylePriority.UseBorders = false;
             this.xrTableCell6.StylePriority.UseBorderWidth = false;
             this.xrTableCell6.StylePriority.UseForeColor = false;
-            this.xrTableCell6.Text = "EPCM Hrs Impact";
+            this.xrTableCell6.Text = "Hrs Impact";
             this.xrTableCell6.Weight = 1.2368651831786119D;
             // 
             // xrTableCell9
@@ -454,7 +454,7 @@
             this.xrTableCell14.StylePriority.UseBorders = false;
             this.xrTableCell14.StylePriority.UseBorderWidth = false;
             this.xrTableCell14.StylePriority.UseForeColor = false;
-            this.xrTableCell14.Text = "EPCM Cost Impact ($)";
+            this.xrTableCell14.Text = "Cost Impact ($)";
             this.xrTableCell14.Weight = 1.2368651665622645D;
             // 
             // xrTableCell16

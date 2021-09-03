@@ -403,6 +403,24 @@ namespace BluePrints.Common.Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Project construction indirect charge rate maintenance.
+        /// </summary>
+        internal static string Menu_Project_ConstructionIndirectChargeRate {
+            get {
+                return ResourceManager.GetString("Menu_Project_ConstructionIndirectChargeRate", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Project construction indirect cost rate maintenance.
+        /// </summary>
+        internal static string Menu_Project_ConstructionIndirectCostRate {
+            get {
+                return ResourceManager.GetString("Menu_Project_ConstructionIndirectCostRate", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Project construction job setup maintenance menu.
         /// </summary>
         internal static string Menu_Project_ConstructionJobs {
