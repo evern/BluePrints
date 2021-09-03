@@ -1255,7 +1255,7 @@ namespace BluePrints.Common.ViewModel.Utils
 
                 decimal remainingQty = Convert.ToDecimal(po.RemainingQty);
                 poDataPoint.Units = remainingQty < 0 ? 0 : remainingQty;
-                poDataPoint.Costs = poDataPoint.Units * unitPrice;
+                poDataPoint.Costs = po.OUTSTANDING_COSTS == null ? 0 : Convert.ToDecimal(po.OUTSTANDING_COSTS);
                 poDataPoint.CostPerQty = unitPrice;
                 poDataPoint.TotalCosts = po.LINETOTAL == null ? 0 : (decimal)po.LINETOTAL;
                 if (alignedDataDates != null)
