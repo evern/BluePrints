@@ -131,7 +131,6 @@ namespace BluePrints.Common.Base
             loaderCollection.AddLoaderDescription(bluePrintsUnitOfWorkFactory, x => x.PROGRESS_ITEMS, PROGRESS_ITEMProjectionFunc);
             loaderCollection.AddLoaderDescription(bluePrintsUnitOfWorkFactory, x => x.PROGRESS_ETCS, PROGRESS_ETCProjectionFunc);
             loaderCollection.AddLoaderDescription(bluePrintsUnitOfWorkFactory, x => x.AREAS, AREAProjectionFunc);
-            loaderCollection.AddLoaderDescription<Data.PHASE, Data.PHASE, Guid, IBluePrintsEntitiesUnitOfWork>(bluePrintsUnitOfWorkFactory, x => x.PHASES);
             loaderCollection.AddLoaderDescription<DEPARTMENT, DEPARTMENT, Guid, IBluePrintsEntitiesUnitOfWork>(bluePrintsUnitOfWorkFactory, x => x.DEPARTMENTS);
             loaderCollection.AddLoaderDescription<DISCIPLINE, DISCIPLINE, Guid, IBluePrintsEntitiesUnitOfWork>(bluePrintsUnitOfWorkFactory, x => x.DISCIPLINES);
             loaderCollection.AddLoaderDescription(bluePrintsUnitOfWorkFactory, x => x.USERS, USERProjectionFunc);
@@ -2035,17 +2034,6 @@ namespace BluePrints.Common.Base
                 var collection = GetEntities<DISCIPLINE>();
                 if (collection != null)
                     collection = collection.OrderBy(x => x.NAME);
-                return collection;
-            }
-        }
-
-        public IEnumerable<Data.PHASE> PHASECollection
-        {
-            get
-            {
-                var collection = GetEntities<Data.PHASE>();
-                if (collection != null)
-                    collection = collection.OrderBy(x => x.INTERNAL_NUM);
                 return collection;
             }
         }

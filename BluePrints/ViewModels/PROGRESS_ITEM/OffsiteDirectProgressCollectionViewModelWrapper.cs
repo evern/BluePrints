@@ -73,8 +73,14 @@ namespace BluePrints.ViewModels
             loaderCollection.AddLoaderDescription(bluePrintsUnitOfWorkFactory, x => x.DELIVERABLES_STATUSES, DELIVERABLES_STATUSProjectionFunc);
             loaderCollection.AddLoaderDescription(bluePrintsUnitOfWorkFactory, x => x.DSTATUS_DOCTYPES, DSTATUS_DOCTYPEProjectionFunc);
             loaderCollection.AddLoaderDescription<DOCTYPE, DOCTYPE, Guid, IBluePrintsEntitiesUnitOfWork>(bluePrintsUnitOfWorkFactory, x => x.DOCTYPES);
+            loaderCollection.AddLoaderDescription(bluePrintsUnitOfWorkFactory, x => x.PHASES, PHASEProjectionFunc);
 
             base.addEntitiesLoader();
+        }
+
+        private Func<IRepositoryQuery<Data.PHASE>, IQueryable<Data.PHASE>> PHASEProjectionFunc()
+        {
+            return query => query.Where(x => x.PHASE_TYPE != PhaseType.Construct && x.PHASE_TYPE != PhaseType.Procurement);
         }
 
         private void assign_baseline(BASELINE baseline)
@@ -285,6 +291,16 @@ namespace BluePrints.ViewModels
             }
         }
 
+        public IEnumerable<Data.PHASE> PHASECollection
+        {
+            get
+            {
+                var collection = GetEntities<Data.PHASE>();
+                if (collection != null)
+                    collection = collection.OrderBy(x => x.INTERNAL_NUM);
+                return collection;
+            }
+        }
         protected override CostGroup cost_group => CostGroup.Offsite;
 
         protected override IEnumerable<IReportable> ReportableCollection => MainViewModel == null || MainViewModel.Entities == null ? new ObservableCollection<BASELINE_ITEMProgress>() : MainViewModel.Entities;
