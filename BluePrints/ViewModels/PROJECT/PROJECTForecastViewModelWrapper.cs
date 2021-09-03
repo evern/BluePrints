@@ -777,8 +777,6 @@ namespace BluePrints.ViewModels
                 dataPointsTable.Columns.Add(columnFieldName, typeof(decimal));
             }
 
-            //preload the forecast collection
-            FORECASTCollection.ToList();
             //child data table is used to record original value of actuals + committed + remaining values before it is overridden by forecasts
             foreach (ForecastJobData commodityJob in commodityJobs)
             {
@@ -3220,19 +3218,14 @@ namespace BluePrints.ViewModels
             }
         }
 
-        List<FORECAST> forecastCollection;
-        public List<FORECAST> FORECASTCollection
+        public IQueryable<FORECAST> FORECASTCollection
         {
             get
             {
-                if(forecastCollection == null)
-                {
-                    forecastCollection = bluePrintsUnitOfWork.FORECASTS.Where(x => x.GUID_PROJECT == LoadPROJECT.GUID).ToList();
-                }
-
-                return forecastCollection;
+                return bluePrintsUnitOfWork.FORECASTS.Where(x => x.GUID_PROJECT == LoadPROJECT.GUID);
             }
         }
+
         public IQueryable<FORECAST_HISTORY> FORECAST_HISTORYCollection
         {
             get
