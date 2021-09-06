@@ -39,6 +39,7 @@ namespace BluePrints.ViewModels
             isHideOnStartup = isHideOnStartupPreference == null ? false : (bool)isHideOnStartupPreference;
         }
 
+        protected override bool isSingleProjectAndUserLocale => false;
         bool isHideOnStartup;
         public bool IsHideOnStartup
         {

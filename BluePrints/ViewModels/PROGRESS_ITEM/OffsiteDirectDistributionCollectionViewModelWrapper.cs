@@ -1130,6 +1130,8 @@ namespace BluePrints.ViewModels
 
         protected override bool manuallySaveProgressOnAfterBaselineItemSaved => true;
 
+        protected override bool isSingleProjectAndUserLocale => true;
+
         protected override void OnClose(CancelEventArgs e)
         {
             GlobalMethods.SetAccordionExpandedState?.Invoke(true);

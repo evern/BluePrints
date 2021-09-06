@@ -325,6 +325,8 @@ namespace BluePrints.ViewModels
         protected override PhaseType progress_type => PhaseType.Design;
 
         protected override bool manuallySaveProgressOnAfterBaselineItemSaved => false;
+
+        protected override bool isSingleProjectAndUserLocale => true;
         #endregion
 
         #region Reporting

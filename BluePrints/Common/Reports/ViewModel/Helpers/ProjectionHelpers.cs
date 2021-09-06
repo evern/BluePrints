@@ -11,14 +11,14 @@ namespace BluePrints.Common.ViewModel.Reporting
     /// </summary>
     public static class ProjectionHelpers
     {
-        public static void Initialize_Stats(IEnumerable<IReportable> reportableItems, DateTime reporting_data_date, TimeSpan reporting_interval, DateTime first_aligned_data_date, bool progressHaveStats, DateTime? overrideLastProgressDate = null, bool forceRetrieveRemainingDataPoints = false)
+        public static void Initialize_Stats(IEnumerable<IReportable> reportableItems, DateTime reporting_data_date, TimeSpan reporting_interval, DateTime first_aligned_data_date, bool progressHaveStats, DateTime? overrideLastProgressDate = null, bool forceRetrieveRemainingDataPoints = false, bool allowPercentageOnZeroTotalUnits = false)
         {
             if (progressHaveStats)
                 return;
 
             foreach (IReportable reportableItem in reportableItems)
             {
-                reportableItem.Stats = new ProgressStats(reporting_data_date, reporting_interval, first_aligned_data_date, reportableItem.Budget_Units, reportableItem.Total_Units, reportableItem.Budget_Quantity, reportableItem.Total_Quantity, reportableItem.Budget_Costs, reportableItem.Total_Costs, overrideLastProgressDate, forceRetrieveRemainingDataPoints);
+                reportableItem.Stats = new ProgressStats(reporting_data_date, reporting_interval, first_aligned_data_date, reportableItem.Budget_Units, reportableItem.Total_Units, reportableItem.Budget_Quantity, reportableItem.Total_Quantity, reportableItem.Budget_Costs, reportableItem.Total_Costs, overrideLastProgressDate, forceRetrieveRemainingDataPoints, allowPercentageOnZeroTotalUnits);
             }
         }
 

@@ -714,7 +714,7 @@ namespace BluePrints.ViewModels
             {
                 phaseType = PhaseType.Design;
                 chargeType = ChargeType.Chargeable;
-                defaultPHASE = PHASECollection.FirstOrDefault(x => (x.PHASE_TYPE != null && x.PHASE_TYPE == PhaseType.Design) && (x.CHARGE_TYPE != null && x.CHARGE_TYPE == ChargeType.Chargeable));
+                defaultPHASE = PHASECollection.FirstOrDefault(x => x.PHASE_TYPE != null && x.PHASE_TYPE == PhaseType.Design && x.CHARGE_TYPE != null && x.CHARGE_TYPE == ChargeType.Chargeable);
                 if (viewType != DeliverablesViewType.Both && defaultPHASE != null)
                     projection.Phase_Guid = defaultPHASE.GUID;
             }
@@ -722,9 +722,15 @@ namespace BluePrints.ViewModels
             {
                 phaseType = PhaseType.Design;
                 chargeType = ChargeType.NotChargeable;
-                PHASE indirectPHASE = PHASECollection.FirstOrDefault(x => (x.PHASE_TYPE != null && x.PHASE_TYPE == PhaseType.Design) && (x.CHARGE_TYPE != null && x.CHARGE_TYPE == ChargeType.NotChargeable));
+                PHASE indirectPHASE = PHASECollection.FirstOrDefault(x => x.PHASE_TYPE != null && x.PHASE_TYPE == PhaseType.Design && x.CHARGE_TYPE != null && x.CHARGE_TYPE == ChargeType.NotChargeable);
                 if (indirectPHASE != null)
                     projection.Phase_Guid = indirectPHASE.GUID;
+            }
+            else if (projection.Phase_Guid == null)
+            {
+                defaultPHASE = PHASECollection.FirstOrDefault(x => x.PHASE_TYPE != null && x.PHASE_TYPE == PhaseType.Design && x.CHARGE_TYPE != null && x.CHARGE_TYPE == ChargeType.Chargeable);
+                if (defaultPHASE != null)
+                    projection.Phase_Guid = defaultPHASE.GUID;
             }
 
             string errorMessage = string.Empty;
