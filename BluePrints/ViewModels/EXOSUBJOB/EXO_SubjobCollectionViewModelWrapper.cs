@@ -658,7 +658,7 @@ namespace BluePrints.ViewModels
                                     newESTIMATE_ITEM.DISCIPLINE_NUM = disciplineInt;
                                     newESTIMATE_ITEM.COMMODITY_CODE = entity.CommodityCode;
                                     newESTIMATE_ITEM.VARIATION_CODE = entity.VariationCode;
-
+                                    newESTIMATE_ITEM.BUDGET_INSTALL_RATE = 0;
                                     ESTIMATE_ITEMProgress projection = new ESTIMATE_ITEMProgress();
                                     projection.Entity = new ESTIMATE_ITEMProjection();
                                     projection.Entity.Entity = newESTIMATE_ITEM;
