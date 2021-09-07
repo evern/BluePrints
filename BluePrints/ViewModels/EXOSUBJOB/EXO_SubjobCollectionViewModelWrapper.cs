@@ -326,6 +326,7 @@ namespace BluePrints.ViewModels
         public override void UnifiedCellValueChanged(string field_name, object old_value, object new_value, ExoSubJobProjection projection, bool isNew)
         {
             string errorMessage = string.Empty;
+            projection.ResetValidCodes();
             projection.Update();
 
             List<KeyValuePair<string, string>> constraintIssues;

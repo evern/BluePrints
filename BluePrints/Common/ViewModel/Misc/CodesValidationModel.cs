@@ -41,6 +41,12 @@ namespace BluePrints.Common.Projections
             COMMODITY_CODES = COMMODITY_CODECollection;
         }
 
+        public void ResetValidCodes()
+        {
+            validCommodityCodes = null;
+            validStockCodes = null;
+        }
+
         public bool IsCommodityCodeValid
         {
             get
