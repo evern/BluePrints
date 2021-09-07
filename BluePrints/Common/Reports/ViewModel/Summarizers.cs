@@ -238,7 +238,7 @@ namespace BluePrints.Common.ViewModel.Reporting
             {
                 if(isSummariseByWBS)
                 {
-                    List<X_WBS_GROUPED_DATAPOINT> budgetedWBSDataPoints = BluePrintsContextHelper.GetWBSGroupedDataPointsSummary(projectNumber, true, false, false, false);
+                    List<X_WBS_GROUPED_DATAPOINT> budgetedWBSDataPoints = BluePrintsContextHelper.GetWBSGroupedDataPointsSummary(projectNumber, true, false, true, false);
                     foreach (WBSReportable reportableObject in ((WBSSummary)SummaryStats).WBSReportables)
                     {
                         reportableObject.AssignWBSReportableData(x => x.Current.SetPlannedData, budgetedWBSDataPoints, isVariationSeparated);
