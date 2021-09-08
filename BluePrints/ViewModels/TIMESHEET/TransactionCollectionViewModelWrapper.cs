@@ -142,7 +142,7 @@ namespace BluePrints.ViewModels
 
         private Func<IRepositoryQuery<STOCK_ITEMS>, IQueryable<STOCK_ITEMS>> STOCK_ITEMSProjectionFunc()
         {
-            return query => query.Where(x => x.ISACTIVE == "Y");
+            return query => query;
         }
 
         private Func<IRepositoryQuery<JOBCOST_HDR>, IQueryable<JOBCOST_HDR>> JOBCOST_HDRProjectionFunc()
