@@ -964,7 +964,8 @@ namespace BluePrints.ViewModels
                 List<Guid> trackCurrentBaselineDeliverableOriginalGuids = repository.Where(x => x.GUID_BASELINE == revisedBaseline.GUID).Select(x => x.GUID_ORIGINAL).ToList();
 
                 ConcurrentBag<TEntity> concurrentBagNewEntities = new ConcurrentBag<TEntity>();
-                Parallel.ForEach(deliverables, deliverable =>
+
+                foreach (ISupportVariation<TEntity> deliverable in deliverables)
                 {
                     VARIATION_ITEM updateVARIATION_ITEM = deliverable.VARIATION_ITEM;
                     decimal? variationUnits = null;
@@ -1020,7 +1021,7 @@ namespace BluePrints.ViewModels
                     }
 
                     LoadingScreenManager.Progress();
-                });
+                }
 
                 LoadingScreenManager.ShowLoadingScreen(deliverables.Count());
                 LoadingScreenManager.SetMessage("Adding deliverables to baseline: " + revisedBaseline.Revision + "...");

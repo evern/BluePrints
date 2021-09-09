@@ -115,6 +115,11 @@ namespace BluePrints.Common.Helpers
                 ExoMethods.CommitSubJobTitle(projection, projectNumber, localPrimeroUnitOfWork, MessageBoxService);
                 ExoMethods.ViewUpdateSubJobTitle(projection, projections, localPrimeroUnitOfWork, projectNumber, projection.SubJobCode, true);
             }
+            else if (field_name.Contains(BindableBase.GetPropertyName(() => new ExoSubJobProjection().Category)))
+            {
+                ExoMethods.CommitLineSubJob(projection, true, BulkColumnEditDialogService, masterJob, projectNumber, localPrimeroUnitOfWork);
+                ExoMethods.ViewUpdateCategory(projection, projections);
+            }
             else if (field_name.Contains(BindableBase.GetPropertyName(() => new ExoSubJobProjection().DisciplineName)))
             {
                 ExoMethods.CommitCostGroupName(projection, localPrimeroUnitOfWork, MessageBoxService);

@@ -67,7 +67,7 @@ namespace BluePrints.Data
 
         public decimal? BUDGET_QUANTITY { get; set; }
 
-        public decimal? BUDGET_INSTALL_RATE { get; set; }
+        public decimal BUDGET_INSTALL_RATE { get; set; }
 
         public decimal? INSTALL_RATE { get; set; }
 

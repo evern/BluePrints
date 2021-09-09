@@ -33,6 +33,9 @@ namespace BluePrints.Common.Projections
 
         [NotMapped]
         public bool IgnoreValidationError { get; set; }
+
+        [NotMapped]
+        public int? Category { get; set; }
         #region Commodity Codes
         private IEnumerable<COMMODITY_CODE> COMMODITY_CODES { get; set; }
         public void PopulateCommodityCodes(IEnumerable<COMMODITY_CODE> COMMODITY_CODECollection)
@@ -62,7 +65,7 @@ namespace BluePrints.Common.Projections
 
             if (PhaseType == Common.PhaseType.Tender)
             {
-                if (commodityCode.Substring(0, 2) == BluePrintsResources.Default_TenderCommodityCode)
+                if (commodityCode.Substring(0, 3) == BluePrintsResources.Default_TenderCommodityCode)
                     return true;
                 else
                     return false;

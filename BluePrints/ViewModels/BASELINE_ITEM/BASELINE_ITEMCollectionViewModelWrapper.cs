@@ -643,6 +643,12 @@ namespace BluePrints.ViewModels
             }
         }
 
+        public override void OnAfterSavedSendMessage(string entityName, string key, string messageType, string sender)
+        {
+            this.RaisePropertyChanged(x => x.FreeUnits);
+            base.OnAfterSavedSendMessage(entityName, key, messageType, sender);
+        }
+
         /// <summary>
         /// Show document type even when it is not valid
         /// </summary>

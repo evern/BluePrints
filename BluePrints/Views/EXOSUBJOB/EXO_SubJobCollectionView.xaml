@@ -58,12 +58,12 @@
                         <dxmvvm:EventToCommand Command="{Binding CustomColumnDisplayTextCommand}" EventName="CustomColumnDisplayText" PassEventArgsToCommand="True" />
                     </dxmvvm:Interaction.Behaviors>
                     <dxg:GridControl.Columns>
-                        <dxg:GridColumn FieldName="SubJobCode" AllowBestFit="false" Width="110" Header="Subjob" HeaderToolTip="Sub job code, type in free text">
+                        <dxg:GridColumn FieldName="SubJobCode" AllowBestFit="True" Width="110" Header="Subjob" HeaderToolTip="Sub job code, type in free text">
                             <dxg:GridColumn.EditSettings>
                                 <dxe:ComboBoxEditSettings AutoComplete="False" IsTextEditable="True" ItemsSource="{Binding SUBJOBCodeStringCollection}" Mask="{Binding SubJobRegex}" MaskType="RegEx" ValidateOnTextInput="False" />
                             </dxg:GridColumn.EditSettings>
                         </dxg:GridColumn>
-                        <dxg:GridColumn FieldName="SubJobTitle" AllowBestFit="false" Width="*" Header="Subjob Title" HeaderToolTip="Sub job title in exo, type in free text" >
+                        <dxg:GridColumn FieldName="SubJobTitle" AllowBestFit="True" Width="200" Header="Subjob Title" HeaderToolTip="Sub job title in exo, type in free text" >
                             <dxg:GridColumn.EditSettings>
                                 <dxe:TextEditSettings NullText="Double click this cell to change title" ShowNullText="True" />
                             </dxg:GridColumn.EditSettings>
@@ -104,6 +104,16 @@
                                 </DataTemplate>
                             </dxg:GridColumn.CellTemplate>
                         </dxg:GridColumn>
+                        <dxg:GridColumn FieldName="CommodityCode" Visible="False" Header="Commodity Code Description (Read Only)" ReadOnly="True" AllowBestFit="True" Width="150" HeaderToolTip="Read-only description of commodity codes from EXO">
+                            <dxg:GridColumn.EditSettings>
+                                <dxe:ComboBoxEditSettings AutoComplete="True" DisplayMember="COSTDESC" IsTextEditable="True" ItemsSource="{Binding JOB_COSTTYPESCollection}" ValueMember="SHORTCODE" />
+                            </dxg:GridColumn.EditSettings>
+                        </dxg:GridColumn>
+                        <dxg:GridColumn FieldName="CommodityCode" Visible="False" Header="Commodity Code Comments (Read Only)" ReadOnly="True" AllowBestFit="True" Width="150" HeaderToolTip="Read-only comments of commodity codes from BluePrints Data -> Commodity Codes">
+                            <dxg:GridColumn.EditSettings>
+                                <dxe:ComboBoxEditSettings AutoComplete="True" DisplayMember="DESCRIPTION" IsTextEditable="True" ItemsSource="{Binding COMMODITY_CODECollection}" ValueMember="CODE" />
+                            </dxg:GridColumn.EditSettings>
+                        </dxg:GridColumn>
                         <dxg:GridColumn FieldName="StockCode" Header="Stock Code" AllowBestFit="false" Width="90" HeaderToolTip="Select from combobox">
                             <dxg:GridColumn.CellTemplate>
                                 <DataTemplate>
@@ -140,6 +150,11 @@
                         <dxg:GridColumn FieldName="ExoBudget" Header="Budget Cost" AllowBestFit="false" Width="90" HeaderToolTip="Budget in Exo">
                             <dxg:GridColumn.EditSettings>
                                 <dxe:SpinEditSettings Increment="100" IsFloatValue="False" IsTextEditable="True" Mask="c0" MaskType="Numeric" MaskUseAsDisplayFormat="True" />
+                            </dxg:GridColumn.EditSettings>
+                        </dxg:GridColumn>
+                        <dxg:GridColumn FieldName="Category" AllowBestFit="True" Visible="False" Width="50" Header="Category" HeaderToolTip="Sub job category">
+                            <dxg:GridColumn.EditSettings>
+                                <dxe:ComboBoxEditSettings AutoComplete="False" IsTextEditable="False" DisplayMember="CATDESC" ItemsSource="{Binding JOB_CATEGORIESCollection}" ValueMember="CATNO" NullText="Leave empty to auto populate" ShowNullText="True"  />
                             </dxg:GridColumn.EditSettings>
                         </dxg:GridColumn>
                         <dxg:GridColumn FieldName="IsLineExistsInExo" Visible="False" Header="Exo" HeaderToolTip="Is this line setup in exo and available to be booked by authorised personnel" ReadOnly="True" />

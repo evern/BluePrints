@@ -110,6 +110,8 @@ namespace BluePrints.ViewModels
         {
             loaderCollection.AddLoaderDescription<DISCIPLINE, DISCIPLINE, Guid, IBluePrintsEntitiesUnitOfWork>(bluePrintsUnitOfWorkFactory, x => x.DISCIPLINES);
             loaderCollection.AddLoaderDescription(bluePrintsUnitOfWorkFactory, x => x.COMMODITY_CODES, COMMODITY_CODEProjectionFunc);
+            loaderCollection.AddLoaderDescription<JOB_COSTTYPES, JOB_COSTTYPES, int, IPrimeroEntitiesUnitOfWork>(localPrimeroUnitOfWorkFactory, x => x.JOB_COSTTYPES);
+            loaderCollection.AddLoaderDescription<JOB_CATEGORIES, JOB_CATEGORIES, int, IPrimeroEntitiesUnitOfWork>(localPrimeroUnitOfWorkFactory, x => x.JOB_CATEGORIES);
             loaderCollection.AddLoaderDescription(bluePrintsUnitOfWorkFactory, x => x.USERS, USERProjectionFunc);
             loaderCollection.AddLoaderDescription<PrimeroData.PROFILE, PrimeroData.PROFILE, int, IPrimeroEntitiesUnitOfWork>(localPrimeroUnitOfWorkFactory, x => x.PROFILE);
             loaderCollection.AddLoaderDescription<PrimeroData.STOCK_ITEMS, PrimeroData.STOCK_ITEMS, string, IPrimeroEntitiesUnitOfWork>(localPrimeroUnitOfWorkFactory, x => x.STOCK_ITEMS);
@@ -544,6 +546,7 @@ namespace BluePrints.ViewModels
                     addedProjection.PopulateCommodityCodes(COMMODITY_CODECollection);
                     addedProjection.PopulateStockItems(STOCK_ITEMSCollection);
                     addedProjection.IsLineExistsInExo = true;
+                    addedProjection.Update();
                 }
 
                 return addedProjections;
@@ -902,6 +905,22 @@ namespace BluePrints.ViewModels
             get
             {
                 return GetEntities<FORECAST_JOB>();
+            }
+        }
+
+        public IEnumerable<JOB_COSTTYPES> JOB_COSTTYPESCollection
+        {
+            get
+            {
+                return GetEntities<JOB_COSTTYPES>();
+            }
+        }
+
+        public IEnumerable<JOB_CATEGORIES> JOB_CATEGORIESCollection
+        {
+            get
+            {
+                return GetEntities<JOB_CATEGORIES>();
             }
         }
 

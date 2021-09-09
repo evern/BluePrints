@@ -70,6 +70,11 @@
                                 </dxg:GridColumn.EditSettings>
                                 </dxg:GridColumn>
                                 <dxg:GridColumn FieldName="IsLineExistsInExo" Header="Bookable" AllowBestFit="false" Width="60" HeaderToolTip="Is this line available to be booked by authorised personnel" />
+                                <dxg:GridColumn FieldName="Category" Visible="False" AllowBestFit="True" Width="50" Header="Category" HeaderToolTip="Sub job category">
+                                    <dxg:GridColumn.EditSettings>
+                                        <dxe:ComboBoxEditSettings AutoComplete="False" IsTextEditable="False" DisplayMember="CATDESC" ItemsSource="{Binding JOB_CATEGORIESCollection}" ValueMember="CATNO" NullText="Leave empty to auto populate" ShowNullText="True"  />
+                                    </dxg:GridColumn.EditSettings>
+                                </dxg:GridColumn>
                             </dxg:GridControl.Columns>
                             <dxg:GridControl.TotalSummary>
                                 <dxg:GridSummaryItem FieldName="SubJobCode" dxc:DXSerializer.Enabled="False" DisplayFormat="{}{0} Record(s)" SummaryType="Count" />
