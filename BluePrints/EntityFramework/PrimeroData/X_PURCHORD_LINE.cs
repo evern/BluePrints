@@ -10,6 +10,11 @@ namespace BluePrints.PrimeroData
         [DatabaseGenerated(DatabaseGeneratedOption.None)]
         public long Id { get; set; }
 
+        [Key]
+        [Column(Order = 1)]
+        [DatabaseGenerated(DatabaseGeneratedOption.None)]
+        public int PO_NUMBER { get; set; }
+
         [StringLength(15)]
         public string SUB_JOBCODE { get; set; }
 

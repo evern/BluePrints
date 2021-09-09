@@ -851,13 +851,13 @@ namespace BluePrints.ViewModels
 
             //For Debugging
             //string s;
-            //if (commodityJob.Projection.SubJobCode == "15671-000-00-P1" && commodityJob.DisciplineCode == "EL01" && commodityJob.Projection.CommodityCode == "E30" && commodityJob.Projection.VariationCode == string.Empty)
+            //if (commodityJob.Projection.SubJobCode == "40701-200-00-P1" && commodityJob.DisciplineCode == "PP01" && commodityJob.Projection.CommodityCode == "P01" && commodityJob.Projection.VariationCode == string.Empty)
             //    s = string.Empty;
             //else
             //    return commodityRow;
 
             #region fallback rate search
-                //rate already present during update
+            //rate already present during update
             if (isNew)
             {
                 Data.PHASE ratePHASE = PHASECollection.FirstOrDefault(x => x.INTERNAL_NUM == commodityJob.Projection.PhaseCode);

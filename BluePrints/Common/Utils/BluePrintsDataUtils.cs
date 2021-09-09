@@ -1326,6 +1326,7 @@ namespace BluePrints.Common.ViewModel.Utils
                     poDataPoint.TotalUnits = orderQty;
 
                     decimal remainingQty = orderQty - Convert.ToDecimal(po.TOTAL_SUP_QUANT);
+                    poDataPoint.PONumber = po.PO_NUMBER.ToString();
                     poDataPoint.Units = remainingQty < 0 ? 0 : remainingQty;
                     poDataPoint.Costs = Convert.ToDecimal(po.TOTAL_OUTSTANDING_COSTS);
                     poDataPoint.CostPerQty = poDataPoint.Units == 0 ? 0 : (poDataPoint.Costs / poDataPoint.Units);

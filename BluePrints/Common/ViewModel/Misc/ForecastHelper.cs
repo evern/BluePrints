@@ -158,10 +158,11 @@ namespace BluePrints.Common.ViewModel.Misc
 
                 //group the pos into PO numbers group to get the total remaining cost
                 //costs is remaining cost in this case
-                var poItems = poDataPoints.GroupBy(x => new { x.Subjob_Name, x.Discipline_Code, x.Commodity_Code, x.Variation_Code }).Select(g => new { g.Key.Subjob_Name, g.Key.Discipline_Code, g.Key.Commodity_Code, g.Key.Variation_Code }).ToList();
+                var poItems = poDataPoints.GroupBy(x => new { x.PONumber, x.Subjob_Name, x.Discipline_Code, x.Commodity_Code, x.Variation_Code }).Select(g => new { g.Key.PONumber, g.Key.Subjob_Name, g.Key.Discipline_Code, g.Key.Commodity_Code, g.Key.Variation_Code }).ToList();
                 foreach (var poItem in poItems)
                 {
-                    currentJobPOForecasts.AddRange(FORECAST_POCollection.Where(x => x.JOB_CODE == poItem.Subjob_Name && x.DISCIPLINE_CODE == poItem.Discipline_Code && x.COMMODITY_CODE == poItem.Commodity_Code && x.VARIATION_CODE == poItem.Variation_Code));
+                    //need to search by PO number to omit FORECAST_PO that's not applicable due to being fully receipted
+                    currentJobPOForecasts.AddRange(FORECAST_POCollection.Where(x => x.PONO == poItem.PONumber && x.JOB_CODE == poItem.Subjob_Name && x.DISCIPLINE_CODE == poItem.Discipline_Code && x.COMMODITY_CODE == poItem.Commodity_Code && x.VARIATION_CODE == poItem.Variation_Code));
                 }
 
                 jobForecastSummary.PORemainingCosts = currentJobPOForecasts.Where(x => x.FORECAST_VALUE != null).Sum(x => (decimal)x.FORECAST_VALUE);
