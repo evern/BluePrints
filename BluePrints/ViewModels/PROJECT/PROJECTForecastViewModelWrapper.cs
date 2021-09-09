@@ -762,12 +762,6 @@ namespace BluePrints.ViewModels
                 isNewData = true;
             }
 
-            if (ShowLoadingScreen)
-            {
-                LoadingScreenManager.ShowLoadingScreen(commodityJobs.Count);
-                LoadingScreenManager.SetMessage("Preparing View...");
-            }
-
             //construct data points table
             dataPointsTable.Columns.Add(columnEntity, typeof(ForecastJobData));
             dataPointsTable.Columns.Add(columnCompare, typeof(DataTable));
@@ -777,6 +771,23 @@ namespace BluePrints.ViewModels
                 dataPointsTable.Columns.Add(columnFieldName, typeof(decimal));
             }
 
+            if (ShowLoadingScreen)
+            {
+                LoadingScreenManager.ShowLoadingScreen(1);
+                LoadingScreenManager.SetMessage("Caching forecast...");
+            }
+
+            //loads the forecast upfront so that data table doesn't have to query the database for each commodity
+            List<FORECAST> cacheFORECAST = FORECASTCollection.ToList();
+            LoadingScreenManager.CloseLoadingScreen();
+
+            if (ShowLoadingScreen)
+            {
+                LoadingScreenManager.ShowLoadingScreen(commodityJobs.Count);
+                LoadingScreenManager.SetMessage("Preparing View...");
+            }
+
+            dataPointsTable.BeginInit();
             //child data table is used to record original value of actuals + committed + remaining values before it is overridden by forecasts
             foreach (ForecastJobData commodityJob in commodityJobs)
             {
@@ -784,9 +795,10 @@ namespace BluePrints.ViewModels
                 ForecastHelper.PopulateTenderBudget(commodityJob, FORECAST_EACTenderBudgetCollection);
                 updateAdditionalJobInfo(commodityJob);
 
-                DataRow commodityRow = updateDataTable(commodityJob, isNewData);
+                DataRow commodityRow = updateDataTable(commodityJob, isNewData, cacheFORECAST);
                 LoadingScreenManager.Progress();
             }
+            dataPointsTable.EndInit();
 
             GridControlService.GridControl.EndDataUpdate();
             LoadingScreenManager.CloseLoadingScreen();
@@ -844,7 +856,7 @@ namespace BluePrints.ViewModels
                 return ChronologicalHelpers.GenerateEndDatesCollection(firstDateToGenerateFrom, endDateToGenerate);
         }
 
-        private DataRow updateDataTable(ForecastJobData commodityJob, bool isNew)
+        private DataRow updateDataTable(ForecastJobData commodityJob, bool isNew, IEnumerable<FORECAST> CachedFORECASTCollection)
         {
             DataRow commodityRow = dataPointsTable.NewRow();
             commodityRow[columnEntity] = commodityJob;
@@ -1006,7 +1018,7 @@ namespace BluePrints.ViewModels
                 ForecastHelper.PopulateProjection(commodityJob, AllProjectDashboards, FORECAST_POCollection, FORECAST_EACCollection, FORECAST_EACPreviousCommitmentCollection, FORECAST_JOBCollection, FORECAST_JOB_SETTINGCollection, alignedDataDateCollection, IsWeeks, false, (DateTime)FixedDataDate);
 
             ExoSubJobProjection projection = commodityJob.Projection;
-            List<FORECAST> relevantFORECASTS = FORECASTCollection.Where(x => x.SUBJOB_CODE == projection.SubJobCode && x.DISCIPLINE_CODE == projection.DisciplineCode && x.COMMODITY_CODE == projection.CommodityCode && x.VARIATION_CODE == projection.VariationCode).ToList();
+            List<FORECAST> relevantFORECASTS = CachedFORECASTCollection.Where(x => x.SUBJOB_CODE == projection.SubJobCode && x.DISCIPLINE_CODE == projection.DisciplineCode && x.COMMODITY_CODE == projection.CommodityCode && x.VARIATION_CODE == projection.VariationCode).ToList();
 
             establishCurrentProductivity(commodityJob);
             decimal P6TotalCurrentRemainingUnits = 0;

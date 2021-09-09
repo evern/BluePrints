@@ -411,7 +411,7 @@ namespace BluePrints.Common.Projections
                 return addedProjections;
             }
 
-            if (masterJob.CATEGORY == null || ((int)masterJob.CATEGORY) >= 5)
+            if (masterJob.CATEGORY == null || ((int)masterJob.CATEGORY) == 5)
             {
                 string projectManagername = string.Empty;
                 USER pmUSER = null;
