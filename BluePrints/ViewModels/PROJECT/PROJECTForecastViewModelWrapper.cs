@@ -774,7 +774,7 @@ namespace BluePrints.ViewModels
             if (ShowLoadingScreen)
             {
                 LoadingScreenManager.ShowLoadingScreen(1);
-                LoadingScreenManager.SetMessage("Caching forecast...");
+                LoadingScreenManager.SetMessage("Caching Forecast...");
             }
 
             //loads the forecast upfront so that data table doesn't have to query the database for each commodity

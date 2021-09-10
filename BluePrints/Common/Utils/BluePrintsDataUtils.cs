@@ -848,7 +848,7 @@ namespace BluePrints.Common.ViewModel.Utils
                             on JOBTRANS.MASTER_JOBNO equals JOBCOST_HDR.JOBNO
                             join JOBCOST_HDR1 in primeroUOW.JOBCOST_HDR
                             on JOBTRANS.JOBNO equals JOBCOST_HDR1.JOBNO
-                            where JOBCOST_HDR.JOBCODE == projectNumber && JOBTRANS.TRANSTYPE == "C" && JOBTRANS.LINE_STATUS != "X"
+                            where JOBCOST_HDR.JOBCODE == projectNumber && JOBTRANS.LINE_STATUS != "X"
                             select new { JOBCOST_HDR1.JOBCODE, JOBTRANS.QUANTITY, JOBTRANS.STOCKCODE, JOBTRANS.LINECOST, JOBTRANS.TRANSDATE, VARIATIONCODE = JOBTRANS.X_VARIATIONCODE, JOBTRANS.INVOICED, JOBTRANS.INVOICEDATE, JOBTRANS.INVSEQNO, JOBTRANS.EXCHRATE };
 
             var jobTransactionsList = jobTransactions.ToList();
