@@ -58,6 +58,25 @@ namespace BluePrints.ViewModels
         protected PROJECTViewModelWrapper()
         {
             UseProductivityFactorOnRemaining = false;
+
+            bool? isCurrentBenchmarkedAgainstBudget = LoginCredentials.GetUserPreferenceBool(DataUtils.GetNameOf(() => UserPreferences.SCurve_CurrentBenchmarkedAgainstBudget));
+            Current_Benchmark = getBenchmarkTargetFromNullableBool(isCurrentBenchmarkedAgainstBudget);
+            bool? isEarnedBenchmarkedAgainstBudget = LoginCredentials.GetUserPreferenceBool(DataUtils.GetNameOf(() => UserPreferences.SCurve_EarnedBenchmarkedAgainstBudget));
+            Earned_Benchmark = getBenchmarkTargetFromNullableBool(isEarnedBenchmarkedAgainstBudget);
+            bool? isBurnedBenchmarkedAgainstBudget = LoginCredentials.GetUserPreferenceBool(DataUtils.GetNameOf(() => UserPreferences.SCurve_BurnedBenchmarkedAgainstBudget));
+            Burned_Benchmark = getBenchmarkTargetFromNullableBool(isBurnedBenchmarkedAgainstBudget);
+            bool? isRemainingBenchmarkedAgainstBudget = LoginCredentials.GetUserPreferenceBool(DataUtils.GetNameOf(() => UserPreferences.SCurve_RemainingBenchmarkedAgainstBudget));
+            Remaining_Benchmark = getBenchmarkTargetFromNullableBool(isRemainingBenchmarkedAgainstBudget);
+        }
+
+        private BenchmarkTarget getBenchmarkTargetFromNullableBool(bool? benchmarkBool)
+        {
+            if (benchmarkBool == null)
+                return BenchmarkTarget.Current;
+            else if ((bool)benchmarkBool)
+                return BenchmarkTarget.Budget;
+            else
+                return BenchmarkTarget.Current;
         }
 
         protected IDialogService ActivityDetailDialogService
@@ -107,6 +126,8 @@ namespace BluePrints.ViewModels
             delayedRefreshDispatcher.Interval = new TimeSpan(0, 0, 0, 1);
             delayedRefreshDispatcher.Tick += delayedRefreshDispatcher_Tick;
             adjustDataDate();
+            viewType = DashboardViewType.Units;
+            usePercentage = true;
         }
 
         private void adjustDataDate()

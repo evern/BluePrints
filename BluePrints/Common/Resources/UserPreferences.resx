@@ -144,4 +144,16 @@
   <data name="PreferenceTrueValue" xml:space="preserve">
     <value>Y</value>
   </data>
+  <data name="SCurve_BurnedBenchmarkedAgainstBudget" xml:space="preserve">
+    <value>Benchmark burned S-Curve against budget</value>
+  </data>
+  <data name="SCurve_CurrentBenchmarkedAgainstBudget" xml:space="preserve">
+    <value>Benchmark current S-Curve against budget</value>
+  </data>
+  <data name="SCurve_EarnedBenchmarkedAgainstBudget" xml:space="preserve">
+    <value>Benchmark earned S-Curve against budget</value>
+  </data>
+  <data name="SCurve_RemainingBenchmarkedAgainstBudget" xml:space="preserve">
+    <value>Benchmark remaining S-Cureve against budget</value>
+  </data>
 </root>

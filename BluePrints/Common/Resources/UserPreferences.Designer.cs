@@ -140,5 +140,41 @@ namespace BluePrints.Common.Resources {
                 return ResourceManager.GetString("PreferenceTrueValue", resourceCulture);
             }
         }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Benchmark burned S-Curve against budget.
+        /// </summary>
+        internal static string SCurve_BurnedBenchmarkedAgainstBudget {
+            get {
+                return ResourceManager.GetString("SCurve_BurnedBenchmarkedAgainstBudget", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Benchmark current S-Curve against budget.
+        /// </summary>
+        internal static string SCurve_CurrentBenchmarkedAgainstBudget {
+            get {
+                return ResourceManager.GetString("SCurve_CurrentBenchmarkedAgainstBudget", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Benchmark earned S-Curve against budget.
+        /// </summary>
+        internal static string SCurve_EarnedBenchmarkedAgainstBudget {
+            get {
+                return ResourceManager.GetString("SCurve_EarnedBenchmarkedAgainstBudget", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Benchmark remaining S-Cureve against budget.
+        /// </summary>
+        internal static string SCurve_RemainingBenchmarkedAgainstBudget {
+            get {
+                return ResourceManager.GetString("SCurve_RemainingBenchmarkedAgainstBudget", resourceCulture);
+            }
+        }
     }
 }

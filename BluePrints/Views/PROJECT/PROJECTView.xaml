@@ -112,6 +112,10 @@
                             <dxe:CheckEditSettings />
                         </dxb:BarEditItem.EditSettings>
                     </dxb:BarEditItem>
+                    <dxb:BarCheckItem x:Name="bcCurrentBenchmark" Content="Current Against Budget" IsChecked="{Binding IsCurrentBenchmarkedAgainstBudget, Mode=TwoWay}" IsEnabled="{Binding IsLoading, Converter={StaticResource BooleanNegationConverter}}" RibbonStyle="SmallWithText" ToolTip="Is S-Curve current percentages benchmarked against budget" Glyph="{dx:DXImage Images/Chart/ChangeChartSeriesType_16x16.png}" LargeGlyph="{dx:DXImage Images/Chart/ChangeChartSeriesType_32x32.png}" />
+                    <dxb:BarCheckItem x:Name="bcEarnedBenchmark" Content="Earned Against Budget" IsChecked="{Binding IsEarnedBenchmarkedAgainstBudget, Mode=TwoWay}" IsEnabled="{Binding IsLoading, Converter={StaticResource BooleanNegationConverter}}" RibbonStyle="SmallWithText" ToolTip="Is S-Curve earned percentages benchmarked against budget" Glyph="{dx:DXImage Images/Chart/ChangeChartSeriesType_16x16.png}" LargeGlyph="{dx:DXImage Images/Chart/ChangeChartSeriesType_32x32.png}" />
+                    <dxb:BarCheckItem x:Name="bcBurnedBenchmark" Content="Burned Against Budget" IsChecked="{Binding IsBurnedBenchmarkedAgainstBudget, Mode=TwoWay}" IsEnabled="{Binding IsLoading, Converter={StaticResource BooleanNegationConverter}}" RibbonStyle="SmallWithText" ToolTip="Is S-Curve burned percentages benchmarked against budget" Glyph="{dx:DXImage Images/Chart/ChangeChartSeriesType_16x16.png}" LargeGlyph="{dx:DXImage Images/Chart/ChangeChartSeriesType_32x32.png}" />
+                    <dxb:BarCheckItem x:Name="bcRemainingBenchmark" Content="Remaining Against Budget" IsChecked="{Binding IsRemainingBenchmarkedAgainstBudget, Mode=TwoWay}" IsEnabled="{Binding IsLoading, Converter={StaticResource BooleanNegationConverter}}" RibbonStyle="SmallWithText" ToolTip="Is S-Curve remaining percentages benchmarked against budget" Glyph="{dx:DXImage Images/Chart/ChangeChartSeriesType_16x16.png}" LargeGlyph="{dx:DXImage Images/Chart/ChangeChartSeriesType_32x32.png}" />
                 </dxb:BarManager.Items>
                 <DockPanel>
                     <dxr:RibbonControl Style="{StaticResource DefaultRibbonControlStyle}">
@@ -134,15 +138,23 @@
                                     <dxb:BarButtonItemLink BarItemName="biDateForward" />
                                     <dxb:BarEditItemLink BarItemName="biDisableAutoReportDate" />
                                 </dxr:RibbonPageGroup>
-                                <dxr:RibbonPageGroup MergeType="Replace" Caption="Chart">
+                                <dxr:RibbonPageGroup MergeType="Replace" Caption="Selection">
+                                    <dxb:BarCheckItemLink BarItemName="biSelectAll" />
+                                    <dxb:BarCheckItemLink BarItemName="biSelectConstruct" />
+                                    <dxb:BarCheckItemLink BarItemName="biSelectDesign" />
+                                </dxr:RibbonPageGroup>
+                            </dxr:RibbonPage>
+                            <dxr:RibbonPage MergeType="Replace" Caption="Chart">
+                                <dxr:RibbonPageGroup MergeType="Replace" Caption="Project Details">
                                     <dxb:BarButtonItemLink BarItemName="biCheckUnits" />
                                     <dxb:BarButtonItemLink BarItemName="biCheckCosts" />
                                     <dxb:BarButtonItemLink BarItemName="biCheckQty" />
                                     <dxb:BarCheckItemLink BarItemName="biCheckPercent" />
                                     <dxb:BarCheckItemLink BarItemName="biCheckCumulativeUC" />
-                                    <dxb:BarCheckItemLink BarItemName="biSelectAll" />
-                                    <dxb:BarCheckItemLink BarItemName="biSelectConstruct" />
-                                    <dxb:BarCheckItemLink BarItemName="biSelectDesign" />
+                                    <dxb:BarCheckItemLink BarItemName="bcCurrentBenchmark" />
+                                    <dxb:BarCheckItemLink BarItemName="bcEarnedBenchmark" />
+                                    <dxb:BarCheckItemLink BarItemName="bcBurnedBenchmark" />
+                                    <dxb:BarCheckItemLink BarItemName="bcRemainingBenchmark" />
                                 </dxr:RibbonPageGroup>
                             </dxr:RibbonPage>
                             <dxr:RibbonPage MergeType="Replace" Caption="Detailed Export">

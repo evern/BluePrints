@@ -25,6 +25,14 @@ namespace BluePrints.Common
         public static DateTime DefaultLastDay = new DateTime(2099, 1, 1);
     }
 
+    public enum BenchmarkTarget
+    {
+        [Display(Name = "Current")]
+        Current,
+        [Display(Name = "Budget")]
+        Budget
+    }
+
     public enum DashboardEXOQueryType
     {
         [Display(Name = "All")]

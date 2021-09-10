@@ -379,7 +379,7 @@ namespace BluePrints.Common.ViewModel.Reporting
                     DateTime firstDataDate = firstAlignedDataDate;
 
                     //total units at start
-                    cumulativeDataPoints = DataPointsHelpers.GroupDataPointsByPeriod(rawDataPoints, TotalUnits, TotalCosts, qtyPerUnit, firstDataDate, reportInterval, Guid.Empty,  null, extrapolateDate);
+                    cumulativeDataPoints = DataPointsHelpers.GroupDataPointsByPeriod(rawDataPoints, BudgetedUnits, BudgetedCosts, TotalUnits, TotalCosts, qtyPerUnit, firstDataDate, reportInterval, Guid.Empty,  null, extrapolateDate);
                 }
 
                 return cumulativeDataPoints;
@@ -402,7 +402,7 @@ namespace BluePrints.Common.ViewModel.Reporting
                     DateTime firstDataDate = firstAlignedDataDate;
 
                     //total units at start
-                    remainingOnlyCumulativeDataPoints = DataPointsHelpers.GroupDataPointsByPeriod(rawDataPoints, TotalUnits, TotalCosts, qtyPerUnit, firstDataDate, reportInterval, Guid.Empty, null, extrapolateDate, true);
+                    remainingOnlyCumulativeDataPoints = DataPointsHelpers.GroupDataPointsByPeriod(rawDataPoints, BudgetedUnits, BudgetedCosts, TotalUnits, TotalCosts, qtyPerUnit, firstDataDate, reportInterval, Guid.Empty, null, extrapolateDate, true);
                 }
 
                 return remainingOnlyCumulativeDataPoints;
@@ -685,6 +685,17 @@ namespace BluePrints.Common.ViewModel.Reporting
 
         public List<ExoDataPoint> RawExoData { get; set; }
 
+        public decimal BudgetUnitsPercentage
+        {
+            get
+            {
+                if (BudgetedUnits == 0 || Units == 0)
+                    return 0;
+                else
+                    return Units / BudgetedUnits;
+            }
+        }
+
         public decimal UnitsPercentage
         {
             get
@@ -693,6 +704,17 @@ namespace BluePrints.Common.ViewModel.Reporting
                     return 0;
                 else
                     return Units / TotalUnits;
+            }
+        }
+
+        public decimal BudgetCostsPercentage
+        {
+            get
+            {
+                if (BudgetedCosts == 0 || Costs == 0)
+                    return 0;
+                else
+                    return Costs / BudgetedCosts;
             }
         }
 

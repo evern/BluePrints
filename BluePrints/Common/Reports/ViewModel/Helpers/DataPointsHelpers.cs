@@ -18,7 +18,7 @@ namespace BluePrints.Common.ViewModel.Reporting
         /// </summary>
         public static ObservableCollection<DataPoint> GroupDataPointsByPeriod(
             IEnumerable<DataPoint> rawDataPoints, decimal budgetedUnits,
-            decimal budgetedCosts, decimal qtyPerUnit, DateTime firstAlignedDataDate, TimeSpan progressInterval, Guid aggregateGuid, 
+            decimal budgetedCosts, decimal totalUnits, decimal totalCosts, decimal qtyPerUnit, DateTime firstAlignedDataDate, TimeSpan progressInterval, Guid aggregateGuid, 
             IEnumerable<VariationAdjustment> rawVariationAdjustments = null, DateTime? overrideLastPeriodDate = null, bool isRemaining = false)
                         {
             if (rawDataPoints == null || rawDataPoints.Count() == 0)
@@ -47,8 +47,8 @@ namespace BluePrints.Common.ViewModel.Reporting
             summaryDataPoints.Add(new DataPoint()
             {
                 DeliverableGuid = deliverableGuid,
-                TotalUnits = budgetedUnits,
-                 TotalCosts = budgetedCosts,
+                TotalUnits = totalUnits,
+                TotalCosts = totalCosts,
                 BudgetedUnits = budgetedUnits,
                 BudgetedCosts = budgetedCosts,
                 Units = 0,
@@ -108,8 +108,8 @@ namespace BluePrints.Common.ViewModel.Reporting
                 summaryDataPoints.Add(new DataPoint()
                 {
                     DeliverableGuid = deliverableGuid,
-                    TotalUnits = budgetedUnits + cumulativeAdjustmentUnits,
-                    TotalCosts = budgetedCosts + cumulativeAdjustmentCosts,
+                    TotalUnits = totalUnits + cumulativeAdjustmentUnits,
+                    TotalCosts = totalCosts + cumulativeAdjustmentCosts,
                     BudgetedUnits = budgetedUnits + cumulativeAdjustmentUnits,
                     BudgetedCosts = budgetedCosts + cumulativeAdjustmentCosts,
                     Units = cumulativeUnits,
