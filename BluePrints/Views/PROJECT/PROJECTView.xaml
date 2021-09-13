@@ -205,6 +205,7 @@
                             <custom:GridControlEx x:Name="GridControl" dx:DXSerializer.SerializationID="GridControlSingleProjectDashboard" IsFilterEnabled="False" ItemsSource="{Binding SingleProjectDashboards}" SelectedItems="{Binding Selected_Dashboards, Mode=TwoWay}" Style="{StaticResource SingleProjectGridControlTemplate}">
                                 <dxmvvm:Interaction.Behaviors>
                                     <dxmvvm:EventToCommand Command="{Binding CustomSummaryCommand}" EventName="CustomSummary" PassEventArgsToCommand="True" />
+                                    <dxmvvm:ReadOnlyDependencyPropertyBindingBehavior Property="VisibleItems" Binding="{Binding VisibleData, Mode=OneWayToSource}"/>
                                 </dxmvvm:Interaction.Behaviors>
                                 <dxg:GridControl.Bands>
                                     <dxg:GridControlBand Header="General">

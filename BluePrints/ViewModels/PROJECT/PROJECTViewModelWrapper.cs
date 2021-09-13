@@ -285,6 +285,12 @@ namespace BluePrints.ViewModels
             return true;
         }
 
+        protected override void OnAfterAssignedCallbackAndRaisePropertyChanged()
+        {
+            GridControlService.GridControl.FilterChanged += gridControl_FilterChanged;
+            base.OnAfterAssignedCallbackAndRaisePropertyChanged();
+        }
+
         protected virtual List<StatsCalculationType> getForecastTypes()
         {
             return null;
@@ -1283,6 +1289,26 @@ namespace BluePrints.ViewModels
                         Selected_Dashboards.Remove(removeSubJob);
                     }
                 }
+            }
+        }
+
+        private void gridControl_FilterChanged(object sender, RoutedEventArgs e)
+        {
+            SelectVisibleRows();
+        }
+
+        public ObservableCollection<object> VisibleData
+        {
+            get { return GetProperty(() => VisibleData); }
+            set { SetProperty(() => VisibleData, value); }
+        }
+
+        public void SelectVisibleRows()
+        {
+            Selected_Dashboards.Clear();
+            foreach (DashboardFlatStructure subjob_dashboard in VisibleData)
+            {
+                Selected_Dashboards.Add(subjob_dashboard);
             }
         }
 
