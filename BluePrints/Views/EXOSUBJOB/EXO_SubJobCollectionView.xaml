@@ -104,12 +104,12 @@
                                 </DataTemplate>
                             </dxg:GridColumn.CellTemplate>
                         </dxg:GridColumn>
-                        <dxg:GridColumn FieldName="CommodityCode" Visible="False" Header="Commodity Code Description (Read Only)" ReadOnly="True" AllowBestFit="True" Width="150" HeaderToolTip="Read-only description of commodity codes from EXO">
+                        <dxg:GridColumn FieldName="CommodityCodeMemberForDescription" Visible="False" Header="Commodity Code Description (Read Only)" ReadOnly="True" AllowBestFit="True" Width="150" HeaderToolTip="Read-only description of commodity codes from EXO">
                             <dxg:GridColumn.EditSettings>
                                 <dxe:ComboBoxEditSettings AutoComplete="True" DisplayMember="COSTDESC" IsTextEditable="True" ItemsSource="{Binding JOB_COSTTYPESCollection}" ValueMember="SHORTCODE" />
                             </dxg:GridColumn.EditSettings>
                         </dxg:GridColumn>
-                        <dxg:GridColumn FieldName="CommodityCode" Visible="False" Header="Commodity Code Comments (Read Only)" ReadOnly="True" AllowBestFit="True" Width="150" HeaderToolTip="Read-only comments of commodity codes from BluePrints Data -> Commodity Codes">
+                        <dxg:GridColumn FieldName="CommodityCodeMemberForComments" Visible="False" Header="Commodity Code Comments (Read Only)" ReadOnly="True" AllowBestFit="True" Width="150" HeaderToolTip="Read-only comments of commodity codes from BluePrints Data -> Commodity Codes">
                             <dxg:GridColumn.EditSettings>
                                 <dxe:ComboBoxEditSettings AutoComplete="True" DisplayMember="DESCRIPTION" IsTextEditable="True" ItemsSource="{Binding COMMODITY_CODECollection}" ValueMember="CODE" />
                             </dxg:GridColumn.EditSettings>

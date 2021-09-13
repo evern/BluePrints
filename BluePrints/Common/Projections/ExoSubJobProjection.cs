@@ -104,6 +104,10 @@ namespace BluePrints.Common.Projections
             return StockCode;
         }
 
+        //because save layout doesn't save columns with same member properly, so this as a work-around
+        public string CommodityCodeMemberForDescription => CommodityCode;
+        public string CommodityCodeMemberForComments => CommodityCode;
+
 
         public bool CommodityIsIndirectOnly { get; set; }
         public string VariationCode { get; set; }
