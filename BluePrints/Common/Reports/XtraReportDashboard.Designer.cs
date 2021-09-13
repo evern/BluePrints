@@ -114,11 +114,11 @@
             this.xrLabelCumulative = new DevExpress.XtraReports.UI.XRLabel();
             this.SubBand2 = new DevExpress.XtraReports.UI.SubBand();
             this.xrChart1 = new DevExpress.XtraReports.UI.XRChart();
-            this.objectDataSource1 = new DevExpress.DataAccess.ObjectBinding.ObjectDataSource(this.components);
             this.reportBy = new DevExpress.XtraReports.Parameters.Parameter();
             this.showBurn = new DevExpress.XtraReports.Parameters.Parameter();
             this.useLate = new DevExpress.XtraReports.Parameters.Parameter();
             this.showAbsolute = new DevExpress.XtraReports.Parameters.Parameter();
+            this.objectDataSource1 = new DevExpress.DataAccess.ObjectBinding.ObjectDataSource(this.components);
             ((System.ComponentModel.ISupportInitialize)(this.xrChart1)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(xyDiagram1)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(secondaryAxisY1)).BeginInit();
@@ -394,7 +394,7 @@
             // 
             this.xrLabel4.Borders = ((DevExpress.XtraPrinting.BorderSide)((DevExpress.XtraPrinting.BorderSide.Right | DevExpress.XtraPrinting.BorderSide.Bottom)));
             this.xrLabel4.DataBindings.AddRange(new DevExpress.XtraReports.UI.XRBinding[] {
-            new DevExpress.XtraReports.UI.XRBinding("Text", null, "BudgetedLate.CurrentPeriodDataPoint.UnitsPercentage", "{0:0.00%}")});
+            new DevExpress.XtraReports.UI.XRBinding("Text", null, "BudgetedLate.CurrentPeriodDataPoint.ReportUnitsPercentage", "{0:0.00%}")});
             this.xrLabel4.Font = new System.Drawing.Font("Calibri", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.xrLabel4.LocationFloat = new DevExpress.Utils.PointFloat(946.2402F, 41.75003F);
             this.xrLabel4.Name = "xrLabel4";
@@ -426,7 +426,7 @@
             // 
             this.xrLabel1.Borders = ((DevExpress.XtraPrinting.BorderSide)((DevExpress.XtraPrinting.BorderSide.Right | DevExpress.XtraPrinting.BorderSide.Bottom)));
             this.xrLabel1.DataBindings.AddRange(new DevExpress.XtraReports.UI.XRBinding[] {
-            new DevExpress.XtraReports.UI.XRBinding("Text", null, "BudgetedLate.CurrentPeriodCumulativeDataPoint.UnitsPercentage", "{0:0.00%}")});
+            new DevExpress.XtraReports.UI.XRBinding("Text", null, "BudgetedLate.CurrentPeriodCumulativeDataPoint.ReportUnitsPercentage", "{0:0.00%}")});
             this.xrLabel1.Font = new System.Drawing.Font("Calibri", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.xrLabel1.LocationFloat = new DevExpress.Utils.PointFloat(380.2397F, 41.75003F);
             this.xrLabel1.Name = "xrLabel1";
@@ -475,7 +475,7 @@
             // 
             this.xrDataSummaryPeriodBurnedPercent.Borders = ((DevExpress.XtraPrinting.BorderSide)((DevExpress.XtraPrinting.BorderSide.Right | DevExpress.XtraPrinting.BorderSide.Bottom)));
             this.xrDataSummaryPeriodBurnedPercent.DataBindings.AddRange(new DevExpress.XtraReports.UI.XRBinding[] {
-            new DevExpress.XtraReports.UI.XRBinding("Text", null, "Burned.CurrentPeriodDataPoint.UnitsPercentage", "{0:0.00%}")});
+            new DevExpress.XtraReports.UI.XRBinding("Text", null, "Burned.CurrentPeriodDataPoint.ReportUnitsPercentage", "{0:0.00%}")});
             this.xrDataSummaryPeriodBurnedPercent.Font = new System.Drawing.Font("Calibri", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.xrDataSummaryPeriodBurnedPercent.FormattingRules.Add(this.SummaryPeriodBurnedEfficiency_Bad);
             this.xrDataSummaryPeriodBurnedPercent.FormattingRules.Add(this.SummaryPeriodBurnedEfficiency_Good);
@@ -506,7 +506,7 @@
             // 
             this.xrDataSummaryCumulativeBurnedPercent.Borders = DevExpress.XtraPrinting.BorderSide.Bottom;
             this.xrDataSummaryCumulativeBurnedPercent.DataBindings.AddRange(new DevExpress.XtraReports.UI.XRBinding[] {
-            new DevExpress.XtraReports.UI.XRBinding("Text", null, "Burned.CurrentPeriodCumulativeDataPoint.UnitsPercentage", "{0:0.00%}")});
+            new DevExpress.XtraReports.UI.XRBinding("Text", null, "Burned.CurrentPeriodCumulativeDataPoint.ReportUnitsPercentage", "{0:0.00%}")});
             this.xrDataSummaryCumulativeBurnedPercent.Font = new System.Drawing.Font("Calibri", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.xrDataSummaryCumulativeBurnedPercent.FormattingRules.Add(this.SummaryCumulativeBurnedEfficiency_Bad);
             this.xrDataSummaryCumulativeBurnedPercent.FormattingRules.Add(this.SummaryCumulativeBurnedEfficiency_Good);
@@ -573,7 +573,7 @@
             this.xrDataSummaryCumulativePlannedPercent.Borders = ((DevExpress.XtraPrinting.BorderSide)(((DevExpress.XtraPrinting.BorderSide.Left | DevExpress.XtraPrinting.BorderSide.Right) 
             | DevExpress.XtraPrinting.BorderSide.Bottom)));
             this.xrDataSummaryCumulativePlannedPercent.DataBindings.AddRange(new DevExpress.XtraReports.UI.XRBinding[] {
-            new DevExpress.XtraReports.UI.XRBinding("Text", null, "Budgeted.CurrentPeriodCumulativeDataPoint.UnitsPercentage", "{0:0.00%}")});
+            new DevExpress.XtraReports.UI.XRBinding("Text", null, "Budgeted.CurrentPeriodCumulativeDataPoint.ReportUnitsPercentage", "{0:0.00%}")});
             this.xrDataSummaryCumulativePlannedPercent.Font = new System.Drawing.Font("Calibri", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.xrDataSummaryCumulativePlannedPercent.LocationFloat = new DevExpress.Utils.PointFloat(238.2395F, 41.75003F);
             this.xrDataSummaryCumulativePlannedPercent.Name = "xrDataSummaryCumulativePlannedPercent";
@@ -605,7 +605,7 @@
             // 
             this.xrDataSummaryCumulativeEarnedPercent.Borders = ((DevExpress.XtraPrinting.BorderSide)((DevExpress.XtraPrinting.BorderSide.Right | DevExpress.XtraPrinting.BorderSide.Bottom)));
             this.xrDataSummaryCumulativeEarnedPercent.DataBindings.AddRange(new DevExpress.XtraReports.UI.XRBinding[] {
-            new DevExpress.XtraReports.UI.XRBinding("Text", null, "Earned.CurrentPeriodCumulativeDataPoint.UnitsPercentage", "{0:0.00%}")});
+            new DevExpress.XtraReports.UI.XRBinding("Text", null, "Earned.CurrentPeriodCumulativeDataPoint.ReportUnitsPercentage", "{0:0.00%}")});
             this.xrDataSummaryCumulativeEarnedPercent.Font = new System.Drawing.Font("Calibri", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.xrDataSummaryCumulativeEarnedPercent.FormattingRules.Add(this.SummaryCumulativeEarnedEfficiency_Bad);
             this.xrDataSummaryCumulativeEarnedPercent.FormattingRules.Add(this.SummaryCumulativeEarnedEfficiency_Good);
@@ -672,7 +672,7 @@
             this.xrDataSummaryPeriodPlannedPercent.Borders = ((DevExpress.XtraPrinting.BorderSide)(((DevExpress.XtraPrinting.BorderSide.Left | DevExpress.XtraPrinting.BorderSide.Right) 
             | DevExpress.XtraPrinting.BorderSide.Bottom)));
             this.xrDataSummaryPeriodPlannedPercent.DataBindings.AddRange(new DevExpress.XtraReports.UI.XRBinding[] {
-            new DevExpress.XtraReports.UI.XRBinding("Text", null, "Budgeted.CurrentPeriodDataPoint.UnitsPercentage", "{0:0.00%}")});
+            new DevExpress.XtraReports.UI.XRBinding("Text", null, "Budgeted.CurrentPeriodDataPoint.ReportUnitsPercentage", "{0:0.00%}")});
             this.xrDataSummaryPeriodPlannedPercent.Font = new System.Drawing.Font("Calibri", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.xrDataSummaryPeriodPlannedPercent.LocationFloat = new DevExpress.Utils.PointFloat(802.2399F, 41.75003F);
             this.xrDataSummaryPeriodPlannedPercent.Name = "xrDataSummaryPeriodPlannedPercent";
@@ -687,7 +687,7 @@
             // 
             this.xrDataSummaryPeriodEarnedPercent.Borders = ((DevExpress.XtraPrinting.BorderSide)((DevExpress.XtraPrinting.BorderSide.Right | DevExpress.XtraPrinting.BorderSide.Bottom)));
             this.xrDataSummaryPeriodEarnedPercent.DataBindings.AddRange(new DevExpress.XtraReports.UI.XRBinding[] {
-            new DevExpress.XtraReports.UI.XRBinding("Text", null, "Earned.CurrentPeriodDataPoint.UnitsPercentage", "{0:0.00%}")});
+            new DevExpress.XtraReports.UI.XRBinding("Text", null, "Earned.CurrentPeriodDataPoint.ReportUnitsPercentage", "{0:0.00%}")});
             this.xrDataSummaryPeriodEarnedPercent.Font = new System.Drawing.Font("Calibri", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.xrDataSummaryPeriodEarnedPercent.FormattingRules.Add(this.SummaryPeriodEarnedEfficiency_Bad);
             this.xrDataSummaryPeriodEarnedPercent.FormattingRules.Add(this.SummaryPeriodEarnedEfficiency_Good);
@@ -846,7 +846,7 @@
             series5.ArgumentDataMember = "Remaining.CumulativeDataPoints.ProgressDate";
             series5.LabelsVisibility = DevExpress.Utils.DefaultBoolean.False;
             series5.Name = "Remaining";
-            series5.ValueDataMembersSerializable = "Remaining.CumulativeDataPoints.UnitsPercentage";
+            series5.ValueDataMembersSerializable = "Remaining.CumulativeDataPoints.ReportUnitsPercentage";
             lineSeriesView1.Color = System.Drawing.Color.Cyan;
             lineSeriesView1.LineMarkerOptions.Color = System.Drawing.Color.Cyan;
             lineSeriesView1.LineMarkerOptions.Size = 5;
@@ -856,7 +856,7 @@
             series6.ArgumentDataMember = "Budgeted.CumulativeDataPoints.ProgressDate";
             series6.LabelsVisibility = DevExpress.Utils.DefaultBoolean.False;
             series6.Name = "Planned";
-            series6.ValueDataMembersSerializable = "Budgeted.CumulativeDataPoints.UnitsPercentage";
+            series6.ValueDataMembersSerializable = "Budgeted.CumulativeDataPoints.ReportUnitsPercentage";
             lineSeriesView2.Color = System.Drawing.Color.FromArgb(((int)(((byte)(247)))), ((int)(((byte)(150)))), ((int)(((byte)(70)))));
             lineSeriesView2.LineMarkerOptions.Color = System.Drawing.Color.FromArgb(((int)(((byte)(247)))), ((int)(((byte)(150)))), ((int)(((byte)(70)))));
             lineSeriesView2.LineMarkerOptions.Size = 5;
@@ -866,7 +866,7 @@
             series7.ArgumentDataMember = "Earned.CumulativeDataPoints.ProgressDate";
             series7.LabelsVisibility = DevExpress.Utils.DefaultBoolean.False;
             series7.Name = "Earned";
-            series7.ValueDataMembersSerializable = "Earned.CumulativeDataPoints.UnitsPercentage";
+            series7.ValueDataMembersSerializable = "Earned.CumulativeDataPoints.ReportUnitsPercentage";
             lineSeriesView3.Color = System.Drawing.Color.FromArgb(((int)(((byte)(0)))), ((int)(((byte)(176)))), ((int)(((byte)(80)))));
             lineSeriesView3.LineMarkerOptions.Color = System.Drawing.Color.FromArgb(((int)(((byte)(0)))), ((int)(((byte)(176)))), ((int)(((byte)(80)))));
             lineSeriesView3.LineMarkerOptions.Size = 5;
@@ -876,7 +876,7 @@
             series8.ArgumentDataMember = "Burned.CumulativeDataPoints.ProgressDate";
             series8.LabelsVisibility = DevExpress.Utils.DefaultBoolean.False;
             series8.Name = "Burned";
-            series8.ValueDataMembersSerializable = "Burned.CumulativeDataPoints.UnitsPercentage";
+            series8.ValueDataMembersSerializable = "Burned.CumulativeDataPoints.ReportUnitsPercentage";
             lineSeriesView4.Color = System.Drawing.Color.FromArgb(((int)(((byte)(149)))), ((int)(((byte)(55)))), ((int)(((byte)(52)))));
             lineSeriesView4.LineMarkerOptions.Color = System.Drawing.Color.FromArgb(((int)(((byte)(149)))), ((int)(((byte)(55)))), ((int)(((byte)(52)))));
             lineSeriesView4.LineMarkerOptions.Size = 5;
@@ -886,7 +886,7 @@
             series9.ArgumentDataMember = "BudgetedLate.CumulativeDataPoints.ProgressDate";
             series9.LabelsVisibility = DevExpress.Utils.DefaultBoolean.False;
             series9.Name = "Late Planned";
-            series9.ValueDataMembersSerializable = "BudgetedLate.CumulativeDataPoints.UnitsPercentage";
+            series9.ValueDataMembersSerializable = "BudgetedLate.CumulativeDataPoints.ReportUnitsPercentage";
             lineSeriesView5.Color = System.Drawing.Color.OrangeRed;
             lineSeriesView5.LineMarkerOptions.Color = System.Drawing.Color.OrangeRed;
             lineSeriesView5.LineMarkerOptions.Size = 5;
@@ -908,7 +908,7 @@
             series11.ArgumentDataMember = "RemainingActual.CumulativeDataPoints.ProgressDate";
             series11.LabelsVisibility = DevExpress.Utils.DefaultBoolean.False;
             series11.Name = "Remaining Actual";
-            series11.ValueDataMembersSerializable = "RemainingActual.CumulativeDataPoints.UnitsPercentage";
+            series11.ValueDataMembersSerializable = "RemainingActual.CumulativeDataPoints.ReportUnitsPercentage";
             lineSeriesView6.Color = System.Drawing.Color.FromArgb(((int)(((byte)(240)))), ((int)(((byte)(0)))), ((int)(((byte)(0)))));
             lineSeriesView6.LineMarkerOptions.Color = System.Drawing.Color.FromArgb(((int)(((byte)(240)))), ((int)(((byte)(0)))), ((int)(((byte)(0)))));
             lineSeriesView6.LineMarkerOptions.Size = 6;
@@ -939,7 +939,7 @@
             series14.ArgumentDataMember = "Current.CumulativeDataPoints.ProgressDate";
             series14.LabelsVisibility = DevExpress.Utils.DefaultBoolean.False;
             series14.Name = "Current";
-            series14.ValueDataMembersSerializable = "Current.CumulativeDataPoints.UnitsPercentage";
+            series14.ValueDataMembersSerializable = "Current.CumulativeDataPoints.ReportUnitsPercentage";
             lineSeriesView7.Color = System.Drawing.Color.FromArgb(((int)(((byte)(227)))), ((int)(((byte)(108)))), ((int)(((byte)(9)))));
             lineSeriesView7.LineMarkerOptions.Color = System.Drawing.Color.FromArgb(((int)(((byte)(227)))), ((int)(((byte)(108)))), ((int)(((byte)(9)))));
             lineSeriesView7.LineMarkerOptions.Size = 5;
@@ -948,7 +948,7 @@
             series15.ArgumentDataMember = "TenderEarned.CumulativeDataPoints.ProgressDate";
             series15.LabelsVisibility = DevExpress.Utils.DefaultBoolean.False;
             series15.Name = "Earned Tender";
-            series15.ValueDataMembersSerializable = "TenderEarned.CumulativeDataPoints.UnitsPercentage";
+            series15.ValueDataMembersSerializable = "TenderEarned.CumulativeDataPoints.ReportUnitsPercentage";
             lineSeriesView8.Color = System.Drawing.Color.FromArgb(((int)(((byte)(146)))), ((int)(((byte)(208)))), ((int)(((byte)(80)))));
             lineSeriesView8.LineMarkerOptions.Color = System.Drawing.Color.FromArgb(((int)(((byte)(146)))), ((int)(((byte)(208)))), ((int)(((byte)(80)))));
             lineSeriesView8.LineMarkerOptions.Size = 5;
@@ -971,11 +971,6 @@
         series14,
         series15};
             this.xrChart1.SizeF = new System.Drawing.SizeF(1503.148F, 889.5601F);
-            // 
-            // objectDataSource1
-            // 
-            this.objectDataSource1.DataSource = typeof(BluePrints.Common.ViewModel.Reporting.DeliverableSummaryStats);
-            this.objectDataSource1.Name = "objectDataSource1";
             // 
             // reportBy
             // 
@@ -1007,6 +1002,11 @@
             this.showAbsolute.Name = "showAbsolute";
             this.showAbsolute.Type = typeof(bool);
             this.showAbsolute.ValueInfo = "False";
+            // 
+            // objectDataSource1
+            // 
+            this.objectDataSource1.DataSource = typeof(BluePrints.Common.ViewModel.Reporting.DeliverableSummaryStats);
+            this.objectDataSource1.Name = "objectDataSource1";
             // 
             // XtraReportDashboard
             // 

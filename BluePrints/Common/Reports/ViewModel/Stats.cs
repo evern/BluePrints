@@ -685,6 +685,8 @@ namespace BluePrints.Common.ViewModel.Reporting
 
         public List<ExoDataPoint> RawExoData { get; set; }
 
+        public bool IsReportBudgetPercentage { get; set; }
+
         public decimal BudgetUnitsPercentage
         {
             get
@@ -726,6 +728,28 @@ namespace BluePrints.Common.ViewModel.Reporting
                     return 0;
                 else
                     return Costs / TotalCosts;
+            }
+        }
+
+        public decimal ReportUnitsPercentage
+        {
+            get
+            {
+                if (IsReportBudgetPercentage)
+                    return BudgetUnitsPercentage;
+
+                return UnitsPercentage;
+            }
+        }
+
+        public decimal ReportCostsPercentage
+        {
+            get
+            {
+                if (IsReportBudgetPercentage)
+                    return BudgetCostsPercentage;
+
+                return CostsPercentage;
             }
         }
     }

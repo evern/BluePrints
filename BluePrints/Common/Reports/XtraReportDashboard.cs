@@ -147,9 +147,9 @@ namespace BluePrints.Reports
             {
                 string changeString = namePartition[2];
                 if (isCost)
-                    changeString = "Costs";
+                    changeString = "ReportCosts";
                 else
-                    changeString = "Units";
+                    changeString = "ReportUnits";
 
                 if (!isAbsolute)
                     changeString += "Percentage";

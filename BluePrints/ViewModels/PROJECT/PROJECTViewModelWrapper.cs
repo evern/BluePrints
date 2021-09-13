@@ -1442,6 +1442,29 @@ namespace BluePrints.ViewModels
                 reportDesigner.Dispose();
         }
 
+        protected override void replaceDataPointReportingMeasure(SummaryStats stats)
+        {
+            setReportingDataPointBenchmark(Current_Benchmark, stats.Current);
+            setReportingDataPointBenchmark(Earned_Benchmark, stats.Earned);
+            setReportingDataPointBenchmark(Burned_Benchmark, stats.Burned);
+            setReportingDataPointBenchmark(Remaining_Benchmark, stats.Remaining);
+
+            base.replaceDataPointReportingMeasure(stats);
+        }
+
+        private void setReportingDataPointBenchmark(BenchmarkTarget benchmarkTarget, Stats stats)
+        {
+            if(stats != null)
+            {
+                if (stats.CurrentPeriodCumulativeDataPoint != null)
+                    stats.CurrentPeriodCumulativeDataPoint.IsReportBudgetPercentage = benchmarkTarget == BenchmarkTarget.Budget;
+
+                if(stats.CumulativeDataPoints != null) 
+                    foreach (Common.ViewModel.Reporting.DataPoint dataPoint in stats.CumulativeDataPoints)
+                        dataPoint.IsReportBudgetPercentage = benchmarkTarget == BenchmarkTarget.Budget;
+            }
+        }
+
         protected override void loadReportLayoutFromDatabase(XtraReportDashboard xtraReport)
         {
             var dbProjectReport = loaderCollection.GetObject<PROJECT_REPORT>();

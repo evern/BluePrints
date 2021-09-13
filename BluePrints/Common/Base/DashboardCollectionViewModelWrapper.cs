@@ -369,6 +369,7 @@ namespace BluePrints.Common.ViewModel
             if (project_dashboard != null)
                 title = project_dashboard.Entity.NAME;
 
+            replaceDataPointReportingMeasure(displaySummary);
             progressReport.AssignProperties(displaySummary, displaySummary.ReportingDataDate, title);
             var previewWindow = new DocumentPreviewWindow();
             previewWindow.PreviewControl.DocumentSource = progressReport;
@@ -378,6 +379,11 @@ namespace BluePrints.Common.ViewModel
             progressReport.CreateDocument(true);
             LoadingScreenManager.CloseLoadingScreen();
             previewWindow.Show();
+        }
+
+        protected virtual void replaceDataPointReportingMeasure(SummaryStats stats)
+        {
+
         }
 
         protected virtual void loadReportLayoutFromDatabase(XtraReportDashboard xtraReport)
