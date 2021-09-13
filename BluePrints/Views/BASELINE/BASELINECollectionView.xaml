@@ -72,7 +72,7 @@
                                     <dxe:ComboBoxEditSettings AutoComplete="True" DisplayMember="wbs_short_name" IsTextEditable="True" ItemsSource="{Binding P6PROJECTSCollection}" NullValueButtonPlacement="Popup" ValueMember="wbs_short_name" />
                                 </dxg:GridColumn.EditSettings>
                             </dxg:GridColumn>
-                            <dxg:GridColumn Header="Rebaseline" FieldName="REBASELINE" MinWidth="40">
+                            <dxg:GridColumn Header="Rebaseline" FieldName="REBASELINE" MinWidth="40" HeaderToolTip="Use actual start date and end date for activities that has been completed">
                                 <dxg:GridColumn.EditSettings>
                                     <dxe:CheckEditSettings />
                                 </dxg:GridColumn.EditSettings>
