@@ -19,6 +19,11 @@ namespace BluePrints.Data
             set { CREATED = value; }
         }
 
+        public override string ToString()
+        {
+            return CODE;
+        }
+
         public string Office => BluePrintsResources.GlobalOffice;
 
         [NotMapped]

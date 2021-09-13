@@ -328,13 +328,17 @@ namespace BluePrints.ViewModels
         public override void UnifiedCellValueChanged(string field_name, object old_value, object new_value, ExoSubJobProjection projection, bool isNew)
         {
             string errorMessage = string.Empty;
-            projection.ResetValidCodes();
-            projection.Update();
 
             List<KeyValuePair<string, string>> constraintIssues;
+
+            //reset have to be called before IsValidEntity
+            projection.ResetValidCodes(); 
+            projection.Update();
+
             if (MainViewModel.IsValidEntity(projection, null, ref errorMessage, out constraintIssues) && projection.IsLineExistsInExo)
             {
                 CommonMethods.SubJobLineValueChanged(field_name, old_value, new_value, projection, Entities, isNew, loadPROJECT.NUMBER, localPrimeroUnitOfWork, bluePrintsEntitiesUnitOfWork, MessageBoxService, BulkColumnEditDialogService, masterJob, () => this.RaisePropertyChanged(x => x.COMMODITY_CODEStringCollection), () => this.RaisePropertyChanged(x => x.STOCK_CODEStringCollection));
+
             }
 
             base.UnifiedCellValueChanged(field_name, old_value, new_value, projection, isNew);

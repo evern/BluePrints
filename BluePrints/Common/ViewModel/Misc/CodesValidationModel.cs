@@ -48,6 +48,8 @@ namespace BluePrints.Common.Projections
         {
             validCommodityCodes = null;
             validStockCodes = null;
+            taggedValidCommodityCodes = null;
+            taggedValidStockItems = null;
         }
 
         public bool IsCommodityCodeValid
