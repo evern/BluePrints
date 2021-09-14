@@ -1113,7 +1113,7 @@ namespace BluePrints.ViewModels
             }
 
             commodityJob.P6RemainingUnitsOverride = P6TotalCurrentRemainingUnits;
-            updateViewForecastsOnDatesFromDb(commodityRow);
+            updateViewForecastsOnDatesFromDb(commodityRow, CachedFORECASTCollection);
             updateTotalUncommittedOnJob(commodityRow);
 
             return commodityRow;
@@ -1349,7 +1349,7 @@ namespace BluePrints.ViewModels
         /// <summary>
         /// Updates the view with forecast values from db for a single row
         /// </summary>
-        private void updateViewForecastsOnDatesFromDb(DataRow dataRow, bool searchParentRow = false)
+        private void updateViewForecastsOnDatesFromDb(DataRow dataRow, IEnumerable<FORECAST> PreloadedFORECASTCollection = null, bool searchParentRow = false)
         {
             ForecastJobData job = (ForecastJobData)dataRow[columnEntity];
             ExoSubJobProjection projection = job.Projection;
@@ -1364,7 +1364,11 @@ namespace BluePrints.ViewModels
             DataTable childCompareDataTable = (DataTable)p6HoursRow[columnCompare];
             DataRow childCompareP6CostsRow = childCompareDataTable.Rows[Convert.ToInt32(BluePrintsResources.ForecastCompareChild_P6CostRowIndex)];
 
-            List<FORECAST> currentRowFORECASTS = FORECASTCollection.Where(x => x.SUBJOB_CODE == projection.SubJobCode && x.DISCIPLINE_CODE == projection.DisciplineCode && x.COMMODITY_CODE == projection.CommodityCode && x.VARIATION_CODE == projection.VariationCode).ToList();
+            List<FORECAST> currentRowFORECASTS;
+            if(PreloadedFORECASTCollection != null)
+                currentRowFORECASTS = PreloadedFORECASTCollection.Where(x => x.SUBJOB_CODE == projection.SubJobCode && x.DISCIPLINE_CODE == projection.DisciplineCode && x.COMMODITY_CODE == projection.CommodityCode && x.VARIATION_CODE == projection.VariationCode).ToList();
+            else
+                currentRowFORECASTS = FORECASTCollection.Where(x => x.SUBJOB_CODE == projection.SubJobCode && x.DISCIPLINE_CODE == projection.DisciplineCode && x.COMMODITY_CODE == projection.CommodityCode && x.VARIATION_CODE == projection.VariationCode).ToList();
             
             decimal P6CurrentRemainingUnits = 0;
             foreach (ForecastDateCost dateCost in job.DateCosts)
@@ -1641,7 +1645,7 @@ namespace BluePrints.ViewModels
             LoadingScreenManager.SetMessage("Summarizing Data...");
             foreach(DataRow editedRow in editedRows)
             {
-                updateViewForecastsOnDatesFromDb(editedRow, true);
+                updateViewForecastsOnDatesFromDb(editedRow, null, true);
                 updateTotalUncommittedOnJob(editedRow, true);
                 LoadingScreenManager.Progress();
             }
@@ -1991,7 +1995,7 @@ namespace BluePrints.ViewModels
                     if(!skipSaveChangesAndRowUpdate)
                     {
                         bluePrintsUnitOfWork.SaveChanges();
-                        updateViewForecastsOnDatesFromDb(compareP6UnitsRemainingRow, true);
+                        updateViewForecastsOnDatesFromDb(compareP6UnitsRemainingRow, null, true);
                     }
                 }
             }
@@ -2401,7 +2405,7 @@ namespace BluePrints.ViewModels
             if(!skipRowSavingAndRefresh)
             {
                 bluePrintsUnitOfWork.SaveChanges();
-                updateViewForecastsOnDatesFromDb(dataRow, true);
+                updateViewForecastsOnDatesFromDb(dataRow, null, true);
                 updateTotalUncommittedOnJob(dataRow, true);
                 updateFloatingSummaryMembers();
             }
