@@ -243,7 +243,6 @@ namespace BluePrints.Common.Base
 
             MainViewModel.SetParentViewModel(this);
             //mainThreadDispatcher.BeginInvoke(new Action(() => InitializeSummarizer(entities)));
-            onMainViewModelFirstLoadedTimer.Start();
             isFirstLoaded = true;
             base.AssignCallBacksAndRaisePropertyChange(entities);
         }
@@ -270,14 +269,15 @@ namespace BluePrints.Common.Base
         //when current view is catering only for a single project and a single user
         protected abstract bool isSingleProjectAndUserLocale { get; }
         List<ProjectUnitOfWorkContext> projectContexts;
-        private List<ProjectUnitOfWorkContext> getProjectContexts()
+        protected List<ProjectUnitOfWorkContext> getProjectContexts()
         {
-            if (projectContexts == null)
+            //Entities can be null when it's disposed
+            if (projectContexts == null && Entities != null)
             {
                 IPrimeroEntitiesUnitOfWork perthUOW = PrimeroEntitiesUnitOfWorkSource.GetUnitOfWorkFactory().CreateUnitOfWork();
                 IPrimeroEntitiesUnitOfWork montrealUOW = PrimeroEntitiesUnitOfWorkSource.GetUnitOfWorkFactory(BluePrintsResources.OfficeMontreal).CreateUnitOfWork();
                 projectContexts = new List<ProjectUnitOfWorkContext>();
-                foreach (var entity in MainViewModel.Entities)
+                foreach (var entity in Entities)
                 {
                     if (!projectContexts.Any(x => x.ProjectNumber == entity.Project_Number))
                     {
@@ -435,6 +435,12 @@ namespace BluePrints.Common.Base
             }
 
             backgroundWorkerDelayedLaunchTimer.Start();
+        }
+
+        protected override void OnAfterAssignedCallbackAndRaisePropertyChanged()
+        {
+            onMainViewModelFirstLoadedTimer.Start();
+            base.OnAfterAssignedCallbackAndRaisePropertyChanged();
         }
 
         private void backgroundWorkerDelayedLaunchTimer_Tick(object sender, EventArgs e)
