@@ -58,6 +58,25 @@ namespace BluePrints.ViewModels
         protected PROJECTViewModelWrapper()
         {
             UseProductivityFactorOnRemaining = false;
+
+            bool? isCurrentBenchmarkedAgainstBudget = LoginCredentials.GetUserPreferenceBool(DataUtils.GetNameOf(() => UserPreferences.SCurve_CurrentBenchmarkedAgainstBudget));
+            Current_Benchmark = getBenchmarkTargetFromNullableBool(isCurrentBenchmarkedAgainstBudget);
+            bool? isEarnedBenchmarkedAgainstBudget = LoginCredentials.GetUserPreferenceBool(DataUtils.GetNameOf(() => UserPreferences.SCurve_EarnedBenchmarkedAgainstBudget));
+            Earned_Benchmark = getBenchmarkTargetFromNullableBool(isEarnedBenchmarkedAgainstBudget);
+            bool? isBurnedBenchmarkedAgainstBudget = LoginCredentials.GetUserPreferenceBool(DataUtils.GetNameOf(() => UserPreferences.SCurve_BurnedBenchmarkedAgainstBudget));
+            Burned_Benchmark = getBenchmarkTargetFromNullableBool(isBurnedBenchmarkedAgainstBudget);
+            bool? isRemainingBenchmarkedAgainstBudget = LoginCredentials.GetUserPreferenceBool(DataUtils.GetNameOf(() => UserPreferences.SCurve_RemainingBenchmarkedAgainstBudget));
+            Remaining_Benchmark = getBenchmarkTargetFromNullableBool(isRemainingBenchmarkedAgainstBudget);
+        }
+
+        private BenchmarkTarget getBenchmarkTargetFromNullableBool(bool? benchmarkBool)
+        {
+            if (benchmarkBool == null)
+                return BenchmarkTarget.Current;
+            else if ((bool)benchmarkBool)
+                return BenchmarkTarget.Budget;
+            else
+                return BenchmarkTarget.Current;
         }
 
         protected IDialogService ActivityDetailDialogService
@@ -107,6 +126,8 @@ namespace BluePrints.ViewModels
             delayedRefreshDispatcher.Interval = new TimeSpan(0, 0, 0, 1);
             delayedRefreshDispatcher.Tick += delayedRefreshDispatcher_Tick;
             adjustDataDate();
+            viewType = DashboardViewType.Units;
+            usePercentage = true;
         }
 
         private void adjustDataDate()
@@ -262,6 +283,12 @@ namespace BluePrints.ViewModels
 
             base.OnMainViewModelLoaded(entities);
             return true;
+        }
+
+        protected override void OnAfterAssignedCallbackAndRaisePropertyChanged()
+        {
+            GridControlService.GridControl.FilterChanged += gridControl_FilterChanged;
+            base.OnAfterAssignedCallbackAndRaisePropertyChanged();
         }
 
         protected virtual List<StatsCalculationType> getForecastTypes()
@@ -1265,6 +1292,26 @@ namespace BluePrints.ViewModels
             }
         }
 
+        private void gridControl_FilterChanged(object sender, RoutedEventArgs e)
+        {
+            SelectVisibleRows();
+        }
+
+        public ObservableCollection<object> VisibleData
+        {
+            get { return GetProperty(() => VisibleData); }
+            set { SetProperty(() => VisibleData, value); }
+        }
+
+        public void SelectVisibleRows()
+        {
+            Selected_Dashboards.Clear();
+            foreach (DashboardFlatStructure subjob_dashboard in VisibleData)
+            {
+                Selected_Dashboards.Add(subjob_dashboard);
+            }
+        }
+
         public IEnumerable<DashboardFlatStructure> SingleProjectDashboards
         {
             get
@@ -1393,6 +1440,29 @@ namespace BluePrints.ViewModels
                 reportDesigner.Dispose();
             else
                 reportDesigner.Dispose();
+        }
+
+        protected override void replaceDataPointReportingMeasure(SummaryStats stats)
+        {
+            setReportingDataPointBenchmark(Current_Benchmark, stats.Current);
+            setReportingDataPointBenchmark(Earned_Benchmark, stats.Earned);
+            setReportingDataPointBenchmark(Burned_Benchmark, stats.Burned);
+            setReportingDataPointBenchmark(Remaining_Benchmark, stats.Remaining);
+
+            base.replaceDataPointReportingMeasure(stats);
+        }
+
+        private void setReportingDataPointBenchmark(BenchmarkTarget benchmarkTarget, Stats stats)
+        {
+            if(stats != null)
+            {
+                if (stats.CurrentPeriodCumulativeDataPoint != null)
+                    stats.CurrentPeriodCumulativeDataPoint.IsReportBudgetPercentage = benchmarkTarget == BenchmarkTarget.Budget;
+
+                if(stats.CumulativeDataPoints != null) 
+                    foreach (Common.ViewModel.Reporting.DataPoint dataPoint in stats.CumulativeDataPoints)
+                        dataPoint.IsReportBudgetPercentage = benchmarkTarget == BenchmarkTarget.Budget;
+            }
         }
 
         protected override void loadReportLayoutFromDatabase(XtraReportDashboard xtraReport)
