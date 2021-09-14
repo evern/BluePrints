@@ -621,7 +621,7 @@ namespace BluePrints.ViewModels
 
                 variation_itemsViewModelWrapper.SetParentViewModel(this);
                 variation_itemsViewModelWrapper.OnEntitiesLoadedCallBack = onLoadedAction;
-                variation_itemsViewModelWrapper.OnEntitiesLoadedCallBackRelateParam = getParentIdFunc;
+                variation_itemsViewModelWrapper.OnEntitiesLoadedCallBackRelateParam = () => variation_itemsViewModelWrapper.UnitOfWork;
                 variation_itemsViewModelWrapper.SuppressNotification = true;
                 variation_itemsViewModelWrapper.SupressCompulsoryEntityNotFoundMessage = supressCompulsoryEntityNotFoundMessage;
                 variation_itemsViewModelWrapper.InViewModelOnlyMode = true;
@@ -638,43 +638,43 @@ namespace BluePrints.ViewModels
 
         private void OnVariationApprove(IEnumerable<BASELINE_ITEMProgress> deliverables, object parameter)
         {
-            IBluePrintsEntitiesUnitOfWork bluePrintsUOW = bluePrintsUnitOfWorkFactory.CreateUnitOfWork();
+            IBluePrintsEntitiesUnitOfWork bluePrintsUOW = (IBluePrintsEntitiesUnitOfWork)parameter;
             mainThreadDispatcher.BeginInvoke(new Action(() => ReviseBASELINE(deliverables, LiveBASELINE, BASELINEViewModel, bluePrintsUOW, bluePrintsUOW.BASELINE_ITEMS, VariationStages.Approve)));
         }
 
         private void OnVariationUnapprove(IEnumerable<BASELINE_ITEMProgress> deliverables, object parameter)
         {
-            IBluePrintsEntitiesUnitOfWork bluePrintsUOW = bluePrintsUnitOfWorkFactory.CreateUnitOfWork();
+            IBluePrintsEntitiesUnitOfWork bluePrintsUOW = (IBluePrintsEntitiesUnitOfWork)parameter;
             mainThreadDispatcher.BeginInvoke(new Action(() => ReviseBASELINE(deliverables, LiveBASELINE, BASELINEViewModel, bluePrintsUOW, bluePrintsUOW.BASELINE_ITEMS, VariationStages.Unapprove)));
         }
 
         private void OnVariationSubmit(IEnumerable<BASELINE_ITEMProgress> deliverables, object parameter)
         {
-            IBluePrintsEntitiesUnitOfWork bluePrintsUOW = bluePrintsUnitOfWorkFactory.CreateUnitOfWork();
+            IBluePrintsEntitiesUnitOfWork bluePrintsUOW = (IBluePrintsEntitiesUnitOfWork)parameter;
             mainThreadDispatcher.BeginInvoke(new Action(() => ReviseBASELINE(deliverables, LiveBASELINE, BASELINEViewModel, bluePrintsUOW, bluePrintsUOW.BASELINE_ITEMS, VariationStages.Submit)));
         }
 
         private void OnVariationUnsubmit(IEnumerable<BASELINE_ITEMProgress> deliverables, object parameter)
         {
-            IBluePrintsEntitiesUnitOfWork bluePrintsUOW = bluePrintsUnitOfWorkFactory.CreateUnitOfWork();
+            IBluePrintsEntitiesUnitOfWork bluePrintsUOW = (IBluePrintsEntitiesUnitOfWork)parameter;
             mainThreadDispatcher.BeginInvoke(new Action(() => ReviseBASELINE(deliverables, LiveBASELINE, BASELINEViewModel, bluePrintsUOW, bluePrintsUOW.BASELINE_ITEMS, VariationStages.Unsubmit)));
         }
 
         private void OnVariationUpdate(IEnumerable<BASELINE_ITEMProgress> deliverables, object parameter)
         {
-            IBluePrintsEntitiesUnitOfWork bluePrintsUOW = bluePrintsUnitOfWorkFactory.CreateUnitOfWork();
+            IBluePrintsEntitiesUnitOfWork bluePrintsUOW = (IBluePrintsEntitiesUnitOfWork)parameter;
             mainThreadDispatcher.BeginInvoke(new Action(() => ReviseBASELINE(deliverables, LiveBASELINE, BASELINEViewModel, bluePrintsUOW, bluePrintsUOW.BASELINE_ITEMS, VariationStages.Update)));
         }
 
         private void OnVariationAddToExo(IEnumerable<BASELINE_ITEMProgress> deliverables, object parameter)
         {
-            IBluePrintsEntitiesUnitOfWork bluePrintsUOW = bluePrintsUnitOfWorkFactory.CreateUnitOfWork();
+            IBluePrintsEntitiesUnitOfWork bluePrintsUOW = (IBluePrintsEntitiesUnitOfWork)parameter;
             mainThreadDispatcher.BeginInvoke(new Action(() => ReviseBASELINE(deliverables, LiveBASELINE, BASELINEViewModel, bluePrintsUOW, bluePrintsUOW.BASELINE_ITEMS, VariationStages.AddToExo)));
         }
 
         private void OnVariationRemoveFromExo(IEnumerable<BASELINE_ITEMProgress> deliverables, object parameter)
         {
-            IBluePrintsEntitiesUnitOfWork bluePrintsUOW = bluePrintsUnitOfWorkFactory.CreateUnitOfWork();
+            IBluePrintsEntitiesUnitOfWork bluePrintsUOW = (IBluePrintsEntitiesUnitOfWork)parameter;
             mainThreadDispatcher.BeginInvoke(new Action(() => ReviseBASELINE(deliverables, LiveBASELINE, BASELINEViewModel, bluePrintsUOW, bluePrintsUOW.BASELINE_ITEMS, VariationStages.RemoveFromExo)));
         }
 
@@ -781,7 +781,6 @@ namespace BluePrints.ViewModels
             where TBaseline : class, IAmBaseline, new()
             where TEntity : class, IDeliverable, ISupportVariationRevision, new()
         {
-            IBluePrintsEntitiesUnitOfWork bluePrintsUnitOfWork = bluePrintsUnitOfWorkFactory.CreateUnitOfWork();
             List<VariationApprovalAction<TEntity>> approvalActions = new List<VariationApprovalAction<TEntity>>();
             string variationCode = SelectedEntity.Entity.NAME;
 
@@ -819,7 +818,7 @@ namespace BluePrints.ViewModels
                     VariationApprovalViewModel<TEntity> viewModel = VariationApprovalViewModel<TEntity>.CreateViewModel(approvalActions);
                     if (ErrorMessagesDialogService.ShowDialog(MessageButton.OKCancel, string.Empty, "ListVariationApprovalAction", viewModel) == MessageResult.OK)
                     {
-                        PROGRESS livePROGRESS = bluePrintsUnitOfWork.PROGRESSES.FirstOrDefault(x => x.TYPE == PhaseType.Design && x.STATUS == ProgressStatus.Live && x.GUID_PROJECT == loadPROJECT.GUID);
+                        PROGRESS livePROGRESS = unitOfWork.PROGRESSES.FirstOrDefault(x => x.TYPE == PhaseType.Design && x.STATUS == ProgressStatus.Live && x.GUID_PROJECT == loadPROJECT.GUID);
                         if (livePROGRESS != null)
                         {
                             if(approvalActions.Any(x => x.ReduceEarned))
@@ -863,7 +862,7 @@ namespace BluePrints.ViewModels
                                             break;
                                     }
 
-                                    bluePrintsUnitOfWork.SaveChanges();
+                                    unitOfWork.SaveChanges();
                                 }
                                 else
                                 {
@@ -917,12 +916,12 @@ namespace BluePrints.ViewModels
             if (variationStage == VariationStages.Unapprove)
             {
                 //BASELINE_ITEM.GUID_VARIATION != null only finds deliverable's that was added through variation, so we don't touch any deliverable that weren't added through variation
-                var deliverablesFromVariation = from BASELINE_ITEM in bluePrintsUnitOfWork.BASELINE_ITEMS
-                                                join BASELINE in bluePrintsUnitOfWork.BASELINES
+                var deliverablesFromVariation = from BASELINE_ITEM in unitOfWork.BASELINE_ITEMS
+                                                join BASELINE in unitOfWork.BASELINES
                                                 on BASELINE_ITEM.GUID_BASELINE equals BASELINE.GUID
-                                                join VARIATION_ITEMS in bluePrintsUnitOfWork.VARIATION_ITEMS
+                                                join VARIATION_ITEMS in unitOfWork.VARIATION_ITEMS
                                                 on BASELINE_ITEM.GUID_ORIGINAL equals VARIATION_ITEMS.GUID_ORIBASEITEM
-                                                join VARIATIONS in bluePrintsUnitOfWork.VARIATIONS
+                                                join VARIATIONS in unitOfWork.VARIATIONS
                                                 on VARIATION_ITEMS.GUID_VARIATION equals VARIATIONS.GUID
                                                 where BASELINE.GUID == liveBASELINE.GUID && BASELINE_ITEM.GUID_VARIATION != null
                                                 select new { BASELINE_ITEM, VARIATIONS };
@@ -939,7 +938,7 @@ namespace BluePrints.ViewModels
                     if (currentDeliverableVariations.Count > 0 && currentDeliverableVariations.All(x => x.BASELINE_ITEM.GUID_VARIATION == SelectedEntity.GUID))
                     {
                         BASELINE_ITEM removeDeliverable = currentDeliverableVariations.First().BASELINE_ITEM;
-                        BASELINE_ITEM variationDeliverable = bluePrintsUnitOfWork.BASELINE_ITEMS.FirstOrDefault(x => x.GUID_ORIGINAL == deliverable.GUID_ORIGINAL && x.GUID_BASELINE == null && x.GUID_VARIATION == removeDeliverable.GUID_VARIATION);
+                        BASELINE_ITEM variationDeliverable = unitOfWork.BASELINE_ITEMS.FirstOrDefault(x => x.GUID_ORIGINAL == deliverable.GUID_ORIGINAL && x.GUID_BASELINE == null && x.GUID_VARIATION == removeDeliverable.GUID_VARIATION);
                         if (variationDeliverable != null)
                         {
                             //copy everything from existing deliverable to variation deliverable before deleting
@@ -950,8 +949,8 @@ namespace BluePrints.ViewModels
                         }
 
                         Messenger.Default.Send(new EntityMessage<BASELINE_ITEM, Guid>(removeDeliverable.GUID, MainViewModel.Key, EntityMessageType.Deleted, this, CurrentHWID, false));
-                        bluePrintsUnitOfWork.BASELINE_ITEMS.Remove(removeDeliverable);
-                        bluePrintsUnitOfWork.SaveChanges();
+                        unitOfWork.BASELINE_ITEMS.Remove(removeDeliverable);
+                        unitOfWork.SaveChanges();
                     }
 
                     LoadingScreenManager.Progress();
@@ -983,7 +982,7 @@ namespace BluePrints.ViewModels
                         if (deliverable.DisplayVariationUnits < 0)
                         {
                             decimal currentVariationReductionUnits = -1 * deliverable.DisplayVariationUnits;
-                            decimal updatedMaximumReducibleUnits = getDeliverableUpdatedMaximumReducibleUnits(bluePrintsUnitOfWork, deliverable);
+                            decimal updatedMaximumReducibleUnits = getDeliverableUpdatedMaximumReducibleUnits(unitOfWork, deliverable);
 
                             if (currentVariationReductionUnits > updatedMaximumReducibleUnits)
                                 variationUnits = -1 * updatedMaximumReducibleUnits;
@@ -1016,7 +1015,10 @@ namespace BluePrints.ViewModels
                     //Save variation units for future viewing
                     if (variationUnits != null && deliverable.VARIATION_ITEM != null)
                     {
-                        deliverable.VARIATION_ITEM.VARIATION_UNITS = (decimal)variationUnits;
+                        VARIATION_ITEM variation = unitOfWork.VARIATION_ITEMS.Find(deliverable.VARIATION_ITEM.GUID);
+                        if(variation != null)
+                            variation.VARIATION_UNITS = (decimal)variationUnits;
+                        
                         //changes will be saved in unitOfWork.SaveChanges();
                     }
 
