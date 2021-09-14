@@ -410,12 +410,17 @@
                             </dxg:GridColumn>
                         </dxg:GridControlBand>
                         <dxg:GridControlBand Header="Information (Read Only)">
+                            <dxg:GridColumn FieldName="Budget_Adjustment_Units" Header="Budget Adjustment Hours" AllowBestFit="false" Width="70" HeaderToolTip="Variation hours added from the variation page, approved and Budget Adjustment checked" ReadOnly="True" >
+                                <dxg:GridColumn.EditSettings>
+                                    <dxe:SpinEditSettings Mask="###,##0 hrs" MaskType="Numeric" MaskUseAsDisplayFormat="True" />
+                                </dxg:GridColumn.EditSettings>
+                            </dxg:GridColumn>
                             <dxg:GridColumn FieldName="Budget_Units" Header="Adjusted Budget" AllowBestFit="false" Width="70" HeaderToolTip="Additional hours added from the variation page and original budget, approved and checked as budget adjustment" ReadOnly="True" >
                                 <dxg:GridColumn.EditSettings>
                                     <dxe:SpinEditSettings Mask="###,##0 hrs" MaskType="Numeric" MaskUseAsDisplayFormat="True" />
                                 </dxg:GridColumn.EditSettings>
                             </dxg:GridColumn>
-                            <dxg:GridColumn FieldName="Variation_Units" Header="Variation Hours" AllowBestFit="false" Width="70" HeaderToolTip="Variation hours added from the variation page and approved to be shown here" ReadOnly="True" >
+                            <dxg:GridColumn FieldName="Variation_Units" Header="Variation Hours" AllowBestFit="false" Width="70" HeaderToolTip="Variation hours added from the variation page and approved" ReadOnly="True" >
                                 <dxg:GridColumn.EditSettings>
                                     <dxe:SpinEditSettings Mask="###,##0 hrs" MaskType="Numeric" MaskUseAsDisplayFormat="True" />
                                 </dxg:GridColumn.EditSettings>
@@ -510,6 +515,7 @@
                         <dxg:GridSummaryItem dxc:DXSerializer.Enabled="False" DisplayFormat="Total {0} Records" FieldName="Entity.Entity.INTERNAL_NUM" SummaryType="Count" />
                         <dxg:GridSummaryItem dxc:DXSerializer.Enabled="False" DisplayFormat="n" FieldName="Entity.Entity.BUDGET_HOURS" ShowInColumn="Entity.Entity.BUDGET_HOURS" SummaryType="Sum" />
                         <dxg:GridSummaryItem dxc:DXSerializer.Enabled="False" DisplayFormat="n" FieldName="Budget_Units" ShowInColumn="Budget_Units" SummaryType="Sum" />
+                        <dxg:GridSummaryItem dxc:DXSerializer.Enabled="False" DisplayFormat="n" FieldName="Budget_Adjustment_Units" ShowInColumn="Budget_Adjustment_Units" SummaryType="Sum" />
                         <dxg:GridSummaryItem dxc:DXSerializer.Enabled="False" DisplayFormat="n" FieldName="Total_Units" ShowInColumn="Total_Units" SummaryType="Sum" />
                         <dxg:GridSummaryItem dxc:DXSerializer.Enabled="False" DisplayFormat="c" FieldName="Total_Costs" ShowInColumn="Total_Costs" SummaryType="Sum" />
                         <dxg:GridSummaryItem dxc:DXSerializer.Enabled="False" DisplayFormat="c" FieldName="Total_InternalCosts" ShowInColumn="Total_InternalCosts" SummaryType="Sum" />
@@ -519,6 +525,7 @@
                         <dxg:GridSummaryItem dxc:DXSerializer.Enabled="False" DisplayFormat="Total {0} Records" FieldName="Entity.Entity.INTERNAL_NUM" SummaryType="Count" />
                         <dxg:GridSummaryItem dxc:DXSerializer.Enabled="False" DisplayFormat="n" FieldName="Entity.Entity.BUDGET_HOURS" ShowInColumn="Entity.Entity.BUDGET_HOURS" SummaryType="Sum" />
                         <dxg:GridSummaryItem dxc:DXSerializer.Enabled="False" DisplayFormat="n" FieldName="Budget_Units" ShowInColumn="Budget_Units" SummaryType="Sum" />
+                        <dxg:GridSummaryItem dxc:DXSerializer.Enabled="False" DisplayFormat="n" FieldName="Budget_Adjustment_Units" ShowInColumn="Budget_Adjustment_Units" SummaryType="Sum" />
                         <dxg:GridSummaryItem dxc:DXSerializer.Enabled="False" DisplayFormat="n" FieldName="Total_Units" ShowInColumn="Total_Units" SummaryType="Sum" />
                         <dxg:GridSummaryItem dxc:DXSerializer.Enabled="False" DisplayFormat="c" FieldName="Total_Costs" ShowInColumn="Total_Costs" SummaryType="Sum" />
                         <dxg:GridSummaryItem dxc:DXSerializer.Enabled="False" DisplayFormat="c" FieldName="Total_InternalCosts" ShowInColumn="Total_InternalCosts" SummaryType="Sum" />
