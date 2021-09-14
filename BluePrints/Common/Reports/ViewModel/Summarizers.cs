@@ -406,7 +406,7 @@ namespace BluePrints.Common.ViewModel.Reporting
     public class FullSummarizer : PartialSummarizer
     {
         readonly FullStatsBuilder FullStatsBuilder;
-        public FullSummarizer(ProjectSummaryStats summaryStats, FullStatsBuilder fullStatsBuilder, string projectNumber, bool isSummariseByWBS)
+        public FullSummarizer(SummaryStats summaryStats, FullStatsBuilder fullStatsBuilder, string projectNumber, bool isSummariseByWBS)
             : base(summaryStats, fullStatsBuilder, projectNumber, isSummariseByWBS)
         {
             FullStatsBuilder = fullStatsBuilder;

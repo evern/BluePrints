@@ -12,7 +12,7 @@ namespace BluePrints.Common.ViewModel.Reporting
     /// <summary>
     /// IReportable wrapper so that baseline_itemProgress properties can be retrieved for reporting purpose
     /// </summary>
-    public class DeliverableSummaryStats : ProjectSummaryStats
+    public class DeliverableSummaryStats : SummaryStats
     {
         public IEnumerable<BASELINE_ITEMProgress> Deliverables
         {
