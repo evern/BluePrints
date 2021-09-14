@@ -265,6 +265,7 @@
                             <ItemsControl>
                                 <dxmvvm:EventToCommand Command="{Binding EditValueChangedCommand}" EventName="EditValueChanged" MarkRoutedEventsAsHandled="True" PassEventArgsToCommand="True" />
                                 <dxmvvm:EventToCommand Command="{Binding EditValueValidateCommand}" EventName="Validate" MarkRoutedEventsAsHandled="True" PassEventArgsToCommand="True" />
+                                <dxmvvm:EventToCommand Command="{Binding GotFocusCommand}" EventName="GotFocus" MarkRoutedEventsAsHandled="True" PassEventArgsToCommand="True" />
                                 <!--<dxmvvm:EventToCommand Command="{Binding EditControlPreviewMouseDownCommand}" EventName="PreviewMouseDown" MarkRoutedEventsAsHandled="True" PassEventArgsToCommand="True" />-->
                             </ItemsControl>
                         </DataTemplate>
@@ -608,7 +609,7 @@
                                                 <dxe:SpinEdit Style="{StaticResource SingleObjectView.SpinEditControlContainer}" Tag="ORI_REVENUE" Mask="c0" MaskType="Numeric" MaskUseAsDisplayFormat="True" EditValue="{Binding LoadPROJECT.ORI_REVENUE, Mode=OneWay}" />
                                             </dxlc:LayoutItem>
                                             <dxlc:LayoutItem Label="Approved Variation" LabelPosition="Left">
-                                                <dxe:SpinEdit Style="{StaticResource SingleObjectView.SpinEditControlContainer}" NullValueButtonPlacement="EditBox" Tag="VAR_REVENUE" Mask="c0" MaskType="Numeric" MaskUseAsDisplayFormat="True" EditValue="{Binding ForecastSummary.Approved_Var_Revenue, Mode=OneWay}" />
+                                                <dxe:SpinEdit Style="{StaticResource SingleObjectView.SpinEditControlContainer}" NullValueButtonPlacement="EditBox" Tag="VAR_REVENUE" Mask="c0" MaskType="Numeric" MaskUseAsDisplayFormat="True" GotFocus="SpinEdit_GotFocus" EditValue="{Binding ForecastSummary.Approved_Var_Revenue, Mode=OneWay}" />
                                             </dxlc:LayoutItem>
                                             <dxlc:LayoutItem>
                                                 <dxe:CheckEdit Content="Manual" IsChecked="{Binding IsManualApprovedVariationRevenue, Mode=OneWay}" ToolTip="Approved variation revenue is manual" />

@@ -496,7 +496,7 @@ namespace BluePrints.ViewModels
         private void DelayedEditValueChangeSetTimer_Tick(object sender, EventArgs e)
         {
             delayedEditValueChangeSetTimer.Stop();
-            isEditValueChangeInvoked = true;
+            allowValueEditing = true;
         }
 
         private void showDateChangeMessage()
@@ -672,7 +672,7 @@ namespace BluePrints.ViewModels
 
         public override void FullRefresh()
         {
-            isEditValueChangeInvoked = false;
+            allowValueEditing = false;
             IsLoading = true;
             IsLoadingForecast = true;
             this.RaisePropertyChanged(x => x.IsLoading);
@@ -2851,18 +2851,21 @@ namespace BluePrints.ViewModels
             string fieldName = baseEdit.Tag.ToString();
         }
 
+        public void GotFocus(RoutedEventArgs e)
+        {
+            //only allow editing when user focused on control instead of being changed from EditValueChanged
+            allowValueEditing = true;
+        }
+
         //prevent value from being saved if layout is loading
-        bool isEditValueChangeInvoked = false;
+        bool allowValueEditing = false;
         public void EditValueChanged(EditValueChangedEventArgs e)
         {
             if (IsLoadingForecast)
                 return;
 
-            if (!isEditValueChangeInvoked)
-            {
-                delayedEditValueChangedSetTrue();
+            if (!allowValueEditing)
                 return;
-            }
 
             if (MainViewModel == null || LoadPROJECT == null || ForecastSummary == null)
                 return;
@@ -2905,7 +2908,6 @@ namespace BluePrints.ViewModels
             //    ForecastSummary.EAC_Revenue = newValueDecimal;
 
             this.RaisePropertyChanged(x => x.ForecastSummary);
-            isEditValueChangeInvoked = true;
         }
 
         private void savePROJECT()
