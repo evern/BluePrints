@@ -573,7 +573,7 @@
             this.showCosts.Description = "Show Costs";
             this.showCosts.Name = "showCosts";
             this.showCosts.Type = typeof(bool);
-            this.showCosts.ValueInfo = "True";
+            this.showCosts.ValueInfo = "False";
             // 
             // GroupFooter1
             // 

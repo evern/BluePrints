@@ -14,6 +14,7 @@ namespace BluePrints.Reports
         {
             InitializeComponent();
             ParametersRequestSubmit += rptBaselineItem_ParametersRequestSubmit;
+            showHoursOnly(true);
         }
 
         public void AssignProperties(PROJECT PROJECT, BASELINE BASELINE, IEnumerable<BASELINE_ITEMProgress> BASELINE_ITEMS)
@@ -111,68 +112,19 @@ namespace BluePrints.Reports
 
             if (showHours && showCosts)
             {
-                xrlblTitle.WidthF = showType ? 199.06F : 295.06F;
-                xrlblDataTitle.WidthF = showType ? 199.06F : 295.06F;
-                xrlblHours.LocationF = new System.Drawing.PointF(805.06F, 0);
-                xrlblDataHours.LocationF = new System.Drawing.PointF(805.06F, 0);
-                xrlblTotalHours.LocationF = new System.Drawing.PointF(804.06F, 0);
-                xrlblHours.Visible = true;
-                xrlblDataHours.Visible = true;
-                xrlblTotalHours.Visible = true;
-                xrlblCosts.Visible = true;
-                xrlblDataCosts.Visible = true;
-                xrlblTotalCosts.Visible = true;
-                xrlblTotalCosts.WidthF = 133.9366F;
-                xrlblTotalCosts.LocationF = new System.Drawing.PointF(905.06F, 0);
-                xrlblTotalCosts.Borders = DevExpress.XtraPrinting.BorderSide.Right |
-                                          DevExpress.XtraPrinting.BorderSide.Bottom;
+                showHoursAndCosts(showType);
             }
             else if (showHours)
             {
-                xrlblTitle.WidthF = showType ? 332.1F : 428.1F;
-                xrlblDataTitle.WidthF = showType ? 332.1F : 428.1F;
-
-                xrlblHours.Visible = true;
-                xrlblDataHours.Visible = true;
-                xrlblTotalHours.Visible = true;
-                xrlblHours.LocationF = new System.Drawing.PointF(939.06F, 0);
-                xrlblDataHours.LocationF = new System.Drawing.PointF(939.06F, 0);
-                xrlblTotalHours.LocationF = new System.Drawing.PointF(938.06F, 0);
-
-                xrlblCosts.Visible = false;
-                xrlblDataCosts.Visible = false;
-                xrlblTotalCosts.Visible = false;
+                showHoursOnly(showType);
             }
             else if (showCosts)
             {
-                xrlblTitle.WidthF = showType ? 299.06F : 395.06F;
-                xrlblDataTitle.WidthF = showType ? 299.06F : 395.06F;
-
-                xrlblHours.Visible = false;
-                xrlblDataHours.Visible = false;
-                xrlblTotalHours.Visible = false;
-                xrlblCosts.Visible = true;
-                xrlblDataCosts.Visible = true;
-                xrlblTotalCosts.Visible = true;
-
-                xrlblTotalCosts.LocationF = new System.Drawing.PointF(904.06F, 0);
-                xrlblTotalCosts.WidthF = 134.9366F;
-                xrlblTotalCosts.Borders = DevExpress.XtraPrinting.BorderSide.Left |
-                                          DevExpress.XtraPrinting.BorderSide.Right |
-                                          DevExpress.XtraPrinting.BorderSide.Bottom;
+                showCostsOnly(showType);
             }
             else
             {
-                xrlblTitle.WidthF = showType ? 432.1F : 528.1F;
-                xrlblDataTitle.WidthF = showType ? 432.1F : 528.1F;
-                xrlblHours.LocationF = new System.Drawing.PointF(805.06F, 0);
-                xrlblDataHours.LocationF = new System.Drawing.PointF(805.06F, 0);
-                xrlblHours.Visible = false;
-                xrlblDataHours.Visible = false;
-                xrlblTotalHours.Visible = false;
-                xrlblCosts.Visible = false;
-                xrlblDataCosts.Visible = false;
-                xrlblTotalCosts.Visible = false;
+                hideAll(showType);
             }
 
             if (!showDeliverableType)
@@ -182,6 +134,74 @@ namespace BluePrints.Reports
             }
         }
 
+        private void showHoursAndCosts(bool showType)
+        {
+            xrlblTitle.WidthF = showType ? 199.06F : 295.06F;
+            xrlblDataTitle.WidthF = showType ? 199.06F : 295.06F;
+            xrlblHours.LocationF = new System.Drawing.PointF(805.06F, 0);
+            xrlblDataHours.LocationF = new System.Drawing.PointF(805.06F, 0);
+            xrlblTotalHours.LocationF = new System.Drawing.PointF(804.06F, 0);
+            xrlblHours.Visible = true;
+            xrlblDataHours.Visible = true;
+            xrlblTotalHours.Visible = true;
+            xrlblCosts.Visible = true;
+            xrlblDataCosts.Visible = true;
+            xrlblTotalCosts.Visible = true;
+            xrlblTotalCosts.WidthF = 133.9366F;
+            xrlblTotalCosts.LocationF = new System.Drawing.PointF(905.06F, 0);
+            xrlblTotalCosts.Borders = DevExpress.XtraPrinting.BorderSide.Right |
+                                      DevExpress.XtraPrinting.BorderSide.Bottom;
+        }
+
+        private void showHoursOnly(bool showType)
+        {
+            xrlblTitle.WidthF = showType ? 332.1F : 428.1F;
+            xrlblDataTitle.WidthF = showType ? 332.1F : 428.1F;
+
+            xrlblHours.Visible = true;
+            xrlblDataHours.Visible = true;
+            xrlblTotalHours.Visible = true;
+            xrlblHours.LocationF = new System.Drawing.PointF(939.06F, 0);
+            xrlblDataHours.LocationF = new System.Drawing.PointF(939.06F, 0);
+            xrlblTotalHours.LocationF = new System.Drawing.PointF(938.06F, 0);
+
+            xrlblCosts.Visible = false;
+            xrlblDataCosts.Visible = false;
+            xrlblTotalCosts.Visible = false;
+        }
+
+        private void showCostsOnly(bool showType)
+        {
+            xrlblTitle.WidthF = showType ? 299.06F : 395.06F;
+            xrlblDataTitle.WidthF = showType ? 299.06F : 395.06F;
+
+            xrlblHours.Visible = false;
+            xrlblDataHours.Visible = false;
+            xrlblTotalHours.Visible = false;
+            xrlblCosts.Visible = true;
+            xrlblDataCosts.Visible = true;
+            xrlblTotalCosts.Visible = true;
+
+            xrlblTotalCosts.LocationF = new System.Drawing.PointF(904.06F, 0);
+            xrlblTotalCosts.WidthF = 134.9366F;
+            xrlblTotalCosts.Borders = DevExpress.XtraPrinting.BorderSide.Left |
+                                      DevExpress.XtraPrinting.BorderSide.Right |
+                                      DevExpress.XtraPrinting.BorderSide.Bottom;
+        }
+
+        private void hideAll(bool showType)
+        {
+            xrlblTitle.WidthF = showType ? 432.1F : 528.1F;
+            xrlblDataTitle.WidthF = showType ? 432.1F : 528.1F;
+            xrlblHours.LocationF = new System.Drawing.PointF(805.06F, 0);
+            xrlblDataHours.LocationF = new System.Drawing.PointF(805.06F, 0);
+            xrlblHours.Visible = false;
+            xrlblDataHours.Visible = false;
+            xrlblTotalHours.Visible = false;
+            xrlblCosts.Visible = false;
+            xrlblDataCosts.Visible = false;
+            xrlblTotalCosts.Visible = false;
+        }
         #endregion
     }
 }
