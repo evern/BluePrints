@@ -100,6 +100,9 @@ namespace BluePrints.Common.Base
             updateP6DatesBackgroundWorker.DoWork += updateP6DatesBackgroundWorker_DoWork;
             updateP6DatesBackgroundWorker.RunWorkerCompleted += updateP6DatesBackgroundWorker_RunWorkerCompleted;
             updateP6DatesBackgroundWorker.WorkerSupportsCancellation = true;
+
+            bool? isEarnedBenchmarkedAgainstBudget = LoginCredentials.GetUserPreferenceBool(DataUtils.GetNameOf(() => UserPreferences.SCurve_EarnedBenchmarkedAgainstBudget));
+            Earned_Benchmark = BluePrintsDataUtils.GetBenchmarkTargetFromNullableBool(isEarnedBenchmarkedAgainstBudget);
         }
 
         protected IPrimeroEntitiesUnitOfWork primeroUnitOfWork;
@@ -2156,6 +2159,104 @@ namespace BluePrints.Common.Base
                 }
             }
         }
+
+        #region Reporting
+        public virtual bool CanEditReport()
+        {
+            return IsCalculationCompleted;
+        }
+
+        public virtual void EditReport()
+        {
+            var reportDesigner = new UserReportDesigner(loadPROJECT,
+                (CollectionViewModel<PROJECT_REPORT, PROJECT_REPORT, Guid, IBluePrintsEntitiesUnitOfWork>)
+                loaderCollection.GetViewModel<PROJECT_REPORT>(), ReportType.Progress_Report);
+            if (reportDesigner.ShowDialog() == System.Windows.Forms.DialogResult.OK)
+                reportDesigner.Dispose();
+            else
+                reportDesigner.Dispose();
+        }
+
+        public BenchmarkTarget Earned_Benchmark { get; set; }
+
+        public bool IsEarnedBenchmarkedAgainstBudget
+        {
+            get => Earned_Benchmark == BenchmarkTarget.Budget;
+            set
+            {
+                if (value)
+                    Earned_Benchmark = BenchmarkTarget.Budget;
+                else
+                    Earned_Benchmark = BenchmarkTarget.Current;
+            }
+        }
+
+        protected void replaceDataPointReportingMeasure(SummaryStats stats)
+        {
+            BluePrintsDataUtils.SetReportingDataPointBenchmark(BenchmarkTarget.Budget, stats.Budgeted);
+            BluePrintsDataUtils.SetReportingDataPointBenchmark(BenchmarkTarget.Budget, stats.BudgetedLate);
+            BluePrintsDataUtils.SetReportingDataPointBenchmark(Earned_Benchmark, stats.Earned);
+        }
+
+        public abstract IEnumerable<IReportable> ReportingEntities { get; }
+
+        public virtual bool CanViewReport()
+        {
+            return IsCalculationCompleted;
+        }
+
+        public virtual void ViewReport()
+        {
+            if (MessageBoxService.ShowMessage("Please make sure that you've already recalculated planned and remaining data for w/e " + DataDate.ToShortDateString() + "\n\nYou can do this by double clicking on the project title in the navigation bar on the left and press refresh", "Info", MessageButton.OKCancel) == MessageResult.Cancel)
+                return;
+
+            LoadingScreenManager.ShowLoadingScreen(1);
+            var progressReport = new XtraReportPROGRESS_ITEMS();
+            var dbProjectReport = loaderCollection.GetObject<PROJECT_REPORT>();
+            if (dbProjectReport != null)
+            {
+                var reportString = dbProjectReport.REPORT.ToString();
+                using (var sw = new StreamWriter(new MemoryStream()))
+                {
+                    sw.Write(reportString);
+                    sw.Flush();
+                    progressReport.LoadLayout(sw.BaseStream);
+                }
+            }
+
+            //LoadingScreenManager.ShowLoadingScreen(1);
+            //await BluePrintsContextHelper.RefreshDeliverablesDataPointsByProject(loadPROJECT.NUMBER);
+            //LoadingScreenManager.Progress();
+
+            TimeSpan reportInterval = ChronologicalHelpers.ConvertProgressIntervalToPeriod(loadPROGRESS);
+            DateTime firstAlignedDataDate = ChronologicalHelpers.GenerateFirstAlignedDataDate(loadPROGRESS);
+
+            DateTime reporting_data_date = DataDate;
+            TimeSpan reporting_interval = ChronologicalHelpers.ConvertProgressIntervalToPeriod(loadPROGRESS);
+            DateTime first_aligned_data_date = ChronologicalHelpers.GenerateFirstAlignedDataDate(loadPROGRESS);
+            DeliverableSummaryStats deliverableSummary = new DeliverableSummaryStats(ReportingEntities, reporting_data_date, reporting_interval, first_aligned_data_date);
+            FullStatsBuilder fullStatsBuilder = new FullStatsBuilder(loadPROJECT.NUMBER, loadPROJECT.CURRENCYCONVERSION, reporting_interval, first_aligned_data_date, SUBJOBCollection, reporting_data_date, primeroUnitOfWork);
+            fullSummarizer = new FullSummarizer(deliverableSummary, fullStatsBuilder, loadPROJECT.NUMBER, false);
+            fullSummarizer.BuildBurnedDataPoints(DashboardEXOQueryType.TimeOnly, false, true);
+            List<StatsCalculationType> statsCalcType = new List<StatsCalculationType>();
+            statsCalcType.Add(StatsCalculationType.Planned);
+            statsCalcType.Add(StatsCalculationType.Earned);
+            statsCalcType.Add(StatsCalculationType.Remaining);
+            fullSummarizer.Build(true, 1, statsCalcType);
+
+            replaceDataPointReportingMeasure(deliverableSummary);
+            progressReport.AssignProperties(deliverableSummary, DataDate, loadPROGRESS.PROJECT.NAME);
+            var previewWindow = new DocumentPreviewWindow();
+            previewWindow.PreviewControl.DocumentSource = progressReport;
+            previewWindow.WindowStartupLocation = WindowStartupLocation.CenterScreen;
+            previewWindow.WindowState = WindowState.Maximized;
+            progressReport.RequestParameters = false;
+            progressReport.CreateDocument(true);
+            LoadingScreenManager.CloseLoadingScreen();
+            previewWindow.Show();
+        }
+        #endregion
+
         #endregion
     }
 }

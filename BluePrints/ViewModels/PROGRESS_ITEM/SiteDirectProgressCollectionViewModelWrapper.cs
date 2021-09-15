@@ -826,15 +826,17 @@ namespace BluePrints.ViewModels
         protected override bool manuallySaveProgressOnAfterBaselineItemSaved => true;
 
         protected override bool isSingleProjectAndUserLocale => true;
+
+        public override IEnumerable<IReportable> ReportingEntities => Entities;
         #endregion
 
         #region Reporting
-        public bool CanEditReport()
+        public override bool CanEditReport()
         {
             return !IsLoading;
         }
 
-        public void EditReport()
+        public override void EditReport()
         {
             var reportDesigner = new UserReportDesigner(loadPROJECT,
                 (CollectionViewModel<PROJECT_REPORT, PROJECT_REPORT, Guid, IBluePrintsEntitiesUnitOfWork>)
@@ -859,12 +861,12 @@ namespace BluePrints.ViewModels
             return !IsLoading;
         }
 
-        public bool CanViewReport()
+        public override bool CanViewReport()
         {
             return !IsLoading;
         }
 
-        public void ViewReport()
+        public override void ViewReport()
         {
         }
         #endregion

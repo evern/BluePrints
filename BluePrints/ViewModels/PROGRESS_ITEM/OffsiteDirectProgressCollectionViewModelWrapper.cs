@@ -330,21 +330,6 @@ namespace BluePrints.ViewModels
         protected override bool isSingleProjectAndUserLocale => true;
         #endregion
 
-        #region Reporting
-        public bool CanEditReport()
-        {
-            return !IsLoading;
-        }
-
-        public void EditReport()
-        {
-            var reportDesigner = new UserReportDesigner(loadPROJECT, PROJECT_REPORTCollectionViewModel, ReportType.Progress_Report);
-            if (reportDesigner.ShowDialog() == System.Windows.Forms.DialogResult.OK)
-                reportDesigner.Dispose();
-            else
-                reportDesigner.Dispose();
-        }
-
         public bool CanFixVariation()
         {
             return !IsLoading;
@@ -409,60 +394,6 @@ namespace BluePrints.ViewModels
             FullRefresh();
         }
 
-        public bool CanViewReport()
-        {
-            return !IsLoading;
-        }
-
-        public void ViewReport()
-        {
-            if (MessageBoxService.ShowMessage("Please make sure that you've already recalculated planned and remaining data for w/e " + DataDate.ToShortDateString() + "\n\nYou can do this by double clicking on the project title in the navigation bar on the left and press refresh", "Info", MessageButton.OKCancel) == MessageResult.Cancel)
-                return;
-
-            LoadingScreenManager.ShowLoadingScreen(1);
-            var progressReport = new XtraReportPROGRESS_ITEMS();
-            var dbProjectReport = loaderCollection.GetObject<PROJECT_REPORT>();
-            if (dbProjectReport != null)
-            {
-                var reportString = dbProjectReport.REPORT.ToString();
-                using (var sw = new StreamWriter(new MemoryStream()))
-                {
-                    sw.Write(reportString);
-                    sw.Flush();
-                    progressReport.LoadLayout(sw.BaseStream);
-                }
-            }
-
-            //LoadingScreenManager.ShowLoadingScreen(1);
-            //await BluePrintsContextHelper.RefreshDeliverablesDataPointsByProject(loadPROJECT.NUMBER);
-            //LoadingScreenManager.Progress();
-
-            TimeSpan reportInterval = ChronologicalHelpers.ConvertProgressIntervalToPeriod(loadPROGRESS);
-            DateTime firstAlignedDataDate = ChronologicalHelpers.GenerateFirstAlignedDataDate(loadPROGRESS);
-
-            DateTime reporting_data_date = DataDate;
-            TimeSpan reporting_interval = ChronologicalHelpers.ConvertProgressIntervalToPeriod(loadPROGRESS);
-            DateTime first_aligned_data_date = ChronologicalHelpers.GenerateFirstAlignedDataDate(loadPROGRESS);
-            DeliverableSummaryStats projectSummary = new DeliverableSummaryStats(MainViewModel.Entities, reporting_data_date, reporting_interval, first_aligned_data_date);
-            FullStatsBuilder fullStatsBuilder = new FullStatsBuilder(loadPROJECT.NUMBER, loadPROJECT.CURRENCYCONVERSION, reporting_interval, first_aligned_data_date, SUBJOBCollection, reporting_data_date, primeroUnitOfWork);
-            fullSummarizer = new FullSummarizer(projectSummary, fullStatsBuilder, loadPROJECT.NUMBER, false);
-            fullSummarizer.BuildBurnedDataPoints(DashboardEXOQueryType.TimeOnly, false, true);
-            List<StatsCalculationType> statsCalcType = new List<StatsCalculationType>();
-            statsCalcType.Add(StatsCalculationType.Planned);
-            statsCalcType.Add(StatsCalculationType.Earned);
-            statsCalcType.Add(StatsCalculationType.Remaining);
-            fullSummarizer.Build(true, 1, statsCalcType);
-
-            progressReport.AssignProperties(projectSummary, DataDate, loadPROGRESS.PROJECT.NAME);
-            var previewWindow = new DocumentPreviewWindow();
-            previewWindow.PreviewControl.DocumentSource = progressReport;
-            previewWindow.WindowStartupLocation = WindowStartupLocation.CenterScreen;
-            previewWindow.WindowState = WindowState.Maximized;
-            progressReport.RequestParameters = false;
-            progressReport.CreateDocument(true);
-            LoadingScreenManager.CloseLoadingScreen();
-            previewWindow.Show();
-        }
-        #endregion
+        public override IEnumerable<IReportable> ReportingEntities => Entities;
     }
 }

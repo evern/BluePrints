@@ -114,11 +114,11 @@
             this.xrLabelCumulative = new DevExpress.XtraReports.UI.XRLabel();
             this.SubBand2 = new DevExpress.XtraReports.UI.SubBand();
             this.xrChart1 = new DevExpress.XtraReports.UI.XRChart();
+            this.objectDataSource1 = new DevExpress.DataAccess.ObjectBinding.ObjectDataSource(this.components);
             this.reportBy = new DevExpress.XtraReports.Parameters.Parameter();
             this.showBurn = new DevExpress.XtraReports.Parameters.Parameter();
             this.useLate = new DevExpress.XtraReports.Parameters.Parameter();
             this.showAbsolute = new DevExpress.XtraReports.Parameters.Parameter();
-            this.objectDataSource1 = new DevExpress.DataAccess.ObjectBinding.ObjectDataSource(this.components);
             ((System.ComponentModel.ISupportInitialize)(this.xrChart1)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(xyDiagram1)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(secondaryAxisY1)).BeginInit();
@@ -972,6 +972,11 @@
         series15};
             this.xrChart1.SizeF = new System.Drawing.SizeF(1503.148F, 889.5601F);
             // 
+            // objectDataSource1
+            // 
+            this.objectDataSource1.DataSource = typeof(BluePrints.Common.ViewModel.Reporting.DeliverableSummaryStats);
+            this.objectDataSource1.Name = "objectDataSource1";
+            // 
             // reportBy
             // 
             this.reportBy.Description = "Report By";
@@ -1002,11 +1007,6 @@
             this.showAbsolute.Name = "showAbsolute";
             this.showAbsolute.Type = typeof(bool);
             this.showAbsolute.ValueInfo = "False";
-            // 
-            // objectDataSource1
-            // 
-            this.objectDataSource1.DataSource = typeof(BluePrints.Common.ViewModel.Reporting.DeliverableSummaryStats);
-            this.objectDataSource1.Name = "objectDataSource1";
             // 
             // XtraReportDashboard
             // 

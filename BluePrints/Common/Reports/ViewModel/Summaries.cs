@@ -14,12 +14,12 @@ namespace BluePrints.Common.ViewModel.Reporting
     /// </summary>
     public class DeliverableSummaryStats : SummaryStats
     {
-        public IEnumerable<BASELINE_ITEMProgress> Deliverables
+        public IEnumerable<IReportable> Deliverables
         {
-            get { return (IEnumerable<BASELINE_ITEMProgress>)this.Reportables; }
+            get { return this.Reportables; }
         }
 
-        public DeliverableSummaryStats(IEnumerable<BASELINE_ITEMProgress> progressItem, DateTime reporting_data_date, TimeSpan reporting_interval, DateTime first_aligned_data_date)
+        public DeliverableSummaryStats(IEnumerable<IReportable> progressItem, DateTime reporting_data_date, TimeSpan reporting_interval, DateTime first_aligned_data_date)
             : base(progressItem, reporting_data_date, reporting_interval, first_aligned_data_date)
         {
             ProjectionHelpers.Initialize_Stats(progressItem, reporting_data_date, reporting_interval, first_aligned_data_date, false);

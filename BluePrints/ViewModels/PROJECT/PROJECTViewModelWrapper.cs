@@ -60,23 +60,13 @@ namespace BluePrints.ViewModels
             UseProductivityFactorOnRemaining = false;
 
             bool? isCurrentBenchmarkedAgainstBudget = LoginCredentials.GetUserPreferenceBool(DataUtils.GetNameOf(() => UserPreferences.SCurve_CurrentBenchmarkedAgainstBudget));
-            Current_Benchmark = getBenchmarkTargetFromNullableBool(isCurrentBenchmarkedAgainstBudget);
+            Current_Benchmark = BluePrintsDataUtils.GetBenchmarkTargetFromNullableBool(isCurrentBenchmarkedAgainstBudget);
             bool? isEarnedBenchmarkedAgainstBudget = LoginCredentials.GetUserPreferenceBool(DataUtils.GetNameOf(() => UserPreferences.SCurve_EarnedBenchmarkedAgainstBudget));
-            Earned_Benchmark = getBenchmarkTargetFromNullableBool(isEarnedBenchmarkedAgainstBudget);
+            Earned_Benchmark = BluePrintsDataUtils.GetBenchmarkTargetFromNullableBool(isEarnedBenchmarkedAgainstBudget);
             bool? isBurnedBenchmarkedAgainstBudget = LoginCredentials.GetUserPreferenceBool(DataUtils.GetNameOf(() => UserPreferences.SCurve_BurnedBenchmarkedAgainstBudget));
-            Burned_Benchmark = getBenchmarkTargetFromNullableBool(isBurnedBenchmarkedAgainstBudget);
+            Burned_Benchmark = BluePrintsDataUtils.GetBenchmarkTargetFromNullableBool(isBurnedBenchmarkedAgainstBudget);
             bool? isRemainingBenchmarkedAgainstBudget = LoginCredentials.GetUserPreferenceBool(DataUtils.GetNameOf(() => UserPreferences.SCurve_RemainingBenchmarkedAgainstBudget));
-            Remaining_Benchmark = getBenchmarkTargetFromNullableBool(isRemainingBenchmarkedAgainstBudget);
-        }
-
-        private BenchmarkTarget getBenchmarkTargetFromNullableBool(bool? benchmarkBool)
-        {
-            if (benchmarkBool == null)
-                return BenchmarkTarget.Current;
-            else if ((bool)benchmarkBool)
-                return BenchmarkTarget.Budget;
-            else
-                return BenchmarkTarget.Current;
+            Remaining_Benchmark = BluePrintsDataUtils.GetBenchmarkTargetFromNullableBool(isRemainingBenchmarkedAgainstBudget);
         }
 
         protected IDialogService ActivityDetailDialogService
@@ -1444,25 +1434,14 @@ namespace BluePrints.ViewModels
 
         protected override void replaceDataPointReportingMeasure(SummaryStats stats)
         {
-            setReportingDataPointBenchmark(Current_Benchmark, stats.Current);
-            setReportingDataPointBenchmark(Earned_Benchmark, stats.Earned);
-            setReportingDataPointBenchmark(Burned_Benchmark, stats.Burned);
-            setReportingDataPointBenchmark(Remaining_Benchmark, stats.Remaining);
+            BluePrintsDataUtils.SetReportingDataPointBenchmark(BenchmarkTarget.Budget, stats.Budgeted);
+            BluePrintsDataUtils.SetReportingDataPointBenchmark(BenchmarkTarget.Budget, stats.BudgetedLate);
+            BluePrintsDataUtils.SetReportingDataPointBenchmark(Current_Benchmark, stats.Current);
+            BluePrintsDataUtils.SetReportingDataPointBenchmark(Earned_Benchmark, stats.Earned);
+            BluePrintsDataUtils.SetReportingDataPointBenchmark(Burned_Benchmark, stats.Burned);
+            BluePrintsDataUtils.SetReportingDataPointBenchmark(Remaining_Benchmark, stats.Remaining);
 
             base.replaceDataPointReportingMeasure(stats);
-        }
-
-        private void setReportingDataPointBenchmark(BenchmarkTarget benchmarkTarget, Stats stats)
-        {
-            if(stats != null)
-            {
-                if (stats.CurrentPeriodCumulativeDataPoint != null)
-                    stats.CurrentPeriodCumulativeDataPoint.IsReportBudgetPercentage = benchmarkTarget == BenchmarkTarget.Budget;
-
-                if(stats.CumulativeDataPoints != null) 
-                    foreach (Common.ViewModel.Reporting.DataPoint dataPoint in stats.CumulativeDataPoints)
-                        dataPoint.IsReportBudgetPercentage = benchmarkTarget == BenchmarkTarget.Budget;
-            }
         }
 
         protected override void loadReportLayoutFromDatabase(XtraReportDashboard xtraReport)

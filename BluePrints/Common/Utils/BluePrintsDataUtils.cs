@@ -1975,6 +1975,29 @@ namespace BluePrints.Common.ViewModel.Utils
                 return string.Empty;
         }
 
+        public static BenchmarkTarget GetBenchmarkTargetFromNullableBool(bool? benchmarkBool)
+        {
+            if (benchmarkBool == null)
+                return BenchmarkTarget.Current;
+            else if ((bool)benchmarkBool)
+                return BenchmarkTarget.Budget;
+            else
+                return BenchmarkTarget.Current;
+        }
+
+        public static void SetReportingDataPointBenchmark(BenchmarkTarget benchmarkTarget, Stats stats)
+        {
+            if (stats != null)
+            {
+                if (stats.CurrentPeriodCumulativeDataPoint != null)
+                    stats.CurrentPeriodCumulativeDataPoint.IsReportBudgetPercentage = benchmarkTarget == BenchmarkTarget.Budget;
+
+                if (stats.CumulativeDataPoints != null)
+                    foreach (Common.ViewModel.Reporting.DataPoint dataPoint in stats.CumulativeDataPoints)
+                        dataPoint.IsReportBudgetPercentage = benchmarkTarget == BenchmarkTarget.Budget;
+            }
+        }
+
         public static void UpdatePercentagesByStatus(IMessageBoxService MessageBoxService, CollectionViewModel<PROGRESS_ITEM, PROGRESS_ITEM, Guid, IBluePrintsEntitiesUnitOfWork> PROGRESS_ITEMSCollectionViewModel, IEnumerable<BASELINE_ITEMProgress> entities)
         {
             if (entities == null)

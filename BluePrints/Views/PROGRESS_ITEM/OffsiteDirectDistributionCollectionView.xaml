@@ -139,6 +139,7 @@
                 <dxb:BarButtonItem x:Name="biProgressRedo" Command="{Binding ProgressRedoCommand}" Content="Redo" Glyph="{dx:DXImage Image=Redo_16x16.png}" LargeGlyph="{dx:DXImage Image=Redo_32x32.png}" ToolTip="Redo undone action" />
                 <dxb:BarButtonItem x:Name="biFixProgressItem" Command="{Binding FixProgressItemCommand}" Content="Fix Data" Glyph="{dxc:DXImage Image=IDE_16x16.png}" LargeGlyph="{dx:DXImage Image=IDE_32x32.png}" ToolTip="Fix the data in database in case anything unexpected happens" />
                 <dxb:BarStaticItem x:Name="biDataDate" Content="{Binding DataDateStr}" ToolTip="Data date" />
+                <dxb:BarCheckItem x:Name="bcEarnedBenchmark" Content="Show Earned % Against Budget" IsChecked="{Binding IsEarnedBenchmarkedAgainstBudget, Mode=TwoWay}" IsEnabled="{Binding IsLoading, Converter={StaticResource BooleanNegationConverter}}" RibbonStyle="SmallWithText" ToolTip="Is S-Curve earned percentages benchmarked against budget" Glyph="{dx:DXImage Images/Chart/ChangeChartSeriesType_16x16.png}" LargeGlyph="{dx:DXImage Images/Chart/ChangeChartSeriesType_32x32.png}" />
                 <!--Disable for now, see user response to re-enable it
                 <dxb:BarButtonItem x:Name="biDateBackward" Command="{Binding DateBackwardCommand}" Content="Backward" Glyph="{dx:DXImage Image=HistoryItem_16x16.png}" LargeGlyph="{dx:DXImage Image=HistoryItem_32x32.png}" ToolTip="Rewind data date to previous interval" />
                 <dxb:BarStaticItem x:Name="biDataDate" Content="{Binding DataDateStr}" ToolTip="Data date" />
@@ -172,6 +173,7 @@
                                 <dxb:BarButtonItemLink BarItemName="biCollapseAllGroups1" />
                                 <dxb:BarButtonItemLink BarItemName="biExportToExcel1" />
                                 <dxb:BarButtonItemLink BarItemName="biExportToPDF1" />
+                                <dxb:BarCheckItemLink BarItemName="bcEarnedBenchmark" />
                                 <dxb:BarButtonItemLink BarItemName="biEditReport1" />
                                 <dxb:BarButtonItemLink BarItemName="biViewReport1" />
                             </dxr:RibbonPageGroup>
