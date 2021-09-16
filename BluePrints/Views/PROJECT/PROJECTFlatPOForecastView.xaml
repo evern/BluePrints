@@ -102,7 +102,6 @@
     </UserControl.Resources>
     <Grid Style="{StaticResource CollectionView.RootContainer}">
         <dxmvvm:Interaction.Behaviors>
-            <services:TableViewService x:Name="DetailTableViewService" TableView="{Binding ElementName=tableViewDetail}" />
             <dx:DialogService x:Name="CustomPODialogService">
                 <dx:DialogService.DialogStyle>
                     <Style TargetType="dx:DXDialogWindow">
