@@ -600,6 +600,7 @@ namespace BluePrints.ViewModels
                 newFORECAST_PO_SETTING.GUID_PROJECT = loadPROJECT.GUID;
                 newFORECAST_PO_SETTING.PONO = forecast.PONO;
                 newFORECAST_PO_SETTING.VARIATION_CODE = forecast.VariationCode;
+                newFORECAST_PO_SETTING.STOCK_CODE = string.Empty;
 
                 if (forecast.VariationCode != null && forecast.VariationCode != string.Empty)
                     newFORECAST_PO_SETTING.VARIATION_CODE = forecast.VariationCode;
