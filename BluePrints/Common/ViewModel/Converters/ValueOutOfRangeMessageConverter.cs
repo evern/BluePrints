@@ -22,6 +22,9 @@ namespace BluePrints.Common.ViewModel.Converters
                 var maxValue = (decimal)values[0];
                 var minValue = (decimal)values[1];
                 var currentValue = (decimal)values[2];
+
+                //round current value because view has P0 mask
+                currentValue = Math.Round(currentValue);
                 bool IsMaxPercentageRestrictedByFuturePercentage = (bool)values[3];
 
                 if (currentValue > maxValue)

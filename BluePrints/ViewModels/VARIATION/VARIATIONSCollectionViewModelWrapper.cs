@@ -1015,6 +1015,7 @@ namespace BluePrints.ViewModels
                     //Save variation units for future viewing
                     if (variationUnits != null && deliverable.VARIATION_ITEM != null)
                     {
+                        //VARIATION_ITEM on deliverable is not from EF model, so find it in repository for editing
                         VARIATION_ITEM variation = unitOfWork.VARIATION_ITEMS.Find(deliverable.VARIATION_ITEM.GUID);
                         if(variation != null)
                             variation.VARIATION_UNITS = (decimal)variationUnits;
