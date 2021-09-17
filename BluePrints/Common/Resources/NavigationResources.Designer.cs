@@ -574,7 +574,7 @@ namespace BluePrints.Common.Resources {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Design Progress Distribution.
+        ///   Looks up a localized string similar to Progress Distribution.
         /// </summary>
         internal static string Menu_Project_DesignProgressDistribution_Title {
             get {
