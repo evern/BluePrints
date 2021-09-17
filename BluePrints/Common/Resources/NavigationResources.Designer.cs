@@ -574,6 +574,15 @@ namespace BluePrints.Common.Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Design Progress Distribution.
+        /// </summary>
+        internal static string Menu_Project_DesignProgressDistribution_Title {
+            get {
+                return ResourceManager.GetString("Menu_Project_DesignProgressDistribution_Title", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Project design resource allocation menu.
         /// </summary>
         internal static string Menu_Project_DesignResourceAllocation {
@@ -1011,6 +1020,15 @@ namespace BluePrints.Common.Resources {
         internal static string Menu_UOMs {
             get {
                 return ResourceManager.GetString("Menu_UOMs", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Users.
+        /// </summary>
+        internal static string Menu_User_Title {
+            get {
+                return ResourceManager.GetString("Menu_User_Title", resourceCulture);
             }
         }
         

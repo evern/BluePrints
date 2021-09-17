@@ -1,4 +1,5 @@
-﻿using System;
+﻿using BluePrints.Common.Resources;
+using System;
 using System.Windows;
 using System.Windows.Data;
 
@@ -32,12 +33,12 @@ namespace BluePrints.Common.ViewModel.Converters
                     if(currentValue > 1)
                         return "Max % is 100%";
                     else if(IsMaxPercentageRestrictedByFuturePercentage)
-                        return "Total % exceeds 100%, please check % on future data dates";
+                        return "Total % exceeds 100%, please check % on future data dates in Design -> " + NavigationResources.Menu_Project_DesignProgressDistribution_Title;
                     else
                         return "Total % exceeds gate max %";
                 }
                 else if (currentValue < minValue)
-                    return "Higher % detected on previous data date, please check % on previous data dates";
+                    return "Higher % detected on previous data date, please check % on previous data dates in Design -> " + NavigationResources.Menu_Project_DesignProgressDistribution_Title;
             }
             catch
             {

@@ -1,4 +1,5 @@
-﻿using System;
+﻿using BluePrints.Common.Resources;
+using System;
 using System.Windows;
 using System.Windows.Data;
 
@@ -13,7 +14,7 @@ namespace BluePrints.Common.ViewModel.Converters
 
             bool isMaxIsMaxPercentageRestrictedByFuturePercentage = (bool)value;
             if (isMaxIsMaxPercentageRestrictedByFuturePercentage)
-                return "Max % is 100% and is restricted by earned % in the future to avoid going beyond 100%";
+                return "Max % is 100% and is restricted by earned units in the future to avoid going beyond 100%, please refer to " + NavigationResources.Menu_Project_DesignProgressDistribution_Title + " for more info";
             else
                 return "Max % is restricted by gate's max %";
         }

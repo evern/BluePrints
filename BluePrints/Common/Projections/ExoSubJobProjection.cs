@@ -1419,7 +1419,7 @@ namespace BluePrints.Common.Projections
             IPrimeroEntitiesUnitOfWork primeroUnitOfWork, Data.PROJECT PROJECT, IEnumerable<STAFF> ExoSTAFFS, string officeName, IEnumerable<COMMODITY_CODE> COMMODITY_CODECollection, IEnumerable<STOCK_ITEMS> STOCK_ITEMSCollection)
         {
             List<ExoTimeAuthorisation> exoLines = GetSubJob(primeroUnitOfWork, PROJECT.NUMBER);
-            List<ExoTimeAuthorisation> exoAuthorisations = GetExoLinesAuthorisations(primeroUnitOfWork, PROJECT.NUMBER);
+            List<ExoTimeAuthorisation> exoAuthorisations = GetExoSubJobAuthorisations(primeroUnitOfWork, PROJECT.NUMBER);
             List<ExoSubJobProjection> exoSubJobs = new List<ExoSubJobProjection>();
             foreach (ExoTimeAuthorisation exoLine in exoLines)
             {
@@ -1429,8 +1429,6 @@ namespace BluePrints.Common.Projections
                 projection.SubJobId = exoLine.SubJobNo;
                 projection.SubJobCode = exoLine.SubJobCode;
                 projection.SubJobTitle = exoLine.SubJobTitle;
-                projection.PopulateCommodityCodes(COMMODITY_CODECollection);
-                projection.PopulateStockItems(STOCK_ITEMSCollection);
 
                 List<ExoTimeAuthorisation> authorisations = exoAuthorisations.Where(x => x.SubJobNo == exoLine.SubJobNo).ToList();
                 projection.AuthUserIds = new List<int>();
@@ -2193,6 +2191,47 @@ namespace BluePrints.Common.Projections
 
             List<ExoTimeAuthorisation> exoTimes = availableLinesByStaffNo.ToList().Select(x => populateExoTimeAuth(x)).ToList();
             return exoTimes;
+        }
+
+        public static List<ExoTimeAuthorisation> GetExoSubJobAuthorisations(IPrimeroEntitiesUnitOfWork primeroUnitOfWork, string projectNumber = null, int? staffNo = null)
+        {
+            var availableLines = from JOB_RESOURCE_ALLOCATION in primeroUnitOfWork.JOB_RESOURCE_ALLOCATION
+                                 join SUBJOB in primeroUnitOfWork.JOBCOST_HDR
+                                 on JOB_RESOURCE_ALLOCATION.JOBNO equals SUBJOB.JOBNO
+                                 join MAINJOB in primeroUnitOfWork.JOBCOST_HDR
+                                 on SUBJOB.MASTER_JOBNO equals MAINJOB.JOBNO
+                                 join JOBCOST_RESOURCE in primeroUnitOfWork.JOBCOST_RESOURCE
+                                 on JOB_RESOURCE_ALLOCATION.RESOURCE_SEQNO equals JOBCOST_RESOURCE.SEQNO
+                                 where MAINJOB.JOBCODE == projectNumber && JOB_RESOURCE_ALLOCATION.START_DATE <= DateTime.Now && JOB_RESOURCE_ALLOCATION.END_DATE > DateTime.Now
+                                 select new { MAINJOB.JOBCODE, MASTERJOBCODE = MAINJOB.JOBCODE, SUBJOB, MAINJOB, JOBCOST_RESOURCE.STAFFNO, MASTERJOBNO = MAINJOB.JOBNO, SUBJOBNO = SUBJOB.JOBNO, SUBJOBTITLE = SUBJOB.TITLE, SUBJOBNAME = SUBJOB.JOBCODE, RESOURCE_SEQNO = JOBCOST_RESOURCE.SEQNO, RESOURCE_STAFF_ID = JOBCOST_RESOURCE.STAFFNO, JOBCOST_RESOURCE.RESOURCENAME, JOBCOST_RESOURCE.DEFAULT_STOCKCODE, END_DATE = JOB_RESOURCE_ALLOCATION.END_DATE, JOBSTATUS = SUBJOB.STATUS };
+
+            var availableLinesByProject = projectNumber == null ? availableLines : availableLines.Where(x => x.JOBCODE == projectNumber);
+            var availableLinesByStaffNo = staffNo == null ? availableLinesByProject : availableLinesByProject.Where(x => x.STAFFNO == staffNo);
+
+            List<ExoTimeAuthorisation> exoTimes = availableLinesByStaffNo.ToList().Select(x => populateExoTimeAuthBySubJob(x)).ToList();
+            return exoTimes;
+        }
+
+        private static ExoTimeAuthorisation populateExoTimeAuthBySubJob(dynamic dbTime)
+        {
+            ExoTimeAuthorisation exoTime = new ExoTimeAuthorisation();
+            exoTime.MasterJobNo = dbTime.MASTERJOBNO;
+            exoTime.MasterJobCode = dbTime.MASTERJOBCODE;
+            exoTime.SubJobNo = dbTime.SUBJOBNO;
+            exoTime.SubJobCode = dbTime.SUBJOBNAME;
+            exoTime.SubJobTitle = dbTime.SUBJOBTITLE;
+            exoTime.ResourceSeqNo = dbTime.RESOURCE_SEQNO;
+            exoTime.ResourceStaffId = dbTime.RESOURCE_STAFF_ID;
+            exoTime.ResourceName = dbTime.RESOURCENAME;
+            exoTime.ResourceEndDate = dbTime.END_DATE;
+            exoTime.ResourceStockCode = dbTime.DEFAULT_STOCKCODE;
+            exoTime.StockCode = dbTime.DEFAULT_STOCKCODE; //when this projection is used in timesheet, the stock code will be resources instead of stock code in jobcost_lines because time booking is only to commodity level
+
+            if (exoTime.VariationCode == null)
+                exoTime.VariationCode = string.Empty;
+            exoTime.JobStatus = dbTime.JOBSTATUS;
+
+            return exoTime;
         }
 
         public static List<string> GetJobNarratives(IPrimeroEntitiesUnitOfWork primeroUnitOfWork, string projectNumber)

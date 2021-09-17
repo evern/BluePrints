@@ -403,7 +403,7 @@ namespace BluePrints.ViewModels
 
         protected override void CellValueChangedImmediatePost(CellValueChangedEventArgs e)
         {
-            if (e.Column.FieldName == (BindableBase.GetPropertyName(() => new ExoSubJobProjection().VariationCode)))
+            if (e.Column.FieldName == BindableBase.GetPropertyName(() => new ExoSubJobProjection().VariationCode))
             {
                 TableView tableView = e.Source as TableView;
                 if (tableView != null && e.RowHandle != GridControl.NewItemRowHandle)
@@ -810,12 +810,7 @@ namespace BluePrints.ViewModels
                     {
                         user.ProjectLocale = loadPROJECT.OfficeNameForExo;
                         STAFF staff = exoSTAFFS.FirstOrDefault(x => x.STAFFNO == user.ProjectLocaleExoId);
-                        //don't return any user that is disabled in EXO
-                        if (staff != null)
-                        {
-                            //if(staff.SECURITYPROFILEID != 4)
-                            userCollection.Add(user);
-                        }
+                        userCollection.Add(user);
                     }
                 }
                 

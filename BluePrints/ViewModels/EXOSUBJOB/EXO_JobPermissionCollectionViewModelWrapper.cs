@@ -5,6 +5,7 @@ using BaseModel.Misc;
 using BaseModel.ViewModel.Base;
 using BaseModel.ViewModel.Dialogs;
 using BaseModel.ViewModel.Loader;
+using BaseModel.ViewModel.Services;
 using BluePrints.BluePrintsEntitiesDataModel;
 using BluePrints.Common;
 using BluePrints.Common.Base;
@@ -62,7 +63,7 @@ namespace BluePrints.ViewModels
         protected EXO_JobPermissionCollectionViewModelWrapper(
             IUnitOfWorkFactory<IBluePrintsEntitiesUnitOfWork> unitOfWorkFactory = null)
         {
-
+            SelectedUsers = new ObservableCollection<ExoSubJobAuth>();
         }
 
         #region Code Properties
@@ -216,7 +217,31 @@ namespace BluePrints.ViewModels
             return base.UnifiedValueValidation(projection, field_name, new_value, isPaste);
         }
 
+        protected virtual ITableViewService PermissionTableViewService { get { return this.GetService<ITableViewService>("PermissionTableViewService"); } }
+
         public void PermissionCellValueChanging(CellValueChangedEventArgs e)
+        {
+            if (e.Column.FieldName == BindableBase.GetPropertyName(() => new ExoSubJobAuth().IsAssigned))
+            {
+                PermissionTableViewService.CommitEditing();
+            }
+        }
+
+        public void ValidatePermissionCell(DevExpress.Xpf.Grid.GridCellValidationEventArgs e)
+        {
+            if (e.Column.FieldName == BindableBase.GetPropertyName(() => new ExoSubJobAuth().IsAssigned))
+            {
+                ExoSubJobAuth permission = (ExoSubJobAuth)e.Row;
+                if (permission.User != null && permission.User.ProjectLocaleExoId == null)
+                {
+                    e.IsValid = false;
+                    e.ErrorContent = "User isn't linked to EXO, please link user to EXO in Data -> " + NavigationResources.Menu_User_Title + " column Perth EXO and Montreal EXO";
+                    e.ErrorType = DevExpress.XtraEditors.DXErrorProvider.ErrorType.Critical;
+                }
+            }
+        }
+
+        public void PermissionCellValueChanged(CellValueChangedEventArgs e)
         {
             //skip on new row
             if (e.RowHandle < 0)
@@ -231,44 +256,11 @@ namespace BluePrints.ViewModels
 
             bool newValue = (bool)e.Value;
             if (newValue)
-            {
-                foreach (ExoSubJobProjection selectedEntity in SelectedEntities.Where(x => x.IsLineExistsInExo && x.SubJobCode != null && x.SubJobId != null))
-                {
-                    if (editingSubJobAuth.User.ProjectLocaleExoId == null)
-                        continue;
-
-                    ExoMethods.findExistingOrAddResourceAllocation(localPrimeroUnitOfWork, (int)selectedEntity.SubJobId, (int)editingSubJobAuth.User.ProjectLocaleExoId);
-
-                    //add authorised user to all entities with same subjob id
-                    foreach (ExoSubJobProjection sameSubJobEntity in Entities.Where(x => x.SubJobCode != null && x.SubJobId == selectedEntity.SubJobId))
-                    {
-                        if (editingSubJobAuth.User.ProjectLocaleExoId != null && !sameSubJobEntity.AuthUserIds.Any(x => x == editingSubJobAuth.User.ProjectLocaleExoId))
-                        {
-                            sameSubJobEntity.AuthUserIds.Add((int)editingSubJobAuth.User.ProjectLocaleExoId);
-                        }
-                    }
-                }
-
-                e.Handled = true;
-            }
+                BulkAssign();
             else
-            {
-                foreach (ExoSubJobProjection selectedEntity in SelectedEntities.Where(x => x.IsLineExistsInExo && x.SubJobCode != null && x.SubJobId != null))
-                {
-                    if (editingSubJobAuth.User.ProjectLocaleExoId != null)
-                        ExoMethods.deleteResourceAllocation(localPrimeroUnitOfWork, (int)selectedEntity.SubJobId, (int)editingSubJobAuth.User.ProjectLocaleExoId);
+                BulkUnassign();
 
-                    //remove authorised user to all entities with same subjob id
-                    foreach (ExoSubJobProjection sameSubJobEntity in Entities.Where(x => x.SubJobCode != null && x.SubJobId == selectedEntity.SubJobId))
-                    {
-                        if (editingSubJobAuth.User.ProjectLocaleExoId != null && sameSubJobEntity.AuthUserIds.Any(x => x == editingSubJobAuth.User.ProjectLocaleExoId))
-                            sameSubJobEntity.AuthUserIds.Remove((int)editingSubJobAuth.User.ProjectLocaleExoId);
-                    }
-                }
-            }
-
-            //refreshPermissions();
-            //base.CellValueChanging(e);
+            e.Handled = true;
         }
 
         protected override void CellValueChangedImmediatePost(CellValueChangedEventArgs e)
@@ -279,6 +271,74 @@ namespace BluePrints.ViewModels
                 if (tableView != null && e.RowHandle != GridControl.NewItemRowHandle)
                 {
                     tableView.CommitEditing();
+                }
+            }
+        }
+
+        public bool CanBulkAssign()
+        {
+            return SelectedUsers != null && SelectedUsers.Count > 0;
+        }
+
+        public void BulkAssign()
+        {
+            List<ErrorMessage> errorMessages = new List<ErrorMessage>();
+            foreach (ExoSubJobProjection selectedEntity in SelectedEntities.Where(x => x.IsLineExistsInExo && x.SubJobCode != null && x.SubJobId != null))
+            {
+                foreach(ExoSubJobAuth selectedUser in SelectedUsers)
+                {
+                    if (selectedUser.User.ProjectLocaleExoId == null)
+                    {
+                        errorMessages.Add(new ErrorMessage(selectedUser.User.Full_Name, "Cannot be assigned because user is not linked to EXO, please link user to EXO in Data -> " + NavigationResources.Menu_User_Title));
+                        continue;
+                    }
+
+                    ExoMethods.findExistingOrAddResourceAllocation(localPrimeroUnitOfWork, (int)selectedEntity.SubJobId, (int)selectedUser.User.ProjectLocaleExoId);
+
+                    //add authorised user to all entities with same subjob id
+                    foreach (ExoSubJobProjection sameSubJobEntity in Entities.Where(x => x.SubJobCode != null && x.SubJobId == selectedEntity.SubJobId))
+                    {
+                        if (selectedUser.User.ProjectLocaleExoId != null && !sameSubJobEntity.AuthUserIds.Any(x => x == selectedUser.User.ProjectLocaleExoId))
+                        {
+                            sameSubJobEntity.AuthUserIds.Add((int)selectedUser.User.ProjectLocaleExoId);
+                        }
+                    }
+
+                    selectedUser.IsAssigned = true;
+                    selectedUser.Update();
+                }
+            }
+
+            if (errorMessages.Count > 0)
+            {
+                DialogCollectionViewModel<ErrorMessage> viewModel = DialogCollectionViewModel<ErrorMessage>.Create(errorMessages, "Errors");
+                ErrorMessagesDialogService.ShowDialog(MessageButton.OKCancel, string.Empty, "ListErrorMessages", viewModel);
+            }
+        }
+
+        public bool CanBulkUnassign()
+        {
+            return CanBulkAssign();
+        }
+
+        public void BulkUnassign()
+        {
+            foreach (ExoSubJobProjection selectedEntity in SelectedEntities.Where(x => x.IsLineExistsInExo && x.SubJobCode != null && x.SubJobId != null))
+            {
+                foreach (ExoSubJobAuth selectedUser in SelectedUsers)
+                {
+                    if (selectedUser.User.ProjectLocaleExoId != null)
+                        ExoMethods.deleteResourceAllocation(localPrimeroUnitOfWork, (int)selectedEntity.SubJobId, (int)selectedUser.User.ProjectLocaleExoId);
+
+                    //remove authorised user to all entities with same subjob id
+                    foreach (ExoSubJobProjection sameSubJobEntity in Entities.Where(x => x.SubJobCode != null && x.SubJobId == selectedEntity.SubJobId))
+                    {
+                        if (selectedUser.User.ProjectLocaleExoId != null && sameSubJobEntity.AuthUserIds.Any(x => x == selectedUser.User.ProjectLocaleExoId))
+                            sameSubJobEntity.AuthUserIds.Remove((int)selectedUser.User.ProjectLocaleExoId);
+                    }
+
+                    selectedUser.IsAssigned = false;
+                    selectedUser.Update();
                 }
             }
         }
@@ -325,7 +385,7 @@ namespace BluePrints.ViewModels
 
                     foreach (STAFF staff in exoSTAFFS)
                     {
-                        ExoSubJobAuth displayUserAuth = new ExoSubJobAuth();
+                        ExoSubJobAuth displayUserAuth = ViewModelSource.Create(() => new ExoSubJobAuth());
                         USER newUser = null;
                         if (tryCombineLocalUsers)
                             newUser = projectLocaleUSERCollection.FirstOrDefault(x => x.ProjectLocaleExoId == staff.STAFFNO);
@@ -383,6 +443,9 @@ namespace BluePrints.ViewModels
         public bool IsPermissionLoading => !IsPermissionGridEnabled ? false : isPermissionLoading;
 
         public ExoSubJobAuth SelectedUser { get; set; }
+
+        public ObservableCollection<ExoSubJobAuth> SelectedUsers { get; set; }
+
         public override void ShowNotification()
         {
             if (AppNotificationService == null)

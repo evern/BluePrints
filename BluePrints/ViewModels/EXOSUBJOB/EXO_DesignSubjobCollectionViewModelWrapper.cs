@@ -5,6 +5,7 @@ using BaseModel.Misc;
 using BaseModel.ViewModel.Base;
 using BaseModel.ViewModel.Dialogs;
 using BaseModel.ViewModel.Loader;
+using BaseModel.ViewModel.Services;
 using BluePrints.BluePrintsEntitiesDataModel;
 using BluePrints.Common;
 using BluePrints.Common.Projections;
@@ -70,7 +71,6 @@ namespace BluePrints.ViewModels
             loaderCollection.AddLoaderDescription(bluePrintsUnitOfWorkFactory, x => x.RATES, RATEProjectionFunc);
             loaderCollection.AddLoaderDescription<DOCTYPE, DOCTYPE, Guid, IBluePrintsEntitiesUnitOfWork>(bluePrintsUnitOfWorkFactory, x => x.DOCTYPES);
             loaderCollection.AddLoaderDescription(bluePrintsUnitOfWorkFactory, x => x.DELIVERABLES_STATUSES, DELIVERABLES_STATUSProjectionFunc);
-            loaderCollection.AddLoaderDescription<USER, USER, Guid, IBluePrintsEntitiesUnitOfWork>(bluePrintsUnitOfWorkFactory, x => x.USERS);
             loaderCollection.AddLoaderDescription(bluePrintsUnitOfWorkFactory, x => x.COMMODITY_CODES, COMMODITY_CODEProjectionFunc);
             loaderCollection.AddLoaderDescription(bluePrintsUnitOfWorkFactory, x => x.VARIATIONS, VARIATIONProjectionFunc);
             base.addEntitiesLoader();
@@ -218,7 +218,7 @@ namespace BluePrints.ViewModels
                     permissions = new List<ExoSubJobAuth>();
                     foreach (USER user in USERCollection)
                     {
-                        ExoSubJobAuth newAuth = new ExoSubJobAuth();
+                        ExoSubJobAuth newAuth = ViewModelSource.Create(() => new ExoSubJobAuth());
                         newAuth.User = user;
                         if (SelectedEntities.All(x => x.AuthUserIds.Any(y => y == user.ProjectLocaleExoId)))
                             newAuth.IsAssigned = true;

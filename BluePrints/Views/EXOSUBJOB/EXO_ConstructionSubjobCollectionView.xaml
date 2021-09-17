@@ -1,4 +1,4 @@
-﻿<UserControl x:Class="BluePrints.Views.EXO_ConstructionSubjobCollectionView" xmlns="http://schemas.microsoft.com/netfx/2009/xaml/presentation" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" xmlns:custom="clr-namespace:BaseModel.Misc;assembly=BaseModel" xmlns:d="http://schemas.microsoft.com/expression/blend/2008" xmlns:dx="http://schemas.devexpress.com/winfx/2008/xaml/core" xmlns:dxb="http://schemas.devexpress.com/winfx/2008/xaml/bars" xmlns:dxc="http://schemas.devexpress.com/winfx/2008/xaml/core" xmlns:dxe="http://schemas.devexpress.com/winfx/2008/xaml/editors" xmlns:dxg="http://schemas.devexpress.com/winfx/2008/xaml/grid" xmlns:dxlc="http://schemas.devexpress.com/winfx/2008/xaml/layoutcontrol" xmlns:dxmvvm="http://schemas.devexpress.com/winfx/2008/xaml/mvvm" xmlns:dxr="http://schemas.devexpress.com/winfx/2008/xaml/ribbon" xmlns:dxrudex="http://schemas.devexpress.com/winfx/2008/xaml/reports/userdesignerextensions" xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" xmlns:viewmodel="clr-namespace:BluePrints.ViewModels" x:Name="userControl" d:DesignHeight="400" d:DesignWidth="1600" DataContext="{dxmvvm:ViewModelSource viewmodel:EXO_ConstructionSubjobCollectionViewModelWrapper}" mc:Ignorable="d">
+﻿<UserControl x:Class="BluePrints.Views.EXO_ConstructionSubjobCollectionView" xmlns="http://schemas.microsoft.com/netfx/2009/xaml/presentation" xmlns:services="clr-namespace:BaseModel.ViewModel.Services;assembly=BaseModel"  xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" xmlns:custom="clr-namespace:BaseModel.Misc;assembly=BaseModel" xmlns:d="http://schemas.microsoft.com/expression/blend/2008" xmlns:dx="http://schemas.devexpress.com/winfx/2008/xaml/core" xmlns:dxb="http://schemas.devexpress.com/winfx/2008/xaml/bars" xmlns:dxc="http://schemas.devexpress.com/winfx/2008/xaml/core" xmlns:dxe="http://schemas.devexpress.com/winfx/2008/xaml/editors" xmlns:dxg="http://schemas.devexpress.com/winfx/2008/xaml/grid" xmlns:dxlc="http://schemas.devexpress.com/winfx/2008/xaml/layoutcontrol" xmlns:dxmvvm="http://schemas.devexpress.com/winfx/2008/xaml/mvvm" xmlns:dxr="http://schemas.devexpress.com/winfx/2008/xaml/ribbon" xmlns:dxrudex="http://schemas.devexpress.com/winfx/2008/xaml/reports/userdesignerextensions" xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" xmlns:viewmodel="clr-namespace:BluePrints.ViewModels" x:Name="userControl" d:DesignHeight="400" d:DesignWidth="1600" DataContext="{dxmvvm:ViewModelSource viewmodel:EXO_ConstructionSubjobCollectionViewModelWrapper}" mc:Ignorable="d">
     <UserControl.Resources>
         <ResourceDictionary>
             <ResourceDictionary.MergedDictionaries>
@@ -8,9 +8,14 @@
         </ResourceDictionary>
     </UserControl.Resources>
     <Grid Style="{StaticResource CollectionView.RootContainer}">
+        <dxmvvm:Interaction.Behaviors>
+            <services:TableViewService x:Name="PermissionTableViewService" TableView="{Binding ElementName=tableViewPermission}" />
+        </dxmvvm:Interaction.Behaviors>
         <dxb:BarManager>
             <dxb:BarManager.Items>
                 <dxb:BarSubItem ItemLinksSource="{StaticResource RibbonDefaultGridButtons}" />
+                <dxb:BarButtonItem x:Name="biBulkAssignUsers" Command="{Binding BulkAssignCommand}" Content="Bulk Assign Users" LargeGlyph="{dxc:DXImage Images/Actions/Apply_32x32.png}" ToolTip="Bulk assign selected users" Glyph="{dxc:DXImage Images/Actions/Apply_16x16.png}" />
+                <dxb:BarButtonItem x:Name="biBulkUnassignUsers" Command="{Binding BulkUnassignCommand}" Content="Bulk Unassign Users" LargeGlyph="{dxc:DXImage Image=Images/Actions/Cancel_32x32.png}" ToolTip="Bulk unassign selected users" Glyph="{dxc:DXImage Images/Actions/Cancel_16x16.png}" />
                 <dxb:BarButtonItem x:Name="biUploadToExo" Command="{Binding UploadToExoCommand}" Content="Upload Selected to Exo" Glyph="{dxc:DXImage Image=Satellite_16x16.png}" LargeGlyph="{dxc:DXImage Image=Satellite_32x32.png}" ToolTip="Add any missing subjob, discipline code, commodity code and available lines into exo" />
                 <dxb:BarButtonItem x:Name="biLocalCopy" Command="{Binding KeyboardCopyCommand}" Content="Copy" Glyph="{dx:DXImage Image=Copy_16x16.png}" LargeGlyph="{dx:DXImage Image=Copy_32x32.png}" ToolTip="Ctrl + C" />
                 <dxb:BarButtonItem x:Name="biLocalPaste" Command="{Binding KeyboardPasteCommand}" Content="Paste" Glyph="{dx:DXImage Image=Paste_16x16.png}" LargeGlyph="{dx:DXImage Image=Paste_32x32.png}" ToolTip="Ctrl + V" />
@@ -33,6 +38,8 @@
                                 <dxb:BarButtonItemLink BarItemName="biExportToPDF1" />
                             </dxr:RibbonPageGroup>
                             <dxr:RibbonPageGroup MergeType="Replace" Caption="Exo">
+                                <dxb:BarButtonItemLink BarItemName="biBulkAssignUsers"/>
+                                <dxb:BarButtonItemLink BarItemName="biBulkUnassignUsers"/>
                                 <dxb:BarButtonItemLink BarItemName="biUploadToExo"/>
                             </dxr:RibbonPageGroup>
                         </dxr:RibbonPage>
@@ -76,7 +83,7 @@
                                 <dxg:GridSummaryItem dxc:DXSerializer.Enabled="False" DisplayFormat="c0" FieldName="ExoBudget" SummaryType="Sum" />
                             </dxg:GridControl.GroupSummary>
                             <dxg:GridControl.View>
-                                <dxg:TableView x:Name="tableView" MouseUp="tableView1_MouseUp" Style="{StaticResource DefaultMinimalTableViewTemplate}">
+                                <dxg:TableView x:Name="tableView" Style="{StaticResource DefaultMinimalTableViewTemplate}">
                                     <dxmvvm:Interaction.Behaviors>
                                         <dxmvvm:EventToCommand Command="{Binding CellValueChangingCommand}" EventName="CellValueChanging" PassEventArgsToCommand="True" />
                                         <dxmvvm:EventToCommand Command="{Binding CellValueChangedCommand}" EventName="CellValueChanged" PassEventArgsToCommand="True" />
@@ -95,7 +102,7 @@
                     </dxlc:LayoutGroup>
                     <dxc:LoadingDecorator IsSplashScreenShown="{Binding IsPermissionLoading}">
                         <dxlc:LayoutGroup Name="LayoutGroupPermission" Orientation="Horizontal" View="Group">
-                            <dxg:GridControl x:Name="GridControlPermission" MaxHeight="2000" dxc:DXSerializer.SerializationID="GridControlExoSubjobUsers" dxc:DXSerializer.StoreLayoutMode="All" IsEnabled="{Binding IsPermissionGridEnabled}" ItemsSource="{Binding Users}" SelectedItem="{Binding SelectedUser, Mode=TwoWay}" SelectionMode="Cell">
+                            <dxg:GridControl x:Name="GridControlPermission" MaxHeight="2000" dxc:DXSerializer.SerializationID="GridControlExoSubjobUsers" dxc:DXSerializer.StoreLayoutMode="All" IsEnabled="{Binding IsPermissionGridEnabled}" SelectionMode="Row" ItemsSource="{Binding Users}" SelectedItem="{Binding SelectedUser, Mode=TwoWay}" SelectedItems="{Binding SelectedUsers}">
                                 <dxg:GridControl.Columns>
                                     <dxg:GridColumn FieldName="IsAssigned" Header="Can Book" AllowBestFit="false" Width="50" HeaderToolTip="Indicate whether user have permission to book the selected time in exo">
                                         <dxg:GridColumn.EditSettings>
@@ -117,9 +124,15 @@
                                     <dxg:GridSummaryItem dxc:DXSerializer.Enabled="False" SummaryType="Count" />
                                 </dxg:GridControl.GroupSummary>
                                 <dxg:GridControl.View>
-                                    <dxg:TableView x:Name="tableViewResources" MouseUp="tableView1_MouseUp" ShowSearchPanelMode="Always" Style="{StaticResource DefaultMinimalTableViewTemplate}">
+                                    <dxg:TableView x:Name="tableViewPermission" ShowSearchPanelMode="Always" Style="{StaticResource DefaultMinimalTableViewTemplate}">
+                                        <dxg:TableView.RowCellMenuCustomizations>
+                                            <dxb:BarButtonItemLink BarItemName="biBulkAssignUsers" />
+                                            <dxb:BarButtonItemLink BarItemName="biBulkUnassignUsers" />
+                                        </dxg:TableView.RowCellMenuCustomizations>
                                         <dxmvvm:Interaction.Behaviors>
                                             <dxmvvm:EventToCommand Command="{Binding PermissionCellValueChangingCommand}" EventName="CellValueChanging" PassEventArgsToCommand="True" />
+                                            <!--Unlike DesignSubJobCollectionView, there is no need for validation since all users are from EXO-->
+                                            <dxmvvm:EventToCommand Command="{Binding PermissionCellValueChangedCommand}" EventName="CellValueChanged" PassEventArgsToCommand="True" />
                                         </dxmvvm:Interaction.Behaviors>
                                     </dxg:TableView>
                                 </dxg:GridControl.View>

@@ -56,6 +56,9 @@ namespace BluePrints.Data
         {
             get
             {
+                if ((FIRST_NAME == string.Empty && LAST_NAME == string.Empty) || (FIRST_NAME == null && LAST_NAME == null))
+                    return NAME;
+
                 if (FIRST_NAME == null)
                     return LAST_NAME;
 
