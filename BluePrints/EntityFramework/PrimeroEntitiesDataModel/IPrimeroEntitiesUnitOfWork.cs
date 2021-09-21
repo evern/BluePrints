@@ -1740,5 +1740,11 @@ namespace BluePrints.PrimeroData.PrimeroEntitiesDataModel
         /// The X_JOB_TIMESHEETS entities repository.
         /// </summary>
         IRepository<X_JOB_TIMESHEETS, Guid> X_JOB_TIMESHEETS { get; }
+
+
+        /// <summary>
+        /// The X_PL_SUMMARY entities repository.
+        /// </summary>
+        IRepository<X_PL_SUMMARY, long> X_PL_SUMMARY { get; }
     }
 }

@@ -916,6 +916,7 @@
     <Compile Include="EntityFramework\Annotations\X_DEPARTMENT.cs" />
     <Compile Include="EntityFramework\Annotations\X_EARNED_QUERY.cs" />
     <Compile Include="EntityFramework\Annotations\X_JOB_TRANSACTIONS_DETAIL_V2.cs" />
+    <Compile Include="EntityFramework\Annotations\X_PL_SUMMARY.cs" />
     <Compile Include="EntityFramework\Annotations\X_VARIATION_QUERY.cs" />
     <Compile Include="EntityFramework\Annotations\JOBCOST_LINES_AUDIT.cs" />
     <Compile Include="EntityFramework\Annotations\JOB_TIMESHEETS.cs" />
@@ -1126,10 +1127,10 @@
     <Compile Include="EntityFramework\PrimeroData\X_JOB_TRANSACTIONS_DETAIL_V2.cs" />
     <Compile Include="EntityFramework\PrimeroData\X_JOB_TRANSACTIONS_DETAIL_SeqNo.cs" />
     <Compile Include="EntityFramework\PrimeroData\X_JOB_TRANSACTIONS_DETAIL.cs" />
-    <Compile Include="EntityFramework\PrimeroData\X_MATERIAL_TRANSACTION.cs" />
+    <Compile Include="EntityFramework\PrimeroData\X_PL_SUMMARY.cs" />
+    <Compile Include="EntityFramework\PrimeroData\X_TRANSACTION.cs" />
     <Compile Include="EntityFramework\PrimeroData\X_PURCHORD_LINE_DETAIL.cs" />
     <Compile Include="EntityFramework\PrimeroData\X_PURCH_REQ_COMMENTS_FILES.cs" />
-    <Compile Include="EntityFramework\PrimeroData\X_TIME_TRANSACTION.cs" />
     <Compile Include="ViewModels\BASELINE_ITEM\DOCCONTROL_BASELINE_ITEMCollectionViewModelWrapper.cs" />
     <Compile Include="ViewModels\BASELINE_ITEM\BASELINE_ITEMWorkpackSchedulingViewModelWrapper.cs" />
     <Compile Include="ViewModels\BASELINE_ITEM\BASELINE_ITEMSchedulingViewModelWrapper.cs" />
@@ -1159,6 +1160,7 @@
     <Compile Include="ViewModels\PROGRESS_ITEM\OffsiteDirectProgressCollectionViewModelWrapper.cs" />
     <Compile Include="ViewModels\EXOSUBJOB\EXO_POCollectionViewModelWrapper.cs" />
     <Compile Include="ViewModels\PROGRESS_ITEM\SiteDirectProgressCollectionViewModelWrapper.cs" />
+    <Compile Include="ViewModels\PROJECT\PROJECTPLCollectionViewModelWrapper.cs" />
     <Compile Include="ViewModels\PROJECT\PROJECTForecastEACReportViewModelWrapper.cs" />
     <Compile Include="ViewModels\PROJECT\PROJECTPlanViewModelWrapper.cs" />
     <Compile Include="ViewModels\PROJECT\PROJECTFlatPOForecastViewModelWrapper.cs" />
@@ -1284,6 +1286,9 @@
     </Compile>
     <Compile Include="Views\PROGRESS_ITEM\SiteDirectProgressCollectionView.xaml.cs">
       <DependentUpon>SiteDirectProgressCollectionView.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Views\PROJECT\PROJECTPLCollectionView.xaml.cs">
+      <DependentUpon>PROJECTPLCollectionView.xaml</DependentUpon>
     </Compile>
     <Compile Include="Views\PROJECT\PROJECTForecastEACReportView.xaml.cs">
       <DependentUpon>PROJECTForecastEACReportView.xaml</DependentUpon>
@@ -2280,6 +2285,10 @@
       <SubType>Designer</SubType>
     </Page>
     <Page Include="Views\PROGRESS_ITEM\SiteDirectProgressCollectionView.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Views\PROJECT\PROJECTPLCollectionView.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>

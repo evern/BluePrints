@@ -4,7 +4,7 @@ namespace BluePrints.PrimeroData
     using System.ComponentModel.DataAnnotations;
     using System.ComponentModel.DataAnnotations.Schema;
 
-    public partial class X_MATERIAL_TRANSACTION
+    public partial class X_TRANSACTION
     {
         [Key]
         [Column(Order = 0)]
