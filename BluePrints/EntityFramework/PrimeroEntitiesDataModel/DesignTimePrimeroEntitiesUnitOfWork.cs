@@ -1794,9 +1794,14 @@ namespace BluePrints.PrimeroData.PrimeroEntitiesDataModel
             get { return GetRepository((X_JOB_TIMESHEETS x) => x.SEQNO); }
         }
 
-        IRepository<X_PL_SUMMARY, long> IPrimeroEntitiesUnitOfWork.X_PL_SUMMARY
+        IRepository<X_PL_SUMMARY, int> IPrimeroEntitiesUnitOfWork.X_PL_SUMMARY
         {
-            get { return GetRepository((X_PL_SUMMARY x) => x.Id); }
+            get { return GetRepository((X_PL_SUMMARY x) => x.JOBNO); }
+        }
+
+        IRepository<X_PURCHORD_LINE_DETAILS_VIEW_V1, int> IPrimeroEntitiesUnitOfWork.X_PURCHORD_LINE_DETAILS_VIEW_V1
+        {
+            get { return GetRepository((X_PURCHORD_LINE_DETAILS_VIEW_V1 x) => x.SEQNO); }
         }
     }
 }

@@ -1938,11 +1938,19 @@ namespace BluePrints.PrimeroData.PrimeroEntitiesDataModel
             }
         }
 
-        IRepository<X_PL_SUMMARY, long> IPrimeroEntitiesUnitOfWork.X_PL_SUMMARY
+        IRepository<X_PL_SUMMARY, int> IPrimeroEntitiesUnitOfWork.X_PL_SUMMARY
         {
             get
             {
-                return GetRepository(x => x.Set<X_PL_SUMMARY>(), (X_PL_SUMMARY x) => x.Id);
+                return GetRepository(x => x.Set<X_PL_SUMMARY>(), (X_PL_SUMMARY x) => x.JOBNO);
+            }
+        }
+
+        IRepository<X_PURCHORD_LINE_DETAILS_VIEW_V1, int> IPrimeroEntitiesUnitOfWork.X_PURCHORD_LINE_DETAILS_VIEW_V1
+        {
+            get
+            {
+                return GetRepository(x => x.Set<X_PURCHORD_LINE_DETAILS_VIEW_V1>(), (X_PURCHORD_LINE_DETAILS_VIEW_V1 x) => x.SEQNO);
             }
         }
     }

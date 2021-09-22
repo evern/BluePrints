@@ -42,47 +42,43 @@
                             <dxg:GridControl x:Name="GridControl" dx:DXSerializer.SerializationID="GridControlPL" dx:DXSerializer.StoreLayoutMode="All" Style="{StaticResource DefaultGridControlTemplate}">
                                 <dxg:GridControl.Columns>
                                     <dxg:GridColumn Header="Job" FieldName="JOBCODE" />
-                                    <dxg:GridColumn FieldName="JOBCODE" Header="Name" >
-                                        <dxg:GridColumn.EditSettings>
-                                            <dxe:ComboBoxEditSettings AutoComplete="True" DisplayMember="NAME" IsTextEditable="True" ItemsSource="{Binding PROJECTCollection}" ValueMember="NUMBER" />
-                                        </dxg:GridColumn.EditSettings>
-                                    </dxg:GridColumn>
-                                    <dxg:GridColumn Header="Approved Revenue" FieldName="ApprovedRevenue" >
+                                    <dxg:GridColumn Header="Name" FieldName="TITLE" />
+                                    <dxg:GridColumn Header="Approved Revenue" BestFitWidth="150" Width="150" FieldName="ApprovedRevenue" >
                                         <dxg:GridColumn.EditSettings>
                                             <dxe:SpinEditSettings Increment="1" IsFloatValue="False" IsTextEditable="True" Mask="c0" MaskType="Numeric" MaskUseAsDisplayFormat="True" />
                                         </dxg:GridColumn.EditSettings>
                                     </dxg:GridColumn>
-                                    <dxg:GridColumn Header="Submitted" FieldName="Submitted" >
+                                    <dxg:GridColumn Header="Submitted" BestFitWidth="150" Width="150"  FieldName="Submitted" >
                                         <dxg:GridColumn.EditSettings>
                                             <dxe:SpinEditSettings Increment="1" IsFloatValue="False" IsTextEditable="True" Mask="c0" MaskType="Numeric" MaskUseAsDisplayFormat="True" />
                                         </dxg:GridColumn.EditSettings>
                                     </dxg:GridColumn>
-                                    <dxg:GridColumn Header="Unapproved" FieldName="Unapproved" >
+                                    <dxg:GridColumn Header="Unapproved" BestFitWidth="150" Width="150" FieldName="Unapproved" >
                                         <dxg:GridColumn.EditSettings>
                                             <dxe:SpinEditSettings Increment="1" IsFloatValue="False" IsTextEditable="True" Mask="c0" MaskType="Numeric" MaskUseAsDisplayFormat="True" />
                                         </dxg:GridColumn.EditSettings>
                                     </dxg:GridColumn>
-                                    <dxg:GridColumn Header="Forecast Revenue" FieldName="ForecastRevenue" >
+                                    <dxg:GridColumn Header="Forecast Revenue" BestFitWidth="150" Width="150" FieldName="ForecastRevenue" >
                                         <dxg:GridColumn.EditSettings>
                                             <dxe:SpinEditSettings Increment="1" IsFloatValue="False" IsTextEditable="True" Mask="c0" MaskType="Numeric" MaskUseAsDisplayFormat="True" />
                                         </dxg:GridColumn.EditSettings>
                                     </dxg:GridColumn>
-                                    <dxg:GridColumn Header="Time Costs" FieldName="TotalTimeCosts" >
+                                    <dxg:GridColumn Header="Time Costs" BestFitWidth="150" Width="150" FieldName="TotalTimeCosts" >
                                         <dxg:GridColumn.EditSettings>
                                             <dxe:SpinEditSettings Increment="1" IsFloatValue="False" IsTextEditable="True" Mask="c0" MaskType="Numeric" MaskUseAsDisplayFormat="True" />
                                         </dxg:GridColumn.EditSettings>
                                     </dxg:GridColumn>
-                                    <dxg:GridColumn Header="Material Costs" FieldName="TotalMaterialCosts" >
+                                    <dxg:GridColumn Header="Material Costs" BestFitWidth="150" Width="150" FieldName="TotalMaterialCosts" >
                                         <dxg:GridColumn.EditSettings>
                                             <dxe:SpinEditSettings Increment="1" IsFloatValue="False" IsTextEditable="True" Mask="c0" MaskType="Numeric" MaskUseAsDisplayFormat="True" />
                                         </dxg:GridColumn.EditSettings>
                                     </dxg:GridColumn>
-                                    <dxg:GridColumn Header="Invoiced" FieldName="TotalInvoiced" >
+                                    <dxg:GridColumn Header="Invoiced" BestFitWidth="150" Width="150" FieldName="TotalInvoiced" >
                                         <dxg:GridColumn.EditSettings>
                                             <dxe:SpinEditSettings Increment="1" IsFloatValue="False" IsTextEditable="True" Mask="c0" MaskType="Numeric" MaskUseAsDisplayFormat="True" />
                                         </dxg:GridColumn.EditSettings>
                                     </dxg:GridColumn>
-                                    <dxg:GridColumn Header="Outstanding" FieldName="TotalOutstanding" >
+                                    <dxg:GridColumn Header="Outstanding" BestFitWidth="150" Width="150"  FieldName="TotalOutstanding" >
                                         <dxg:GridColumn.EditSettings>
                                             <dxe:SpinEditSettings Increment="1" IsFloatValue="False" IsTextEditable="True" Mask="c0" MaskType="Numeric" MaskUseAsDisplayFormat="True" />
                                         </dxg:GridColumn.EditSettings>
@@ -120,7 +116,7 @@
                                     <dxg:GridColumn BestFitWidth="150" Width="150" FieldName="COMMODITY_CODE_DESC" Header="Commodity Desc" ReadOnly="True" />
                                     <dxg:GridColumn BestFitWidth="250" Width="250" FieldName="VARIATION_CODE" Header="Variation" ReadOnly="True" />
                                     <dxg:GridColumn BestFitWidth="75" Width="75" FieldName="STOCKCODE" Header="Stock Code" ReadOnly="True" />
-                                    <dxg:GridColumn BestFitWidth="85" Width="85" FieldName="TRANSDATE" Header="Date" ReadOnly="True" />
+                                    <dxg:GridColumn BestFitWidth="85" Width="85" FieldName="TRANSDATE" Header="Date" ReadOnly="True" SortOrder="Descending" SortIndex="{Binding DateSortIndex}" />
                                     <dxg:GridColumn BestFitWidth="200" Width="200" FieldName="RESOURCE_SUPPLIER_NAME" Header="Name" ReadOnly="True"  />
                                     <dxg:GridColumn BestFitWidth="150" Width="150" FieldName="QUANTITY" Header="Quantity" ReadOnly="True">
                                         <dxg:GridColumn.EditSettings>
@@ -157,6 +153,67 @@
                                 </dxg:GridControl.TotalSummary>
                                 <dxg:GridControl.View>
                                     <dxg:TableView x:Name="tableViewActualDetail" GroupSummaryDisplayMode="AlignByColumns" NewItemRowPosition="None" ShowGroupedColumns="False" ShowTotalSummary="True" Style="{StaticResource DefaultMinimalTableViewTemplate}" >
+                                    </dxg:TableView>
+                                </dxg:GridControl.View>
+                            </dxg:GridControl>
+                        </dxdo:LayoutPanel>
+                        <dxdo:LayoutPanel x:Name="PO_Details" dx:DXSerializer.Enabled="False" AutoHidden="False"  ShowHideButton="True" ShowCloseButton="False" Visibility="{Binding PODetailsVisibility}">
+                            <dxg:GridControl x:Name="gridControlPODetails" dx:DXSerializer.Enabled="False" FontFamily="Calibri" FontSize="12" ShowAllTableValuesInCheckedFilterPopup="False" AutoGenerateColumns="None" FilterCriteria="{Binding POFilterCriteria, Mode=TwoWay}" ItemsSource="{Binding PODetail}" SelectionMode="Row" ShowLoadingPanel="{Binding IsLoading}">
+                                <dxg:GridControl.Columns>
+                                    <dxg:GridColumn BestFitWidth="100" Width="100" FieldName="MASTER_JOBCODE" Header="Job" ReadOnly="True" />
+                                    <dxg:GridColumn BestFitWidth="100" Width="100" FieldName="SUB_JOBCODE" Header="Subjob" ReadOnly="True" />
+                                    <dxg:GridColumn BestFitWidth="50" Width="50" FieldName="DISCIPLINE_CODE" Header="Discipline" ReadOnly="True" />
+                                    <dxg:GridColumn BestFitWidth="50" Width="50" FieldName="COMMODITY_CODE" Header="Commodity" ReadOnly="True" />
+                                    <dxg:GridColumn BestFitWidth="150" Width="150" FieldName="COMMODITY_CODE_DESC" Header="Commodity Desc" ReadOnly="True" />
+                                    <dxg:GridColumn BestFitWidth="250" Width="250" FieldName="VARIATION_CODE" Header="Variation" ReadOnly="True" />
+                                    <dxg:GridColumn BestFitWidth="75" Width="75" FieldName="STOCKCODE" Header="Stock Code" ReadOnly="True" />
+                                    <dxg:GridColumn BestFitWidth="85" Width="85" FieldName="ORDERDATE" Header="Date" ReadOnly="True" SortOrder="Descending" SortIndex="{Binding DateSortIndex}" />
+                                    <dxg:GridColumn BestFitWidth="100" Width="100" FieldName="PO_NUMBER" Header="PO Number" ReadOnly="True" />
+                                    <dxg:GridColumn BestFitWidth="250" Width="150" FieldName="DESCRIPTION" Header="Commodity Desc" ReadOnly="True" />
+                                    <dxg:GridColumn AllowBestFit="False" Width="*" FieldName="NARRATIVE" Header="Narrative" ReadOnly="True" />
+                                    <dxg:GridColumn BestFitWidth="200" Width="200" FieldName="SUPPLIER_NAME" Header="Supplier" ReadOnly="True" />
+                                    <dxg:GridColumn BestFitWidth="150" Width="150" FieldName="ORDER_QTY" Header="Quantity" ReadOnly="True" >
+                                        <dxg:GridColumn.EditSettings>
+                                            <dxe:TextEditSettings Mask="n2" MaskType="Numeric" MaskUseAsDisplayFormat="True" />
+                                        </dxg:GridColumn.EditSettings>
+                                    </dxg:GridColumn>
+                                    <dxg:GridColumn BestFitWidth="150" Width="150" FieldName="CUT_OFF_SUPPLIED" Header="Supplied Qty To Data Date" HeaderToolTip="Supplied qty cut off on data date" ReadOnly="True">
+                                        <dxg:GridColumn.EditSettings>
+                                            <dxe:TextEditSettings Mask="n2" MaskType="Numeric" MaskUseAsDisplayFormat="True" />
+                                        </dxg:GridColumn.EditSettings>
+                                    </dxg:GridColumn>
+                                    <dxg:GridColumn BestFitWidth="150" Width="150" FieldName="UNIT_PRICE" Header="Unit Cost" ReadOnly="True">
+                                        <dxg:GridColumn.EditSettings>
+                                            <dxe:TextEditSettings Mask="c2" MaskType="Numeric" MaskUseAsDisplayFormat="True" />
+                                        </dxg:GridColumn.EditSettings>
+                                    </dxg:GridColumn>
+                                    <dxg:GridColumn BestFitWidth="150" Width="150" FieldName="LINETOTAL" Header="Total Cost" ReadOnly="True">
+                                        <dxg:GridColumn.EditSettings>
+                                            <dxe:TextEditSettings Mask="c2" MaskType="Numeric" MaskUseAsDisplayFormat="True" />
+                                        </dxg:GridColumn.EditSettings>
+                                    </dxg:GridColumn>
+                                    <dxg:GridColumn BestFitWidth="150" Width="150" FieldName="OUTSTANDING_COSTS" Header="Outstanding Cost On Data Date" HeaderToolTip="Outstandingcost cut off on data date" ReadOnly="True">
+                                        <dxg:GridColumn.EditSettings>
+                                            <dxe:TextEditSettings Mask="c2" MaskType="Numeric" MaskUseAsDisplayFormat="True" />
+                                        </dxg:GridColumn.EditSettings>
+                                    </dxg:GridColumn>
+                                </dxg:GridControl.Columns>
+                                <dxg:GridControl.GroupSummary>
+                                    <dxg:GridSummaryItem DisplayFormat="Record(s): {0:n0}" FieldName="SUB_JOBCODE" SummaryType="Count" />
+                                    <dxg:GridSummaryItem DisplayFormat="n2" FieldName="ORDER_QTY" SummaryType="Sum" />
+                                    <dxg:GridSummaryItem DisplayFormat="n2" FieldName="SUPPLIED_QTY" SummaryType="Sum" />
+                                    <dxg:GridSummaryItem DisplayFormat="c2" FieldName="LINETOTAL" SummaryType="Sum" />
+                                    <dxg:GridSummaryItem DisplayFormat="c2" FieldName="OUTSTANDING_COSTS" SummaryType="Sum" />
+                                </dxg:GridControl.GroupSummary>
+                                <dxg:GridControl.TotalSummary>
+                                    <dxg:GridSummaryItem DisplayFormat="Record(s): {0:n0}" FieldName="SUBJOB_CODE" SummaryType="Count" />
+                                    <dxg:GridSummaryItem DisplayFormat="n2" FieldName="ORDER_QTY" SummaryType="Sum" />
+                                    <dxg:GridSummaryItem DisplayFormat="n2" FieldName="SUPPLIED_QTY" SummaryType="Sum" />
+                                    <dxg:GridSummaryItem DisplayFormat="c2" FieldName="LINETOTAL" SummaryType="Sum" />
+                                    <dxg:GridSummaryItem DisplayFormat="c2" FieldName="OUTSTANDING_COSTS" SummaryType="Sum" />
+                                </dxg:GridControl.TotalSummary>
+                                <dxg:GridControl.View>
+                                    <dxg:TableView x:Name="tableViewPODetail" GroupSummaryDisplayMode="AlignByColumns" NewItemRowPosition="None" ShowGroupedColumns="False" ShowTotalSummary="True" Style="{StaticResource DefaultMinimalTableViewTemplate}" >
                                     </dxg:TableView>
                                 </dxg:GridControl.View>
                             </dxg:GridControl>

@@ -394,6 +394,7 @@ namespace BluePrints.PrimeroData
         public virtual DbSet<X_JOB_TRANSACTIONS_DETAIL_V2> X_JOB_TRANSACTIONS_DETAIL_V2 { get; set; }
         public virtual DbSet<X_JOB_TIMESHEETS> X_JOB_TIMESHEETS { get; set; }
         public virtual DbSet<X_PL_SUMMARY> X_PL_SUMMARY { get; set; }
+        public virtual DbSet<X_PURCHORD_LINE_DETAILS_VIEW_V1> X_PURCHORD_LINE_DETAILS_VIEW_V1 { get; set; }
 
         protected override void OnModelCreating(DbModelBuilder modelBuilder)
         {

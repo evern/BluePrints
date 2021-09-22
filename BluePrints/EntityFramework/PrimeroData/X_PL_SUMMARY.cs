@@ -8,11 +8,15 @@ namespace BluePrints.PrimeroData
 
     public partial class X_PL_SUMMARY
     {
+        [Key]
         [DatabaseGenerated(DatabaseGeneratedOption.None)]
-        public long Id { get; set; }
+        public int JOBNO { get; set; }
 
         [StringLength(15)]
         public string JOBCODE { get; set; }
+
+        [StringLength(60)]
+        public string TITLE { get; set; }
 
         [StringLength(100)]
         public string NUMBER { get; set; }

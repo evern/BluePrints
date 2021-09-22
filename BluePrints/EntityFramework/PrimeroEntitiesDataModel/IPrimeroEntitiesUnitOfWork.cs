@@ -1741,10 +1741,14 @@ namespace BluePrints.PrimeroData.PrimeroEntitiesDataModel
         /// </summary>
         IRepository<X_JOB_TIMESHEETS, Guid> X_JOB_TIMESHEETS { get; }
 
-
         /// <summary>
         /// The X_PL_SUMMARY entities repository.
         /// </summary>
-        IRepository<X_PL_SUMMARY, long> X_PL_SUMMARY { get; }
+        IRepository<X_PL_SUMMARY, int> X_PL_SUMMARY { get; }
+
+        /// <summary>
+        /// The X_PURCHORD_LINE_DETAILS_VIEW_V1 entities repository.
+        /// </summary>
+        IRepository<X_PURCHORD_LINE_DETAILS_VIEW_V1, int> X_PURCHORD_LINE_DETAILS_VIEW_V1 { get; }
     }
 }
