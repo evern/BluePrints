@@ -2014,6 +2014,7 @@ namespace BluePrints.ViewModels
             }
         }
 
+        string weekViewPreventEditingMessage = "Sorry, cells in weeks view isn't editable, please switch to month view to edit cell";
         public override void ValidateCell(GridCellValidationEventArgs e)
         {
             if(e.Value != null)
@@ -2021,7 +2022,7 @@ namespace BluePrints.ViewModels
                 DateTime dateTime;
                 if (IsWeeks)
                 {
-                    e.ErrorContent = "Sorry, cells in weeks view aren't editable";
+                    e.ErrorContent = weekViewPreventEditingMessage;
                     e.IsValid = false;
                 }
                 else if (DateTime.TryParse(e.Column.FieldName, out dateTime))
@@ -2088,6 +2089,19 @@ namespace BluePrints.ViewModels
                             }
                         }
                     }
+                }
+            }
+        }
+
+
+        public void ChildGridValidateCell(GridCellValidationEventArgs e)
+        {
+            if (e.Value != null)
+            {
+                if (IsWeeks)
+                {
+                    e.ErrorContent = weekViewPreventEditingMessage;
+                    e.IsValid = false;
                 }
             }
         }

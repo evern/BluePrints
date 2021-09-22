@@ -414,6 +414,7 @@
                                                 <dxg:GridControl.View>
                                                     <dxg:TableView x:Name="tableViewChild" TotalSummaryContentStyle="{StaticResource TotalSummaryStyle}" GroupColumnSummaryContentStyle="{StaticResource GroupSummaryStyle}" ColumnHeaderTemplate="{StaticResource ForecastHeaderTemplate}" RowStyle="{StaticResource TableRowStyle}" AllowEditing="True" AllowGrouping="True" ShowGroupedColumns="False" NewItemRowPosition="None" ShowTotalSummary="True" Style="{StaticResource DefaultMinimalTableViewTemplate}" ScrollBarAnnotationMode="None">
                                                         <dxmvvm:Interaction.Behaviors>
+                                                            <dxmvvm:EventToCommand Command="{Binding ChildGridValidateCellCommand}" EventName="ValidateCell" PassEventArgsToCommand="True" />
                                                             <dxmvvm:EventToCommand Command="{Binding CellValueChangedUpdateCommand}" EventName="CellValueChanged" PassEventArgsToCommand="True" />
                                                         </dxmvvm:Interaction.Behaviors>
                                                         <dxg:TableView.FormatConditions>
