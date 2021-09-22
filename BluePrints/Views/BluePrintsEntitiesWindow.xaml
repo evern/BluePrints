@@ -184,6 +184,7 @@
                             <Setter Property="IsExpanded" Value="{Binding TreeViewIsExpanded}" />
                             <Setter Property="ShowInCollapsedMode" Value="{Binding ShowInCollapseMode}" />
                             <Setter Property="ContextMenu" Value="{Binding Menu}" />
+                            <Setter Property="ToolTip" Value="{Binding ToolTip}" />
                         </Style>
                     </dxa:AccordionControl.ItemContainerStyle>
                 </dxa:AccordionControl>

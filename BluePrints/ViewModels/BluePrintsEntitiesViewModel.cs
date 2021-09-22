@@ -392,7 +392,7 @@ namespace BluePrints.ViewModels
             myDesignTimesheetDescription = new BluePrintsEntitiesModuleDescription(DataUtils.GetNameOf(() => NavigationResources.Menu_UserTimesheet), string.Empty, dashboardCategoryDescription.NavigationId, "My Design Timesheet", "DesignTimesheetEntryCollectionView", false, null, null, true, false, @"Scheduling\TimeLineView_16x16.png");
             myReviewTimesheetDescription = new BluePrintsEntitiesModuleDescription(DataUtils.GetNameOf(() => NavigationResources.Menu_ReviewTimesheet), string.Empty, dashboardCategoryDescription.NavigationId, "Review Timesheets", "DesignTimesheetEntryCollectionView", true, null, null, true, false, @"Scheduling\SwitchTimeScalesTo_16x16.png");
 
-            projectEditableCategoryDescription = new BluePrintsEntitiesModuleDescription(DataUtils.GetNameOf(() => NavigationResources.Menu_AllProjects), string.Empty, null, "Projects", "PROJECTCollectionView", new EntitiesParameter<Action<object>>(NavigateCoreCommand), null, null, true, true, @"Programming\Project_16x16.png", null, null, false);
+            projectEditableCategoryDescription = new BluePrintsEntitiesModuleDescription(DataUtils.GetNameOf(() => NavigationResources.Menu_AllProjects), string.Empty, null, "Projects", "PROJECTCollectionView", new EntitiesParameter<Action<object>>(NavigateCoreCommand), null, null, true, true, @"Programming\Project_16x16.png", null, null, false, null, "Double click to view all projects");
             projectCategoryDescription = new BluePrintsEntitiesModuleDescription(DataUtils.GetNameOf(() => NavigationResources.Menu_AllProjects), string.Empty, null, "Projects", null, null, null, null, true, true, @"Programming\Project_16x16.png");
             myProjectsCategoryDescription = new BluePrintsEntitiesModuleDescription(DataUtils.GetNameOf(() => NavigationResources.Menu_AllProjects), string.Empty, DataUtils.GetNameOf(() => NavigationResources.Menu_AllProjects), "My Projects", null, null, null, null, true, false, @"Business Objects\BOTask_16x16.png");
             myTendersCategoryDescription = new BluePrintsEntitiesModuleDescription(DataUtils.GetNameOf(() => NavigationResources.Category_UserTenders), string.Empty, DataUtils.GetNameOf(() => NavigationResources.Menu_AllProjects), "My Tenders", null, null, null, null, true, false, @"Business Objects\BOReport2_16x16.png");
@@ -532,14 +532,11 @@ namespace BluePrints.ViewModels
             }
 
             List<BluePrintsEntitiesModuleDescription> projectModuleContextMenuItems = new List<BluePrintsEntitiesModuleDescription>();
-            //BluePrintsEntitiesModuleDescription projectRateMenuItem = new BluePrintsEntitiesModuleDescription("View_ProjectRates" + keyString, projectKey, childTitlePrefix + "Rates", "RATECollectionView", new EntitiesParameter<PROJECT>(entity), null, "Rates", false, false, @"Number Formats\Currency2_16x16.png");
-            BluePrintsEntitiesModuleDescription projectAreaMenuItem = new BluePrintsEntitiesModuleDescription(DataUtils.GetNameOf(() => NavigationResources.ContextMenu_ProjectAreas), projectSpecificKey, projectSpecificKey, childTitlePrefix + "Areas", "AREACollectionView", new EntitiesParameter<PROJECT>(entity), null, "Areas", false, false, @"Maps\Map_16x16.png");
             BluePrintsEntitiesModuleDescription projectBaselineMenuItem = new BluePrintsEntitiesModuleDescription(DataUtils.GetNameOf(() => NavigationResources.ContextMenu_ProjectBaselines), projectSpecificKey, projectSpecificKey, childTitlePrefix + "Design Budget", "BASELINECollectionView", new EntitiesParameter<PROJECT>(entity), null, "Design Budget", false, false, @"Support\Version_16x16.png");
             BluePrintsEntitiesModuleDescription projectEstimateMenuItem = new BluePrintsEntitiesModuleDescription(DataUtils.GetNameOf(() => NavigationResources.ContextMenu_ProjectEstimates), projectSpecificKey, projectSpecificKey, childTitlePrefix + "Construction Budget", "ESTIMATECollectionView", new EntitiesParameter<PROJECT>(entity), null, "Construction Budget", false, false, @"Support\Version_16x16.png");
             BluePrintsEntitiesModuleDescription projectProgressMenuItem = new BluePrintsEntitiesModuleDescription(DataUtils.GetNameOf(() => NavigationResources.ContextMenu_ProjectProgresses), projectSpecificKey, projectSpecificKey, childTitlePrefix + "Progress", "PROGRESSCollectionView", new EntitiesParameter<PROJECT>(entity), null, "Progress", false, false, @"Support\Version_16x16.png");
 
             //projectModuleContextMenuItems.Add(projectRateMenuItem);
-            projectModuleContextMenuItems.Add(projectAreaMenuItem);
             projectModuleContextMenuItems.Add(projectBaselineMenuItem);
             projectModuleContextMenuItems.Add(projectEstimateMenuItem);
             projectModuleContextMenuItems.Add(projectProgressMenuItem);
@@ -554,7 +551,7 @@ namespace BluePrints.ViewModels
                 return;
             }
 
-            BluePrintsEntitiesModuleDescription projectModuleDescription = new BluePrintsEntitiesModuleDescription(DataUtils.GetNameOf(() => NavigationResources.Menu_Project_Dashboard), projectSpecificKey, parentId, projectTitle, "PROJECTView", new DualEntitiesParameter<PROJECT, Action<object>>(entity, NavigateCoreCommand), null, null, false, false, @"Programming\ProjectDirectory_16x16.png", projectModuleContextMenuItems, NavigateCoreCommand);
+            BluePrintsEntitiesModuleDescription projectModuleDescription = new BluePrintsEntitiesModuleDescription(DataUtils.GetNameOf(() => NavigationResources.Menu_Project_Dashboard), projectSpecificKey, parentId, projectTitle, "PROJECTView", new DualEntitiesParameter<PROJECT, Action<object>>(entity, NavigateCoreCommand), null, null, false, false, @"Programming\ProjectDirectory_16x16.png", projectModuleContextMenuItems, NavigateCoreCommand, false, null, "Double click to view S-Curve. Right click to access more items");
             moduleAdder(projectStatusDescription, projectModuleDescription, isSecurityModule, true);
 
             BluePrintsEntitiesModuleDescription design_category_description = new BluePrintsEntitiesModuleDescription(DataUtils.GetNameOf(() => NavigationResources.Category_Project_Design), projectSpecificKey, projectModuleDescription.NavigationId, "Design", null, null, null, null, false, false, @"Miscellaneous\Design_16x16.png");
@@ -730,9 +727,14 @@ namespace BluePrints.Common.ViewModel
         List<BluePrintsEntitiesModuleDescription> menuItems;
         Action<object> navigateAction;
         public bool Animate { get; set; }
-        public BluePrintsEntitiesModuleDescription(string id, string projectSpecificKey, string parentId, string title, string documentType = null, object documentParameter = null, ImageSource image = null, string navigationTitle = null, bool treeViewIsExpanded = true, bool showInCollapseMode = false, string imagePath = "", List<BluePrintsEntitiesModuleDescription> menuItems = null, Action<object> navigateAction = null, bool showAnimation = false, Func<string> preferredDocumentType = null)
+        public BluePrintsEntitiesModuleDescription(string id, string projectSpecificKey, string parentId, string title, string documentType = null, object documentParameter = null, ImageSource image = null, string navigationTitle = null, bool treeViewIsExpanded = true, bool showInCollapseMode = false, string imagePath = "", List<BluePrintsEntitiesModuleDescription> menuItems = null, Action<object> navigateAction = null, bool showAnimation = false, Func<string> preferredDocumentType = null, string toolTip = "")
             : base(id, projectSpecificKey, parentId, title, documentType, documentParameter, image, navigationTitle, treeViewIsExpanded, showInCollapseMode, preferredDocumentType)
         {
+            if (toolTip != string.Empty)
+                this.ToolTip = toolTip;
+            else
+                this.ToolTip = null;
+
             this.menuItems = menuItems;
             this.navigateAction = navigateAction;
             ChildModules = new RangeObservableCollection<BluePrintsEntitiesModuleDescription>();
