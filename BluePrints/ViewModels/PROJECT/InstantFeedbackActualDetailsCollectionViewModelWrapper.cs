@@ -69,14 +69,24 @@ namespace BluePrints.ViewModels
 
         #region Database Operation
         Data.PROJECT loadPROJECT;
+        bool loadAll;
         private readonly IUnitOfWorkFactory<IBluePrintsEntitiesUnitOfWork> bluePrintsUnitOfWorkFactory = BluePrintsEntitiesUnitOfWorkSource.GetUnitOfWorkFactory();
         private IUnitOfWorkFactory<IPrimeroEntitiesUnitOfWork> primeroUnitOfWorkFactory;
         protected override void resolveParameters(object parameter)
         {
             if(parameter != null)
             {
-                loadPROJECT = (Data.PROJECT)parameter;
-                primeroUnitOfWorkFactory = PrimeroEntitiesUnitOfWorkSource.GetUnitOfWorkFactory(loadPROJECT.OfficeNameForExo);
+                bool? isLoadAll = parameter as bool?;
+                if(isLoadAll == null)
+                {
+                    loadPROJECT = (Data.PROJECT)parameter;
+                    primeroUnitOfWorkFactory = PrimeroEntitiesUnitOfWorkSource.GetUnitOfWorkFactory(loadPROJECT.OfficeNameForExo);
+                }
+                else
+                {
+                    loadAll = true;
+                    primeroUnitOfWorkFactory = PrimeroEntitiesUnitOfWorkSource.GetUnitOfWorkFactory();
+                }
             }
             else
                 primeroUnitOfWorkFactory = PrimeroEntitiesUnitOfWorkSource.GetUnitOfWorkFactory();
@@ -98,7 +108,9 @@ namespace BluePrints.ViewModels
 
         protected override Func<IRepositoryQuery<X_JOB_TRANSACTIONS_DETAIL_V2>, IQueryable<X_JOB_TRANSACTIONS_DETAIL_V2>> specifyMainViewModelProjection()
         {
-            if(loadPROJECT == null)
+            if (loadAll)
+                return query => query;
+            else if(loadPROJECT == null)
                 return query => query.Where(x => x.MASTER_JOBCODE == "X");
             else
                 return query => query.Where(x => x.MASTER_JOBCODE == loadPROJECT.NUMBER);

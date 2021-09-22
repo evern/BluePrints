@@ -3,9 +3,9 @@ using System.Windows.Controls;
 
 namespace BluePrints.Views
 {
-    public partial class PROJECTPLView : UserControl
+    public partial class PROJECTPLCollectionView : UserControl
     {
-        public PROJECTPLView()
+        public PROJECTPLCollectionView()
         {
             InitializeComponent();
         }

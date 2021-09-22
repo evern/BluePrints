@@ -1,4 +1,4 @@
-namespace BluePrints.Data
+namespace BluePrints.PrimeroData
 {
     using BaseModel.Attributes;
     using BaseModel.DataModel;

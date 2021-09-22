@@ -268,6 +268,15 @@ namespace BluePrints.Common.Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to All project P&amp;L.
+        /// </summary>
+        internal static string Menu_AllProjects_PL {
+            get {
+                return ResourceManager.GetString("Menu_AllProjects_PL", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Client maintenance menu.
         /// </summary>
         internal static string Menu_Client {

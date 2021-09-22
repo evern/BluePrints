@@ -27,7 +27,7 @@ namespace BluePrints.PrimeroData
 
         public double? TotalTimeCosts { get; set; }
 
-        public double? TotalMaterialCost { get; set; }
+        public double? TotalMaterialCosts { get; set; }
 
         public double? TotalInvoiced { get; set; }
 
