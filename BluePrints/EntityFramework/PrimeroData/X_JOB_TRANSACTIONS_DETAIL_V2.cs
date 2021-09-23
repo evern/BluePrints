@@ -8,14 +8,14 @@
 
     public partial class X_JOB_TRANSACTIONS_DETAIL_V2
     {
-        public int? MASTER_JOBNO { get; set; }
-
-        public int? JOBNO { get; set; }
-
         [Key]
         [Column(Order = 0)]
         [DatabaseGenerated(DatabaseGeneratedOption.None)]
         public int SEQNO { get; set; }
+
+        public int? MASTER_JOBNO { get; set; }
+
+        public int? JOBNO { get; set; }
 
         [StringLength(15)]
         public string MASTER_JOBCODE { get; set; }
