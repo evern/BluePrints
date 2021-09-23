@@ -1953,5 +1953,13 @@ namespace BluePrints.PrimeroData.PrimeroEntitiesDataModel
                 return GetRepository(x => x.Set<X_PURCHORD_LINE_DETAILS_VIEW_V1>(), (X_PURCHORD_LINE_DETAILS_VIEW_V1 x) => x.SEQNO);
             }
         }
+
+        IRepository<X_INVOICED_V1, int> IPrimeroEntitiesUnitOfWork.X_INVOICED_V1
+        {
+            get
+            {
+                return GetRepository(x => x.Set<X_INVOICED_V1>(), (X_INVOICED_V1 x) => x.SEQNO);
+            }
+        }
     }
 }

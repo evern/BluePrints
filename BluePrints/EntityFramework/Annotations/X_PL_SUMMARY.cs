@@ -14,5 +14,36 @@ namespace BluePrints.PrimeroData
     public partial class X_PL_SUMMARY : EntityBase
     {
         public string Office => BluePrintsResources.GlobalOffice;
+
+        public decimal Profit
+        {
+            get
+            {
+                if (ApprovedRevenue == null)
+                    return 0;
+
+                decimal approvedRevenueDecimal = (decimal)ApprovedRevenue;
+
+                if (TotalCosts == null)
+                    return approvedRevenueDecimal;
+
+                decimal totalCostsDecimal = Convert.ToDecimal((double)TotalCosts);
+
+                return approvedRevenueDecimal - totalCostsDecimal;
+            }
+        }
+
+        public decimal MarginPercentage
+        {
+            get
+            {
+                if (ApprovedRevenue == null || ApprovedRevenue == 0)
+                    return 0;
+
+                decimal approvedRevenueDecimal = (decimal)ApprovedRevenue;
+
+                return Profit / approvedRevenueDecimal;
+            }
+        }
     }
 }

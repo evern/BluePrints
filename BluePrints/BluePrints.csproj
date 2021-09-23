@@ -915,6 +915,7 @@
     <Compile Include="EntityFramework\Annotations\JOBCOST_HDR.cs" />
     <Compile Include="EntityFramework\Annotations\X_DEPARTMENT.cs" />
     <Compile Include="EntityFramework\Annotations\X_EARNED_QUERY.cs" />
+    <Compile Include="EntityFramework\Annotations\X_INVOICED_V1.cs" />
     <Compile Include="EntityFramework\Annotations\X_PURCHORD_LINE_DETAILS_VIEW_V1.cs" />
     <Compile Include="EntityFramework\Annotations\X_JOB_TRANSACTIONS_DETAIL_V2.cs" />
     <Compile Include="EntityFramework\Annotations\X_PL_SUMMARY.cs" />
@@ -1125,6 +1126,7 @@
     <Compile Include="Common\Misc\BluePrintsEnums.cs" />
     <Compile Include="EntityFramework\PrimeroData\X_DEPARTMENT.cs" />
     <Compile Include="EntityFramework\PrimeroData\X_JOB_TIMESHEETS.cs" />
+    <Compile Include="EntityFramework\PrimeroData\X_INVOICED_V1.cs" />
     <Compile Include="EntityFramework\PrimeroData\X_PURCHORD_LINE_DETAILS_VIEW_V1.cs" />
     <Compile Include="EntityFramework\PrimeroData\X_JOB_TRANSACTIONS_DETAIL_V2.cs" />
     <Compile Include="EntityFramework\PrimeroData\X_JOB_TRANSACTIONS_DETAIL_SeqNo.cs" />
@@ -1162,6 +1164,7 @@
     <Compile Include="ViewModels\PROGRESS_ITEM\OffsiteDirectProgressCollectionViewModelWrapper.cs" />
     <Compile Include="ViewModels\EXOSUBJOB\EXO_POCollectionViewModelWrapper.cs" />
     <Compile Include="ViewModels\PROGRESS_ITEM\SiteDirectProgressCollectionViewModelWrapper.cs" />
+    <Compile Include="ViewModels\PROJECT\InstantFeedbackInvoicedCollectionViewModelWrapper.cs" />
     <Compile Include="ViewModels\PROJECT\InstantFeedbackPODetailsCollectionViewModelWrapper.cs" />
     <Compile Include="ViewModels\PROJECT\PROJECTPLCollectionViewModelWrapper.cs" />
     <Compile Include="ViewModels\PROJECT\PROJECTForecastEACReportViewModelWrapper.cs" />

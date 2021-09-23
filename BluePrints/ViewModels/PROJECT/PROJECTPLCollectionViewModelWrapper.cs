@@ -50,12 +50,16 @@ namespace BluePrints.ViewModels
 
         InstantFeedbackActualDetailsCollectionViewModelWrapper instantFeedbackActualDetailViewModel = InstantFeedbackActualDetailsCollectionViewModelWrapper.Create();
         InstantFeedbackPODetailsCollectionViewModelWrapper instantFeedbackPODetailViewModel = InstantFeedbackPODetailsCollectionViewModelWrapper.Create();
+        InstantFeedbackInvoicedCollectionViewModelWrapper InstantFeedbackInvoicedViewModel = InstantFeedbackInvoicedCollectionViewModelWrapper.Create();
         protected override void resolveParameters(object parameter)
         {
             instantFeedbackActualDetailViewModel.OnParameterChange(true);
             instantFeedbackPODetailViewModel.OnParameterChange(true);
+            InstantFeedbackInvoicedViewModel.OnParameterChange(true);
             ActualFilterCriteria = CriteriaOperator.Parse("[MASTER_JOBCODE] = 'X'");
             POFilterCriteria = CriteriaOperator.Parse("[MASTER_JOBCODE] = 'X'");
+            InvoicedFilterCriteria = CriteriaOperator.Parse("[MASTER_JOBCODE] = 'X'");
+            IsActualDetailsVisible = true;
             this.RaisePropertyChanged(x => x.ActualFilterCriteria);
             this.RaisePropertyChanged(x => x.POFilterCriteria);
         }
@@ -137,12 +141,17 @@ namespace BluePrints.ViewModels
 
         public IListSource ActualsDetail => instantFeedbackActualDetailViewModel.InstantFeedbackEntities;
         public IListSource PODetail => instantFeedbackPODetailViewModel.InstantFeedbackEntities;
-        public Visibility ActualDetailsVisibility => !IsPoDetailsVisible ? Visibility.Visible : Visibility.Collapsed;
+        public IListSource InvoiceDetail => InstantFeedbackInvoicedViewModel.InstantFeedbackEntities;
+        public Visibility ActualDetailsVisibility => IsActualDetailsVisible ? Visibility.Visible : Visibility.Collapsed;
         public Visibility PODetailsVisibility => IsPoDetailsVisible ? Visibility.Visible : Visibility.Collapsed;
+        public Visibility InvoiceDetailsVisibility => IsInvoiceDetailsVisible ? Visibility.Visible : Visibility.Collapsed;
         public int DateSortIndex => 1;
         public bool IsPoDetailsVisible { get; set; }
+        public bool IsActualDetailsVisible { get; set; }
+        public bool IsInvoiceDetailsVisible { get; set; }
         public CriteriaOperator ActualFilterCriteria { get; set; }
         public CriteriaOperator POFilterCriteria { get; set; }
+        public CriteriaOperator InvoicedFilterCriteria { get; set; }
         private void setFilter(X_PL_SUMMARY projectSummary, GridColumn gridColumn)
         {
             if (gridColumn == null || projectSummary == null)
@@ -151,35 +160,53 @@ namespace BluePrints.ViewModels
             if (gridColumn.FieldName.ToUpper().Contains("TOTALTIMECOSTS"))
             {
                 ActualFilterCriteria = CriteriaOperator.Parse("[MASTER_JOBCODE] = '" + projectSummary.JOBCODE + "' AND [TRANSTYPE] = 'T'");
+                IsActualDetailsVisible = true;
                 IsPoDetailsVisible = false;
+                IsInvoiceDetailsVisible = false;
                 this.RaisePropertyChanged(x => x.ActualsDetail);
                 this.RaisePropertyChanged(x => x.ActualFilterCriteria);
             }
             if (gridColumn.FieldName.ToUpper().Contains("TOTALMATERIALCOSTS"))
             {
                 ActualFilterCriteria = CriteriaOperator.Parse("[MASTER_JOBCODE] = '" + projectSummary.JOBCODE + "' AND [TRANSTYPE] = 'C'");
+                IsActualDetailsVisible = true;
                 IsPoDetailsVisible = false;
+                IsInvoiceDetailsVisible = false;
+                this.RaisePropertyChanged(x => x.ActualsDetail);
+                this.RaisePropertyChanged(x => x.ActualFilterCriteria);
+            }
+            else if (gridColumn.FieldName.ToUpper().Contains("TOTALCOSTS"))
+            {
+                ActualFilterCriteria = CriteriaOperator.Parse("[MASTER_JOBCODE] = '" + projectSummary.JOBCODE + "'");
+                IsActualDetailsVisible = true;
+                IsPoDetailsVisible = false;
+                IsInvoiceDetailsVisible = false;
                 this.RaisePropertyChanged(x => x.ActualsDetail);
                 this.RaisePropertyChanged(x => x.ActualFilterCriteria);
             }
             else if (gridColumn.FieldName.ToUpper().Contains("TOTALINVOICED"))
             {
-                ActualFilterCriteria = CriteriaOperator.Parse("[MASTER_JOBCODE] = '" + projectSummary.JOBCODE + "' AND [INVOICED] > 0.0m");
-
+                InvoicedFilterCriteria = CriteriaOperator.Parse("[MASTER_JOBCODE] = '" + projectSummary.JOBCODE + "'");
+                IsActualDetailsVisible = false;
                 IsPoDetailsVisible = false;
-                this.RaisePropertyChanged(x => x.ActualsDetail);
-                this.RaisePropertyChanged(x => x.ActualFilterCriteria);
+                IsInvoiceDetailsVisible = true;
+                this.RaisePropertyChanged(x => x.InvoiceDetail);
+                this.RaisePropertyChanged(x => x.InvoicedFilterCriteria);
             }
             else if (gridColumn.FieldName.ToUpper().Contains("TOTALOUTSTANDING"))
             {
                 POFilterCriteria = CriteriaOperator.Parse("[MASTER_JOBCODE] = '" + projectSummary.JOBCODE + "'");
+                IsActualDetailsVisible = false;
                 IsPoDetailsVisible = true;
+                IsInvoiceDetailsVisible = false;
+
                 this.RaisePropertyChanged(x => x.PODetail);
                 this.RaisePropertyChanged(x => x.POFilterCriteria);
             }
 
             this.RaisePropertyChanged(x => x.ActualDetailsVisibility);
             this.RaisePropertyChanged(x => x.PODetailsVisibility);
+            this.RaisePropertyChanged(x => x.InvoiceDetailsVisibility);
             this.RaisePropertyChanged(x => x.DateSortIndex);
         }
 

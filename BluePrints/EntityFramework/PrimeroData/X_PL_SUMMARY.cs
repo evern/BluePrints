@@ -36,5 +36,7 @@ namespace BluePrints.PrimeroData
         public double? TotalInvoiced { get; set; }
 
         public double? TotalOutstanding { get; set; }
+
+        public double? TotalCosts { get; set; }
     }
 }

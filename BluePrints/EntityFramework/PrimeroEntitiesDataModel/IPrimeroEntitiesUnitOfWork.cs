@@ -1750,5 +1750,10 @@ namespace BluePrints.PrimeroData.PrimeroEntitiesDataModel
         /// The X_PURCHORD_LINE_DETAILS_VIEW_V1 entities repository.
         /// </summary>
         IRepository<X_PURCHORD_LINE_DETAILS_VIEW_V1, int> X_PURCHORD_LINE_DETAILS_VIEW_V1 { get; }
+
+        /// <summary>
+        /// The X_INVOICED_V1 entities repository.
+        /// </summary>
+        IRepository<X_INVOICED_V1, int> X_INVOICED_V1 { get; }
     }
 }

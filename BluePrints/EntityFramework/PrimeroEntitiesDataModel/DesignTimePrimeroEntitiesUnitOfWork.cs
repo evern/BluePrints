@@ -1803,5 +1803,10 @@ namespace BluePrints.PrimeroData.PrimeroEntitiesDataModel
         {
             get { return GetRepository((X_PURCHORD_LINE_DETAILS_VIEW_V1 x) => x.SEQNO); }
         }
+
+        IRepository<X_INVOICED_V1, int> IPrimeroEntitiesUnitOfWork.X_INVOICED_V1
+        {
+            get { return GetRepository((X_INVOICED_V1 x) => x.SEQNO); }
+        }
     }
 }
