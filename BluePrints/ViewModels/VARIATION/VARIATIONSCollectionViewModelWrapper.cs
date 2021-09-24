@@ -884,27 +884,50 @@ namespace BluePrints.ViewModels
                 }
             }
 
-            TBaseline revisedBaseline = null;
+            TBaseline backupBaseline = null;
             //only revise baseline if variation is approved, this method can be called from submitted which creates a new variation with IsCreateExoVariation == true
             if (variationStage == VariationStages.Approve)
             {
-                liveBASELINE.Baseline_Status = BaselineStatus.Superseded;
+                string oldRevisionNumber = liveBASELINE.Revision;
+                liveBASELINE.Revision = getNewRevisionNumber(liveBASELINE.Revision);
                 collectionViewModel.Save(liveBASELINE);
 
-                revisedBaseline = new TBaseline();
-                DataUtils.ShallowCopy(revisedBaseline, liveBASELINE);
-                revisedBaseline.GUID = Guid.Empty;
-                revisedBaseline.Revision = getNewRevisionNumber(liveBASELINE.Revision);
-                revisedBaseline.Baseline_Status = BaselineStatus.Live;
-                collectionViewModel.Save(revisedBaseline);
+                backupBaseline = new TBaseline();
+                DataUtils.ShallowCopy(backupBaseline, liveBASELINE);
+                backupBaseline.GUID = Guid.Empty;
+                backupBaseline.Revision = oldRevisionNumber;
+                backupBaseline.Baseline_Status = BaselineStatus.Superseded;
+                collectionViewModel.Save(backupBaseline);
+
+                LoadingScreenManager.SetMessage("Backup up live baseline to baseline " + backupBaseline.Revision + "...");
+                IQueryable<TEntity> liveDeliverables = repository.Where(x => x.GUID_BASELINE == liveBASELINE.GUID);
+                LoadingScreenManager.ShowLoadingScreen(liveDeliverables.Count());
+                foreach (TEntity liveDeliverable in liveDeliverables)
+                {
+                    TEntity newDeliverable = new TEntity();
+                    DataUtils.ShallowCopy(newDeliverable, liveDeliverable);
+                    newDeliverable.GUID = Guid.Empty;
+                    newDeliverable.GUID_BASELINE = backupBaseline.GUID;
+                    repository.Add(newDeliverable);
+                    LoadingScreenManager.Progress();
+                }
+
+                unitOfWork.SaveChanges();
+                LoadingScreenManager.CloseLoadingScreen();
+
+                //revise variation that have current live baseline as TO BASELINE to backup baseline
+                List<VARIATIONProjection> currentBaselineVariations = Entities.Where(x => x.Entity.GUID_BASELINE == liveBASELINE.GUID).ToList();
+                foreach(VARIATIONProjection currentBaselineVariation in currentBaselineVariations)
+                {
+                    currentBaselineVariation.Entity.GUID_BASELINE = backupBaseline.GUID;
+                    MainViewModel.Save(currentBaselineVariation);
+                }
 
                 SelectedEntity.Entity.APPROVED = DateTime.Now;
                 SelectedEntity.Entity.APPROVEDBY = LoginCredentials.CurrentUserGuid;
-                SelectedEntity.Entity.GUID_ORIBASELINE = liveBASELINE.GUID;
-                SelectedEntity.Entity.GUID_BASELINE = revisedBaseline.GUID;
+                SelectedEntity.Entity.GUID_ORIBASELINE = backupBaseline.GUID;
+                SelectedEntity.Entity.GUID_BASELINE = liveBASELINE.GUID;
                 MainViewModel.Save(SelectedEntity);
-
-                liveBASELINE.GUID = revisedBaseline.GUID;
             }
 
             List<TEntity> newBASELINE_ITEMS = new List<TEntity>();
@@ -933,20 +956,27 @@ namespace BluePrints.ViewModels
                 foreach (ISupportVariation<TEntity> deliverable in deliverables)
                 {
                     List<BASELINE_ITEM_VARIATIONContainer> currentDeliverableVariations = variationDeliverables.Where(x => x.BASELINE_ITEM.GUID_ORIGINAL == deliverable.OriginalEntityKey).ToList();
+                    
+                    //only remove deliverable when all related variations are unapproved
+                    List<bool> removeDeliverableVotes = new List<bool>();
+                    foreach(BASELINE_ITEM_VARIATIONContainer deliverableCheck in currentDeliverableVariations)
+                    {
+                        bool removeDeliverableVote = true;
+                        //since current stage in unapprov, selected variation will eventually be unapproved, so vote it as remove for current variation
+                        if (deliverableCheck.VARIATION.GUID == SelectedEntity.GUID)
+                            removeDeliverableVote = true;
+                        else 
+                        {   //use EF values for other variations
+                            removeDeliverableVote = deliverableCheck.VARIATION.APPROVED == null;
+                        }
 
-                    //only remove this deliverable is only the variation responsible of adding it exists
-                    if (currentDeliverableVariations.Count > 0 && currentDeliverableVariations.All(x => x.BASELINE_ITEM.GUID_VARIATION == SelectedEntity.GUID))
+                        removeDeliverableVotes.Add(removeDeliverableVote);
+                    }
+
+                    //only remove this deliverable if all votes says to remove
+                    if (removeDeliverableVotes.Count > 0 && removeDeliverableVotes.All(x => x))
                     {
                         BASELINE_ITEM removeDeliverable = currentDeliverableVariations.First().BASELINE_ITEM;
-                        BASELINE_ITEM variationDeliverable = unitOfWork.BASELINE_ITEMS.FirstOrDefault(x => x.GUID_ORIGINAL == deliverable.GUID_ORIGINAL && x.GUID_BASELINE == null && x.GUID_VARIATION == removeDeliverable.GUID_VARIATION);
-                        if (variationDeliverable != null)
-                        {
-                            //copy everything from existing deliverable to variation deliverable before deleting
-                            Guid variationDeliverableGuid = variationDeliverable.GUID;
-                            DataUtils.ShallowCopy(variationDeliverable, removeDeliverable);
-                            variationDeliverable.GUID_BASELINE = null;
-                            variationDeliverable.GUID = variationDeliverableGuid;
-                        }
 
                         Messenger.Default.Send(new EntityMessage<BASELINE_ITEM, Guid>(removeDeliverable.GUID, MainViewModel.Key, EntityMessageType.Deleted, this, CurrentHWID, false));
                         unitOfWork.BASELINE_ITEMS.Remove(removeDeliverable);
@@ -958,9 +988,9 @@ namespace BluePrints.ViewModels
 
                 LoadingScreenManager.CloseLoadingScreen();
             }
-            else if (variationStage == VariationStages.Approve && revisedBaseline != null && revisedBaseline.GUID != Guid.Empty)
+            else if (variationStage == VariationStages.Approve && liveBASELINE != null && liveBASELINE.GUID != Guid.Empty)
             {
-                List<Guid> trackCurrentBaselineDeliverableOriginalGuids = repository.Where(x => x.GUID_BASELINE == revisedBaseline.GUID).Select(x => x.GUID_ORIGINAL).ToList();
+                List<Guid> trackCurrentBaselineDeliverableOriginalGuids = repository.Where(x => x.GUID_BASELINE == liveBASELINE.GUID).Select(x => x.GUID_ORIGINAL).ToList();
 
                 ConcurrentBag<TEntity> concurrentBagNewEntities = new ConcurrentBag<TEntity>();
 
@@ -1004,10 +1034,9 @@ namespace BluePrints.ViewModels
                         TEntity newDeliverable = new TEntity();
                         DataUtils.ShallowCopy(newDeliverable, deliverable.Entity);
                         newDeliverable.GUID = Guid.Empty;
-                        newDeliverable.GUID_BASELINE = revisedBaseline.GUID;
-                        //remember deliverable that was added from variation so that when we delete we don't touch deliverable that weren't added from variation
-                        if (deliverable.DisplayVariationAction == VariationAction.Add)
-                            newDeliverable.GUID_VARIATION = SelectedEntity.GUID;
+                        newDeliverable.GUID_BASELINE = liveBASELINE.GUID;
+                        //remember variation that added this deliverable
+                        newDeliverable.GUID_VARIATION = SelectedEntity.GUID;
 
                         concurrentBagNewEntities.Add(newDeliverable);
                     }
@@ -1027,7 +1056,7 @@ namespace BluePrints.ViewModels
                 }
 
                 LoadingScreenManager.ShowLoadingScreen(deliverables.Count());
-                LoadingScreenManager.SetMessage("Adding deliverables to baseline: " + revisedBaseline.Revision + "...");
+                LoadingScreenManager.SetMessage("Adding deliverables to baseline: " + backupBaseline.Revision + "...");
                 int saveThreshold = 200;
                 int processCount = 0;
                 foreach(TEntity entity in concurrentBagNewEntities)

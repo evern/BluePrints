@@ -60,7 +60,6 @@
                         <dxr:RibbonPage MergeType="Replace" Caption="Grid">
                             <dxr:RibbonPageGroup MergeType="Replace" Caption="Grid" >
                                 <dxb:BarButtonItemLink BarItemName="biFullRefresh1" />
-                                <dxb:BarButtonItemLink BarItemName="biBulkDelete" />
                                 <dxb:BarButtonItemLink BarItemName="biUndo1" />
                                 <dxb:BarButtonItemLink BarItemName="biRedo1" />
                                 <dxb:BarButtonItemLink BarItemName="biKeyboardCopy1"/>
@@ -247,7 +246,7 @@
                                 <dxe:ComboBoxEditSettings AllowDrop="False" AutoComplete="True" IsTextEditable="True" ItemsSource="{dxe:EnumItemsSource EnumType={x:Type common:VariationAction}}" />
                             </dxg:GridColumn.EditSettings>
                         </dxg:GridColumn>
-                        <dxg:GridColumn FieldName="Variation_Units" AllowBestFit="false" Width="70" Header="Approved Variation Hours" HeaderToolTip="Previously Approved Variation Hours" IsEnabled="False" ReadOnly="True">
+                        <dxg:GridColumn FieldName="Variation_Units" AllowBestFit="false" Width="70" Header="Other Variation Hours" HeaderToolTip="Variation hours from other approved variation(s)" IsEnabled="False" ReadOnly="True">
                             <dxg:GridColumn.EditSettings>
                                 <dxe:SpinEditSettings Increment="1" Mask="###,##0 hrs" MaskType="Numeric" MaskUseAsDisplayFormat="True" MinValue="0" />
                             </dxg:GridColumn.EditSettings>
@@ -378,7 +377,6 @@
                                 <dxb:BarSubItemLink BarItemName="contextMenuDuplicateMulti" />
                                 <dxb:BarSubItemLink BarItemName="contextMenuInsertMulti" />
                                 <dxb:BarItemLinkSeparator />
-                                <dxb:BarButtonItemLink BarItemName="biBulkDelete" />
                                 <dxb:BarButtonItemLink BarItemName="biFullRefresh1" />
                             </dxg:TableView.RowCellMenuCustomizations>
                         </dxg:TableView>
