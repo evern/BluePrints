@@ -164,6 +164,11 @@
                                     </DataTemplate>
                                 </dxg:GridColumn.CellTemplate>
                             </dxg:GridColumn>
+                            <dxg:GridColumn FieldName="CONSTRUCT_PROGRESS_TRACKING" Header="Construction Progress Tracking" HeaderToolTip="Use remaining units calculated from budgeted - earned in forecast, also allows for P6 assignment of multiple budget to a single activity">
+                                <dxg:GridColumn.EditSettings>
+                                    <dxe:CheckEditSettings />
+                                </dxg:GridColumn.EditSettings>
+                            </dxg:GridColumn>
                             <dxg:GridColumn FieldName="USE_WORKPACKS" Header="Use Workpacks" HeaderToolTip="Signifies whether mapping should be done by workpack instead of deliverables">
                                 <dxg:GridColumn.EditSettings>
                                     <dxe:CheckEditSettings />

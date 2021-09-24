@@ -110,6 +110,8 @@
 
         public Guid? DELETEDBY { get; set; }
 
+        public bool CONSTRUCT_PROGRESS_TRACKING { get; set; }
+
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
         public virtual ICollection<DAYWORK> DAYWORK { get; set; }
 

@@ -107,7 +107,7 @@ namespace BluePrints.ViewModels
 
         protected override void OnAfterAssignedCallbackAndRaisePropertyChanged()
         {
-            disableMultipleDeliverablesToOneActivityAssignment = false;
+            disableMultipleDeliverablesToOneActivityAssignment = !loadPROJECT.CONSTRUCT_PROGRESS_TRACKING;
             MainViewModel.AlwaysSkipMessage = true;
             P6_ASSIGNMENTSCollectionViewModel.AlwaysSkipMessage = false;
             base.OnAfterAssignedCallbackAndRaisePropertyChanged();
