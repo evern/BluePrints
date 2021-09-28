@@ -20,7 +20,7 @@ namespace BluePrints.ViewModels
 {
     public class PROJECTPLCollectionViewModelWrapper :
         BluePrintsEntitiesCollectionWrapper
-        <X_PL_SUMMARY, X_PL_SUMMARY, int, IPrimeroEntitiesUnitOfWork>
+        <X_PL_SUMMARY_V1, X_PL_SUMMARY_V1, int, IPrimeroEntitiesUnitOfWork>
     {
         /// <summary>
         /// Creates a new instance of PROJECTPLCollectionViewModelWrapper as a POCO view model.
@@ -71,15 +71,15 @@ namespace BluePrints.ViewModels
 
         protected override void onAuxiliaryEntitiesCollectionLoaded()
         {
-            CreateMainViewModel(primeroUnitOfWorkFactory, x => x.X_PL_SUMMARY);
+            CreateMainViewModel(primeroUnitOfWorkFactory, x => x.X_PL_SUMMARY_V1);
         }
 
-        protected override Func<IRepositoryQuery<X_PL_SUMMARY>, IQueryable<X_PL_SUMMARY>> specifyMainViewModelProjection()
+        protected override Func<IRepositoryQuery<X_PL_SUMMARY_V1>, IQueryable<X_PL_SUMMARY_V1>> specifyMainViewModelProjection()
         {
             return query => query;
         }
 
-        protected override void AssignCallBacksAndRaisePropertyChange(IEnumerable<X_PL_SUMMARY> entities)
+        protected override void AssignCallBacksAndRaisePropertyChange(IEnumerable<X_PL_SUMMARY_V1> entities)
         {
             MainViewModel.SetParentViewModel(this);
             base.AssignCallBacksAndRaisePropertyChange(entities);
@@ -87,12 +87,12 @@ namespace BluePrints.ViewModels
         #endregion
 
         #region Saving Behavior
-        public override string UnifiedRowValidation(X_PL_SUMMARY projection)
+        public override string UnifiedRowValidation(X_PL_SUMMARY_V1 projection)
         {
             return string.Empty;
         }
 
-        public override string UnifiedValueValidation(X_PL_SUMMARY projection, string field_name, object new_value, bool isPaste)
+        public override string UnifiedValueValidation(X_PL_SUMMARY_V1 projection, string field_name, object new_value, bool isPaste)
         {
             return string.Empty;
         }
@@ -132,7 +132,7 @@ namespace BluePrints.ViewModels
                 RowData clickRowData = tableView.FocusedRowData;
 
                 if (clickRowData != null)
-                    setFilter((X_PL_SUMMARY)clickRowData.Row, hi.Column);
+                    setFilter((X_PL_SUMMARY_V1)clickRowData.Row, hi.Column);
             }
             catch (Exception ex)
             {
@@ -152,7 +152,7 @@ namespace BluePrints.ViewModels
         public CriteriaOperator ActualFilterCriteria { get; set; }
         public CriteriaOperator POFilterCriteria { get; set; }
         public CriteriaOperator InvoicedFilterCriteria { get; set; }
-        private void setFilter(X_PL_SUMMARY projectSummary, GridColumn gridColumn)
+        private void setFilter(X_PL_SUMMARY_V1 projectSummary, GridColumn gridColumn)
         {
             if (gridColumn == null || projectSummary == null)
                 return;

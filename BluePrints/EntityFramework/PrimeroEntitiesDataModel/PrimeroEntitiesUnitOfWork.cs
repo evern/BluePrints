@@ -1922,11 +1922,11 @@ namespace BluePrints.PrimeroData.PrimeroEntitiesDataModel
             }
         }
 
-        IRepository<X_JOB_TRANSACTIONS_DETAIL_V2, int> IPrimeroEntitiesUnitOfWork.X_JOB_TRANSACTIONS_DETAIL_V2
+        IRepository<X_JOB_TRANSACTIONS_DETAIL_V3, int> IPrimeroEntitiesUnitOfWork.X_JOB_TRANSACTIONS_DETAIL_V3
         {
             get
             {
-                return GetRepository(x => x.Set<X_JOB_TRANSACTIONS_DETAIL_V2>(), (X_JOB_TRANSACTIONS_DETAIL_V2 x) => x.SEQNO);
+                return GetRepository(x => x.Set<X_JOB_TRANSACTIONS_DETAIL_V3>(), (X_JOB_TRANSACTIONS_DETAIL_V3 x) => x.SEQNO);
             }
         }
 
@@ -1938,11 +1938,11 @@ namespace BluePrints.PrimeroData.PrimeroEntitiesDataModel
             }
         }
 
-        IRepository<X_PL_SUMMARY, int> IPrimeroEntitiesUnitOfWork.X_PL_SUMMARY
+        IRepository<X_PL_SUMMARY_V1, int> IPrimeroEntitiesUnitOfWork.X_PL_SUMMARY_V1
         {
             get
             {
-                return GetRepository(x => x.Set<X_PL_SUMMARY>(), (X_PL_SUMMARY x) => x.JOBNO);
+                return GetRepository(x => x.Set<X_PL_SUMMARY_V1>(), (X_PL_SUMMARY_V1 x) => x.JOBNO);
             }
         }
 

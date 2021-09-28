@@ -6,7 +6,7 @@ namespace BluePrints.PrimeroData
     using System.ComponentModel.DataAnnotations.Schema;
     using System.Data.Entity.Spatial;
 
-    public partial class X_PL_SUMMARY
+    public partial class X_PL_SUMMARY_V1
     {
         [Key]
         [DatabaseGenerated(DatabaseGeneratedOption.None)]

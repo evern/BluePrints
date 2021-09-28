@@ -11,7 +11,7 @@ namespace BluePrints.PrimeroData
     using System.ComponentModel.DataAnnotations.Schema;
     using System.Linq;
     
-    public partial class X_PL_SUMMARY : EntityBase
+    public partial class X_PL_SUMMARY_V1 : EntityBase
     {
         public string Office => BluePrintsResources.GlobalOffice;
 

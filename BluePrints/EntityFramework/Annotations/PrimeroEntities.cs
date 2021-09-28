@@ -31,7 +31,7 @@ namespace BluePrints.PrimeroData
         {
             SqlParameter projectNumberParameter = new SqlParameter("@ProjectNumber", projectNumber);
             SqlParameter cutOffDateParameter = new SqlParameter("@CutOffDate", cutOffDate);
-            List<X_PURCHORD_LINE> purchaseOrderLines = primeroEntitiesUnitOfWork.DbContext.Database.SqlQuery<X_PURCHORD_LINE>("X_PURCHORD_LINES @ProjectNumber, @CutOffDate", projectNumberParameter, cutOffDateParameter).ToList();
+            List<X_PURCHORD_LINE> purchaseOrderLines = primeroEntitiesUnitOfWork.DbContext.Database.SqlQuery<X_PURCHORD_LINE>("X_PURCHORD_LINES_V1 @ProjectNumber, @CutOffDate", projectNumberParameter, cutOffDateParameter).ToList();
             return purchaseOrderLines;
         }
 
@@ -39,7 +39,7 @@ namespace BluePrints.PrimeroData
         {
             SqlParameter projectNumberParameter = new SqlParameter("@ProjectNumber", projectNumber);
             SqlParameter cutOffDateParameter = new SqlParameter("@CutOffDate", cutOffDate);
-            List<X_TRANSACTION> timeLines = primeroEntitiesUnitOfWork.DbContext.Database.SqlQuery<X_TRANSACTION>("X_TIME_TRANSACTIONS @ProjectNumber, @CutOffDate", projectNumberParameter, cutOffDateParameter).ToList();
+            List<X_TRANSACTION> timeLines = primeroEntitiesUnitOfWork.DbContext.Database.SqlQuery<X_TRANSACTION>("X_TIME_TRANSACTIONS_V1 @ProjectNumber, @CutOffDate", projectNumberParameter, cutOffDateParameter).ToList();
             return timeLines;
         }
 
@@ -47,7 +47,7 @@ namespace BluePrints.PrimeroData
         {
             SqlParameter projectNumberParameter = new SqlParameter("@ProjectNumber", projectNumber);
             SqlParameter cutOffDateParameter = new SqlParameter("@CutOffDate", cutOffDate);
-            List<X_TRANSACTION> materialLines = primeroEntitiesUnitOfWork.DbContext.Database.SqlQuery<X_TRANSACTION>("X_MATERIAL_TRANSACTIONS @ProjectNumber, @CutOffDate", projectNumberParameter, cutOffDateParameter).ToList();
+            List<X_TRANSACTION> materialLines = primeroEntitiesUnitOfWork.DbContext.Database.SqlQuery<X_TRANSACTION>("X_MATERIAL_TRANSACTIONS_V1 @ProjectNumber, @CutOffDate", projectNumberParameter, cutOffDateParameter).ToList();
             return materialLines;
         }
     }

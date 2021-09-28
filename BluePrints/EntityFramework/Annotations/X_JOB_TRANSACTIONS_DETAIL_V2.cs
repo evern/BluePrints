@@ -7,7 +7,7 @@
     using System.ComponentModel.DataAnnotations.Schema;
     using System.Data.Entity.Spatial;
 
-    public partial class X_JOB_TRANSACTIONS_DETAIL_V2 : EntityBase
+    public partial class X_JOB_TRANSACTIONS_DETAIL_V3 : EntityBase
     {
 
         [NotMapped]
