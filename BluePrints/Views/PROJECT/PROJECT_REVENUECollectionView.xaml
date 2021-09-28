@@ -58,7 +58,7 @@
                         <dxg:GridColumn Header="Revenue" FieldName="ViewRevenue" AllowBestFit="false" Width="250">
                             <dxg:GridColumn.CellTemplate>
                                 <DataTemplate>
-                                    <dxe:SpinEdit x:Name="PART_Editor" Increment="1" Mask="c0" MaskType="Numeric" MaskUseAsDisplayFormat="True" IsReadOnly="{Binding RowData.Row.IsRevenueReadOnly}" Background="{Binding RowData.Row.Revenue_Background}"/>
+                                    <dxe:SpinEdit x:Name="PART_Editor" Increment="1" Mask="c0" MaskType="Numeric" MaskUseAsDisplayFormat="True" IsReadOnly="{Binding RowData.Row.IsRevenueReadOnly}" Background="{Binding RowData.Row.Revenue_Background}" />
                                 </DataTemplate>
                             </dxg:GridColumn.CellTemplate>
                         </dxg:GridColumn>

@@ -7,10 +7,8 @@
     using System.ComponentModel.DataAnnotations.Schema;
     using System.Data.Entity.Spatial;
 
-    public partial class X_JOB_TRANSACTIONS_DETAIL_V3 : EntityBase
+    public partial class X_PURCHORD_LINE_DETAILS_VIEW_V1 : EntityBase
     {
 
-        [NotMapped]
-        public bool QtyEdited { get; set; }
     }
 }

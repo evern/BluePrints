@@ -48,48 +48,29 @@ namespace BluePrints.ViewModels
     /// <summary>
     /// Represents the single PROGRESS object view model.
     /// </summary>
-    public partial class InstantFeedbackActualDetailsCollectionViewModelWrapper : BluePrintsEntitiesCollectionWrapper<X_JOB_TRANSACTIONS_DETAIL_V3, X_JOB_TRANSACTIONS_DETAIL_V3, int, IPrimeroEntitiesUnitOfWork>
+    public partial class InstantFeedbackPODetailsCollectionViewModelWrapper : BluePrintsEntitiesCollectionWrapper<X_PURCHORD_LINE_DETAILS_VIEW_V1, X_PURCHORD_LINE_DETAILS_VIEW_V1, int, IPrimeroEntitiesUnitOfWork>
     {
         /// <summary>
         /// Creates a new instance of PROGRESS_ITEMSViewModelWrapper as a POCO view model.
         /// </summary>
         /// <param name="unitOfWorkFactory">A factory used to create a unit of work instance.</param>
-        public static InstantFeedbackActualDetailsCollectionViewModelWrapper Create()
+        public static InstantFeedbackPODetailsCollectionViewModelWrapper Create()
         {
-            return ViewModelSource.Create(() => new InstantFeedbackActualDetailsCollectionViewModelWrapper());
+            return ViewModelSource.Create(() => new InstantFeedbackPODetailsCollectionViewModelWrapper());
         }
 
         public bool IsCostsVisible { get; set; }
         public bool CanEditQuantity { get; set; }
         protected override string readOnlyMessage => "Cells are read only because you do not have authority to edit transactions";
-        protected InstantFeedbackActualDetailsCollectionViewModelWrapper()
+        protected InstantFeedbackPODetailsCollectionViewModelWrapper()
         {
             IsInstantFeedbackMode = true;
         }
 
         #region Database Operation
-        Data.PROJECT loadPROJECT;
-        bool loadAll;
-        private readonly IUnitOfWorkFactory<IBluePrintsEntitiesUnitOfWork> bluePrintsUnitOfWorkFactory = BluePrintsEntitiesUnitOfWorkSource.GetUnitOfWorkFactory();
-        private IUnitOfWorkFactory<IPrimeroEntitiesUnitOfWork> primeroUnitOfWorkFactory;
+        private IUnitOfWorkFactory<IPrimeroEntitiesUnitOfWork> primeroUnitOfWorkFactory = PrimeroEntitiesUnitOfWorkSource.GetUnitOfWorkFactory();
         protected override void resolveParameters(object parameter)
         {
-            if(parameter != null)
-            {
-                bool? isLoadAll = parameter as bool?;
-                if(isLoadAll == null)
-                {
-                    loadPROJECT = (Data.PROJECT)parameter;
-                    primeroUnitOfWorkFactory = PrimeroEntitiesUnitOfWorkSource.GetUnitOfWorkFactory(loadPROJECT.OfficeNameForExo);
-                }
-                else
-                {
-                    loadAll = true;
-                    primeroUnitOfWorkFactory = PrimeroEntitiesUnitOfWorkSource.GetUnitOfWorkFactory();
-                }
-            }
-            else
-                primeroUnitOfWorkFactory = PrimeroEntitiesUnitOfWorkSource.GetUnitOfWorkFactory();
         }
 
         protected override void addEntitiesLoader()
@@ -98,7 +79,7 @@ namespace BluePrints.ViewModels
 
         protected override void onAuxiliaryEntitiesCollectionLoaded()
         {
-            CreateMainViewModel(primeroUnitOfWorkFactory, x => x.X_JOB_TRANSACTIONS_DETAIL_V3);
+            CreateMainViewModel(primeroUnitOfWorkFactory, x => x.X_PURCHORD_LINE_DETAILS_VIEW_V1);
         }
 
         protected override void OnAfterAssignedCallbackAndRaisePropertyChanged()
@@ -106,14 +87,9 @@ namespace BluePrints.ViewModels
             IsPasteCellLevel = true;
         }
 
-        protected override Func<IRepositoryQuery<X_JOB_TRANSACTIONS_DETAIL_V3>, IQueryable<X_JOB_TRANSACTIONS_DETAIL_V3>> specifyMainViewModelProjection()
+        protected override Func<IRepositoryQuery<X_PURCHORD_LINE_DETAILS_VIEW_V1>, IQueryable<X_PURCHORD_LINE_DETAILS_VIEW_V1>> specifyMainViewModelProjection()
         {
-            if (loadAll)
-                return query => query.OrderByDescending(x => x.TRANSDATE);
-            else if(loadPROJECT == null)
-                return query => query.Where(x => x.MASTER_JOBCODE == "X").OrderByDescending(x => x.TRANSDATE);
-            else
-                return query => query.Where(x => x.MASTER_JOBCODE == loadPROJECT.NUMBER).OrderByDescending(x => x.TRANSDATE);
+            return query => query.OrderByDescending(x => x.ORDERDATE);
         }
 
         public override void FullRefresh()
@@ -134,26 +110,16 @@ namespace BluePrints.ViewModels
         public override string ViewName
         {
             //get { return "OffsiteDirectProgressViewModelWrapper" + view_project_specific_affix; }
-            get { return "InstantFeedbackActualDetailsCollectionViewModelWrapper_v1" + view_project_specific_affix; }
-        }
-
-        private string view_project_specific_affix
-        {
-            get
-            {
-                if (loadPROJECT == null)
-                    return string.Empty;
-                return loadPROJECT.GUID.ToString();
-            }
+            get { return "InstantFeedbackPODetailsCollectionViewModelWrapper_v1"; }
         }
         #endregion
 
-        public override string UnifiedValueValidation(X_JOB_TRANSACTIONS_DETAIL_V3 projection, string field_name, object new_value, bool isPaste)
+        public override string UnifiedValueValidation(X_PURCHORD_LINE_DETAILS_VIEW_V1 projection, string field_name, object new_value, bool isPaste)
         {
             return string.Empty;
         }
 
-        public override string UnifiedRowValidation(X_JOB_TRANSACTIONS_DETAIL_V3 projection)
+        public override string UnifiedRowValidation(X_PURCHORD_LINE_DETAILS_VIEW_V1 projection)
         {
             return string.Empty;
         }

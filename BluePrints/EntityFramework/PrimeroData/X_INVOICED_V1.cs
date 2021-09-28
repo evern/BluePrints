@@ -1,4 +1,4 @@
-﻿namespace BluePrints.PrimeroData
+namespace BluePrints.PrimeroData
 {
     using System;
     using System.Collections.Generic;
@@ -6,7 +6,7 @@
     using System.ComponentModel.DataAnnotations.Schema;
     using System.Data.Entity.Spatial;
 
-    public partial class X_JOB_TRANSACTIONS_DETAIL_V3
+    public partial class X_INVOICED_V1
     {
         [Key]
         [Column(Order = 0)]
@@ -74,9 +74,7 @@
         [StringLength(20)]
         public string INVNO { get; set; }
 
-        [Key]
-        [Column(Order = 2)]
-        public double INVOICED { get; set; }
+        public double? INVOICED { get; set; }
 
         public DateTime? INVOICEDATE { get; set; }
 
