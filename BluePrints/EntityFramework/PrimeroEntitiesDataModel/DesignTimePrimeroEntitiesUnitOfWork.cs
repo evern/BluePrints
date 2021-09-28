@@ -1784,14 +1784,29 @@ namespace BluePrints.PrimeroData.PrimeroEntitiesDataModel
             get { return GetRepository((X_JOB_TRANSACTIONS_DETAIL_SeqNo x) => x.SEQNO); }
         }
 
-        IRepository<X_JOB_TRANSACTIONS_DETAIL_V2, int> IPrimeroEntitiesUnitOfWork.X_JOB_TRANSACTIONS_DETAIL_V2
+        IRepository<X_JOB_TRANSACTIONS_DETAIL_V3, int> IPrimeroEntitiesUnitOfWork.X_JOB_TRANSACTIONS_DETAIL_V3
         {
-            get { return GetRepository((X_JOB_TRANSACTIONS_DETAIL_V2 x) => x.SEQNO); }
+            get { return GetRepository((X_JOB_TRANSACTIONS_DETAIL_V3 x) => x.SEQNO); }
         }
 
         IRepository<X_JOB_TIMESHEETS, Guid> IPrimeroEntitiesUnitOfWork.X_JOB_TIMESHEETS
         {
             get { return GetRepository((X_JOB_TIMESHEETS x) => x.SEQNO); }
+        }
+
+        IRepository<X_PL_SUMMARY_V1, int> IPrimeroEntitiesUnitOfWork.X_PL_SUMMARY_V1
+        {
+            get { return GetRepository((X_PL_SUMMARY_V1 x) => x.JOBNO); }
+        }
+
+        IRepository<X_PURCHORD_LINE_DETAILS_VIEW_V1, int> IPrimeroEntitiesUnitOfWork.X_PURCHORD_LINE_DETAILS_VIEW_V1
+        {
+            get { return GetRepository((X_PURCHORD_LINE_DETAILS_VIEW_V1 x) => x.SEQNO); }
+        }
+
+        IRepository<X_INVOICED_V1, int> IPrimeroEntitiesUnitOfWork.X_INVOICED_V1
+        {
+            get { return GetRepository((X_INVOICED_V1 x) => x.SEQNO); }
         }
     }
 }

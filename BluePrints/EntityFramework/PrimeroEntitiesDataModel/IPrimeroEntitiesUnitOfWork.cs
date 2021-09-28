@@ -1727,9 +1727,9 @@ namespace BluePrints.PrimeroData.PrimeroEntitiesDataModel
         IRepository<X_JOB_TRANSACTIONS_DETAIL_SeqNo, int> X_JOB_TRANSACTIONS_DETAIL_SeqNos { get; }
 
         /// <summary>
-        /// The X_JOB_TRANSACTIONS_DETAIL_V2 entities repository.
+        /// The X_JOB_TRANSACTIONS_DETAIL_V3 entities repository.
         /// </summary>
-        IRepository<X_JOB_TRANSACTIONS_DETAIL_V2, int> X_JOB_TRANSACTIONS_DETAIL_V2 { get; }
+        IRepository<X_JOB_TRANSACTIONS_DETAIL_V3, int> X_JOB_TRANSACTIONS_DETAIL_V3 { get; }
 
         /// <summary>
         /// The X_DEPARTMENT entities repository.
@@ -1740,5 +1740,20 @@ namespace BluePrints.PrimeroData.PrimeroEntitiesDataModel
         /// The X_JOB_TIMESHEETS entities repository.
         /// </summary>
         IRepository<X_JOB_TIMESHEETS, Guid> X_JOB_TIMESHEETS { get; }
+
+        /// <summary>
+        /// The X_PL_SUMMARY entities repository.
+        /// </summary>
+        IRepository<X_PL_SUMMARY_V1, int> X_PL_SUMMARY_V1 { get; }
+
+        /// <summary>
+        /// The X_PURCHORD_LINE_DETAILS_VIEW_V1 entities repository.
+        /// </summary>
+        IRepository<X_PURCHORD_LINE_DETAILS_VIEW_V1, int> X_PURCHORD_LINE_DETAILS_VIEW_V1 { get; }
+
+        /// <summary>
+        /// The X_INVOICED_V1 entities repository.
+        /// </summary>
+        IRepository<X_INVOICED_V1, int> X_INVOICED_V1 { get; }
     }
 }
