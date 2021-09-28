@@ -100,6 +100,7 @@ namespace BluePrints.ViewModels
         bool is2020Onwards = false;
         public bool IsYearToDate => isYearToDate;
         public bool Is2020Onwards => is2020Onwards;
+        public int DateSortIndex => 1;
         public string officeName;
         protected override void resolveParameters(object parameter)
         {
