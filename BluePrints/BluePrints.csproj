@@ -23,9 +23,9 @@
     <UpdatePeriodically>false</UpdatePeriodically>
     <UpdateRequired>true</UpdateRequired>
     <MapFileExtensions>true</MapFileExtensions>
-    <MinimumRequiredVersion>1.0.7.98</MinimumRequiredVersion>
-    <ApplicationRevision>98</ApplicationRevision>
-    <ApplicationVersion>1.0.7.%2a</ApplicationVersion>
+    <MinimumRequiredVersion>1.0.8.32</MinimumRequiredVersion>
+    <ApplicationRevision>32</ApplicationRevision>
+    <ApplicationVersion>1.0.8.%2a</ApplicationVersion>
     <UseApplicationTrust>false</UseApplicationTrust>
     <PublishWizardCompleted>true</PublishWizardCompleted>
     <BootstrapperEnabled>true</BootstrapperEnabled>
@@ -917,7 +917,7 @@
     <Compile Include="EntityFramework\Annotations\X_EARNED_QUERY.cs" />
     <Compile Include="EntityFramework\Annotations\X_INVOICED_V1.cs" />
     <Compile Include="EntityFramework\Annotations\X_PURCHORD_LINE_DETAILS_VIEW_V1.cs" />
-    <Compile Include="EntityFramework\Annotations\X_JOB_TRANSACTIONS_DETAIL_V2.cs" />
+    <Compile Include="EntityFramework\Annotations\X_JOB_TRANSACTIONS_DETAIL_V3.cs" />
     <Compile Include="EntityFramework\Annotations\X_PL_SUMMARY_V1.cs" />
     <Compile Include="EntityFramework\Annotations\X_VARIATION_QUERY.cs" />
     <Compile Include="EntityFramework\Annotations\JOBCOST_LINES_AUDIT.cs" />
@@ -1128,10 +1128,10 @@
     <Compile Include="EntityFramework\PrimeroData\X_JOB_TIMESHEETS.cs" />
     <Compile Include="EntityFramework\PrimeroData\X_INVOICED_V1.cs" />
     <Compile Include="EntityFramework\PrimeroData\X_PURCHORD_LINE_DETAILS_VIEW_V1.cs" />
-    <Compile Include="EntityFramework\PrimeroData\X_JOB_TRANSACTIONS_DETAIL_V2.cs" />
+    <Compile Include="EntityFramework\PrimeroData\X_JOB_TRANSACTIONS_DETAIL_V3.cs" />
     <Compile Include="EntityFramework\PrimeroData\X_JOB_TRANSACTIONS_DETAIL_SeqNo.cs" />
     <Compile Include="EntityFramework\PrimeroData\X_JOB_TRANSACTIONS_DETAIL.cs" />
-    <Compile Include="EntityFramework\PrimeroData\X_PL_SUMMARY.cs" />
+    <Compile Include="EntityFramework\PrimeroData\X_PL_SUMMARY_V1.cs" />
     <Compile Include="EntityFramework\PrimeroData\X_TRANSACTION.cs" />
     <Compile Include="EntityFramework\PrimeroData\X_PURCHORD_LINE_DETAIL.cs" />
     <Compile Include="EntityFramework\PrimeroData\X_PURCH_REQ_COMMENTS_FILES.cs" />
