@@ -489,30 +489,32 @@ namespace BluePrints.ViewModels
                     return "Project number already exists";
                 }
             }
-            else if (field_name == BindableBase.GetPropertyName(() => new PROJECT().GUID_OFFICE))
-            {
-                if (projection.NUMBER != string.Empty)
-                {
-                    if (projection.GUID_OFFICE != null && new_value != null)
-                    {
-                        Guid newOfficeGuid = (Guid)new_value;
-                        OFFICE findOldOFFICE = OFFICECollection.FirstOrDefault(x => x.GUID == projection.GUID_OFFICE);
-                        if (findOldOFFICE != null)
-                        {
-                            JOBCOST_LINES exoLine;
-                            if (findOldOFFICE.NAME.ToUpper() == BluePrintsResources.OfficeMontreal)
-                                exoLine = ExoQueries.GetAnyProjectLineByJobNumber(primeroMontrealUnitOfWork, projection.NUMBER);
-                            else
-                                exoLine = ExoQueries.GetAnyProjectLineByJobNumber(primeroPerthUnitOfWork, projection.NUMBER);
+            //disallow office changes when it exists in EXO
+            //else if (field_name == BindableBase.GetPropertyName(() => new PROJECT().GUID_OFFICE))
+            //{
+            //    if (projection.NUMBER != string.Empty)
+            //    {
+            //        if (projection.GUID_OFFICE != null && new_value != null)
+            //        {
+            //            Guid newOfficeGuid = (Guid)new_value;
+            //            OFFICE findOldOFFICE = OFFICECollection.FirstOrDefault(x => x.GUID == projection.GUID_OFFICE);
+            //            if (findOldOFFICE != null)
+            //            {
+            //                JOBCOST_LINES exoLine;
+            //                if (findOldOFFICE.NAME.ToUpper() == BluePrintsResources.OfficeMontreal)
+            //                    exoLine = ExoQueries.GetAnyProjectLineByJobNumber(primeroMontrealUnitOfWork, projection.NUMBER);
+            //                else
+            //                    exoLine = ExoQueries.GetAnyProjectLineByJobNumber(primeroPerthUnitOfWork, projection.NUMBER);
 
-                            if (exoLine != null && newOfficeGuid.ToString() != projection.GUID_OFFICE.ToString())
-                            {
-                                return "Exo job already already exists in " + findOldOFFICE.NAME + ", so office cannot be changed";
-                            }
-                        }
-                    }
-                }
-            }
+            //                if (exoLine != null && newOfficeGuid.ToString() != projection.GUID_OFFICE.ToString())
+            //                {
+            //                    return "Exo job already already exists in " + findOldOFFICE.NAME + ", so office cannot be changed";
+            //                }
+            //            }
+            //        }
+            //    }
+            //}
+
             //else if (field_name == BindableBase.GetPropertyName(() => new PROJECT().TENDER_PROJECT_START))
             //{
             //    DateTime? tenderProjectStart = (DateTime?)new_value;
