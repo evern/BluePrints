@@ -989,7 +989,7 @@ namespace BluePrints.Common.ViewModel.Utils
             primeroUOW.AutoDetectChangesEnabled(false);
             using (var t = new TransactionScope(TransactionScopeOption.Required, new TransactionOptions { IsolationLevel = System.Transactions.IsolationLevel.ReadUncommitted }))
             {
-                List<X_TIME_TRANSACTION> timeLines = PrimeroEntities.GetTimeSummary(primeroUOW, projectNumber, dataDate);
+                List<X_TRANSACTION> timeLines = PrimeroEntities.GetTimeSummary(primeroUOW, projectNumber, dataDate);
                 if (showLoadingScreen)
                 {
                     LoadingScreenManager.ShowLoadingScreen(timeLines.Count());
@@ -1001,27 +1001,27 @@ namespace BluePrints.Common.ViewModel.Utils
                     if (jobTransaction == null)
                         continue;
 
-                    if (qualifiedSubjobs == null || qualifiedSubjobs.Contains(jobTransaction.SUBJOB_CODE))
+                    if (qualifiedSubjobs == null || qualifiedSubjobs.Contains(jobTransaction.SUB_JOBCODE))
                     {
-                        if (qualifiedSubjobs == null || jobTransaction.COST_TYPE != null && !jobTransaction.COST_TYPE.Contains("G99") && !jobTransaction.COST_TYPE.Contains("010"))
+                        if (qualifiedSubjobs == null || jobTransaction.COMMODITY_CODE != null && !jobTransaction.COMMODITY_CODE.Contains("G99") && !jobTransaction.COMMODITY_CODE.Contains("010"))
                         {
                             ExoDataPoint burnedDataPoint = new ExoDataPoint();
                             burnedDataPoint.BudgetedUnits = 0;
                             burnedDataPoint.BudgetedCosts = 0;
-                            burnedDataPoint.Units = Convert.ToDecimal(jobTransaction.TOTAL_HOURS);
+                            burnedDataPoint.Units = Convert.ToDecimal(jobTransaction.TOTAL_QUANTITY);
                             burnedDataPoint.Costs = Convert.ToDecimal(jobTransaction.TOTAL_COSTS);
                             burnedDataPoint.CostPerQty = burnedDataPoint.Units == 0 ? 0 : burnedDataPoint.Costs / burnedDataPoint.Units;
                             burnedDataPoint.ActualDate = jobTransaction.FIRST_WEEK_DATE;
                             burnedDataPoint.ProgressDate = burnedDataPoint.ActualDate;
-                            burnedDataPoint.Subjob_Name = jobTransaction.SUBJOB_CODE;
+                            burnedDataPoint.Subjob_Name = jobTransaction.SUB_JOBCODE;
                             burnedDataPoint.ResourceName = string.Empty;
                             burnedDataPoint.Description = string.Empty;
                             burnedDataPoint.Quantity = burnedDataPoint.Units;
                             burnedDataPoint.Role = string.Empty;
-                            burnedDataPoint.CostGroup = jobTransaction.COST_GROUP;
-                            burnedDataPoint.Discipline_Code = jobTransaction.COST_GROUP;
-                            burnedDataPoint.CostType = jobTransaction.COST_TYPE;
-                            burnedDataPoint.Commodity_Code = jobTransaction.COST_TYPE;
+                            burnedDataPoint.CostGroup = jobTransaction.DISCIPLINE_CODE;
+                            burnedDataPoint.Discipline_Code = jobTransaction.DISCIPLINE_CODE;
+                            burnedDataPoint.CostType = jobTransaction.COMMODITY_CODE;
+                            burnedDataPoint.Commodity_Code = jobTransaction.COMMODITY_CODE;
                             //stock code is not required for time since it indicates person booked to it
                             //burnedDataPoint.StockCode = jobTransaction.StockCode;
                             burnedDataPoint.Narrative = string.Empty;
@@ -1034,7 +1034,7 @@ namespace BluePrints.Common.ViewModel.Utils
                         }
                     }
                     else
-                        missingSubJobNames.Add(jobTransaction.SUBJOB_CODE);
+                        missingSubJobNames.Add(jobTransaction.SUB_JOBCODE);
 
                     if (showLoadingScreen)
                         LoadingScreenManager.Progress();
@@ -1045,7 +1045,7 @@ namespace BluePrints.Common.ViewModel.Utils
                     {
                         SUBJOB missingSUBJOB = new SUBJOB();
                         missingSUBJOB.INTERNAL_NAME1 = missingSubJobName;
-                        missingSUBJOB.MissingQuantity = Convert.ToDecimal(timeLines.Where(x => x.SUBJOB_CODE == missingSubJobName).Sum(x => x.TOTAL_HOURS));
+                        missingSUBJOB.MissingQuantity = Convert.ToDecimal(timeLines.Where(x => x.SUB_JOBCODE == missingSubJobName).Sum(x => x.TOTAL_QUANTITY));
                         missingSUBJOBS.Add(missingSUBJOB);
                     }
 
@@ -1066,7 +1066,7 @@ namespace BluePrints.Common.ViewModel.Utils
 
             using (var t = new TransactionScope(TransactionScopeOption.Required, new TransactionOptions { IsolationLevel = System.Transactions.IsolationLevel.ReadUncommitted }))
             {
-                var jobMaterials = from X_JOB_TRANSACTIONS_DETAIL in primeroUOW.X_JOB_TRANSACTIONS_DETAIL_V2
+                var jobMaterials = from X_JOB_TRANSACTIONS_DETAIL in primeroUOW.X_JOB_TRANSACTIONS_DETAIL_V3
                                    where X_JOB_TRANSACTIONS_DETAIL.TRANSTYPE == "C" && X_JOB_TRANSACTIONS_DETAIL.MASTER_JOBCODE == projectNumber && X_JOB_TRANSACTIONS_DETAIL.TRANSDATE <= invoiceCutOffDate
                                    select X_JOB_TRANSACTIONS_DETAIL;
 
@@ -1139,7 +1139,7 @@ namespace BluePrints.Common.ViewModel.Utils
 
             using (var t = new TransactionScope(TransactionScopeOption.Required, new TransactionOptions { IsolationLevel = System.Transactions.IsolationLevel.ReadUncommitted }))
             {
-                List<X_MATERIAL_TRANSACTION> materialLines = PrimeroEntities.GetMaterialSummary(primeroUOW, projectNumber, invoiceCutOffDate);
+                List<X_TRANSACTION> materialLines = PrimeroEntities.GetMaterialSummary(primeroUOW, projectNumber, invoiceCutOffDate);
                 if (showLoadingScreen)
                 {
                     LoadingScreenManager.ShowLoadingScreen(materialLines.Count());

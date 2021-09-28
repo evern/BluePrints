@@ -1143,17 +1143,17 @@ namespace BluePrints.ViewModels
                 summaries.Add(new SummaryDescriptor() { FieldName = "Entity.Budget", DisplayFormat = "c0", Type = SummaryItemType.Sum });
                 columns.Add(new ColumnDescriptor() { FieldName = "Entity.BudgetVariance", ReadOnly = true, Header = "Rev 0 Variance (I) (H - A)", Fixed = FixedStyle.Left, Width = 75, Settings = SettingsType.Number, Mask = "c0", HeaderToolTip = "Budget variance from first EAC" });
                 summaries.Add(new SummaryDescriptor() { FieldName = "Entity.BudgetVariance", DisplayFormat = "c0", Type = SummaryItemType.Sum });
-                columns.Add(new ColumnDescriptor() { FieldName = "Entity.DeliverableUnits", ReadOnly = true, Visible = false, Header = "Deliverable Budget Units", Mask = "###,##0h", Increment = 1, Fixed = FixedStyle.Left, Width = 75, Settings = SettingsType.Number, HeaderToolTip = "Total hours including variation, available for design only" });
+                columns.Add(new ColumnDescriptor() { FieldName = "Entity.DeliverableUnits", ReadOnly = true, Visible = false, Header = "Deliverable Budget Hours", Mask = "###,##0h", Increment = 1, Fixed = FixedStyle.Left, Width = 75, Settings = SettingsType.Number, HeaderToolTip = "Total hours including variation, available for design only" });
                 summaries.Add(new SummaryDescriptor() { FieldName = "Entity.DeliverableUnits", DisplayFormat = "###,##0h", Type = SummaryItemType.Sum });
-                columns.Add(new ColumnDescriptor() { FieldName = "Entity.P6BudgetedUnits", ReadOnly = true, Visible = false, Header = "P6 Budget Units", Mask = "###,##0h", Increment = 1, Fixed = FixedStyle.Left, Width = 75, Settings = SettingsType.Number, HeaderToolTip = "Total hours from P6" });
+                columns.Add(new ColumnDescriptor() { FieldName = "Entity.P6BudgetedUnits", ReadOnly = true, Visible = false, Header = "P6 Budget Hours", Mask = "###,##0h", Increment = 1, Fixed = FixedStyle.Left, Width = 75, Settings = SettingsType.Number, HeaderToolTip = "Total hours from P6" });
                 summaries.Add(new SummaryDescriptor() { FieldName = "Entity.P6BudgetedUnits", DisplayFormat = "###,##0h", Type = SummaryItemType.Sum });
-                columns.Add(new ColumnDescriptor() { FieldName = "Entity.ActualUnits", ReadOnly = true, Header = "Actual Units", Fixed = FixedStyle.Left, Width = 50, Settings = SettingsType.Number, Mask = "n0", HeaderToolTip = "Actual units to date" });
+                columns.Add(new ColumnDescriptor() { FieldName = "Entity.ActualUnits", ReadOnly = true, Header = "Actual Hours", Fixed = FixedStyle.Left, Width = 50, Settings = SettingsType.Number, Mask = "n0", HeaderToolTip = "Actual hours to date, doesn't include material quantity" });
                 summaries.Add(new SummaryDescriptor() { FieldName = "Entity.ActualUnits", DisplayFormat = "n0", Type = SummaryItemType.Sum });
-                columns.Add(new ColumnDescriptor() { FieldName = "Entity.P6RemainingUnits", ReadOnly = true, Header = "Remaining Units", Fixed = FixedStyle.Left, Width = 50, Settings = SettingsType.Number, Mask = "n0", HeaderToolTip = "Remaining units from refreshing P6" });
+                columns.Add(new ColumnDescriptor() { FieldName = "Entity.P6RemainingUnits", ReadOnly = true, Header = "Remaining Hours", Fixed = FixedStyle.Left, Width = 50, Settings = SettingsType.Number, Mask = "n0", HeaderToolTip = "Remaining hours from refreshing P6" });
                 summaries.Add(new SummaryDescriptor() { FieldName = "Entity.P6RemainingUnits", DisplayFormat = "n0", Type = SummaryItemType.Sum });
-                columns.Add(new ColumnDescriptor() { FieldName = "Entity.ProgressETC", ReadOnly = true, Visible = false, Header = "User Remaining Units", Fixed = FixedStyle.Left, Width = 70, Settings = SettingsType.Number, Mask = "n0", HeaderToolTip = "Discretionary remaining units keyed in by user, it'll only show value when there are remaining units" });
+                columns.Add(new ColumnDescriptor() { FieldName = "Entity.ProgressETC", ReadOnly = true, Visible = false, Header = "User Remaining Hours", Fixed = FixedStyle.Left, Width = 70, Settings = SettingsType.Number, Mask = "n0", HeaderToolTip = "Discretionary remaining hours keyed in by user, it'll only show value when there are remaining hours" });
                 summaries.Add(new SummaryDescriptor() { FieldName = "Entity.ProgressETC", DisplayFormat = "n0", Type = SummaryItemType.Sum });
-                columns.Add(new ColumnDescriptor() { FieldName = "Entity.P6RemainingUnitsOverride", ReadOnly = true, Header = "PF Units", Fixed = FixedStyle.Left, Width = 50, Settings = SettingsType.Number, Mask = "n0", HeaderToolTip = "Remaining units from refreshing P6" });
+                columns.Add(new ColumnDescriptor() { FieldName = "Entity.P6RemainingUnitsOverride", ReadOnly = true, Header = "PF Hours", Fixed = FixedStyle.Left, Width = 50, Settings = SettingsType.Number, Mask = "n0", HeaderToolTip = "Remaining hours from refreshing P6" });
                 summaries.Add(new SummaryDescriptor() { FieldName = "Entity.P6RemainingUnitsOverride", DisplayFormat = "n0", Type = SummaryItemType.Sum });
 
                 if (!IsShowActualsHistory)
@@ -1468,6 +1468,7 @@ namespace BluePrints.ViewModels
         public Visibility PODetailsVisibility => IsPoDetailsVisible ? Visibility.Visible : Visibility.Collapsed;
         public bool IsPoDetailsVisible { get; set; }
         private bool isDetailBestFitApplied { get; set; }
+        public int DateSortIndex => 1;
         private void setFilter(DataRowView dataRowView, GridColumn gridColumn)
         {
             if (gridColumn == null || dataRowView == null)
@@ -1567,6 +1568,7 @@ namespace BluePrints.ViewModels
 
             this.RaisePropertyChanged(x => x.ActualDetailsVisibility);
             this.RaisePropertyChanged(x => x.PODetailsVisibility);
+            this.RaisePropertyChanged(x => x.DateSortIndex);
         }
 
         public void DetailGridKeyDown(System.Windows.Input.KeyEventArgs e)
@@ -2014,6 +2016,7 @@ namespace BluePrints.ViewModels
             }
         }
 
+        string weekViewPreventEditingMessage = "Sorry, cells in weeks view isn't editable, please switch to month view to edit cell";
         public override void ValidateCell(GridCellValidationEventArgs e)
         {
             if(e.Value != null)
@@ -2021,7 +2024,7 @@ namespace BluePrints.ViewModels
                 DateTime dateTime;
                 if (IsWeeks)
                 {
-                    e.ErrorContent = "Sorry, cells in weeks view aren't editable";
+                    e.ErrorContent = weekViewPreventEditingMessage;
                     e.IsValid = false;
                 }
                 else if (DateTime.TryParse(e.Column.FieldName, out dateTime))
@@ -2088,6 +2091,19 @@ namespace BluePrints.ViewModels
                             }
                         }
                     }
+                }
+            }
+        }
+
+
+        public void ChildGridValidateCell(GridCellValidationEventArgs e)
+        {
+            if (e.Value != null)
+            {
+                if (IsWeeks)
+                {
+                    e.ErrorContent = weekViewPreventEditingMessage;
+                    e.IsValid = false;
                 }
             }
         }
