@@ -33,67 +33,81 @@
                 <dxdo:DockLayoutManager Name="dockLayoutManager" Margin="0" Padding="0" BorderThickness="0" FloatingMode="Desktop" MDIMergeStyle="WhenChildActivated">
                     <dxdo:LayoutGroup Margin="0" Padding="0" BorderThickness="0" ItemHeight="*" Orientation="Vertical">
                         <dxdo:LayoutPanel x:Name="Forecast" ShowHideButton="False" ShowCloseButton="False">
-
                             <dxg:GridControl x:Name="GridControl" dx:DXSerializer.SerializationID="GridControlPL" dx:DXSerializer.StoreLayoutMode="All" Style="{StaticResource DefaultGridControlTemplate}">
-                                <dxg:GridControl.Columns>
-                                    <dxg:GridColumn Header="Job" FieldName="JOBCODE" />
-                                    <dxg:GridColumn Header="Name" FieldName="TITLE" />
-                                    <dxg:GridColumn Header="Approved Revenue (A)" BestFitWidth="125" Width="125" FieldName="ApprovedRevenue" HeaderToolTip="Original Revenue + Approved Variation from forecast" >
-                                        <dxg:GridColumn.EditSettings>
-                                            <dxe:SpinEditSettings Increment="1" IsFloatValue="False" IsTextEditable="True" Mask="c0" MaskType="Numeric" MaskUseAsDisplayFormat="True" />
-                                        </dxg:GridColumn.EditSettings>
-                                    </dxg:GridColumn>
-                                    <dxg:GridColumn Header="Submitted (B)" BestFitWidth="125" Width="125"  FieldName="Submitted" HeaderToolTip="Approved Variation from forecast">
-                                        <dxg:GridColumn.EditSettings>
-                                            <dxe:SpinEditSettings Increment="1" IsFloatValue="False" IsTextEditable="True" Mask="c0" MaskType="Numeric" MaskUseAsDisplayFormat="True" />
-                                        </dxg:GridColumn.EditSettings>
-                                    </dxg:GridColumn>
-                                    <dxg:GridColumn Header="Unapproved (C)" BestFitWidth="125" Width="125" FieldName="Unapproved" HeaderToolTip="Unapproved Variation from forecast" >
-                                        <dxg:GridColumn.EditSettings>
-                                            <dxe:SpinEditSettings Increment="1" IsFloatValue="False" IsTextEditable="True" Mask="c0" MaskType="Numeric" MaskUseAsDisplayFormat="True" />
-                                        </dxg:GridColumn.EditSettings>
-                                    </dxg:GridColumn>
-                                    <dxg:GridColumn Header="Forecast Revenue (D) (A + C)" BestFitWidth="125" Width="125" FieldName="ForecastRevenue" HeaderToolTip="Original Revenue + Approved Variation + Unapproved Variation from forecast">
-                                        <dxg:GridColumn.EditSettings>
-                                            <dxe:SpinEditSettings Increment="1" IsFloatValue="False" IsTextEditable="True" Mask="c0" MaskType="Numeric" MaskUseAsDisplayFormat="True" />
-                                        </dxg:GridColumn.EditSettings>
-                                    </dxg:GridColumn>
-                                    <dxg:GridColumn Header="Time Costs (E)" BestFitWidth="125" Width="125" FieldName="TotalTimeCosts" HeaderToolTip="Total cost from hours booked">
-                                        <dxg:GridColumn.EditSettings>
-                                            <dxe:SpinEditSettings Increment="1" IsFloatValue="False" IsTextEditable="True" Mask="c0" MaskType="Numeric" MaskUseAsDisplayFormat="True" ToolTip="Click to show details below" />
-                                        </dxg:GridColumn.EditSettings>
-                                    </dxg:GridColumn>
-                                    <dxg:GridColumn Header="Material Costs (F)" BestFitWidth="125" Width="125" FieldName="TotalMaterialCosts" HeaderToolTip="Total costs from materials" >
-                                        <dxg:GridColumn.EditSettings>
-                                            <dxe:SpinEditSettings Increment="1" IsFloatValue="False" IsTextEditable="True" Mask="c0" MaskType="Numeric" MaskUseAsDisplayFormat="True" ToolTip="Click to show details below" />
-                                        </dxg:GridColumn.EditSettings>
-                                    </dxg:GridColumn>
-                                    <dxg:GridColumn Header="Total Costs (G) (E + F)" BestFitWidth="125" Width="125" FieldName="TotalCosts" HeaderToolTip="Total costs from materials and hours booked" >
-                                        <dxg:GridColumn.EditSettings>
-                                            <dxe:SpinEditSettings Increment="1" IsFloatValue="False" IsTextEditable="True" Mask="c0" MaskType="Numeric" MaskUseAsDisplayFormat="True" ToolTip="Click to show details below" />
-                                        </dxg:GridColumn.EditSettings>
-                                    </dxg:GridColumn>
-                                    <dxg:GridColumn Header="Invoiced (H)" BestFitWidth="125" Width="125" FieldName="TotalInvoiced" HeaderToolTip="Total invoiced by rates or lump sum">
-                                        <dxg:GridColumn.EditSettings>
-                                            <dxe:SpinEditSettings Increment="1" IsFloatValue="False" IsTextEditable="True" Mask="c0" MaskType="Numeric" MaskUseAsDisplayFormat="True" ToolTip="Click to show details below" />
-                                        </dxg:GridColumn.EditSettings>
-                                    </dxg:GridColumn>
-                                    <dxg:GridColumn Header="Outstanding (I)" BestFitWidth="125" Width="125"  FieldName="TotalOutstanding" HeaderToolTip="Total outstanding PO">
-                                        <dxg:GridColumn.EditSettings>
-                                            <dxe:SpinEditSettings Increment="1" IsFloatValue="False" IsTextEditable="True" Mask="c0" MaskType="Numeric" MaskUseAsDisplayFormat="True" ToolTip="Click to show details below" />
-                                        </dxg:GridColumn.EditSettings>
-                                    </dxg:GridColumn>
-                                    <dxg:GridColumn Header="Profit (J) (A - G)" BestFitWidth="125" Width="125"  FieldName="Profit" HeaderToolTip="Approved revenue less total costs">
-                                        <dxg:GridColumn.EditSettings>
-                                            <dxe:SpinEditSettings Increment="1" IsFloatValue="False" IsTextEditable="True" Mask="c0" MaskType="Numeric" MaskUseAsDisplayFormat="True" />
-                                        </dxg:GridColumn.EditSettings>
-                                    </dxg:GridColumn>
-                                    <dxg:GridColumn Header="Margin (K) (J / A)" BestFitWidth="125" Width="125"  FieldName="MarginPercentage" HeaderToolTip="Approved revenue less total costs divide by approved revenue">
-                                        <dxg:GridColumn.EditSettings>
-                                            <dxe:SpinEditSettings Increment="1" IsFloatValue="False" IsTextEditable="True" Mask="p2" MaskType="Numeric" MaskUseAsDisplayFormat="True" />
-                                        </dxg:GridColumn.EditSettings>
-                                    </dxg:GridColumn>
-                                </dxg:GridControl.Columns>
+                                <dxg:GridControl.Bands>
+                                    <dxg:GridControlBand Header="Project Properties">
+                                        <dxg:GridColumn Header="Job" FieldName="JOBCODE" />
+                                        <dxg:GridColumn Header="Name" FieldName="TITLE" />
+                                    </dxg:GridControlBand>
+                                    <dxg:GridControlBand Header="Editable Properties">
+                                        <dxg:GridColumn Header="Original Revenue (A)" BestFitWidth="125" Width="125" FieldName="ORI_REVENUE" HeaderToolTip="Editable Original Revenue" >
+                                            <dxg:GridColumn.EditSettings>
+                                                <dxe:SpinEditSettings Increment="1" IsFloatValue="False" IsTextEditable="True" Mask="c0" MaskType="Numeric" MaskUseAsDisplayFormat="True" />
+                                            </dxg:GridColumn.EditSettings>
+                                        </dxg:GridColumn>
+                                        <dxg:GridColumn Header="Approved Variation Revenue (B)" BestFitWidth="125" Width="125" FieldName="VAR_REVENUE" HeaderToolTip="Editable Approved Variation Revenue" >
+                                            <dxg:GridColumn.EditSettings>
+                                                <dxe:SpinEditSettings Increment="1" IsFloatValue="False" IsTextEditable="True" Mask="c0" MaskType="Numeric" MaskUseAsDisplayFormat="True" />
+                                            </dxg:GridColumn.EditSettings>
+                                        </dxg:GridColumn>
+                                        <dxg:GridColumn Header="Unapproved Variation Revenue (C)" BestFitWidth="125" Width="125" FieldName="UNAPPROVED_VAR_REVENUE" HeaderToolTip="Editable Unapproved Variation Revenue" >
+                                            <dxg:GridColumn.EditSettings>
+                                                <dxe:SpinEditSettings Increment="1" IsFloatValue="False" IsTextEditable="True" Mask="c0" MaskType="Numeric" MaskUseAsDisplayFormat="True" />
+                                            </dxg:GridColumn.EditSettings>
+                                        </dxg:GridColumn>
+                                    </dxg:GridControlBand>
+                                    <dxg:GridControlBand Header="Revenue">
+                                        <dxg:GridColumn Header="Approved Revenue (D) (A + B)" BestFitWidth="125" Width="125" ReadOnly="True" FieldName="ApprovedRevenue" HeaderToolTip="Original Revenue + Approved Variation from forecast" >
+                                            <dxg:GridColumn.EditSettings>
+                                                <dxe:SpinEditSettings Increment="1" IsFloatValue="False" IsTextEditable="True" Mask="c0" MaskType="Numeric" MaskUseAsDisplayFormat="True" />
+                                            </dxg:GridColumn.EditSettings>
+                                        </dxg:GridColumn>
+                                        <dxg:GridColumn Header="Forecast Revenue (E) (A + B + C)" BestFitWidth="125" Width="125" ReadOnly="True" FieldName="ForecastRevenue" HeaderToolTip="Original Revenue + Approved Variation + Unapproved Variation from forecast">
+                                            <dxg:GridColumn.EditSettings>
+                                                <dxe:SpinEditSettings Increment="1" IsFloatValue="False" IsTextEditable="True" Mask="c0" MaskType="Numeric" MaskUseAsDisplayFormat="True" />
+                                            </dxg:GridColumn.EditSettings>
+                                        </dxg:GridColumn>
+                                    </dxg:GridControlBand>
+                                    <dxg:GridControlBand Header="Costs (Query Details by Clicking on Cell)">
+                                        <dxg:GridColumn Header="Time Costs (F)" BestFitWidth="125" Width="125" ReadOnly="True" FieldName="TotalTimeCosts" HeaderToolTip="Total cost from hours booked">
+                                            <dxg:GridColumn.EditSettings>
+                                                <dxe:SpinEditSettings Increment="1" IsFloatValue="False" IsTextEditable="True" Mask="c0" MaskType="Numeric" MaskUseAsDisplayFormat="True" ToolTip="Click to show details below" />
+                                            </dxg:GridColumn.EditSettings>
+                                        </dxg:GridColumn>
+                                        <dxg:GridColumn Header="Material Costs (G)" BestFitWidth="125" Width="125" ReadOnly="True" FieldName="TotalMaterialCosts" HeaderToolTip="Total costs from materials" >
+                                            <dxg:GridColumn.EditSettings>
+                                                <dxe:SpinEditSettings Increment="1" IsFloatValue="False" IsTextEditable="True" Mask="c0" MaskType="Numeric" MaskUseAsDisplayFormat="True" ToolTip="Click to show details below" />
+                                            </dxg:GridColumn.EditSettings>
+                                        </dxg:GridColumn>
+                                        <dxg:GridColumn Header="Total Costs (H) (F + G)" BestFitWidth="125" Width="125" ReadOnly="True" FieldName="TotalCosts" HeaderToolTip="Total costs from materials and hours booked" >
+                                            <dxg:GridColumn.EditSettings>
+                                                <dxe:SpinEditSettings Increment="1" IsFloatValue="False" IsTextEditable="True" Mask="c0" MaskType="Numeric" MaskUseAsDisplayFormat="True" ToolTip="Click to show details below" />
+                                            </dxg:GridColumn.EditSettings>
+                                        </dxg:GridColumn>
+                                        <dxg:GridColumn Header="Invoiced (I)" BestFitWidth="125" Width="125" ReadOnly="True" FieldName="TotalInvoiced" HeaderToolTip="Total invoiced by rates or lump sum">
+                                            <dxg:GridColumn.EditSettings>
+                                                <dxe:SpinEditSettings Increment="1" IsFloatValue="False" IsTextEditable="True" Mask="c0" MaskType="Numeric" MaskUseAsDisplayFormat="True" ToolTip="Click to show details below" />
+                                            </dxg:GridColumn.EditSettings>
+                                        </dxg:GridColumn>
+                                        <dxg:GridColumn Header="Outstanding (J)" BestFitWidth="125" Width="125" ReadOnly="True" FieldName="TotalOutstanding" HeaderToolTip="Total outstanding PO">
+                                            <dxg:GridColumn.EditSettings>
+                                                <dxe:SpinEditSettings Increment="1" IsFloatValue="False" IsTextEditable="True" Mask="c0" MaskType="Numeric" MaskUseAsDisplayFormat="True" ToolTip="Click to show details below" />
+                                            </dxg:GridColumn.EditSettings>
+                                        </dxg:GridColumn>
+                                    </dxg:GridControlBand>
+                                    <dxg:GridControlBand Header="Profit">
+                                            <dxg:GridColumn Header="Profit (K) (D - H)" BestFitWidth="125" Width="125" ReadOnly="True" FieldName="Profit" HeaderToolTip="Approved revenue less total costs">
+                                            <dxg:GridColumn.EditSettings>
+                                                <dxe:SpinEditSettings Increment="1" IsFloatValue="False" IsTextEditable="True" Mask="c0" MaskType="Numeric" MaskUseAsDisplayFormat="True" />
+                                            </dxg:GridColumn.EditSettings>
+                                        </dxg:GridColumn>
+                                        <dxg:GridColumn Header="Margin (L) (K / D)" BestFitWidth="125" Width="125" ReadOnly="True" FieldName="MarginPercentage" HeaderToolTip="Approved revenue less total costs divide by approved revenue">
+                                            <dxg:GridColumn.EditSettings>
+                                                <dxe:SpinEditSettings Increment="1" IsFloatValue="False" IsTextEditable="True" Mask="p2" MaskType="Numeric" MaskUseAsDisplayFormat="True" />
+                                            </dxg:GridColumn.EditSettings>
+                                        </dxg:GridColumn>
+                                    </dxg:GridControlBand>
+                                </dxg:GridControl.Bands>
                                 <dxg:GridControl.TotalSummary>
                                     <dxg:GridSummaryItem dx:DXSerializer.Enabled="False" Alignment="Right" SummaryType="Count" />
                                 </dxg:GridControl.TotalSummary>
@@ -101,7 +115,7 @@
                                     <dxg:GridSummaryItem dx:DXSerializer.Enabled="False" SummaryType="Count" />
                                 </dxg:GridControl.GroupSummary>
                                 <dxg:GridControl.View>
-                                    <dxg:TableView x:Name="tableView" Style="{StaticResource DefaultTableViewTemplate}" AllowEditing="False">
+                                    <dxg:TableView x:Name="tableView" Style="{StaticResource DefaultTableViewTemplate}" >
                                         <dxmvvm:Interaction.Behaviors>
                                             <dxmvvm:EventToCommand Command="{Binding MouseDownCommand}" EventName="MouseDown" PassEventArgsToCommand="True" />
                                         </dxmvvm:Interaction.Behaviors>

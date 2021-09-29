@@ -207,14 +207,14 @@ namespace BluePrints.ViewModels
             columns.Clear();
             summaries.Clear();
 
-            columns.Add(new ColumnDescriptor() { FieldName = "Resource_SeqNo", Header = "Resource", Fixed = FixedStyle.Left, Width = 150, DisplayMember = "RESOURCENAME", ValueMember = "SEQNO", ItemsSource = JOBCOST_RESOURCECollection, Settings = SettingsType.DisplayMemberCollection });
+            columns.Add(new ColumnDescriptor() { FieldName = "Resource_SeqNo", Header = "Resource", Fixed = FixedStyle.Left, Width = 200, DisplayMember = "RESOURCENAME", ValueMember = "SEQNO", ItemsSource = JOBCOST_RESOURCECollection, Settings = SettingsType.DisplayMemberCollection, HeaderToolTip = "Resource name, if it empty when data is pasted it means resource doesn't exist in EXO" });
             summaries.Add(new SummaryDescriptor() { FieldName = "Resource_SeqNo", DisplayFormat = "{0} Record(s)", Type = SummaryItemType.Count });
-            columns.Add(new ColumnDescriptor() { FieldName = "JobNo", Header = "Job", Fixed = FixedStyle.Left, Width = 100, DisplayMember = "JOBCODE", ValueMember = "JOBNO", ItemsSource = JOBCOST_HDRCollection, Settings = SettingsType.DisplayMemberCollection });
-            columns.Add(new ColumnDescriptor() { FieldName = "CostGroup", Header = "Discipline", Fixed = FixedStyle.Left, Width = 70, DisplayMember = "SHORTCODE", ValueMember = "SEQNO", ItemsSource = JOB_COSTGROUPSCollection, Settings = SettingsType.DisplayMemberCollection });
-            columns.Add(new ColumnDescriptor() { FieldName = "CostType", Header = "Commodity", Fixed = FixedStyle.Left, Width = 70, DisplayMember = "SHORTCODE", ValueMember = "SEQNO", ItemsSource = JOB_COSTTYPESCollection, Settings = SettingsType.DisplayMemberCollection });
+            columns.Add(new ColumnDescriptor() { FieldName = "JobNo", Header = "Job", Fixed = FixedStyle.Left, Width = 100, DisplayMember = "JOBCODE", ValueMember = "JOBNO", ItemsSource = JOBCOST_HDRCollection, Settings = SettingsType.DisplayMemberCollection, HeaderToolTip = "Sub job, if it empty when data is pasted it means sub job doesn't exist in EXO" });
+            columns.Add(new ColumnDescriptor() { FieldName = "CostGroup", Header = "Discipline", Fixed = FixedStyle.Left, Width = 100, DisplayMember = "SHORTCODE", ValueMember = "SEQNO", ItemsSource = JOB_COSTGROUPSCollection, Settings = SettingsType.DisplayMemberCollection, HeaderToolTip = "Cost group, if it empty when data is pasted it means cost group doesn't exist in EXO" });
+            columns.Add(new ColumnDescriptor() { FieldName = "CostType", Header = "Commodity", Fixed = FixedStyle.Left, Width = 100, DisplayMember = "SHORTCODE", ValueMember = "SEQNO", ItemsSource = JOB_COSTTYPESCollection, Settings = SettingsType.DisplayMemberCollection, HeaderToolTip = "Stock code, if it empty when data is pasted it means stock code doesn't exist in EXO" });
             columns.Add(new ColumnDescriptor() { FieldName = "StockCode", Header = "Stock Code", Fixed = FixedStyle.Left, Width = 100, NullText = "Leave empty to auto-populate with resource code during submission", Settings = SettingsType.Text });
-            columns.Add(new ColumnDescriptor() { FieldName = "VariationCode", Header = "Variation", Fixed = FixedStyle.Left, Width = 70, ItemsSource = VariationCodes, Settings = SettingsType.Collection });
-            columns.Add(new ColumnDescriptor() { FieldName = "Narrative", Header = "Narrative", Fixed = FixedStyle.Left, Width = 100, Settings = SettingsType.Default });
+            columns.Add(new ColumnDescriptor() { FieldName = "VariationCode", Header = "Variation", Fixed = FixedStyle.Left, Width = 150, ItemsSource = VariationCodes, Settings = SettingsType.Collection });
+            columns.Add(new ColumnDescriptor() { FieldName = "Narrative", Header = "Narrative", Fixed = FixedStyle.Left, Width = 200, Settings = SettingsType.Default });
             columns.Add(new ColumnDescriptor() { FieldName = "Duplicate", Header = "Duplicate", ReadOnly = true, Fixed = FixedStyle.Right, Width = 50, UnboundType = UnboundColumnType.Boolean, Settings = SettingsType.Unbound });
             columns.Add(new ColumnDescriptor() { FieldName = "UniqueCode", Header = "UniqueCode", ReadOnly = true, Visible = false, Fixed = FixedStyle.Right, Width = 50, Settings = SettingsType.Default });
 
@@ -538,12 +538,14 @@ namespace BluePrints.ViewModels
                 return;
 
             int committedRow = 0;
-            if(!isRowsUnique())
+            int notCommittedRow = 0;
+            if (!isRowsUnique())
             {
                 MessageBoxService.ShowMessage("Rows that are not unique are highlighted in red, please delete the one's you don't want and try again later");
                 return;
             }
 
+            List<ErrorMessage> errorMessages = new List<ErrorMessage>();
             LoadingScreenManager.ShowLoadingScreen(DataPointsTable.Rows.Count);
             foreach (DataRow row in DataPointsTable.Rows)
             {
@@ -568,32 +570,72 @@ namespace BluePrints.ViewModels
                     bool isValidJobCode = IsValidJobCode(subJobNo, costGroupNo, costTypeNo, variationCode);
                     string subJobCode = string.Empty;
                     string subJobTitle = string.Empty;
+                    string costGroupCode = string.Empty;
+                    string costTypeCode = string.Empty;
                     string stockCode = row[columnStockCode].ToString();
                     string stockCodeDescription = string.Empty;
-                    if (isValidJobCode)
+                    bool shouldSkip = false;
+
+                    JOBCOST_HDR subJob = primeroUnitOfWork.JOBCOST_HDR.FirstOrDefault(x => x.JOBNO == subJobNo);
+                    if (subJob != null)
                     {
-                        JOBCOST_HDR subJob = primeroUnitOfWork.JOBCOST_HDR.FirstOrDefault(x => x.JOBNO == subJobNo);
-                        if(subJob != null)
-                        {
-                            subJobCode = subJob.JOBCODE;
-                            subJobTitle = subJob.TITLE;
-                        }
-
-                        if (stockCode.Trim() == string.Empty)
-                        {
-                            JOBCOST_RESOURCE resource = primeroUnitOfWork.JOBCOST_RESOURCE.FirstOrDefault(x => x.SEQNO == resourceSeqNo);
-                            stockCode = resource.DEFAULT_STOCKCODE;
-                        }
-
-                        STOCK_ITEMS stockItem = primeroUnitOfWork.STOCK_ITEMS.FirstOrDefault(x => x.STOCKCODE == stockCode);
-                        if (stockItem != null)
-                        {
-                            stockCode = stockItem.STOCKCODE;
-                            stockCodeDescription = stockItem.DESCRIPTION;
-                        }
+                        subJobCode = subJob.JOBCODE;
+                        subJobTitle = subJob.TITLE;
                     }
-                    
-                    if(subJobCode != string.Empty && subJobTitle != string.Empty && stockCode != string.Empty && stockCodeDescription != string.Empty)
+
+                    JOB_COSTGROUPS costGroup = primeroUnitOfWork.JOB_COSTGROUPS.FirstOrDefault(x => x.SEQNO == costGroupNo);
+                    if(costGroup != null)
+                        costGroupCode = costGroup.SHORTCODE;
+
+                    JOB_COSTTYPES costType = primeroUnitOfWork.JOB_COSTTYPES.FirstOrDefault(x => x.SEQNO == costTypeNo);
+                    if (costType != null)
+                        costTypeCode = costType.SHORTCODE;
+
+                    if (stockCode.Trim() == string.Empty)
+                    {
+                        JOBCOST_RESOURCE resource = primeroUnitOfWork.JOBCOST_RESOURCE.FirstOrDefault(x => x.SEQNO == resourceSeqNo);
+                        stockCode = resource.DEFAULT_STOCKCODE;
+                    }
+
+                    STOCK_ITEMS stockItem = primeroUnitOfWork.STOCK_ITEMS.FirstOrDefault(x => x.STOCKCODE == stockCode);
+                    if (stockItem != null)
+                    {
+                        stockCode = stockItem.STOCKCODE;
+                        stockCodeDescription = stockItem.DESCRIPTION;
+                    }
+
+                    string rowName = string.Concat("Job: ", subJobCode, " Group: ", costGroupCode, " Type: ", costTypeCode, " Stock: ", stockCode);
+                    if (!isValidJobCode)
+                    {
+                        errorMessages.Add(new ErrorMessage(rowName, "Sub Job, Cost Group and Cost Type combination doesn't exist in EXO"));
+                        shouldSkip = true;
+                    }
+
+                    if(subJobCode == string.Empty)
+                    {
+                        errorMessages.Add(new ErrorMessage(rowName, "Sub Job doesn't exist in EXO"));
+                        shouldSkip = true;
+                    }
+
+                    if(subJobTitle == string.Empty)
+                    {
+                        errorMessages.Add(new ErrorMessage(rowName, "Sub Job title cannot be blank"));
+                        shouldSkip = true;
+                    }
+
+                    if (stockCode == string.Empty)
+                    {
+                        errorMessages.Add(new ErrorMessage(rowName, "Stock code doesn't exist in EXO"));
+                        shouldSkip = true;
+                    }
+
+                    if (stockCodeDescription == string.Empty)
+                    {
+                        errorMessages.Add(new ErrorMessage(rowName, "Stock code description cannot be blank"));
+                        shouldSkip = true;
+                    }
+
+                    if (!shouldSkip)
                     {
                         committedRow += 1;
                         foreach (DataColumn dataColumn in DataPointsTable.Columns)
@@ -654,12 +696,19 @@ namespace BluePrints.ViewModels
                             }
                         }
                     }
+                    else
+                        notCommittedRow += 1;
                 }
 
                 LoadingScreenManager.Progress();
             }
 
-            MessageBoxService.ShowMessage(committedRow.ToString() + " records committed to exo");
+            if (errorMessages.Count > 0 && committedRow == 0)
+                ShowErrorMessage("Error, no records committed", errorMessages);
+            else if (errorMessages.Count > 0 && committedRow > 0)
+                ShowErrorMessage(committedRow + " record(s) committed to EXO and " + notCommittedRow.ToString() + " record(s) not commited with the following Error", errorMessages);
+            else
+                MessageBoxService.ShowMessage(committedRow.ToString() + " records committed to exo");
         }
 
         private bool IsValidJobCode(int subJobNo, int costGroupNo, int costTypeNo, string variationCode)
@@ -907,18 +956,15 @@ namespace BluePrints.ViewModels
             };
 
             var dateFromToViewModel = DateFromToDialogViewModel.Create();
-            UICommand result = DateFromToDialogService.ShowDialog(new List<UICommand>() { okCommand, currentCommand }, "Select Date Range to Query", "DateFromTo", dateFromToViewModel);
+            UICommand result = DateFromToDialogService.ShowDialog(new List<UICommand>() { okCommand, currentCommand }, "Select Week. Date Will be Automatically Adjusted to Week Starting Monday", "DateFromTo", dateFromToViewModel);
 
             if(result == okCommand)
-            {
                 DateFrom = dateFromToViewModel.DateFrom;
-                DateTo = dateFromToViewModel.DateTo;
-            }
             else
-            {
-                DateFrom = DateTime.Now.StartOfWeek(DayOfWeek.Monday).AddDays(-7);
-                DateTo = DateFrom.AddDays(5);
-            }
+                DateFrom = DateTime.Now.AddDays(-7);
+
+            DateFrom = DateFrom.StartOfWeek(DayOfWeek.Monday);
+            DateTo = DateFrom.AddDays(6);
         }
 
         private string view_project_specific_affix
