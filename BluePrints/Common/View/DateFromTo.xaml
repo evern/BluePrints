@@ -5,9 +5,9 @@
                 <dxlc:LayoutItem Height="50" Label="From:">
                     <dxe:DateEdit x:Name="dateFrom" Mask="dd-MMM-yy" MaskUseAsDisplayFormat="True" Text="{Binding DateFrom, Mode=TwoWay}" />
                 </dxlc:LayoutItem>
-                <dxlc:LayoutItem Height="50" Label="To:">
+                <!--<dxlc:LayoutItem Height="50" Label="To:">
                     <dxe:DateEdit x:Name="dateTo" Mask="dd-MMM-yy" MaskUseAsDisplayFormat="True" Text="{Binding DateTo, Mode=TwoWay}" />
-                </dxlc:LayoutItem>
+                </dxlc:LayoutItem>-->
             </dxlc:LayoutGroup>
             <dxlc:LayoutGroup Name="LayoutGroupButtons" Height="30" HorizontalAlignment="Right" Orientation="Horizontal" View="Group" />
         </dxlc:LayoutGroup>
