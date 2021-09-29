@@ -15,21 +15,37 @@ namespace BluePrints.PrimeroData
     {
         public string Office => BluePrintsResources.GlobalOffice;
 
+        public decimal OriginalRevenue => ORI_REVENUE == null ? 0 : (decimal)ORI_REVENUE;
+
+        public decimal VarRevenue => VAR_REVENUE == null ? 0 : (decimal)VAR_REVENUE;
+
+        public decimal UnapprovedVarRevenue => UNAPPROVED_VAR_REVENUE == null ? 0 : (decimal)UNAPPROVED_VAR_REVENUE;
+
+        public decimal ApprovedRevenue
+        {
+            get
+            {
+                return OriginalRevenue + VarRevenue;
+            }
+        }
+
+        public decimal ForecastRevenue
+        {
+            get
+            {
+                return OriginalRevenue + VarRevenue + UnapprovedVarRevenue;
+            }
+        }
+
         public decimal Profit
         {
             get
             {
-                if (ApprovedRevenue == null)
-                    return 0;
-
-                decimal approvedRevenueDecimal = (decimal)ApprovedRevenue;
-
                 if (TotalCosts == null)
-                    return approvedRevenueDecimal;
+                    return ApprovedRevenue;
 
                 decimal totalCostsDecimal = Convert.ToDecimal((double)TotalCosts);
-
-                return approvedRevenueDecimal - totalCostsDecimal;
+                return ApprovedRevenue - totalCostsDecimal;
             }
         }
 
@@ -37,12 +53,10 @@ namespace BluePrints.PrimeroData
         {
             get
             {
-                if (ApprovedRevenue == null || ApprovedRevenue == 0)
+                if (ApprovedRevenue == 0)
                     return 0;
 
-                decimal approvedRevenueDecimal = (decimal)ApprovedRevenue;
-
-                return Profit / approvedRevenueDecimal;
+                return Profit / ApprovedRevenue;
             }
         }
     }

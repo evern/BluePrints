@@ -18,16 +18,16 @@ namespace BluePrints.PrimeroData
         [StringLength(60)]
         public string TITLE { get; set; }
 
+        public Guid? PROJECT_GUID { get; set; }
+
         [StringLength(100)]
         public string NUMBER { get; set; }
 
-        public decimal? ApprovedRevenue { get; set; }
+        public decimal? ORI_REVENUE { get; set; }
 
-        public decimal? Submitted { get; set; }
+        public decimal? VAR_REVENUE { get; set; }
 
-        public decimal? Unapproved { get; set; }
-
-        public decimal? ForecastRevenue { get; set; }
+        public decimal? UNAPPROVED_VAR_REVENUE { get; set; }
 
         public double? TotalTimeCosts { get; set; }
 

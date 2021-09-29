@@ -1,4 +1,5 @@
 ﻿using BaseModel.DataModel;
+using BaseModel.Misc;
 using BaseModel.ViewModel.Base;
 using BaseModel.ViewModel.Loader;
 using BluePrints.BluePrintsEntitiesDataModel;
@@ -7,6 +8,7 @@ using BluePrints.Data;
 using BluePrints.PrimeroData;
 using BluePrints.PrimeroData.PrimeroEntitiesDataModel;
 using DevExpress.Data.Filtering;
+using DevExpress.Mvvm;
 using DevExpress.Mvvm.POCO;
 using DevExpress.Xpf.Grid;
 using System;
@@ -47,7 +49,7 @@ namespace BluePrints.ViewModels
 
         private IUnitOfWorkFactory<IPrimeroEntitiesUnitOfWork> primeroUnitOfWorkFactory = PrimeroEntitiesUnitOfWorkSource.GetUnitOfWorkFactory();
         private IUnitOfWorkFactory<IBluePrintsEntitiesUnitOfWork> bluePrintsUnitOfWorkFactory = BluePrintsEntitiesUnitOfWorkSource.GetUnitOfWorkFactory();
-
+        IBluePrintsEntitiesUnitOfWork bluePrintsUnitOfWork;
         InstantFeedbackActualDetailsCollectionViewModelWrapper instantFeedbackActualDetailViewModel = InstantFeedbackActualDetailsCollectionViewModelWrapper.Create();
         InstantFeedbackPODetailsCollectionViewModelWrapper instantFeedbackPODetailViewModel = InstantFeedbackPODetailsCollectionViewModelWrapper.Create();
         InstantFeedbackInvoicedCollectionViewModelWrapper InstantFeedbackInvoicedViewModel = InstantFeedbackInvoicedCollectionViewModelWrapper.Create();
@@ -60,6 +62,8 @@ namespace BluePrints.ViewModels
             POFilterCriteria = CriteriaOperator.Parse("[MASTER_JOBCODE] = 'X'");
             InvoicedFilterCriteria = CriteriaOperator.Parse("[MASTER_JOBCODE] = 'X'");
             IsActualDetailsVisible = true;
+
+            bluePrintsUnitOfWork = bluePrintsUnitOfWorkFactory.CreateUnitOfWork();
             this.RaisePropertyChanged(x => x.ActualFilterCriteria);
             this.RaisePropertyChanged(x => x.POFilterCriteria);
         }
@@ -87,6 +91,13 @@ namespace BluePrints.ViewModels
         #endregion
 
         #region Saving Behavior
+        protected override OperationInterceptMode OnBeforeProjectionSaveIsContinue(X_PL_SUMMARY_V1 projection, out bool isNew)
+        {
+            isNew = false;
+            //skip all DB save for X_PL_SUMMARY_V1
+            return OperationInterceptMode.SkipAll;
+        }
+
         public override string UnifiedRowValidation(X_PL_SUMMARY_V1 projection)
         {
             return string.Empty;
@@ -95,6 +106,40 @@ namespace BluePrints.ViewModels
         public override string UnifiedValueValidation(X_PL_SUMMARY_V1 projection, string field_name, object new_value, bool isPaste)
         {
             return string.Empty;
+        }
+
+        public override void UnifiedCellValueChanged(string field_name, object old_value, object new_value, X_PL_SUMMARY_V1 projection, bool isNew)
+        {
+            if (field_name == BindableBase.GetPropertyName(() => new X_PL_SUMMARY_V1().ORI_REVENUE))
+            {
+                updatePROJECTProperty((x, y) => x.ORI_REVENUE = y, projection.PROJECT_GUID, new_value);
+            }
+            else if (field_name == BindableBase.GetPropertyName(() => new X_PL_SUMMARY_V1().VAR_REVENUE))
+            {
+                updatePROJECTProperty((x, y) => x.VAR_REVENUE = y, projection.PROJECT_GUID, new_value);
+            }
+            else if (field_name == BindableBase.GetPropertyName(() => new X_PL_SUMMARY_V1().UNAPPROVED_VAR_REVENUE))
+            {
+                updatePROJECTProperty((x, y) => x.UNAPPROVED_VAR_REVENUE = y, projection.PROJECT_GUID, new_value);
+            }
+
+            base.UnifiedCellValueChanged(field_name, old_value, new_value, projection, isNew);
+        }
+
+        private void updatePROJECTProperty(Action<PROJECT, decimal> setProjectMemberFunc, Guid? projectGuid, object newValue)
+        {
+            if (newValue != null)
+            {
+                PROJECT findPROJECT = bluePrintsUnitOfWork.PROJECTS.FirstOrDefault(x => x.GUID == projectGuid);
+                if (findPROJECT != null)
+                {
+                    decimal newValueDecimal = (decimal)newValue;
+                    findPROJECT.ORI_REVENUE = newValueDecimal;
+
+                    setProjectMemberFunc(findPROJECT, newValueDecimal);
+                    bluePrintsUnitOfWork.SaveChanges();
+                }
+            }
         }
         #endregion
 
