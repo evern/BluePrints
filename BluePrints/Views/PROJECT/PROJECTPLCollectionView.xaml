@@ -56,7 +56,7 @@
                                             </dxg:GridColumn.EditSettings>
                                         </dxg:GridColumn>
                                     </dxg:GridControlBand>
-                                    <dxg:GridControlBand Header="Summary">
+                                    <dxg:GridControlBand Header="Revenue">
                                         <dxg:GridColumn Header="Approved Revenue (D) (A + B)" BestFitWidth="125" Width="125" ReadOnly="True" FieldName="ApprovedRevenue" HeaderToolTip="Original Revenue + Approved Variation from forecast" >
                                             <dxg:GridColumn.EditSettings>
                                                 <dxe:SpinEditSettings Increment="1" IsFloatValue="False" IsTextEditable="True" Mask="c0" MaskType="Numeric" MaskUseAsDisplayFormat="True" />
@@ -67,6 +67,8 @@
                                                 <dxe:SpinEditSettings Increment="1" IsFloatValue="False" IsTextEditable="True" Mask="c0" MaskType="Numeric" MaskUseAsDisplayFormat="True" />
                                             </dxg:GridColumn.EditSettings>
                                         </dxg:GridColumn>
+                                    </dxg:GridControlBand>
+                                    <dxg:GridControlBand Header="Costs (Query Details by Clicking on Cell)">
                                         <dxg:GridColumn Header="Time Costs (F)" BestFitWidth="125" Width="125" ReadOnly="True" FieldName="TotalTimeCosts" HeaderToolTip="Total cost from hours booked">
                                             <dxg:GridColumn.EditSettings>
                                                 <dxe:SpinEditSettings Increment="1" IsFloatValue="False" IsTextEditable="True" Mask="c0" MaskType="Numeric" MaskUseAsDisplayFormat="True" ToolTip="Click to show details below" />
@@ -92,7 +94,9 @@
                                                 <dxe:SpinEditSettings Increment="1" IsFloatValue="False" IsTextEditable="True" Mask="c0" MaskType="Numeric" MaskUseAsDisplayFormat="True" ToolTip="Click to show details below" />
                                             </dxg:GridColumn.EditSettings>
                                         </dxg:GridColumn>
-                                        <dxg:GridColumn Header="Profit (K) (D - H)" BestFitWidth="125" Width="125" ReadOnly="True" FieldName="Profit" HeaderToolTip="Approved revenue less total costs">
+                                    </dxg:GridControlBand>
+                                    <dxg:GridControlBand Header="Profit">
+                                            <dxg:GridColumn Header="Profit (K) (D - H)" BestFitWidth="125" Width="125" ReadOnly="True" FieldName="Profit" HeaderToolTip="Approved revenue less total costs">
                                             <dxg:GridColumn.EditSettings>
                                                 <dxe:SpinEditSettings Increment="1" IsFloatValue="False" IsTextEditable="True" Mask="c0" MaskType="Numeric" MaskUseAsDisplayFormat="True" />
                                             </dxg:GridColumn.EditSettings>
