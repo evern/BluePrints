@@ -11,12 +11,6 @@ namespace BluePrints
     /// </summary>
     public partial class App : Application
     {
-        protected async override void OnStartup(StartupEventArgs e)
-        {
-            base.OnStartup(e);
-            await ThemeManager.PreloadThemeResourceAsync("Win10Light");
-        }
-
         private void OnAppStartup(object sender, StartupEventArgs e)
         {
             //disable prompt for expression binding when editing reports

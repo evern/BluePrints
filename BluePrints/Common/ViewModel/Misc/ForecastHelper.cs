@@ -445,7 +445,7 @@ namespace BluePrints.Common.ViewModel.Misc
                     continue;
 
                 LoadingScreenManager.SetMessage("Saving Job " + projection.FullCode + "...");
-                FORECAST_JOB_SNAPSHOT forecastJobSnapshot = FindExistingOrAddForecastJobSnapshot(bluePrintsEntitiesUnitOfWork, projectGuid, projection.SubJobCode, projection.DisciplineCode, projection.CommodityCode, job.Projection.VariationCode, job.Projection.Budget, job.TenderBudget, dataDate, true);
+                FORECAST_JOB_HOUR_SNAPSHOT forecastJobSnapshot = FindExistingOrAddForecastJobSnapshot(bluePrintsEntitiesUnitOfWork, projectGuid, projection.SubJobCode, projection.DisciplineCode, projection.CommodityCode, job.Projection.VariationCode, job.Projection.Budget, job.TenderBudget, dataDate, true);
 
                 //get unique stock code values for each date cost categories
                 List<string> uniquePOStockCodes = new List<string>();
@@ -472,17 +472,17 @@ namespace BluePrints.Common.ViewModel.Misc
                         //save p6 overrides or p6 values, skip when date is actual date
                         decimal p6OverrideQty = forecastP6UnitsOverridesOnDate.Sum(x => (decimal)x.FORECAST_UNITS);
                         decimal p6OverrideCosts = p6OverrideQty * job.P6NominalRate;
-                        AddOrEditForecastJobHourSnapshot(bluePrintsEntitiesUnitOfWork, forecastJobSnapshot.GUID, ForecastSnapshotValueType.P6Override, "", dateCost.Date, p6OverrideQty, p6OverrideCosts);
+                        AddOrEditForecastJobHourSnapshot(bluePrintsEntitiesUnitOfWork, projectGuid, projection.SubJobCode, projection.DisciplineCode, projection.CommodityCode, projection.VariationCode, ForecastSnapshotValueType.P6Override, "", dataDate, dateCost.Date, p6OverrideQty, p6OverrideCosts);
                     }
 
-                    AddOrEditForecastJobHourSnapshot(bluePrintsEntitiesUnitOfWork, forecastJobSnapshot.GUID, ForecastSnapshotValueType.P6Original, "", dateCost.Date, dateCost.P6Hours, dateCost.P6Costs);
+                    AddOrEditForecastJobHourSnapshot(bluePrintsEntitiesUnitOfWork, projectGuid, projection.SubJobCode, projection.DisciplineCode, projection.CommodityCode, projection.VariationCode, ForecastSnapshotValueType.P6Original, "", dataDate, dateCost.Date, dateCost.P6Hours, dateCost.P6Costs);
 
                     //save discretionary cost overrides
                     if (forecastDiscretionaryCostsOverridesOnDate.Count > 0 && dateCost != job.DateCosts.First())
                     {
                         //units is actually costs
                         decimal overrideCosts = forecastDiscretionaryCostsOverridesOnDate.Sum(x => (decimal)x.FORECAST_UNITS);
-                        AddOrEditForecastJobHourSnapshot(bluePrintsEntitiesUnitOfWork, forecastJobSnapshot.GUID, ForecastSnapshotValueType.DiscretionaryTotal, "", dateCost.Date, 0, overrideCosts);
+                        AddOrEditForecastJobHourSnapshot(bluePrintsEntitiesUnitOfWork, projectGuid, projection.SubJobCode, projection.DisciplineCode, projection.CommodityCode, projection.VariationCode, ForecastSnapshotValueType.DiscretionaryTotal, "", dataDate, dateCost.Date, 0, overrideCosts);
                     }
 
                     #endregion
@@ -495,7 +495,7 @@ namespace BluePrints.Common.ViewModel.Misc
                         if (stockCodeJobLine != null)
                             dropDownBudget = stockCodeJobLine.BudgetCosts;
 
-                        AddOrEditForecastJobHourSnapshot(bluePrintsEntitiesUnitOfWork, forecastJobSnapshot.GUID, ForecastSnapshotValueType.Actual, uniqueActualStockCode, dateCost.Date, dateCost.ActualUnits, dateCost.ActualCosts, dropDownBudget);
+                        AddOrEditForecastJobHourSnapshot(bluePrintsEntitiesUnitOfWork, projectGuid, projection.SubJobCode, projection.DisciplineCode, projection.CommodityCode, projection.VariationCode, ForecastSnapshotValueType.Actual, uniqueActualStockCode, dataDate, dateCost.Date, dateCost.ActualUnits, dateCost.ActualCosts, dropDownBudget);
                     }
 
                     //save material
@@ -506,7 +506,7 @@ namespace BluePrints.Common.ViewModel.Misc
                         if (stockCodeJobLine != null)
                             dropDownBudget = stockCodeJobLine.BudgetCosts;
 
-                        AddOrEditForecastJobHourSnapshot(bluePrintsEntitiesUnitOfWork, forecastJobSnapshot.GUID, ForecastSnapshotValueType.Material, uniqueMaterialStockCode, dateCost.Date, dateCost.MaterialQuantity, dateCost.MaterialCosts, dropDownBudget);
+                        AddOrEditForecastJobHourSnapshot(bluePrintsEntitiesUnitOfWork, projectGuid, projection.SubJobCode, projection.DisciplineCode, projection.CommodityCode, projection.VariationCode, ForecastSnapshotValueType.Material, uniqueMaterialStockCode, dataDate, dateCost.Date, dateCost.MaterialQuantity, dateCost.MaterialCosts, dropDownBudget);
                     }
 
                     //save indirects
@@ -517,7 +517,7 @@ namespace BluePrints.Common.ViewModel.Misc
                         if (stockCodeJobLine != null)
                             dropDownIndirectBudget = stockCodeJobLine.BudgetCosts;
 
-                        AddOrEditForecastJobHourSnapshot(bluePrintsEntitiesUnitOfWork, forecastJobSnapshot.GUID, ForecastSnapshotValueType.IndirectForecast, uniqueIndirectStockCode, dateCost.Date, 0, dateCost.IndirectForecastCosts, dropDownIndirectBudget);
+                        AddOrEditForecastJobHourSnapshot(bluePrintsEntitiesUnitOfWork, projectGuid, projection.SubJobCode, projection.DisciplineCode, projection.CommodityCode, projection.VariationCode, ForecastSnapshotValueType.IndirectForecast, uniqueIndirectStockCode, dataDate, dateCost.Date, 0, dateCost.IndirectForecastCosts, dropDownIndirectBudget);
                     }
 
                     //save pos
@@ -528,7 +528,7 @@ namespace BluePrints.Common.ViewModel.Misc
                         if (poJobLine != null)
                             dropDownBudget = poJobLine.BudgetCosts;
 
-                        AddOrEditForecastJobHourSnapshot(bluePrintsEntitiesUnitOfWork, forecastJobSnapshot.GUID, ForecastSnapshotValueType.POForecast, uniquePOStockCode, dateCost.Date, 0, dateCost.POForecastCosts, dropDownBudget);
+                        AddOrEditForecastJobHourSnapshot(bluePrintsEntitiesUnitOfWork, projectGuid, projection.SubJobCode, projection.DisciplineCode, projection.CommodityCode, projection.VariationCode, ForecastSnapshotValueType.POForecast, uniquePOStockCode, dataDate, dateCost.Date, 0, dateCost.POForecastCosts, dropDownBudget);
                     }
                     #endregion
 
@@ -574,16 +574,21 @@ namespace BluePrints.Common.ViewModel.Misc
             return findForecastSummarySnapshot;
         }
 
-        public static FORECAST_JOB_HOUR_SNAPSHOT AddOrEditForecastJobHourSnapshot(IBluePrintsEntitiesUnitOfWork bluePrintsEntitiesUnitOfWork, Guid forecastJobSnapshotGuid, ForecastSnapshotValueType forecastSnapshotType, string stockCode, DateTime date, decimal quantity, decimal costs, decimal budget = 0, bool commitToDb = false)
+        public static FORECAST_JOB_HOUR_SNAPSHOT AddOrEditForecastJobHourSnapshot(IBluePrintsEntitiesUnitOfWork bluePrintsEntitiesUnitOfWork, Guid projectGuid, string subJobCode, string disciplineCode, string commodityCode, string variationCode, ForecastSnapshotValueType forecastSnapshotType, string stockCode, DateTime dataDate, DateTime date, decimal quantity, decimal costs, decimal budget = 0, bool commitToDb = false)
         {
-            FORECAST_JOB_HOUR_SNAPSHOT findForecastJobHourSnapshot = bluePrintsEntitiesUnitOfWork.FORECAST_JOB_HOUR_SNAPSHOTS.Where(x => x.GUID_FORECAST_JOB_SNAPSHOT == forecastJobSnapshotGuid).FirstOrDefault(x => x.SNAPSHOT_TYPE == forecastSnapshotType && x.STOCK_CODE == stockCode && x.FORECAST_DATE == date);
+            FORECAST_JOB_HOUR_SNAPSHOT findForecastJobHourSnapshot = bluePrintsEntitiesUnitOfWork.FORECAST_JOB_HOUR_SNAPSHOTS.Where(x => x.GUID_PROJECT == projectGuid && x.DATA_DATE == dataDate).Where(x => x.SUBJOB_CODE == subJobCode && x.DISCIPLINE_CODE == disciplineCode && x.COMMODITY_CODE == commodityCode && x.VARIATION_CODE == variationCode && x.STOCK_CODE == stockCode).FirstOrDefault(x => x.SNAPSHOT_TYPE == forecastSnapshotType && x.FORECAST_DATE == date);
 
             if (findForecastJobHourSnapshot == null)
             {
                 findForecastJobHourSnapshot = new FORECAST_JOB_HOUR_SNAPSHOT();
-                findForecastJobHourSnapshot.GUID_FORECAST_JOB_SNAPSHOT = forecastJobSnapshotGuid;
+                findForecastJobHourSnapshot.GUID_PROJECT = projectGuid;
                 findForecastJobHourSnapshot.SNAPSHOT_TYPE = forecastSnapshotType;
+                findForecastJobHourSnapshot.SUBJOB_CODE = subJobCode;
+                findForecastJobHourSnapshot.DISCIPLINE_CODE = disciplineCode;
+                findForecastJobHourSnapshot.COMMODITY_CODE = commodityCode;
+                findForecastJobHourSnapshot.VARIATION_CODE = variationCode;
                 findForecastJobHourSnapshot.STOCK_CODE = stockCode;
+                findForecastJobHourSnapshot.DATA_DATE = dataDate;
                 findForecastJobHourSnapshot.FORECAST_DATE = date;
                 findForecastJobHourSnapshot.CREATED = DateTime.Now;
                 findForecastJobHourSnapshot.CREATEDBY = LoginCredentials.CurrentUserGuid;
@@ -605,25 +610,27 @@ namespace BluePrints.Common.ViewModel.Misc
             return findForecastJobHourSnapshot;
         }
 
-        public static FORECAST_JOB_SNAPSHOT FindExistingOrAddForecastJobSnapshot(IBluePrintsEntitiesUnitOfWork bluePrintsEntitiesUnitOfWork, Guid projectGuid, string subJobCode, string disciplineCode, string commodityCode, string variationCode, decimal budget, decimal tenderBudget, DateTime dataDate, bool commitToDb = false)
+        public static FORECAST_JOB_HOUR_SNAPSHOT FindExistingOrAddForecastJobSnapshot(IBluePrintsEntitiesUnitOfWork bluePrintsEntitiesUnitOfWork, Guid projectGuid, string subJobCode, string disciplineCode, string commodityCode, string variationCode, decimal budget, decimal tenderBudget, DateTime dataDate, bool commitToDb = false)
         {
-            FORECAST_JOB_SNAPSHOT findForecastJobSnapshot = bluePrintsEntitiesUnitOfWork.FORECAST_JOB_SNAPSHOTS.Where(x => x.GUID_PROJECT == projectGuid).FirstOrDefault(x => x.SUBJOB_CODE == subJobCode && x.DISCIPLINE_CODE == disciplineCode && x.COMMODITY_CODE == commodityCode && x.VARIATION_CODE == variationCode && x.DATA_DATE == dataDate);
+            FORECAST_JOB_HOUR_SNAPSHOT findForecastJobSnapshot = bluePrintsEntitiesUnitOfWork.FORECAST_JOB_HOUR_SNAPSHOTS.Where(x => x.GUID_PROJECT == projectGuid && x.DATA_DATE == dataDate).FirstOrDefault(x => x.SUBJOB_CODE == subJobCode && x.DISCIPLINE_CODE == disciplineCode && x.COMMODITY_CODE == commodityCode && x.VARIATION_CODE == variationCode);
             if (findForecastJobSnapshot != null)
                 return findForecastJobSnapshot;
             else
             {
-                FORECAST_JOB_SNAPSHOT newForecastJobSnapshot = new FORECAST_JOB_SNAPSHOT();
+                FORECAST_JOB_HOUR_SNAPSHOT newForecastJobSnapshot = new FORECAST_JOB_HOUR_SNAPSHOT();
                 newForecastJobSnapshot.SUBJOB_CODE = subJobCode;
                 newForecastJobSnapshot.DISCIPLINE_CODE = disciplineCode;
                 newForecastJobSnapshot.COMMODITY_CODE = commodityCode;
-                newForecastJobSnapshot.VARIATION_CODE = variationCode;
+                newForecastJobSnapshot.VARIATION_CODE = DataUtils.NormalizeString(variationCode);
+                newForecastJobSnapshot.STOCK_CODE = string.Empty; //job doesn't store stock code value
                 newForecastJobSnapshot.PROJECT_BUDGET = budget;
                 newForecastJobSnapshot.TENDER_BUDGET = tenderBudget;
                 newForecastJobSnapshot.GUID_PROJECT = projectGuid;
                 newForecastJobSnapshot.DATA_DATE = dataDate;
+                newForecastJobSnapshot.SNAPSHOT_TYPE = ForecastSnapshotValueType.Job;
                 newForecastJobSnapshot.CREATED = DateTime.Now;
                 newForecastJobSnapshot.CREATEDBY = LoginCredentials.CurrentUserGuid;
-                bluePrintsEntitiesUnitOfWork.FORECAST_JOB_SNAPSHOTS.Add(newForecastJobSnapshot);
+                bluePrintsEntitiesUnitOfWork.FORECAST_JOB_HOUR_SNAPSHOTS.Add(newForecastJobSnapshot);
 
                 if(commitToDb)
                     bluePrintsEntitiesUnitOfWork.SaveChanges();

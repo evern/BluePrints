@@ -64,7 +64,6 @@ namespace BluePrints.ViewModels
         {
             loaderCollection.AddLoaderDescription(bluePrintsUnitOfWorkFactory, x => x.FORECAST_JOB_HOUR_SNAPSHOTS, FORECAST_JOB_HOUR_SNAPSHOTProjectionFunc);
             loaderCollection.AddLoaderDescription(bluePrintsUnitOfWorkFactory, x => x.FORECAST_SUMMARY_SNAPSHOTS, FORECAST_SUMMARY_SNAPSHOTProjectionFunc, x => setDataDate(x));
-            loaderCollection.AddLoaderDescription(bluePrintsUnitOfWorkFactory, x => x.FORECAST_JOB_SNAPSHOTS, FORECAST_JOB_SNAPSHOTProjectionFunc);
             loaderCollection.AddLoaderDescription(bluePrintsUnitOfWorkFactory, x => x.DISCIPLINE_DESCS, DISCIPLINE_DESCProjectionFunc);
             loaderCollection.AddLoaderDescription<JOB_COSTGROUPS, JOB_COSTGROUPS, int, IPrimeroEntitiesUnitOfWork>(primeroUnitOfWorkFactory, x => x.JOB_COSTGROUPS);
         }
@@ -76,12 +75,7 @@ namespace BluePrints.ViewModels
 
         protected virtual Func<IRepositoryQuery<FORECAST_JOB_HOUR_SNAPSHOT>, IQueryable<FORECAST_JOB_HOUR_SNAPSHOT>> FORECAST_JOB_HOUR_SNAPSHOTProjectionFunc()
         {
-            return query => query.Where(x => x.FORECAST_JOB_SNAPSHOT.GUID_PROJECT == loadPROJECT.GUID);
-        }
-
-        protected virtual Func<IRepositoryQuery<FORECAST_JOB_SNAPSHOT>, IQueryable<FORECAST_JOB_SNAPSHOT>> FORECAST_JOB_SNAPSHOTProjectionFunc()
-        {
-            return query => query.Where(x => x.GUID_PROJECT == loadPROJECT.GUID && x.DATA_DATE == DataDate);
+            return query => query.Where(x => x.GUID_PROJECT == loadPROJECT.GUID);
         }
 
         protected virtual Func<IRepositoryQuery<DISCIPLINE_DESC>, IQueryable<DISCIPLINE_DESC>> DISCIPLINE_DESCProjectionFunc()
@@ -162,7 +156,13 @@ namespace BluePrints.ViewModels
             InitializeColumnSource(ParentViewColumns, ParentSummaries, alignedDataDateCollection, false);
             InitializeColumnSource(ChildViewColumns, ChildSummaries, alignedDataDateCollection, true);
 
-            LoadingScreenManager.ShowLoadingScreen(FORECAST_JOB_SNAPSHOTCollection.Count());
+            //data relevant to job
+            IEnumerable<FORECAST_JOB_HOUR_SNAPSHOT> forecastJobSnapshotJobCollection = FORECAST_JOB_HOUR_SNAPSHOTCollection.Where(x => x.SNAPSHOT_TYPE == Common.ForecastSnapshotValueType.Job && x.DATA_DATE == DataDate);
+
+            //data relevant to hours
+            IEnumerable<FORECAST_JOB_HOUR_SNAPSHOT> forecastJobSnapshotHoursCollection = FORECAST_JOB_HOUR_SNAPSHOTCollection.Where(x => x.SNAPSHOT_TYPE != Common.ForecastSnapshotValueType.Job && x.DATA_DATE == DataDate);
+
+            LoadingScreenManager.ShowLoadingScreen(forecastJobSnapshotJobCollection.Count());
             LoadingScreenManager.SetMessage("Preparing View...");
             //construct data points table
             dataPointsTable.Columns.Add(columnEntity, typeof(ForecastJobSnapshot));
@@ -174,7 +174,7 @@ namespace BluePrints.ViewModels
             }
 
             //child data table is used to record original value of actuals + committed + remaining values before it is overridden by forecasts
-            foreach (FORECAST_JOB_SNAPSHOT forecastJobSnapshot in FORECAST_JOB_SNAPSHOTCollection)
+            foreach (FORECAST_JOB_HOUR_SNAPSHOT forecastJobSnapshot in forecastJobSnapshotJobCollection)
             {
                 ForecastJobSnapshot forecastSnapshotData = new ForecastJobSnapshot();
                 forecastSnapshotData.SubJobCode = forecastJobSnapshot.SUBJOB_CODE;
@@ -183,10 +183,11 @@ namespace BluePrints.ViewModels
                 forecastSnapshotData.TenderBudget = forecastJobSnapshot.TENDER_BUDGET;
                 forecastSnapshotData.Budget = forecastJobSnapshot.PROJECT_BUDGET;
 
+                IEnumerable<FORECAST_JOB_HOUR_SNAPSHOT> relevantFORECAST_JOB_HOUR_SNAPSHOTS = forecastJobSnapshotHoursCollection.Where(x => x.SUBJOB_CODE == forecastJobSnapshot.SUBJOB_CODE && x.DISCIPLINE_CODE == forecastJobSnapshot.DISCIPLINE_CODE && x.COMMODITY_CODE == forecastJobSnapshot.COMMODITY_CODE && x.VARIATION_CODE == forecastJobSnapshot.VARIATION_CODE);
                 foreach (DateTime alignedDataDate in alignedDataDateCollection)
                 {
-                    IEnumerable<FORECAST_JOB_HOUR_SNAPSHOT> currentMonthFORECAST_JOB_HOUR_SNAPSHOTS = forecastJobSnapshot.FORECAST_JOB_HOUR_SNAPSHOT.Where(x => x.FORECAST_DATE.Date == alignedDataDate.Date);
-                    ForecastDateSnapshot forecastDateSnapshot = new ForecastDateSnapshot(forecastJobSnapshot.FORECAST_JOB_HOUR_SNAPSHOT, alignedDataDate.Date);
+                    IEnumerable<FORECAST_JOB_HOUR_SNAPSHOT> currentMonthFORECAST_JOB_HOUR_SNAPSHOTS = relevantFORECAST_JOB_HOUR_SNAPSHOTS.Where(x => x.FORECAST_DATE != null && ((DateTime)x.FORECAST_DATE).Date == alignedDataDate.Date);
+                    ForecastDateSnapshot forecastDateSnapshot = new ForecastDateSnapshot(relevantFORECAST_JOB_HOUR_SNAPSHOTS, alignedDataDate.Date);
                     forecastSnapshotData.DateCosts.Add(forecastDateSnapshot);
                 }
 
@@ -361,7 +362,7 @@ namespace BluePrints.ViewModels
 
         private List<DateTime> generateDates()
         {
-            DateTime endDateToGenerate = FORECAST_JOB_HOUR_SNAPSHOTCollection.Max(x => x.FORECAST_DATE);
+            DateTime endDateToGenerate = FORECAST_JOB_HOUR_SNAPSHOTCollection.Where(x => x.FORECAST_DATE != null).Max(x => (DateTime)x.FORECAST_DATE);
             DateTime firstDateToGenerateFrom = new DateTime();
             firstDateToGenerateFrom = DataDate;
 
@@ -493,14 +494,6 @@ namespace BluePrints.ViewModels
             get
             {
                 return GetEntities<FORECAST_JOB_HOUR_SNAPSHOT>();
-            }
-        }
-
-        public IEnumerable<FORECAST_JOB_SNAPSHOT> FORECAST_JOB_SNAPSHOTCollection
-        {
-            get
-            {
-                return GetEntities<FORECAST_JOB_SNAPSHOT>();
             }
         }
 

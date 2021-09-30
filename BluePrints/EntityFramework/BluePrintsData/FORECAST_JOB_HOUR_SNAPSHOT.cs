@@ -21,14 +21,31 @@ namespace BluePrints.Data
         [Key]
         public Guid GUID { get; set; }
 
-        public Guid GUID_FORECAST_JOB_SNAPSHOT { get; set; }
+        public Guid GUID_PROJECT { get; set; }
+
+        [Required]
+        [StringLength(50)]
+        public string SUBJOB_CODE { get; set; }
+
+        [StringLength(50)]
+        public string DISCIPLINE_CODE { get; set; }
+
+        [StringLength(50)]
+        public string COMMODITY_CODE { get; set; }
+
+        [StringLength(250)]
+        public string VARIATION_CODE { get; set; }
 
         [StringLength(50)]
         public string STOCK_CODE { get; set; }
 
         public ForecastSnapshotValueType SNAPSHOT_TYPE { get; set; }
 
-        public DateTime FORECAST_DATE { get; set; }
+        public DateTime DATA_DATE { get; set; }
+
+        public DateTime? FORECAST_DATE { get; set; }
+
+        public decimal TENDER_BUDGET { get; set; }
 
         public decimal PROJECT_BUDGET { get; set; }
 
@@ -48,6 +65,6 @@ namespace BluePrints.Data
 
         public Guid? DELETEDBY { get; set; }
 
-        public virtual FORECAST_JOB_SNAPSHOT FORECAST_JOB_SNAPSHOT { get; set; }
+        public virtual PROJECT PROJECT { get; set; }
     }
 }

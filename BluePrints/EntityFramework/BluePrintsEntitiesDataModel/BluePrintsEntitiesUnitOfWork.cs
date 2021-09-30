@@ -161,11 +161,6 @@ namespace BluePrints.BluePrintsEntitiesDataModel
             get { return GetRepository(x => x.Set<FORECAST_JOB_HOUR_SNAPSHOT>(), (FORECAST_JOB_HOUR_SNAPSHOT x) => x.GUID); }
         }
 
-        public IRepository<FORECAST_JOB_SNAPSHOT, Guid> FORECAST_JOB_SNAPSHOTS
-        {
-            get { return GetRepository(x => x.Set<FORECAST_JOB_SNAPSHOT>(), (FORECAST_JOB_SNAPSHOT x) => x.GUID); }
-        }
-
         public IRepository<FORECAST_SUMMARY_SNAPSHOT, Guid> FORECAST_SUMMARY_SNAPSHOTS
         {
             get { return GetRepository(x => x.Set<FORECAST_SUMMARY_SNAPSHOT>(), (FORECAST_SUMMARY_SNAPSHOT x) => x.GUID); }

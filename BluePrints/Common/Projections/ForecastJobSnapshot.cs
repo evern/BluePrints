@@ -158,7 +158,7 @@ namespace BluePrints.Common.Projections
         public ForecastDateSnapshot(IEnumerable<FORECAST_JOB_HOUR_SNAPSHOT> byDateForecastJobHourSnapshots, DateTime date)
         {
             Date = date;
-            this.byDateForecastJobHourSnapshots = byDateForecastJobHourSnapshots.Where(x => x.FORECAST_DATE.Date == Date.Date);
+            this.byDateForecastJobHourSnapshots = byDateForecastJobHourSnapshots.Where(x => x.FORECAST_DATE != null &&  ((DateTime)x.FORECAST_DATE).Date == Date.Date);
         }
 
         public IEnumerable<FORECAST_JOB_HOUR_SNAPSHOT> POForecastSnapshots => byDateForecastJobHourSnapshots.Where(x => x.SNAPSHOT_TYPE == Common.ForecastSnapshotValueType.POForecast);

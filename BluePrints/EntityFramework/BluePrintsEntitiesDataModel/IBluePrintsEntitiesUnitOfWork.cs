@@ -142,11 +142,6 @@ namespace BluePrints.BluePrintsEntitiesDataModel
         IRepository<FORECAST_JOB_HOUR_SNAPSHOT, Guid> FORECAST_JOB_HOUR_SNAPSHOTS { get; }
 
         /// <summary>
-        /// The FORECAST_JOB_SNAPSHOT entities repository.
-        /// </summary>
-        IRepository<FORECAST_JOB_SNAPSHOT, Guid> FORECAST_JOB_SNAPSHOTS { get; }
-
-        /// <summary>
         /// The FORECAST_SUMMARY_SNAPSHOT entities repository.
         /// </summary>
         IRepository<FORECAST_SUMMARY_SNAPSHOT, Guid> FORECAST_SUMMARY_SNAPSHOTS { get; }
