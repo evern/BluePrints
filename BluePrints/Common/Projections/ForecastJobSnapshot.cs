@@ -23,52 +23,36 @@ namespace BluePrints.Common.Projections
         }
         public string PhaseCode => BluePrintsDataUtils.GetPhaseCode(SubJobCode);
 
-        public string AreaCode
-        {
-            get
-            {
-                if (SubJobCode == string.Empty)
-                    return string.Empty;
-                else if (SubJobCode.Length < 15)
-                    return string.Empty;
+        public string AreaCode => BluePrintsDataUtils.GetAreaCode(SubJobCode);
 
-                return SubJobCode.Substring(6, 3);
-            }
-        }
-
-        public string SubAreaCode
-        {
-            get
-            {
-                if (SubJobCode == string.Empty)
-                    return string.Empty;
-                else if (SubJobCode.Length < 15)
-                    return string.Empty;
-
-                return SubJobCode.Substring(10, 2);
-            }
-        }
+        public string SubAreaCode => BluePrintsDataUtils.GetSubAreaCode(SubJobCode);
 
         public string SubJobCode { get; set; }
-
         public string DisciplineCode { get; set; }
-
         public string DisciplineDesc { get; set; }
-
         public string CommodityCode { get; set; }
-
+        public string VariationCode { get; set; }
         public string DropDownPhase { get; set; }
-
         public decimal TenderBudget { get; set; }
-
         public decimal Budget { get; set; }
-
+        public decimal ActualCosts { get; set; }
+        public decimal ActualUnits { get; set; }
         public string CompareMask { get; set; }
 
         #region IForecastViewModel
         //used by detailed rows so that only P6 hour row can be edited
         public bool IsP6HoursRow { get; set; }
         public decimal DropDownIndirectBudget { get; set; }
+
+        #region Rate Members
+        public decimal P6RemainingUnits { get; set; }
+        public decimal P6RemainingCosts { get; set; }
+        public RATE FallBackRate { get; set; }
+        public decimal P6NominalRate => P6RemainingUnits == 0 ? FallBackRate == null ? 0 : FallBackRate.RATE1 == null ? 0 : (decimal)FallBackRate.RATE1 : P6RemainingCosts / P6RemainingUnits; 
+        #endregion
+
+        //store P6 units either native or from override
+        public decimal? P6RemainingUnitsOverride { get; set; }
         public IEnumerable<IForecastDateCostViewModel> ForecastDateCosts => DateCosts; 
         #endregion
 
@@ -154,11 +138,23 @@ namespace BluePrints.Common.Projections
 
     public class ForecastDateSnapshot : IForecastDateCostViewModel
     {
+        public readonly DateTime FloorDate;
+        public readonly DateTime CeilingDate;
+        private readonly DateTime firstViewDate;
+        private readonly DateTime firstForecastDate;
         readonly IEnumerable<FORECAST_JOB_HOUR_SNAPSHOT> byDateForecastJobHourSnapshots;
-        public ForecastDateSnapshot(IEnumerable<FORECAST_JOB_HOUR_SNAPSHOT> byDateForecastJobHourSnapshots, DateTime date)
+        public ForecastDateSnapshot(IEnumerable<FORECAST_JOB_HOUR_SNAPSHOT> byDataDateForecastJobHourSnapshots, DateTime firstViewDate, DateTime date, DateTime dataDate)
         {
-            Date = date;
-            this.byDateForecastJobHourSnapshots = byDateForecastJobHourSnapshots.Where(x => x.FORECAST_DATE != null &&  ((DateTime)x.FORECAST_DATE).Date == Date.Date);
+            Date = date; 
+            
+            this.firstViewDate = firstViewDate;
+            this.firstForecastDate = dataDate;
+
+            firstForecastDate = new DateTime(dataDate.Date.Year, dataDate.Date.Month, 1).AddMonths(2).AddDays(-1);
+            FloorDate = new DateTime(date.Date.Year, date.Date.Month, 1);
+            CeilingDate = FloorDate.AddMonths(1).AddDays(-1);
+
+            this.byDateForecastJobHourSnapshots = byDataDateForecastJobHourSnapshots.Where(x => x.FORECAST_DATE != null &&  ((DateTime)x.FORECAST_DATE).Date == Date.Date);
         }
 
         public IEnumerable<FORECAST_JOB_HOUR_SNAPSHOT> POForecastSnapshots => byDateForecastJobHourSnapshots.Where(x => x.SNAPSHOT_TYPE == Common.ForecastSnapshotValueType.POForecast);
@@ -174,6 +170,7 @@ namespace BluePrints.Common.Projections
         public decimal IndirectForecastCosts => IndirectForecastSnapshots.Sum(x => x.FORECAST_COST);
         public decimal MaterialCosts => MaterialForecastSnapshots.Sum(x => x.FORECAST_COST);
         public decimal ActualCosts => ActualForecastSnapshots.Sum(x => x.FORECAST_COST);
+        public decimal P6Hours => P6Snapshots.Sum(x => x.FORECAST_QTY);
         public decimal P6Costs => P6Snapshots.Sum(x => x.FORECAST_COST);
         public decimal P6Quantities => P6Snapshots.Sum(x => x.FORECAST_QTY);
         public decimal? P6OverrideCost

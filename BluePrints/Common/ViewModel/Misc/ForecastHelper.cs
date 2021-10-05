@@ -627,7 +627,7 @@ namespace BluePrints.Common.ViewModel.Misc
                 newForecastJobSnapshot.TENDER_BUDGET = tenderBudget;
                 newForecastJobSnapshot.GUID_PROJECT = projectGuid;
                 newForecastJobSnapshot.DATA_DATE = dataDate;
-                newForecastJobSnapshot.SNAPSHOT_TYPE = ForecastSnapshotValueType.Job;
+                newForecastJobSnapshot.SNAPSHOT_TYPE = ForecastSnapshotValueType.Budget;
                 newForecastJobSnapshot.CREATED = DateTime.Now;
                 newForecastJobSnapshot.CREATEDBY = LoginCredentials.CurrentUserGuid;
                 bluePrintsEntitiesUnitOfWork.FORECAST_JOB_HOUR_SNAPSHOTS.Add(newForecastJobSnapshot);

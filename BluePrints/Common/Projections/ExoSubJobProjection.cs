@@ -183,12 +183,7 @@ namespace BluePrints.Common.Projections
         {
             get
             {
-                if (SubJobCode == string.Empty)
-                    return string.Empty;
-                else if (SubJobCode.Length < 15)
-                    return string.Empty;
-
-                return SubJobCode.Substring(6, 3);
+                return BluePrintsDataUtils.GetAreaCode(SubJobCode);
             }
         }
 
@@ -196,12 +191,7 @@ namespace BluePrints.Common.Projections
         {
             get
             {
-                if (SubJobCode == string.Empty)
-                    return string.Empty;
-                else if (SubJobCode.Length < 15)
-                    return string.Empty;
-
-                return SubJobCode.Substring(10, 2);
+                return BluePrintsDataUtils.GetSubAreaCode(SubJobCode);
             }
         }
 

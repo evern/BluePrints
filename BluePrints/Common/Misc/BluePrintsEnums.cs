@@ -55,8 +55,8 @@ namespace BluePrints.Common
 
     public enum ForecastSnapshotValueType
     {
-        [Display(Name = "Job")]
-        Job,
+        [Display(Name = "Budget")]
+        Budget,
         [Display(Name = "Actual")]
         Actual,
         [Display(Name = "Material")]
