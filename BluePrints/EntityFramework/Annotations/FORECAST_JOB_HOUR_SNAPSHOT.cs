@@ -36,6 +36,8 @@ namespace BluePrints.Data
             }
         }
 
+        public string ForecastViewCode => string.Concat(SUBJOB_CODE, ";", DISCIPLINE_CODE, ";", COMMODITY_CODE, ";", VARIATION_CODE);
+
         public string Office => BluePrintsResources.GlobalOffice;
 
         public string PhaseCode => BluePrintsDataUtils.GetPhaseCode(SUBJOB_CODE);

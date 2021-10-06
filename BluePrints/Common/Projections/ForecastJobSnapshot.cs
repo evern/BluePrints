@@ -48,9 +48,11 @@ namespace BluePrints.Common.Projections
         public decimal P6RemainingUnits { get; set; }
         public decimal P6RemainingCosts { get; set; }
         public RATE FallBackRate { get; set; }
-        public decimal P6NominalRate => P6RemainingUnits == 0 ? FallBackRate == null ? 0 : FallBackRate.RATE1 == null ? 0 : (decimal)FallBackRate.RATE1 : P6RemainingCosts / P6RemainingUnits; 
+        public decimal P6NominalRate => P6RemainingUnits == 0 ? FallBackRate == null ? 0 : FallBackRate.RATE1 == null ? 0 : (decimal)FallBackRate.RATE1 : P6RemainingCosts / P6RemainingUnits;
         #endregion
 
+
+        public decimal Productivity { get; set; }
         //store P6 units either native or from override
         public decimal? P6RemainingUnitsOverride { get; set; }
         public IEnumerable<IForecastDateCostViewModel> ForecastDateCosts => DateCosts; 
