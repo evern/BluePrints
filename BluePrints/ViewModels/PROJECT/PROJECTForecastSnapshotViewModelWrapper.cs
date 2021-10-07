@@ -242,7 +242,7 @@ namespace BluePrints.ViewModels
                 uniqueForecastJobs.Add(new UniqueForecastJob(subJobCode, disciplineCode, commodityCode, variationCode, FORECAST_JOB_HOUR_SNAPSHOTCollection));
             }
 
-            Common.LoadingScreenManager.ShowLoadingScreen(FORECAST_JOB_HOUR_SNAPSHOTCollection.Count());
+            Common.LoadingScreenManager.ShowLoadingScreen(uniqueForecastJobs.Count());
             Common.LoadingScreenManager.SetMessage("Preparing View...");
             //construct data points table
             dataPointsTable.Columns.Add(columnEntity, typeof(ForecastJobSnapshot));
@@ -402,6 +402,7 @@ namespace BluePrints.ViewModels
             dataPointsTable.Rows.Add(commodityRow);
             decimal P6TotalCurrentRemainingUnits = 0;
 
+            List<FORECAST> relevantFORECASTS = FORECASTCollection.Where(x => x.SUBJOB_CODE == job.SubJobCode && x.DISCIPLINE_CODE == job.DisciplineCode && x.COMMODITY_CODE == job.CommodityCode && x.VARIATION_CODE == job.VariationCode).ToList();
             foreach (ForecastDateSnapshot dateCost in job.DateCosts)
             {
                 foreach (FORECAST_JOB_HOUR_SNAPSHOT poForecastSnapshot in dateCost.POForecastSnapshots)
@@ -435,9 +436,7 @@ namespace BluePrints.ViewModels
                 //retrieve original p6 values
                 compareChildP6CostsRemainingRow[dateCost.Date.ToString(BluePrintsResources.ColumnDateFormat)] = dateCost.P6Costs;
                 compareChildP6UnitsRemainingRow[dateCost.Date.ToString(BluePrintsResources.ColumnDateFormat)] = dateCost.P6Quantities;
-
-                List<FORECAST> relevantFORECASTS = FORECASTCollection.Where(x => x.SUBJOB_CODE == job.SubJobCode && x.DISCIPLINE_CODE == job.DisciplineCode && x.COMMODITY_CODE == job.CommodityCode && x.VARIATION_CODE == job.VariationCode).ToList();
-                List<FORECAST> forecastOverrides = relevantFORECASTS.Where(x => x.FORECAST_UNITS != null && x.FORECAST_DATE >= dateCost.FloorDate && x.FORECAST_DATE <= dateCost.CeilingDate).ToList();
+                List<FORECAST> forecastOverrides = relevantFORECASTS.Where(x => x.FORECAST_UNITS != null && x.FORECAST_DATE >= dateCost.MonthStartDate && x.FORECAST_DATE <= dateCost.MonthEndDate).ToList();
                 List<FORECAST> forecastCostsOverrides = forecastOverrides.Where(x => x.FORECAST_TYPE == Common.ForecastDataType.Cost).ToList();
                 List<FORECAST> forecastUnitsOverrides = forecastOverrides.Where(x => x.FORECAST_TYPE == Common.ForecastDataType.P6).ToList();
                 List<FORECAST> forecastJobHourOverrides = forecastOverrides.Where(x => x.FORECAST_TYPE == Common.ForecastDataType.Hour).ToList();
@@ -479,14 +478,14 @@ namespace BluePrints.ViewModels
             }
 
             job.P6RemainingUnitsOverride = P6TotalCurrentRemainingUnits;
-            updateViewForecastsOnDatesFromDb(commodityRow);
+            updateViewForecastsOnDatesFromDb(commodityRow, false, relevantFORECASTS);
             return commodityRow;
         }
 
         /// <summary>
         /// Updates the view with forecast values from db for a single row
         /// </summary>
-        private void updateViewForecastsOnDatesFromDb(DataRow dataRow, bool searchParentRow = false)
+        private void updateViewForecastsOnDatesFromDb(DataRow dataRow, bool searchParentRow = false, List<FORECAST> relevantFORECASTS = null)
         {
             ForecastJobSnapshot job = (ForecastJobSnapshot)dataRow[columnEntity];
             //need to map back into main row because datarow could be coming from p6 hours edit
@@ -500,7 +499,7 @@ namespace BluePrints.ViewModels
             DataTable childCompareDataTable = (DataTable)p6HoursRow[columnCompare];
             DataRow childCompareP6CostsRow = childCompareDataTable.Rows[Convert.ToInt32(BluePrintsResources.ForecastCompareChild_P6CostRowIndex)];
 
-            List<FORECAST> currentRowFORECASTS = FORECASTCollection.Where(x => x.SUBJOB_CODE == job.SubJobCode && x.DISCIPLINE_CODE == job.DisciplineCode && x.COMMODITY_CODE == job.CommodityCode && x.VARIATION_CODE == job.VariationCode).ToList();
+            List<FORECAST> currentRowFORECASTS = relevantFORECASTS != null ? relevantFORECASTS : FORECASTCollection.Where(x => x.SUBJOB_CODE == job.SubJobCode && x.DISCIPLINE_CODE == job.DisciplineCode && x.COMMODITY_CODE == job.CommodityCode && x.VARIATION_CODE == job.VariationCode).ToList();
 
             decimal P6CurrentRemainingUnits = 0;
             foreach (ForecastDateSnapshot dateCost in job.DateCosts)
@@ -514,8 +513,8 @@ namespace BluePrints.ViewModels
                     {
                         if (dataPointsTable.Columns.Contains(alignedDateField))
                         {
-                            IEnumerable<FORECAST> currentRowDateFORECAST = currentRowFORECASTS.Where(x => x.FORECAST_UNITS != null && x.FORECAST_TYPE == ForecastDataType.Cost && x.FORECAST_DATE >= dateCost.FloorDate && x.FORECAST_DATE <= dateCost.CeilingDate);
-                            IEnumerable<FORECAST> currentRowP6OverrideFORECAST = currentRowFORECASTS.Where(x => x.FORECAST_UNITS != null && x.FORECAST_TYPE == ForecastDataType.P6 && x.FORECAST_DATE >= dateCost.FloorDate && x.FORECAST_DATE <= dateCost.CeilingDate);
+                            IEnumerable<FORECAST> currentRowDateFORECAST = currentRowFORECASTS.Where(x => x.FORECAST_UNITS != null && x.FORECAST_TYPE == ForecastDataType.Cost && x.FORECAST_DATE >= dateCost.MonthStartDate && x.FORECAST_DATE <= dateCost.MonthEndDate);
+                            IEnumerable<FORECAST> currentRowP6OverrideFORECAST = currentRowFORECASTS.Where(x => x.FORECAST_UNITS != null && x.FORECAST_TYPE == ForecastDataType.P6 && x.FORECAST_DATE >= dateCost.MonthStartDate && x.FORECAST_DATE <= dateCost.MonthEndDate);
 
                             decimal currentP6Units = (decimal)p6HoursRow[alignedDateField];
                             P6CurrentRemainingUnits += currentP6Units;
@@ -622,7 +621,8 @@ namespace BluePrints.ViewModels
 
         private List<DateTime> generateDates()
         {
-            DateTime endDateToGenerate = FORECAST_JOB_HOUR_SNAPSHOTCollection.Where(x => x.FORECAST_DATE != null).Max(x => (DateTime)x.FORECAST_DATE);
+            List<FORECAST_JOB_HOUR_SNAPSHOT> snapShots = FORECAST_JOB_HOUR_SNAPSHOTCollection.Where(x => x.FORECAST_DATE != null).ToList();
+            DateTime endDateToGenerate = snapShots.Count == 0 ? DateTime.Now.AddMonths(1) : snapShots.Max(x => (DateTime)x.FORECAST_DATE);
             DateTime firstDateToGenerateFrom = new DateTime();
             firstDateToGenerateFrom = FixedDataDate;
 
@@ -716,13 +716,16 @@ namespace BluePrints.ViewModels
             {
                 string columnFieldName = alignedDate.Date.ToString(BluePrintsResources.ColumnDateFormat);
 
-                if (isChild)
-                    columns.Add(new ColumnDescriptor() { FieldName = columnFieldName, ReadOnly = false, Header = columnFieldName, Fixed = FixedStyle.None, Width = 60, Settings = SettingsType.ForecastChild });
-                else
-                    columns.Add(new ColumnDescriptor() { FieldName = columnFieldName, ReadOnly = false, Header = columnFieldName, Fixed = FixedStyle.None, Width = 60, Settings = SettingsType.ForecastFuture });
+                if (alignedDate > FixedDataDateMonthEnd)
+                {
+                    if (isChild)
+                        columns.Add(new ColumnDescriptor() { FieldName = columnFieldName, ReadOnly = false, Header = columnFieldName, Fixed = FixedStyle.None, Width = 60, Settings = SettingsType.ForecastChild });
+                    else
+                        columns.Add(new ColumnDescriptor() { FieldName = columnFieldName, ReadOnly = false, Header = columnFieldName, Fixed = FixedStyle.None, Width = 60, Settings = SettingsType.ForecastFuture });
 
-                if (!isChild)
-                    summaries.Add(new SummaryDescriptor() { FieldName = columnFieldName, DisplayFormat = "c0", Type = SummaryItemType.Sum });
+                    if (!isChild)
+                        summaries.Add(new SummaryDescriptor() { FieldName = columnFieldName, DisplayFormat = "c0", Type = SummaryItemType.Sum });
+                }
             }
         }
         #endregion
@@ -751,6 +754,29 @@ namespace BluePrints.ViewModels
         public override string ViewName
         {
             get { return "PROJECTForecastSnapshotViewModelWrapper_v2"; }
+        }
+
+        public async void RefreshAllForecastData()
+        {
+            Common.LoadingScreenManager.ShowLoadingScreen(1);
+            //Common.LoadingScreenManager.SetMessage("Fetching P6 remaining data...");
+            //await BluePrintsContextHelper.RefreshDeliverablesRemainingDataPointsByProject(LoadPROJECT.NUMBER, true);
+
+            //Common.LoadingScreenManager.SetMessage("Fetching P6 planned data...");
+            //await BluePrintsContextHelper.RefreshDeliverablesPlannedDataPointsByProject(LoadPROJECT.NUMBER, true);
+
+            Common.LoadingScreenManager.SetMessage("Updating actuals, indirect, P6 and PO data...");
+            BluePrintsContextHelper.RefreshAllForecastData(LoadPROJECT.NUMBER, FixedDataDate);
+            Common.LoadingScreenManager.CloseLoadingScreen();
+
+            FullRefresh();
+        }
+
+        public override void FullRefresh()
+        {
+            alignedDataDateCollection.Clear();
+            //ForecastSummary.Reset();
+            base.FullRefresh();
         }
 
         public IEnumerable<FORECAST_JOB_HOUR_SNAPSHOT> FORECAST_JOB_HOUR_SNAPSHOTCollection

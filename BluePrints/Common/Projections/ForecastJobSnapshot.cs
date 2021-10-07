@@ -140,8 +140,8 @@ namespace BluePrints.Common.Projections
 
     public class ForecastDateSnapshot : IForecastDateCostViewModel
     {
-        public readonly DateTime FloorDate;
-        public readonly DateTime CeilingDate;
+        public readonly DateTime MonthStartDate;
+        public readonly DateTime MonthEndDate;
         private readonly DateTime firstViewDate;
         private readonly DateTime firstForecastDate;
         readonly IEnumerable<FORECAST_JOB_HOUR_SNAPSHOT> byDateForecastJobHourSnapshots;
@@ -153,8 +153,8 @@ namespace BluePrints.Common.Projections
             this.firstForecastDate = dataDate;
 
             firstForecastDate = new DateTime(dataDate.Date.Year, dataDate.Date.Month, 1).AddMonths(2).AddDays(-1);
-            FloorDate = new DateTime(date.Date.Year, date.Date.Month, 1);
-            CeilingDate = FloorDate.AddMonths(1).AddDays(-1);
+            MonthStartDate = new DateTime(date.Date.Year, date.Date.Month, 1);
+            MonthEndDate = MonthStartDate.AddMonths(1).AddDays(-1);
 
             this.byDateForecastJobHourSnapshots = byDataDateForecastJobHourSnapshots.Where(x => x.FORECAST_DATE != null &&  ((DateTime)x.FORECAST_DATE).Date == Date.Date);
         }

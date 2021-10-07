@@ -340,6 +340,7 @@
                 <dxb:BarCheckItem x:Name="biShowActuals" Content="Show Actuals History" Glyph="{dxc:DXImage Images/Scheduling/SwitchTimeScalesTo_16x16.png}" IsChecked="{Binding IsShowActualsHistory, Mode=TwoWay}" IsEnabled="{Binding IsLoading, Converter={StaticResource BooleanNegationConverter}}" LargeGlyph="{dxc:DXImage Images/Scheduling/SwitchTimeScalesTo_32x32.png}" RibbonStyle="SmallWithText" ToolTip="Toggle historical actuals visibility" />
                 <dxb:BarButtonItem x:Name="biSaveSummary" Command="{Binding SaveSummaryCommand}" Content="Save Excel Summary" Glyph="{dx:DXImage Image=SpreadsheetInsertTable_16x16.png}" LargeGlyph="{dx:DXImage Image=SpreadsheetInsertTable_32x32.png}" RibbonStyle="SmallWithText" ToolTip="Saves the summary for excel macro to retrieve values" />
                 <dxb:BarButtonItem x:Name="biSaveSnapshot" Command="{Binding SaveViewCommand}" Content="Save Snapshot" LargeGlyph="{dx:DXImage Images/Toolbox Items/PictureBox_32x32.png}" RibbonStyle="SmallWithText" ToolTip="Saves the summary for excel macro to retrieve values" Glyph="{dxc:DXImage Images/Toolbox Items/PictureBox_16x16.png}" />
+                <dxb:BarButtonItem x:Name="biRefreshAllData" Command="{Binding RefreshAllForecastDataCommand}" Content="Refresh All Data" LargeGlyph="{dx:DXImage Images/Toolbox Items/PictureBox_32x32.png}" RibbonStyle="SmallWithText" ToolTip="Refresh actuals, budget, indirects, P6 and PO data" Glyph="{dxc:DXImage Images/Toolbox Items/PictureBox_16x16.png}" />
             </dxb:BarManager.Items>
             <DockPanel>
                 <dxr:RibbonControl Style="{StaticResource DefaultRibbonControlStyle}">
@@ -379,6 +380,7 @@
                                 <dxb:BarEditItemLink BarItemName="beForecastProject" />
                                 <dxb:BarEditItemLink BarItemName="beLastRefreshed" />
                                 <dxb:BarButtonItemLink BarItemName="biReloadP6" />
+                                <dxb:BarButtonItemLink BarItemName="biRefreshAllData" />
                             </dxr:RibbonPageGroup>
                         </dxr:RibbonPage>
                     </dxr:RibbonDefaultPageCategory>
