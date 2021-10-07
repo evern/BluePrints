@@ -147,7 +147,7 @@ namespace BluePrints.Common.Projections
         readonly IEnumerable<FORECAST_JOB_HOUR_SNAPSHOT> byDateForecastJobHourSnapshots;
         public ForecastDateSnapshot(IEnumerable<FORECAST_JOB_HOUR_SNAPSHOT> byDataDateForecastJobHourSnapshots, DateTime firstViewDate, DateTime date, DateTime dataDate)
         {
-            Date = date; 
+            QueryDate = date; 
             
             this.firstViewDate = firstViewDate;
             this.firstForecastDate = dataDate;
@@ -156,77 +156,50 @@ namespace BluePrints.Common.Projections
             MonthStartDate = new DateTime(date.Date.Year, date.Date.Month, 1);
             MonthEndDate = MonthStartDate.AddMonths(1).AddDays(-1);
 
-            this.byDateForecastJobHourSnapshots = byDataDateForecastJobHourSnapshots.Where(x => x.FORECAST_DATE != null &&  ((DateTime)x.FORECAST_DATE).Date == Date.Date);
+            this.byDateForecastJobHourSnapshots = byDataDateForecastJobHourSnapshots.Where(x => x.FORECAST_DATE != null &&  ((DateTime)x.FORECAST_DATE).Month == QueryDate.Month && ((DateTime)x.FORECAST_DATE).Year == QueryDate.Year);
         }
 
-        public IEnumerable<FORECAST_JOB_HOUR_SNAPSHOT> POForecastSnapshots => byDateForecastJobHourSnapshots.Where(x => x.SNAPSHOT_TYPE == Common.ForecastSnapshotValueType.POForecast);
-        public IEnumerable<FORECAST_JOB_HOUR_SNAPSHOT> IndirectForecastSnapshots => byDateForecastJobHourSnapshots.Where(x => x.SNAPSHOT_TYPE == Common.ForecastSnapshotValueType.IndirectForecast);
-        public IEnumerable<FORECAST_JOB_HOUR_SNAPSHOT> MaterialForecastSnapshots => byDateForecastJobHourSnapshots.Where(x => x.SNAPSHOT_TYPE == Common.ForecastSnapshotValueType.Material);
-        public IEnumerable<FORECAST_JOB_HOUR_SNAPSHOT> ActualForecastSnapshots => byDateForecastJobHourSnapshots.Where(x => x.SNAPSHOT_TYPE == Common.ForecastSnapshotValueType.Actual);
-        public IEnumerable<FORECAST_JOB_HOUR_SNAPSHOT> P6Snapshots => byDateForecastJobHourSnapshots.Where(x => x.SNAPSHOT_TYPE == Common.ForecastSnapshotValueType.P6Original);
-        public IEnumerable<FORECAST_JOB_HOUR_SNAPSHOT> P6OverrideSnapshots => byDateForecastJobHourSnapshots.Where(x => x.SNAPSHOT_TYPE == Common.ForecastSnapshotValueType.P6Override);
-        public IEnumerable<FORECAST_JOB_HOUR_SNAPSHOT> ViewOverrideSnapshots => byDateForecastJobHourSnapshots.Where(x => x.SNAPSHOT_TYPE == Common.ForecastSnapshotValueType.DiscretionaryTotal);
+        public IEnumerable<FORECAST_JOB_HOUR_SNAPSHOT> POForecastSnapshots => byDateForecastJobHourSnapshots.Where(x => x.SNAPSHOT_TYPE == ForecastSnapshotValueType.POForecast);
+        public IEnumerable<FORECAST_JOB_HOUR_SNAPSHOT> IndirectForecastSnapshots => byDateForecastJobHourSnapshots.Where(x => x.SNAPSHOT_TYPE == ForecastSnapshotValueType.IndirectForecast);
+        public IEnumerable<FORECAST_JOB_HOUR_SNAPSHOT> MaterialForecastSnapshots => byDateForecastJobHourSnapshots.Where(x => x.SNAPSHOT_TYPE == ForecastSnapshotValueType.Material);
+        public IEnumerable<FORECAST_JOB_HOUR_SNAPSHOT> ActualForecastSnapshots => byDateForecastJobHourSnapshots.Where(x => x.SNAPSHOT_TYPE == ForecastSnapshotValueType.Actual);
+        public IEnumerable<FORECAST_JOB_HOUR_SNAPSHOT> P6Snapshots => byDateForecastJobHourSnapshots.Where(x => x.SNAPSHOT_TYPE == ForecastSnapshotValueType.P6Original);
 
-        public DateTime Date { get; set; }
+        public DateTime QueryDate { get; set; }
         public decimal POForecastCosts => POForecastSnapshots.Sum(x => x.FORECAST_COST);
         public decimal IndirectForecastCosts => IndirectForecastSnapshots.Sum(x => x.FORECAST_COST);
         public decimal MaterialCosts => MaterialForecastSnapshots.Sum(x => x.FORECAST_COST);
         public decimal ActualCosts => ActualForecastSnapshots.Sum(x => x.FORECAST_COST);
-        public decimal P6Hours => P6Snapshots.Sum(x => x.FORECAST_QTY);
-        public decimal P6Costs => P6Snapshots.Sum(x => x.FORECAST_COST);
+        public decimal P6Hours
+        {
+            get
+            {
+                if (P6Snapshots.Count() == 0)
+                    return 0;
+
+                return P6Snapshots.Sum(x => x.FORECAST_QTY);
+            }
+
+        }
+
+        public decimal P6Costs
+        {
+            get
+            {
+                if (P6Snapshots.Count() == 0)
+                    return 0;
+
+                return P6Snapshots.Sum(x => x.FORECAST_COST);
+            }
+        }
+
         public decimal P6Quantities => P6Snapshots.Sum(x => x.FORECAST_QTY);
-        public decimal? P6OverrideCost
-        {
-            get
-            {
-                if (P6OverrideSnapshots.Count() == 0)
-                    return null;
-
-                return P6OverrideSnapshots.Sum(x => x.FORECAST_COST);
-            }
-        }
-
-        public decimal? P6OverrideQuantity
-        {
-            get
-            {
-                if (P6OverrideSnapshots.Count() == 0)
-                    return null;
-
-                return P6OverrideSnapshots.Sum(x => x.FORECAST_QTY);
-            }
-        }
-
-        public decimal? ViewOverrideCost
-        {
-            get
-            {
-                if (ViewOverrideSnapshots.Count() == 0)
-                    return null;
-
-                return ViewOverrideSnapshots.Sum(x => x.FORECAST_COST);
-            }
-        }
-
-        public decimal P6ViewCost
-        {
-            get
-            {
-                if (P6OverrideCost != null)
-                    return (decimal)P6OverrideCost;
-
-                return P6Costs;
-            }
-        }
 
         public decimal TotalCosts
         {
             get
             {
-                if (ViewOverrideCost != null)
-                    return (decimal)ViewOverrideCost;
-
-                return ActualCosts + MaterialCosts + P6ViewCost + POForecastCosts + IndirectForecastCosts;
+                return ActualCosts + MaterialCosts + POForecastCosts + IndirectForecastCosts + P6Costs;
             }
         }
     }

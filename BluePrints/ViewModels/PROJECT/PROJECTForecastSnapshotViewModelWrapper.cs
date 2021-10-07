@@ -272,7 +272,7 @@ namespace BluePrints.ViewModels
 
                 foreach (DateTime alignedDataDate in alignedDataDateCollection)
                 {
-                    ForecastDateSnapshot forecastDateSnapshot = new ForecastDateSnapshot(uniqueForecastJob.AllCollection, firstViewDate, FixedDataDate, alignedDataDate.Date);
+                    ForecastDateSnapshot forecastDateSnapshot = new ForecastDateSnapshot(uniqueForecastJob.AllCollection, firstViewDate, alignedDataDate.Date, FixedDataDate);
                     forecastSnapshotData.DateCosts.Add(forecastDateSnapshot);
                 }
 
@@ -409,76 +409,61 @@ namespace BluePrints.ViewModels
                 {
                     //finds the unique row based on stock code
                     DataRow poForecastRow = poForecastRows.First(x => x.Key == poForecastSnapshot.STOCK_CODE).Value;
-                    poForecastRow[dateCost.Date.ToString(BluePrintsResources.ColumnDateFormat)] = poForecastSnapshot.FORECAST_COST;
+                    poForecastRow[dateCost.QueryDate.ToString(BluePrintsResources.ColumnDateFormat)] = poForecastSnapshot.FORECAST_COST;
                 }
 
                 foreach (FORECAST_JOB_HOUR_SNAPSHOT indirectForecastSnapshot in dateCost.IndirectForecastSnapshots)
                 {
                     //finds the unique row based on stock code
                     DataRow indirectForecastRow = indirectForecastRows.First(x => x.Key == indirectForecastSnapshot.STOCK_CODE).Value;
-                    indirectForecastRow[dateCost.Date.ToString(BluePrintsResources.ColumnDateFormat)] = indirectForecastSnapshot.FORECAST_COST;
+                    indirectForecastRow[dateCost.QueryDate.ToString(BluePrintsResources.ColumnDateFormat)] = indirectForecastSnapshot.FORECAST_COST;
                 }
 
                 foreach (FORECAST_JOB_HOUR_SNAPSHOT actualForecastSnapshot in dateCost.ActualForecastSnapshots)
                 {
                     //finds the unique row based on stock code
                     DataRow actualForecastRow = actualForecastRows.First(x => x.Key == actualForecastSnapshot.STOCK_CODE).Value;
-                    actualForecastRow[dateCost.Date.ToString(BluePrintsResources.ColumnDateFormat)] = actualForecastSnapshot.FORECAST_COST;
+                    actualForecastRow[dateCost.QueryDate.ToString(BluePrintsResources.ColumnDateFormat)] = actualForecastSnapshot.FORECAST_COST;
                 }
 
                 foreach (FORECAST_JOB_HOUR_SNAPSHOT materialForecastSnapshot in dateCost.MaterialForecastSnapshots)
                 {
                     //finds the unique row based on stock code
                     DataRow materialForecastRow = materialForecastRows.First(x => x.Key == materialForecastSnapshot.STOCK_CODE).Value;
-                    materialForecastRow[dateCost.Date.ToString(BluePrintsResources.ColumnDateFormat)] = materialForecastSnapshot.FORECAST_COST;
+                    materialForecastRow[dateCost.QueryDate.ToString(BluePrintsResources.ColumnDateFormat)] = materialForecastSnapshot.FORECAST_COST;
                 }
 
                 //retrieve original p6 values
-                compareChildP6CostsRemainingRow[dateCost.Date.ToString(BluePrintsResources.ColumnDateFormat)] = dateCost.P6Costs;
-                compareChildP6UnitsRemainingRow[dateCost.Date.ToString(BluePrintsResources.ColumnDateFormat)] = dateCost.P6Quantities;
+                compareChildP6CostsRemainingRow[dateCost.QueryDate.ToString(BluePrintsResources.ColumnDateFormat)] = dateCost.P6Costs;
+                compareChildP6UnitsRemainingRow[dateCost.QueryDate.ToString(BluePrintsResources.ColumnDateFormat)] = dateCost.P6Hours;
+
                 List<FORECAST> forecastOverrides = relevantFORECASTS.Where(x => x.FORECAST_UNITS != null && x.FORECAST_DATE >= dateCost.MonthStartDate && x.FORECAST_DATE <= dateCost.MonthEndDate).ToList();
-                List<FORECAST> forecastCostsOverrides = forecastOverrides.Where(x => x.FORECAST_TYPE == Common.ForecastDataType.Cost).ToList();
-                List<FORECAST> forecastUnitsOverrides = forecastOverrides.Where(x => x.FORECAST_TYPE == Common.ForecastDataType.P6).ToList();
-                List<FORECAST> forecastJobHourOverrides = forecastOverrides.Where(x => x.FORECAST_TYPE == Common.ForecastDataType.Hour).ToList();
-                List<FORECAST> forecastHistory = forecastOverrides.Where(x => x.FORECAST_TYPE == Common.ForecastDataType.DataDateForecast).ToList();
+                List<FORECAST> forecastCostsOverrides = forecastOverrides.Where(x => x.FORECAST_TYPE == ForecastDataType.Cost).ToList();
+                List<FORECAST> forecastUnitsOverrides = forecastOverrides.Where(x => x.FORECAST_TYPE == ForecastDataType.P6).ToList();
+                List<FORECAST> forecastJobHourOverrides = forecastOverrides.Where(x => x.FORECAST_TYPE == ForecastDataType.Hour).ToList();
+                List<FORECAST> forecastHistory = forecastOverrides.Where(x => x.FORECAST_TYPE == ForecastDataType.DataDateForecast).ToList();
 
                 //skip when date is actual date
                 if (forecastUnitsOverrides.Count > 0 && dateCost != job.DateCosts.First())
                 {
                     decimal p6OverrideUnits = forecastUnitsOverrides.Sum(x => (decimal)x.FORECAST_UNITS);
 
-                    compareP6UnitsRemainingRow[dateCost.Date.ToString(BluePrintsResources.ColumnDateFormat)] = p6OverrideUnits;
-                    compareP6CostsRemainingRow[dateCost.Date.ToString(BluePrintsResources.ColumnDateFormat)] = p6OverrideUnits * job.P6NominalRate;
+                    compareP6UnitsRemainingRow[dateCost.QueryDate.ToString(BluePrintsResources.ColumnDateFormat)] = p6OverrideUnits;
+                    compareP6CostsRemainingRow[dateCost.QueryDate.ToString(BluePrintsResources.ColumnDateFormat)] = p6OverrideUnits * job.P6NominalRate;
                     P6TotalCurrentRemainingUnits += p6OverrideUnits;
                 }
                 else
                 {
-                    compareP6UnitsRemainingRow[dateCost.Date.ToString(BluePrintsResources.ColumnDateFormat)] = dateCost.P6Hours;
-                    compareP6CostsRemainingRow[dateCost.Date.ToString(BluePrintsResources.ColumnDateFormat)] = dateCost.P6Costs;
+                    compareP6UnitsRemainingRow[dateCost.QueryDate.ToString(BluePrintsResources.ColumnDateFormat)] = dateCost.P6Hours;
+                    compareP6CostsRemainingRow[dateCost.QueryDate.ToString(BluePrintsResources.ColumnDateFormat)] = dateCost.P6Costs;
                     P6TotalCurrentRemainingUnits += dateCost.P6Hours;
                 }
 
-                //retrieve p6 values that can be either original or edited
-                if (dateCost.P6OverrideCost == null)
-                    compareP6CostsRemainingRow[dateCost.Date.ToString(BluePrintsResources.ColumnDateFormat)] = DBNull.Value;
-                else
-                    compareP6CostsRemainingRow[dateCost.Date.ToString(BluePrintsResources.ColumnDateFormat)] = (decimal)dateCost.P6OverrideCost;
-
-                if(dateCost.P6OverrideQuantity == null)
-                    compareP6UnitsRemainingRow[dateCost.Date.ToString(BluePrintsResources.ColumnDateFormat)] = DBNull.Value;
-                else
-                    compareP6UnitsRemainingRow[dateCost.Date.ToString(BluePrintsResources.ColumnDateFormat)] = (decimal)dateCost.P6OverrideQuantity;
-
-
-                commodityRow[dateCost.Date.ToString(BluePrintsResources.ColumnDateFormat)] = dateCost.TotalCosts;
-                if (dateCost.ViewOverrideCost == null)
-                    compareUncommittedRow[dateCost.Date.ToString(BluePrintsResources.ColumnDateFormat)] = DBNull.Value;
-                else
-                    compareUncommittedRow[dateCost.Date.ToString(BluePrintsResources.ColumnDateFormat)] = (decimal)dateCost.ViewOverrideCost;
+                commodityRow[dateCost.QueryDate.ToString(BluePrintsResources.ColumnDateFormat)] = dateCost.TotalCosts;
             }
 
             job.P6RemainingUnitsOverride = P6TotalCurrentRemainingUnits;
-            updateViewForecastsOnDatesFromDb(commodityRow, false, relevantFORECASTS);
+            //updateViewForecastsOnDatesFromDb(commodityRow, false, relevantFORECASTS);
             return commodityRow;
         }
 
@@ -504,7 +489,7 @@ namespace BluePrints.ViewModels
             decimal P6CurrentRemainingUnits = 0;
             foreach (ForecastDateSnapshot dateCost in job.DateCosts)
             {
-                DateTime? alignedDataDate = alignedDataDateCollection.OrderBy(x => x).FirstOrDefault(x => x.Date >= dateCost.Date);
+                DateTime? alignedDataDate = alignedDataDateCollection.OrderBy(x => x).FirstOrDefault(x => x.Date >= dateCost.QueryDate);
                 if (alignedDataDate != null)
                 {
                     string alignedDateField = ((DateTime)alignedDataDate).ToString(BluePrintsResources.ColumnDateFormat);
@@ -583,19 +568,13 @@ namespace BluePrints.ViewModels
                     }
                     else
                     {
-                        List<DataRow> costRows = new List<DataRow>();
-                        foreach (DataRow costRow in compareDataTable.Rows)
-                        {
-                            ForecastJobSnapshot job = (ForecastJobSnapshot)costRow[columnEntity];
-                            string dropDownPhase = job.DropDownPhase;
-                            if (dropDownPhase.Contains(BluePrintsResources.ForecastCompare_PORowPhase) || dropDownPhase.Contains(BluePrintsResources.ForecastCompare_IndirectRowPhase)
-                               || dropDownPhase.Contains(BluePrintsResources.ForecastCompare_MaterialRowPhase) || dropDownPhase.Contains(BluePrintsResources.ForecastCompare_IndirectRowPhase))
-                            {
-                                costRows.Add(costRow);
-                            }
-                        }
+                        List<DataRow> costRows = (from DataRow costRow in compareDataTable.Rows
+                                                  let job = (ForecastJobSnapshot)costRow[columnEntity]
+                                                  let dropDownPhase = job.DropDownPhase
+                                                  where dropDownPhase.Contains(BluePrintsResources.ForecastCompare_PORowPhase) || dropDownPhase.Contains(BluePrintsResources.ForecastCompare_IndirectRowPhase)
+                                                  || dropDownPhase.Contains(BluePrintsResources.ForecastCompare_MaterialRowPhase) || dropDownPhase.Contains(BluePrintsResources.ForecastCompare_IndirectRowPhase)
+                                                  select costRow).ToList();
 
-                        DataRow compareP6CostsRemainingRow = compareDataTable.Rows[Convert.ToInt32(BluePrintsResources.ForecastCompare_P6CostRowIndex)];
                         DataRow compareP6UnitsRemainingRow = compareDataTable.Rows[Convert.ToInt32(BluePrintsResources.ForecastCompare_P6HourRowIndex)];
 
                         DataTable compareChildDataTable = (DataTable)compareP6UnitsRemainingRow[columnCompare];
@@ -606,7 +585,13 @@ namespace BluePrints.ViewModels
                         decimal dynamicCostsFromCostRows = 0;
                         foreach (DataRow costRow in costRows)
                         {
-                            dynamicCostsFromCostRows += (decimal)costRow[dateFieldName];
+                            string parseDecimalStr = costRow[dateFieldName].ToString();
+                            if(parseDecimalStr != string.Empty)
+                            {
+                                decimal parseDecimal = 0;
+                                if (decimal.TryParse(parseDecimalStr, out parseDecimal))
+                                    dynamicCostsFromCostRows += parseDecimal;
+                            }
                         }
 
                         totalValue = p6CostValue + dynamicCostsFromCostRows;

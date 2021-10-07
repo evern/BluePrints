@@ -37,7 +37,7 @@ namespace BluePrints.Common.ViewModel.Converters
                         DateTime parseDateTime;
                         if (DateTime.TryParse(fieldname, out parseDateTime))
                         {
-                            ForecastDateCost dateCost = commodityJob.DateCosts.FirstOrDefault(x => x.Date.Date == parseDateTime.Date);
+                            ForecastDateCost dateCost = commodityJob.DateCosts.FirstOrDefault(x => x.QueryDate.Date == parseDateTime.Date);
                             if(dateCost != null)
                             {
                                 decimal p6RemainingCosts = dateCost.P6Costs;

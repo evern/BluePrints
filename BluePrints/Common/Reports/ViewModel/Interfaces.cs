@@ -22,7 +22,7 @@ namespace BluePrints.Common.ViewModel.Reporting
     {
         decimal P6Costs { get; }
         decimal TotalCosts { get;}
-        DateTime Date { get; }
+        DateTime QueryDate { get; }
     }
 
     public interface IHaveDisciplineDesc : ICanUpdate

@@ -287,7 +287,7 @@ namespace BluePrints.Common.Projections
         private readonly DateTime firstForecastDate;
         public ForecastDateCost(DateTime date, DateTime firstViewDate, DateTime dataDate, bool isWeeks)
         {
-            Date = date;
+            QueryDate = date;
             this.firstViewDate = firstViewDate;
             this.firstForecastDate = dataDate;
 
@@ -327,13 +327,13 @@ namespace BluePrints.Common.Projections
         public IEnumerable<RemainingCost> RelevantIndirectCosts => IndirectRemainingCosts.Where(x => x.ForecastDate.Date > firstViewDate);
 
         //show actuals by summing up from beginning of time on first date
-        private DateTime ActualFloorDate => Date == firstViewDate ? new DateTime(1) : FloorDate;
+        private DateTime ActualFloorDate => QueryDate == firstViewDate ? new DateTime(1) : FloorDate;
         //only show po forecast after actuals date without it summing up from beginning of time on first date
         private DateTime? POAndIndirectForecastFloorDate => FloorDate > firstViewDate ? FloorDate : (DateTime?)null;
         //only show p6 remaining after actuals date and have it summing up from beginning of time on first date
         private DateTime? P6RemainingFloorDate => CeilingDate >= firstForecastDate ? CeilingDate == firstForecastDate ? new DateTime(2010, 1, 1) : FloorDate : (DateTime?)null;
 
-        public DateTime Date { get; set; }
+        public DateTime QueryDate { get; set; }
 
         //not using this as a measure because user can override it
         public decimal ActualCosts => CurrentPeriodActualDataPoints.Sum(x => x.Costs);
