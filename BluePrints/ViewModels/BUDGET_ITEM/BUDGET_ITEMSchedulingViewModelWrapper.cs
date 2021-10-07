@@ -231,7 +231,7 @@ namespace BluePrints.ViewModels
 
         public override IEnumerable<ICanAssignP6> Deliverables_Source => Entities;
 
-        public override bool HasHoursOnDeliverables => true;
+        public override bool HasHoursOnDeliverables => loadPROJECT.CONSTRUCT_PROGRESS_TRACKING;
         #endregion
     }
 }
