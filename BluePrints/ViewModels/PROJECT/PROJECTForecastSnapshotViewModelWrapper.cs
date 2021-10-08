@@ -1,4 +1,5 @@
-﻿using BaseModel.DataModel;
+﻿using BaseModel.Data.Helpers;
+using BaseModel.DataModel;
 using BaseModel.Misc;
 using BaseModel.View;
 using BaseModel.ViewModel.Base;
@@ -64,6 +65,7 @@ namespace BluePrints.ViewModels
         BackgroundWorker projectSavingBackgroundWorker = new BackgroundWorker();
         DispatcherTimer delayedProjectSaveTimer;
         public PROJECT LoadPROJECT { get; set; }
+        public bool IsWeeks => false; //used by ForecastHeaderTemplate
         protected override void resolveParameters(object parameter)
         {
             var PROJECTParameter = (EntitiesParameter<PROJECT>)parameter;
@@ -77,11 +79,16 @@ namespace BluePrints.ViewModels
             loaderCollection.AddLoaderDescription(bluePrintsUnitOfWorkFactory, x => x.FORECAST_JOB_HOUR_SNAPSHOTS, FORECAST_JOB_HOUR_SNAPSHOTProjectionFunc);
             loaderCollection.AddLoaderDescription(bluePrintsUnitOfWorkFactory, x => x.FORECAST_SUMMARY_SNAPSHOTS, FORECAST_SUMMARY_SNAPSHOTProjectionFunc);
             loaderCollection.AddLoaderDescription(bluePrintsUnitOfWorkFactory, x => x.DISCIPLINE_DESCS, DISCIPLINE_DESCProjectionFunc);
+            loaderCollection.AddLoaderDescription(bluePrintsUnitOfWorkFactory, x => x.COMMODITY_CODES, COMMODITY_CODEProjectionFunc);
             loaderCollection.AddLoaderDescription<JOB_COSTGROUPS, JOB_COSTGROUPS, int, IPrimeroEntitiesUnitOfWork>(primeroUnitOfWorkFactory, x => x.JOB_COSTGROUPS);
             loaderCollection.AddLoaderDescription<Data.PHASE, Data.PHASE, Guid, IBluePrintsEntitiesUnitOfWork>(bluePrintsUnitOfWorkFactory, x => x.PHASES);
             loaderCollection.AddLoaderDescription(bluePrintsUnitOfWorkFactory, x => x.RATES, RATEProjectionFunc);
         }
 
+        protected virtual Func<IRepositoryQuery<COMMODITY_CODE>, IQueryable<COMMODITY_CODE>> COMMODITY_CODEProjectionFunc()
+        {
+            return query => query.Where(x => x.GUID_PROJECT == null);
+        }
         private Func<IRepositoryQuery<Data.PROJECT>, IQueryable<Data.PROJECT>> PROJECTProjectionFunc()
         {
             return query => query.Where(x => x.GUID == LoadPROJECT.GUID);
@@ -221,7 +228,7 @@ namespace BluePrints.ViewModels
         {
             dataPointsTable = new DataTable();
             Jobs = new List<ForecastJobSnapshot>();
-            GridControlService.GridControl.BeginDataUpdate();
+            GridControlService.GridControl?.BeginDataUpdate();
 
 
             alignedDataDateCollection = generateDates();
@@ -258,30 +265,30 @@ namespace BluePrints.ViewModels
             //child data table is used to record original value of actuals + committed + remaining values before it is overridden by forecasts
             foreach (UniqueForecastJob uniqueForecastJob in uniqueForecastJobs)
             {
-                ForecastJobSnapshot forecastSnapshotData = new ForecastJobSnapshot();
-                forecastSnapshotData.SubJobCode = uniqueForecastJob.SUBJOB_CODE;
-                forecastSnapshotData.DisciplineCode = uniqueForecastJob.DISCIPLINE_CODE;
-                forecastSnapshotData.CommodityCode = uniqueForecastJob.COMMODITY_CODE;
-                forecastSnapshotData.VariationCode = uniqueForecastJob.VARIATION_CODE;
-                forecastSnapshotData.Budget = uniqueForecastJob.Budget;
-                forecastSnapshotData.TenderBudget = uniqueForecastJob.TenderBudget;
+                ForecastJobSnapshot forecastJobSnapshot = new ForecastJobSnapshot();
+                populateCompulsoryDataForForecastJobSnapshot(forecastJobSnapshot);
+                forecastJobSnapshot.SubJobCode = uniqueForecastJob.SUBJOB_CODE;
+                forecastJobSnapshot.DisciplineCode = uniqueForecastJob.DISCIPLINE_CODE;
+                forecastJobSnapshot.CommodityCode = uniqueForecastJob.COMMODITY_CODE;
+                forecastJobSnapshot.VariationCode = uniqueForecastJob.VARIATION_CODE;
+                forecastJobSnapshot.Budget = uniqueForecastJob.Budget;
+                forecastJobSnapshot.TenderBudget = uniqueForecastJob.TenderBudget;
 
-                populateFallBackRate(forecastSnapshotData, uniqueForecastJob.P6Collection);
-                forecastSnapshotData.ActualUnits = uniqueForecastJob.ActualCollection.Sum(x => x.FORECAST_QTY);
-                forecastSnapshotData.ActualCosts = uniqueForecastJob.ActualCollection.Sum(x => x.FORECAST_COST);
+                forecastJobSnapshot.ActualUnits = uniqueForecastJob.ActualCollection.Sum(x => x.FORECAST_QTY);
+                forecastJobSnapshot.ActualCosts = uniqueForecastJob.ActualCollection.Sum(x => x.FORECAST_COST);
 
                 foreach (DateTime alignedDataDate in alignedDataDateCollection)
                 {
                     ForecastDateSnapshot forecastDateSnapshot = new ForecastDateSnapshot(uniqueForecastJob.AllCollection, firstViewDate, alignedDataDate.Date, FixedDataDate);
-                    forecastSnapshotData.DateCosts.Add(forecastDateSnapshot);
+                    forecastJobSnapshot.DateCosts.Add(forecastDateSnapshot);
                 }
 
-                Jobs.Add(forecastSnapshotData);
-                DataRow jobRow = updateDataTable(forecastSnapshotData);
+                Jobs.Add(forecastJobSnapshot);
+                DataRow jobRow = updateDataTable(forecastJobSnapshot);
                 Common.LoadingScreenManager.Progress();
             }
 
-            GridControlService.GridControl.EndDataUpdate();
+            GridControlService.GridControl?.EndDataUpdate();
             Common.LoadingScreenManager.CloseLoadingScreen();
 
             //ForecastSummary.Reset();
@@ -299,16 +306,10 @@ namespace BluePrints.ViewModels
             this.RaisePropertyChanged(x => x.ForecastSummary);
         }
 
-        private void populateFallBackRate(ForecastJobSnapshot forecastSnapshotData, IEnumerable<FORECAST_JOB_HOUR_SNAPSHOT> P6FORECAST_JOB_HOUR_SNAPSHOTS)
+        private void populateCompulsoryDataForForecastJobSnapshot(ForecastJobSnapshot forecastJobSnapshot)
         {
-            forecastSnapshotData.P6RemainingUnits = P6FORECAST_JOB_HOUR_SNAPSHOTS.Where(x => x.SNAPSHOT_TYPE == Common.ForecastSnapshotValueType.P6Original).Sum(x => x.FORECAST_QTY);
-            forecastSnapshotData.P6RemainingCosts = P6FORECAST_JOB_HOUR_SNAPSHOTS.Where(x => x.SNAPSHOT_TYPE == Common.ForecastSnapshotValueType.P6Original).Sum(x => x.FORECAST_COST);
-
-            Data.PHASE ratePHASE = PHASECollection.FirstOrDefault(x => x.INTERNAL_NUM == forecastSnapshotData.PhaseCode);
-            if (ratePHASE != null && forecastSnapshotData.DisciplineCode != null && forecastSnapshotData.DisciplineCode != string.Empty)
-            {
-                forecastSnapshotData.FallBackRate = BluePrintsDataUtils.CascadeRateSearchByCode(forecastSnapshotData.AreaCode, forecastSnapshotData.SubAreaCode, forecastSnapshotData.DisciplineCode, null, forecastSnapshotData.CommodityCode, forecastSnapshotData.VariationCode, RATECollection, Common.CostType.Cost, (PhaseType)ratePHASE.PHASE_TYPE);
-            }
+            forecastJobSnapshot.PopulateCommodityCodes(COMMODITY_CODECollection);
+            forecastJobSnapshot.IsBudgetReadOnly = LoginCredentials.getPermissionStatus(DataUtils.GetNameOf(() => NavigationResources.Permission_EXO_ChangeBudget)) == LoginCredentials.PermissionStatus.None;
         }
 
         private DataRow updateDataTable(ForecastJobSnapshot job)
@@ -365,7 +366,7 @@ namespace BluePrints.ViewModels
             foreach (KeyValuePair<string, decimal> uniquePOStockCodeAttrbutes in job.POStockCodeAttributes)
             {
                 DataRow comparePOForecastRow = compareDataTable.NewRow();
-                comparePOForecastRow[columnEntity] = ViewModelSource.Create(() => new ForecastJobSnapshot() { DropDownPhase = BluePrintsResources.ForecastCompare_PORowPhase + " [" + uniquePOStockCodeAttrbutes + "] $", CompareMask = "c0", DropDownIndirectBudget = uniquePOStockCodeAttrbutes.Value });
+                comparePOForecastRow[columnEntity] = ViewModelSource.Create(() => new ForecastJobSnapshot() { DropDownPhase = BluePrintsResources.ForecastCompare_PORowPhase + " [" + uniquePOStockCodeAttrbutes.Key + "] $", CompareMask = "c0", DropDownIndirectBudget = uniquePOStockCodeAttrbutes.Value });
                 poForecastRows.Add(uniquePOStockCodeAttrbutes.Key, comparePOForecastRow);
                 compareDataTable.Rows.Add(comparePOForecastRow);
             }
@@ -374,7 +375,7 @@ namespace BluePrints.ViewModels
             foreach (KeyValuePair<string, decimal> uniqueIndirectStockCode in job.IndirectStockCodeAttributes)
             {
                 DataRow compareIndirectRemainingRow = compareDataTable.NewRow();
-                compareIndirectRemainingRow[columnEntity] = ViewModelSource.Create(() => new ForecastJobSnapshot() { DropDownPhase = BluePrintsResources.ForecastCompare_IndirectRowPhase + " [" + uniqueIndirectStockCode + "] $", DropDownIndirectBudget = uniqueIndirectStockCode.Value, CompareMask = "c0" });
+                compareIndirectRemainingRow[columnEntity] = ViewModelSource.Create(() => new ForecastJobSnapshot() { DropDownPhase = BluePrintsResources.ForecastCompare_IndirectRowPhase + " [" + uniqueIndirectStockCode.Key + "] $", DropDownIndirectBudget = uniqueIndirectStockCode.Value, CompareMask = "c0" });
                 indirectForecastRows.Add(uniqueIndirectStockCode.Key, compareIndirectRemainingRow);
                 compareDataTable.Rows.Add(compareIndirectRemainingRow);
             }
@@ -383,7 +384,7 @@ namespace BluePrints.ViewModels
             foreach (KeyValuePair<string, decimal> uniqueMaterialStockCode in job.MaterialStockCodeAttributes)
             {
                 DataRow compareMaterialRemainingRow = compareDataTable.NewRow();
-                compareMaterialRemainingRow[columnEntity] = ViewModelSource.Create(() => new ForecastJobSnapshot() { DropDownPhase = BluePrintsResources.ForecastCompare_MaterialRowPhase + " [" + uniqueMaterialStockCode + "] $", DropDownIndirectBudget = uniqueMaterialStockCode.Value, CompareMask = "c0" });
+                compareMaterialRemainingRow[columnEntity] = ViewModelSource.Create(() => new ForecastJobSnapshot() { DropDownPhase = BluePrintsResources.ForecastCompare_MaterialRowPhase + " [" + uniqueMaterialStockCode.Key + "] $", DropDownIndirectBudget = uniqueMaterialStockCode.Value, CompareMask = "c0" });
                 materialForecastRows.Add(uniqueMaterialStockCode.Key, compareMaterialRemainingRow);
                 compareDataTable.Rows.Add(compareMaterialRemainingRow);
             }
@@ -392,7 +393,7 @@ namespace BluePrints.ViewModels
             foreach (KeyValuePair<string, decimal> uniqueActualStockCode in job.ActualStockCodeAttributes)
             {
                 DataRow compareActualRemainingRow = compareDataTable.NewRow();
-                compareActualRemainingRow[columnEntity] = ViewModelSource.Create(() => new ForecastJobSnapshot() { DropDownPhase = BluePrintsResources.ForecastCompare_ActualRowPhase + " [" + uniqueActualStockCode + "] $", DropDownIndirectBudget = uniqueActualStockCode.Value, CompareMask = "c0" });
+                compareActualRemainingRow[columnEntity] = ViewModelSource.Create(() => new ForecastJobSnapshot() { DropDownPhase = BluePrintsResources.ForecastCompare_ActualRowPhase + " [" + uniqueActualStockCode.Key + "] $", DropDownIndirectBudget = uniqueActualStockCode.Value, CompareMask = "c0" });
                 actualForecastRows.Add(uniqueActualStockCode.Key, compareActualRemainingRow);
                 compareDataTable.Rows.Add(compareActualRemainingRow);
             }
@@ -804,6 +805,14 @@ namespace BluePrints.ViewModels
             get
             {
                 return GetEntities<RATE>();
+            }
+        }
+
+        public IEnumerable<COMMODITY_CODE> COMMODITY_CODECollection
+        {
+            get
+            {
+                return GetEntities<COMMODITY_CODE>();
             }
         }
 

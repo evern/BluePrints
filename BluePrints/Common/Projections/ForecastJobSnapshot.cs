@@ -5,6 +5,7 @@ using BluePrints.Common.ViewModel.Reporting;
 using BluePrints.Common.ViewModel.Utils;
 using BluePrints.Data;
 using BluePrints.ViewModels;
+using DevExpress.Mvvm;
 using DevExpress.Mvvm.POCO;
 using System;
 using System.Collections.Generic;
@@ -14,7 +15,7 @@ using System.Threading.Tasks;
 
 namespace BluePrints.Common.Projections
 {
-    public class ForecastJobSnapshot : EntityBase, IHaveDisciplineDesc, IForecastViewModel
+    public class ForecastJobSnapshot : CodesValidationModel, IHaveDisciplineDesc, IForecastViewModel
     {
         public List<ForecastDateSnapshot> DateCosts { get; set; }
         public ForecastJobSnapshot()
@@ -38,6 +39,7 @@ namespace BluePrints.Common.Projections
         public decimal ActualCosts { get; set; }
         public decimal ActualUnits { get; set; }
         public string CompareMask { get; set; }
+        public bool IsBudgetReadOnly { get; set; }
 
         #region IForecastViewModel
         //used by detailed rows so that only P6 hour row can be edited
@@ -47,11 +49,13 @@ namespace BluePrints.Common.Projections
         #region Rate Members
         public decimal P6RemainingUnits { get; set; }
         public decimal P6RemainingCosts { get; set; }
-        public RATE FallBackRate { get; set; }
-        public decimal P6NominalRate => P6RemainingUnits == 0 ? FallBackRate == null ? 0 : FallBackRate.RATE1 == null ? 0 : (decimal)FallBackRate.RATE1 : P6RemainingCosts / P6RemainingUnits;
+        public decimal P6NominalRate => P6RemainingUnits == 0 ? 0 : P6RemainingCosts / P6RemainingUnits;
         #endregion
 
-
+        public bool IsCommodityCodeError => !IsCommodityCodeValid;
+        public decimal IsCommodityCodeErrorImageWidth => IsCommodityCodeError ? 15 : 0;
+        public decimal IsErrorMessageImageWidth => JobErrorMessage == null || JobErrorMessage == string.Empty ? 0 : 15;
+        public string JobErrorMessage { get; set; }
         public decimal Productivity { get; set; }
         //store P6 units either native or from override
         public decimal? P6RemainingUnitsOverride { get; set; }
@@ -136,6 +140,34 @@ namespace BluePrints.Common.Projections
                 return actualStockCodeAttributes;
             }
         }
+
+        #region Codes Validation
+        protected override string disciplineCodePropertyName => BindableBase.GetPropertyName(() => new ForecastJobSnapshot().DisciplineCode);
+
+        protected override string commodityCodePropertyName => BindableBase.GetPropertyName(() => new ForecastJobSnapshot().CommodityCode);
+
+        protected override string stockCodePropertyName => string.Empty;
+
+        protected override string exoBudgetPropertyName => string.Empty;
+
+        protected override string subJobCode => SubJobCode;
+
+        protected override string disciplineCode => DisciplineCode;
+
+        protected override string commodityCode => CommodityCode;
+
+        protected override string stockCode => string.Empty;
+
+        protected override decimal exoBudget => 0;
+
+        protected override decimal budget => Budget;
+
+        protected override bool isLineExists => false;
+
+        protected override bool ignoreBudgetError => true;
+
+        protected override string variationCode => VariationCode; 
+        #endregion
     }
 
     public class ForecastDateSnapshot : IForecastDateCostViewModel

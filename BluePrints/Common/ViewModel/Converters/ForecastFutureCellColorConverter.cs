@@ -15,7 +15,7 @@ namespace BluePrints.Common.ViewModel.Converters
         public object Convert(object[] values, Type targetType, object parameter,
             System.Globalization.CultureInfo culture)
         {
-            SolidColorBrush transparentColor = new System.Windows.Media.SolidColorBrush(Colors.Transparent);
+            SolidColorBrush transparentColor = new SolidColorBrush(Colors.Transparent);
             try
             {
                 if (values[0] == null || values[1] == null || values[2] == null)
@@ -51,14 +51,14 @@ namespace BluePrints.Common.ViewModel.Converters
                                 if (totalCosts != 0)
                                 {
                                     if (currentValue > totalCosts)
-                                        return new System.Windows.Media.SolidColorBrush(Colors.Chartreuse);
+                                        return new SolidColorBrush(Colors.Chartreuse);
                                     else if (currentValue < totalCosts)
-                                        return new System.Windows.Media.SolidColorBrush(Colors.LightSalmon);
+                                        return new SolidColorBrush(Colors.LightSalmon);
                                 }
                                 else if (currentValue > 0)
-                                    return new System.Windows.Media.SolidColorBrush(Colors.Chartreuse);
+                                    return new SolidColorBrush(Colors.Chartreuse);
                                 else if(p6RemainingCosts != 0 && currentValue == 0)
-                                    return new System.Windows.Media.SolidColorBrush(Colors.Yellow);
+                                    return new SolidColorBrush(Colors.Yellow);
 
                             }
                         }
