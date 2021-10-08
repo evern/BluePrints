@@ -359,8 +359,10 @@ namespace BluePrints.ViewModels
             //create rows based on unique codes for each type
             Dictionary<string, DataRow> poForecastRows = new Dictionary<string, DataRow>();
             Dictionary<string, DataRow> indirectForecastRows = new Dictionary<string, DataRow>();
-            Dictionary<string, DataRow> materialForecastRows = new Dictionary<string, DataRow>();
-            Dictionary<string, DataRow> actualForecastRows = new Dictionary<string, DataRow>();
+
+            //might want to use this in show actuals history
+            //Dictionary<string, DataRow> materialForecastRows = new Dictionary<string, DataRow>();
+            //Dictionary<string, DataRow> actualForecastRows = new Dictionary<string, DataRow>();
 
             //add PO forecast rows on demand
             foreach (KeyValuePair<string, decimal> uniquePOStockCodeAttrbutes in job.POStockCodeAttributes)
@@ -380,23 +382,24 @@ namespace BluePrints.ViewModels
                 compareDataTable.Rows.Add(compareIndirectRemainingRow);
             }
 
-            //add material rows on demand
-            foreach (KeyValuePair<string, decimal> uniqueMaterialStockCode in job.MaterialStockCodeAttributes)
-            {
-                DataRow compareMaterialRemainingRow = compareDataTable.NewRow();
-                compareMaterialRemainingRow[columnEntity] = ViewModelSource.Create(() => new ForecastJobSnapshot() { DropDownPhase = BluePrintsResources.ForecastCompare_MaterialRowPhase + " [" + uniqueMaterialStockCode.Key + "] $", DropDownIndirectBudget = uniqueMaterialStockCode.Value, CompareMask = "c0" });
-                materialForecastRows.Add(uniqueMaterialStockCode.Key, compareMaterialRemainingRow);
-                compareDataTable.Rows.Add(compareMaterialRemainingRow);
-            }
+            //might want to use this in show actuals history
+            ////add material rows on demand
+            //foreach (KeyValuePair<string, decimal> uniqueMaterialStockCode in job.MaterialStockCodeAttributes)
+            //{
+            //    DataRow compareMaterialRemainingRow = compareDataTable.NewRow();
+            //    compareMaterialRemainingRow[columnEntity] = ViewModelSource.Create(() => new ForecastJobSnapshot() { DropDownPhase = BluePrintsResources.ForecastCompare_MaterialRowPhase + " [" + uniqueMaterialStockCode.Key + "] $", DropDownIndirectBudget = uniqueMaterialStockCode.Value, CompareMask = "c0" });
+            //    materialForecastRows.Add(uniqueMaterialStockCode.Key, compareMaterialRemainingRow);
+            //    compareDataTable.Rows.Add(compareMaterialRemainingRow);
+            //}
 
-            //add actual rows on demand
-            foreach (KeyValuePair<string, decimal> uniqueActualStockCode in job.ActualStockCodeAttributes)
-            {
-                DataRow compareActualRemainingRow = compareDataTable.NewRow();
-                compareActualRemainingRow[columnEntity] = ViewModelSource.Create(() => new ForecastJobSnapshot() { DropDownPhase = BluePrintsResources.ForecastCompare_ActualRowPhase + " [" + uniqueActualStockCode.Key + "] $", DropDownIndirectBudget = uniqueActualStockCode.Value, CompareMask = "c0" });
-                actualForecastRows.Add(uniqueActualStockCode.Key, compareActualRemainingRow);
-                compareDataTable.Rows.Add(compareActualRemainingRow);
-            }
+            ////add actual rows on demand
+            //foreach (KeyValuePair<string, decimal> uniqueActualStockCode in job.ActualStockCodeAttributes)
+            //{
+            //    DataRow compareActualRemainingRow = compareDataTable.NewRow();
+            //    compareActualRemainingRow[columnEntity] = ViewModelSource.Create(() => new ForecastJobSnapshot() { DropDownPhase = BluePrintsResources.ForecastCompare_ActualRowPhase + " [" + uniqueActualStockCode.Key + "] $", DropDownIndirectBudget = uniqueActualStockCode.Value, CompareMask = "c0" });
+            //    actualForecastRows.Add(uniqueActualStockCode.Key, compareActualRemainingRow);
+            //    compareDataTable.Rows.Add(compareActualRemainingRow);
+            //}
 
             //add the compare data table into a single column in parent row
             commodityRow[columnCompare] = compareDataTable;
@@ -420,19 +423,20 @@ namespace BluePrints.ViewModels
                     indirectForecastRow[dateCost.QueryDate.ToString(BluePrintsResources.ColumnDateFormat)] = indirectForecastSnapshot.FORECAST_COST;
                 }
 
-                foreach (FORECAST_JOB_HOUR_SNAPSHOT actualForecastSnapshot in dateCost.ActualForecastSnapshots)
-                {
-                    //finds the unique row based on stock code
-                    DataRow actualForecastRow = actualForecastRows.First(x => x.Key == actualForecastSnapshot.STOCK_CODE).Value;
-                    actualForecastRow[dateCost.QueryDate.ToString(BluePrintsResources.ColumnDateFormat)] = actualForecastSnapshot.FORECAST_COST;
-                }
+                //might want to use this in show actuals history
+                //foreach (FORECAST_JOB_HOUR_SNAPSHOT actualForecastSnapshot in dateCost.ActualForecastSnapshots)
+                //{
+                //    //finds the unique row based on stock code
+                //    DataRow actualForecastRow = actualForecastRows.First(x => x.Key == actualForecastSnapshot.STOCK_CODE).Value;
+                //    actualForecastRow[dateCost.QueryDate.ToString(BluePrintsResources.ColumnDateFormat)] = actualForecastSnapshot.FORECAST_COST;
+                //}
 
-                foreach (FORECAST_JOB_HOUR_SNAPSHOT materialForecastSnapshot in dateCost.MaterialForecastSnapshots)
-                {
-                    //finds the unique row based on stock code
-                    DataRow materialForecastRow = materialForecastRows.First(x => x.Key == materialForecastSnapshot.STOCK_CODE).Value;
-                    materialForecastRow[dateCost.QueryDate.ToString(BluePrintsResources.ColumnDateFormat)] = materialForecastSnapshot.FORECAST_COST;
-                }
+                //foreach (FORECAST_JOB_HOUR_SNAPSHOT materialForecastSnapshot in dateCost.MaterialForecastSnapshots)
+                //{
+                //    //finds the unique row based on stock code
+                //    DataRow materialForecastRow = materialForecastRows.First(x => x.Key == materialForecastSnapshot.STOCK_CODE).Value;
+                //    materialForecastRow[dateCost.QueryDate.ToString(BluePrintsResources.ColumnDateFormat)] = materialForecastSnapshot.FORECAST_COST;
+                //}
 
                 //retrieve original p6 values
                 compareChildP6CostsRemainingRow[dateCost.QueryDate.ToString(BluePrintsResources.ColumnDateFormat)] = dateCost.P6Costs;
@@ -695,7 +699,7 @@ namespace BluePrints.ViewModels
             else
             {
                 columns.Add(new ColumnDescriptor() { FieldName = "Entity.DropDownPhase", Header = "", Fixed = FixedStyle.Left, Width = 50, Settings = SettingsType.Default, HeaderToolTip = "Source of forecasted costs/hours type" });
-                columns.Add(new ColumnDescriptor() { FieldName = "Entity.DropDownIndirectBudget", ReadOnly = true, Header = "Budget (A)", Increment = 1, Fixed = FixedStyle.Left, Width = 50, Settings = SettingsType.Budget, HeaderToolTip = "Indirect budget from Exo" });
+                columns.Add(new ColumnDescriptor() { FieldName = "Entity.DropDownIndirectBudget", ReadOnly = true, Header = "Project Budget (A)", Increment = 1, Fixed = FixedStyle.Left, Width = 50, Settings = SettingsType.Budget, HeaderToolTip = "Indirect budget from Exo" });
             }
 
             foreach (DateTime alignedDate in alignedDates)
@@ -742,7 +746,7 @@ namespace BluePrints.ViewModels
             get { return "PROJECTForecastSnapshotViewModelWrapper_v2"; }
         }
 
-        public async void RefreshAllForecastData()
+        public void RefreshAllForecastData()
         {
             Common.LoadingScreenManager.ShowLoadingScreen(1);
             //Common.LoadingScreenManager.SetMessage("Fetching P6 remaining data...");
