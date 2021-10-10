@@ -952,7 +952,7 @@ namespace BluePrints.ViewModels
                 }
             }
 
-            return true;
+            return string.Empty;
         }
 
         public void AddUndo(BASELINE_ITEMProgress changedEntity, string propertyName, object oldValue, object newValue, EntityMessageType messageType)

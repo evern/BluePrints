@@ -420,18 +420,17 @@ namespace BluePrints.ViewModels
                 List<CombinedCommodityCode> combinedCommodityCodes = new List<CombinedCommodityCode>();
                 if(loadCostType == CostType.Charge)
                 {
-                    PhaseType commodityPhaseType = loadChargeType == ChargeType.Chargeable ? PhaseType.Design : PhaseType.Indirect;
                     foreach(DOCTYPE doctype in DOCTYPECollection)
                     {
-                        if (loadChargeType == ChargeType.NotChargeable || !doctype.IS_INDIRECT_ONLY)
+                        if ((loadPhaseType == PhaseType.Indirect && doctype.IS_INDIRECT_ONLY) || (loadPhaseType != PhaseType.Indirect && !doctype.IS_INDIRECT_ONLY))
                         {
-                            IEnumerable<COMMODITY_CODE> findCOMMODITY_CODES = COMMODITY_CODECollection.Where(x => x.CODE == doctype.CODE);
+                            IEnumerable<COMMODITY_CODE> findCOMMODITY_CODES = COMMODITY_CODECollection.Where(x => x.CODE == doctype.CODE && x.PHASE_TYPE == loadPhaseType);
                             foreach(COMMODITY_CODE findCOMMODITY_CODE in findCOMMODITY_CODES)
                             {
                                 Guid? disciplineGuid = findCOMMODITY_CODE == null ? (Guid?)null : findCOMMODITY_CODE.GUID_DISCIPLINE;
 
                                 CombinedCommodityCode newCommodityCode = new CombinedCommodityCode()
-                                { PhaseType = commodityPhaseType, GuidDepartment = doctype.GUID_DDEPARTMENT, GuidDiscipline = disciplineGuid, Code = doctype.CODE, Key = doctype.GUID, Description = doctype.NAME };
+                                { PhaseType = loadPhaseType, GuidDepartment = doctype.GUID_DDEPARTMENT, GuidDiscipline = disciplineGuid, Code = doctype.CODE, Key = doctype.GUID, Description = doctype.NAME };
                                 combinedCommodityCodes.Add(newCommodityCode);
                             }
                         }
