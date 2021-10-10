@@ -755,7 +755,7 @@ namespace BluePrints.ViewModels
             if (defaultPHASE == null)
                 return;
 
-            if (projection.Phase_Guid == null || (projection.Entity.Entity.GUID_DOCTYPE != null && !isDocTypePhaseValid(projection.Entity.Entity.GUID_DOCTYPE, projection.Phase_Guid)))
+            if (projection.Phase_Guid == null || (projection.Entity.Entity.GUID_DOCTYPE != null && isDocTypePhaseValid(projection.Entity.Entity.GUID_DOCTYPE, projection.Phase_Guid) != string.Empty))
             {
                 if (projection.Entity.Entity.DOCTYPE != null)
                 {
@@ -904,9 +904,10 @@ namespace BluePrints.ViewModels
             {
                 if(newValue != null) 
                 {
-                    if (!isDocTypePhaseValid(entity.Entity.Entity.GUID_DOCTYPE, (Guid)newValue))
+                    string errorMessage = isDocTypePhaseValid(entity.Entity.Entity.GUID_DOCTYPE, (Guid)newValue);
+                    if (errorMessage != string.Empty)
                     {
-                        return "Only indirect phase can be selected for this document type";
+                        return errorMessage;
                     }
                 }
             }
@@ -933,7 +934,7 @@ namespace BluePrints.ViewModels
             return string.Empty;
         }
 
-        private bool isDocTypePhaseValid(Guid? doctypeGuid, Guid? phaseGuid)
+        private string isDocTypePhaseValid(Guid? doctypeGuid, Guid? phaseGuid)
         {
             if (doctypeGuid != null && phaseGuid != null)
             {
@@ -944,9 +945,9 @@ namespace BluePrints.ViewModels
                     if (doctype != null)
                     {
                         if (!doctype.IS_INDIRECT_ONLY && phase.PHASE_TYPE == PhaseType.Indirect)
-                            return false;
+                            return "Doc type cannot be assigned with indirect phase";
                         else if (doctype.IS_INDIRECT_ONLY && phase.PHASE_TYPE == PhaseType.Design)
-                            return false;
+                            return "Doc type must be assigned with indirect phase";
                     }
                 }
             }
