@@ -109,18 +109,18 @@
                         <dxmvvm:EventToCommand Command="{Binding CustomSummaryCommand}" EventName="CustomSummary" PassEventArgsToCommand="True" />
                     </dxmvvm:Interaction.Behaviors>
                     <dxg:GridControl.Bands>
-                        <dxg:GridControlBand Header="Properties (Read Only)">
-                            <dxg:GridColumn FieldName="Entity.Entity.GUID_PHASE" Header="Phase" AllowBestFit="false" Width="50" HeaderToolTip="Automatically assigned field. Changing this will affect subjob name" SortMode="Custom">
+                        <dxg:GridControlBand x:Name="gcbProperties" Header="Properties (Read Only)">
+                            <dxg:GridColumn FieldName="Entity.Entity.GUID_PHASE" Header="Phase" AllowBestFit="false" Width="50" HeaderToolTip="Automatically assigned field. Changing this will affect subjob name" SortMode="DisplayText">
                                 <dxg:GridColumn.EditSettings>
                                     <dxe:ComboBoxEditSettings AutoComplete="True" DisplayMember="INTERNAL_NUM" IsTextEditable="True" ItemsSource="{Binding PHASECollection}" ValueMember="GUID" />
                                 </dxg:GridColumn.EditSettings>
                             </dxg:GridColumn>
-                            <dxg:GridColumn FieldName="Entity.Entity.GUID_AREA" Header="Area" AllowBestFit="false" Width="50" ReadOnly="True" SortMode="Custom">
+                            <dxg:GridColumn FieldName="Entity.Entity.GUID_AREA" Header="Area" AllowBestFit="false" Width="50" ReadOnly="True" SortMode="DisplayText">
                                 <dxg:GridColumn.EditSettings>
                                     <dxe:ComboBoxEditSettings AutoComplete="True" DisplayMember="INTERNAL_NUM" IsTextEditable="True" ItemsSource="{Binding AREACollection}" ValueMember="GUID" />
                                 </dxg:GridColumn.EditSettings>
                             </dxg:GridColumn>
-                            <dxg:GridColumn FieldName="Entity.Entity.SubAreaGuid" Header="Sub Area" AllowBestFit="false" Width="50" ReadOnly="True" SortMode="Custom">
+                            <dxg:GridColumn FieldName="Entity.Entity.SubAreaGuid" Header="Sub Area" AllowBestFit="false" Width="50" ReadOnly="True" SortMode="DisplayText">
                                 <dxg:GridColumn.CellTemplate>
                                     <DataTemplate>
                                         <dxe:ComboBoxEdit x:Name="PART_Editor" DisplayMember="INTERNAL_NUM" ImmediatePopup="True" IncrementalFiltering="True" ItemsSource="{Binding RowData.Row.Entity.Entity.SubAreaCollection}" NullValueButtonPlacement="Popup" ValidateOnEnterKeyPressed="True" ValidateOnTextInput="True" ValueMember="GUID" />
@@ -131,7 +131,7 @@
                                     <dxe:ComboBoxEditSettings AutoComplete="True" DisplayMember="INTERNAL_NUM" IsTextEditable="True" ItemsSource="{Binding SUBAREACollection}" NullValueButtonPlacement="EditBox" ValueMember="GUID" />
                                 </dxg:GridColumn.EditSettings>
                             </dxg:GridColumn>
-                            <dxg:GridColumn FieldName="Entity.Entity.GUID_DISCIPLINE" Header="Discipline" ReadOnly="True" SortMode="Custom">
+                            <dxg:GridColumn FieldName="Entity.Entity.GUID_DISCIPLINE" Header="Discipline" ReadOnly="True" SortMode="DisplayText">
                                 <dxg:GridColumn.EditSettings>
                                     <dxe:ComboBoxEditSettings AutoComplete="True" DisplayMember="NAME" IsTextEditable="True" ItemsSource="{Binding DISCIPLINECollection}" ValueMember="GUID" />
                                 </dxg:GridColumn.EditSettings>
@@ -141,13 +141,13 @@
                                     <dxe:SpinEditSettings Increment="1" IsFloatValue="False" IsTextEditable="True" Mask="n0" MaskType="Numeric" MaskUseAsDisplayFormat="True" MaxValue="99" MinValue="1" />
                                 </dxg:GridColumn.EditSettings>
                             </dxg:GridColumn>
-                            <dxg:GridColumn FieldName="Entity.Entity.GUID_DOCTYPE" Header="Document Type" ReadOnly="True" SortMode="Custom">
+                            <dxg:GridColumn FieldName="Entity.Entity.GUID_DOCTYPE" Header="Document Type" ReadOnly="True" SortMode="DisplayText">
                                 <dxg:GridColumn.EditSettings>
                                     <dxe:ComboBoxEditSettings AutoComplete="True" DisplayMember="NAME" IsTextEditable="True" ItemsSource="{Binding DOCTYPECollection}" ValueMember="GUID" />
                                 </dxg:GridColumn.EditSettings>
                             </dxg:GridColumn>
                             <dxg:GridColumn FieldName="Entity.Entity.DELIVERABLE_TYPE" Header="Deliverable Type" IsEnabled="False" ReadOnly="True" />
-                            <dxg:GridColumn FieldName="Entity.Entity.GUID_DEPARTMENT" Header="Department" ReadOnly="True" SortMode="Custom">
+                            <dxg:GridColumn FieldName="Entity.Entity.GUID_DEPARTMENT" Header="Department" ReadOnly="True" SortMode="DisplayText">
                                 <dxg:GridColumn.EditSettings>
                                     <dxe:ComboBoxEditSettings AutoComplete="True" DisplayMember="NAME" IsTextEditable="True" ItemsSource="{Binding DEPARTMENTCollection}" ValueMember="GUID" />
                                 </dxg:GridColumn.EditSettings>
@@ -157,24 +157,24 @@
                             <dxg:GridColumn FieldName="Entity.Entity.PRIMARY_TITLE" Header="Primary Title" IsEnabled="False" ReadOnly="True" />
                             <dxg:GridColumn FieldName="Entity.Entity.SECONDARY_TITLE" Header="Secondary Title" IsEnabled="False" ReadOnly="True" />
                             <dxg:GridColumn FieldName="Entity.Entity.COMMENTS" Header="Comments" ReadOnly="True" />
-                            <dxg:GridColumn Header="Resource" FieldName="Entity.Entity.GUID_USER" Visible="False" ColumnFilterMode="DisplayText" SortMode="Custom">
+                            <dxg:GridColumn Header="Resource" FieldName="Entity.Entity.GUID_USER" Visible="False" ColumnFilterMode="DisplayText" SortMode="DisplayText">
                                 <dxg:GridColumn.EditSettings>
                                     <dxe:ComboBoxEditSettings AutoComplete="True" DisplayMember="NAME" IsTextEditable="True" ItemsSource="{Binding USERCollection}" ValueMember="GUID" />
                                 </dxg:GridColumn.EditSettings>
                             </dxg:GridColumn>
-                            <dxg:GridColumn FieldName="Entity.Entity.GUID_SUBJOB" AllowBestFit="false" Width="110" Header="Sub Job" ReadOnly="True" SortMode="Custom">
+                            <dxg:GridColumn FieldName="Entity.Entity.GUID_SUBJOB" AllowBestFit="false" Width="110" Header="Sub Job" ReadOnly="True" SortMode="DisplayText">
                                 <dxg:GridColumn.EditSettings>
                                     <dxe:ComboBoxEditSettings DisplayMember="INTERNAL_NAME1" IsTextEditable="False" ItemsSource="{Binding SUBJOBCollection}" ValueMember="GUID" />
                                 </dxg:GridColumn.EditSettings>
                             </dxg:GridColumn>
-                            <dxg:GridColumn FieldName="Entity.Entity.OFFICE" Visible="False" Header="Office" SortMode="Custom">
+                            <dxg:GridColumn FieldName="Entity.Entity.OFFICE" Visible="False" Header="Office" SortMode="DisplayText">
                                 <dxg:GridColumn.EditSettings>
                                     <dxe:ComboBoxEditSettings AutoComplete="True" IsTextEditable="True" ItemsSource="{dxe:EnumItemsSource EnumType={x:Type common:Office}}" />
                                 </dxg:GridColumn.EditSettings>
                             </dxg:GridColumn>
                         </dxg:GridControlBand>
-                        <dxg:GridControlBand Header="Editable Properties">
-                            <dxg:GridColumn FieldName="DeliverableStatusProgressGuid" Header="Gates" HeaderToolTip="From deliverables status table. Changing this value will increase current % only if the status has a higher percentage than previously earned %" SortMode="Custom">
+                        <dxg:GridControlBand x:Name="gcbEditableProperties" Header="Editable Properties">
+                            <dxg:GridColumn FieldName="DeliverableStatusProgressGuid" Header="Gates" HeaderToolTip="From deliverables status table. Changing this value will increase current % only if the status has a higher percentage than previously earned %" SortMode="DisplayText">
                                 <dxg:GridColumn.CellTemplate>
                                     <DataTemplate>
                                         <dxe:ComboBoxEdit x:Name="PART_Editor" DisplayMember="NAME" ImmediatePopup="True" IncrementalFiltering="True" ItemsSource="{Binding RowData.Row.Entity.Entity.DeliverableStatusCollection}" NullValueButtonPlacement="Popup" ValidateOnEnterKeyPressed="True" ValidateOnTextInput="True" ValueMember="GUID" />
@@ -260,7 +260,7 @@
                                 </dxg:GridColumn.EditSettings>
                             </dxg:GridColumn>
                         </dxg:GridControlBand>
-                        <dxg:GridControlBand Header="Budget (Read Only)">
+                        <dxg:GridControlBand x:Name="gcbBudget" Header="Budget (Read Only)">
                             <dxg:GridColumn FieldName="Entity.Entity.BUDGET_HOURS" AllowBestFit="false" Width="70" Header="Budget Hours" HeaderToolTip="Baseline hours" IsEnabled="False" ReadOnly="True">
                                 <dxg:GridColumn.EditSettings>
                                     <dxe:SpinEditSettings Increment="1" Mask="n" MaskType="Numeric" MaskUseAsDisplayFormat="True" MinValue="0" />
@@ -327,7 +327,7 @@
                                 </dxg:GridColumn.EditSettings>
                             </dxg:GridColumn>
                         </dxg:GridControlBand>
-                        <dxg:GridControlBand Header="Cumulative To Date (Read Only)">
+                        <dxg:GridControlBand x:Name="gcbCumulativeToDate" Header="Cumulative To Date (Read Only)">
                             <dxg:GridColumn FieldName="Baseline_Percentage" Header="Baseline %" AllowBestFit="false" Width="70" HeaderToolTip="% as benchmarked against budget. May exceed 100% if variation exists" IsEnabled="False" ReadOnly="True">
                                 <dxg:GridColumn.EditSettings>
                                     <dxe:SpinEditSettings Mask="p" MaskType="Numeric" MaskUseAsDisplayFormat="True" />
@@ -374,7 +374,7 @@
                                 </dxg:GridColumn.EditSettings>
                             </dxg:GridColumn>
                         </dxg:GridControlBand>
-                        <dxg:GridControlBand Header="Cumulative Total (Read Only)">
+                        <dxg:GridControlBand x:Name="gcbCumulativeTotal" Header="Cumulative Total (Read Only)">
                             <dxg:GridColumn AllowSearchPanel="False" FieldName="FirstDataDate" AllowBestFit="false" Width="80" Header="First Earned Date" HeaderToolTip="Progress first earned date along the entire timeline" ReadOnly="True">
                                 <dxg:GridColumn.EditSettings>
                                     <dxe:DateEditSettings DisplayFormat="dd-MMM-yyyy" />
@@ -425,7 +425,7 @@
                                 </dxg:GridColumn.EditSettings>
                             </dxg:GridColumn>
                         </dxg:GridControlBand>
-                        <dxg:GridControlBand Header="Period (Read Only)">
+                        <dxg:GridControlBand x:Name="gcbPeriod" Header="Period (Read Only)">
                             <dxg:GridColumn FieldName="ScheduleCurrentPeriodPercentage" Header="Planned %" AllowBestFit="false" Width="70" HeaderToolTip="Required % for current period obtained from subjob or P6" IsEnabled="False" ReadOnly="True">
                                 <dxg:GridColumn.EditSettings>
                                     <dxe:SpinEditSettings Mask="p" MaskType="Numeric" MaskUseAsDisplayFormat="True" />
@@ -447,7 +447,7 @@
                                 </dxg:GridColumn.EditSettings>
                             </dxg:GridColumn>
                         </dxg:GridControlBand>
-                        <dxg:GridControlBand Header="Productivity (Read Only)">
+                        <dxg:GridControlBand x:Name="gcbProductivity" Header="Productivity (Read Only)">
                             <dxg:GridColumn FieldName="Current_Productivity" Header="Current Productivity" AllowBestFit="false" Width="70" HeaderToolTip="Productivity is calculated as [current earned hours / schedule planned hours]" IsEnabled="False" ReadOnly="True">
                                 <dxg:GridColumn.EditSettings>
                                     <dxe:SpinEditSettings Mask="n" MaskType="Numeric" MaskUseAsDisplayFormat="True" />
@@ -466,13 +466,13 @@
                             <!--<dxg:GridColumn FieldName="IAmCritical" Header="Critical" AllowBestFit="false" Width="60" HeaderToolTip="Deliverable is required to hit a milestone in the next interval. Expand this row to view required milestone" ReadOnly="True" />-->
                             <dxg:GridColumn FieldName="IAmOverdue" Header="Overdue" AllowBestFit="false" Width="60" HeaderToolTip="Schedule % more than current %" ReadOnly="True" />
                         </dxg:GridControlBand>
-                        <dxg:GridControlBand Header="Investigation (Read Only)">
+                        <dxg:GridControlBand x:Name="gcbInvestigation" Header="Investigation (Read Only)">
                             <dxg:GridColumn AllowSearchPanel="False" FieldName="Last_Created" AllowBestFit="false" Width="100" Header="Progress Created" HeaderToolTip="Progress first created date" ReadOnly="True">
                                 <dxg:GridColumn.EditSettings>
                                     <dxe:DateEditSettings DisplayFormat="dd-MMM-yyyy HH:mm" />
                                 </dxg:GridColumn.EditSettings>
                             </dxg:GridColumn>
-                            <dxg:GridColumn AllowSearchPanel="False" FieldName="Last_CreatedBy" Header="Created By" HeaderToolTip="Person where current progress is created by" ReadOnly="True" SortMode="Custom">
+                            <dxg:GridColumn AllowSearchPanel="False" FieldName="Last_CreatedBy" Header="Created By" HeaderToolTip="Person where current progress is created by" ReadOnly="True" SortMode="DisplayText">
                                 <dxg:GridColumn.EditSettings>
                                     <dxe:ComboBoxEditSettings AutoComplete="True" DisplayMember="NAME" IsTextEditable="True" ItemsSource="{Binding USERCollection}" ValueMember="GUID" />
                                 </dxg:GridColumn.EditSettings>
@@ -482,7 +482,7 @@
                                     <dxe:DateEditSettings DisplayFormat="dd-MMM-yyyy HH:mm" />
                                 </dxg:GridColumn.EditSettings>
                             </dxg:GridColumn>
-                            <dxg:GridColumn AllowSearchPanel="False" FieldName="Last_UpdatedBy" Header="Updated By" HeaderToolTip="Person where current progress is updated by" ReadOnly="True" SortMode="Custom">
+                            <dxg:GridColumn AllowSearchPanel="False" FieldName="Last_UpdatedBy" Header="Updated By" HeaderToolTip="Person where current progress is updated by" ReadOnly="True" SortMode="DisplayText">
                                 <dxg:GridColumn.EditSettings>
                                     <dxe:ComboBoxEditSettings AutoComplete="True" DisplayMember="NAME" IsTextEditable="True" ItemsSource="{Binding USERCollection}" ValueMember="GUID" />
                                 </dxg:GridColumn.EditSettings>

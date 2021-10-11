@@ -31,6 +31,11 @@ namespace BluePrints.Data
             set { CREATED = value; }
         }
 
+        public override string ToString()
+        {
+            return INTERNAL_NUM;
+        }
+
         public string Office => this.PROJECT == null ? string.Empty : this.PROJECT.NUMBER + " " + this.PROJECT.OfficeName;
     }
 }

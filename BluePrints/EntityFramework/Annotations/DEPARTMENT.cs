@@ -32,6 +32,11 @@ namespace BluePrints.Data
             }
         }
 
+        public override string ToString()
+        {
+            return NAME;
+        }
+
         public string Office => BluePrintsResources.GlobalOffice;
     }
 }

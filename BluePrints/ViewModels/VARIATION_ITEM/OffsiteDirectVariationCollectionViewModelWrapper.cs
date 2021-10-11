@@ -336,6 +336,26 @@ namespace BluePrints.ViewModels
         #endregion
 
         #region View Property
+        public override void BulkDelete()
+        {
+            List<ErrorMessage> errorMessages = new List<ErrorMessage>();
+            foreach(BASELINE_ITEMProgress projection in SelectedEntities)
+            {
+                if(projection.IsReadOnly)
+                {
+                    errorMessages.Add(new ErrorMessage(projection.Deliverable_Name, "This deliverable can only be deleted from deliverable's list"));
+                }
+            }
+
+            if (errorMessages.Count > 0)
+            {
+                ShowErrorMessage("Delete Failed", errorMessages);
+                return;
+            }
+
+            base.BulkDelete();
+        }
+
         protected override void OnClose(CancelEventArgs e)
         {
             Messenger.Default.Send(new EntityMessage<VARIATION, Guid>(loadVARIATION.GUID, MainViewModel.Key, EntityMessageType.Changed, this, CurrentHWID, false));

@@ -135,7 +135,7 @@
                                     </dxg:GridColumn.HeaderStyle>
                                     <dxg:GridColumn.CellTemplate>
                                         <DataTemplate>
-                                            <dxe:ComboBoxEdit AutoComplete="True" Name="PART_Editor" AllowDrop="{Binding RowData.Row.IsNewRow}" IsReadOnly="{Binding RowData.Row.IsNewRow, Converter={StaticResource BooleanNegationConverter}}" DisplayMember="RESOURCENAME" IsTextEditable="True" ItemsSource="{Binding DisplayEntities}" ValueMember="STAFFNO" NullText="Leave empty to autogenerate"/>
+                                            <dxe:ComboBoxEdit AutoComplete="True" Name="PART_Editor" AllowDrop="{Binding RowData.Row.IsViewNewRow}" IsReadOnly="{Binding RowData.Row.IsViewNewRow, Converter={StaticResource BooleanNegationConverter}}" DisplayMember="RESOURCENAME" IsTextEditable="True" ItemsSource="{Binding DisplayEntities}" ValueMember="STAFFNO" NullText="Leave empty to autogenerate"/>
                                         </DataTemplate>
                                     </dxg:GridColumn.CellTemplate>
                                     <!--For Filtering-->

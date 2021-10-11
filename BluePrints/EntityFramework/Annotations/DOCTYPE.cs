@@ -42,6 +42,11 @@ namespace BluePrints.Data
             return DSTATUS_DOCTYPE.Where(x => x.DELIVERABLES_STATUS != null && x.DELIVERABLES_STATUS.GUID_PROJECT == GUID_PROJECT).Select(x => x.DELIVERABLES_STATUS);
         }
 
+        public override string ToString()
+        {
+            return NAME;
+        }
+
         public string Office => BluePrintsResources.GlobalOffice;
     }
 }
