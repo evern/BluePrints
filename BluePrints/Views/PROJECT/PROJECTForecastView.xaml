@@ -473,7 +473,7 @@
                             <dxdo:LayoutPanel FontFamily="Calibri" FontSize="12" ItemHeight="30" ShowControlBox="False" ShowCloseButton="False" ShowCollapseButton="False" ShowPinButton="False">
                                 <dxlc:LayoutItem HorizontalAlignment="Center" Label="Click anywhere on the table below and press CTRL + F to clear filter and search for any actuals and POs" LabelPosition="Left" />
                             </dxdo:LayoutPanel>
-                            <dxdo:LayoutPanel x:Name="Actual_Details" dx:DXSerializer.Enabled="False" AutoHidden="False" ShowHideButton="True" ShowCloseButton="False" Visibility="Visible">
+                            <dxdo:LayoutPanel x:Name="Actual_Details" dx:DXSerializer.Enabled="False" AutoHidden="False" ShowHideButton="True" ShowCloseButton="False" Visibility="{Binding ActualDetailsVisibility}">
                                 <dxg:GridControl x:Name="gridControlActualDetails" FontFamily="Calibri" FontSize="12" ShowAllTableValuesInCheckedFilterPopup="False" AutoGenerateColumns="None" FilterCriteria="{Binding ActualFilterCriteria, Mode=TwoWay}" ItemsSource="{Binding ActualsDetail}" SelectionMode="Row" ShowLoadingPanel="{Binding IsLoading}">
                                     <dxmvvm:Interaction.Behaviors>
                                         <dxmvvm:EventToCommand EventName="KeyDown" Command="{Binding DetailGridKeyDownCommand}" PassEventArgsToCommand="True" />

@@ -1264,18 +1264,18 @@ namespace BluePrints.Common.ViewModel.Utils
 
                 poDataPoint.ActualDate = po.ORDERDATE == null ? DateTime.Now : (DateTime)po.ORDERDATE;
                 poDataPoint.PURCHORD_HDRLastUpdated = po.LAST_UPDATED;
-                poDataPoint.Subjob_Name = po.SUB_JOBCODE;
+                poDataPoint.Subjob_Name = po.SUB_JOBCODE.Trim();
                 poDataPoint.ResourceName = string.Empty;
                 poDataPoint.Quantity = poDataPoint.Units;
                 poDataPoint.Description = po.DESCRIPTION;
                 poDataPoint.Narrative = po.NARRATIVE;
                 poDataPoint.Supplier = po.SUPPLIER_NAME;
                 poDataPoint.InvoiceNo = string.Empty;
-                poDataPoint.CostGroup = po.DISCIPLINE_CODE;
-                poDataPoint.Discipline_Code = po.DISCIPLINE_CODE;
+                poDataPoint.CostGroup = po.DISCIPLINE_CODE.Trim();
+                poDataPoint.Discipline_Code = po.DISCIPLINE_CODE.Trim();
                 poDataPoint.CostType = po.COMMODITY_CODE_DESC;
-                poDataPoint.Commodity_Code = po.COMMODITY_CODE;
-                poDataPoint.StockCode = po.STOCKCODE;
+                poDataPoint.Commodity_Code = po.COMMODITY_CODE.Trim();
+                poDataPoint.StockCode = po.STOCKCODE.Trim();
                 poDataPoint.Cost_GLName = string.Empty;
                 poDataPoint.Purchase_GLName = string.Empty;
                 poDataPoint.IsPO = true;
