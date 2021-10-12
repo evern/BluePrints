@@ -158,7 +158,7 @@
                                     </dxg:GridColumn.HeaderStyle>
                                     <dxg:GridColumn.CellTemplate>
                                         <DataTemplate>
-                                            <dxe:TextEdit IsReadOnly="{Binding RowData.Row.IsNewRow, Converter={StaticResource BooleanNegationConverter}}" Name="PART_Editor" NullText="Leave empty to autogenerate"/>
+                                            <dxe:TextEdit IsReadOnly="{Binding RowData.Row.IsViewNewRow, Converter={StaticResource BooleanNegationConverter}}" Name="PART_Editor" NullText="Leave empty to autogenerate"/>
                                         </DataTemplate>
                                     </dxg:GridColumn.CellTemplate>
                                 </dxg:GridColumn>

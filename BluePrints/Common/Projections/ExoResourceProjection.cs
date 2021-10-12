@@ -23,7 +23,7 @@ using BaseModel.ViewModel.Dialogs;
 namespace BluePrints.Common.Projections
 {
     //ExoSubJobProjection is not flat so this is created
-    [ConstraintAttributes("RESOURCENAME")]
+    //[ConstraintAttributes("RESOURCENAME")]
     public class ExoResourceProjection : EntityBase, IGuidEntityKey
     {
         public ExoResourceProjection()

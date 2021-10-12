@@ -128,32 +128,38 @@ namespace BluePrints.ViewModels
             ExoResourceProjection remoteProjection = new ExoResourceProjection();
             DataUtils.ShallowCopy(remoteProjection, projection);
 
-            string upperCaseName = projection.RESOURCENAME.ToUpper();
+            string newResourceShortCode = string.Empty;
 
-            string partialShortCode;
-            //use new unit of work to prevent concurrency issues
-            List<int> availablePrimeroEnumerations = ExoQueries.GetAvailableStaffEnumerations(primeroUnitOfWork, upperCaseName, out partialShortCode);
-
-            //use new unit of work to prevent concurrency issues
-            List<int> availablePgaEnumerations = ExoQueries.GetAvailableStaffEnumerations(pgaUnitOfWork, upperCaseName, out partialShortCode);
-
-            int commonAvailableNameCount = -1;
-            foreach(int primeroEnumeration in availablePrimeroEnumerations)
+            //only assign common new stock code when record is new row
+            if(projection.IsViewNewRow)
             {
-                if(availablePgaEnumerations.Any(x => x == primeroEnumeration))
+                string upperCaseName = projection.RESOURCENAME.ToUpper();
+
+                string partialShortCode;
+                //use new unit of work to prevent concurrency issues
+                List<int> availablePrimeroEnumerations = ExoQueries.GetAvailableStaffEnumerations(primeroUnitOfWork, upperCaseName, out partialShortCode);
+
+                //use new unit of work to prevent concurrency issues
+                List<int> availablePgaEnumerations = ExoQueries.GetAvailableStaffEnumerations(pgaUnitOfWork, upperCaseName, out partialShortCode);
+
+                int commonAvailableNameCount = -1;
+                foreach (int primeroEnumeration in availablePrimeroEnumerations)
                 {
-                    commonAvailableNameCount = primeroEnumeration;
-                    break;
+                    if (availablePgaEnumerations.Any(x => x == primeroEnumeration))
+                    {
+                        commonAvailableNameCount = primeroEnumeration;
+                        break;
+                    }
                 }
+
+                newResourceShortCode = commonAvailableNameCount == -1 ? "N/A" : string.Concat(partialShortCode, commonAvailableNameCount.ToString());
             }
 
-            string newResourceShortCode = commonAvailableNameCount == -1 ? "N/A" : string.Concat(partialShortCode, commonAvailableNameCount.ToString());
             string primaryDbStaffName;
-
             string newItemSearchName = projection.STAFFNO == null ? projection.RESOURCENAME.ToUpper() : string.Empty;
-            bool isNew = commitToExo(projection, primeroUnitOfWork, newResourceShortCode, newItemSearchName, out primaryDbStaffName);
+            bool isNew = commitToExo(projection, primeroUnitOfWork, newResourceShortCode, newItemSearchName, out primaryDbStaffName, false);
             string secondaryDbStaffName;
-            commitToExo(remoteProjection, pgaUnitOfWork, newResourceShortCode, primaryDbStaffName, out secondaryDbStaffName);
+            commitToExo(remoteProjection, pgaUnitOfWork, newResourceShortCode, primaryDbStaffName, out secondaryDbStaffName, true);
 
             //need to add post to capture generated id and properties
             //forceNewEntry is to accomodate row added from newitemrow, because it is automatically added into display entities hence the need to overridden
@@ -165,9 +171,13 @@ namespace BluePrints.ViewModels
             return newlyAddedResources;
         }
 
-        private bool commitToExo(ExoResourceProjection resource, IPrimeroEntitiesUnitOfWork primeroUOW, string newResourceShortCode, string forceSearchName, out string primaryDbStaffName)
+        private bool commitToExo(ExoResourceProjection resource, IPrimeroEntitiesUnitOfWork primeroUOW, string newResourceShortCode, string forceSearchName, out string primaryDbStaffName, bool isRemote)
         {
             bool isNew;
+
+            string officeName = isRemote ? "Montreal" : "Perth";
+            LoadingScreenManager.ShowLoadingScreen(1);
+            LoadingScreenManager.SetMessage("Updating Staff for " + resource.RESOURCENAME + " in " + officeName + "'s EXO");
             STAFF addedStaff = ExoMethods.FindExistingOrAddStaff(primeroUOW, resource.STAFFNO, resource.RESOURCENAME, resource.TITLE, resource.SECURITYPROFILEID, resource.USERPROFILEID, resource.REPORTS_TO_STAFFNO, resource.PAYROLL_ID, forceSearchName, out primaryDbStaffName, out isNew);
 
             resource.STAFFNO = addedStaff.STAFFNO;
@@ -175,6 +185,8 @@ namespace BluePrints.ViewModels
             //do not map back because multiple contexts are involved
             resource.REPORTS_TO_STAFFNO = addedStaff.REPORTS_TO_STAFFNO;
             string activeShortCode = isNew ? newResourceShortCode : resource.SHORTCODE;
+
+            LoadingScreenManager.SetMessage("Updating Resource for " + resource.RESOURCENAME + " in " + officeName + "'s EXO");
             JOBCOST_RESOURCE addedResource = ExoMethods.FindExistingOrAddResource(primeroUOW, resource.STAFFNO, resource.RESOURCE_SEQNO, resource.RESOURCENAME, resource.TITLE, resource.DEFAULT_STOCKCODE, activeShortCode, forceSearchName);
 
             //map back generated properties to projection
@@ -182,8 +194,19 @@ namespace BluePrints.ViewModels
             resource.SHORTCODE = addedResource.SHORTCODE;
             resource.RESOURCE_SEQNO = addedResource.SEQNO;
 
+            LoadingScreenManager.SetMessage("Updating Stock for " + resource.RESOURCENAME + " in " + officeName + "'s EXO");
             STOCK_ITEMS stockItem = ExoMethods.FindExistingOrAddStockItem(primeroUOW, resource.SHORTCODE, resource.RESOURCENAME, resource.SELLPRICE1, resource.SALES_GL_CODE, resource.PURCH_GL_CODE, resource.COS_GL_CODE, resource.STDCOST, resource.COSTGROUP, resource.COSTTYPE, resource.DEPARTMENT);
-            primeroUOW.SaveChanges();
+
+            try
+            {
+                primeroUOW.SaveChanges();
+            }
+            catch
+            {
+                MessageBoxService.ShowMessage("Update failed for " + resource.RESOURCENAME);
+            }
+
+            LoadingScreenManager.CloseLoadingScreen();
             resource.IsViewNewRow = false;
             resource.Update();
 
@@ -230,6 +253,9 @@ namespace BluePrints.ViewModels
         {
             if (projection.RESOURCENAME == null || projection.RESOURCENAME == string.Empty)
                 return "Name is required";
+
+            if (projection.IsViewNewRow && Entities.Where(x => !x.IsViewNewRow).Any(x => x.RESOURCENAME == projection.RESOURCENAME))
+                return "Name already exists";
 
             return string.Empty;
         }
