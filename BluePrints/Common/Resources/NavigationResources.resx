@@ -507,4 +507,13 @@
   <data name="Menu_AllProjects_PL" xml:space="preserve">
     <value>All project P&amp;L</value>
   </data>
+  <data name="Category_Data_EXO" xml:space="preserve">
+    <value>Exo data category</value>
+  </data>
+  <data name="Menu_EXO_StockItems" xml:space="preserve">
+    <value>EXO Stock Items maintenance menu</value>
+  </data>
+  <data name="Menu_EXO_JobResources" xml:space="preserve">
+    <value>EXO Job Resource maintenance menu</value>
+  </data>
 </root>

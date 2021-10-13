@@ -79,6 +79,15 @@ namespace BluePrints.Common.Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Exo data category.
+        /// </summary>
+        internal static string Category_Data_EXO {
+            get {
+                return ResourceManager.GetString("Category_Data_EXO", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Lead projects category.
         /// </summary>
         internal static string Category_LeadProjects {
@@ -336,6 +345,24 @@ namespace BluePrints.Common.Resources {
         internal static string Menu_DocumentTypes {
             get {
                 return ResourceManager.GetString("Menu_DocumentTypes", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to EXO Job Resource maintenance menu.
+        /// </summary>
+        internal static string Menu_EXO_JobResources {
+            get {
+                return ResourceManager.GetString("Menu_EXO_JobResources", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to EXO Stock Items maintenance menu.
+        /// </summary>
+        internal static string Menu_EXO_StockItems {
+            get {
+                return ResourceManager.GetString("Menu_EXO_StockItems", resourceCulture);
             }
         }
         

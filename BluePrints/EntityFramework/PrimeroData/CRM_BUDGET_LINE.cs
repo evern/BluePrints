@@ -64,6 +64,6 @@ namespace BluePrints.PrimeroData
 
         public virtual STOCK_GROUPS STOCK_GROUPS { get; set; }
 
-        public virtual STOCK_ITEMS STOCK_ITEMS { get; set; }
+        //public virtual STOCK_ITEMS STOCK_ITEMS { get; set; }
     }
 }

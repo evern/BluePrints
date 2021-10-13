@@ -16,7 +16,7 @@ namespace BluePrints.PrimeroData
             STAFF = new HashSet<STAFF>();
             STOCK_GROUP2S = new HashSet<STOCK_GROUP2S>();
             STOCK_GROUPS = new HashSet<STOCK_GROUPS>();
-            STOCK_ITEMS = new HashSet<STOCK_ITEMS>();
+            //STOCK_ITEMS = new HashSet<STOCK_ITEMS>();
         }
 
         [Key]
@@ -80,6 +80,6 @@ namespace BluePrints.PrimeroData
 
         public virtual ICollection<STOCK_GROUPS> STOCK_GROUPS { get; set; }
 
-        public virtual ICollection<STOCK_ITEMS> STOCK_ITEMS { get; set; }
+        //public virtual ICollection<STOCK_ITEMS> STOCK_ITEMS { get; set; }
     }
 }

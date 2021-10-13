@@ -1295,6 +1295,89 @@ namespace BluePrints.Common.ViewModel.Utils
             return poDataPoints.ToList();
         }
 
+        public static void PopulateNewJobcostResourcesDefaults(JOBCOST_RESOURCE JOBCOST_RESOURCE)
+        {
+            JOBCOST_RESOURCE.COSTRATE0 = 0;
+            JOBCOST_RESOURCE.COSTRATE1 = 0;
+            JOBCOST_RESOURCE.COSTRATE2 = 0;
+            JOBCOST_RESOURCE.COSTRATE3 = 0;
+            JOBCOST_RESOURCE.SELLRATE0 = 0;
+            JOBCOST_RESOURCE.SELLRATE1 = 0;
+            JOBCOST_RESOURCE.SELLRATE2 = 0;
+            JOBCOST_RESOURCE.SELLRATE3 = 0;
+            JOBCOST_RESOURCE.NORMALHOURS = 0;
+            JOBCOST_RESOURCE.ISACTIVE = "Y";
+        }
+
+        public static void PopulateNewStockItemsDefaults(STOCK_ITEMS STOCK_ITEM)
+        {
+            STOCK_ITEM.STOCKGROUP = 2;
+            STOCK_ITEM.STATUS = "L";
+            STOCK_ITEM.SELLPRICE2 = 0;
+            STOCK_ITEM.SELLPRICE3 = 0;
+            STOCK_ITEM.SELLPRICE4 = 0;
+            STOCK_ITEM.SELLPRICE5 = 0;
+            STOCK_ITEM.SELLPRICE6 = 0;
+            STOCK_ITEM.SELLPRICE7 = 0;
+            STOCK_ITEM.SELLPRICE8 = 0;
+            STOCK_ITEM.SELLPRICE9 = 0;
+            STOCK_ITEM.SELLPRICE10 = 0;
+            STOCK_ITEM.LATESTCOST = 0;
+            STOCK_ITEM.AVECOST = 0;
+            STOCK_ITEM.MINSTOCK = 0;
+            STOCK_ITEM.MAXSTOCK = 0;
+            STOCK_ITEM.SUPPLIERNO = 0;
+            STOCK_ITEM.MONTHUNITS = 0;
+            STOCK_ITEM.YEARUNITS = 0;
+            STOCK_ITEM.LASTYEARUNITS = 0;
+            STOCK_ITEM.MONTHVALUE = 0;
+            STOCK_ITEM.YEARVALUE = 0;
+            STOCK_ITEM.LASTYEARVALUE = 0;
+            STOCK_ITEM.DISCOUNTLEVEL = 0;
+            STOCK_ITEM.DEFDAYS = 0;
+            STOCK_ITEM.LASTMONTHVALUE = 0;
+            STOCK_ITEM.LASTMONTHUNITS = 0;
+            STOCK_ITEM.WEB_SHOW = "N";
+            STOCK_ITEM.ISACTIVE = "Y";
+            STOCK_ITEM.WEIGHT = 0;
+            STOCK_ITEM.CUBIC = 0;
+            STOCK_ITEM.PQTY = 1;
+            STOCK_ITEM.HAS_SN = "N";
+            STOCK_ITEM.SALES_GLSUBCODE = 0;
+            STOCK_ITEM.PURCH_GLSUBCODE = 0;
+            STOCK_ITEM.BRANCHNO = 0;
+            STOCK_ITEM.SALESTAXRATE = -1;
+            STOCK_ITEM.PURCHTAXRATE = -1;
+            STOCK_ITEM.LAST_UPDATED = DateTime.Now;
+            STOCK_ITEM.UPDATEITEM_QTY = 0;
+            STOCK_ITEM.COS_GLSUBCODE = 0;
+            STOCK_ITEM.STOCKPRICEGROUP = 0;
+            STOCK_ITEM.SUPPLIERCOST = 0;
+            STOCK_ITEM.ECONORDERQTY = 1;
+            STOCK_ITEM.STOCK_CLASSIFICATION = 0;
+            STOCK_ITEM.STOCKGROUP2 = 0;
+            STOCK_ITEM.TOTALSTOCK = 0;
+            STOCK_ITEM.HAS_BN = "N";
+            STOCK_ITEM.HAS_EXPIRY = "N";
+            STOCK_ITEM.EXPIRY_DAYS = 1;
+            STOCK_ITEM.DUTY = 0;
+            STOCK_ITEM.SERIALNO_TYPE = 0;
+            STOCK_ITEM.LABEL_QTY = 1;
+            STOCK_ITEM.IS_DISCOUNTABLE = "Y";
+            STOCK_ITEM.RESTRICTED_ITEM = "N";
+            STOCK_ITEM.NUMDECIMALS = -1;
+            STOCK_ITEM.COGSMETHOD = 0;
+            STOCK_ITEM.DEFAULTWARRANTYNO = -2;
+            STOCK_ITEM.DIMENSIONS = 0;
+            STOCK_ITEM.AUTO_NARRATIVE = 0;
+            STOCK_ITEM.X_SIZEID = 0;
+            STOCK_ITEM.X_COLOURID = 0;
+            STOCK_ITEM.VARIABLECOST = "N";
+            STOCK_ITEM.LOOKUP_RECOVERABLE = 'Y';
+            STOCK_ITEM.X_PAYTYPE = 'H';
+            STOCK_ITEM.X_ALLOWNO = 0;
+        }
+
         public static List<ExoDataPoint> GetEXOPOByWBS(IPrimeroEntitiesUnitOfWork primeroUOW, string projectNumber, DateTime queryDate, List<DateTime> alignedDataDates = null, bool showLoadingScreen = false, ExoQueryType exoQueryType = ExoQueryType.All)
         {
             List<ExoDataPoint> poDataPoints = new List<ExoDataPoint>();
