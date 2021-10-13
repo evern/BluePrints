@@ -5,8 +5,8 @@ namespace BluePrints.PrimeroData
     using System.ComponentModel.DataAnnotations;
     using System.ComponentModel.DataAnnotations.Schema;
 
-    [ConstraintAttributes("STOCKCODE")]
-    public partial class STOCK_ITEMS : EntityBase
+    [ConstraintAttributes("RESOURCENAME")]
+    public partial class JOBCOST_RESOURCE : EntityBase
     {
         [NotMapped]
         public bool IsActive
@@ -20,9 +20,5 @@ namespace BluePrints.PrimeroData
                     ISACTIVE = "N";
             }
         }
-
-
-        [NotMapped]
-        public bool IsValid { get; set; }
     }
 }

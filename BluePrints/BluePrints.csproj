@@ -913,6 +913,7 @@
     <Compile Include="EntityFramework\Annotations\REGISTER_TQ.cs" />
     <Compile Include="EntityFramework\Annotations\REGISTER_TQ_ATTACHMENT.cs" />
     <Compile Include="EntityFramework\Annotations\JOBCOST_HDR.cs" />
+    <Compile Include="EntityFramework\Annotations\JOBCOST_RESOURCE.cs" />
     <Compile Include="EntityFramework\Annotations\X_DEPARTMENT.cs" />
     <Compile Include="EntityFramework\Annotations\X_EARNED_QUERY.cs" />
     <Compile Include="EntityFramework\Annotations\X_INVOICED_V1.cs" />
@@ -1143,6 +1144,8 @@
     <Compile Include="ViewModels\CLIENT\CLIENTCollectionViewModelWrapper.cs" />
     <Compile Include="ViewModels\CONSTRUCTION_STAGE\CONSTRUCTION_STAGECollectionViewModelWrapper.cs" />
     <Compile Include="ViewModels\DISCIPLINE\DISCIPLINE_DESCCollectionViewModelWrapper.cs" />
+    <Compile Include="ViewModels\EXO\JOBCOST_RESOURCECollectionViewModelWrapper.cs" />
+    <Compile Include="ViewModels\EXO\STOCK_ITEMSCollectionViewModelWrapper.cs" />
     <Compile Include="ViewModels\EXOSUBJOB\EXO_PricesCollectionViewModelWrapper.cs" />
     <Compile Include="ViewModels\EXOSUBJOB\EXO_JobHistoryCollectionViewModelWrapper.cs" />
     <Compile Include="ViewModels\EXOSUBJOB\EXO_ConstructionSubjobCollectionViewModelWrapper.cs" />
@@ -1232,6 +1235,12 @@
     </Compile>
     <Compile Include="Views\DISCIPLINE\DISCIPLINE_DESCCollectionView.xaml.cs">
       <DependentUpon>DISCIPLINE_DESCCollectionView.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Views\EXO\JOBCOST_RESOURCECollectionView.xaml.cs">
+      <DependentUpon>JOBCOST_RESOURCECollectionView.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Views\EXO\STOCK_ITEMSCollectionView.xaml.cs">
+      <DependentUpon>STOCK_ITEMSCollectionView.xaml</DependentUpon>
     </Compile>
     <Compile Include="Views\EXOSUBJOB\EXO_PricesCollectionView.xaml.cs">
       <DependentUpon>EXO_PricesCollectionView.xaml</DependentUpon>
@@ -2211,6 +2220,14 @@
       <SubType>Designer</SubType>
     </Page>
     <Page Include="Views\DISCIPLINE\DISCIPLINE_DESCCollectionView.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Views\EXO\JOBCOST_RESOURCECollectionView.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Views\EXO\STOCK_ITEMSCollectionView.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>
@@ -5427,8 +5444,6 @@
     <Content Include="DatabaseScript.sql" />
   </ItemGroup>
   <ItemGroup>
-    <Folder Include="ViewModels\STOCK_CODE\" />
-    <Folder Include="ViewModels\STOCK_GROUP\" />
     <Folder Include="Views\ESTIMATE_ITEM\" />
     <Folder Include="Views\STOCK_CODE\" />
     <Folder Include="Views\STOCK_GROUP\" />

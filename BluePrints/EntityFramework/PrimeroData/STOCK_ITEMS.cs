@@ -8,8 +8,8 @@ namespace BluePrints.PrimeroData
     {
         public STOCK_ITEMS()
         {
-            CRM_BUDGET_LINE = new HashSet<CRM_BUDGET_LINE>();
-            CRM_BUDGET = new HashSet<CRM_BUDGET>();
+            //CRM_BUDGET_LINE = new HashSet<CRM_BUDGET_LINE>();
+            //CRM_BUDGET = new HashSet<CRM_BUDGET>();
         }
 
         [Key]
@@ -214,8 +214,8 @@ namespace BluePrints.PrimeroData
 
         public int? X_ALLOWNO { get; set; }
 
-        public virtual ICollection<CRM_BUDGET_LINE> CRM_BUDGET_LINE { get; set; }
+        //public virtual ICollection<CRM_BUDGET_LINE> CRM_BUDGET_LINE { get; set; }
 
-        public virtual ICollection<CRM_BUDGET> CRM_BUDGET { get; set; }
+        //public virtual ICollection<CRM_BUDGET> CRM_BUDGET { get; set; }
     }
 }
