@@ -4,6 +4,7 @@ using BaseModel.Misc;
 using BaseModel.View;
 using BaseModel.ViewModel.Base;
 using BaseModel.ViewModel.Loader;
+using BaseModel.ViewModel.UndoRedo;
 using BluePrints.BluePrintsEntitiesDataModel;
 using BluePrints.Common;
 using BluePrints.Common.Base;
@@ -65,7 +66,22 @@ namespace BluePrints.ViewModels
         BackgroundWorker projectSavingBackgroundWorker = new BackgroundWorker();
         DispatcherTimer delayedProjectSaveTimer;
         public PROJECT LoadPROJECT { get; set; }
-        public bool IsWeeks => false; //used by ForecastHeaderTemplate
+        bool isWeeks;
+        public bool IsWeeks
+        {
+            get => isWeeks;
+            set
+            {
+                if (isWeeks != value)
+                {
+                    isWeeks = value;
+                    ForecastSummary.Reset();
+                    EntitiesUndoRedoManager.Clear();
+                    mainThreadDispatcher.BeginInvoke(new Action(() => loadDataPointsTable()));
+                }
+            }
+        }
+
         protected override void resolveParameters(object parameter)
         {
             var PROJECTParameter = (EntitiesParameter<PROJECT>)parameter;
@@ -616,7 +632,10 @@ namespace BluePrints.ViewModels
             DateTime firstDateToGenerateFrom = new DateTime();
             firstDateToGenerateFrom = FixedDataDate;
 
-            return ChronologicalHelpers.GenerateEndDatesCollection(firstDateToGenerateFrom, endDateToGenerate);
+            if (IsWeeks)
+                return ChronologicalHelpers.GenerateEndDatesCollection(firstDateToGenerateFrom, endDateToGenerate, true);
+            else
+                return ChronologicalHelpers.GenerateEndDatesCollection(firstDateToGenerateFrom, endDateToGenerate);
         }
         #endregion
 
@@ -841,6 +860,133 @@ namespace BluePrints.ViewModels
                 return
                     (CollectionViewModel<PROJECT, PROJECT, Guid, IBluePrintsEntitiesUnitOfWork>)
                     loaderCollection.GetViewModel<PROJECT>();
+            }
+        }
+        #endregion
+
+        #region Undo Redo
+
+        /// <summary>
+        /// Manages all undo and redo operation
+        /// </summary>
+        private EntitiesUndoRedoManager<DataRow> entitiesundoredomanager { get; set; }
+
+        public EntitiesUndoRedoManager<DataRow> EntitiesUndoRedoManager
+        {
+            get
+            {
+                if (entitiesundoredomanager == null)
+                    entitiesundoredomanager = new EntitiesUndoRedoManager<DataRow>(BulkPropertyUndo, BulkPropertyRedo);
+
+                return entitiesundoredomanager;
+            }
+        }
+
+        /// <summary>
+        /// Function to undo the entity changes
+        /// Must be used in conjunction of EntitiesUndoManager
+        /// </summary>
+        /// <param name="entityProperty">Entity passed over from EntitiesUndoRedo</param>
+        public virtual void BulkPropertyUndo(IEnumerable<UndoRedoEntityInfo<DataRow>> entityProperties)
+        {
+            IEnumerable<UndoRedoEntityInfo<DataRow>> bulkSaveProperties = entityProperties.Where(x => x.MessageType == EntityMessageType.Changed);
+            foreach (UndoRedoEntityInfo<DataRow> entityProperty in bulkSaveProperties)
+            {
+                object oldValue = entityProperty.OldValue;
+                if (oldValue == null || oldValue == DBNull.Value)
+                {
+                    resetViewRemainingOnJob(entityProperty.ChangedEntity, entityProperty.PropertyName, false);
+                    //oldValue = 0.00m;
+                }
+                else
+                {
+                    //do this twice so that detailed grid value can be updated (hack)
+                    entityProperty.ChangedEntity[entityProperty.PropertyName] = oldValue;
+                    entityProperty.ChangedEntity[entityProperty.PropertyName] = oldValue;
+                }
+
+                DateTime parseDateTime;
+                if (DateTime.TryParse(entityProperty.PropertyName, out parseDateTime))
+                {
+                    decimal? oldValueDecimal = null;
+                    if (entityProperty.OldValue != null)
+                        oldValueDecimal = (decimal)entityProperty.OldValue;
+                    findExistingOrAddNewForecast(entityProperty.ChangedEntity, parseDateTime, oldValueDecimal);
+                }
+            }
+
+            foreach (UndoRedoEntityInfo<DataRow> entityProperty in bulkSaveProperties)
+            {
+                updateTotalUncommittedOnJob(entityProperty.ChangedEntity, true);
+            }
+
+            refreshGridData();
+        }
+
+        /// <summary>
+        /// Function to redo the entity changes
+        /// Must be used in conjunction of EntitiesUndoManager
+        /// </summary>
+        /// <param name="entityProperty">Entity passed over from EntitiesUndoRedo</param>
+        public virtual void BulkPropertyRedo(IEnumerable<UndoRedoEntityInfo<DataRow>> entityProperties)
+        {
+            IEnumerable<UndoRedoEntityInfo<DataRow>> bulkSaveProperties = entityProperties.Where(x => x.MessageType == EntityMessageType.Changed);
+            foreach (UndoRedoEntityInfo<DataRow> entityProperty in bulkSaveProperties)
+            {
+                object newValue = entityProperty.NewValue;
+                if (newValue == null || newValue == DBNull.Value)
+                {
+                    resetViewRemainingOnJob(entityProperty.ChangedEntity, entityProperty.PropertyName, false);
+                    //newValue = 0.00m;
+                }
+                else
+                {
+                    //do this twice so that detailed grid value can be updated (hack)
+                    entityProperty.ChangedEntity[entityProperty.PropertyName] = newValue;
+                    entityProperty.ChangedEntity[entityProperty.PropertyName] = newValue;
+                }
+
+                DateTime parseDateTime;
+                if (DateTime.TryParse(entityProperty.PropertyName, out parseDateTime))
+                {
+                    decimal? newValueDecimal = null;
+                    if (entityProperty.NewValue != DBNull.Value && entityProperty.NewValue != null)
+                        newValueDecimal = (decimal)entityProperty.NewValue;
+                    findExistingOrAddNewForecast(entityProperty.ChangedEntity, parseDateTime, newValueDecimal);
+                }
+            }
+
+            foreach (UndoRedoEntityInfo<DataRow> entityProperty in bulkSaveProperties)
+            {
+                updateTotalUncommittedOnJob(entityProperty.ChangedEntity, true);
+            }
+
+            refreshGridData();
+        }
+
+        private void resetViewRemainingOnJob(DataRow updateRow, string fieldName, bool addUndo)
+        {
+            if (updateRow[columnCompare] == DBNull.Value)
+                return;
+
+            ForecastJobData job = ((ForecastJobData)updateRow[columnEntity]);
+            ExoSubJobProjection entity = job.Projection;
+            DataTable compareDataTable = (DataTable)updateRow[columnCompare];
+
+            decimal oldValue = 0.00m;
+            decimal newValue = 0.00m;
+            if (compareDataTable.Columns.Contains(fieldName))
+            {
+                decimal resetValue = getMasterRowResetValue(compareDataTable, fieldName);
+                resetChildRow(compareDataTable, fieldName, addUndo);
+                oldValue = (decimal)updateRow[fieldName];
+                newValue = resetValue;
+
+                //do it twice so that child row value can be updated (hack)
+                updateRow[fieldName] = newValue;
+                updateRow[fieldName] = newValue;
+                EntitiesUndoRedoManager.AddUndo(updateRow, fieldName, oldValue, newValue, EntityMessageType.Changed);
+                updateTotalUncommittedOnJob(updateRow, true);
             }
         }
         #endregion
