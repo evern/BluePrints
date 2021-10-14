@@ -282,6 +282,23 @@ namespace BluePrints.ViewModels
         #endregion
 
         #region View Properties
+
+        /// <summary>
+        /// Show stock code even when it is not valid
+        /// </summary>
+        public void CustomColumnDisplayText(CustomColumnDisplayTextEventArgs e)
+        {
+            if (e.Column.FieldName == columnStockItem && e.Row != null)
+            {
+                DataRowView dataRowView = (DataRowView)e.Row;
+                if(dataRowView.Row[columnStockItem] != DBNull.Value)
+                {
+                    string stockCode = dataRowView.Row[columnStockItem].ToString();
+                    e.DisplayText = stockCode;
+                }
+            }
+        }
+
         DataTable dataPointsTable = null;
         public DataTable DataPointsTable
         {
@@ -314,7 +331,8 @@ namespace BluePrints.ViewModels
             dataPointsTable.Columns.Add(columnProjection, typeof(ExoSubJobProjection));
             dataPointsTable.Columns.Add(columnForecastJob, typeof(FORECAST_JOB));
             dataPointsTable.Columns.Add(columnStockItemName, typeof(string));
-            DataPointsTable.Columns.Add(columnRecommendedForecastRate, typeof(decimal));
+            dataPointsTable.Columns.Add(columnStockItemErrorImageWidth, typeof(decimal));
+            dataPointsTable.Columns.Add(columnRecommendedForecastRate, typeof(decimal));
             dataPointsTable.Columns.Add(columnTotalHours, typeof(decimal));
             dataPointsTable.Columns.Add(columnTotalCosts, typeof(decimal));
 
@@ -435,12 +453,20 @@ namespace BluePrints.ViewModels
                         if (isNewRow)
                             forecastJob.FORECAST_RATE = newDecimalValue;
                     }
+
+                    row[columnStockItemErrorImageWidth] = 0m;
                 }
                 else
+                {
+                    row[columnStockItemErrorImageWidth] = 15m;
                     row[columnStockItemName] = string.Empty;
+                }
             }
             else
+            {
                 row[columnStockItemName] = string.Empty;
+                row[columnStockItemErrorImageWidth] = 0m;
+            }
 
             //update total hours
             decimal rate = 0.00m;
@@ -1089,6 +1115,7 @@ namespace BluePrints.ViewModels
         static string columnTotalCosts = "TOTAL_COSTS";
         static string columnDescription = "Description";
         static string columnStockItem = "StockItem";
+        static string columnStockItemErrorImageWidth = "StockItemErrorImageWidth";
         static string columnReference = "Reference";
         static string columnNote = "Note";
         static string columnUOM = BluePrintsResources.ForecastIndirectUOMColumn;

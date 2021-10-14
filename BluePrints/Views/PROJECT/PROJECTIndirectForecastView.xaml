@@ -55,6 +55,40 @@
                         ReadOnly="{Binding Path=(dxci:DependencyObjectExtensions.DataContext).ReadOnly, RelativeSource={RelativeSource Self}, Mode=TwoWay}"
                         Visible="{Binding Path=(dxci:DependencyObjectExtensions.DataContext).Visible, RelativeSource={RelativeSource Self}}"
                         HeaderToolTip="{Binding Path=(dxci:DependencyObjectExtensions.DataContext).HeaderToolTip, RelativeSource={RelativeSource Self}}" >
+                        <dxg:GridColumn.CellTemplate>
+                            <DataTemplate>
+                                <Grid>
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="{Binding RowData.Row.StockItemErrorImageWidth}" />
+                                        <ColumnDefinition Width="*" />
+                                    </Grid.ColumnDefinitions>
+                                    <Image Grid.Column="0" Visibility="Visible" Source="{dx:DXImage Image=Cancel_16x16.png}" ToolTip="Stock Code has been changed in EXO, please update"/>
+                                    <dxg:LookUpEdit Name="PART_Editor" Grid.Column="1" AutoComplete="True" AutoPopulateColumns="False" DisplayMember="STOCKCODE" IsTextEditable="true" ItemsSource="{Binding DataContext.STOCK_ITEMCollection, ElementName=userControl}" NullValueButtonPlacement="Popup"  PopupMinWidth="1500" ValueMember="STOCKCODE">
+                                        <dxg:LookUpEdit.StyleSettings>
+                                            <dxg:SearchLookUpEditStyleSettings />
+                                        </dxg:LookUpEdit.StyleSettings>
+                                        <dxg:LookUpEdit.PopupContentTemplate>
+                                            <ControlTemplate TargetType="ContentControl">
+                                                <dxg:GridControl x:Name="PART_GridControl" SelectionMode="Row" ShowBorder="False">
+                                                    <dxg:GridControl.Columns>
+                                                        <dxg:GridColumn FieldName="STOCKCODE" Header="Stock Code" ReadOnly="True" />
+                                                        <dxg:GridColumn FieldName="DESCRIPTION" Header="Description" SortIndex="1" ReadOnly="True" />
+                                                        <dxg:GridColumn FieldName="STDCOST" Header="Standard Cost" ReadOnly="True" >
+                                                            <dxg:GridColumn.EditSettings>
+                                                                <dxe:SpinEditSettings Increment="10" Mask="n2" MaskType="Numeric" MaskUseAsDisplayFormat="True" MinValue="0" />
+                                                            </dxg:GridColumn.EditSettings>
+                                                        </dxg:GridColumn>
+                                                    </dxg:GridControl.Columns>
+                                                    <dxg:GridControl.View>
+                                                        <dxg:TableView RowStyle="{StaticResource SelectionBackgroundStyle}" ShowFocusedRectangle="True" ShowGroupPanel="True" ShowSearchPanelMode="Always" ShowSearchPanelNavigationButtons="True" ShowSelectionRectangle="True" />
+                                                    </dxg:GridControl.View>
+                                                </dxg:GridControl>
+                                            </ControlTemplate>
+                                        </dxg:LookUpEdit.PopupContentTemplate>
+                                    </dxg:LookUpEdit>
+                                </Grid>
+                            </DataTemplate>
+                        </dxg:GridColumn.CellTemplate>
                         <dxg:GridColumn.EditSettings>
                             <dxg:LookUpEditSettings AutoComplete="True" AutoPopulateColumns="False" DisplayMember="STOCKCODE" IsTextEditable="true" ItemsSource="{Binding Path=(dxci:DependencyObjectExtensions.DataContext).ItemsSource, RelativeSource={RelativeSource Self}}" NullValueButtonPlacement="Popup"  PopupMinWidth="1500" ValueMember="STOCKCODE">
                                 <dxg:LookUpEditSettings.StyleSettings>
@@ -240,6 +274,7 @@
                                             GroupSummaryGeneratorTemplate="{StaticResource SummaryTemplate}"
                                             ColumnGeneratorTemplateSelector="{StaticResource ColumnTemplateSelector}" ColumnsSource="{Binding ParentViewColumns}" dxc:DXSerializer.SerializationID="GridControlForecast" dxc:DXSerializer.StoreLayoutMode="All" AutoExpandAllGroups="False" ShowAllTableValuesInCheckedFilterPopup="False" AutoGenerateColumns="None" ClipboardCopyMode="ExcludeHeader" ItemsSource="{Binding DataPointsTable}" CurrentItem="{Binding SelectedDataRow, Mode=TwoWay}" SelectedItems="{Binding SelectedDataRows, Mode=TwoWay}" SelectionMode="{Binding SelectMode}" ShowLoadingPanel="{Binding IsLoading}">
                                     <dxmvvm:Interaction.Behaviors>
+                                        <dxmvvm:EventToCommand Command="{Binding CustomColumnDisplayTextCommand}" EventName="CustomColumnDisplayText" PassEventArgsToCommand="True" />
                                         <dxmvvm:EventToCommand Command="{Binding PastingFromClipboardCommand}" EventName="PastingFromClipboard" PassEventArgsToCommand="True" />
                                     </dxmvvm:Interaction.Behaviors>
                                     <dxg:GridControl.View>

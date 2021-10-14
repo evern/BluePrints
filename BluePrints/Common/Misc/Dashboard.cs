@@ -406,10 +406,6 @@ namespace BluePrints.Common.Misc
 
         private static void populateFlatDashboards(List<DashboardFlatStructure> masterDashboardFlat, string subJobCode, string disciplineCode, string commodityCode, string variationCode, WBSReportable stats, IEnumerable<SUBJOB> designSubJobs, IEnumerable<SUBJOB> constructSubJobs, IEnumerable<DOCTYPE> DOCTYPECollection = null)
         {
-            string s;
-            if (subJobCode == "00151-009-00-D1" && disciplineCode == "ST01")
-                s = string.Empty;
-
             DashboardFlatStructure newDashboard = new DashboardFlatStructure();
             newDashboard.SubjobCode = subJobCode;
             newDashboard.PhaseCode = newDashboard.SubjobCode.Length > 14 ? newDashboard.SubjobCode.Substring(13, 2) : string.Empty;
