@@ -153,10 +153,10 @@ namespace BluePrints.ViewModels
             loadExoData(primeroUnitOfWork);
         }
 
-        protected override void BackgroundRefresh()
+        protected override void BackgroundRefresh(bool loadLayout = false)
         {
             if(isExoDataLoaded)
-                base.BackgroundRefresh();
+                base.BackgroundRefresh(true);
         }
 
         protected bool isExoDataLoaded = false;

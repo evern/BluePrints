@@ -206,10 +206,10 @@ namespace BluePrints.ViewModels
             }
         }
 
-        protected override void BackgroundRefresh()
+        protected override void BackgroundRefresh(bool loadLayout = false)
         {
-            if(IsCalculationCompleted)
-                base.BackgroundRefresh();
+            if (IsCalculationCompleted)
+                base.BackgroundRefresh(true);
         }
 
         private void applyBestFit()

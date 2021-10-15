@@ -178,10 +178,10 @@ namespace BluePrints.ViewModels
             this.RaisePropertiesChanged();
         }
 
-        protected override void BackgroundRefresh()
+        protected override void BackgroundRefresh(bool loadLayout = false)
         {
             if (isJobsLoaded)
-                base.BackgroundRefresh();
+                base.BackgroundRefresh(true);
             //wait for exo data to load before refreshing data table
         }
 

@@ -1103,11 +1103,11 @@ namespace BluePrints.Common.ViewModel.Utils
                         materialDataPoint.Description = jobMaterial.DESCRIPTION;
                         materialDataPoint.Supplier = jobMaterial.RESOURCE_SUPPLIER_NAME;
                         materialDataPoint.InvoiceNo = jobMaterial.INVNO == null ? string.Empty : jobMaterial.INVNO.ToString();
-                        materialDataPoint.CostGroup = jobMaterial.DISCIPLINE_CODE;
-                        materialDataPoint.Discipline_Code = jobMaterial.DISCIPLINE_CODE;
+                        materialDataPoint.CostGroup = jobMaterial.DISCIPLINE_CODE.Trim();
+                        materialDataPoint.Discipline_Code = jobMaterial.DISCIPLINE_CODE.Trim();
                         materialDataPoint.CostType = jobMaterial.COMMODITY_CODE;
-                        materialDataPoint.Commodity_Code = jobMaterial.COMMODITY_CODE;
-                        materialDataPoint.StockCode = jobMaterial.STOCKCODE;
+                        materialDataPoint.Commodity_Code = jobMaterial.COMMODITY_CODE.Trim();
+                        materialDataPoint.StockCode = jobMaterial.STOCKCODE.Trim();
                         materialDataPoint.Cost_GLName = jobMaterial.COST_GL_NAME;
                         materialDataPoint.Purchase_GLName = jobMaterial.PURCH_GL_NAME;
                         materialDataPoint.Variation_Code = normalizeVariationCode(jobMaterial.VARIATION_CODE);
