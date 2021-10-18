@@ -1895,12 +1895,32 @@ namespace BluePrints.Common.ViewModel.Utils
 
         public static string GetPhaseCode(string subjobCode)
         {
-            if (subjobCode == string.Empty)
+            if (subjobCode == string.Empty || subjobCode == null)
                 return string.Empty;
             else if (subjobCode.Length < 15)
                 return string.Empty;
 
             return subjobCode.Substring(13, 2);
+        }
+
+        public static string GetAreaCode(string subJobcode)
+        {
+            if (subJobcode == string.Empty)
+                return string.Empty;
+            else if (subJobcode.Length < 15)
+                return string.Empty;
+
+            return subJobcode.Substring(6, 3);
+        }
+
+        public static string GetSubAreaCode(string subJobcode)
+        {
+            if (subJobcode == string.Empty)
+                return string.Empty;
+            else if (subJobcode.Length < 15)
+                return string.Empty;
+
+            return subJobcode.Substring(10, 2);
         }
 
         public static void WORKPACK_Populate_Name(WORKPACK workpack, IEnumerable<SUBJOB> SUBJOBCollection, IEnumerable<DISCIPLINE> DISCIPLINECollection)
@@ -1977,6 +1997,24 @@ namespace BluePrints.Common.ViewModel.Utils
             IEnumerable<RATE> rateByDepartment = rateByDisciplineNum.Where(y => (y.GUID_DEPARTMENT == departmentGuid) || (y.GUID_DEPARTMENT == null)).OrderByDescending(y => y.GUID_DEPARTMENT);
             IEnumerable<RATE> rateBySubArea = rateByDepartment.Where(y => (y.GUID_SUBAREA == subAreaGuid) || (y.GUID_SUBAREA == null)).OrderByDescending(y => y.GUID_SUBAREA);
             IEnumerable<RATE> rateByArea = rateBySubArea.Where(y => (y.GUID_AREA == areaGuid) || (y.GUID_AREA == null)).OrderByDescending(y => y.GUID_AREA);
+
+            return rateByArea.FirstOrDefault();
+        }
+
+        /// <summary>
+        /// Searches rate cascadingly for IRATE interface
+        /// </summary>
+        /// <returns></returns>
+        public static RATE CascadeRateSearchByCode(string areaCode, string subAreaCode, string disciplineCode, string departmentCode, string commodityCode, string variationCode, IEnumerable<RATE> RATECollection, CostType costType, PhaseType phaseType)
+        {
+            IEnumerable<RATE> rateByPhase = RATECollection.Where(y => y.COST_TYPE == costType && y.Phase_Type == phaseType);
+            //order by descending places null GUID's at the end, so First() won't pick it up
+            IEnumerable<RATE> rateByVariations = rateByPhase.Where(y => (y.VARIATION_CODE == variationCode) || (y.VARIATION_CODE == string.Empty || y.VARIATION_CODE == null)).OrderByDescending(y => y.COMMODITY_CODE);
+            IEnumerable<RATE> rateByCommodities = rateByVariations.Where(y => (y.COMMODITY_CODE == commodityCode) || (y.COMMODITY_CODE == string.Empty || y.COMMODITY_CODE == null)).OrderByDescending(y => y.COMMODITY_CODE);
+            IEnumerable<RATE> rateByDiscipline = rateByCommodities.Where(y => (y.DISCIPLINE != null && y.DISCIPLINE.CODE == disciplineCode) || (y.GUID_DISCIPLINE == null)).OrderByDescending(y => y.GUID_DISCIPLINE);
+            IEnumerable<RATE> rateByDepartment = rateByDiscipline.Where(y => (y.DEPARTMENT != null && y.DEPARTMENT.CODE == departmentCode) || (y.GUID_DEPARTMENT == null)).OrderByDescending(y => y.GUID_DEPARTMENT);
+            IEnumerable<RATE> rateBySubArea = rateByDepartment.Where(y => (y.SUBAREA != null && y.SUBAREA.INTERNAL_NUM == subAreaCode) || (y.GUID_SUBAREA == null)).OrderByDescending(y => y.GUID_SUBAREA);
+            IEnumerable<RATE> rateByArea = rateBySubArea.Where(y => (y.AREA != null && y.AREA.INTERNAL_NUM == areaCode) || (y.GUID_AREA == null)).OrderByDescending(y => y.GUID_AREA);
 
             return rateByArea.FirstOrDefault();
         }

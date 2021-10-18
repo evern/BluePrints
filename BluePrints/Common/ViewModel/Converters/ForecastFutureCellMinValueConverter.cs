@@ -1,6 +1,8 @@
 ﻿using BluePrints.Common.Projections;
 using BluePrints.Common.Resources;
+using BluePrints.Common.ViewModel.Reporting;
 using System;
+using System.Collections.Generic;
 using System.Data;
 using System.Linq;
 using System.Windows;
@@ -29,15 +31,16 @@ namespace BluePrints.Common.ViewModel.Converters
                 if (dataRow["CompareEntities"] != DBNull.Value)
                 {
                     DataTable compareDataTable = (DataTable)dataRow["CompareEntities"];
-                    ForecastJobData commodityJob = (ForecastJobData)dataRow["Entity"];
+                    IForecastViewModel commodityJob = (IForecastViewModel)dataRow["Entity"];
 
                     if (compareDataTable.TableName == BluePrintsResources.ForecastCompareTableName)
                     {
                         string fieldname = values[1].ToString();
                         DateTime parseDateTime;
+
                         if (DateTime.TryParse(fieldname, out parseDateTime))
                         {
-                            ForecastDateCost dateCost = commodityJob.DateCosts.FirstOrDefault(x => x.Date.Date == parseDateTime.Date);
+                            IForecastDateCostViewModel dateCost = commodityJob.ForecastDateCosts.FirstOrDefault(x => x.QueryDate.Date == parseDateTime.Date);
                             if (dateCost != null)
                             {
                                 decimal poForecastCosts = dateCost.POForecastCosts;

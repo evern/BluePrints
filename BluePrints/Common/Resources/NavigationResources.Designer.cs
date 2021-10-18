@@ -790,6 +790,15 @@ namespace BluePrints.Common.Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Project read-only forecast menu.
+        /// </summary>
+        internal static string Menu_Project_Forecast_ReadOnly {
+            get {
+                return ResourceManager.GetString("Menu_Project_Forecast_ReadOnly", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Project holidays maintenance.
         /// </summary>
         internal static string Menu_Project_Holidays {

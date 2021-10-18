@@ -10,6 +10,25 @@ using System.Threading.Tasks;
 
 namespace BluePrints.Common.ViewModel.Reporting
 {
+    public interface IForecastViewModel
+    {
+        //used by detailed rows so that only P6 hour row can be edited
+        bool IsP6HoursRow { get; }
+        string CompareMask { get; }
+        IEnumerable<IForecastDateCostViewModel> ForecastDateCosts { get; }
+    }
+
+    public interface IForecastDateCostViewModel
+    {
+        decimal ActualCosts { get; }
+        decimal MaterialCosts { get; }
+        decimal IndirectForecastCosts { get; }
+        decimal POForecastCosts { get; }
+        decimal P6Costs { get; }
+        decimal TotalCosts { get;}
+        DateTime QueryDate { get; }
+    }
+
     public interface IHaveDisciplineDesc : ICanUpdate
     {
         string DisciplineCode { get; }
