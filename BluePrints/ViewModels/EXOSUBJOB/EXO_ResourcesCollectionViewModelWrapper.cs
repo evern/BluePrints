@@ -140,26 +140,29 @@ namespace BluePrints.ViewModels
                 List<int> availablePrimeroEnumerations = ExoQueries.GetAvailableStaffEnumerations(primeroUnitOfWork, upperCaseName, out partialShortCode);
 
                 //use new unit of work to prevent concurrency issues
-                List<int> availablePgaEnumerations = ExoQueries.GetAvailableStaffEnumerations(pgaUnitOfWork, upperCaseName, out partialShortCode);
+                //List<int> availablePgaEnumerations = ExoQueries.GetAvailableStaffEnumerations(pgaUnitOfWork, upperCaseName, out partialShortCode);
 
-                int commonAvailableNameCount = -1;
-                foreach (int primeroEnumeration in availablePrimeroEnumerations)
-                {
-                    if (availablePgaEnumerations.Any(x => x == primeroEnumeration))
-                    {
-                        commonAvailableNameCount = primeroEnumeration;
-                        break;
-                    }
-                }
+                //int commonAvailableNameCount = -1;
+                //foreach (int primeroEnumeration in availablePrimeroEnumerations)
+                //{
+                //    if (availablePgaEnumerations.Any(x => x == primeroEnumeration))
+                //    {
+                //        commonAvailableNameCount = primeroEnumeration;
+                //        break;
+                //    }
+                //}
+                int firstPrimeroEnumeration = availablePrimeroEnumerations.Count > 0 ? availablePrimeroEnumerations.First() : -1;
 
-                newResourceShortCode = commonAvailableNameCount == -1 ? "N/A" : string.Concat(partialShortCode, commonAvailableNameCount.ToString());
+
+                newResourceShortCode = firstPrimeroEnumeration == -1 ? "N/A" : string.Concat(partialShortCode, firstPrimeroEnumeration.ToString());
             }
 
             string primaryDbStaffName;
             string newItemSearchName = projection.STAFFNO == null ? projection.RESOURCENAME.ToUpper() : string.Empty;
             bool isNew = commitToExo(projection, primeroUnitOfWork, newResourceShortCode, newItemSearchName, out primaryDbStaffName, false);
-            string secondaryDbStaffName;
-            commitToExo(remoteProjection, pgaUnitOfWork, newResourceShortCode, primaryDbStaffName, out secondaryDbStaffName, true);
+
+            //string secondaryDbStaffName;
+            //commitToExo(remoteProjection, pgaUnitOfWork, newResourceShortCode, primaryDbStaffName, out secondaryDbStaffName, true);
 
             //need to add post to capture generated id and properties
             //forceNewEntry is to accomodate row added from newitemrow, because it is automatically added into display entities hence the need to overridden
@@ -220,8 +223,8 @@ namespace BluePrints.ViewModels
 
             string primaryDbName;
             deleteResources(projection, primeroUnitOfWork, string.Empty, out primaryDbName);
-            string remoteDbName;
-            deleteResources(remoteProjection, pgaUnitOfWork, primaryDbName, out remoteDbName, true);
+            //string remoteDbName;
+            //deleteResources(remoteProjection, pgaUnitOfWork, primaryDbName, out remoteDbName, true);
         }
 
         private void deleteResources(ExoResourceProjection projection, IPrimeroEntitiesUnitOfWork primeroUOW, string forceSearchName, out string primaryDbName, bool isRemoteOperation = false)
