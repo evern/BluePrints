@@ -907,8 +907,8 @@
     <Compile Include="EntityFramework\Annotations\DISCIPLINE_DESC.cs" />
     <Compile Include="EntityFramework\Annotations\DR_PRICES.cs" />
     <Compile Include="EntityFramework\Annotations\FORECAST_HISTORY.cs" />
-	  <Compile Include="EntityFramework\Annotations\FORECAST_SUMMARY_SNAPSHOT.cs" />
-	  <Compile Include="EntityFramework\Annotations\FORECAST_JOB_HOUR_SNAPSHOT.cs" />
+    <Compile Include="EntityFramework\Annotations\FORECAST_SUMMARY_SNAPSHOT.cs" />
+    <Compile Include="EntityFramework\Annotations\FORECAST_JOB_HOUR_SNAPSHOT.cs" />
     <Compile Include="EntityFramework\Annotations\PROGRESS_ETC.cs" />
     <Compile Include="EntityFramework\Annotations\REGISTER_CHANGE_ATTACHMENT.cs" />
     <Compile Include="EntityFramework\Annotations\REGISTER_CLARIFICATION.cs" />
@@ -1001,6 +1001,8 @@
     <Compile Include="EntityFramework\BluePrintsData\DISCIPLINE_DESC.cs" />
     <Compile Include="EntityFramework\BluePrintsData\FORECAST.cs" />
     <Compile Include="EntityFramework\BluePrintsData\FORECAST_HISTORY.cs" />
+    <Compile Include="EntityFramework\BluePrintsData\FORECAST_JOB_HOUR.cs" />
+    <Compile Include="EntityFramework\BluePrintsData\FORECAST_SUMMARY_SNAPSHOT.cs" />
     <Compile Include="EntityFramework\BluePrintsData\PROGRESS_ETC.cs" />
     <Compile Include="EntityFramework\BluePrintsData\REGISTER_CLARIFICATION.cs" />
     <Compile Include="EntityFramework\BluePrintsData\REGISTER_TQ.cs" />
@@ -1167,9 +1169,13 @@
     <Compile Include="ViewModels\PROGRESS_ITEM\OffsiteDirectDistributionCollectionViewModelWrapper.cs" />
     <Compile Include="ViewModels\PROGRESS_ITEM\OffsiteDirectProgressCollectionViewModelWrapper.cs" />
     <Compile Include="ViewModels\EXOSUBJOB\EXO_POCollectionViewModelWrapper.cs" />
+    <Compile Include="ViewModels\PROJECT\InstantFeedbackInvoicedCollectionViewModelWrapper.cs" />
+    <Compile Include="ViewModels\PROJECT\InstantFeedbackPODetailsCollectionViewModelWrapper.cs" />
     <Compile Include="ViewModels\PROJECT\PROJECTForecastEACReportViewModelWrapper.cs" />
+    <Compile Include="ViewModels\PROJECT\PROJECTForecastSnapshotViewModelWrapper.cs" />
     <Compile Include="ViewModels\PROJECT\PROJECTPlanViewModelWrapper.cs" />
     <Compile Include="ViewModels\PROJECT\PROJECTFlatPOForecastViewModelWrapper.cs" />
+    <Compile Include="ViewModels\PROJECT\PROJECTPLCollectionViewModelWrapper.cs" />
     <Compile Include="ViewModels\PROJECT\PROJECT_REVENUECollectionViewModelWrapper.cs" />
     <Compile Include="ViewModels\PROJECT\PROJECTIndirectForecastViewModelWrapper.cs" />
     <Compile Include="ViewModels\PROJECT\POSpreadViewModel.cs" />
