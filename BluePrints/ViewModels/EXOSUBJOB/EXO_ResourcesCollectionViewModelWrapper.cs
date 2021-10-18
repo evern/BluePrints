@@ -51,12 +51,14 @@ namespace BluePrints.ViewModels
         #region Database Operations
 #if MONTREAL
         private readonly IUnitOfWorkFactory<IPrimeroEntitiesUnitOfWork> primeroUnitOfWorkFactory = PrimeroEntitiesUnitOfWorkSource.GetUnitOfWorkFactory(BluePrintsResources.OfficeMontreal);
+        private readonly IPrimeroEntitiesUnitOfWork localUnitOfWork = PrimeroEntitiesUnitOfWorkSource.GetUnitOfWorkFactory(BluePrintsResources.OfficeMontreal).CreateUnitOfWork();
+        private readonly IPrimeroEntitiesUnitOfWork remoteUnitOfWork = PrimeroEntitiesUnitOfWorkSource.GetUnitOfWorkFactory(BluePrintsResources.OfficePerth).CreateUnitOfWork();
 #else
-        private readonly IUnitOfWorkFactory<IPrimeroEntitiesUnitOfWork> primeroUnitOfWorkFactory = PrimeroEntitiesUnitOfWorkSource.GetUnitOfWorkFactory();
+        private readonly IUnitOfWorkFactory<IPrimeroEntitiesUnitOfWork> primeroUnitOfWorkFactory = PrimeroEntitiesUnitOfWorkSource.GetUnitOfWorkFactory(BluePrintsResources.OfficePerth);
+        private readonly IPrimeroEntitiesUnitOfWork localUnitOfWork = PrimeroEntitiesUnitOfWorkSource.GetUnitOfWorkFactory(BluePrintsResources.OfficePerth).CreateUnitOfWork();
+        private readonly IPrimeroEntitiesUnitOfWork remoteUnitOfWork = PrimeroEntitiesUnitOfWorkSource.GetUnitOfWorkFactory(BluePrintsResources.OfficeMontreal).CreateUnitOfWork();
 #endif
 
-        private readonly IPrimeroEntitiesUnitOfWork primeroUnitOfWork = PrimeroEntitiesUnitOfWorkSource.GetUnitOfWorkFactory().CreateUnitOfWork();
-        private readonly IPrimeroEntitiesUnitOfWork pgaUnitOfWork = PrimeroEntitiesUnitOfWorkSource.GetUnitOfWorkFactory(BluePrintsResources.OfficeMontreal).CreateUnitOfWork();
         private readonly IUnitOfWorkFactory<IBluePrintsEntitiesUnitOfWork> bluePrintsUnitOfWorkFactory = BluePrintsEntitiesUnitOfWorkSource.GetUnitOfWorkFactory();
         List<USER> activeDirectoryUSERS;
         protected override void resolveParameters(object parameter)
@@ -86,7 +88,7 @@ namespace BluePrints.ViewModels
 
         protected override Func<IRepositoryQuery<JOBCOST_RESOURCE>, IQueryable<ExoResourceProjection>> specifyMainViewModelProjection()
         {
-            return query => ExoQueries.GetResources(primeroUnitOfWork, USERCollection);
+            return query => ExoQueries.GetResources(localUnitOfWork, USERCollection);
         }
 
         protected override void AssignCallBacksAndRaisePropertyChange(IEnumerable<ExoResourceProjection> entities)
@@ -137,7 +139,7 @@ namespace BluePrints.ViewModels
 
                 string partialShortCode;
                 //use new unit of work to prevent concurrency issues
-                List<int> availablePrimeroEnumerations = ExoQueries.GetAvailableStaffEnumerations(primeroUnitOfWork, upperCaseName, out partialShortCode);
+                List<int> availablePrimeroEnumerations = ExoQueries.GetAvailableStaffEnumerations(localUnitOfWork, upperCaseName, out partialShortCode);
 
                 //use new unit of work to prevent concurrency issues
                 //List<int> availablePgaEnumerations = ExoQueries.GetAvailableStaffEnumerations(pgaUnitOfWork, upperCaseName, out partialShortCode);
@@ -159,7 +161,7 @@ namespace BluePrints.ViewModels
 
             string primaryDbStaffName;
             string newItemSearchName = projection.STAFFNO == null ? projection.RESOURCENAME.ToUpper() : string.Empty;
-            bool isNew = commitToExo(projection, primeroUnitOfWork, newResourceShortCode, newItemSearchName, out primaryDbStaffName, false);
+            bool isNew = commitToExo(projection, localUnitOfWork, newResourceShortCode, newItemSearchName, out primaryDbStaffName, false);
 
             //string secondaryDbStaffName;
             //commitToExo(remoteProjection, pgaUnitOfWork, newResourceShortCode, primaryDbStaffName, out secondaryDbStaffName, true);
@@ -222,7 +224,7 @@ namespace BluePrints.ViewModels
             DataUtils.ShallowCopy(remoteProjection, projection);
 
             string primaryDbName;
-            deleteResources(projection, primeroUnitOfWork, string.Empty, out primaryDbName);
+            deleteResources(projection, localUnitOfWork, string.Empty, out primaryDbName);
             //string remoteDbName;
             //deleteResources(remoteProjection, pgaUnitOfWork, primaryDbName, out remoteDbName, true);
         }
@@ -315,7 +317,7 @@ namespace BluePrints.ViewModels
                                 {
                                     if (MessageBoxService.ShowMessage("Are you sure you add " + projection.RESOURCENAME + " to BluePrints?", "Confirmation", MessageButton.OKCancel, MessageIcon.Warning) == MessageResult.OK)
                                     {
-                                        userAdditionViewModel = USERAdditionViewModel.Create(activeDirectoryUSER, DEPARTMENTCollection, DISCIPLINECollection, USERCollection, OFFICECollection, activeDirectoryUSER.TITLE, activeDirectoryUSER.DESCRIPTION, primeroUnitOfWork.STAFF, pgaUnitOfWork.STAFF);
+                                        userAdditionViewModel = USERAdditionViewModel.Create(activeDirectoryUSER, DEPARTMENTCollection, DISCIPLINECollection, USERCollection, OFFICECollection, activeDirectoryUSER.TITLE, activeDirectoryUSER.DESCRIPTION, localUnitOfWork.STAFF, remoteUnitOfWork.STAFF);
                                         userAdditionViewModel.PopulateUSERStaffId();
                                         if (USERAddDialogService.ShowDialog(MessageButton.OKCancel, "New User", "USERAdditionView", userAdditionViewModel) == MessageResult.Cancel)
                                         {
