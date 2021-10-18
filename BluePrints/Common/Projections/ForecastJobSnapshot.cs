@@ -59,8 +59,19 @@ namespace BluePrints.Common.Projections
         public decimal Productivity { get; set; }
         //store P6 units either native or from override
         public decimal? P6RemainingUnitsOverride { get; set; }
-        public IEnumerable<IForecastDateCostViewModel> ForecastDateCosts => DateCosts; 
+        public IEnumerable<IForecastDateCostViewModel> ForecastDateCosts => DateCosts;
         #endregion
+
+        public bool IsProcurement
+        {
+            get
+            {
+                if (SubJobCode == null || SubJobCode == string.Empty)
+                    return false;
+
+                return SubJobCode.ToUpper().Contains("P");
+            }
+        }
 
         Dictionary<string, decimal> poStockCodeAttributes = null;
         public Dictionary<string, decimal> POStockCodeAttributes
@@ -234,6 +245,9 @@ namespace BluePrints.Common.Projections
                 return ActualCosts + MaterialCosts + POForecastCosts + IndirectForecastCosts + P6Costs;
             }
         }
+
+        //p6 costs needs to be categorised as uncommitted
+        public decimal CommittedCosts => ActualCosts + MaterialCosts + POForecastCosts;
     }
 
 }

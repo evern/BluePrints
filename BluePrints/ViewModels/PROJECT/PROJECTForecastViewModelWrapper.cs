@@ -612,7 +612,7 @@ namespace BluePrints.ViewModels
             return true;
         }
 
-        protected override void BackgroundRefresh()
+        protected override void BackgroundRefresh(bool loadLayout = false)
         {
             if (!isLoadingExo && !IsLoadingForecast)
                 base.BackgroundRefresh();
