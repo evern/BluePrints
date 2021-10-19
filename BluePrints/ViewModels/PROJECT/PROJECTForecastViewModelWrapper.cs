@@ -2348,12 +2348,10 @@ namespace BluePrints.ViewModels
                 editFORECAST.FORECAST_UNITS = saveNewValue;
                 editFORECAST.FORECAST_TYPE = editForecastDataType;
                 bluePrintsUnitOfWork.FORECASTS.Add(editFORECAST);
-                //FORECASTCollectionViewModel.Save(editFORECAST);
             }
             else
             {
                 editFORECAST.FORECAST_UNITS = saveNewValue;
-                //FORECASTCollectionViewModel.Save(editFORECAST);
             }
 
             if (resetFORECAST == null)

@@ -274,7 +274,6 @@ namespace BluePrints.Common.Projections
                 return Projection.DisciplineCode;
             }
         }
-
         public string DisciplineDesc { get; set; }
         #endregion
     }

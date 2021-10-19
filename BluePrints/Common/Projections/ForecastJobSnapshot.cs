@@ -27,6 +27,7 @@ namespace BluePrints.Common.Projections
         public string AreaCode => BluePrintsDataUtils.GetAreaCode(SubJobCode);
 
         public string SubAreaCode => BluePrintsDataUtils.GetSubAreaCode(SubJobCode);
+        public ExoSubJobProjection ExoJob { get; set; }
 
         public string SubJobCode { get; set; }
         public string DisciplineCode { get; set; }
@@ -62,6 +63,33 @@ namespace BluePrints.Common.Projections
         public IEnumerable<IForecastDateCostViewModel> ForecastDateCosts => DateCosts;
         #endregion
 
+        #region PO Errors
+        public decimal PORemainingCosts { get; set; }
+        public decimal Outstanding { get; set; }
+        public bool IsPOError { get; set; }
+        public decimal IsPOErrorImageWidth => IsPOError ? 15 : 0;
+        #endregion
+
+        public decimal? EarnedUnits { get; set; }
+        public decimal Uncommitted { get; set; }
+        public decimal CurrentUncommitted { get; set; }
+        public decimal OriginalUncommitted { get; set; }
+        public decimal CurrentProductivity
+        {
+            get
+            {
+                if (EarnedUnits != null && ActualUnits != 0)
+                {
+                    if (EarnedUnits > 0)
+                        return (decimal)EarnedUnits / ActualUnits;
+                    else
+                        return 0.00m;
+                }
+                else
+                    return 0.00m;
+            }
+        }
+
         public bool IsProcurement
         {
             get
@@ -70,6 +98,17 @@ namespace BluePrints.Common.Projections
                     return false;
 
                 return SubJobCode.ToUpper().Contains("P");
+            }
+        }
+
+        public bool IsContingency
+        {
+            get
+            {
+                if (SubJobCode == null || SubJobCode == string.Empty)
+                    return false;
+
+                return CommodityCode == BluePrintsResources.ContingencyCostType;
             }
         }
 
@@ -151,6 +190,28 @@ namespace BluePrints.Common.Projections
                 return actualStockCodeAttributes;
             }
         }
+
+        public string ForecastErrorString { get; set; }
+        public string ErrorMessageIdentificationCode
+        {
+            get
+            {
+                string subJobCode = SubJobCode == null || SubJobCode == string.Empty ? "(Missing)" : SubJobCode;
+                string disciplineCode = DisciplineCode == null || DisciplineCode == string.Empty ? "(Missing)" : DisciplineCode;
+                string commodityCode = CommodityCode == null || CommodityCode == string.Empty ? "(Missing)" : CommodityCode;
+
+                return subJobCode + "-" + disciplineCode + "-" + commodityCode;
+            }
+        }
+
+        #region Summaries
+        public decimal EstimateToComplete => Outstanding + Uncommitted;
+        public decimal OriginalEstimateAtCompletion => ActualCosts + Outstanding + OriginalUncommitted;
+        public decimal EstimateAtCompletion => ActualCosts + Outstanding + Uncommitted;
+        public decimal CurrentEstimateAtCompletion => ActualCosts + Outstanding + CurrentUncommitted;
+        public decimal PeriodMovement => PreviousEAC - EstimateAtCompletion;
+        public decimal PreviousEAC { get; set; }
+        #endregion
 
         #region Codes Validation
         protected override string disciplineCodePropertyName => BindableBase.GetPropertyName(() => new ForecastJobSnapshot().DisciplineCode);

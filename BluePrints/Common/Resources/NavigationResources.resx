@@ -495,4 +495,25 @@
   <data name="Menu_Project_Forecast_ReadOnly" xml:space="preserve">
     <value>Project read-only forecast menu</value>
   </data>
+  <data name="Menu_Project_DesignProgressDistribution_Title" xml:space="preserve">
+    <value>Progress Distribution</value>
+  </data>
+  <data name="Menu_Project_ConstructionIndirectCostRate" xml:space="preserve">
+    <value>Project construction indirect cost rate maintenance</value>
+  </data>
+  <data name="Menu_Project_ConstructionIndirectChargeRate" xml:space="preserve">
+    <value>Project construction indirect charge rate maintenance</value>
+  </data>
+  <data name="Menu_AllProjects_PL" xml:space="preserve">
+    <value>All project P&amp;L</value>
+  </data>
+  <data name="Menu_EXO_JobResources" xml:space="preserve">
+    <value>EXO Job Resource maintenance menu</value>
+  </data>
+  <data name="Menu_EXO_StockItems" xml:space="preserve">
+    <value>EXO Stock Items maintenance menu</value>
+  </data>
+  <data name="Menu_User_Title" xml:space="preserve">
+    <value>Users</value>
+  </data>
 </root>

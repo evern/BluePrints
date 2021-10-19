@@ -1299,6 +1299,36 @@ namespace BluePrints.Common.Projections
 
     public static class ExoQueries
     {
+        public static List<ExoSubJobProjection> GetExoSubJobProjection(
+       IPrimeroEntitiesUnitOfWork primeroUnitOfWork, Data.PROJECT PROJECT)
+        {
+            List<ExoTimeAuthorisation> exoLines = GetProjectLines(primeroUnitOfWork, PROJECT.NUMBER);
+            List<ExoSubJobProjection> exoSubJobs = new List<ExoSubJobProjection>();
+            foreach (ExoTimeAuthorisation exoLine in exoLines)
+            {
+                ExoSubJobProjection newSubJobProjection = ViewModelSource.Create(() => new ExoSubJobProjection());
+                newSubJobProjection.LineId = exoLine.LineSeqNo;
+
+                newSubJobProjection.SubJobId = exoLine.SubJobNo;
+                newSubJobProjection.SubJobCode = exoLine.SubJobCode;
+                newSubJobProjection.SubJobTitle = exoLine.SubJobTitle;
+                newSubJobProjection.DisciplineId = exoLine.DisciplineId;
+                newSubJobProjection.DisciplineCode = exoLine.DisciplineCode;
+                newSubJobProjection.DisciplineName = exoLine.DisciplineName;
+                newSubJobProjection.CommodityId = exoLine.CommodityId;
+                newSubJobProjection.CommodityCode = exoLine.CommodityCode;
+                newSubJobProjection.CommodityName = exoLine.CommodityName;
+                newSubJobProjection.StockCode = exoLine.StockCode;
+                newSubJobProjection.VariationCode = exoLine.VariationCode;
+                newSubJobProjection.Category = exoLine.Category;
+                newSubJobProjection.AuthUserIds = new List<int>();
+
+                exoSubJobs.Add(newSubJobProjection);
+            }
+
+            return exoSubJobs.OrderBy(x => x.SubJobCode).ToList();
+        }
+
         public static IQueryable<ExoSubJobProjection> GetNativeExoSubJobProjection(
             IPrimeroEntitiesUnitOfWork primeroUnitOfWork, Data.PROJECT PROJECT, ref List<ExoTimeAuthorisation> exoLines)
         {
@@ -1923,6 +1953,69 @@ namespace BluePrints.Common.Projections
                                join MAINJOB in primeroUnitOfWork.JOBCOST_HDR
                                on SUBJOB.MASTER_JOBNO equals MAINJOB.JOBNO
                                where MAINJOB.JOBCODE == projectNumber && JOBCOST_LINES.LINKED_STOCKCODE == stockCode.ToUpper() && SUBJOB.JOBCODE == line.SubJobCode.ToUpper()
+                               select JOBCOST_LINES;
+            }
+            else
+            {
+                projectLines = from JOBCOST_LINES in primeroUnitOfWork.JOBCOST_LINES
+                               join JOB_COSTGROUPS in primeroUnitOfWork.JOB_COSTGROUPS
+                               on JOBCOST_LINES.COST_CENTRE2 equals JOB_COSTGROUPS.SEQNO
+                               join JOB_COSTTYPES in primeroUnitOfWork.JOB_COSTTYPES
+                               on JOBCOST_LINES.COST_CENTRE equals JOB_COSTTYPES.SEQNO
+                               join SUBJOB in primeroUnitOfWork.JOBCOST_HDR
+                               on JOBCOST_LINES.JOBNO equals SUBJOB.JOBNO
+                               join MAINJOB in primeroUnitOfWork.JOBCOST_HDR
+                               on SUBJOB.MASTER_JOBNO equals MAINJOB.JOBNO
+                               where MAINJOB.JOBCODE == projectNumber && SUBJOB.JOBCODE == line.SubJobCode.ToUpper() && JOB_COSTGROUPS.SHORTCODE == line.DisciplineCode.ToUpper() && JOB_COSTTYPES.SHORTCODE == line.CommodityCode.ToUpper()
+                               select JOBCOST_LINES;
+            }
+
+            List<JOBCOST_LINES> listProjectLines = projectLines.ToList();
+            if (line.VariationCode == string.Empty || line.VariationCode == null)
+                return listProjectLines.Where(x => x.X_VARIATION_CODE == string.Empty || x.X_VARIATION_CODE == null).ToList();
+            else
+                return listProjectLines.Where(x => x.X_VARIATION_CODE == line.VariationCode).ToList();
+        }
+
+        public static List<JOBCOST_LINES> GetProjectLines(IPrimeroEntitiesUnitOfWork primeroUnitOfWork, string projectNumber, ForecastJobSnapshot line, ExoJobLinesQueryCompliance jobLinesQueryType = ExoJobLinesQueryCompliance.Full)
+        {
+            if (line.SubJobCode == null || line.SubJobCode == string.Empty || (jobLinesQueryType == ExoJobLinesQueryCompliance.Full && (line.DisciplineCode == null || line.DisciplineCode == string.Empty || line.CommodityCode == null || line.CommodityCode == string.Empty)))
+                return null;
+
+            string commodityCode = line.CommodityCode;
+
+            IQueryable<JOBCOST_LINES> projectLines;
+
+            if (jobLinesQueryType == ExoJobLinesQueryCompliance.Full)
+            {
+                projectLines = from JOBCOST_LINES in primeroUnitOfWork.JOBCOST_LINES
+                               join JOB_COSTGROUPS in primeroUnitOfWork.JOB_COSTGROUPS
+                               on JOBCOST_LINES.COST_CENTRE2 equals JOB_COSTGROUPS.SEQNO
+                               join JOB_COSTTYPES in primeroUnitOfWork.JOB_COSTTYPES
+                               on JOBCOST_LINES.COST_CENTRE equals JOB_COSTTYPES.SEQNO
+                               join SUBJOB in primeroUnitOfWork.JOBCOST_HDR
+                               on JOBCOST_LINES.JOBNO equals SUBJOB.JOBNO
+                               join MAINJOB in primeroUnitOfWork.JOBCOST_HDR
+                               on SUBJOB.MASTER_JOBNO equals MAINJOB.JOBNO
+                               where MAINJOB.JOBCODE == projectNumber && JOBCOST_LINES.LINKED_STOCKCODE == commodityCode.ToUpper() && SUBJOB.JOBCODE == line.SubJobCode.ToUpper() && JOB_COSTGROUPS.SHORTCODE == line.DisciplineCode.ToUpper() && JOB_COSTTYPES.SHORTCODE == line.CommodityCode.ToUpper()
+                               select JOBCOST_LINES;
+            }
+            else if (jobLinesQueryType == ExoJobLinesQueryCompliance.IgnoreCostCentres)
+            {
+                projectLines = from JOBCOST_LINES in primeroUnitOfWork.JOBCOST_LINES
+                               join JOB_COSTGROUPS in primeroUnitOfWork.JOB_COSTGROUPS
+                               on JOBCOST_LINES.COST_CENTRE2 equals JOB_COSTGROUPS.SEQNO
+                               into JobCostCentre2
+                               from JobCostCentre2DefaultIfEmpty in JobCostCentre2.DefaultIfEmpty()
+                               join JOB_COSTTYPES in primeroUnitOfWork.JOB_COSTTYPES
+                               on JOBCOST_LINES.COST_CENTRE equals JOB_COSTTYPES.SEQNO
+                               into JobCostCentre
+                               from JobCostCentreDefaultIfEmpty in JobCostCentre.DefaultIfEmpty()
+                               join SUBJOB in primeroUnitOfWork.JOBCOST_HDR
+                               on JOBCOST_LINES.JOBNO equals SUBJOB.JOBNO
+                               join MAINJOB in primeroUnitOfWork.JOBCOST_HDR
+                               on SUBJOB.MASTER_JOBNO equals MAINJOB.JOBNO
+                               where MAINJOB.JOBCODE == projectNumber && JOBCOST_LINES.LINKED_STOCKCODE == commodityCode.ToUpper() && SUBJOB.JOBCODE == line.SubJobCode.ToUpper()
                                select JOBCOST_LINES;
             }
             else

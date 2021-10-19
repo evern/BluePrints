@@ -79,15 +79,6 @@ namespace BluePrints.Common.Resources {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Exo data category.
-        /// </summary>
-        internal static string Category_Data_EXO {
-            get {
-                return ResourceManager.GetString("Category_Data_EXO", resourceCulture);
-            }
-        }
-        
-        /// <summary>
         ///   Looks up a localized string similar to Lead projects category.
         /// </summary>
         internal static string Category_LeadProjects {

@@ -290,6 +290,21 @@ namespace BluePrints.Common.ViewModel.Misc
             }
         }
 
+        public static void PopulateEAC(ForecastJobSnapshot forecastProjection, IEnumerable<FORECAST_EAC> FORECAST_EACCollection, DateTime previousEACDataDate)
+        {
+            //populate previous estimate to completion
+            FORECAST_EAC previousEAC = FORECAST_EACCollection.FirstOrDefault(x => x.SUBJOB_CODE == forecastProjection.SubJobCode && x.DISCIPLINE_CODE == forecastProjection.DisciplineCode && x.COMMODITY_CODE == forecastProjection.CommodityCode && x.VARIATION_CODE == forecastProjection.VariationCode && x.FORECAST_DATE.Date == previousEACDataDate.Date && x.TYPE == ForecastEACType.EAC);
+            if (previousEAC != null)
+            {
+                if (previousEAC.FORECAST_COSTS != null)
+                    forecastProjection.PreviousEAC = (decimal)previousEAC.FORECAST_COSTS;
+            }
+            else
+            {
+                forecastProjection.PreviousEAC = 0.00m;
+            }
+        }
+
         public static void PopulateTenderBudget(ForecastJobData forecastProjection, IEnumerable<FORECAST_EAC> FORECAST_EACTenderBudgetCollection)
         {
             //populate previous estimate to completion
@@ -392,6 +407,7 @@ namespace BluePrints.Common.ViewModel.Misc
                 LoadingScreenManager.CloseLoadingScreen();
             return combinedSubJobs.ToList();
         }
+
 
         /// <summary>
         /// Add entries to job list and also provide lookup table for looking up additional meta data because it can be empty when invoked from exo actuals

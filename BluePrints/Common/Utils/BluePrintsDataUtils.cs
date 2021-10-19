@@ -1400,7 +1400,7 @@ namespace BluePrints.Common.ViewModel.Utils
 
             foreach (var po in purchaseOrderLines)
             {
-                if (po.DISCIPLINE_CODE != null && (!po.DISCIPLINE_CODE.Contains("G99") && !po.DISCIPLINE_CODE.Contains("010")))
+                if (po.DISCIPLINE_CODE != null && !po.DISCIPLINE_CODE.Contains("G99") && !po.DISCIPLINE_CODE.Contains("010"))
                 {
                     ExoDataPoint poDataPoint = new ExoDataPoint();
                     poDataPoint.BudgetedUnits = 0;
