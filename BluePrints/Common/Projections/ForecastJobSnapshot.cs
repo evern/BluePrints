@@ -33,10 +33,13 @@ namespace BluePrints.Common.Projections
         public string DisciplineCode { get; set; }
         public string DisciplineDesc { get; set; }
         public string CommodityCode { get; set; }
+        public string CommodityName => ExoJob == null ? string.Empty : ExoJob.CommodityName;
         public string VariationCode { get; set; }
         public string DropDownPhase { get; set; }
         public decimal TenderBudget { get; set; }
         public decimal Budget { get; set; }
+        public decimal P6BudgetedUnits { get; set; }
+        public decimal BudgetVariance => TenderBudget - Budget;
         public decimal ActualCosts { get; set; }
         public decimal ActualUnits { get; set; }
         public string CompareMask { get; set; }
@@ -51,6 +54,7 @@ namespace BluePrints.Common.Projections
         public decimal P6RemainingUnits { get; set; }
         public decimal P6RemainingCosts { get; set; }
         public decimal P6NominalRate => P6RemainingUnits == 0 ? 0 : P6RemainingCosts / P6RemainingUnits;
+        public bool IsProductivityFloating { get; set; }
         #endregion
 
         public bool IsCommodityCodeError => !IsCommodityCodeValid;
@@ -60,12 +64,14 @@ namespace BluePrints.Common.Projections
         public decimal Productivity { get; set; }
         //store P6 units either native or from override
         public decimal? P6RemainingUnitsOverride { get; set; }
+        public decimal ProgressETC { get; set; }
         public IEnumerable<IForecastDateCostViewModel> ForecastDateCosts => DateCosts;
         #endregion
 
         #region PO Errors
         public decimal PORemainingCosts { get; set; }
         public decimal Outstanding { get; set; }
+        public decimal PreviousOutstanding { get; set; }
         public bool IsPOError { get; set; }
         public decimal IsPOErrorImageWidth => IsPOError ? 15 : 0;
         #endregion
@@ -74,6 +80,14 @@ namespace BluePrints.Common.Projections
         public decimal Uncommitted { get; set; }
         public decimal CurrentUncommitted { get; set; }
         public decimal OriginalUncommitted { get; set; }
+        public decimal ActualUnitsPostDataDate { get; set; }
+        public decimal ActualCostsPostDataDate { get; set; }
+        public decimal ActualUnitsPreviousDataDate { get; set; }
+        public decimal ActualCostsPreviousDataDate { get; set; }
+        public decimal PctCompleteCosts => EstimateAtCompletion == 0 ? 1 : ActualCosts / EstimateAtCompletion;
+        public decimal PctCompleteUnits => P6BudgetedUnits == 0 ? 1 : (P6BudgetedUnits - P6RemainingUnits) / P6BudgetedUnits;
+        public decimal PctComplete => IsProcurement ? PctCompleteCosts : PctCompleteUnits;
+
         public decimal CurrentProductivity
         {
             get
@@ -90,6 +104,17 @@ namespace BluePrints.Common.Projections
             }
         }
 
+        public bool IsContingency
+        {
+            get
+            {
+                if (SubJobCode == null || SubJobCode == string.Empty)
+                    return false;
+
+                return CommodityCode == BluePrintsResources.ContingencyCostType;
+            }
+        }
+
         public bool IsProcurement
         {
             get
@@ -101,14 +126,36 @@ namespace BluePrints.Common.Projections
             }
         }
 
-        public bool IsContingency
+        public bool IsConstruction
         {
             get
             {
                 if (SubJobCode == null || SubJobCode == string.Empty)
                     return false;
 
-                return CommodityCode == BluePrintsResources.ContingencyCostType;
+                return SubJobCode.ToUpper().Contains("C");
+            }
+        }
+
+        public bool IsDesign
+        {
+            get
+            {
+                if (SubJobCode == null || SubJobCode == string.Empty)
+                    return false;
+
+                return SubJobCode.ToUpper().Contains("D");
+            }
+        }
+
+        public bool IsIndirect
+        {
+            get
+            {
+                if (SubJobCode == null || SubJobCode == string.Empty)
+                    return false;
+
+                return SubJobCode.ToUpper().Contains("I");
             }
         }
 
@@ -209,7 +256,13 @@ namespace BluePrints.Common.Projections
         public decimal OriginalEstimateAtCompletion => ActualCosts + Outstanding + OriginalUncommitted;
         public decimal EstimateAtCompletion => ActualCosts + Outstanding + Uncommitted;
         public decimal CurrentEstimateAtCompletion => ActualCosts + Outstanding + CurrentUncommitted;
+        public decimal Variance => Budget - EstimateAtCompletion;
+        public decimal TotalCommitment => ActualCosts + Outstanding;
         public decimal PeriodMovement => PreviousEAC - EstimateAtCompletion;
+        public decimal PercentagePeriodMovement => PreviousEAC == 0 ? 0 : PeriodMovement / PreviousEAC;
+        public decimal? TotalCommitmentPreviousSaved { get; set; }
+        public decimal TotalCommitmentPrevious => TotalCommitmentPreviousSaved != null ? (decimal)TotalCommitmentPreviousSaved : ActualCostsPreviousDataDate + PreviousOutstanding;
+        public decimal TotalCommitmentDifference => TotalCommitment - TotalCommitmentPrevious;
         public decimal PreviousEAC { get; set; }
         #endregion
 
@@ -267,7 +320,7 @@ namespace BluePrints.Common.Projections
         public IEnumerable<FORECAST_JOB_HOUR_SNAPSHOT> IndirectForecastSnapshots => byDateForecastJobHourSnapshots.Where(x => x.SNAPSHOT_TYPE == ForecastSnapshotValueType.IndirectForecast);
         public IEnumerable<FORECAST_JOB_HOUR_SNAPSHOT> MaterialForecastSnapshots => byDateForecastJobHourSnapshots.Where(x => x.SNAPSHOT_TYPE == ForecastSnapshotValueType.Material);
         public IEnumerable<FORECAST_JOB_HOUR_SNAPSHOT> ActualForecastSnapshots => byDateForecastJobHourSnapshots.Where(x => x.SNAPSHOT_TYPE == ForecastSnapshotValueType.Actual);
-        public IEnumerable<FORECAST_JOB_HOUR_SNAPSHOT> P6Snapshots => byDateForecastJobHourSnapshots.Where(x => x.SNAPSHOT_TYPE == ForecastSnapshotValueType.P6Original);
+        public IEnumerable<FORECAST_JOB_HOUR_SNAPSHOT> P6Snapshots => byDateForecastJobHourSnapshots.Where(x => x.SNAPSHOT_TYPE == ForecastSnapshotValueType.P6Remaining);
 
         public DateTime QueryDate { get; set; }
         public decimal POForecastCosts => POForecastSnapshots.Sum(x => x.FORECAST_COST);

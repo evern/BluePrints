@@ -106,12 +106,17 @@ namespace BluePrints.Common
         POForecast,
         //P6 original values, exists for all dates
         [Display(Name = "P6 Original")]
-        P6Original,
+        P6Remaining,        
         //P6 view values, exists for all dates but can be retrieved from override
         [Display(Name = "P6 Override")]
-        P6Override,
+        P6RemainingOverride,
         [Display(Name = "Discretionary Total")]
-        DiscretionaryTotal
+        DiscretionaryTotal,
+        //P6 planned values, exists for all dates
+        [Display(Name = "P6 Planned")]
+        P6Planned,
+        [Display(Name = "Progress ETC")]
+        ProgressETC
     }
 
     public enum ForecastDataType

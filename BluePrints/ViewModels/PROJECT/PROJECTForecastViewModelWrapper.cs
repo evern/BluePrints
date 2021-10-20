@@ -224,7 +224,6 @@ namespace BluePrints.ViewModels
 
         public bool IsLoadingForecast { get; set; }
         public bool IsHidden { get; set; }
-        public bool IsJobForecast;
         public ForecastSummary ForecastSummary { get; set; }
         public CriteriaOperator ActualFilterCriteria { get; set; }
         public CriteriaOperator POFilterCriteria { get; set; }

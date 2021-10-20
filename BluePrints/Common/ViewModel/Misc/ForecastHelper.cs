@@ -498,10 +498,10 @@ namespace BluePrints.Common.ViewModel.Misc
                         //save p6 overrides or p6 values, skip when date is actual date
                         decimal p6OverrideQty = forecastP6UnitsOverridesOnDate.Sum(x => (decimal)x.FORECAST_UNITS);
                         decimal p6OverrideCosts = p6OverrideQty * job.P6NominalRate;
-                        AddOrEditForecastJobHourSnapshot(bluePrintsEntitiesUnitOfWork, projectGuid, projection.SubJobCode, projection.DisciplineCode, projection.CommodityCode, projection.VariationCode, ForecastSnapshotValueType.P6Override, "", dataDate, dateCost.QueryDate, p6OverrideQty, p6OverrideCosts);
+                        AddOrEditForecastJobHourSnapshot(bluePrintsEntitiesUnitOfWork, projectGuid, projection.SubJobCode, projection.DisciplineCode, projection.CommodityCode, projection.VariationCode, ForecastSnapshotValueType.P6RemainingOverride, "", dataDate, dateCost.QueryDate, p6OverrideQty, p6OverrideCosts);
                     }
 
-                    AddOrEditForecastJobHourSnapshot(bluePrintsEntitiesUnitOfWork, projectGuid, projection.SubJobCode, projection.DisciplineCode, projection.CommodityCode, projection.VariationCode, ForecastSnapshotValueType.P6Original, "", dataDate, dateCost.QueryDate, dateCost.P6Hours, dateCost.P6Costs);
+                    AddOrEditForecastJobHourSnapshot(bluePrintsEntitiesUnitOfWork, projectGuid, projection.SubJobCode, projection.DisciplineCode, projection.CommodityCode, projection.VariationCode, ForecastSnapshotValueType.P6Remaining, "", dataDate, dateCost.QueryDate, dateCost.P6Hours, dateCost.P6Costs);
 
                     //save discretionary cost overrides
                     if (forecastDiscretionaryCostsOverridesOnDate.Count > 0 && dateCost != job.DateCosts.First())
