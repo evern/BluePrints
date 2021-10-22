@@ -3,6 +3,7 @@
              xmlns:view1="clr-namespace:BluePrints.Common.ViewModel.Misc" x:Name="userControl" d:DesignHeight="1200" d:DesignWidth="1200" DataContext="{dxmvvm:ViewModelSource viewmodel:PROJECTForecastSnapshotViewModelWrapper}" mc:Ignorable="d">
     <UserControl.Resources>
         <ResourceDictionary>
+            <converter:StringToImageConverter x:Key="StringToImageConverter" />
             <view1:ColumnTemplateSelector x:Key="ColumnTemplateSelector"/>
             <DataTemplate x:Key="DefaultColumnTemplate">
                 <ContentControl>
@@ -332,7 +333,32 @@
                         <dxe:TextEditSettings DisplayFormat="d" IsEnabled="False" />
                     </dxb:BarEditItem.EditSettings>
                 </dxb:BarEditItem>
-                <dxb:BarButtonItem x:Name="biReloadP6" Command="{Binding ReloadP6ForecastCommand}" Content="Refresh Remaining From P6" Glyph="{dx:DXImage Image=Reset2_16x16.png}" LargeGlyph="{dx:DXImage Image=Reset2_32x32.png}" ToolTip="Reload from P6. Must be performed after pressing F9 in P6" />
+                <dxb:BarButtonItem x:Name="biReloadP6" Command="{Binding ReloadP6ForecastCommand}" Content="Refresh P6" Glyph="{dx:DXImage Image=Reset2_16x16.png}" LargeGlyph="{dx:DXImage Image=Reset2_32x32.png}" ToolTip="Reload from P6. Must be performed after pressing F9 in P6" />
+                <dxb:BarButtonItem x:Name="biLastRefreshedError" Content="Error" IsVisible="{Binding IsP6DataDateError}" Command="{Binding ShowP6ErrorMessageCommand}" ToolTip="{Binding P6ErrorMessage}" >
+                    <dxb:BarButtonItem.GlyphTemplate>
+                        <DataTemplate>
+                            <Image Source="{Binding P6ErrorIconName, Converter={StaticResource StringToImageConverter}}">
+                                <Image.RenderTransform>
+                                    <TranslateTransform x:Name="transTransform1" X="0" Y="0" />
+                                </Image.RenderTransform>
+                            </Image>
+                            <DataTemplate.Triggers>
+                                <DataTrigger Binding="{Binding Animate}" Value="True">
+                                    <DataTrigger.EnterActions>
+                                        <BeginStoryboard Name="bounce">
+                                            <Storyboard RepeatBehavior="Forever">
+                                                <DoubleAnimation AutoReverse="True" BeginTime="0:0:3" RepeatBehavior="3x" SpeedRatio="15" Storyboard.TargetName="transTransform1" Storyboard.TargetProperty="Y" From="0" To="-3" Duration="0:0:1" />
+                                            </Storyboard>
+                                        </BeginStoryboard>
+                                    </DataTrigger.EnterActions>
+                                    <DataTrigger.ExitActions>
+                                        <StopStoryboard BeginStoryboardName="bounce" />
+                                    </DataTrigger.ExitActions>
+                                </DataTrigger>
+                            </DataTemplate.Triggers>
+                        </DataTemplate>
+                    </dxb:BarButtonItem.GlyphTemplate>
+                </dxb:BarButtonItem>
                 <dxb:BarCheckItem x:Name="biShowActuals" Content="Show Actuals History" Glyph="{dxc:DXImage Images/Scheduling/SwitchTimeScalesTo_16x16.png}" IsChecked="{Binding IsShowActualsHistory, Mode=TwoWay}" IsEnabled="{Binding IsLoading, Converter={StaticResource BooleanNegationConverter}}" LargeGlyph="{dxc:DXImage Images/Scheduling/SwitchTimeScalesTo_32x32.png}" RibbonStyle="SmallWithText" ToolTip="Toggle historical actuals visibility" />
                 <dxb:BarButtonItem x:Name="biSaveSummary" Command="{Binding SaveSummaryCommand}" Content="Save Excel Summary" Glyph="{dx:DXImage Image=SpreadsheetInsertTable_16x16.png}" LargeGlyph="{dx:DXImage Image=SpreadsheetInsertTable_32x32.png}" RibbonStyle="SmallWithText" ToolTip="Saves the summary for excel macro to retrieve values" />
                 <dxb:BarButtonItem x:Name="biRefreshAllData" Command="{Binding RefreshAllForecastDataCommand}" Content="Refresh Actual and Forecast" LargeGlyph="{dx:DXImage Images/Toolbox Items/PictureBox_32x32.png}" RibbonStyle="SmallWithText" ToolTip="Refresh actuals, budget, indirects and PO data" Glyph="{dxc:DXImage Images/Toolbox Items/PictureBox_16x16.png}" />
@@ -371,6 +397,7 @@
                             </dxr:RibbonPageGroup>
                             <dxr:RibbonPageGroup MergeType="Replace" Caption="P6 Tools">
                                 <dxb:BarEditItemLink BarItemName="beForecastProject" />
+                                <dxb:BarButtonItemLink BarItemName="biLastRefreshedError" />
                                 <dxb:BarEditItemLink BarItemName="beLastRefreshed" />
                                 <dxb:BarButtonItemLink BarItemName="biRefreshAllData" />
                                 <dxb:BarButtonItemLink BarItemName="biReloadP6" />

@@ -69,6 +69,8 @@ namespace BluePrints.ViewModels
             delayedGridUpdateTimer = new DispatcherTimer();
             delayedGridUpdateTimer.Interval = new TimeSpan(0, 0, 0, 0, 10);
 
+            P6ErrorIconName = "Warning";
+            P6ErrorMessage = "P6 Data Date is less than data date, please change data date in P6 and press 'Refresh P6' so that PF is accurate";
             IsHidden = true;
         }
 
@@ -374,6 +376,8 @@ namespace BluePrints.ViewModels
             X_PURCHORD_LINE_DETAILS = PrimeroEntities.GetPurchaseOrdersDetail(primeroUnitOfWork, LoadPROJECT.NUMBER, FixedDataDateMonthEnd);
             Common.LoadingScreenManager.CloseLoadingScreen();
 
+            refreshP6DataDateError();
+
             dataPointsTable = null;
 
             updateDataPointsTable();
@@ -534,7 +538,13 @@ namespace BluePrints.ViewModels
             compareP6CostsRemainingRow = compareDataTable.NewRow();
             compareP6UnitsRemainingRow = compareDataTable.NewRow();
 
-            compareP6UnitsRemainingRow[columnEntity] = ViewModelSource.Create(() => new ForecastJobSnapshot() { DropDownPhase = "P6 Hours", DateCosts = job.DateCosts, IsP6HoursRow = true });
+            ForecastJobSnapshot p6UnitsForecastJobSnapshot = ViewModelSource.Create(() => new ForecastJobSnapshot());
+            DataUtils.ShallowCopy(p6UnitsForecastJobSnapshot, job);
+            p6UnitsForecastJobSnapshot.DropDownPhase = "P6 Hours";
+            p6UnitsForecastJobSnapshot.DateCosts = job.DateCosts;
+            p6UnitsForecastJobSnapshot.ExoJob = job.ExoJob;
+
+            compareP6UnitsRemainingRow[columnEntity] = p6UnitsForecastJobSnapshot;
             compareP6CostsRemainingRow[columnEntity] = ViewModelSource.Create(() => new ForecastJobSnapshot() { DropDownPhase = "P6 $", CompareMask = "c0" });
 
             //update discipline desc
@@ -990,8 +1000,8 @@ namespace BluePrints.ViewModels
         {
             IsLoading = true;
             this.RaisePropertyChanged(x => x.IsLoading);
-            //await BluePrintsContextHelper.RefreshDeliverablesRemainingDataPointsByProject(LoadPROJECT.NUMBER, true);
-            //await BluePrintsContextHelper.RefreshDeliverablesPlannedDataPointsByProject(LoadPROJECT.NUMBER, true);
+            await BluePrintsContextHelper.RefreshDeliverablesRemainingDataPointsByProject(LoadPROJECT.NUMBER, true);
+            await BluePrintsContextHelper.RefreshDeliverablesPlannedDataPointsByProject(LoadPROJECT.NUMBER, true);
             await BluePrintsContextHelper.RefreshForecastP6ByProject(LoadPROJECT.NUMBER, FixedDataDate, true);
             await BluePrintsContextHelper.RefreshForecastP6ByProject(LoadPROJECT.NUMBER, FixedDataDate, false);
             FullRefresh();
@@ -1034,8 +1044,33 @@ namespace BluePrints.ViewModels
             return !IsLoading;
         }
 
+        private void refreshP6DataDateError()
+        {
+            IsP6DataDateError = P6DataDate < FixedDataDate;
+            Animate = true;
+            this.RaisePropertyChanged(x => x.IsP6DataDateError);
+            this.RaisePropertyChanged(x => x.P6ErrorMessage);
+            this.RaisePropertyChanged(x => x.P6ErrorIconName);
+            this.RaisePropertyChanged(x => x.Animate);
+        }
+
+        public void ShowP6ErrorMessage()
+        {
+            MessageBoxService.ShowMessage(P6ErrorMessage, "PF Error", MessageButton.OK, MessageIcon.Error);
+        }
+
+        public string P6ErrorMessage { get; set; }
+        public string P6ErrorIconName { get; set; }
+        public bool IsP6DataDateError { get; set; }
+        public bool Animate { get; set; }
         public void ApplyCurrentPF()
         {
+            if (P6DataDate < FixedDataDate)
+            {
+                ShowP6ErrorMessage();
+                return;
+            }
+
             EntitiesUndoRedoManager.PauseActionId();
             GridControl gridControl = GridControlService.GridControl;
             TableView tableView = gridControl.View as TableView;
