@@ -554,7 +554,7 @@ namespace BluePrints.Common.ViewModel.Misc
                         if (poJobLine != null)
                             dropDownBudget = poJobLine.BudgetCosts;
 
-                        AddOrEditForecastJobHourSnapshot(bluePrintsEntitiesUnitOfWork, projectGuid, projection.SubJobCode, projection.DisciplineCode, projection.CommodityCode, projection.VariationCode, ForecastSnapshotValueType.POForecast, uniquePOStockCode, dataDate, dateCost.QueryDate, 0, dateCost.POForecastCosts, dropDownBudget);
+                        AddOrEditForecastJobHourSnapshot(bluePrintsEntitiesUnitOfWork, projectGuid, projection.SubJobCode, projection.DisciplineCode, projection.CommodityCode, projection.VariationCode, ForecastSnapshotValueType.CurrentPOForecast, uniquePOStockCode, dataDate, dateCost.QueryDate, 0, dateCost.POForecastCosts, dropDownBudget);
                     }
                     #endregion
 
