@@ -416,7 +416,7 @@ namespace BluePrints.ViewModels
             //child data table is used to record original value of actuals + committed + remaining values before it is overridden by forecasts
             foreach (UniqueForecastJob uniqueForecastJob in uniqueForecastJobs)
             {
-                ForecastJobSnapshot forecastJobSnapshot = new ForecastJobSnapshot();
+                ForecastJobSnapshot forecastJobSnapshot = ViewModelSource.Create(() => new ForecastJobSnapshot());
                 populateCompulsoryDataForForecastJobSnapshot(forecastJobSnapshot);
                 forecastJobSnapshot.SubJobCode = uniqueForecastJob.SUBJOB_CODE;
                 forecastJobSnapshot.DisciplineCode = uniqueForecastJob.DISCIPLINE_CODE;
@@ -441,7 +441,7 @@ namespace BluePrints.ViewModels
                 populateLookupAttributes(forecastJobSnapshot, projectLines, FORECAST_JOB_SETTINGCollection);
                 foreach (DateTime alignedDataDate in alignedDataDateCollection)
                 {
-                    ForecastDateSnapshot forecastDateSnapshot = new ForecastDateSnapshot(uniqueForecastJob.AllCollection, firstViewDate, alignedDataDate.Date, FixedDataDate);
+                    ForecastDateSnapshot forecastDateSnapshot = ViewModelSource.Create(() => new ForecastDateSnapshot(uniqueForecastJob.AllCollection, firstViewDate, alignedDataDate.Date, FixedDataDate));
                     forecastJobSnapshot.DateCosts.Add(forecastDateSnapshot);
                 }
 
@@ -473,6 +473,11 @@ namespace BluePrints.ViewModels
                 forecastJobSnapshot.ExoJob = projectLines.FirstOrDefault(x => x.SubJobCode == forecastJobSnapshot.SubJobCode && x.DisciplineCode == forecastJobSnapshot.DisciplineCode && x.CommodityCode == forecastJobSnapshot.CommodityCode && (x.VariationCode == null || x.VariationCode == string.Empty));
             else
                 forecastJobSnapshot.ExoJob = projectLines.FirstOrDefault(x => x.SubJobCode == forecastJobSnapshot.SubJobCode && x.DisciplineCode == forecastJobSnapshot.DisciplineCode && x.CommodityCode == forecastJobSnapshot.CommodityCode && x.VariationCode == forecastJobSnapshot.VariationCode);
+
+            if (forecastJobSnapshot.ExoJob == null)
+            {
+                forecastJobSnapshot.ExoJob = new ExoSubJobProjection() { SubJobCode = forecastJobSnapshot.SubJobCode, SubJobTitle = string.Empty, DisciplineCode = forecastJobSnapshot.DisciplineCode, DisciplineName = string.Empty, CommodityCode = forecastJobSnapshot.CommodityCode, CommodityName = string.Empty, CommodityDescription = string.Empty, CommodityUOM = string.Empty, VariationCode = forecastJobSnapshot.VariationCode };
+            }
 
             //set whether productivity is floating
             if (FORECAST_JOB_SETTINGCollection.Where(x => x.SUBJOB_CODE == forecastJobSnapshot.SubJobCode && x.DISCIPLINE_CODE == forecastJobSnapshot.DisciplineCode && x.COMMODITY_CODE == forecastJobSnapshot.CommodityCode && x.VARIATION_CODE == forecastJobSnapshot.VariationCode && x.IS_FLOATING_PRODUCTIVITY).Count() > 0)
