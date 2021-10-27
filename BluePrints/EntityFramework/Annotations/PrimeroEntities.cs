@@ -21,6 +21,9 @@ namespace BluePrints.PrimeroData
     {
         public static List<X_PURCHORD_LINE_DETAIL> GetPurchaseOrdersDetail(IPrimeroEntitiesUnitOfWork primeroEntitiesUnitOfWork, string projectNumber, DateTime cutOffDate)
         {
+            if (cutOffDate.Year < 1800)
+                cutOffDate = DateTime.Now;
+
             SqlParameter projectNumberParameter = new SqlParameter("@ProjectNumber", projectNumber);
             SqlParameter cutOffDateParameter = new SqlParameter("@CutOffDate", cutOffDate);
             List<X_PURCHORD_LINE_DETAIL> purchaseOrderLines = primeroEntitiesUnitOfWork.DbContext.Database.SqlQuery<X_PURCHORD_LINE_DETAIL>("X_PURCHORD_LINE_DETAILS_V1 @ProjectNumber, @CutOffDate", projectNumberParameter, cutOffDateParameter).ToList();
@@ -29,6 +32,9 @@ namespace BluePrints.PrimeroData
 
         public static List<X_PURCHORD_LINE> GetPurchaseOrdersSummary(IPrimeroEntitiesUnitOfWork primeroEntitiesUnitOfWork, string projectNumber, DateTime cutOffDate)
         {
+            if (cutOffDate.Year < 1800)
+                cutOffDate = DateTime.Now;
+
             SqlParameter projectNumberParameter = new SqlParameter("@ProjectNumber", projectNumber);
             SqlParameter cutOffDateParameter = new SqlParameter("@CutOffDate", cutOffDate);
             List<X_PURCHORD_LINE> purchaseOrderLines = primeroEntitiesUnitOfWork.DbContext.Database.SqlQuery<X_PURCHORD_LINE>("X_PURCHORD_LINES_V1 @ProjectNumber, @CutOffDate", projectNumberParameter, cutOffDateParameter).ToList();
@@ -37,6 +43,9 @@ namespace BluePrints.PrimeroData
 
         public static List<X_TRANSACTION> GetTimeSummary(IPrimeroEntitiesUnitOfWork primeroEntitiesUnitOfWork, string projectNumber, DateTime cutOffDate)
         {
+            if (cutOffDate.Year < 1800)
+                cutOffDate = DateTime.Now;
+
             SqlParameter projectNumberParameter = new SqlParameter("@ProjectNumber", projectNumber);
             SqlParameter cutOffDateParameter = new SqlParameter("@CutOffDate", cutOffDate);
             List<X_TRANSACTION> timeLines = primeroEntitiesUnitOfWork.DbContext.Database.SqlQuery<X_TRANSACTION>("X_TIME_TRANSACTIONS_V1 @ProjectNumber, @CutOffDate", projectNumberParameter, cutOffDateParameter).ToList();
@@ -45,6 +54,9 @@ namespace BluePrints.PrimeroData
 
         public static List<X_TRANSACTION> GetMaterialSummary(IPrimeroEntitiesUnitOfWork primeroEntitiesUnitOfWork, string projectNumber, DateTime cutOffDate)
         {
+            if (cutOffDate.Year < 1800)
+                cutOffDate = DateTime.Now;
+
             SqlParameter projectNumberParameter = new SqlParameter("@ProjectNumber", projectNumber);
             SqlParameter cutOffDateParameter = new SqlParameter("@CutOffDate", cutOffDate);
             List<X_TRANSACTION> materialLines = primeroEntitiesUnitOfWork.DbContext.Database.SqlQuery<X_TRANSACTION>("X_MATERIAL_TRANSACTIONS_V1 @ProjectNumber, @CutOffDate", projectNumberParameter, cutOffDateParameter).ToList();

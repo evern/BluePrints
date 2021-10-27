@@ -1366,7 +1366,7 @@ namespace BluePrints.ViewModels
                                 uncommittedCostRow[alignedDateField] = 0;
                             }
                             else
-                                uncommittedCostRow[alignedDateField] = overrideCostOnDataDate - dateCost.P6Costs - dateCost.MaterialCosts - dateCost.ActualCosts - dateCost.IndirectForecastCosts - dateCost.POForecastCosts;
+                                uncommittedCostRow[alignedDateField] = overrideCostOnDataDate - dateCost.P6Costs - dateCost.MaterialCosts - dateCost.ActualCosts - dateCost.IndirectForecastCosts - dateCost.POOutstandingCosts;
                         }
                     }
                 }
@@ -2714,23 +2714,6 @@ namespace BluePrints.ViewModels
             IBluePrintsEntitiesUnitOfWork bluePrintsEntitiesUnitOfWork = BluePrintsEntitiesUnitOfWorkSource.GetUnitOfWorkFactory().CreateUnitOfWork();
             findExistingOrAddNewEACHistory(FixedDataDateMonthEnd, ForecastSummary, bluePrintsEntitiesUnitOfWork);
             MessageBoxService.ShowMessage("Summary saved for excel for data date " + FixedDataDateMonthEnd.ToShortDateString(), "Excel Data Saved", MessageButton.OK);
-        }
-
-        public bool CanSaveView()
-        {
-            return !IsLoading;
-        }
-
-        public void SaveView()
-        {
-            if(IsShowActualsHistory)
-            {
-                MessageBoxService.ShowMessage("View cannot be saved in view actuals history mode");
-                return;
-            }
-
-            ForecastHelper.SaveSnapshot(LoadPROJECT.GUID, FixedDataDateMonthEnd, bluePrintsUnitOfWork, commodityJobs, FORECASTCollection, ForecastSummary);
-            MessageBoxService.ShowMessage("Forecast Snapshot Saved");
         }
 
         private FORECAST_EAC createNewEAC(DateTime forecastDate, ExoSubJobProjection projection, decimal newPreviousEAC, ForecastEACType forecastEACType)

@@ -198,27 +198,6 @@ namespace BluePrints.Common.Projections
             }
         }
 
-
-        Dictionary<string, decimal> materialStockCodeAttributes = null;
-        public Dictionary<string, decimal> MaterialStockCodeAttributes
-        {
-            get
-            {
-                if (materialStockCodeAttributes == null)
-                {
-                    materialStockCodeAttributes = new Dictionary<string, decimal>();
-                    var groupByStockCodeSnapshots = DateCosts.SelectMany(x => x.MaterialForecastSnapshots).GroupBy(x => x.STOCK_CODE).Select(group => new { StockCode = group.Key, Budget = group.First().PROJECT_BUDGET });
-                    foreach (var groupByStockCodeSnapshot in groupByStockCodeSnapshots)
-                    {
-                        materialStockCodeAttributes.Add(groupByStockCodeSnapshot.StockCode, groupByStockCodeSnapshot.Budget);
-                    }
-                }
-
-                return materialStockCodeAttributes;
-            }
-        }
-
-
         Dictionary<string, decimal> actualStockCodeAttributes = null;
         public Dictionary<string, decimal> ActualStockCodeAttributes
         {
@@ -238,7 +217,6 @@ namespace BluePrints.Common.Projections
             }
         }
 
-        public string ForecastErrorString { get; set; }
         public string ErrorMessageIdentificationCode
         {
             get
@@ -301,7 +279,7 @@ namespace BluePrints.Common.Projections
         public readonly DateTime MonthEndDate;
         private readonly DateTime firstViewDate;
         private readonly DateTime firstForecastDate;
-        readonly IEnumerable<FORECAST_JOB_HOUR_SNAPSHOT> byDateForecastJobHourSnapshots;
+        readonly List<FORECAST_JOB_HOUR_SNAPSHOT> byDateForecastJobHourSnapshots;
         public ForecastDateSnapshot(IEnumerable<FORECAST_JOB_HOUR_SNAPSHOT> byDataDateForecastJobHourSnapshots, DateTime firstViewDate, DateTime date, DateTime dataDate)
         {
             QueryDate = date; 
@@ -313,19 +291,19 @@ namespace BluePrints.Common.Projections
             MonthStartDate = new DateTime(date.Date.Year, date.Date.Month, 1);
             MonthEndDate = MonthStartDate.AddMonths(1).AddDays(-1);
 
-            this.byDateForecastJobHourSnapshots = byDataDateForecastJobHourSnapshots.Where(x => x.FORECAST_DATE != null &&  ((DateTime)x.FORECAST_DATE).Month == QueryDate.Month && ((DateTime)x.FORECAST_DATE).Year == QueryDate.Year);
+            this.byDateForecastJobHourSnapshots = byDataDateForecastJobHourSnapshots.Where(x => x.FORECAST_DATE != null &&  ((DateTime)x.FORECAST_DATE).Month == QueryDate.Month && ((DateTime)x.FORECAST_DATE).Year == QueryDate.Year).ToList();
         }
 
-        public IEnumerable<FORECAST_JOB_HOUR_SNAPSHOT> POForecastSnapshots => byDateForecastJobHourSnapshots.Where(x => x.SNAPSHOT_TYPE == ForecastSnapshotValueType.CurrentPOForecast);
-        public IEnumerable<FORECAST_JOB_HOUR_SNAPSHOT> IndirectForecastSnapshots => byDateForecastJobHourSnapshots.Where(x => x.SNAPSHOT_TYPE == ForecastSnapshotValueType.IndirectForecast);
-        public IEnumerable<FORECAST_JOB_HOUR_SNAPSHOT> MaterialForecastSnapshots => byDateForecastJobHourSnapshots.Where(x => x.SNAPSHOT_TYPE == ForecastSnapshotValueType.Material);
+
+        public IEnumerable<FORECAST_JOB_HOUR_SNAPSHOT> POForecastSnapshots => byDateForecastJobHourSnapshots.Where(x => x.SNAPSHOT_TYPE == ForecastSnapshotValueType.ForecastPO);
+        public IEnumerable<FORECAST_JOB_HOUR_SNAPSHOT> IndirectForecastSnapshots => byDateForecastJobHourSnapshots.Where(x => x.SNAPSHOT_TYPE == ForecastSnapshotValueType.ForecastIndirect);
+
         public IEnumerable<FORECAST_JOB_HOUR_SNAPSHOT> ActualForecastSnapshots => byDateForecastJobHourSnapshots.Where(x => x.SNAPSHOT_TYPE == ForecastSnapshotValueType.Actual);
         public IEnumerable<FORECAST_JOB_HOUR_SNAPSHOT> P6Snapshots => byDateForecastJobHourSnapshots.Where(x => x.SNAPSHOT_TYPE == ForecastSnapshotValueType.P6Remaining);
 
         public DateTime QueryDate { get; set; }
-        public decimal POForecastCosts => POForecastSnapshots.Sum(x => x.FORECAST_COST);
+        public decimal POOutstandingCosts => POForecastSnapshots.Sum(x => x.FORECAST_COST);
         public decimal IndirectForecastCosts => IndirectForecastSnapshots.Sum(x => x.FORECAST_COST);
-        public decimal MaterialCosts => MaterialForecastSnapshots.Sum(x => x.FORECAST_COST);
         public decimal ActualCosts => ActualForecastSnapshots.Sum(x => x.FORECAST_COST);
         public decimal P6Hours
         {
@@ -356,12 +334,12 @@ namespace BluePrints.Common.Projections
         {
             get
             {
-                return ActualCosts + MaterialCosts + POForecastCosts + IndirectForecastCosts + P6Costs;
+                return ActualCosts + POOutstandingCosts + IndirectForecastCosts + P6Costs;
             }
         }
 
         //p6 costs needs to be categorised as uncommitted
-        public decimal CommittedCosts => ActualCosts + MaterialCosts + POForecastCosts;
+        public decimal CommittedCosts => ActualCosts + POOutstandingCosts;
     }
 
 }

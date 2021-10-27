@@ -907,7 +907,6 @@
     <Compile Include="EntityFramework\Annotations\DISCIPLINE_DESC.cs" />
     <Compile Include="EntityFramework\Annotations\DR_PRICES.cs" />
     <Compile Include="EntityFramework\Annotations\FORECAST_HISTORY.cs" />
-    <Compile Include="EntityFramework\Annotations\FORECAST_SUMMARY_SNAPSHOT.cs" />
     <Compile Include="EntityFramework\Annotations\FORECAST_JOB_HOUR_SNAPSHOT.cs" />
     <Compile Include="EntityFramework\Annotations\PROGRESS_ETC.cs" />
     <Compile Include="EntityFramework\Annotations\REGISTER_CHANGE_ATTACHMENT.cs" />
@@ -1002,7 +1001,6 @@
     <Compile Include="EntityFramework\BluePrintsData\FORECAST.cs" />
     <Compile Include="EntityFramework\BluePrintsData\FORECAST_HISTORY.cs" />
     <Compile Include="EntityFramework\BluePrintsData\FORECAST_JOB_HOUR.cs" />
-    <Compile Include="EntityFramework\BluePrintsData\FORECAST_SUMMARY_SNAPSHOT.cs" />
     <Compile Include="EntityFramework\BluePrintsData\PROGRESS_ETC.cs" />
     <Compile Include="EntityFramework\BluePrintsData\REGISTER_CLARIFICATION.cs" />
     <Compile Include="EntityFramework\BluePrintsData\REGISTER_TQ.cs" />

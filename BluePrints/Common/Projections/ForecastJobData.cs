@@ -341,12 +341,12 @@ namespace BluePrints.Common.Projections
         public decimal MaterialQuantity => CurrentPeriodMaterialDataPoints.Sum(x => x.Quantity);
         public decimal P6Hours => CurrentPeriodP6DataPoints.Sum(x => x.Units);
         public decimal P6Costs => CurrentPeriodP6DataPoints.Sum(x => x.Costs);
-        public decimal POForecastCosts => CurrentPeriodForecastPOs.Sum(x => (decimal)x.FORECAST_VALUE);
+        public decimal POOutstandingCosts => CurrentPeriodForecastPOs.Sum(x => (decimal)x.FORECAST_VALUE);
         public decimal EACCosts => CurrentPeriodForecastEACs.Sum(x => (decimal)x.FORECAST_COSTS);
         public decimal IndirectForecastCosts => CurrentPeriodIndirectCosts.Sum(x => x.ForecastRemainingCosts);
-        public decimal TotalCosts => ActualCosts + MaterialCosts + P6Costs + POForecastCosts + IndirectForecastCosts;
+        public decimal TotalCosts => ActualCosts + MaterialCosts + P6Costs + POOutstandingCosts + IndirectForecastCosts;
 
         //p6 costs needs to be categorised as uncommitted
-        public decimal CommittedCosts => ActualCosts + MaterialCosts + POForecastCosts;
+        public decimal CommittedCosts => ActualCosts + MaterialCosts + POOutstandingCosts;
     }
 }

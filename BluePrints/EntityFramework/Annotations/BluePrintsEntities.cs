@@ -222,10 +222,11 @@ namespace BluePrints.Data
 #pragma warning disable CS4014 // Because this call is not awaited, execution of the current method continues before the call is completed
             await Task.WhenAll(RefreshForecastBudgetByProject(projectNumber, dataDate),
                 RefreshForecastActualsByProject(projectNumber, dataDate),
+                RefreshForecastPOByProject(projectNumber, dataDate),
                 RefreshForecastIndirectByProject(projectNumber, dataDate),
+                RefreshEarnedByProject(projectNumber, dataDate),
                 RefreshForecastP6ByProject(projectNumber, dataDate, true),
-                RefreshForecastP6ByProject(projectNumber, dataDate, false),
-                RefreshForecastPOByProject(projectNumber, dataDate)
+                RefreshForecastP6ByProject(projectNumber, dataDate, false)
                 );
 #pragma warning restore CS4014 // Because this call is not awaited, execution of the current method continues before the call is completed
         }
@@ -237,7 +238,8 @@ namespace BluePrints.Data
                 dbContext.Database.CommandTimeout = 5000;
                 SqlParameter projectNumberParameter = new SqlParameter("@PROJECT_NUMBER", projectNumber);
                 SqlParameter dataDateParameter = new SqlParameter("@DATA_DATE", dataDate);
-                Task<int> returnTask = dbContext.Database.ExecuteSqlCommandAsync("RefreshForecastBudget @PROJECT_NUMBER, @DATA_DATE", projectNumberParameter, dataDateParameter);
+                SqlParameter userGuidParameter = new SqlParameter("@USER_GUID", LoginCredentials.CurrentUserGuid);
+                Task<int> returnTask = dbContext.Database.ExecuteSqlCommandAsync("RefreshForecastBudget @PROJECT_NUMBER, @DATA_DATE, @USER_GUID", projectNumberParameter, dataDateParameter, userGuidParameter);
                 var i = await returnTask;
             }
         }
@@ -249,7 +251,8 @@ namespace BluePrints.Data
                 dbContext.Database.CommandTimeout = 5000;
                 SqlParameter projectNumberParameter = new SqlParameter("@PROJECT_NUMBER", projectNumber);
                 SqlParameter dataDateParameter = new SqlParameter("@DATA_DATE", dataDate);
-                Task<int> returnTask = dbContext.Database.ExecuteSqlCommandAsync("RefreshForecastActuals @PROJECT_NUMBER, @DATA_DATE", projectNumberParameter, dataDateParameter);
+                SqlParameter userGuidParameter = new SqlParameter("@USER_GUID", LoginCredentials.CurrentUserGuid);
+                Task<int> returnTask = dbContext.Database.ExecuteSqlCommandAsync("RefreshForecastActuals @PROJECT_NUMBER, @DATA_DATE, @USER_GUID", projectNumberParameter, dataDateParameter, userGuidParameter);
                 var i = await returnTask;
             }
         }
@@ -261,7 +264,21 @@ namespace BluePrints.Data
                 dbContext.Database.CommandTimeout = 5000;
                 SqlParameter projectNumberParameter = new SqlParameter("@PROJECT_NUMBER", projectNumber);
                 SqlParameter dataDateParameter = new SqlParameter("@DATA_DATE", dataDate);
-                Task<int> returnTask = dbContext.Database.ExecuteSqlCommandAsync("RefreshForecastIndirects @PROJECT_NUMBER, @DATA_DATE", projectNumberParameter, dataDateParameter);
+                SqlParameter userGuidParameter = new SqlParameter("@USER_GUID", LoginCredentials.CurrentUserGuid);
+                Task<int> returnTask = dbContext.Database.ExecuteSqlCommandAsync("RefreshForecastIndirects @PROJECT_NUMBER, @DATA_DATE, @USER_GUID", projectNumberParameter, dataDateParameter, userGuidParameter);
+                var i = await returnTask;
+            }
+        }
+
+        public static async Task RefreshEarnedByProject(string projectNumber, DateTime dataDate)
+        {
+            using (BluePrintsEntities dbContext = new BluePrintsEntities())
+            {
+                dbContext.Database.CommandTimeout = 5000;
+                SqlParameter projectNumberParameter = new SqlParameter("@PROJECT_NUMBER", projectNumber);
+                SqlParameter dataDateParameter = new SqlParameter("@DATA_DATE", dataDate);
+                SqlParameter userGuidParameter = new SqlParameter("@USER_GUID", LoginCredentials.CurrentUserGuid);
+                Task<int> returnTask = dbContext.Database.ExecuteSqlCommandAsync("RefreshEarned @PROJECT_NUMBER, @DATA_DATE, @USER_GUID", projectNumberParameter, dataDateParameter, userGuidParameter);
                 var i = await returnTask;
             }
         }
@@ -274,7 +291,8 @@ namespace BluePrints.Data
                 SqlParameter projectNumberParameter = new SqlParameter("@PROJECT_NUMBER", projectNumber);
                 SqlParameter dataDateParameter = new SqlParameter("@DATA_DATE", dataDate);
                 SqlParameter isPlannedParameter = new SqlParameter("@IS_PLANNED", isPlanned);
-                Task<int> returnTask = dbContext.Database.ExecuteSqlCommandAsync("RefreshForecastP6s @PROJECT_NUMBER, @DATA_DATE, @IS_PLANNED", projectNumberParameter, dataDateParameter, isPlannedParameter);
+                SqlParameter userGuidParameter = new SqlParameter("@USER_GUID", LoginCredentials.CurrentUserGuid);
+                Task<int> returnTask = dbContext.Database.ExecuteSqlCommandAsync("RefreshForecastP6s @PROJECT_NUMBER, @DATA_DATE, @IS_PLANNED, @USER_GUID", projectNumberParameter, dataDateParameter, isPlannedParameter, userGuidParameter);
                 var i = await returnTask;
             }
         }
@@ -286,7 +304,8 @@ namespace BluePrints.Data
                 dbContext.Database.CommandTimeout = 5000;
                 SqlParameter projectNumberParameter = new SqlParameter("@PROJECT_NUMBER", projectNumber);
                 SqlParameter dataDateParameter = new SqlParameter("@DATA_DATE", dataDate);
-                Task<int> returnTask = dbContext.Database.ExecuteSqlCommandAsync("RefreshForecastPOs @PROJECT_NUMBER, @DATA_DATE", projectNumberParameter, dataDateParameter);
+                SqlParameter userGuidParameter = new SqlParameter("@USER_GUID", LoginCredentials.CurrentUserGuid);
+                Task<int> returnTask = dbContext.Database.ExecuteSqlCommandAsync("RefreshForecastPOs @PROJECT_NUMBER, @DATA_DATE, @USER_GUID", projectNumberParameter, dataDateParameter, userGuidParameter);
                 var i = await returnTask;
             }
         }
@@ -298,7 +317,8 @@ namespace BluePrints.Data
                 dbContext.Database.CommandTimeout = 5000;
                 SqlParameter projectNumberParameter = new SqlParameter("@PROJECT_NUMBER", projectNumber);
                 SqlParameter dataDateParameter = new SqlParameter("@DATA_DATE", dataDate);
-                Task<int> returnTask = dbContext.Database.ExecuteSqlCommandAsync("RefreshForecastETC @PROJECT_NUMBER, @DATA_DATE", projectNumberParameter, dataDateParameter);
+                SqlParameter userGuidParameter = new SqlParameter("@USER_GUID", LoginCredentials.CurrentUserGuid);
+                Task<int> returnTask = dbContext.Database.ExecuteSqlCommandAsync("RefreshForecastETC @PROJECT_NUMBER, @DATA_DATE, @USER_GUID", projectNumberParameter, dataDateParameter, userGuidParameter);
                 var i = await returnTask;
             }
         }

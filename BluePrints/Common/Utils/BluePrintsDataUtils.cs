@@ -2028,10 +2028,10 @@ namespace BluePrints.Common.ViewModel.Utils
             string disciplineCode = fullDisciplineCode.Substring(0, 2);
             if (phaseType == null)
             {
-                validCommodityCodes = COMMODITY_CODES.Where(x => (x.DISCIPLINE == null || (x.DISCIPLINE.CODE.Length >= 2 && x.DISCIPLINE.CODE.Substring(0, 2) == disciplineCode))).OrderBy(x => x.CODE).ToList();
+                validCommodityCodes = COMMODITY_CODES.Where(x => x.DISCIPLINE == null || (x.DISCIPLINE.CODE.Length >= 2 && x.DISCIPLINE.CODE.Substring(0, 2) == disciplineCode)).OrderBy(x => x.CODE).ToList();
             }
             else if (phaseType == PhaseType.Tender)
-                validCommodityCodes = COMMODITY_CODES.Where(x => (x.DISCIPLINE == null || (x.DISCIPLINE.CODE.Length >= 2 && x.DISCIPLINE.CODE.Substring(0, 2) == BluePrintsResources.Default_TenderDisciplineCode))).OrderBy(x => x.CODE).ToList();
+                validCommodityCodes = COMMODITY_CODES.Where(x => x.DISCIPLINE == null || (x.DISCIPLINE.CODE.Length >= 2 && x.DISCIPLINE.CODE.Substring(0, 2) == BluePrintsResources.Default_TenderDisciplineCode)).OrderBy(x => x.CODE).ToList();
             else
             {
                 IEnumerable<COMMODITY_CODE> phaseCommodityCodes;

@@ -21,9 +21,8 @@ namespace BluePrints.Common.ViewModel.Reporting
     public interface IForecastDateCostViewModel
     {
         decimal ActualCosts { get; }
-        decimal MaterialCosts { get; }
+        decimal POOutstandingCosts { get; }
         decimal IndirectForecastCosts { get; }
-        decimal POForecastCosts { get; }
         decimal P6Costs { get; }
         decimal TotalCosts { get;}
         DateTime QueryDate { get; }

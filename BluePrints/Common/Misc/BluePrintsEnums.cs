@@ -95,30 +95,27 @@ namespace BluePrints.Common
     public enum ForecastSnapshotValueType
     {
         [Display(Name = "Budget")]
-        Budget,
+        Budget = 0,
         [Display(Name = "Actual")]
-        Actual,
-        [Display(Name = "Material")]
-        Material,
+        Actual = 1,
+        [Display(Name = "Previous PO Outstanding")]
+        PreviousOutstandingPO = 2,
+        [Display(Name = "Current PO Outstanding")]
+        CurrentOutstandingPO = 3,
+        [Display(Name = "Forecast PO Outstanding")]
+        ForecastPO = 4, 
         [Display(Name = "Indirect Forecast")]
-        IndirectForecast,
-        [Display(Name = "Current PO Forecast")]
-        CurrentPOForecast,
-        [Display(Name = "Previous PO Forecast")]
-        PreviousPOForecast,
+        ForecastIndirect = 5,
+        [Display(Name = "Earned Forecast")]
+        Earned = 6,
         //P6 planned values, exists for all dates
         [Display(Name = "P6 Planned")]
-        P6Planned,
+        P6Planned = 7,
         //P6 original values, exists for all dates
         [Display(Name = "P6 Remaining")]
-        P6Remaining,
+        P6Remaining = 8,
         [Display(Name = "Progress ETC")]
-        ProgressETC, 
-        //P6 view values, exists for all dates but can be retrieved from override
-        [Display(Name = "P6 Override")]
-        P6RemainingOverride,
-        [Display(Name = "Discretionary Total")]
-        DiscretionaryTotal
+        ProgressETC = 9
     }
 
     public enum ForecastDataType
