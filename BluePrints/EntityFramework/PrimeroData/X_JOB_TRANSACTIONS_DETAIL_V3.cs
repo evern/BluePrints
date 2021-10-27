@@ -36,8 +36,6 @@
         [StringLength(50)]
         public string DEPARTMENT_NAME { get; set; }
 
-        [Key]
-        [Column(Order = 1)]
         [StringLength(50)]
         public string VARIATION_CODE { get; set; }
 
@@ -74,8 +72,6 @@
         [StringLength(20)]
         public string INVNO { get; set; }
 
-        [Key]
-        [Column(Order = 2)]
         public double INVOICED { get; set; }
 
         public DateTime? INVOICEDATE { get; set; }
