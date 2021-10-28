@@ -56,6 +56,7 @@ namespace BluePrints.ViewModels
         private PROJECT loadPROJECT;
         List<ExoTimeAuthorisation> exoLines;
         private static string notAvailableStr = "Doesn't Exists in Exo";
+        public bool IsWeeks => false;
         protected override void resolveParameters(object parameter)
         {
             IsLoading = true;
@@ -238,7 +239,7 @@ namespace BluePrints.ViewModels
 
         protected override Func<IRepositoryQuery<FORECAST_EAC>, IQueryable<FORECAST_EAC>> specifyMainViewModelProjection()
         {
-            return query => query.Where(x => x.GUID_PROJECT == loadPROJECT.GUID);
+            return query => query.Where(x => x.GUID_PROJECT == loadPROJECT.GUID && x.TYPE == Common.ForecastEACType.EAC);
         }
 
         protected override void AssignCallBacksAndRaisePropertyChange(IEnumerable<FORECAST_EAC> entities)

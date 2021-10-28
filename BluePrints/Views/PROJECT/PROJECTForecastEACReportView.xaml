@@ -80,6 +80,7 @@
         <Grid DataContext="{Binding MainViewModel}">
             <dxb:BarManager>
                 <dxb:BarManager.Items>
+                    <dxb:BarButtonItem x:Name="biCopyWithHeader1" Command="{Binding DataContext.CopyWithHeaderCommand, ElementName=userControl}" Content="Copy With Headers" Glyph="{dx:DXImageOffice2013 Image=AlignHorizontalTop_16x16.png}" RibbonStyle="SmallWithText" ToolTip="Copy selected rows along with header" />
                     <dxb:BarButtonItem x:Name="biFullRefresh1" Command="{Binding DataContext.FullRefreshCommand, ElementName=userControl}" Content="Refresh" Glyph="{dx:DXImage Image=Refresh_16x16.png}" LargeGlyph="{dx:DXImage Image=Refresh_32x32.png}" RibbonStyle="SmallWithText" ToolTip="Refresh table with updated data. Also clears any undo redo entries" />
                     <dxb:BarCheckItem x:Name="biCellSelection1" Content="Cell Selection" Glyph="{dxc:DXImage Image=SplitTableCells_16x16.png}" IsChecked="{Binding IsPasteCellLevel, Mode=TwoWay}" LargeGlyph="{dxc:DXImage Image=SplitTableCells_32x32.png}" RibbonStyle="SmallWithText" ToolTip="Change selection to cells instead of row" />
                     <dxb:BarButtonItem x:Name="biSaveLayout1" Command="{Binding DataContext.SaveLayoutCommand, ElementName=userControl}" Content="Save Layout" Glyph="{dx:DXImage Image=Save_16x16.png}" LargeGlyph="{dx:DXImage Image=Save_32x32.png}" RibbonStyle="SmallWithText" ToolTip="Save current table filters, sorting, grouping and expanded group" />
@@ -131,6 +132,7 @@
                                             <dxg:GridControl.View>
                                                 <dxg:TableView x:Name="tableView" RowStyle="{StaticResource TableRowStyle}" TotalSummaryContentStyle="{StaticResource TotalSummaryStyle}" GroupColumnSummaryContentStyle="{StaticResource GroupSummaryStyle}" ColumnHeaderTemplate="{StaticResource ForecastHeaderTemplate}" custom:GroupChildSelector.Mode="Hierarchical" GroupSummaryDisplayMode="AlignByColumns" NewItemRowPosition="None" PrintAllDetails="True" ShowEditFormOnDoubleClick="True" ShowTotalSummary="True" Style="{StaticResource DefaultMinimalTableViewTemplate}" ScrollBarAnnotationMode="None">
                                                     <dxg:TableView.RowCellMenuCustomizations>
+                                                        <dxb:BarButtonItemLink BarItemName="biCopyWithHeader1" />
                                                         <dxb:BarButtonItemLink BarItemName="biFullRefresh1" />
                                                     </dxg:TableView.RowCellMenuCustomizations>
                                                 </dxg:TableView>
