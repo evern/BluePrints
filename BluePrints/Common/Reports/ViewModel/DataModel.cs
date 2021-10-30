@@ -449,7 +449,16 @@ namespace BluePrints.Common.ViewModel.Reporting
 
         public decimal MinPercentage => Total_Units == 0 ? 0 : (Earned_Units_BeforeDataDate / Total_Units);
 
-        public virtual decimal MaxPercentage => Total_Units == 0 ? 1 : ((Total_Units - Earned_Units_AfterDataDate) / Total_Units);
+        public virtual decimal MaxPercentage
+        {
+            get
+            {
+                string s;
+                if (Deliverable_Name == "21502-200-MDL-GE-001")
+                    s = string.Empty;
+                return Total_Units == 0 ? 1 : ((Total_Units - Earned_Units_AfterDataDate) / Total_Units);
+            }
+        }
 
         protected decimal? earned_units_beforedatadate;
         public virtual decimal Earned_Units_BeforeDataDate

@@ -43,6 +43,7 @@
                         </DataTemplate>
                     </dxb:BarButtonItem.GlyphTemplate>
                 </dxb:BarButtonItem>
+                <dxb:BarButtonItem x:Name="biClearStatus" Command="{Binding ClearDeliverableStatusCommand}" Content="Clear Gate" Glyph="{dx:DXImage Image=ClearFormatting_16x16.png}" LargeGlyph="{dx:DXImage Image=ClearFormatting_32x32.png}" ToolTip="Clear status on selected deliverable" />
                 <dxb:BarCheckItem x:Name="bcEarnedBenchmark" Content="Show Earned % Against Budget" IsChecked="{Binding IsEarnedBenchmarkedAgainstBudget, Mode=TwoWay}" IsEnabled="{Binding IsLoading, Converter={StaticResource BooleanNegationConverter}}" RibbonStyle="SmallWithText" ToolTip="Is S-Curve earned percentages benchmarked against budget" Glyph="{dx:DXImage Images/Chart/ChangeChartSeriesType_16x16.png}" LargeGlyph="{dx:DXImage Images/Chart/ChangeChartSeriesType_32x32.png}" />
                 <dxb:BarCheckItem x:Name="bcShowBookable" Content="Show Bookable Only" IsEnabled="{Binding IsExoDataLoaded}" Glyph="{dxc:DXImage Image=Date&amp;Time_16x16.png}" IsChecked="{Binding ShowBookable}" LargeGlyph="{dxc:DXImage Image=Date&amp;Time_32x32.png}" ToolTip="Show bookable only" />
                 <dxb:BarButtonItem x:Name="biUpdateAll" Command="{Binding UpdateAllPercentagesByStatusCommand}" Content="Update % by Gates" Glyph="{dx:DXImage Image=ClearFormatting_16x16.png}" LargeGlyph="{dx:DXImage Image=ClearFormatting_32x32.png}" ToolTip="Bulk update all deliverables progress by it's gate. Deliverables without gates will be ignored. When deliverables status % is lower than current %, previous progresses will be reduced starting from previous interval." />
@@ -106,6 +107,7 @@
                 <custom:GridControlEx x:Name="GridControl" dxc:DXSerializer.SerializationID="GridControlOffsiteDirectProgress" dxc:DXSerializer.StoreLayoutMode="All" Style="{StaticResource DefaultGridControlTemplate}">
                     <dxmvvm:Interaction.Behaviors>
                         <behavior:DetailGridSearchingBehavior/>
+                        <dxmvvm:EventToCommand Command="{Binding CustomColumnDisplayTextCommand}" EventName="CustomColumnDisplayText" PassEventArgsToCommand="True" />
                         <dxmvvm:EventToCommand Command="{Binding CustomSummaryCommand}" EventName="CustomSummary" PassEventArgsToCommand="True" />
                     </dxmvvm:Interaction.Behaviors>
                     <dxg:GridControl.Bands>
@@ -177,7 +179,7 @@
                             <dxg:GridColumn FieldName="DeliverableStatusProgressGuid" Header="Gates" HeaderToolTip="From deliverables status table. Changing this value will increase current % only if the status has a higher percentage than previously earned %" SortMode="DisplayText">
                                 <dxg:GridColumn.CellTemplate>
                                     <DataTemplate>
-                                        <dxe:ComboBoxEdit x:Name="PART_Editor" DisplayMember="NAME" ImmediatePopup="True" IncrementalFiltering="True" ItemsSource="{Binding RowData.Row.Entity.Entity.DeliverableStatusCollection}" NullValueButtonPlacement="Popup" ValidateOnEnterKeyPressed="True" ValidateOnTextInput="True" ValueMember="GUID" />
+                                        <dxe:ComboBoxEdit x:Name="PART_Editor" DisplayMember="NAME" ImmediatePopup="True" IncrementalFiltering="True" ItemsSource="{Binding RowData.Row.Entity.Entity.DeliverableStatusCollection}" NullValueButtonPlacement="EditBox" ValidateOnEnterKeyPressed="True" ValidateOnTextInput="True" ValueMember="GUID" />
                                     </DataTemplate>
                                 </dxg:GridColumn.CellTemplate>
                                 <!--  For Filtering  -->
@@ -605,6 +607,8 @@
                                 <dxb:BarButtonItemLink BarItemName="biBookTime" />
                                 <dxb:BarItemLinkSeparator />
                                 <dxb:BarLinkContainerItem ItemLinksSource="{StaticResource ContextMenuDefaultHeaderButtons}" />
+                                <dxb:BarItemLinkSeparator />
+                                <dxb:BarButtonItemLink BarItemName="biClearStatus" />
                                 <dxb:BarItemLinkSeparator />
                                 <dxb:BarButtonItemLink BarItemName="biBulkDelete1" />
                                 <dxb:BarButtonItemLink BarItemName="biFullRefresh1" />

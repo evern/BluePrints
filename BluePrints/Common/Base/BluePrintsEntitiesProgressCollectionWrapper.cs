@@ -1364,6 +1364,9 @@ namespace BluePrints.Common.Base
 
         private void UpdateTrueP6Dates(BASELINE liveBASELINE, PROGRESS livePROGRESS, IP6EntitiesUnitOfWork p6UnitOfWork)
         {
+            if (Entities == null)
+                return;
+
             if (typeof(TMainProjectionEntity).GetInterfaces().Contains(typeof(IHaveTrueP6Dates)))
             {
                 if (liveBASELINE != null)

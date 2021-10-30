@@ -226,6 +226,40 @@ namespace BluePrints.ViewModels
 
         #region View Properties
         /// <summary>
+        /// Show document type even when it is not valid
+        /// </summary>
+        public void CustomColumnDisplayText(CustomColumnDisplayTextEventArgs e)
+        {
+            if (e.Column.FieldName.Contains(BindableBase.GetPropertyName(() => new BASELINE_ITEMProgress().DeliverableStatusProgressGuid)) && e.Row != null)
+            {
+                BASELINE_ITEMProgress projection = (BASELINE_ITEMProgress)e.Row;
+                if (projection.Entity.Entity.DELIVERABLES_STATUS != null)
+                    e.DisplayText = projection.Entity.Entity.DELIVERABLES_STATUS.NAME;
+            }
+        }
+
+        public bool CanClearDeliverableStatus()
+        {
+            return !IsLoading && SelectedEntities.Count > 0;
+        }
+
+
+        public void ClearDeliverableStatus()
+        {
+            List<BASELINE_ITEMProgress> saveEntities = new List<BASELINE_ITEMProgress>();
+            foreach (BASELINE_ITEMProgress entity in SelectedEntities)
+            {
+                entity.DeliverableStatusProgressGuid = null;
+                //to prevent custom display text from showing it
+                entity.Entity.Entity.DELIVERABLES_STATUS = null;
+                saveEntities.Add(entity);
+            }
+
+            MainViewModel.BaseBulkSave(saveEntities);
+        }
+
+
+        /// <summary>
         /// The view name to be used when saving layout for IDocumentContent
         /// </summary>
         public override string ViewName

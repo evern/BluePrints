@@ -340,7 +340,7 @@ namespace BluePrints.Common.Projections
         {
             if (propertyName.Contains(BindableBase.GetPropertyName(() => new BASELINE_ITEM().DOCTYPE)))
             {
-                if(Entity.Entity.IsDocumentTypeValid != BASELINE_ITEM.DocumentTypeValidStatus.Valid)
+                if (Entity.Entity.IsDocumentTypeValid != BASELINE_ITEM.DocumentTypeValidStatus.Valid)
                 {
                     string errorText = "Document type";
                     if (Entity.Entity.DOCTYPE != null)
@@ -359,6 +359,13 @@ namespace BluePrints.Common.Projections
                     info.ErrorText = Entity.Entity.DELIVERABLE_TYPE.ToString() + " is not valid";
                     if (Entity.Entity.DOCTYPE != null)
                         info.ErrorText += " for doc type of " + Entity.Entity.DOCTYPE.CODE;
+                }
+            }
+            else if (propertyName.Contains(BindableBase.GetPropertyName(() => new BASELINE_ITEMProgress().DeliverableStatusProgressGuid)))
+            {
+                if (Entity.Entity.DeliverableStatusGuid != null && !Entity.Entity.DeliverableStatusCollection.Any(x => x.GUID == Entity.Entity.DeliverableStatusGuid))
+                {
+                    info.ErrorText = "Status is not valid, please right click and click Clear Gate";
                 }
             }
         }
