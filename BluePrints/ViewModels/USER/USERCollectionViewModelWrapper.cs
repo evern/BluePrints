@@ -159,6 +159,11 @@ namespace BluePrints.ViewModels
             {
                 populateUserProperties(projection, OFFICECollection);
             }
+            else if (field_name == BindableBase.GetPropertyName(() => new USER().NAME))
+            {
+                if (new_value != null)
+                    projection.NAME = new_value.ToString().Trim();
+            }
 
             base.UnifiedCellValueChanged(field_name, old_value, new_value, projection, isNew);
         }

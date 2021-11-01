@@ -1350,6 +1350,9 @@ namespace BluePrints.Common.Base
 
         private void updateP6DatesBackgroundWorker_RunWorkerCompleted(object sender, RunWorkerCompletedEventArgs e)
         {
+            if (Entities == null)
+                return;
+
             if (updateP6DatesBackgroundWorker.CancellationPending)
                 return;
 

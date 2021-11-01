@@ -13,7 +13,7 @@
         </dxmvvm:Interaction.Behaviors>
         <dxlc:LayoutControl Name="LayoutControlRoot" Orientation="Vertical">
             <dxlc:LayoutGroup Name="LayoutGroupGrid" View="Group">
-                <custom:GridControlEx x:Name="GridControl" dx:DXSerializer.SerializationID="GridControlSelectionUSER" dx:DXSerializer.StoreLayoutMode="All" Style="{StaticResource BasicGridControlTemplate}">
+                <custom:GridControlEx x:Name="GridControl" dx:DXSerializer.SerializationID="GridControlSelectionUSER" dx:DXSerializer.StoreLayoutMode="All" ItemsSource="{Binding Entities}" CurrentItem="{Binding SelectedEntity}" SelectedItems="{Binding SelectedEntities}">
                     <dxg:GridControl.Columns>
                         <dxg:GridColumn Header="Login Name" FieldName="NAME" />
                         <dxg:GridColumn Header="First Name" FieldName="FIRST_NAME" />
@@ -21,14 +21,9 @@
                         <dxg:GridColumn Header="Department" FieldName="DEPARTMENT" />
                         <dxg:GridColumn Header="Title" FieldName="TITLE" />
                         <dxg:GridColumn Header="Description" FieldName="DESCRIPTION" />
-                        <dxg:GridColumn Header="Role" FieldName="GUID_ROLE">
-                            <dxg:GridColumn.EditSettings>
-                                <dxe:ComboBoxEditSettings DisplayMember="NAME" IsTextEditable="False" ItemsSource="{Binding LookUpROLES.Entities}" ValueMember="GUID" />
-                            </dxg:GridColumn.EditSettings>
-                        </dxg:GridColumn>
                     </dxg:GridControl.Columns>
                     <dxg:GridControl.View>
-                        <dxg:TableView x:Name="tableView" AllowEditing="False" NewItemRowPosition="None" Style="{StaticResource DefaultTableViewTemplate}" />
+                        <dxg:TableView x:Name="tableView" AllowEditing="False" NewItemRowPosition="None"  />
                     </dxg:GridControl.View>
                 </custom:GridControlEx>
             </dxlc:LayoutGroup>
