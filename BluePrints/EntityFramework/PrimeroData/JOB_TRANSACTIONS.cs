@@ -275,8 +275,10 @@ namespace BluePrints.PrimeroData
         [StringLength(50)]
         public string X_SUPPLIERNAME { get; set; }
 
-        public int X_WEEKNO { get; set; }
+        //Remove these because Montreal doesn't have it
 
-        public int X_YEAR { get; set; }
+        //public int X_WEEKNO { get; set; }
+
+        //public int X_YEAR { get; set; }
     }
 }
