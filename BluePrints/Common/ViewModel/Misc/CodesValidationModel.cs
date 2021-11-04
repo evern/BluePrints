@@ -261,7 +261,7 @@ namespace BluePrints.Common.Projections
             }
         }
 
-        public void GetPropertyError(string propertyName, ErrorInfo info)
+        public virtual void GetPropertyError(string propertyName, ErrorInfo info)
         {
             if(!IgnoreValidationError)
             {

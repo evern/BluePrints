@@ -45,8 +45,6 @@ namespace BluePrints.Data
 
         public DateTime? FORECAST_DATE { get; set; }
 
-        public decimal TENDER_BUDGET { get; set; }
-
         public decimal PROJECT_BUDGET { get; set; }
 
         public decimal FORECAST_QTY { get; set; }

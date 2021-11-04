@@ -916,6 +916,7 @@
     <Compile Include="EntityFramework\Annotations\JOBCOST_HDR.cs" />
     <Compile Include="EntityFramework\Annotations\JOBCOST_RESOURCE.cs" />
     <Compile Include="EntityFramework\Annotations\X_DEPARTMENT.cs" />
+    <Compile Include="EntityFramework\Annotations\X_JOBCOST_LINES_AUDIT.cs" />
     <Compile Include="EntityFramework\Annotations\X_EARNED_QUERY.cs" />
     <Compile Include="EntityFramework\Annotations\X_INVOICED_V1.cs" />
     <Compile Include="EntityFramework\Annotations\X_PURCHORD_LINE_DETAILS_VIEW_V1.cs" />
@@ -1006,6 +1007,7 @@
     <Compile Include="EntityFramework\BluePrintsData\REGISTER_TQ.cs" />
     <Compile Include="EntityFramework\BluePrintsData\REGISTER_CHANGE_ATTACHMENT.cs" />
     <Compile Include="EntityFramework\BluePrintsData\REGISTER_TQ_ATTACHMENT.cs" />
+    <Compile Include="EntityFramework\BluePrintsData\X_JOBCOST_LINES_AUDIT.cs" />
     <Compile Include="EntityFramework\BluePrintsData\X_REPORTABLES.cs" />
     <Compile Include="EntityFramework\BluePrintsData\X_EARNED_QUERY.cs" />
     <Compile Include="EntityFramework\BluePrintsData\X_WBS_GROUPED_DATAPOINT.cs" />

@@ -500,5 +500,10 @@ namespace BluePrints.BluePrintsEntitiesDataModel
         {
             get { return GetRepository(x => x.Set<X_VARIATION_QUERY>(), (X_VARIATION_QUERY x) => x.GUID); }
         }
+            
+        IRepository<X_JOBCOST_LINES_AUDIT, Guid> IBluePrintsEntitiesUnitOfWork.X_JOBCOST_LINES_AUDIT
+        {
+            get { return GetRepository(x => x.Set<X_JOBCOST_LINES_AUDIT>(), (X_JOBCOST_LINES_AUDIT x) => x.GUID); }
+        }
     }
 }

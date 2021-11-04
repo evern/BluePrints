@@ -101,6 +101,7 @@ namespace BluePrints.Data
         public virtual DbSet<VARIATION_CONSTRUCTION_IMPACT> VARIATION_CONSTRUCTION_IMPACT { get; set; }
         public virtual DbSet<X_VARIATION_QUERY> X_VARIATION_QUERY { get; set; }
         public virtual DbSet<X_EARNED_QUERY> X_EARNED_QUERY { get; set; }
+        public virtual DbSet<X_JOBCOST_LINES_AUDIT> X_JOBCOST_LINES_AUDIT { get; set; }
 
         protected override void OnModelCreating(DbModelBuilder modelBuilder)
         {
