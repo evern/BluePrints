@@ -227,7 +227,7 @@ namespace BluePrints.ViewModels
             MainViewModel.BaseBulkDelete(removePOForecasts);
         }
 
-        private void findExistingOrAddNewFORECAST_PO(DataRow dataRow, DateTime forecastDate, decimal? viewCosts, bool skipUpdating = false)
+        protected override void findExistingOrAddNewFORECAST_PO(DataRow dataRow, DateTime forecastDate, decimal? viewCosts, bool skipUpdating = false)
         {
             POFlatForecastProjection entity = (POFlatForecastProjection)dataRow[columnEntity];
 
