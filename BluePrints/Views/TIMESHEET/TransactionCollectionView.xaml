@@ -198,7 +198,7 @@
                                     <dxe:SpinEditSettings Mask="n" MaskType="Numeric" MaskUseAsDisplayFormat="True" />
                                 </dxg:GridColumn.EditSettings>
                             </dxg:GridColumn>
-                            <dxg:GridColumn FieldName="UNITPRICE" Visible="{Binding IsCostsVisible}" ShowInColumnChooser="False" Header="Unit Rate" ReadOnly="True" >
+                            <dxg:GridColumn FieldName="UNITCOST" Visible="{Binding IsCostsVisible}" ShowInColumnChooser="False" Header="Unit Rate" ReadOnly="True" >
                                 <dxg:GridColumn.EditSettings>
                                     <dxe:SpinEditSettings Mask="c0" MaskType="Numeric" MaskUseAsDisplayFormat="True" />
                                 </dxg:GridColumn.EditSettings>
