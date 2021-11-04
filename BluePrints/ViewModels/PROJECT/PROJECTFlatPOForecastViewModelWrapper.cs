@@ -221,10 +221,9 @@ namespace BluePrints.ViewModels
             return allExoPos.GroupBy(x => new { x.PONumber, x.Variation_Code, x.StockCode }).Select(group => new POFlatLine { PONumber = group.Key.PONumber, VariationCode = group.Key.Variation_Code, StockCode = group.Key.StockCode, DataPoints = group.ToList() }).ToList();
         }
 
-        private void clearPOForecast(string poNo, string variationCode)
+        protected override void clearPOForecast(string poNo, string stockCode, string variationCode)
         {
-            List<FORECAST_PO> removePOForecasts = Entities.Where(x => x.PONO == poNo && x.VARIATION_CODE == variationCode).ToList();
-            MainViewModel.BaseBulkDelete(removePOForecasts);
+            List<FORECAST_PO> removePOForecasts = Entities.Where(x => x.PONO == poNo && x.STOCK_CODE == stockCode && x.VARIATION_CODE == variationCode).ToList();
         }
 
         protected override void findExistingOrAddNewFORECAST_PO(DataRow dataRow, DateTime forecastDate, decimal? viewCosts, bool skipUpdating = false)

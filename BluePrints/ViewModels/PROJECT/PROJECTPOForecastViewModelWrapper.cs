@@ -687,7 +687,7 @@ namespace BluePrints.ViewModels
             }
         }
 
-        private void clearPOForecast(string poNo, string variationCode)
+        protected virtual void clearPOForecast(string poNo, string stockCode, string variationCode)
         {
             List<FORECAST_PO> removePOForecasts = Entities.Where(x => x.PONO == poNo && x.VARIATION_CODE == variationCode).ToList();
             MainViewModel.BaseBulkDelete(removePOForecasts);
@@ -843,7 +843,12 @@ namespace BluePrints.ViewModels
                         DataRowView editing_row_view = (DataRowView)rowObject;
                         DataRow editing_row = editing_row_view.Row;
                         POForecastProjection projection = (POForecastProjection)editing_row[columnEntity];
-                        clearPOForecast(projection.PONO, projection.VariationCode);
+
+                        string stockCode = string.Empty;
+                        if (projection.GetType() == typeof(POFlatForecastProjection))
+                            stockCode = ((POFlatForecastProjection)projection).StockCode;
+
+                        clearPOForecast(projection.PONO, stockCode, projection.VariationCode);
                         decimal costPerPeriod = projection.PO_RemainingPrice / (decimal)spreadPeriod;
 
                         //decimal remainingPrice = projection.PO_RemainingPrice < 0 ? 0 : projection.PO_RemainingPrice;
