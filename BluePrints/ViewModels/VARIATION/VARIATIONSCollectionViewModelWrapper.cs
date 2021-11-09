@@ -156,7 +156,7 @@ namespace BluePrints.ViewModels
             summariesAssigned = 0;
             foreach (var entity in entities)
             {
-                CreateVARIATION_ITEMSViewModelWrapper<BASELINE_ITEMProgress>(entity.Entity, (projections, parentId) => mainThreadDispatcher.BeginInvoke(new Action(() => AssignVariationSummary(projections, parentId))), () => entity.GUID, true);
+                CreateVARIATION_ITEMSViewModelWrapper<BASELINE_ITEMProgress>(entity.Entity, (projections, parentId) => mainThreadDispatcher.BeginInvoke(new Action(() => AssignVariationSummary(projections, entity.GUID))), () => entity.GUID, true);
             }
         }
 
