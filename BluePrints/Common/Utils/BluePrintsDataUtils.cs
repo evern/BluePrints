@@ -844,12 +844,12 @@ namespace BluePrints.Common.ViewModel.Utils
             }
 
             var jobTransactions = from JOBTRANS in primeroUOW.JOB_TRANSACTIONS
-                            join JOBCOST_HDR in primeroUOW.JOBCOST_HDR
-                            on JOBTRANS.MASTER_JOBNO equals JOBCOST_HDR.JOBNO
-                            join JOBCOST_HDR1 in primeroUOW.JOBCOST_HDR
-                            on JOBTRANS.JOBNO equals JOBCOST_HDR1.JOBNO
-                            where JOBCOST_HDR.JOBCODE == projectNumber && JOBTRANS.LINE_STATUS != "X"
-                            select new { JOBCOST_HDR1.JOBCODE, JOBTRANS.QUANTITY, JOBTRANS.STOCKCODE, JOBTRANS.LINECOST, JOBTRANS.TRANSDATE, VARIATIONCODE = JOBTRANS.X_VARIATIONCODE, JOBTRANS.INVOICED, JOBTRANS.INVOICEDATE, JOBTRANS.INVSEQNO, JOBTRANS.EXCHRATE };
+                                  join JOBCOST_HDR in primeroUOW.JOBCOST_HDR
+                                  on JOBTRANS.MASTER_JOBNO equals JOBCOST_HDR.JOBNO
+                                  join JOBCOST_HDR1 in primeroUOW.JOBCOST_HDR
+                                  on JOBTRANS.JOBNO equals JOBCOST_HDR1.JOBNO
+                                  where JOBCOST_HDR.JOBCODE == projectNumber && JOBTRANS.LINE_STATUS != "X"
+                                  select new { JOBCOST_HDR1.JOBCODE, JOBTRANS.QUANTITY, JOBTRANS.STOCKCODE, JOBTRANS.LINECOST, JOBTRANS.TRANSDATE, VARIATIONCODE = JOBTRANS.X_VARIATIONCODE, JOBTRANS.INVOICED, JOBTRANS.INVOICEDATE, JOBTRANS.INVSEQNO, JOBTRANS.EXCHRATE };
 
             var jobTransactionsList = jobTransactions.ToList();
             if (showLoadingScreen)
@@ -888,6 +888,63 @@ namespace BluePrints.Common.ViewModel.Utils
 
             return revenueDataPoints.ToList();
         }
+
+        //public static List<ExoDataPoint> GetRevenue(IPrimeroEntitiesUnitOfWork primeroUOW, string projectNumber, DateTime dataDate, decimal currencyConversion = 1, bool showLoadingScreen = false)
+        //{
+        //    ConcurrentBag<ExoDataPoint> revenueDataPoints = new ConcurrentBag<ExoDataPoint>();
+        //    HashSet<string> missingSubJobNames = new HashSet<string>();
+
+        //    if (showLoadingScreen)
+        //    {
+        //        LoadingScreenManager.ShowLoadingScreen(1);
+        //        LoadingScreenManager.SetMessage("Loading Revenue...");
+        //    }
+
+        //    var invoiceLines = from DR_INVLINES in primeroUOW.DR_INVLINES
+        //                    join SUBJOB in primeroUOW.JOBCOST_HDR
+        //                    on DR_INVLINES.JOBNO equals SUBJOB.JOBNO
+        //                    join MASTERJOB in primeroUOW.JOBCOST_HDR
+        //                    on SUBJOB.MASTER_JOBNO equals MASTERJOB.JOBNO
+        //                    where MASTERJOB.JOBCODE == projectNumber
+        //                    select new { MASTERJOB.JOBCODE, DR_INVLINES.QUANTITY, DR_INVLINES.STOCKCODE, DR_INVLINES.TRANSDATE, DR_INVLINES.LINETOTAL, DR_INVLINES.INVNO, DR_INVLINES.EXCHRATE };
+
+        //    var invoiceLineList = invoiceLines.ToList();
+        //    if (showLoadingScreen)
+        //    {
+        //        LoadingScreenManager.CloseLoadingScreen();
+        //        LoadingScreenManager.ShowLoadingScreen(invoiceLineList.Count);
+        //        LoadingScreenManager.SetMessage("Loading Revenue...");
+        //    }
+
+        //    foreach (var invoiceLine in invoiceLineList)
+        //    {
+        //        ExoDataPoint revenueDataPoint = new ExoDataPoint();
+        //        revenueDataPoint.BudgetedUnits = 0;
+        //        revenueDataPoint.BudgetedCosts = 0;
+        //        revenueDataPoint.Units = (decimal)invoiceLine.QUANTITY;
+        //        //burnedDataPoint.Costs = (decimal)jobTransaction.LINETOTAL * currencyConversion;
+        //        currencyConversion = invoiceLine.EXCHRATE != null ? 1 / (decimal)invoiceLine.EXCHRATE : currencyConversion;
+
+        //        revenueDataPoint.Costs = (decimal)invoiceLine.LINETOTAL * currencyConversion;
+        //        revenueDataPoint.CostPerQty = revenueDataPoint.Units == 0 ? 0 : revenueDataPoint.Costs / revenueDataPoint.Units;
+        //        //burnedDataPoint.ProgressDate = alignedDataDates.FirstOrDefault(dates => dates.Date >= jobTransaction.TRANSDATE);
+        //        revenueDataPoint.ActualDate = invoiceLine.TRANSDATE == null ? DateTime.Now : (DateTime)invoiceLine.TRANSDATE;
+        //        revenueDataPoint.ProgressDate = revenueDataPoint.ActualDate;
+        //        revenueDataPoint.Subjob_Name = invoiceLine.JOBCODE;
+        //        revenueDataPoint.Quantity = (decimal)invoiceLine.QUANTITY;
+        //        revenueDataPoint.StockCode = invoiceLine.STOCKCODE;
+        //        //revenueDataPoint.Variation_Code = BluePrintsDataUtils.normalizeVariationCode(invoiceLine.VARIATIONCODE);
+        //        revenueDataPoint.InvoiceNo = invoiceLine.INVNO.ToString();
+        //        revenueDataPoint.InvoiceAmount = Convert.ToDecimal(invoiceLine.LINETOTAL) * currencyConversion;
+        //        revenueDataPoint.InvoiceDate = invoiceLine.TRANSDATE;
+
+        //        revenueDataPoints.Add(revenueDataPoint);
+        //        if (showLoadingScreen)
+        //            LoadingScreenManager.Progress();
+        //    }
+
+        //    return revenueDataPoints.ToList();
+        //}
 
         public static List<ExoDataPoint> GetBurned(IPrimeroEntitiesUnitOfWork primeroUOW, string projectNumber, DateTime dataDate, IEnumerable<string> qualifiedSubjobs = null, List<SUBJOB> missingSUBJOBS = null, decimal currencyConversion = 1, bool showLoadingScreen = false)
         {

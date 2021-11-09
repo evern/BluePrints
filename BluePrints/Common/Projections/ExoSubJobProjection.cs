@@ -2071,24 +2071,6 @@ namespace BluePrints.Common.Projections
                 return null;
         }
 
-
-        public static decimal GetProjectClaims(IPrimeroEntitiesUnitOfWork primeroUnitOfWork, string projectNumber)
-        {
-            var jobClaims = from JOBTRANS in primeroUnitOfWork.JOB_TRANSACTIONS
-                            join JOBCOST_HDR in primeroUnitOfWork.JOBCOST_HDR
-                            on JOBTRANS.MASTER_JOBNO equals JOBCOST_HDR.JOBNO
-                            where JOBCOST_HDR.JOBCODE == projectNumber && JOBTRANS.TRANSTYPE == "C" && JOBTRANS.LINE_STATUS != "X"
-                            select new { JOBCOST_HDR.JOBCODE, JOBTRANS.QUANTITY, JOBTRANS.LINETOTAL, JOBTRANS.LINECOST, JOBTRANS.TRANSDATE, VARIATIONCODE = JOBTRANS.X_VARIATIONCODE, JOBTRANS.INVOICED, JOBTRANS.INVOICEDATE, JOBTRANS.INVSEQNO };
-
-            IEnumerable<dynamic> dbTimes = jobClaims.ToList();
-            if (dbTimes.Count() > 0)
-            {
-                return Convert.ToDecimal(dbTimes.Sum(x => (double)x.INVOICED));
-            }
-            else
-                return 0;
-        }
-
         public static List<ExoTimeAuthorisation> GetExoLinesAuthorisations(IPrimeroEntitiesUnitOfWork primeroUnitOfWork, string projectNumber = null, int? staffNo = null)
         {
             var availableLines = from JOBCOST_LINES in primeroUnitOfWork.JOBCOST_LINES
