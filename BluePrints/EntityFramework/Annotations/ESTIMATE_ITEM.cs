@@ -360,5 +360,9 @@ namespace BluePrints.Data
         public decimal Unadjusted_Budget_Units => Budget_Units;
 
         public decimal UnitsPerQuantity => Total_Units / Total_Quantity;
+
+        public string Deliverable_Title => DESCRIPTION;
+
+        public string Area_Title => AREA == null ? string.Empty : AREA.TITLE;
     }
 }

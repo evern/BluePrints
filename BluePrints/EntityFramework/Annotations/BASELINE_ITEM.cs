@@ -389,6 +389,10 @@ namespace BluePrints.Data
 
         public string UOM => "h";
 
+        public string Deliverable_Title => PRIMARY_TITLE;
+
+        public string Area_Title => AREA == null ? string.Empty : AREA.TITLE;
+
         public void SetOriginalEntityKey(Guid newGuid)
         {
             GUID_ORIGINAL = newGuid;

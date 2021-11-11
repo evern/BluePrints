@@ -211,6 +211,10 @@ namespace BluePrints.Common.Projections
         public decimal? ViewBudget_Costs => Reportables == null ? (decimal?)null : Budget_Costs;
 
         public decimal? ViewTotal_Costs => Reportables == null ? (decimal?)null : Total_Costs;
+
+        public string Deliverable_Title => string.Empty;
+
+        public string Area_Title => string.Empty;
         #endregion
     }
 

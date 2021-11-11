@@ -914,6 +914,10 @@ namespace BluePrints.Common.ViewModel.Reporting
         public string UOM => Entity.UOM;
 
         public decimal Variation_Quantity => Entity.Variation_Quantity;
+
+        public string Deliverable_Title => Entity.Deliverable_Title;
+
+        public string Area_Title => Entity.Area_Title;
     }
 
     public class DeliverableEarnedPercentages

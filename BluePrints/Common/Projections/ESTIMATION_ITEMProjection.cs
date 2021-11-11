@@ -171,6 +171,10 @@ namespace BluePrints.Common.Projections
         public decimal Unadjusted_Budget_Units => Budget_Units;
 
         public decimal UnitsPerQuantity => Total_Units / Total_Quantity;
+
+        public string Deliverable_Title => Entity.Deliverable_Title;
+
+        public string Area_Title => Entity.Area_Title;
     }
 
     public static class ESTIMATE_ITEMProjectionQueries

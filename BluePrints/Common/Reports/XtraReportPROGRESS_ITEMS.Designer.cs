@@ -548,7 +548,7 @@
             // 
             this.xrLabel21.Borders = ((DevExpress.XtraPrinting.BorderSide)((DevExpress.XtraPrinting.BorderSide.Left | DevExpress.XtraPrinting.BorderSide.Bottom)));
             this.xrLabel21.DataBindings.AddRange(new DevExpress.XtraReports.UI.XRBinding[] {
-            new DevExpress.XtraReports.UI.XRBinding("Text", null, "Deliverables.Entity.Entity.PRIMARY_TITLE")});
+            new DevExpress.XtraReports.UI.XRBinding("Text", null, "Deliverables.Deliverable_Title")});
             this.xrLabel21.Font = new System.Drawing.Font("Calibri", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.xrLabel21.KeepTogether = true;
             this.xrLabel21.LocationFloat = new DevExpress.Utils.PointFloat(135.875F, 0F);
@@ -573,7 +573,7 @@
             this.xrLabel43.Borders = ((DevExpress.XtraPrinting.BorderSide)(((DevExpress.XtraPrinting.BorderSide.Left | DevExpress.XtraPrinting.BorderSide.Right) 
             | DevExpress.XtraPrinting.BorderSide.Bottom)));
             this.xrLabel43.DataBindings.AddRange(new DevExpress.XtraReports.UI.XRBinding[] {
-            new DevExpress.XtraReports.UI.XRBinding("Text", null, "Deliverables.Entity.Entity.AREA.TITLE")});
+            new DevExpress.XtraReports.UI.XRBinding("Text", null, "Deliverables.Area_Title")});
             this.xrLabel43.Font = new System.Drawing.Font("Calibri", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.xrLabel43.KeepTogether = true;
             this.xrLabel43.LocationFloat = new DevExpress.Utils.PointFloat(135.875F, 0F);

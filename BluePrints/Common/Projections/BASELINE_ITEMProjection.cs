@@ -182,6 +182,10 @@ namespace BluePrints.Common.Projections
 
         public decimal Variation_Quantity => Variation_Units / UnitsPerQuantity;
 
+        public string Deliverable_Title => Entity.Deliverable_Title;
+
+        public string Area_Title => Entity.Area_Title;
+
         public void SetOriginalEntityKey(Guid newGuid)
         {
             Entity.SetOriginalEntityKey(newGuid);

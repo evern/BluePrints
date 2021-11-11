@@ -78,6 +78,8 @@ namespace BluePrints.Common.ViewModel.Reporting
         Guid? Department_Guid { get; }
         string Discipline_Code { get; }
         string Deliverable_Name { get; }
+        string Deliverable_Title { get; }
+        string Area_Title { get; }
         Guid? Phase_Guid { get; set; }
         Guid? Subjob_Guid { get; set; }
         Guid? Area_Guid { get; }
