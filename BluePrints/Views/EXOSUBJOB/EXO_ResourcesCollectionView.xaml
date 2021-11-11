@@ -143,6 +143,16 @@
                                         <dxe:ComboBoxEditSettings AutoComplete="True" DisplayMember="RESOURCENAME" IsTextEditable="True" ItemsSource="{Binding DisplayEntities}" ValueMember="STAFFNO" NullText="Leave empty to autogenerate" />
                                     </dxg:GridColumn.EditSettings>
                                 </dxg:GridColumn>
+                                <dxg:GridColumn FieldName="STOCKGROUP" Header="Stock Group">
+                                    <dxg:GridColumn.EditSettings>
+                                        <dxe:ComboBoxEditSettings AutoComplete="True" DisplayMember="GROUPNAME" IsTextEditable="True" ItemsSource="{Binding STOCK_GROUPSCollection}" ValueMember="GROUPNO" />
+                                    </dxg:GridColumn.EditSettings>
+                                </dxg:GridColumn>
+                                <dxg:GridColumn FieldName="STOCKGROUP2" Header="Stock Group 2">
+                                    <dxg:GridColumn.EditSettings>
+                                        <dxe:ComboBoxEditSettings AutoComplete="True" DisplayMember="GROUPNAME" IsTextEditable="True" ItemsSource="{Binding STOCK_GROUP2SCollection}" ValueMember="GROUPNO" />
+                                    </dxg:GridColumn.EditSettings>
+                                </dxg:GridColumn>
                                 <dxg:GridColumn FieldName="DEFAULT_STOCKCODE" Header="Default Stock Code" >
                                     <dxg:GridColumn.CellTemplate>
                                         <DataTemplate>

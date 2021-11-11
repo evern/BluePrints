@@ -123,6 +123,8 @@ namespace BluePrints.ViewModels
             loaderCollection.AddLoaderDescription<JOB_COSTGROUPS, JOB_COSTGROUPS, int, IPrimeroEntitiesUnitOfWork>(primeroUnitOfWorkFactory, x => x.JOB_COSTGROUPS);
             loaderCollection.AddLoaderDescription(bluePrintsUnitOfWorkFactory, x => x.FORECAST_CACHES, FORECAST_CACHEProjectionFunc);
             loaderCollection.AddLoaderDescription<USER, USER, Guid, IBluePrintsEntitiesUnitOfWork>(bluePrintsUnitOfWorkFactory, x => x.USERS);
+            loaderCollection.AddLoaderDescription<STOCK_GROUPS, STOCK_GROUPS, int, IPrimeroEntitiesUnitOfWork>(primeroUnitOfWorkFactory, x => x.STOCK_GROUPS);
+            loaderCollection.AddLoaderDescription<STOCK_GROUP2S, STOCK_GROUP2S, int, IPrimeroEntitiesUnitOfWork>(primeroUnitOfWorkFactory, x => x.STOCK_GROUP2S);
         }
 
         private void setProject(Data.PROJECT project)
@@ -3158,6 +3160,28 @@ namespace BluePrints.ViewModels
         #endregion
 
         #region Entity Wrapper Properties
+        public IEnumerable<STOCK_GROUP2S> STOCK_GROUP2SCollection
+        {
+            get
+            {
+                var collection = GetEntities<STOCK_GROUP2S>();
+                if (collection != null)
+                    collection = collection.OrderBy(x => x.GROUPNO);
+                return collection;
+            }
+        }
+
+        public IEnumerable<STOCK_GROUPS> STOCK_GROUPSCollection
+        {
+            get
+            {
+                var collection = GetEntities<STOCK_GROUPS>();
+                if (collection != null)
+                    collection = collection.OrderBy(x => x.GROUPNO);
+                return collection;
+            }
+        }
+
         public IEnumerable<JOB_COSTGROUPS> JOB_COSTGROUPCollection
         {
             get

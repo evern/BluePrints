@@ -139,6 +139,8 @@ namespace BluePrints.ViewModels
             loaderCollection.AddLoaderDescription(primeroUnitOfWorkFactory, x => x.STOCK_ITEMS, STOCK_ITEMSProjectionFunc);
             loaderCollection.AddLoaderDescription<GLACCS, GLACCS, int, IPrimeroEntitiesUnitOfWork>(primeroUnitOfWorkFactory, x => x.GLACCS);
             loaderCollection.AddLoaderDescription(primeroUnitOfWorkFactory, x => x.JOBCOST_HDR, JOBCOST_HDRProjectionFunc, x => loadJOBCOST_HDR = x);
+            loaderCollection.AddLoaderDescription<STOCK_GROUPS, STOCK_GROUPS, int, IPrimeroEntitiesUnitOfWork>(primeroUnitOfWorkFactory, x => x.STOCK_GROUPS);
+            loaderCollection.AddLoaderDescription<STOCK_GROUP2S, STOCK_GROUP2S, int, IPrimeroEntitiesUnitOfWork>(primeroUnitOfWorkFactory, x => x.STOCK_GROUP2S);
         }
 
         private Func<IRepositoryQuery<STOCK_ITEMS>, IQueryable<STOCK_ITEMS>> STOCK_ITEMSProjectionFunc()
@@ -402,6 +404,28 @@ namespace BluePrints.ViewModels
                 var collection = GetEntities<JOB_COSTTYPES>();
                 if (collection != null)
                     collection = collection.OrderBy(x => x.SHORTCODE);
+                return collection;
+            }
+        }
+
+        public IEnumerable<STOCK_GROUP2S> STOCK_GROUP2SCollection
+        {
+            get
+            {
+                var collection = GetEntities<STOCK_GROUP2S>();
+                if (collection != null)
+                    collection = collection.OrderBy(x => x.GROUPNO);
+                return collection;
+            }
+        }
+
+        public IEnumerable<STOCK_GROUPS> STOCK_GROUPSCollection
+        {
+            get
+            {
+                var collection = GetEntities<STOCK_GROUPS>();
+                if (collection != null)
+                    collection = collection.OrderBy(x => x.GROUPNO);
                 return collection;
             }
         }

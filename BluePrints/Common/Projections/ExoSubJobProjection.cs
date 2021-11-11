@@ -836,7 +836,7 @@ namespace BluePrints.Common.Projections
             }
         }
 
-        public static STOCK_ITEMS FindExistingOrAddStockItem(IPrimeroEntitiesUnitOfWork pUnitOfWork, string shortCode, string description, double? sellPrice, int? salesGLCode, int? purchGLCode, int? cosGLCode, double? stdCost, int costGroup, int costType, string department)
+        public static STOCK_ITEMS FindExistingOrAddStockItem(IPrimeroEntitiesUnitOfWork pUnitOfWork, string shortCode, string description, double? sellPrice, int? salesGLCode, int? purchGLCode, int? cosGLCode, double? stdCost, int costGroup, int costType, string department, int? stockGroup, int? stockGroup2S)
         {
             STOCK_ITEMS stock_item = ExoQueries.FindSTOCK_ITEM(pUnitOfWork, shortCode);
             if (stock_item != null)
@@ -850,6 +850,8 @@ namespace BluePrints.Common.Projections
                 stock_item.COSTGROUP = costGroup;
                 stock_item.COSTTYPE = costType;
                 stock_item.X_DEPARTMENT = department;
+                stock_item.STOCKGROUP = stockGroup;
+                stock_item.STOCKGROUP2 = stockGroup2S;
                 return stock_item;
             }
             else
@@ -2159,14 +2161,14 @@ namespace BluePrints.Common.Projections
         public static IQueryable<ExoResourceProjection> GetResources(IPrimeroEntitiesUnitOfWork primeroUnitOfWork, IEnumerable<USER> USERCollection)
         {
             var resources = from JOBCOST_RESOURCE in primeroUnitOfWork.JOBCOST_RESOURCE
-                                     join STAFF in primeroUnitOfWork.STAFF
-                                     on JOBCOST_RESOURCE.STAFFNO equals STAFF.STAFFNO
-                                     join STOCK_ITEMS in primeroUnitOfWork.STOCK_ITEMS
-                                     on JOBCOST_RESOURCE.SHORTCODE equals STOCK_ITEMS.STOCKCODE
-                                     where JOBCOST_RESOURCE.ISACTIVE == "Y"
-                            select new { JOBCOST_RESOURCE.SEQNO, STAFF.STAFFNO, STAFF.PAYROLL_ID, JOBCOST_STAFFNO = JOBCOST_RESOURCE.STAFFNO, JOBCOST_RESOURCE.RESOURCENAME, JOBCOST_RESOURCE.TITLE, JOBCOST_RESOURCE.DEFAULT_STOCKCODE, JOBCOST_RESOURCE.SHORTCODE, STAFF.SECURITYPROFILEID, STAFF.USERPROFILEID, STAFF.REPORTS_TO_STAFFNO, STOCK_ITEMS.SELLPRICE1, STOCK_ITEMS.STDCOST, STOCK_ITEMS.SALES_GL_CODE, STOCK_ITEMS.PURCH_GL_CODE, STOCK_ITEMS.COS_GL_CODE, STOCK_ITEMS.COSTTYPE, STOCK_ITEMS.COSTGROUP, STOCK_ITEMS.X_DEPARTMENT };
+                            join STAFF in primeroUnitOfWork.STAFF
+                            on JOBCOST_RESOURCE.STAFFNO equals STAFF.STAFFNO
+                            join STOCK_ITEMS in primeroUnitOfWork.STOCK_ITEMS
+                            on JOBCOST_RESOURCE.SHORTCODE equals STOCK_ITEMS.STOCKCODE
+                            where JOBCOST_RESOURCE.ISACTIVE == "Y"
+                            select new { JOBCOST_RESOURCE.SEQNO, STAFF.STAFFNO, STAFF.PAYROLL_ID, JOBCOST_STAFFNO = JOBCOST_RESOURCE.STAFFNO, JOBCOST_RESOURCE.RESOURCENAME, JOBCOST_RESOURCE.TITLE, JOBCOST_RESOURCE.DEFAULT_STOCKCODE, JOBCOST_RESOURCE.SHORTCODE, STAFF.SECURITYPROFILEID, STAFF.USERPROFILEID, STAFF.REPORTS_TO_STAFFNO, STOCK_ITEMS.SELLPRICE1, STOCK_ITEMS.STDCOST, STOCK_ITEMS.SALES_GL_CODE, STOCK_ITEMS.PURCH_GL_CODE, STOCK_ITEMS.COS_GL_CODE, STOCK_ITEMS.COSTTYPE, STOCK_ITEMS.COSTGROUP, STOCK_ITEMS.X_DEPARTMENT, STOCK_ITEMS.STOCKGROUP, STOCK_ITEMS.STOCKGROUP2 };
 
-            List<ExoResourceProjection> exoResources = resources.ToList().Select(x => ViewModelSource.Create(() => new ExoResourceProjection() { GUID = Guid.NewGuid(), STAFFNO = x.STAFFNO, PAYROLL_ID = x.PAYROLL_ID, RESOURCE_SEQNO = x.SEQNO, RESOURCENAME = x.RESOURCENAME, TITLE = x.TITLE, DEFAULT_STOCKCODE = x.DEFAULT_STOCKCODE, SECURITYPROFILEID = x.SECURITYPROFILEID, USERPROFILEID = x.USERPROFILEID, REPORTS_TO_STAFFNO = x.REPORTS_TO_STAFFNO, SHORTCODE = x.SHORTCODE, IsViewNewRow = false, STDCOST = x.STDCOST, SELLPRICE1 = x.SELLPRICE1, SALES_GL_CODE = x.SALES_GL_CODE, PURCH_GL_CODE = x.PURCH_GL_CODE, COS_GL_CODE = x.COS_GL_CODE, COSTGROUP = x.COSTGROUP, COSTTYPE = x.COSTTYPE, DEPARTMENT = x.X_DEPARTMENT})).ToList();
+            List<ExoResourceProjection> exoResources = resources.ToList().Select(x => ViewModelSource.Create(() => new ExoResourceProjection() { GUID = Guid.NewGuid(), STAFFNO = x.STAFFNO, PAYROLL_ID = x.PAYROLL_ID, RESOURCE_SEQNO = x.SEQNO, RESOURCENAME = x.RESOURCENAME, TITLE = x.TITLE, DEFAULT_STOCKCODE = x.DEFAULT_STOCKCODE, SECURITYPROFILEID = x.SECURITYPROFILEID, USERPROFILEID = x.USERPROFILEID, REPORTS_TO_STAFFNO = x.REPORTS_TO_STAFFNO, SHORTCODE = x.SHORTCODE, IsViewNewRow = false, STDCOST = x.STDCOST, SELLPRICE1 = x.SELLPRICE1, SALES_GL_CODE = x.SALES_GL_CODE, PURCH_GL_CODE = x.PURCH_GL_CODE, COS_GL_CODE = x.COS_GL_CODE, COSTGROUP = x.COSTGROUP, COSTTYPE = x.COSTTYPE, DEPARTMENT = x.X_DEPARTMENT, STOCKGROUP = x.STOCKGROUP, STOCKGROUP2 = x.STOCKGROUP2 })).ToList();
             foreach(ExoResourceProjection exoResource in exoResources)
             {
                 if (USERCollection.Any(x => x.EXO_STAFF_ID == exoResource.STAFFNO))

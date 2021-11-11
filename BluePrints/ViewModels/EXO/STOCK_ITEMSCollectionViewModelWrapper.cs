@@ -155,6 +155,7 @@ namespace BluePrints.ViewModels
                 return collection;
             }
         }
+
         /// <summary>
         /// The view name to be used when saving layout for IDocumentContent
         /// </summary>

@@ -56,8 +56,7 @@ namespace BluePrints.ViewModels
         /// This constructor is declared protected to avoid undesired instantiation of the FORECAST_JOBCollectionViewModelWrapper type without the POCO proxy factory.
         /// </summary>
         /// <param name="unitOfWorkFactory">A factory used to create a unit of work instance.</param>
-        protected PROJECTIndirectForecastViewModelWrapper(
-            IUnitOfWorkFactory<IBluePrintsEntitiesUnitOfWork> unitOfWorkFactory = null)
+        protected PROJECTIndirectForecastViewModelWrapper(IUnitOfWorkFactory<IBluePrintsEntitiesUnitOfWork> unitOfWorkFactory = null)
         {
         }
 
@@ -132,6 +131,8 @@ namespace BluePrints.ViewModels
             loaderCollection.AddLoaderDescription<JOB_COSTTYPES, JOB_COSTTYPES, int, IPrimeroEntitiesUnitOfWork>(primeroUnitOfWorkFactory, x => x.JOB_COSTTYPES);
             loaderCollection.AddLoaderDescription<JOB_COSTGROUPS, JOB_COSTGROUPS, int, IPrimeroEntitiesUnitOfWork>(primeroUnitOfWorkFactory, x => x.JOB_COSTGROUPS);
             loaderCollection.AddLoaderDescription(bluePrintsUnitOfWorkFactory, x => x.FORECAST_EACS, FORECAST_EACProjectionFunc);
+            loaderCollection.AddLoaderDescription<STOCK_GROUPS, STOCK_GROUPS, int, IPrimeroEntitiesUnitOfWork>(primeroUnitOfWorkFactory, x => x.STOCK_GROUPS);
+            loaderCollection.AddLoaderDescription<STOCK_GROUP2S, STOCK_GROUP2S, int, IPrimeroEntitiesUnitOfWork>(primeroUnitOfWorkFactory, x => x.STOCK_GROUP2S);
         }
 
         private Func<IRepositoryQuery<Data.PROJECT>, IQueryable<Data.PROJECT>> PROJECTProjectionFunc()
@@ -331,6 +332,7 @@ namespace BluePrints.ViewModels
             dataPointsTable.Columns.Add(columnProjection, typeof(ExoSubJobProjection));
             dataPointsTable.Columns.Add(columnForecastJob, typeof(FORECAST_JOB));
             dataPointsTable.Columns.Add(columnStockItemName, typeof(string));
+            dataPointsTable.Columns.Add(columnStockItemGroup2, typeof(string));
             dataPointsTable.Columns.Add(columnStockItemErrorImageWidth, typeof(decimal));
             dataPointsTable.Columns.Add(columnRecommendedForecastRate, typeof(decimal));
             dataPointsTable.Columns.Add(columnTotalHours, typeof(decimal));
@@ -437,6 +439,10 @@ namespace BluePrints.ViewModels
                 if (findSTOCK_ITEM != null)
                 {
                     row[columnStockItemName] = findSTOCK_ITEM.DESCRIPTION;
+                    STOCK_GROUP2S findSTOCK_GROUP2S = STOCK_GROUP2SCollection.FirstOrDefault(x => x.GROUPNO == findSTOCK_ITEM.STOCKGROUP2);
+                    if (findSTOCK_GROUP2S != null)
+                        row[columnStockItemGroup2] = findSTOCK_GROUP2S.GROUPNAME;
+
                     decimal? newDecimalValue = null;
                     if (findSTOCK_ITEM.STDCOST != null && findSTOCK_ITEM.STDCOST > 0)
                         newDecimalValue = Convert.ToDecimal(findSTOCK_ITEM.STDCOST);
@@ -460,11 +466,13 @@ namespace BluePrints.ViewModels
                 {
                     row[columnStockItemErrorImageWidth] = 15m;
                     row[columnStockItemName] = string.Empty;
+                    row[columnStockItemGroup2] = string.Empty;
                 }
             }
             else
             {
                 row[columnStockItemName] = string.Empty;
+                row[columnStockItemGroup2] = string.Empty;
                 row[columnStockItemErrorImageWidth] = 0m;
             }
 
@@ -1110,6 +1118,7 @@ namespace BluePrints.ViewModels
         static string columnCommodityName = "CommodityName";
         static string columnProjection = "Projection";
         static string columnStockItemName = "StockItemName";
+        static string columnStockItemGroup2 = "StockItemGroup2";
         static string columnRecommendedForecastRate = "RecommendedRate";
         static string columnTotalHours = "TOTAL_HOURS";
         static string columnTotalCosts = "TOTAL_COSTS";
@@ -1131,6 +1140,7 @@ namespace BluePrints.ViewModels
             columns.Add(new ColumnDescriptor() { FieldName = columnDescription, ReadOnly = false, Header = "Description", Fixed = FixedStyle.Left, Width = 100, Settings = SettingsType.Default });
             columns.Add(new ColumnDescriptor() { FieldName = columnStockItem, ReadOnly = false, Header = "Stock Code", ItemsSource = STOCK_ITEMCollection, HeaderToolTip="Changing this value will automatically populate rate", Fixed = FixedStyle.Left, Width = 50, Settings = SettingsType.StockItem });
             columns.Add(new ColumnDescriptor() { FieldName = columnStockItemName, ReadOnly = true, Header = "Stock Name (AutoFilled)", Fixed = FixedStyle.Left, Width = 100, Settings = SettingsType.Default });
+            columns.Add(new ColumnDescriptor() { FieldName = columnStockItemGroup2, ReadOnly = true, Header = "Stock Group 2 (AutoFilled)", Fixed = FixedStyle.Left, Width = 100, Settings = SettingsType.Default });
             columns.Add(new ColumnDescriptor() { FieldName = columnReference, ReadOnly = false, Header = "Reference", Fixed = FixedStyle.Left, Width = 75, Settings = SettingsType.Default });
             columns.Add(new ColumnDescriptor() { FieldName = columnNote, ReadOnly = false, Header = "Note", Fixed = FixedStyle.Left, Width = 75, Settings = SettingsType.Default });
             columns.Add(new ColumnDescriptor() { FieldName = columnUOM, ReadOnly = false, Header = "UOM", Fixed = FixedStyle.Left, Width = 50, Settings = SettingsType.Default });
@@ -1654,6 +1664,28 @@ namespace BluePrints.ViewModels
                 return
                     (CollectionViewModel<PROJECT, PROJECT, Guid, IBluePrintsEntitiesUnitOfWork>)
                     loaderCollection.GetViewModel<PROJECT>();
+            }
+        }
+
+        public IEnumerable<STOCK_GROUP2S> STOCK_GROUP2SCollection
+        {
+            get
+            {
+                var collection = GetEntities<STOCK_GROUP2S>();
+                if (collection != null)
+                    collection = collection.OrderBy(x => x.GROUPNO);
+                return collection;
+            }
+        }
+
+        public IEnumerable<STOCK_GROUPS> STOCK_GROUPSCollection
+        {
+            get
+            {
+                var collection = GetEntities<STOCK_GROUPS>();
+                if (collection != null)
+                    collection = collection.OrderBy(x => x.GROUPNO);
+                return collection;
             }
         }
 

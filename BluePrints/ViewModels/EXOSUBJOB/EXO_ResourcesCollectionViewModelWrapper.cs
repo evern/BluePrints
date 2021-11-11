@@ -78,6 +78,8 @@ namespace BluePrints.ViewModels
             loaderCollection.AddLoaderDescription<ROLE, ROLE, Guid, IBluePrintsEntitiesUnitOfWork>(bluePrintsUnitOfWorkFactory, x => x.ROLES);
             loaderCollection.AddLoaderDescription<X_DEPARTMENT, X_DEPARTMENT, int, IPrimeroEntitiesUnitOfWork>(primeroUnitOfWorkFactory, x => x.X_DEPARTMENTS);
             loaderCollection.AddLoaderDescription<OFFICE, OFFICE, Guid, IBluePrintsEntitiesUnitOfWork>(bluePrintsUnitOfWorkFactory, x => x.OFFICES);
+            loaderCollection.AddLoaderDescription<STOCK_GROUPS, STOCK_GROUPS, int, IPrimeroEntitiesUnitOfWork>(primeroUnitOfWorkFactory, x => x.STOCK_GROUPS);
+            loaderCollection.AddLoaderDescription<STOCK_GROUP2S, STOCK_GROUP2S, int, IPrimeroEntitiesUnitOfWork>(primeroUnitOfWorkFactory, x => x.STOCK_GROUP2S);
         }
 #endregion
 
@@ -200,7 +202,7 @@ namespace BluePrints.ViewModels
             resource.RESOURCE_SEQNO = addedResource.SEQNO;
 
             LoadingScreenManager.SetMessage("Updating Stock for " + resource.RESOURCENAME + " in " + officeName + "'s EXO");
-            STOCK_ITEMS stockItem = ExoMethods.FindExistingOrAddStockItem(primeroUOW, resource.SHORTCODE, resource.RESOURCENAME, resource.SELLPRICE1, resource.SALES_GL_CODE, resource.PURCH_GL_CODE, resource.COS_GL_CODE, resource.STDCOST, resource.COSTGROUP, resource.COSTTYPE, resource.DEPARTMENT);
+            STOCK_ITEMS stockItem = ExoMethods.FindExistingOrAddStockItem(primeroUOW, resource.SHORTCODE, resource.RESOURCENAME, resource.SELLPRICE1, resource.SALES_GL_CODE, resource.PURCH_GL_CODE, resource.COS_GL_CODE, resource.STDCOST, resource.COSTGROUP, resource.COSTTYPE, resource.DEPARTMENT, resource.STOCKGROUP, resource.STOCKGROUP2);
 
             try
             {
@@ -478,6 +480,28 @@ namespace BluePrints.ViewModels
                 if (collection != null)
                     collection = collection.OrderBy(x => x.X_Number);
 
+                return collection;
+            }
+        }
+
+        public IEnumerable<STOCK_GROUPS> STOCK_GROUPSCollection
+        {
+            get
+            {
+                var collection = GetEntities<STOCK_GROUPS>();
+                if (collection != null)
+                    collection = collection.OrderBy(x => x.GROUPNO);
+                return collection;
+            }
+        }
+
+        public IEnumerable<STOCK_GROUP2S> STOCK_GROUP2SCollection
+        {
+            get
+            {
+                var collection = GetEntities<STOCK_GROUP2S>();
+                if (collection != null)
+                    collection = collection.OrderBy(x => x.GROUPNO);
                 return collection;
             }
         }

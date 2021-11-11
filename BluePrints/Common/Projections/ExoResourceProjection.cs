@@ -70,5 +70,9 @@ namespace BluePrints.Common.Projections
         public bool IsViewNewRow { get; set; }
 
         public bool IsExistInBP { get; set; }
+
+        public int? STOCKGROUP { get; set; }
+
+        public int? STOCKGROUP2 { get; set; }
     }
 }

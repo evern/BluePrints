@@ -198,6 +198,16 @@
                                     <dxe:ComboBoxEditSettings AutoComplete="True" DisplayMember="NAME" IsTextEditable="True" ItemsSource="{Binding GLACCSCollection}" ValueMember="ACCNO" />
                                 </dxg:GridColumn.EditSettings>
                             </dxg:GridColumn>
+                            <dxg:GridColumn FieldName="STOCKGROUP" Header="Stock Group" ReadOnly="true">
+                                <dxg:GridColumn.EditSettings>
+                                    <dxe:ComboBoxEditSettings AutoComplete="True" DisplayMember="GROUPNAME" IsTextEditable="True" ItemsSource="{Binding STOCK_GROUPSCollection}" ValueMember="GROUPNO" />
+                                </dxg:GridColumn.EditSettings>
+                            </dxg:GridColumn>
+                            <dxg:GridColumn FieldName="STOCKGROUP2" Header="Stock Group 2" ReadOnly="true">
+                                <dxg:GridColumn.EditSettings>
+                                    <dxe:ComboBoxEditSettings AutoComplete="True" DisplayMember="GROUPNAME" IsTextEditable="True" ItemsSource="{Binding STOCK_GROUP2SCollection}" ValueMember="GROUPNO" />
+                                </dxg:GridColumn.EditSettings>
+                            </dxg:GridColumn>
                         </dxg:GridControlBand>
                     </dxg:GridControl.Bands>
                     <dxg:GridControl.GroupSummary>

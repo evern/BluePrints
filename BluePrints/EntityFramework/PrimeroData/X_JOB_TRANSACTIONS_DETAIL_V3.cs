@@ -94,5 +94,9 @@
         public int? Q_WEEKNO { get; set; }
 
         public int? Q_YEAR { get; set; }
+
+        public int? STOCKGROUP { get; set; }
+
+        public int? STOCKGROUP2 { get; set; }
     }
 }
