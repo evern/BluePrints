@@ -24,19 +24,15 @@ namespace BluePrints.Data
         [StringLength(50)]
         public string PONO { get; set; }
 
-        [Required]
         [StringLength(50)]
         public string JOB_CODE { get; set; }
 
-        [Required]
         [StringLength(50)]
         public string DISCIPLINE_CODE { get; set; }
 
-        [Required]
         [StringLength(50)]
         public string COMMODITY_CODE { get; set; }
 
-        [Required]
         [StringLength(50)]
         public string STOCK_CODE { get; set; }
 
