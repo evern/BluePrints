@@ -412,6 +412,15 @@ namespace BluePrints.Common.Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Contractor.
+        /// </summary>
+        internal static string Deliverables_Contractor_Filter {
+            get {
+                return ResourceManager.GetString("Deliverables_Contractor_Filter", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to D.
         /// </summary>
         internal static string DesignPhaseCode {

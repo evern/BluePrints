@@ -596,6 +596,7 @@
     <Compile Include="Common\Misc\CombinedCommodityCode.cs" />
     <Compile Include="Common\Misc\Dashboard.cs" />
     <Compile Include="Common\Misc\Deliverable_Milestone.cs" />
+    <Compile Include="Common\Misc\Extensions.cs" />
     <Compile Include="Common\Misc\GlobalVariables.cs" />
     <Compile Include="Common\Misc\LoginCredentials.cs" />
     <Compile Include="Common\Base\BluePrintsProjectionBase.cs" />

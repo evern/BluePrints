@@ -3,6 +3,7 @@ using BaseModel.DataModel;
 using BaseModel.Misc;
 using BaseModel.ViewModel.Base;
 using BaseModel.ViewModel.Loader;
+using BaseModel.ViewModel.Services;
 using BluePrints.BluePrintsEntitiesDataModel;
 using BluePrints.Common;
 using BluePrints.Common.Base;
@@ -19,7 +20,10 @@ using BluePrints.P6EntitiesDataModel;
 using BluePrints.PrimeroData.PrimeroEntitiesDataModel;
 using BluePrints.Reports;
 using DevExpress.Data;
+using DevExpress.Data.Filtering;
+using DevExpress.DataAccess.Excel;
 using DevExpress.Mvvm;
+using DevExpress.Mvvm.DataAnnotations;
 using DevExpress.Mvvm.POCO;
 using DevExpress.Xpf.Editors;
 using DevExpress.Xpf.Grid;
@@ -28,6 +32,7 @@ using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
+using System.Data;
 using System.IO;
 using System.Linq;
 using System.Windows;
@@ -426,6 +431,140 @@ namespace BluePrints.ViewModels
 
             bluePrintsUnitOfWork.SaveChanges();
             FullRefresh();
+        }
+
+        public bool CanExportContractorDeliverablesToExcel()
+        {
+            return !IsLoading;
+        }
+
+        public IEnumerable<BASELINE_ITEMProgress> ContractorDeliverableList
+        {
+            get
+            {
+                if (ContractorOfficeGuid == null)
+                    return null;
+                else
+                    return Entities.Where(x => x.Entity.Entity.GUID_OFFICE == ContractorOfficeGuid);
+            }
+        }
+
+        public Guid? ContractorOfficeGuid
+        {
+            get
+            {
+                OFFICE findOFFICE = OFFICECollection.FirstOrDefault(x => x.NAME.ToUpper() == BluePrintsResources.Deliverables_Contractor_Filter.ToUpper());
+                if (findOFFICE != null)
+                    return findOFFICE.GUID;
+
+                return null;
+            }
+        }
+
+        [ServiceProperty(Key = "ExportTableViewService")]
+        protected virtual ITableViewService ExportTableViewService { get { return null; } }
+        public int InternalNumSortIndex => 1;
+        public void ExportContractorDeliverablesToExcel()
+        {
+            string ResultPath = string.Empty; 
+            if(ContractorDeliverableList == null)
+            {
+                MessageBoxService.ShowMessage("There are no contractor deliverables, please assign 'Office' column in deliverables list to " + BluePrintsResources.Deliverables_Contractor_Filter, "Error", MessageButton.OK, MessageIcon.Warning);
+                return;
+            }
+
+            this.RaisePropertyChanged(x => x.ContractorDeliverableList);
+            if (FolderBrowserDialogService.ShowDialog())
+            {
+                ResultPath = FolderBrowserDialogService.ResultPath;
+                bool result = ExportTableViewService.ExportToXls(ResultPath + "\\" + loadPROJECT.NUMBER + "_ContractorExport_" + loadPROGRESS.DATA_DATE.ToString("dd-MMM-yy") + ".xlsx", isExcelExportDataAware);
+
+                if (!result)
+                    MessageBoxService.ShowMessage("Export failed because the file is in use", "Warning", MessageButton.OK, MessageIcon.Warning);
+            }
+        }
+
+        public bool CanImportContractorDeliverableFromExcel()
+        {
+            return CanExportContractorDeliverablesToExcel();
+        }
+
+        public string InternalNumberHeaderString => "Internal Number";
+        public string CurrentPercentageHeaderString => "Current %";
+        public void ImportContractorDeliverableFromExcel()
+        {
+            if(FileBrowserDialogService.ShowDialog())
+            {
+                ExcelDataSource excelDataSource = new ExcelDataSource();
+                excelDataSource.Name = "Excel Data Source";
+                excelDataSource.FileName = FileBrowserDialogService.GetFullFileName();
+                ExcelWorksheetSettings worksheetSettings = new ExcelWorksheetSettings("Sheet");
+                excelDataSource.SourceOptions = new ExcelSourceOptions(worksheetSettings);
+                excelDataSource.Fill();
+
+                DataTable excelSourceDataTable = excelDataSource.ToDataTable();
+                if (ContractorDeliverableList == null)
+                {
+                    MessageBoxService.ShowMessage("Could not find any contractor deliverable to import to", "Error", MessageButton.OK, MessageIcon.Warning);
+                    return;
+                }
+
+                List<PROGRESS_ITEM> updateProgress = new List<PROGRESS_ITEM>();
+                List<ErrorMessage> errorMessages = new List<ErrorMessage>();
+                foreach(DataRow dataRow in excelSourceDataTable.Rows)
+                {
+                    if(dataRow[InternalNumberHeaderString] != DBNull.Value && dataRow[CurrentPercentageHeaderString] != DBNull.Value)
+                    {
+                        string internalNumber = dataRow[InternalNumberHeaderString].ToString();
+                        decimal newPercentage;
+                        if (decimal.TryParse(dataRow[CurrentPercentageHeaderString].ToString(), out newPercentage))
+                        {
+                            List<BASELINE_ITEMProgress> findContractorDeliverables = ContractorDeliverableList.Where(x => x.Deliverable_Name == internalNumber).ToList();
+                            if (findContractorDeliverables.Count == 1)
+                            {
+                                BASELINE_ITEMProgress findContractorDeliverable = findContractorDeliverables.First();
+                                string totalEarnedPercentageString = string.Format("{0:P2}.", findContractorDeliverable.Total_Earned_Percentage);
+                                string newPercentageString = string.Format("{0:P2}.", newPercentage);
+                                if (findContractorDeliverable.Total_Earned_Percentage == newPercentage)
+                                    continue;
+
+                                if (findContractorDeliverable.Total_Earned_Percentage > newPercentage)
+                                {
+                                    errorMessages.Add(new ErrorMessage(findContractorDeliverable.Deliverable_Name, "Contractor update % of " + newPercentageString + " is less than current % of " + totalEarnedPercentageString + ", update skipped"));
+                                    continue;
+                                }
+
+                                IEnumerable<PROGRESS_ITEM> newPROGRESS_ITEMS = UpdateContractorDeliverableProgress(findContractorDeliverable, newPercentage);
+                                updateProgress.AddRange(newPROGRESS_ITEMS);
+                                errorMessages.Add(new ErrorMessage(internalNumber, "Updated from " + totalEarnedPercentageString + "% to " + newPercentageString + "%, update success"));
+                            }
+                            else if(findContractorDeliverables.Count == 0)
+                                errorMessages.Add(new ErrorMessage(internalNumber, "Contractor deliverable with internal number: " + internalNumber + " is not found, updated skipped"));
+                            else
+                                errorMessages.Add(new ErrorMessage(internalNumber, "More than a single contractor deliverable with internal number: " + internalNumber + " is found, updated skipped"));
+
+                        }
+                    }
+                }
+
+                PROGRESS_ITEMSCollectionViewModel.BaseBulkSave(updateProgress);
+                if (errorMessages.Count > 0)
+                    ShowErrorMessage("Contractor Deliverable Update Status", errorMessages);
+                else
+                    MessageBoxService.ShowMessage("No contractor deliverable has been progressed, nothing to import", "Status", MessageButton.OK, MessageIcon.Information);
+            }
+        }
+
+        private IEnumerable<PROGRESS_ITEM> UpdateContractorDeliverableProgress(BASELINE_ITEMProgress findContractorDeliverable, decimal newPercentage)
+        {
+            if(findContractorDeliverable != null)
+            {
+                findContractorDeliverable.Total_Earned_Percentage = newPercentage;
+                IEnumerable<PROGRESS_ITEM> newPRORESS_ITEMS = findContractorDeliverable.GetExistingOrNewEditedProgresses(PROGRESS_ITEMSCollectionViewModel.FindActualProjectionByExpression);
+                return newPRORESS_ITEMS;
+            }
+
+            return new List<PROGRESS_ITEM>();
         }
 
         public override IEnumerable<IReportable> ReportingEntities => Entities;

@@ -150,6 +150,7 @@ namespace BluePrints.Common.Base
             loaderCollection.AddLoaderDescription<DEPARTMENT, DEPARTMENT, Guid, IBluePrintsEntitiesUnitOfWork>(bluePrintsUnitOfWorkFactory, x => x.DEPARTMENTS);
             loaderCollection.AddLoaderDescription<DISCIPLINE, DISCIPLINE, Guid, IBluePrintsEntitiesUnitOfWork>(bluePrintsUnitOfWorkFactory, x => x.DISCIPLINES);
             loaderCollection.AddLoaderDescription(bluePrintsUnitOfWorkFactory, x => x.USERS, USERProjectionFunc);
+            loaderCollection.AddLoaderDescription<OFFICE, OFFICE, Guid, IBluePrintsEntitiesUnitOfWork>(bluePrintsUnitOfWorkFactory, x => x.OFFICES);
         }
 
         protected virtual Func<IRepositoryQuery<USER>, IQueryable<USER>> USERProjectionFunc()
@@ -2136,6 +2137,20 @@ namespace BluePrints.Common.Base
                 var collection = GetEntities<DISCIPLINE>();
                 if (collection != null)
                     collection = collection.OrderBy(x => x.NAME);
+                return collection;
+            }
+        }
+
+        public IEnumerable<OFFICE> OFFICECollection
+        {
+            get
+            {
+                var collection = GetEntities<OFFICE>();
+                if (collection != null)
+                {
+                    collection = collection.OrderBy(x => x.NAME);
+                }
+
                 return collection;
             }
         }
