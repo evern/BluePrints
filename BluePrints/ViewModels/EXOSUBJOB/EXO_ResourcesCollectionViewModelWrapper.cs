@@ -98,6 +98,14 @@ namespace BluePrints.ViewModels
             base.AssignCallBacksAndRaisePropertyChange(entities);
         }
 
+        public override void UnifiedNewRowInitializationFromView(ExoResourceProjection projection)
+        {
+            projection.STDCOST = 0;
+            projection.SELLPRICE1 = 0;
+
+            base.UnifiedNewRowInitializationFromView(projection);
+        }
+
         protected override OperationInterceptMode OnBeforeProjectionSaveIsContinue(ExoResourceProjection projection, out bool isNew)
         {
             isNew = false;
@@ -114,6 +122,8 @@ namespace BluePrints.ViewModels
             deleteResource(projection);
             return OperationInterceptMode.SkipOneAndAllDbSaves;
         }
+
+       
 
         protected bool onBeforeEntitySaved(ExoResourceProjection projection)
         {

@@ -1370,6 +1370,8 @@ namespace BluePrints.Common.ViewModel.Utils
         {
             STOCK_ITEM.STOCKGROUP = 2;
             STOCK_ITEM.STATUS = "L";
+            STOCK_ITEM.STDCOST = 0;
+            STOCK_ITEM.SELLPRICE1 = 0;
             STOCK_ITEM.SELLPRICE2 = 0;
             STOCK_ITEM.SELLPRICE3 = 0;
             STOCK_ITEM.SELLPRICE4 = 0;

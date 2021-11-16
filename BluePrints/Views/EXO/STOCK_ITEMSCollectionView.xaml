@@ -59,6 +59,11 @@
                                 <dxe:SpinEditSettings Increment="1" IsFloatValue="False" IsTextEditable="True" Mask="c2" MaskType="Numeric" MaskUseAsDisplayFormat="True" MinValue="0" />
                             </dxg:GridColumn.EditSettings>
                         </dxg:GridColumn>
+                        <dxg:GridColumn FieldName="SELLPRICE1" Header="Sell Price" HeaderToolTip="Sell rate per hour for this resource">
+                            <dxg:GridColumn.EditSettings>
+                                <dxe:SpinEditSettings Increment="1" IsFloatValue="False" IsTextEditable="True" Mask="c2" MaskType="Numeric" MaskUseAsDisplayFormat="True" MinValue="0" />
+                            </dxg:GridColumn.EditSettings>
+                        </dxg:GridColumn>
                         <dxg:GridColumn FieldName="SALES_GL_CODE" Header="Sales GL" >
                             <dxg:GridColumn.EditSettings>
                                 <dxe:ComboBoxEditSettings AutoComplete="True" DisplayMember="NAME" IsTextEditable="True" ItemsSource="{Binding GLACCSCollection}" ValueMember="ACCNO" />

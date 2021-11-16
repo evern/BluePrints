@@ -842,11 +842,11 @@ namespace BluePrints.Common.Projections
             if (stock_item != null)
             {
                 stock_item.ISACTIVE = "Y";
-                stock_item.SELLPRICE1 = sellPrice;
+                stock_item.SELLPRICE1 = sellPrice == null ? 0 : sellPrice;
                 stock_item.SALES_GL_CODE = salesGLCode;
                 stock_item.PURCH_GL_CODE = purchGLCode;
                 stock_item.COS_GL_CODE = cosGLCode;
-                stock_item.STDCOST = stdCost;
+                stock_item.STDCOST = stdCost == null ? 0 : stdCost;
                 stock_item.COSTGROUP = costGroup;
                 stock_item.COSTTYPE = costType;
                 stock_item.X_DEPARTMENT = department;

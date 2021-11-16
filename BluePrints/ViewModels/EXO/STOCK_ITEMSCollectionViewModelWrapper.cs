@@ -8,6 +8,7 @@ using BluePrints.Common.ViewModel.Utils;
 using BluePrints.Data;
 using BluePrints.PrimeroData;
 using BluePrints.PrimeroData.PrimeroEntitiesDataModel;
+using DevExpress.Mvvm;
 using DevExpress.Mvvm.POCO;
 using DevExpress.Xpf.Grid;
 using System;
@@ -81,13 +82,41 @@ namespace BluePrints.ViewModels
             base.UnifiedNewRowInitializationFromView(projection);
         }
 
+        protected override OperationInterceptMode OnBeforeProjectionSaveIsContinue(STOCK_ITEMS projection, out bool isNew)
+        {
+            if (projection.STDCOST == null)
+                projection.STDCOST = 0;
+
+            if (projection.SELLPRICE1 == null)
+                projection.SELLPRICE1 = 0;
+
+            return base.OnBeforeProjectionSaveIsContinue(projection, out isNew);
+        }
+
         public override string UnifiedRowValidation(STOCK_ITEMS projection)
         {
+            if (projection.STDCOST == null)
+                return "Cost cannot be empty";
+
+            if (projection.SELLPRICE1 == null)
+                return "Sell price cannot be empty";
+
             return string.Empty;
         }
 
         public override string UnifiedValueValidation(STOCK_ITEMS projection, string field_name, object new_value, bool isPaste)
         {
+            if (field_name == BindableBase.GetPropertyName(() => new STOCK_ITEMS().STDCOST))
+            {
+                if (new_value == null)
+                    return "Cost cannot be empty";
+            }
+            else if (field_name == BindableBase.GetPropertyName(() => new STOCK_ITEMS().SELLPRICE1))
+            {
+                if (new_value == null)
+                    return "Sell price cannot be empty";
+            }
+
             return string.Empty;
         }
         #endregion

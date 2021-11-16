@@ -51,11 +51,13 @@ namespace BluePrints.Common.Projections
         public int USERPROFILEID { get; set; }
         public int? REPORTS_TO_STAFFNO { get; set; }
 
+        [Required]
         public double? SELLPRICE1 { get; set; }
         public int? SALES_GL_CODE { get; set; }
         public int? PURCH_GL_CODE { get; set; }
         public int? COS_GL_CODE { get; set; }
 
+        [Required]
         public double? STDCOST { get; set; }
 
         public string DEPARTMENT { get; set; }
