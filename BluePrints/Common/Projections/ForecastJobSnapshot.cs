@@ -54,6 +54,18 @@ namespace BluePrints.Common.Projections
             PopulateLookupAttributes(projectLines, FORECAST_JOB_SETTINGCollection);
         }
 
+        public void DisableQueryables()
+        {
+            uniqueForecastJob.DisableQueryables();
+        }
+
+        public void EnableQueryables()
+        {
+            uniqueForecastJob.EnableQueryables();
+            TenderBudget = uniqueForecastJob.TenderBudget;
+            JobErrorMessage = uniqueForecastJob.ErrorMessage;
+        }
+
         public void PopulateLookupAttributes(List<ExoSubJobProjection> projectLines, IEnumerable<FORECAST_JOB_SETTING> FORECAST_JOB_SETTINGCollection)
         {
             if (VariationCode == null || VariationCode == string.Empty)

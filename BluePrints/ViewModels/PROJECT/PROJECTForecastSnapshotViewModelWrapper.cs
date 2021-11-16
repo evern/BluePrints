@@ -31,6 +31,7 @@ using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Data;
 using System.Linq;
+using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Input;
 using System.Windows.Threading;
@@ -421,17 +422,29 @@ namespace BluePrints.ViewModels
 
             bool isBudgetReadOnly = LoginCredentials.getPermissionStatus(DataUtils.GetNameOf(() => NavigationResources.Permission_EXO_ChangeBudget)) == LoginCredentials.PermissionStatus.None;
             //child data table is used to record original value of actuals + committed + remaining values before it is overridden by forecasts
-            foreach (UniqueForecastJob uniqueForecastJob in uniqueForecastJobs)
-            {
-                ForecastJobSnapshot forecastJobSnapshot = ViewModelSource.Create(() => new ForecastJobSnapshot(uniqueForecastJob, projectLines, FORECAST_JOB_SETTINGCollection, FORECAST_EACCollection, COMMODITY_CODECollection, PreviousEACDataDate, isBudgetReadOnly));
-                foreach (DateTime alignedDataDate in alignedDataDateCollection)
+            Parallel.ForEach(uniqueForecastJobs,
+                uniqueForecastJob =>
                 {
-                    ForecastDateSnapshot forecastDateSnapshot = ViewModelSource.Create(() => new ForecastDateSnapshot(uniqueForecastJob.AllCollection, firstViewDate, alignedDataDate.Date, FixedDataDate));
-                    forecastJobSnapshot.DateCosts.Add(forecastDateSnapshot);
-                }
+                    ForecastJobSnapshot forecastJobSnapshot = ViewModelSource.Create(() => new ForecastJobSnapshot(uniqueForecastJob, projectLines, FORECAST_JOB_SETTINGCollection, FORECAST_EACCollection, COMMODITY_CODECollection, PreviousEACDataDate, isBudgetReadOnly));
+                    forecastJobSnapshot.DisableQueryables();
 
-                Jobs.Add(forecastJobSnapshot);
-                DataRow jobRow = updateDataTable(forecastJobSnapshot);
+                    populateCompulsoryDataForForecastJobSnapshot(forecastJobSnapshot);
+                    foreach (DateTime alignedDataDate in alignedDataDateCollection)
+                    {
+                        ForecastDateSnapshot forecastDateSnapshot = ViewModelSource.Create(() => new ForecastDateSnapshot(uniqueForecastJob.AllCollection, firstViewDate, alignedDataDate.Date, FixedDataDate));
+                        forecastJobSnapshot.DateCosts.Add(forecastDateSnapshot);
+                    }
+
+                    Jobs.Add(forecastJobSnapshot);
+                    Common.LoadingScreenManager.Progress();
+                });
+
+            Common.LoadingScreenManager.ShowLoadingScreen(Jobs.Count());
+            Common.LoadingScreenManager.SetMessage("Updating View...");
+            foreach (ForecastJobSnapshot job in Jobs)
+            {
+                job.EnableQueryables();
+                DataRow jobRow = updateDataTable(job);
                 Common.LoadingScreenManager.Progress();
             }
 
@@ -549,7 +562,7 @@ namespace BluePrints.ViewModels
             dataPointsTable.Rows.Add(commodityRow);
             decimal P6TotalCurrentRemainingUnits = 0;
 
-            List<FORECAST> relevantFORECASTS = FORECASTCollection.Where(x => x.SUBJOB_CODE == job.SubJobCode && x.DISCIPLINE_CODE == job.DisciplineCode && x.COMMODITY_CODE == job.CommodityCode && x.VARIATION_CODE == job.VariationCode).ToList();
+            List<FORECAST> relevantFORECASTS = QueryableFORECASTCollection.Where(x => x.SUBJOB_CODE == job.SubJobCode && x.DISCIPLINE_CODE == job.DisciplineCode && x.COMMODITY_CODE == job.CommodityCode && x.VARIATION_CODE == job.VariationCode).ToList();
             foreach (ForecastDateSnapshot dateCost in job.DateCosts)
             {
                 foreach (FORECAST_JOB_HOUR_SNAPSHOT poForecastSnapshot in dateCost.POForecastSnapshots)
@@ -625,7 +638,7 @@ namespace BluePrints.ViewModels
             DataTable childCompareDataTable = (DataTable)p6HoursRow[columnCompare];
             DataRow childCompareP6CostsRow = childCompareDataTable.Rows[Convert.ToInt32(BluePrintsResources.ForecastCompareChild_P6CostRowIndex)];
 
-            List<FORECAST> currentRowFORECASTS = relevantFORECASTS != null ? relevantFORECASTS : FORECASTCollection.Where(x => x.SUBJOB_CODE == job.SubJobCode && x.DISCIPLINE_CODE == job.DisciplineCode && x.COMMODITY_CODE == job.CommodityCode && x.VARIATION_CODE == job.VariationCode).ToList();
+            List<FORECAST> currentRowFORECASTS = relevantFORECASTS != null ? relevantFORECASTS : QueryableFORECASTCollection.Where(x => x.SUBJOB_CODE == job.SubJobCode && x.DISCIPLINE_CODE == job.DisciplineCode && x.COMMODITY_CODE == job.CommodityCode && x.VARIATION_CODE == job.VariationCode).ToList();
 
             decimal P6CurrentRemainingUnits = 0;
             foreach (ForecastDateSnapshot dateCost in job.DateCosts)
@@ -1116,7 +1129,7 @@ namespace BluePrints.ViewModels
                     else
                     {
                         ForecastJobSnapshot job = (ForecastJobSnapshot)row[columnEntity];
-                        if (FORECASTCollection.Any(x => x.SUBJOB_CODE == job.SubJobCode && x.DISCIPLINE_CODE == job.DisciplineCode && x.COMMODITY_CODE == job.CommodityCode && x.VARIATION_CODE == job.VariationCode))
+                        if (QueryableFORECASTCollection.Any(x => x.SUBJOB_CODE == job.SubJobCode && x.DISCIPLINE_CODE == job.DisciplineCode && x.COMMODITY_CODE == job.CommodityCode && x.VARIATION_CODE == job.VariationCode))
                         {
                             if (MessageBoxService.ShowMessage("Any forecast done on this job will be removed and automatically generated based on PF = " + e.Value.ToString() + ", do you wish to continue?", "Warning", MessageButton.OKCancel) == MessageResult.Cancel)
                             {
@@ -1443,6 +1456,7 @@ namespace BluePrints.ViewModels
             if (fieldName == BindableBase.GetPropertyName(() => new ForecastJobSnapshot().Budget))
             {
                 commitBudget(primeroUnitOfWork, bluePrintsUnitOfWork, row, newValue, out errorMessages);
+                refreshJOBCOST_LINES_AUDIT();
                 ForecastJobSnapshot.RefreshErrorMessage(ExoQueries.GetExoSubJobProjection(primeroUnitOfWork, LoadPROJECT.NUMBER, ForecastJobSnapshot.SubJobCode, ForecastJobSnapshot.DisciplineCode, ForecastJobSnapshot.CommodityCode, ForecastJobSnapshot.VariationCode));
                 ForecastJobSnapshot.RaisePropertiesChanged();
             }
@@ -1486,7 +1500,7 @@ namespace BluePrints.ViewModels
                     DataTable compareChildDataTable = (DataTable)compareP6UnitsRemainingRow[columnCompare];
                     DataRow compareChildP6UnitsRemainingRow = compareChildDataTable.Rows[Convert.ToInt32(BluePrintsResources.ForecastCompareChild_P6HourRowIndex)];
 
-                    List<FORECAST> resetFORECASTS = FORECASTCollection.Where(x => x.SUBJOB_CODE == job.SubJobCode && x.DISCIPLINE_CODE == job.DisciplineCode && x.COMMODITY_CODE == job.CommodityCode && x.VARIATION_CODE == job.VariationCode).ToList();
+                    List<FORECAST> resetFORECASTS = QueryableFORECASTCollection.Where(x => x.SUBJOB_CODE == job.SubJobCode && x.DISCIPLINE_CODE == job.DisciplineCode && x.COMMODITY_CODE == job.CommodityCode && x.VARIATION_CODE == job.VariationCode).ToList();
                     foreach (FORECAST resetFORECAST in resetFORECASTS)
                     {
                         resetFORECAST.FORECAST_UNITS = null;
@@ -2079,7 +2093,7 @@ namespace BluePrints.ViewModels
             //this is definitely present because the view is generated from datecost model
             ForecastDateSnapshot dateCost = job.DateCosts.First(x => x.QueryDate == forecastDate.Date);
 
-            IQueryable<FORECAST> findFORECASTS = FORECASTCollection.Where(x => x.FORECAST_DATE >= dateCost.MonthStartDate && x.FORECAST_DATE <= dateCost.MonthEndDate && x.SUBJOB_CODE == job.SubJobCode && x.DISCIPLINE_CODE == job.DisciplineCode && x.COMMODITY_CODE == job.CommodityCode && x.VARIATION_CODE == job.VariationCode);
+            IQueryable<FORECAST> findFORECASTS = QueryableFORECASTCollection.Where(x => x.FORECAST_DATE >= dateCost.MonthStartDate && x.FORECAST_DATE <= dateCost.MonthEndDate && x.SUBJOB_CODE == job.SubJobCode && x.DISCIPLINE_CODE == job.DisciplineCode && x.COMMODITY_CODE == job.CommodityCode && x.VARIATION_CODE == job.VariationCode);
             IQueryable<FORECAST> findCostFORECASTS = findFORECASTS.Where(x => x.FORECAST_TYPE == ForecastDataType.Cost);
             IQueryable<FORECAST> findP6FORECASTS = findFORECASTS.Where(x => x.FORECAST_TYPE == ForecastDataType.P6);
 
@@ -2533,14 +2547,6 @@ namespace BluePrints.ViewModels
             }
         }
 
-        public IQueryable<FORECAST> FORECASTCollection
-        {
-            get
-            {
-                return bluePrintsUnitOfWork.FORECASTS.Where(x => x.GUID_PROJECT == LoadPROJECT.GUID);
-            }
-        }
-
         public IEnumerable<USER> USERCollection
         {
             get
@@ -2611,11 +2617,48 @@ namespace BluePrints.ViewModels
             }
         }
 
+        public IQueryable<FORECAST> QueryableFORECASTCollection
+        {
+            get
+            {
+                return bluePrintsUnitOfWork.FORECASTS.Where(x => x.GUID_PROJECT == LoadPROJECT.GUID);
+            }
+        }
+
+        private List<X_JOBCOST_LINES_AUDIT> jobcostLinesAuditCollection;
+        private List<X_JOBCOST_LINES_AUDIT> JOBCOST_LINES_AUDITCollection
+        {
+            get
+            {
+                if (jobcostLinesAuditCollection == null)
+                    jobcostLinesAuditCollection = queryableJOBCOST_LINES_AUDITCollection.ToList();
+
+                return jobcostLinesAuditCollection;
+            }
+        }
+
+        private void refreshJOBCOST_LINES_AUDIT()
+        {
+            jobcostLinesAuditCollection = null;
+        }
+
         private IQueryable<X_JOBCOST_LINES_AUDIT> queryableJOBCOST_LINES_AUDITCollection
         {
             get
             {
                 return bluePrintsUnitOfWork.X_JOBCOST_LINES_AUDIT.Where(x => x.JOBCODE.Contains(LoadPROJECT.NUMBER));
+            }
+        }
+
+        private List<FORECAST_EAC> tenderBudgetCollection;
+        private List<FORECAST_EAC> TenderBudgetCollection
+        {
+            get
+            {
+                if (tenderBudgetCollection == null)
+                    tenderBudgetCollection = queryableTenderBudgetCollection.ToList();
+
+                return tenderBudgetCollection;
             }
         }
 
@@ -2708,6 +2751,17 @@ namespace BluePrints.ViewModels
             IndirectCollection = filteredForecastJobHourSnapshot.Where(x => x.SNAPSHOT_TYPE == ForecastSnapshotValueType.ForecastIndirect).ToList();
         }
 
+        public void DisableQueryables()
+        {
+            isThreadSafe = false;
+        }
+
+        public void EnableQueryables()
+        {
+            isThreadSafe = true;
+        }
+
+        private bool isThreadSafe;
         private readonly IQueryable<X_JOBCOST_LINES_AUDIT> JOBCOST_LINES_AUDITS;
         private readonly IQueryable<FORECAST_EAC> QueryableTenderBudgetCollection;
         public ExoSubJobProjection ProjectLine { get; set; }
@@ -2774,6 +2828,9 @@ namespace BluePrints.ViewModels
         {
             get
             {
+                if (!isThreadSafe)
+                    return 0;
+
                 if (QueryableTenderBudgetCollection == null)
                     return 0;
 
@@ -2820,6 +2877,9 @@ namespace BluePrints.ViewModels
                 bool isExistInActuals = ActualCollection.Count > 0;
                 bool isExistInRemaining = P6RemainingCollection.Count > 0;
                 string possibleErrorMessage = string.Empty;
+
+                if (!isThreadSafe)
+                    return possibleErrorMessage;
 
                 if(isExistInBudget)
                 {
