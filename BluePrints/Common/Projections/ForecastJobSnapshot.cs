@@ -54,18 +54,6 @@ namespace BluePrints.Common.Projections
             PopulateLookupAttributes(projectLines, FORECAST_JOB_SETTINGCollection);
         }
 
-        public void DisableQueryables()
-        {
-            uniqueForecastJob.DisableQueryables();
-        }
-
-        public void EnableQueryables()
-        {
-            uniqueForecastJob.EnableQueryables();
-            TenderBudget = uniqueForecastJob.TenderBudget;
-            JobErrorMessage = uniqueForecastJob.ErrorMessage;
-        }
-
         public void PopulateLookupAttributes(List<ExoSubJobProjection> projectLines, IEnumerable<FORECAST_JOB_SETTING> FORECAST_JOB_SETTINGCollection)
         {
             if (VariationCode == null || VariationCode == string.Empty)
@@ -83,18 +71,19 @@ namespace BluePrints.Common.Projections
                 IsProductivityFloating = true;
         }
 
-
         public void PopulateCompulsoryDataForForecastJobSnapshot(IEnumerable<FORECAST_EAC> FORECAST_EACCollection, IEnumerable<COMMODITY_CODE> COMMODITY_CODECollection, DateTime previousEACDataDate)
         {
             ForecastHelper.PopulateEAC(this, FORECAST_EACCollection, previousEACDataDate);
             PopulateCommodityCodes(COMMODITY_CODECollection);
         }
 
-        public void RefreshErrorMessage(ExoSubJobProjection projectLine)
+        public void RefreshErrorMessage(ExoSubJobProjection projectLine, IQueryable<X_JOBCOST_LINES_AUDIT> X_JOBCOST_LINES_AUDITQueryable)
         {
             if(uniqueForecastJob != null)
             {
                 uniqueForecastJob.ProjectLine = projectLine;
+                JobErrorMessage = uniqueForecastJob.ErrorMessage;
+                uniqueForecastJob.UpdateErrorMessage(X_JOBCOST_LINES_AUDITQueryable);
                 JobErrorMessage = uniqueForecastJob.ErrorMessage;
             }
         }

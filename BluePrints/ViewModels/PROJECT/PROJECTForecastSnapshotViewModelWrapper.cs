@@ -73,6 +73,7 @@ namespace BluePrints.ViewModels
             P6ErrorIconName = "Warning";
             P6ErrorMessage = "P6 Data Date is less than data date, please change data date in P6 and press 'Refresh P6' so that PF is accurate";
             IsHidden = true;
+            canEditConstructionUncommitted = LoginCredentials.getPermissionStatus(DataUtils.GetNameOf(() => NavigationResources.Permission_ConstructionUncommitted)) == LoginCredentials.PermissionStatus.All;
         }
 
         #region Database Operations
@@ -392,9 +393,16 @@ namespace BluePrints.ViewModels
 
             List<UniqueForecastJob> uniqueForecastJobs = new List<UniqueForecastJob>();
 
+            Common.LoadingScreenManager.ShowLoadingScreen(1);
+            Common.LoadingScreenManager.SetMessage("Loading Tender Budgets/Job History...");
+            refreshTenderBudgetCollection();
+            refreshJOBCOST_LINES_AUDIT();
+            Common.LoadingScreenManager.CloseLoadingScreen();
+
             Common.LoadingScreenManager.ShowLoadingScreen(uniqueForecastJobs.Count());
             Common.LoadingScreenManager.SetMessage("Generating Unique Job Codes...");
-            foreach (string uniqueWBSName in uniqueWBSNames)
+            Parallel.ForEach(uniqueWBSNames,
+            uniqueWBSName =>
             {
                 List<string> delimited = uniqueWBSName.Split(';').ToList();
                 string subJobCode = delimited[0];
@@ -402,9 +410,18 @@ namespace BluePrints.ViewModels
                 string commodityCode = delimited[2];
                 string variationCode = delimited[3];
 
-                uniqueForecastJobs.Add(new UniqueForecastJob(projectLines, subJobCode, disciplineCode, commodityCode, variationCode, queryableJOBCOST_LINES_AUDITCollection, queryableTenderBudgetCollection, FixedDataDate, FORECAST_JOB_HOUR_SNAPSHOTCollection));
+                UniqueForecastJob uniqueForecastJob = new UniqueForecastJob(projectLines, subJobCode, disciplineCode, commodityCode, variationCode, FixedDataDate, FORECAST_JOB_HOUR_SNAPSHOTCollection);
+                uniqueForecastJob.UpdateTenderBudget(TenderBudgetCollection.AsQueryable());
+                uniqueForecastJob.UpdateErrorMessage(JOBCOST_LINES_AUDITCollection.AsQueryable());
+                uniqueForecastJobs.Add(uniqueForecastJob);
                 Common.LoadingScreenManager.Progress();
+            });
+
+            foreach (string uniqueWBSName in uniqueWBSNames)
+            {
+
             }
+
             Common.LoadingScreenManager.CloseLoadingScreen();
 
             Common.LoadingScreenManager.ShowLoadingScreen(uniqueForecastJobs.Count());
@@ -426,8 +443,6 @@ namespace BluePrints.ViewModels
                 uniqueForecastJob =>
                 {
                     ForecastJobSnapshot forecastJobSnapshot = ViewModelSource.Create(() => new ForecastJobSnapshot(uniqueForecastJob, projectLines, FORECAST_JOB_SETTINGCollection, FORECAST_EACCollection, COMMODITY_CODECollection, PreviousEACDataDate, isBudgetReadOnly));
-                    forecastJobSnapshot.DisableQueryables();
-
                     populateCompulsoryDataForForecastJobSnapshot(forecastJobSnapshot);
                     foreach (DateTime alignedDataDate in alignedDataDateCollection)
                     {
@@ -439,12 +454,17 @@ namespace BluePrints.ViewModels
                     Common.LoadingScreenManager.Progress();
                 });
 
+            Common.LoadingScreenManager.ShowLoadingScreen(1);
+            Common.LoadingScreenManager.SetMessage("Loading Forecast Overrides...");
+            List<FORECAST> cachedFORECASTCollection = QueryableFORECASTCollection.ToList();
+            Common.LoadingScreenManager.CloseLoadingScreen();
+
             Common.LoadingScreenManager.ShowLoadingScreen(Jobs.Count());
             Common.LoadingScreenManager.SetMessage("Updating View...");
-            foreach (ForecastJobSnapshot job in Jobs)
+
+            foreach(ForecastJobSnapshot job in Jobs)
             {
-                job.EnableQueryables();
-                DataRow jobRow = updateDataTable(job);
+                DataRow jobRow = updateDataTable(job, cachedFORECASTCollection);
                 Common.LoadingScreenManager.Progress();
             }
 
@@ -472,7 +492,7 @@ namespace BluePrints.ViewModels
             forecastJobSnapshot.IsBudgetReadOnly = LoginCredentials.getPermissionStatus(DataUtils.GetNameOf(() => NavigationResources.Permission_EXO_ChangeBudget)) == LoginCredentials.PermissionStatus.None;
         }
 
-        private DataRow updateDataTable(ForecastJobSnapshot job)
+        private DataRow updateDataTable(ForecastJobSnapshot job, List<FORECAST> CachedFORECASTCollection = null)
         {
             DataRow commodityRow = dataPointsTable.NewRow();
             commodityRow[columnEntity] = job;
@@ -562,7 +582,9 @@ namespace BluePrints.ViewModels
             dataPointsTable.Rows.Add(commodityRow);
             decimal P6TotalCurrentRemainingUnits = 0;
 
-            List<FORECAST> relevantFORECASTS = QueryableFORECASTCollection.Where(x => x.SUBJOB_CODE == job.SubJobCode && x.DISCIPLINE_CODE == job.DisciplineCode && x.COMMODITY_CODE == job.CommodityCode && x.VARIATION_CODE == job.VariationCode).ToList();
+            //use cached data if present so that it's threadsafe
+            IQueryable<FORECAST> loadFORECASTCollection = CachedFORECASTCollection == null ? QueryableFORECASTCollection : CachedFORECASTCollection.AsQueryable();
+            List<FORECAST> relevantFORECASTS = loadFORECASTCollection.Where(x => x.SUBJOB_CODE == job.SubJobCode && x.DISCIPLINE_CODE == job.DisciplineCode && x.COMMODITY_CODE == job.CommodityCode && x.VARIATION_CODE == job.VariationCode).ToList();
             foreach (ForecastDateSnapshot dateCost in job.DateCosts)
             {
                 foreach (FORECAST_JOB_HOUR_SNAPSHOT poForecastSnapshot in dateCost.POForecastSnapshots)
@@ -613,7 +635,35 @@ namespace BluePrints.ViewModels
                     P6TotalCurrentRemainingUnits += dateCost.P6Hours;
                 }
 
-                commodityRow[dateCost.QueryDate.ToString(BluePrintsResources.ColumnDateFormat)] = dateCost.TotalCosts;
+                decimal viewCost = 0;
+                if (forecastCostsOverrides.Count > 0 && dateCost != job.DateCosts.First())
+                {
+                    decimal overrideCosts = forecastCostsOverrides.Sum(x => (decimal)x.FORECAST_UNITS);
+                    viewCost = overrideCosts;
+                }
+                else
+                {
+                    viewCost = dateCost.TotalCosts;
+                }
+
+                //only describe actuals when it's less than data date
+                if (dateCost.QueryDate <= FixedDataDateMonthEnd)
+                {
+                    commodityRow[dateCost.QueryDate.ToString(BluePrintsResources.ColumnDateFormat)] = dateCost.ActualCosts;
+
+                    //describe previously forecasted costs
+                    compareUncommittedRow[dateCost.QueryDate.ToString(BluePrintsResources.ColumnDateFormat)] = forecastHistory.Sum(x => (decimal)x.FORECAST_UNITS);
+                }
+                else
+                {
+                    commodityRow[dateCost.QueryDate.ToString(BluePrintsResources.ColumnDateFormat)] = viewCost;
+
+                    //when there aren't any P6 overrides then parent value will be purely uncommitted value, it's either this or P6 override which isn't categorised as uncommitted
+                    if (forecastCostsOverrides.Count > 0 && forecastUnitsOverrides.Count == 0)
+                        compareUncommittedRow[dateCost.QueryDate.ToString(BluePrintsResources.ColumnDateFormat)] = viewCost - dateCost.TotalCosts;
+                    else
+                        compareUncommittedRow[dateCost.QueryDate.ToString(BluePrintsResources.ColumnDateFormat)] = 0;
+                }
             }
 
             job.P6RemainingUnitsOverride = P6TotalCurrentRemainingUnits;
@@ -1456,8 +1506,7 @@ namespace BluePrints.ViewModels
             if (fieldName == BindableBase.GetPropertyName(() => new ForecastJobSnapshot().Budget))
             {
                 commitBudget(primeroUnitOfWork, bluePrintsUnitOfWork, row, newValue, out errorMessages);
-                refreshJOBCOST_LINES_AUDIT();
-                ForecastJobSnapshot.RefreshErrorMessage(ExoQueries.GetExoSubJobProjection(primeroUnitOfWork, LoadPROJECT.NUMBER, ForecastJobSnapshot.SubJobCode, ForecastJobSnapshot.DisciplineCode, ForecastJobSnapshot.CommodityCode, ForecastJobSnapshot.VariationCode));
+                ForecastJobSnapshot.RefreshErrorMessage(ExoQueries.GetExoSubJobProjection(primeroUnitOfWork, LoadPROJECT.NUMBER, ForecastJobSnapshot.SubJobCode, ForecastJobSnapshot.DisciplineCode, ForecastJobSnapshot.CommodityCode, ForecastJobSnapshot.VariationCode), queryableJOBCOST_LINES_AUDITCollection);
                 ForecastJobSnapshot.RaisePropertiesChanged();
             }
             else if (fieldName == BindableBase.GetPropertyName(() => new ForecastJobSnapshot().TenderBudget))
@@ -2640,6 +2689,7 @@ namespace BluePrints.ViewModels
         private void refreshJOBCOST_LINES_AUDIT()
         {
             jobcostLinesAuditCollection = null;
+            JOBCOST_LINES_AUDITCollection.ToList();
         }
 
         private IQueryable<X_JOBCOST_LINES_AUDIT> queryableJOBCOST_LINES_AUDITCollection
@@ -2660,6 +2710,12 @@ namespace BluePrints.ViewModels
 
                 return tenderBudgetCollection;
             }
+        }
+
+        private void refreshTenderBudgetCollection()
+        {
+            tenderBudgetCollection = null;
+            TenderBudgetCollection.ToList();
         }
 
         private IQueryable<FORECAST_EAC> queryableTenderBudgetCollection
@@ -2727,15 +2783,13 @@ namespace BluePrints.ViewModels
 
     public class UniqueForecastJob
     {
-        public UniqueForecastJob(IEnumerable<ExoSubJobProjection> projectLines, string subJobCode, string disciplineCode, string commodityCode, string variationCode, IQueryable<X_JOBCOST_LINES_AUDIT> JOBCOST_LINES_AUDITCollection, IQueryable<FORECAST_EAC> queryableTenderBudgetCollection, DateTime dataDate, IEnumerable<FORECAST_JOB_HOUR_SNAPSHOT> FORECAST_JOB_HOURByDataDateCollection)
+        public UniqueForecastJob(IEnumerable<ExoSubJobProjection> projectLines, string subJobCode, string disciplineCode, string commodityCode, string variationCode, DateTime dataDate, IEnumerable<FORECAST_JOB_HOUR_SNAPSHOT> FORECAST_JOB_HOURByDataDateCollection)
         {
             SUBJOB_CODE = subJobCode;
             DISCIPLINE_CODE = disciplineCode;
             COMMODITY_CODE = commodityCode;
             VARIATION_CODE = variationCode;
             ProjectLine = projectLines.FirstOrDefault(x => x.SubJobCode == subJobCode && x.DisciplineCode == disciplineCode && x.CommodityCode == commodityCode && x.VariationCode == variationCode);
-            JOBCOST_LINES_AUDITS = JOBCOST_LINES_AUDITCollection;
-            QueryableTenderBudgetCollection = queryableTenderBudgetCollection;
 
             IEnumerable<FORECAST_JOB_HOUR_SNAPSHOT> filteredForecastJobHourSnapshot = FORECAST_JOB_HOURByDataDateCollection.Where(x => x.SUBJOB_CODE == subJobCode && x.DISCIPLINE_CODE == disciplineCode && x.COMMODITY_CODE == commodityCode && x.VARIATION_CODE == variationCode);
             AllCollection = filteredForecastJobHourSnapshot.ToList();
@@ -2751,19 +2805,6 @@ namespace BluePrints.ViewModels
             IndirectCollection = filteredForecastJobHourSnapshot.Where(x => x.SNAPSHOT_TYPE == ForecastSnapshotValueType.ForecastIndirect).ToList();
         }
 
-        public void DisableQueryables()
-        {
-            isThreadSafe = false;
-        }
-
-        public void EnableQueryables()
-        {
-            isThreadSafe = true;
-        }
-
-        private bool isThreadSafe;
-        private readonly IQueryable<X_JOBCOST_LINES_AUDIT> JOBCOST_LINES_AUDITS;
-        private readonly IQueryable<FORECAST_EAC> QueryableTenderBudgetCollection;
         public ExoSubJobProjection ProjectLine { get; set; }
         public string SUBJOB_CODE { get; set; }
         public string DISCIPLINE_CODE { get; set; }
@@ -2824,24 +2865,20 @@ namespace BluePrints.ViewModels
             }
         }
 
-        public decimal TenderBudget
+        public void UpdateTenderBudget(IQueryable<FORECAST_EAC> tenderBudgetCollection)
         {
-            get
-            {
-                if (!isThreadSafe)
-                    return 0;
+            if (tenderBudgetCollection == null || tenderBudgetCollection.Count() == 0)
+                tenderBudget = 0;
 
-                if (QueryableTenderBudgetCollection == null)
-                    return 0;
+            FORECAST_EAC findTenderBudget = tenderBudgetCollection.FirstOrDefault(x => x.SUBJOB_CODE == SUBJOB_CODE && x.DISCIPLINE_CODE == DISCIPLINE_CODE && x.COMMODITY_CODE == COMMODITY_CODE && x.VARIATION_CODE == VARIATION_CODE);
+            if (findTenderBudget != null && findTenderBudget.FORECAST_COSTS != null)
+                tenderBudget = (decimal)findTenderBudget.FORECAST_COSTS;
 
-                FORECAST_EAC findTenderBudget = QueryableTenderBudgetCollection.FirstOrDefault(x => x.SUBJOB_CODE == SUBJOB_CODE && x.DISCIPLINE_CODE == DISCIPLINE_CODE && x.COMMODITY_CODE == COMMODITY_CODE && x.VARIATION_CODE == VARIATION_CODE);
-                if (findTenderBudget != null && findTenderBudget.FORECAST_COSTS != null)
-                    return (decimal)findTenderBudget.FORECAST_COSTS;
-
-                return 0;
-            }
+            tenderBudget = 0;
         }
 
+        private decimal tenderBudget;
+        public decimal TenderBudget => tenderBudget;
         public List<FORECAST_JOB_HOUR_SNAPSHOT> AllCollection { get; set; }
         public List<FORECAST_JOB_HOUR_SNAPSHOT> BudgetCollection { get; set; }
         public List<FORECAST_JOB_HOUR_SNAPSHOT> ActualCollection { get; set; }
@@ -2868,58 +2905,55 @@ namespace BluePrints.ViewModels
             }
         }
 
-        public string ErrorMessage
+        public void UpdateErrorMessage(IQueryable<X_JOBCOST_LINES_AUDIT> JOBCOST_LINES_AUDITS)
         {
-            get
+            bool isExistInBudget = ProjectLine != null;
+            bool isExistInCacheBudget = BudgetCollection.Count > 0;
+            bool isExistInActuals = ActualCollection.Count > 0;
+            bool isExistInRemaining = P6RemainingCollection.Count > 0;
+            string possibleErrorMessage = string.Empty;
+
+            if (isExistInBudget)
             {
-                bool isExistInBudget = ProjectLine != null;
-                bool isExistInCacheBudget = BudgetCollection.Count > 0;
-                bool isExistInActuals = ActualCollection.Count > 0;
-                bool isExistInRemaining = P6RemainingCollection.Count > 0;
-                string possibleErrorMessage = string.Empty;
+                IEnumerable<X_JOBCOST_LINES_AUDIT> findJOBCOST_LINES_AUDIT = JOBCOST_LINES_AUDITS.Where(x => x.JOBCODE == SUBJOB_CODE && x.DISCIPLINE_CODE == DISCIPLINE_CODE && x.COMMODITY_CODE == COMMODITY_CODE && x.VARIATION_CODE == VARIATION_CODE).OrderByDescending(x => x.UPDATED).ThenBy(x => x.CREATED);
+                X_JOBCOST_LINES_AUDIT createdJOBCOST_LINES_AUDIT = findJOBCOST_LINES_AUDIT.FirstOrDefault(x => x.BUDGET_UPDATED == null);
+                X_JOBCOST_LINES_AUDIT updatedJOBCOST_LINES_AUDIT = findJOBCOST_LINES_AUDIT.FirstOrDefault(x => x.BUDGET_UPDATED != null);
 
-                if (!isThreadSafe)
-                    return possibleErrorMessage;
-
-                if(isExistInBudget)
+                if (!isExistInCacheBudget)
                 {
-                    IQueryable<X_JOBCOST_LINES_AUDIT> findJOBCOST_LINES_AUDIT = JOBCOST_LINES_AUDITS.Where(x => x.JOBCODE == SUBJOB_CODE && x.DISCIPLINE_CODE == DISCIPLINE_CODE && x.COMMODITY_CODE == COMMODITY_CODE && x.VARIATION_CODE == VARIATION_CODE).OrderByDescending(x => x.UPDATED).ThenBy(x => x.CREATED);
-                    X_JOBCOST_LINES_AUDIT createdJOBCOST_LINES_AUDIT = findJOBCOST_LINES_AUDIT.FirstOrDefault(x => x.BUDGET_UPDATED == null);
-                    X_JOBCOST_LINES_AUDIT updatedJOBCOST_LINES_AUDIT = findJOBCOST_LINES_AUDIT.FirstOrDefault(x => x.BUDGET_UPDATED != null);
-
-                    if (!isExistInCacheBudget)
-                    {
-                        if (createdJOBCOST_LINES_AUDIT != null && updatedJOBCOST_LINES_AUDIT != null)
-                            possibleErrorMessage = "Job is added since last data refresh\nJob was created by " + createdJOBCOST_LINES_AUDIT.CREATED_BY_USER + "\nBudget was updated by: " + updatedJOBCOST_LINES_AUDIT.BUDGET_UPDATED_BY_USER;
-                        else if(createdJOBCOST_LINES_AUDIT != null)
-                            possibleErrorMessage = "Job is added since last data refresh\nJob was created by " + createdJOBCOST_LINES_AUDIT.CREATED_BY_USER;
-                        else if(updatedJOBCOST_LINES_AUDIT != null)
-                            possibleErrorMessage = "Job is added since last data refresh\nBudget was updated by " + updatedJOBCOST_LINES_AUDIT.BUDGET_UPDATED_BY_USER;
-                        else
-                            possibleErrorMessage = "Job is added since last data refresh\nBudget was created in EXO and not tracked by BluePrints";
-                    }
-                    else if (ProjectLine.ExoBudget != BudgetCosts)
-                    {
-                        possibleErrorMessage = "Exo budget doesn't match previously saved budget of " + BudgetCosts;
-                        if (updatedJOBCOST_LINES_AUDIT != null)
-                            possibleErrorMessage += "\nBudget was updated by " + updatedJOBCOST_LINES_AUDIT.BUDGET_UPDATED_BY_USER;
-                    }
+                    if (createdJOBCOST_LINES_AUDIT != null && updatedJOBCOST_LINES_AUDIT != null)
+                        possibleErrorMessage = "Job is added since last data refresh\nJob was created by " + createdJOBCOST_LINES_AUDIT.CREATED_BY_USER + "\nBudget was updated by: " + updatedJOBCOST_LINES_AUDIT.BUDGET_UPDATED_BY_USER;
+                    else if (createdJOBCOST_LINES_AUDIT != null)
+                        possibleErrorMessage = "Job is added since last data refresh\nJob was created by " + createdJOBCOST_LINES_AUDIT.CREATED_BY_USER;
+                    else if (updatedJOBCOST_LINES_AUDIT != null)
+                        possibleErrorMessage = "Job is added since last data refresh\nBudget was updated by " + updatedJOBCOST_LINES_AUDIT.BUDGET_UPDATED_BY_USER;
+                    else
+                        possibleErrorMessage = "Job is added since last data refresh\nBudget was created in EXO and not tracked by BluePrints";
                 }
-                else
+                else if (ProjectLine.ExoBudget != BudgetCosts)
                 {
-                    if (isExistInActuals && isExistInRemaining)
-                        possibleErrorMessage = "Job have actuals and remaining costs";
-                    else if (isExistInActuals)
-                        possibleErrorMessage = "Job have actuals";
-                    else if (isExistInRemaining)
-                        possibleErrorMessage = "Job have remaining costs";
-
-                    if (possibleErrorMessage != string.Empty)
-                        possibleErrorMessage += " but its not budgeted, please add the budget in Budget Input";
+                    possibleErrorMessage = "Exo budget doesn't match previously saved budget of " + BudgetCosts;
+                    if (updatedJOBCOST_LINES_AUDIT != null)
+                        possibleErrorMessage += "\nBudget was updated by " + updatedJOBCOST_LINES_AUDIT.BUDGET_UPDATED_BY_USER;
                 }
-
-                return possibleErrorMessage;
             }
+            else
+            {
+                if (isExistInActuals && isExistInRemaining)
+                    possibleErrorMessage = "Job have actuals and remaining costs";
+                else if (isExistInActuals)
+                    possibleErrorMessage = "Job have actuals";
+                else if (isExistInRemaining)
+                    possibleErrorMessage = "Job have remaining costs";
+
+                if (possibleErrorMessage != string.Empty)
+                    possibleErrorMessage += " but its not budgeted, please add the budget in Budget Input";
+            }
+
+            errorMessage = possibleErrorMessage;
         }
+
+        string errorMessage;
+        public string ErrorMessage => errorMessage;
     }
 }
