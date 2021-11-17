@@ -172,13 +172,18 @@ namespace BluePrints.ViewModels
             if (MainViewModel == null)
                 return;
 
-            foreach (ExoSubJobProjection designSubjob in designSubjobs)
+            foreach(ExoSubJobProjection entity in Entities)
             {
-                ExoSubJobProjection findSubJob = Entities.FirstOrDefault(x => x.SubJobCode == designSubjob.SubJobCode && x.DisciplineCode == designSubjob.DisciplineCode && x.CommodityCode == designSubjob.CommodityCode);
-                if (findSubJob != null)
+                ExoSubJobProjection findDesignSubJob;
+                if(entity.VariationCode == null || entity.VariationCode == string.Empty)
+                    findDesignSubJob = designSubjobs.FirstOrDefault(x => x.SubJobCode == entity.SubJobCode && x.DisciplineCode == entity.DisciplineCode && x.CommodityCode == entity.CommodityCode && (x.VariationCode == null || x.VariationCode == string.Empty));
+                else
+                    findDesignSubJob = designSubjobs.FirstOrDefault(x => x.SubJobCode == entity.SubJobCode && x.DisciplineCode == entity.DisciplineCode && x.CommodityCode == entity.CommodityCode && x.VariationCode == entity.VariationCode);
+
+                if(findDesignSubJob != null)
                 {
-                    findSubJob.HasBudget = true;
-                    findSubJob.Update();
+                    entity.HasBudget = true;
+                    entity.Update();
                 }
             }
         }
