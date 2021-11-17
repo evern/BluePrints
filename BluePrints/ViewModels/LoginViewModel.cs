@@ -231,7 +231,7 @@ namespace BluePrints.ViewModels
                     if (user.GUID_ROLE == Guid.Empty)
                         return UserAuthenticationResult.RoleNotAssigned;
 
-                    if (user.LEAVE_DATE != null)
+                    if (user.LEAVE_DATE <= DateTime.Now)
                         return UserAuthenticationResult.UsernameInactive;
 
                     if (UserName != null && UserPassword != null)
