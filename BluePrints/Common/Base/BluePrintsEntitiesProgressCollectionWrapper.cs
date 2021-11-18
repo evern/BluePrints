@@ -311,6 +311,9 @@ namespace BluePrints.Common.Base
             if (userIdContexts == null)
             {
                 userIdContexts = new List<UserIdsAuthorisationContext>();
+                if (MainViewModel == null || MainViewModel.Entities == null)
+                    return userIdContexts;
+
                 foreach (var entity in MainViewModel.Entities)
                 {
                     Data.PROJECT project = bluePrintsUOW.PROJECTS.FirstOrDefault(x => x.NUMBER == entity.Project_Number);
