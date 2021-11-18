@@ -26,6 +26,7 @@ using DevExpress.Mvvm.POCO;
 using DevExpress.Xpf.Editors;
 using DevExpress.Xpf.Grid;
 using System;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
@@ -220,6 +221,10 @@ namespace BluePrints.ViewModels
         {
             MainViewModel.OnAfterProjectionSavedCallBack = onAfterEntitySaved;
             MainViewModel.SetParentViewModel(this);
+
+            IsPasteCellLevel = true;
+            this.RaisePropertyChanged(x => x.IsPasteCellLevel);
+            this.RaisePropertyChanged(x => x.SelectMode);
             base.AssignCallBacksAndRaisePropertyChange(entities);
         }
         #endregion
@@ -391,7 +396,7 @@ namespace BluePrints.ViewModels
             foreach (string uniqueWBSName in projectLines.Select(x => x.ForecastViewCode).Distinct())
                 uniqueWBSNames.Add(uniqueWBSName);
 
-            List<UniqueForecastJob> uniqueForecastJobs = new List<UniqueForecastJob>();
+            ConcurrentBag<UniqueForecastJob> uniqueForecastJobs = new ConcurrentBag<UniqueForecastJob>();
 
             Common.LoadingScreenManager.ShowLoadingScreen(1);
             Common.LoadingScreenManager.SetMessage("Loading Tender Budgets/Job History...");
