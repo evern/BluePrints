@@ -385,10 +385,10 @@ namespace BluePrints.ViewModels
 
                 if (perthStaffCollection == null)
                 {
-                    LoadingScreenManager.ShowLoadingScreen(1);
-                    LoadingScreenManager.SetMessage("Loading Perth Active Staffs");
+                    //LoadingScreenManager.ShowLoadingScreen(1);
+                    //LoadingScreenManager.SetMessage("Loading Perth Active Staffs");
                     perthStaffCollection = new List<STAFF>(primeroUnitOfWork.STAFF.Where(x => x.ISACTIVE == "Y").OrderBy(x => x.NAME));
-                    LoadingScreenManager.CloseLoadingScreen();
+                    //LoadingScreenManager.CloseLoadingScreen();
                 }
 
                 return perthStaffCollection;
@@ -405,10 +405,10 @@ namespace BluePrints.ViewModels
 
                 if (pgaStaffCollection == null)
                 {
-                    LoadingScreenManager.ShowLoadingScreen(1);
-                    LoadingScreenManager.SetMessage("Loading Montreal Active Staffs");
+                    //LoadingScreenManager.ShowLoadingScreen(1);
+                    //LoadingScreenManager.SetMessage("Loading Montreal Active Staffs");
                     pgaStaffCollection = new List<STAFF>(pgaUnitOfWork.STAFF.Where(x => x.ISACTIVE == "Y").OrderBy(x => x.NAME));
-                    LoadingScreenManager.CloseLoadingScreen();
+                    //LoadingScreenManager.CloseLoadingScreen();
                 }
 
                 return pgaStaffCollection;
