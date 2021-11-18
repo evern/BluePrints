@@ -44,6 +44,7 @@ namespace BluePrints.Common.Projections
             JobErrorMessage = uniqueForecastJob.ErrorMessage;
             ActualUnits = uniqueForecastJob.ActualCollection.Sum(x => x.FORECAST_QTY);
             ActualCosts = uniqueForecastJob.ActualCollection.Sum(x => x.FORECAST_COST);
+            EarnedUnits = uniqueForecastJob.EarnedCollection.Sum(x => x.FORECAST_QTY);
             PORemainingCosts = uniqueForecastJob.POCollection.Sum(x => x.FORECAST_COST);
             ProgressETC = uniqueForecastJob.ProgressETCCollection.Sum(x => x.FORECAST_QTY);
             ActualCostsPreviousDataDate = uniqueForecastJob.ActualCollection.Sum(x => x.FORECAST_COST);

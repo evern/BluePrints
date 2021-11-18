@@ -445,7 +445,7 @@ namespace BluePrints.ViewModels
                             {
                                 if (LoginCredentials.getPermissionStatus(DataUtils.GetNameOf(() => NavigationResources.Permission_Forecast_MoveDataDate)) == LoginCredentials.PermissionStatus.None)
                                 {
-                                    MessageBoxService.ShowMessage("Cannot move data date backwards because EAC is finalised for " + ((DateTime)lastEACDataDate).ToShortDateString(), "Error", MessageButton.OK, MessageIcon.Exclamation);
+                                    MessageBoxService.ShowMessage("Cannot move data date backwards because EAC is finalised for " + lastEACDataDate.ToShortDateString(), "Error", MessageButton.OK, MessageIcon.Exclamation);
                                     FixedDataDate = LoadDataDate;
                                     this.RaisePropertyChanged(x => x.FixedDataDate);
                                     return;
