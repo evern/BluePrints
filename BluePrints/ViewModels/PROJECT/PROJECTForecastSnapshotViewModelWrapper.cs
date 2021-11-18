@@ -331,7 +331,7 @@ namespace BluePrints.ViewModels
         protected string columnEntity = "Entity";
         protected string columnCompare = "CompareEntities";
         DataTable dataPointsTable = null;
-        List<ForecastJobSnapshot> Jobs = null;
+        ConcurrentBag<ForecastJobSnapshot> Jobs = null;
         protected List<DateTime> alignedDataDateCollection;
         public ForecastSummary ForecastSummary { get; set; }
         protected JOBCOST_HDR masterJob;
@@ -380,7 +380,7 @@ namespace BluePrints.ViewModels
         private void updateDataPointsTable()
         {
             dataPointsTable = new DataTable();
-            Jobs = new List<ForecastJobSnapshot>();
+            Jobs = new ConcurrentBag<ForecastJobSnapshot>();
             GridControlService.GridControl?.BeginDataUpdate();
 
 
@@ -521,6 +521,7 @@ namespace BluePrints.ViewModels
             p6UnitsForecastJobSnapshot.DropDownPhase = "P6 Hours";
             p6UnitsForecastJobSnapshot.DateCosts = job.DateCosts;
             p6UnitsForecastJobSnapshot.ExoJob = job.ExoJob;
+            p6UnitsForecastJobSnapshot.IsP6HoursRow = true;
 
             compareP6UnitsRemainingRow[columnEntity] = p6UnitsForecastJobSnapshot;
             compareP6CostsRemainingRow[columnEntity] = ViewModelSource.Create(() => new ForecastJobSnapshot() { DropDownPhase = "P6 $", CompareMask = "c0" });
@@ -2551,6 +2552,7 @@ namespace BluePrints.ViewModels
 
         public void RefreshAllForecastData()
         {
+            IsLoading = true;
             Common.LoadingScreenManager.ShowLoadingScreen(1);
             //Common.LoadingScreenManager.SetMessage("Fetching P6 remaining data...");
             //await BluePrintsContextHelper.RefreshDeliverablesRemainingDataPointsByProject(LoadPROJECT.NUMBER, true);
@@ -2562,6 +2564,7 @@ namespace BluePrints.ViewModels
             BluePrintsContextHelper.RefreshAllForecastData(LoadPROJECT.NUMBER, FixedDataDate);
             Common.LoadingScreenManager.CloseLoadingScreen();
 
+            resetIsLoading();
             FullRefresh();
         }
 
