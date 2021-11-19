@@ -971,10 +971,10 @@ namespace BluePrints.ViewModels
                         columns.Add(new ColumnDescriptor() { FieldName = columnFieldName, ReadOnly = false, Header = columnFieldName, Fixed = FixedStyle.None, Width = 60, Settings = SettingsType.ForecastChild });
                     else
                         columns.Add(new ColumnDescriptor() { FieldName = columnFieldName, ReadOnly = false, Header = columnFieldName, Fixed = FixedStyle.None, Width = 60, Settings = SettingsType.ForecastFuture });
-
-                    if (!isChild)
-                        summaries.Add(new SummaryDescriptor() { FieldName = columnFieldName, DisplayFormat = "c0", Type = SummaryItemType.Sum });
                 }
+
+                if (!isChild)
+                    summaries.Add(new SummaryDescriptor() { FieldName = columnFieldName, DisplayFormat = "c0", Type = SummaryItemType.Sum });
             }
         }
         #endregion
@@ -2822,7 +2822,7 @@ namespace BluePrints.ViewModels
                 if (BudgetCollection.Count == 0)
                     return 0;
 
-                return BudgetCollection.First().PROJECT_BUDGET;
+                return BudgetCollection.Sum(x => x.PROJECT_BUDGET);
             }
         }
 

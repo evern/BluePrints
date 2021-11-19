@@ -418,7 +418,7 @@ namespace BluePrints.ViewModels
             return calcTypes;
         }
 
-        public DateTime FixedDataDateMonthEnd => new DateTime(((DateTime)FixedDataDate).Year, ((DateTime)FixedDataDate).Month, 1).AddMonths(1).AddDays(-1);
+        public DateTime FixedDataDateMonthEnd => FixedDataDate == null ? DateTime.Now : new DateTime(((DateTime)FixedDataDate).Year, ((DateTime)FixedDataDate).Month, 1).AddMonths(1).AddDays(-1);
         private DateTime? firstDataPointsDate { get; set; }
         public DateTime? LoadDataDate { get; set; }
         public override DateTime? FixedDataDate { get; set; }
