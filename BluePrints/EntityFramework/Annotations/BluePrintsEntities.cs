@@ -25,7 +25,7 @@ namespace BluePrints.Data
             applicableContext.Add("BluePrints.Data.BluePrintsEntities");
             AddInterceptor(new SoftDeleteInterceptor("DELETED", "DELETEDBY", () => LoginCredentials.CurrentUserGuid, applicableContext));
             AddInterceptor(new CreatedAndUpdatedDateInterceptor("CREATED", "CREATEDBY", "UPDATED", "UPDATEDBY", () => LoginCredentials.CurrentUserGuid, applicableContext)); 
-            SetExecutionStrategy("System.Data.SqlClient", () => new SqlAzureExecutionStrategy());
+            //SetExecutionStrategy("System.Data.SqlClient", () => new SqlAzureExecutionStrategy());
         }
     }
 
@@ -219,21 +219,20 @@ namespace BluePrints.Data
             }
         }
 
-        public static async void RefreshAllForecastData(string projectNumber, DateTime dataDate)
+        public static void RefreshAllForecastData(string projectNumber, DateTime dataDate)
         {
 #pragma warning disable CS4014 // Because this call is not awaited, execution of the current method continues before the call is completed
-            await Task.WhenAll(RefreshForecastBudgetByProject(projectNumber, dataDate),
-                RefreshForecastActualsByProject(projectNumber, dataDate),
-                RefreshForecastPOByProject(projectNumber, dataDate),
-                RefreshForecastIndirectByProject(projectNumber, dataDate),
-                RefreshEarnedByProject(projectNumber, dataDate),
-                RefreshForecastP6ByProject(projectNumber, dataDate, true),
-                RefreshForecastP6ByProject(projectNumber, dataDate, false)
-                );
+            RefreshForecastBudgetByProject(projectNumber, dataDate);
+            RefreshForecastActualsByProject(projectNumber, dataDate);
+            RefreshForecastPOByProject(projectNumber, dataDate);
+            RefreshForecastIndirectByProject(projectNumber, dataDate);
+            RefreshEarnedByProject(projectNumber, dataDate);
+            RefreshForecastP6ByProject(projectNumber, dataDate, true);
+            RefreshForecastP6ByProject(projectNumber, dataDate, false);
 #pragma warning restore CS4014 // Because this call is not awaited, execution of the current method continues before the call is completed
         }
 
-        public static async Task RefreshForecastBudgetByProject(string projectNumber, DateTime dataDate)
+        public static void RefreshForecastBudgetByProject(string projectNumber, DateTime dataDate)
         {
             using (BluePrintsEntities dbContext = new BluePrintsEntities())
             {
@@ -241,12 +240,11 @@ namespace BluePrints.Data
                 SqlParameter projectNumberParameter = new SqlParameter("@PROJECT_NUMBER", projectNumber);
                 SqlParameter dataDateParameter = new SqlParameter("@DATA_DATE", dataDate);
                 SqlParameter userGuidParameter = new SqlParameter("@USER_GUID", LoginCredentials.CurrentUserGuid);
-                Task<int> returnTask = dbContext.Database.ExecuteSqlCommandAsync("RefreshForecastBudget @PROJECT_NUMBER, @DATA_DATE, @USER_GUID", projectNumberParameter, dataDateParameter, userGuidParameter);
-                var i = await returnTask;
+                dbContext.Database.ExecuteSqlCommand("RefreshForecastBudget @PROJECT_NUMBER, @DATA_DATE, @USER_GUID", projectNumberParameter, dataDateParameter, userGuidParameter);
             }
         }
 
-        public static async Task RefreshForecastActualsByProject(string projectNumber, DateTime dataDate)
+        public static void RefreshForecastActualsByProject(string projectNumber, DateTime dataDate)
         {
             using (BluePrintsEntities dbContext = new BluePrintsEntities())
             {
@@ -254,12 +252,11 @@ namespace BluePrints.Data
                 SqlParameter projectNumberParameter = new SqlParameter("@PROJECT_NUMBER", projectNumber);
                 SqlParameter dataDateParameter = new SqlParameter("@DATA_DATE", dataDate);
                 SqlParameter userGuidParameter = new SqlParameter("@USER_GUID", LoginCredentials.CurrentUserGuid);
-                Task<int> returnTask = dbContext.Database.ExecuteSqlCommandAsync("RefreshForecastActuals @PROJECT_NUMBER, @DATA_DATE, @USER_GUID", projectNumberParameter, dataDateParameter, userGuidParameter);
-                var i = await returnTask;
+                dbContext.Database.ExecuteSqlCommand("RefreshForecastActuals @PROJECT_NUMBER, @DATA_DATE, @USER_GUID", projectNumberParameter, dataDateParameter, userGuidParameter);
             }
         }
 
-        public static async Task RefreshForecastIndirectByProject(string projectNumber, DateTime dataDate)
+        public static void RefreshForecastIndirectByProject(string projectNumber, DateTime dataDate)
         {
             using (BluePrintsEntities dbContext = new BluePrintsEntities())
             {
@@ -267,12 +264,11 @@ namespace BluePrints.Data
                 SqlParameter projectNumberParameter = new SqlParameter("@PROJECT_NUMBER", projectNumber);
                 SqlParameter dataDateParameter = new SqlParameter("@DATA_DATE", dataDate);
                 SqlParameter userGuidParameter = new SqlParameter("@USER_GUID", LoginCredentials.CurrentUserGuid);
-                Task<int> returnTask = dbContext.Database.ExecuteSqlCommandAsync("RefreshForecastIndirects @PROJECT_NUMBER, @DATA_DATE, @USER_GUID", projectNumberParameter, dataDateParameter, userGuidParameter);
-                var i = await returnTask;
+                dbContext.Database.ExecuteSqlCommand("RefreshForecastIndirects @PROJECT_NUMBER, @DATA_DATE, @USER_GUID", projectNumberParameter, dataDateParameter, userGuidParameter);
             }
         }
 
-        public static async Task RefreshEarnedByProject(string projectNumber, DateTime dataDate)
+        public static void RefreshEarnedByProject(string projectNumber, DateTime dataDate)
         {
             using (BluePrintsEntities dbContext = new BluePrintsEntities())
             {
@@ -280,12 +276,11 @@ namespace BluePrints.Data
                 SqlParameter projectNumberParameter = new SqlParameter("@PROJECT_NUMBER", projectNumber);
                 SqlParameter dataDateParameter = new SqlParameter("@DATA_DATE", dataDate);
                 SqlParameter userGuidParameter = new SqlParameter("@USER_GUID", LoginCredentials.CurrentUserGuid);
-                Task<int> returnTask = dbContext.Database.ExecuteSqlCommandAsync("RefreshEarned @PROJECT_NUMBER, @DATA_DATE, @USER_GUID", projectNumberParameter, dataDateParameter, userGuidParameter);
-                var i = await returnTask;
+                dbContext.Database.ExecuteSqlCommand("RefreshEarned @PROJECT_NUMBER, @DATA_DATE, @USER_GUID", projectNumberParameter, dataDateParameter, userGuidParameter);
             }
         }
 
-        public static async Task RefreshForecastP6ByProject(string projectNumber, DateTime dataDate, bool isPlanned)
+        public static void RefreshForecastP6ByProject(string projectNumber, DateTime dataDate, bool isPlanned)
         {
             using (BluePrintsEntities dbContext = new BluePrintsEntities())
             {
@@ -294,12 +289,11 @@ namespace BluePrints.Data
                 SqlParameter dataDateParameter = new SqlParameter("@DATA_DATE", dataDate);
                 SqlParameter isPlannedParameter = new SqlParameter("@IS_PLANNED", isPlanned);
                 SqlParameter userGuidParameter = new SqlParameter("@USER_GUID", LoginCredentials.CurrentUserGuid);
-                Task<int> returnTask = dbContext.Database.ExecuteSqlCommandAsync("RefreshForecastP6s @PROJECT_NUMBER, @DATA_DATE, @IS_PLANNED, @USER_GUID", projectNumberParameter, dataDateParameter, isPlannedParameter, userGuidParameter);
-                var i = await returnTask;
+                dbContext.Database.ExecuteSqlCommand("RefreshForecastP6s @PROJECT_NUMBER, @DATA_DATE, @IS_PLANNED, @USER_GUID", projectNumberParameter, dataDateParameter, isPlannedParameter, userGuidParameter);
             }
         }
 
-        public static async Task RefreshForecastPOByProject(string projectNumber, DateTime dataDate)
+        public static void RefreshForecastPOByProject(string projectNumber, DateTime dataDate)
         {
             using (BluePrintsEntities dbContext = new BluePrintsEntities())
             {
@@ -307,12 +301,11 @@ namespace BluePrints.Data
                 SqlParameter projectNumberParameter = new SqlParameter("@PROJECT_NUMBER", projectNumber);
                 SqlParameter dataDateParameter = new SqlParameter("@DATA_DATE", dataDate);
                 SqlParameter userGuidParameter = new SqlParameter("@USER_GUID", LoginCredentials.CurrentUserGuid);
-                Task<int> returnTask = dbContext.Database.ExecuteSqlCommandAsync("RefreshForecastPOs @PROJECT_NUMBER, @DATA_DATE, @USER_GUID", projectNumberParameter, dataDateParameter, userGuidParameter);
-                var i = await returnTask;
+                dbContext.Database.ExecuteSqlCommand("RefreshForecastPOs @PROJECT_NUMBER, @DATA_DATE, @USER_GUID", projectNumberParameter, dataDateParameter, userGuidParameter);
             }
         }
 
-        public static async Task RefreshProgressETCByProject(string projectNumber, DateTime dataDate)
+        public static void RefreshProgressETCByProject(string projectNumber, DateTime dataDate)
         {
             using (BluePrintsEntities dbContext = new BluePrintsEntities())
             {
@@ -320,8 +313,7 @@ namespace BluePrints.Data
                 SqlParameter projectNumberParameter = new SqlParameter("@PROJECT_NUMBER", projectNumber);
                 SqlParameter dataDateParameter = new SqlParameter("@DATA_DATE", dataDate);
                 SqlParameter userGuidParameter = new SqlParameter("@USER_GUID", LoginCredentials.CurrentUserGuid);
-                Task<int> returnTask = dbContext.Database.ExecuteSqlCommandAsync("RefreshForecastETC @PROJECT_NUMBER, @DATA_DATE, @USER_GUID", projectNumberParameter, dataDateParameter, userGuidParameter);
-                var i = await returnTask;
+                dbContext.Database.ExecuteSqlCommand("RefreshForecastETC @PROJECT_NUMBER, @DATA_DATE, @USER_GUID", projectNumberParameter, dataDateParameter, userGuidParameter);
             }
         }
     }
