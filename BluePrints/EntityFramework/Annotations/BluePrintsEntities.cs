@@ -9,6 +9,7 @@ using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations.Schema;
 using System.Data.Entity;
 using System.Data.Entity.Core.Objects;
+using System.Data.Entity.SqlServer;
 using System.Data.SqlClient;
 using System.Linq;
 using System.Threading;
@@ -23,7 +24,8 @@ namespace BluePrints.Data
             List<string> applicableContext = new List<string>();
             applicableContext.Add("BluePrints.Data.BluePrintsEntities");
             AddInterceptor(new SoftDeleteInterceptor("DELETED", "DELETEDBY", () => LoginCredentials.CurrentUserGuid, applicableContext));
-            AddInterceptor(new CreatedAndUpdatedDateInterceptor("CREATED", "CREATEDBY", "UPDATED", "UPDATEDBY", () => LoginCredentials.CurrentUserGuid, applicableContext));
+            AddInterceptor(new CreatedAndUpdatedDateInterceptor("CREATED", "CREATEDBY", "UPDATED", "UPDATEDBY", () => LoginCredentials.CurrentUserGuid, applicableContext)); 
+            SetExecutionStrategy("System.Data.SqlClient", () => new SqlAzureExecutionStrategy());
         }
     }
 

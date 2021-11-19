@@ -383,8 +383,9 @@ namespace BluePrints.ViewModels
             Jobs = new ConcurrentBag<ForecastJobSnapshot>();
             GridControlService.GridControl?.BeginDataUpdate();
 
-
-            alignedDataDateCollection = generateDates();
+            DateTime actualsEarliestDate = FORECAST_JOB_HOUR_SNAPSHOTCollection.Where(x => x.SNAPSHOT_TYPE == ForecastSnapshotValueType.Actual && x.FORECAST_DATE != null).Min(x => (DateTime)x.FORECAST_DATE);
+            DateTime firstDataPointDate = isShowActualsHistory ? actualsEarliestDate : FixedDataDate;
+            alignedDataDateCollection = generateDates(firstDataPointDate);
             InitializeColumnSource(ParentViewColumns, ParentSummaries, alignedDataDateCollection, false);
             InitializeColumnSource(ChildViewColumns, ChildSummaries, alignedDataDateCollection, true);
 
@@ -516,14 +517,7 @@ namespace BluePrints.ViewModels
             compareP6CostsRemainingRow = compareDataTable.NewRow();
             compareP6UnitsRemainingRow = compareDataTable.NewRow();
 
-            ForecastJobSnapshot p6UnitsForecastJobSnapshot = ViewModelSource.Create(() => new ForecastJobSnapshot());
-            DataUtils.ShallowCopy(p6UnitsForecastJobSnapshot, job);
-            p6UnitsForecastJobSnapshot.DropDownPhase = "P6 Hours";
-            p6UnitsForecastJobSnapshot.DateCosts = job.DateCosts;
-            p6UnitsForecastJobSnapshot.ExoJob = job.ExoJob;
-            p6UnitsForecastJobSnapshot.IsP6HoursRow = true;
-
-            compareP6UnitsRemainingRow[columnEntity] = p6UnitsForecastJobSnapshot;
+            compareP6UnitsRemainingRow[columnEntity] = ViewModelSource.Create(() => new ForecastJobSnapshot() { DropDownPhase = "P6 Hours", CompareMask = "n2", ExoJob = job.ExoJob, DateCosts = job.DateCosts, IsP6HoursRow = true, P6RemainingUnits = job.P6RemainingUnits, P6RemainingCosts = job.P6RemainingCosts });
             compareP6CostsRemainingRow[columnEntity] = ViewModelSource.Create(() => new ForecastJobSnapshot() { DropDownPhase = "P6 $", CompareMask = "c0" });
 
             //update discipline desc
@@ -813,12 +807,12 @@ namespace BluePrints.ViewModels
             return 0.00m;
         }
 
-        private List<DateTime> generateDates()
+        private List<DateTime> generateDates(DateTime firstDataPointDate)
         {
             List<FORECAST_JOB_HOUR_SNAPSHOT> snapShots = FORECAST_JOB_HOUR_SNAPSHOTCollection.Where(x => x.FORECAST_DATE != null).ToList();
             DateTime endDateToGenerate = snapShots.Count == 0 ? DateTime.Now.AddMonths(1) : snapShots.Max(x => (DateTime)x.FORECAST_DATE);
             DateTime firstDateToGenerateFrom = new DateTime();
-            firstDateToGenerateFrom = FixedDataDate;
+            firstDateToGenerateFrom = firstDataPointDate;
 
             if (IsWeeks)
                 return ChronologicalHelpers.GenerateEndDatesCollection(firstDateToGenerateFrom, endDateToGenerate, true);
@@ -965,7 +959,12 @@ namespace BluePrints.ViewModels
             foreach (DateTime alignedDate in alignedDates)
             {
                 string columnFieldName = alignedDate.Date.ToString(BluePrintsResources.ColumnDateFormat);
-
+                if (alignedDate <= FixedDataDateMonthEnd)
+                {
+                    //do not show actuals
+                    if (isShowActualsHistory)
+                        columns.Add(new ColumnDescriptor() { FieldName = columnFieldName, ReadOnly = true, Header = columnFieldName, Fixed = FixedStyle.None, Width = 60, Settings = SettingsType.ForecastPast });
+                }
                 if (alignedDate > FixedDataDateMonthEnd)
                 {
                     if (isChild)
