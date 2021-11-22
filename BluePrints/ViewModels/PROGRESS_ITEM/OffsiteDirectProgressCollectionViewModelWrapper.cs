@@ -477,7 +477,7 @@ namespace BluePrints.ViewModels
             if (FolderBrowserDialogService.ShowDialog())
             {
                 ResultPath = FolderBrowserDialogService.ResultPath;
-                bool result = ExportTableViewService.ExportToXls(ResultPath + "\\" + loadPROJECT.NUMBER + "_ContractorExport_" + loadPROGRESS.DATA_DATE.ToString("dd-MMM-yy") + ".xlsx", isExcelExportDataAware);
+                bool result = ExportTableViewService.ExportToXls(ResultPath + "\\" + loadPROJECT.NUMBER + "_ContractorExport_" + DataDate.Date.ToString(BluePrintsResources.ColumnDateFormat) + ".xlsx", isExcelExportDataAware);
 
                 if (!result)
                     MessageBoxService.ShowMessage("Export failed because the file is in use", "Warning", MessageButton.OK, MessageIcon.Warning);
@@ -493,65 +493,89 @@ namespace BluePrints.ViewModels
         public string CurrentPercentageHeaderString => "Current %";
         public void ImportContractorDeliverableFromExcel()
         {
-            if(FileBrowserDialogService.ShowDialog())
+            FileBrowserDialogService.Filter = "Excel Files (.xls)|*.xlsx|All Files (*.*)|*.*";
+            if (FileBrowserDialogService.ShowDialog())
             {
-                ExcelDataSource excelDataSource = new ExcelDataSource();
-                excelDataSource.Name = "Excel Data Source";
-                excelDataSource.FileName = FileBrowserDialogService.GetFullFileName();
-                ExcelWorksheetSettings worksheetSettings = new ExcelWorksheetSettings("Sheet");
-                excelDataSource.SourceOptions = new ExcelSourceOptions(worksheetSettings);
-                excelDataSource.Fill();
+                string fullFileName = FileBrowserDialogService.GetFullFileName();
+                string[] fileNamesSplit = fullFileName.Split('_');
+                string dateString = fileNamesSplit.Last();
+                dateString = dateString.Split('.').First();
+                DateTime importSheetDate;
 
-                DataTable excelSourceDataTable = excelDataSource.ToDataTable();
-                if (ContractorDeliverableList == null)
+                if(DateTime.TryParse(dateString, out importSheetDate))
                 {
-                    MessageBoxService.ShowMessage("Could not find any contractor deliverable to import to", "Error", MessageButton.OK, MessageIcon.Warning);
-                    return;
-                }
-
-                List<PROGRESS_ITEM> updateProgress = new List<PROGRESS_ITEM>();
-                List<ErrorMessage> errorMessages = new List<ErrorMessage>();
-                foreach(DataRow dataRow in excelSourceDataTable.Rows)
-                {
-                    if(dataRow[InternalNumberHeaderString] != DBNull.Value && dataRow[CurrentPercentageHeaderString] != DBNull.Value)
+                    if(importSheetDate.Date == DataDate.Date)
                     {
-                        string internalNumber = dataRow[InternalNumberHeaderString].ToString();
-                        decimal newPercentage;
-                        if (decimal.TryParse(dataRow[CurrentPercentageHeaderString].ToString(), out newPercentage))
+                        ExcelDataSource excelDataSource = new ExcelDataSource();
+                        excelDataSource.Name = "Excel Data Source";
+                        excelDataSource.FileName = FileBrowserDialogService.GetFullFileName();
+                        ExcelWorksheetSettings worksheetSettings = new ExcelWorksheetSettings("Sheet");
+                        excelDataSource.SourceOptions = new ExcelSourceOptions(worksheetSettings);
+                        excelDataSource.Fill();
+
+                        DataTable excelSourceDataTable = excelDataSource.ToDataTable();
+                        if (ContractorDeliverableList == null)
                         {
-                            List<BASELINE_ITEMProgress> findContractorDeliverables = ContractorDeliverableList.Where(x => x.Deliverable_Name == internalNumber).ToList();
-                            if (findContractorDeliverables.Count == 1)
-                            {
-                                BASELINE_ITEMProgress findContractorDeliverable = findContractorDeliverables.First();
-                                string totalEarnedPercentageString = string.Format("{0:P2}.", findContractorDeliverable.Total_Earned_Percentage);
-                                string newPercentageString = string.Format("{0:P2}.", newPercentage);
-                                if (findContractorDeliverable.Total_Earned_Percentage == newPercentage)
-                                    continue;
-
-                                if (findContractorDeliverable.Total_Earned_Percentage > newPercentage)
-                                {
-                                    errorMessages.Add(new ErrorMessage(findContractorDeliverable.Deliverable_Name, "Contractor update % of " + newPercentageString + " is less than current % of " + totalEarnedPercentageString + ", update skipped"));
-                                    continue;
-                                }
-
-                                IEnumerable<PROGRESS_ITEM> newPROGRESS_ITEMS = UpdateContractorDeliverableProgress(findContractorDeliverable, newPercentage);
-                                updateProgress.AddRange(newPROGRESS_ITEMS);
-                                errorMessages.Add(new ErrorMessage(internalNumber, "Updated from " + totalEarnedPercentageString + "% to " + newPercentageString + "%, update success"));
-                            }
-                            else if(findContractorDeliverables.Count == 0)
-                                errorMessages.Add(new ErrorMessage(internalNumber, "Contractor deliverable with internal number: " + internalNumber + " is not found, updated skipped"));
-                            else
-                                errorMessages.Add(new ErrorMessage(internalNumber, "More than a single contractor deliverable with internal number: " + internalNumber + " is found, updated skipped"));
-
+                            MessageBoxService.ShowMessage("Could not find any contractor deliverable to import to", "Error", MessageButton.OK, MessageIcon.Warning);
+                            return;
                         }
+
+                        List<PROGRESS_ITEM> updateProgress = new List<PROGRESS_ITEM>();
+                        List<ErrorMessage> errorMessages = new List<ErrorMessage>();
+                        foreach (DataRow dataRow in excelSourceDataTable.Rows)
+                        {
+                            if (dataRow[InternalNumberHeaderString] != DBNull.Value && dataRow[CurrentPercentageHeaderString] != DBNull.Value)
+                            {
+                                string internalNumber = dataRow[InternalNumberHeaderString].ToString();
+                                decimal newPercentage;
+                                if (decimal.TryParse(dataRow[CurrentPercentageHeaderString].ToString(), out newPercentage))
+                                {
+                                    List<BASELINE_ITEMProgress> findDeliverable = MainViewModel.Entities.Where(x => x.Deliverable_Name == internalNumber).ToList();
+                                    if (findDeliverable.Count == 1)
+                                    {
+                                        BASELINE_ITEMProgress findContractorDeliverable = findDeliverable.First();
+                                        string totalEarnedPercentageString = string.Format("{0:P2}.", findContractorDeliverable.Total_Earned_Percentage);
+                                        string newPercentageString = string.Format("{0:P2}.", newPercentage);
+                                        if (findContractorDeliverable.Total_Earned_Percentage == newPercentage)
+                                            continue;
+
+                                        if (findContractorDeliverable.Total_Earned_Percentage > newPercentage)
+                                        {
+                                            errorMessages.Add(new ErrorMessage(findContractorDeliverable.Deliverable_Name, "Contractor update % of " + newPercentageString + " is less than current % of " + totalEarnedPercentageString + ", update skipped"));
+                                            continue;
+                                        }
+
+                                        IEnumerable<PROGRESS_ITEM> newPROGRESS_ITEMS = UpdateContractorDeliverableProgress(findContractorDeliverable, newPercentage);
+                                        updateProgress.AddRange(newPROGRESS_ITEMS);
+                                        errorMessages.Add(new ErrorMessage(internalNumber, "Updated from " + totalEarnedPercentageString + "% to " + newPercentageString + "%, update success"));
+                                    }
+                                    else if (findDeliverable.Count == 0)
+                                    {
+                                        errorMessages.Add(new ErrorMessage(internalNumber, "Contractor deliverable with internal number: " + internalNumber + " is not found, updated skipped"));
+
+                                    }
+                                    else
+                                        errorMessages.Add(new ErrorMessage(internalNumber, "More than a single contractor deliverable with internal number: " + internalNumber + " is found, updated skipped"));
+
+                                }
+                            }
+                        }
+
+                        PROGRESS_ITEMSCollectionViewModel.BaseBulkSave(updateProgress);
+                        if (errorMessages.Count > 0)
+                            ShowErrorMessage("Contractor Deliverable Update Status", errorMessages);
+                        else
+                            MessageBoxService.ShowMessage("No contractor deliverable has been progressed, nothing to import", "Status", MessageButton.OK, MessageIcon.Information);
+                    }
+                    else
+                    {
+                        MessageBoxService.ShowMessage("Import excel workbook data date of " + importSheetDate.Date.ToShortDateString() + " is less than current data date of " + DataDate.Date.ToShortDateString(), "Import Error", MessageButton.OK, MessageIcon.Warning);
                     }
                 }
-
-                PROGRESS_ITEMSCollectionViewModel.BaseBulkSave(updateProgress);
-                if (errorMessages.Count > 0)
-                    ShowErrorMessage("Contractor Deliverable Update Status", errorMessages);
                 else
-                    MessageBoxService.ShowMessage("No contractor deliverable has been progressed, nothing to import", "Status", MessageButton.OK, MessageIcon.Information);
+                {
+                    MessageBoxService.ShowMessage("Data date cannot be determined from import spreadsheet file name, please rename it ending with " + loadPROGRESS.DATA_DATE.ToString(BluePrintsResources.ColumnDateFormat));
+                }
             }
         }
 

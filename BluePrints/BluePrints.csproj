@@ -800,6 +800,7 @@
     <Compile Include="Common\ViewModel\Converters\BoolToImageConverter.cs" />
     <Compile Include="Common\ViewModel\Converters\WarningToImageConverter.cs" />
     <Compile Include="Common\ViewModel\Converters\ForecastPreviousCellColorConverter.cs" />
+    <Compile Include="Common\ViewModel\Misc\BASELINE_ITEMProgressImportWrapper.cs" />
     <Compile Include="Common\ViewModel\Misc\BookTimeSheetViewModel.cs" />
     <Compile Include="Common\ViewModel\Converters\WeeksToTextConverter.cs" />
     <Compile Include="Common\ViewModel\Converters\MeetingMasterDetailNewRowTextConverter.cs" />
@@ -815,6 +816,7 @@
     <Compile Include="Common\ViewModel\GanttChart\GanttCanvas.cs" />
     <Compile Include="Common\ViewModel\GanttChart\P6_Activity.cs" />
     <Compile Include="Common\ViewModel\Misc\CodesValidationModel.cs" />
+    <Compile Include="Common\ViewModel\Misc\ListImportDeliverableViewModel.cs" />
     <Compile Include="Common\ViewModel\Misc\ListImportDocumentsViewModel.cs" />
     <Compile Include="Common\ViewModel\Misc\NullValueTemplateSelector.cs" />
     <Compile Include="Common\ViewModel\Misc\VariationApprovalViewModel.cs" />
@@ -838,6 +840,9 @@
     </Compile>
     <Compile Include="Common\View\BookTimeDialog.xaml.cs">
       <DependentUpon>BookTimeDialog.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Common\View\ListImportDeliverableView.xaml.cs">
+      <DependentUpon>ListImportDeliverableView.xaml</DependentUpon>
     </Compile>
     <Compile Include="Common\View\ListImportDocuments.xaml.cs">
       <DependentUpon>ListImportDocuments.xaml</DependentUpon>
@@ -2089,6 +2094,10 @@
       <SubType>Designer</SubType>
     </Page>
     <Page Include="Common\View\BookTimeDialog.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Common\View\ListImportDeliverableView.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>
