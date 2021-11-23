@@ -72,7 +72,7 @@
         [StringLength(20)]
         public string INVNO { get; set; }
 
-        public double INVOICED { get; set; }
+        public double? INVOICED { get; set; }
 
         public DateTime? INVOICEDATE { get; set; }
 

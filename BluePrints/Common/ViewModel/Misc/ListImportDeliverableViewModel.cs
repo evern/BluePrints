@@ -16,11 +16,11 @@ using System.Windows.Threading;
 
 namespace BaseModel.ViewModel.Dialogs
 {
-    public class ListImportDeliverableViewModel<BASELINE_ITEMProgress>
+    public class ListImportDeliverableViewModel<BASELINE_ITEMProgressImportWrapper>
     {
-        public static ListImportDeliverableViewModel<BASELINE_ITEMProgress> Create(IEnumerable<BASELINE_ITEMProgress> enumerableObjects)
+        public static ListImportDeliverableViewModel<BASELINE_ITEMProgressImportWrapper> Create(IEnumerable<BASELINE_ITEMProgressImportWrapper> enumerableObjects)
         {
-            return ViewModelSource.Create(() => new ListImportDeliverableViewModel<BASELINE_ITEMProgress>(enumerableObjects));
+            return ViewModelSource.Create(() => new ListImportDeliverableViewModel<BASELINE_ITEMProgressImportWrapper>(enumerableObjects));
         }
 
         [ServiceProperty(Key = "DefaultTableViewService")]
@@ -29,13 +29,13 @@ namespace BaseModel.ViewModel.Dialogs
         [ServiceProperty(Key = "DefaultGridControlService")]
         public virtual IGridControlService GridControlService { get { return null; } }
 
-        ObservableCollection<BASELINE_ITEMProgress> sourceObjects;
-        public ObservableCollection<BASELINE_ITEMProgress> SourceObjects
+        ObservableCollection<BASELINE_ITEMProgressImportWrapper> sourceObjects;
+        public ObservableCollection<BASELINE_ITEMProgressImportWrapper> SourceObjects
         {
             get
             {
                 if (sourceObjects == null)
-                    sourceObjects = new ObservableCollection<BASELINE_ITEMProgress>();
+                    sourceObjects = new ObservableCollection<BASELINE_ITEMProgressImportWrapper>();
 
                 return sourceObjects;
             }
@@ -43,15 +43,15 @@ namespace BaseModel.ViewModel.Dialogs
 
         public string Message { get; set; }
 
-        protected ObservableCollection<BASELINE_ITEMProgress> selectedentities { get; set; }
-        public ObservableCollection<BASELINE_ITEMProgress> SelectedEntities
+        protected ObservableCollection<BASELINE_ITEMProgressImportWrapper> selectedentities { get; set; }
+        public ObservableCollection<BASELINE_ITEMProgressImportWrapper> SelectedEntities
         {
             get { return selectedentities; }
             set { selectedentities = value; }
         }
 
-        BASELINE_ITEMProgress selectedEntity;
-        public virtual BASELINE_ITEMProgress SelectedEntity
+        BASELINE_ITEMProgressImportWrapper selectedEntity;
+        public virtual BASELINE_ITEMProgressImportWrapper SelectedEntity
         {
             get => selectedEntity;
             set
@@ -71,13 +71,13 @@ namespace BaseModel.ViewModel.Dialogs
         }
 
         DispatcherTimer delayedRefreshTimer;
-        IEnumerable<BASELINE_ITEMProgress> enumerableDocuments;
+        IEnumerable<BASELINE_ITEMProgressImportWrapper> enumerableDocuments;
         string infoObjectStr = BluePrintsResources.ReferenceInfoLineName;
         string infoObjectPathStr = "Press click import files or add empty row and manually enter details to add custom reference";
 
-        protected ListImportDeliverableViewModel(IEnumerable<BASELINE_ITEMProgress> enumerableObjects)
+        protected ListImportDeliverableViewModel(IEnumerable<BASELINE_ITEMProgressImportWrapper> enumerableObjects)
         {
-            SelectedEntities = new ObservableCollection<BASELINE_ITEMProgress>();
+            SelectedEntities = new ObservableCollection<BASELINE_ITEMProgressImportWrapper>();
             SelectedEntities.CollectionChanged += SelectedEntities_CollectionChanged;
             enumerableDocuments = enumerableObjects;
             if(enumerableDocuments != null)
@@ -85,11 +85,11 @@ namespace BaseModel.ViewModel.Dialogs
                 if(enumerableDocuments.Count() == 0)
                 {
                     //workaround an issue where grid doesn't show anything subsequently if there's no object at binding time
-                    //SourceObjects.Add(new BASELINE_ITEMProgress() { AttachmentName = infoObjectStr, AttachmentPath = infoObjectPathStr });
+                    //SourceObjects.Add(new BASELINE_ITEMProgressImportWrapper() { AttachmentName = infoObjectStr, AttachmentPath = infoObjectPathStr });
                 }
                 else
                 {
-                    foreach (BASELINE_ITEMProgress enumerableDocument in enumerableDocuments)
+                    foreach (BASELINE_ITEMProgressImportWrapper enumerableDocument in enumerableDocuments)
                     {
                         SourceObjects.Add(enumerableDocument);
                     }
@@ -102,12 +102,12 @@ namespace BaseModel.ViewModel.Dialogs
             delayedRefreshTimer.Start();
         }
 
-        public List<BASELINE_ITEMProgress> GetSelectedDocuments()
+        public List<BASELINE_ITEMProgressImportWrapper> GetSelectedDocuments()
         {
-            List<BASELINE_ITEMProgress> returnDocuments = new List<BASELINE_ITEMProgress>();
-            foreach(T sourceObject in SourceObjects)
+            List<BASELINE_ITEMProgressImportWrapper> returnDocuments = new List<BASELINE_ITEMProgressImportWrapper>();
+            foreach(BASELINE_ITEMProgressImportWrapper sourceObject in SourceObjects)
             {
-                if (sourceObject.AttachmentName != BluePrintsResources.ReferenceInfoLineName && sourceObject.AttachmentName != null && sourceObject.AttachmentName != string.Empty)
+                //if (sourceObject.AttachmentName != BluePrintsResources.ReferenceInfoLineName && sourceObject.AttachmentName != null && sourceObject.AttachmentName != string.Empty)
                     returnDocuments.Add(sourceObject);
             }
 
