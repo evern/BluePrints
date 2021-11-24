@@ -15,11 +15,12 @@
     <dxlc:LayoutControl Orientation="Vertical">
         <dxmvvm:Interaction.Behaviors>
             <services:TableViewService x:Name="DefaultTableViewService" TableView="{Binding ElementName=tableView}" />
+            <services:GridControlService x:Name="DefaultGridControlService" GridControl="{Binding ElementName=GridControl}" />
             <dxmvvm:FolderBrowserDialogService Description="Choose Folder" RestorePreviouslySelectedDirectory="True" RootFolder="Desktop" ShowNewFolderButton="True" />
         </dxmvvm:Interaction.Behaviors>
         <dxlc:LayoutGroup Name="LayoutGroupContent" Height="500" Orientation="Vertical" View="Group">
             <dxlc:LayoutItem HorizontalAlignment="Center" Height="50">
-                <Button Command="{Binding ExportToExcelCommand}" ToolTip="Export current view to excel. Includes grouping, sorting and column visibility preferences">
+                <Button Command="{Binding DataContext.ExportToExcelCommand, ElementName=userControl}" ToolTip="Export current view to excel. Includes grouping, sorting and column visibility preferences">
                     <StackPanel Orientation="Horizontal">
                         <Image Source="{dx:DXImage Image=ExportToXLSX_16x16.png}" Width="16" Height="16" Margin="0, 0, 3, 0" />
                         <TextBlock Text="Export" VerticalAlignment="Center" />
@@ -32,60 +33,70 @@
             <dxlc:LayoutItem Height="400">
                 <dxg:GridControl x:Name="GridControl" dx:DXSerializer.SerializationID="GridControlList" dx:DXSerializer.StoreLayoutMode="All" ItemsSource="{Binding SourceObjects}" SelectionMode="Row">
                     <dxg:GridControl.Columns>
-                        <dxg:GridColumn FieldName="Entity.Entity.GUID_PHASE" Header="Phase" AllowBestFit="false" Width="50" HeaderToolTip="Automatically assigned field. Changing this will affect subjob name" SortMode="DisplayText">
-                            <dxg:GridColumn.EditSettings>
-                                <dxe:ComboBoxEditSettings AutoComplete="True" DisplayMember="INTERNAL_NUM" IsTextEditable="True" ItemsSource="{Binding PHASECollection}" ValueMember="GUID" />
-                            </dxg:GridColumn.EditSettings>
-                        </dxg:GridColumn>
-                        <dxg:GridColumn FieldName="Entity.Entity.GUID_AREA" Header="Area" AllowBestFit="false" Width="50" ReadOnly="True" SortMode="DisplayText">
-                            <dxg:GridColumn.EditSettings>
-                                <dxe:ComboBoxEditSettings AutoComplete="True" DisplayMember="INTERNAL_NUM" IsTextEditable="True" ItemsSource="{Binding AREACollection}" ValueMember="GUID" />
-                            </dxg:GridColumn.EditSettings>
-                        </dxg:GridColumn>
-                        <dxg:GridColumn FieldName="Entity.Entity.SubAreaGuid" Header="Sub Area" AllowBestFit="false" Width="50" ReadOnly="True" SortMode="DisplayText">
+                        <dxg:GridColumn FieldName="Entity.Entity.GUID_PHASE" Header="{Binding PhaseHeaderString}" AllowBestFit="false" Width="50" HeaderToolTip="Automatically assigned field. Changing this will affect subjob name" SortMode="DisplayText">
                             <dxg:GridColumn.CellTemplate>
                                 <DataTemplate>
-                                    <dxe:ComboBoxEdit x:Name="PART_Editor" DisplayMember="INTERNAL_NUM" ImmediatePopup="True" IncrementalFiltering="True" ItemsSource="{Binding RowData.Row.Entity.Entity.SubAreaCollection}" NullValueButtonPlacement="Popup" ValidateOnEnterKeyPressed="True" ValidateOnTextInput="True" ValueMember="GUID" />
+                                    <dxe:ComboBoxEdit x:Name="PART_Editor" Background="{Binding RowData.Row.BackColor}" AutoComplete="True" DisplayMember="INTERNAL_NUM" IsTextEditable="True" ItemsSource="{Binding DataContext.PHASECollection, ElementName=userControl}" ValueMember="GUID" />
+                                </DataTemplate>
+                            </dxg:GridColumn.CellTemplate>
+                            <dxg:GridColumn.EditSettings>
+                                <dxe:ComboBoxEditSettings AutoComplete="True" DisplayMember="INTERNAL_NUM" IsTextEditable="True" ItemsSource="{Binding DataContext.PHASECollection, ElementName=userControl}" ValueMember="GUID" />
+                            </dxg:GridColumn.EditSettings>
+                        </dxg:GridColumn>
+                        <dxg:GridColumn FieldName="Entity.Entity.GUID_AREA" Header="{Binding AreaHeaderString}" AllowBestFit="false" Width="50" ReadOnly="True" SortMode="DisplayText">
+                            <dxg:GridColumn.EditSettings>
+                                <dxe:ComboBoxEditSettings AutoComplete="True" DisplayMember="INTERNAL_NUM" IsTextEditable="True" ItemsSource="{Binding DataContext.AREACollection, ElementName=userControl}" ValueMember="GUID" />
+                            </dxg:GridColumn.EditSettings>
+                        </dxg:GridColumn>
+                        <dxg:GridColumn FieldName="Entity.Entity.SubAreaGuid" Header="{Binding SubAreaHeaderString}" AllowBestFit="false" Width="50" ReadOnly="True" SortMode="DisplayText">
+                            <dxg:GridColumn.CellTemplate>
+                                <DataTemplate>
+                                    <dxe:ComboBoxEdit x:Name="PART_Editor" DisplayMember="INTERNAL_NUM" ImmediatePopup="True" IncrementalFiltering="True" ItemsSource="{Binding DataContext.AREACollection, ElementName=userControl}" NullValueButtonPlacement="Popup" ValidateOnEnterKeyPressed="True" ValidateOnTextInput="True" ValueMember="GUID" />
                                 </DataTemplate>
                             </dxg:GridColumn.CellTemplate>
                             <!--  For Filtering  -->
                             <dxg:GridColumn.EditSettings>
-                                <dxe:ComboBoxEditSettings AutoComplete="True" DisplayMember="INTERNAL_NUM" IsTextEditable="True" ItemsSource="{Binding SUBAREACollection}" NullValueButtonPlacement="EditBox" ValueMember="GUID" />
+                                <dxe:ComboBoxEditSettings AutoComplete="True" DisplayMember="INTERNAL_NUM" IsTextEditable="True" ItemsSource="{Binding DataContext.AREACollection, ElementName=userControl}" NullValueButtonPlacement="EditBox" ValueMember="GUID" />
                             </dxg:GridColumn.EditSettings>
                         </dxg:GridColumn>
-                        <dxg:GridColumn FieldName="Entity.Entity.GUID_DISCIPLINE" Header="Discipline" ReadOnly="True" SortMode="DisplayText">
+                        <dxg:GridColumn FieldName="Entity.Entity.GUID_DISCIPLINE" Header="{Binding DisciplineHeaderString}" ReadOnly="True" SortMode="DisplayText">
                             <dxg:GridColumn.EditSettings>
-                                <dxe:ComboBoxEditSettings AutoComplete="True" DisplayMember="NAME" IsTextEditable="True" ItemsSource="{Binding DISCIPLINECollection}" ValueMember="GUID" />
+                                <dxe:ComboBoxEditSettings AutoComplete="True" DisplayMember="NAME" IsTextEditable="True" ItemsSource="{Binding DataContext.DISCIPLINECollection, ElementName=userControl}" ValueMember="GUID" />
                             </dxg:GridColumn.EditSettings>
                         </dxg:GridColumn>
-                        <dxg:GridColumn FieldName="Entity.Entity.DISCIPLINE_NUM" Header="Discipline Number" AllowBestFit="false" Width="60">
+                        <dxg:GridColumn FieldName="Entity.Entity.DISCIPLINE_NUM" Header="{Binding DisciplineNumberHeaderString}" AllowBestFit="false" Width="60">
                             <dxg:GridColumn.EditSettings>
                                 <dxe:SpinEditSettings Increment="1" IsFloatValue="False" IsTextEditable="True" Mask="n0" MaskType="Numeric" MaskUseAsDisplayFormat="True" MaxValue="99" MinValue="1" />
                             </dxg:GridColumn.EditSettings>
                         </dxg:GridColumn>
-                        <dxg:GridColumn FieldName="Entity.Entity.GUID_DOCTYPE" Header="Document Type" ReadOnly="True" SortMode="DisplayText">
+                        <dxg:GridColumn FieldName="Entity.Entity.GUID_DOCTYPE" Header="{Binding DocumentTypeHeaderString}" ReadOnly="True" SortMode="DisplayText">
                             <dxg:GridColumn.EditSettings>
-                                <dxe:ComboBoxEditSettings AutoComplete="True" DisplayMember="NAME" IsTextEditable="True" ItemsSource="{Binding DOCTYPECollection}" ValueMember="GUID" />
+                                <dxe:ComboBoxEditSettings AutoComplete="True" DisplayMember="NAME" IsTextEditable="True" ItemsSource="{Binding DataContext.DOCTYPECollection, ElementName=userControl}" ValueMember="GUID" />
                             </dxg:GridColumn.EditSettings>
                         </dxg:GridColumn>
-                        <dxg:GridColumn FieldName="Entity.Entity.DELIVERABLE_TYPE" Header="Deliverable Type" IsEnabled="False" ReadOnly="True" />
-                        <dxg:GridColumn FieldName="Entity.Entity.GUID_DEPARTMENT" Header="Department" ReadOnly="True" SortMode="DisplayText">
+                        <dxg:GridColumn FieldName="Entity.Entity.DELIVERABLE_TYPE" Header="{Binding DeliverableTypeHeaderString}" IsEnabled="False" ReadOnly="True" />
+                        <dxg:GridColumn FieldName="Entity.Entity.GUID_DEPARTMENT" Header="{Binding DepartmentHeaderString}" ReadOnly="True" SortMode="DisplayText">
                             <dxg:GridColumn.EditSettings>
-                                <dxe:ComboBoxEditSettings AutoComplete="True" DisplayMember="NAME" IsTextEditable="True" ItemsSource="{Binding DEPARTMENTCollection}" ValueMember="GUID" />
+                                <dxe:ComboBoxEditSettings AutoComplete="True" DisplayMember="NAME" IsTextEditable="True" ItemsSource="{Binding DataContext.DEPARTMENTCollection, ElementName=userControl}" ValueMember="GUID" />
                             </dxg:GridColumn.EditSettings>
                         </dxg:GridColumn>
                         <dxg:GridColumn FieldName="Entity.Entity.INTERNAL_NUM" AllowBestFit="false" Width="140" Header="{Binding InternalNumberHeaderString}" SortIndex="{Binding InternalNumSortIndex}" IsEnabled="False" ReadOnly="True" />
-                        <dxg:GridColumn FieldName="Entity.Entity.CLIENT_NUM" Header="Client Number" IsEnabled="False" ReadOnly="True" />
-                        <dxg:GridColumn FieldName="Entity.Entity.PRIMARY_TITLE" Header="Primary Title" IsEnabled="False" ReadOnly="True" />
-                        <dxg:GridColumn FieldName="Entity.Entity.SECONDARY_TITLE" Header="Secondary Title" IsEnabled="False" ReadOnly="True" />
-                        <dxg:GridColumn FieldName="Entity.Entity.COMMENTS" Header="Comments" ReadOnly="True" />
+                        <dxg:GridColumn FieldName="Entity.Entity.CLIENT_NUM" Header="{Binding ClientNumberHeaderString}" IsEnabled="False" ReadOnly="True" />
+                        <dxg:GridColumn FieldName="Entity.Entity.PRIMARY_TITLE" Header="{Binding PrimaryTitleHeaderString}" IsEnabled="False" ReadOnly="True" />
+                        <dxg:GridColumn FieldName="Entity.Entity.SECONDARY_TITLE" Header="{Binding SecondaryTitleHeaderString}" IsEnabled="False" ReadOnly="True" />
+                        <dxg:GridColumn FieldName="Entity.Entity.COMMENTS" Header="{Binding CommentsHeaderString}" ReadOnly="True" >
+                            <dxg:GridColumn.CellTemplate>
+                                <DataTemplate>
+                                    <dxe:TextEdit x:Name="PART_Editor" Background="{Binding RowData.Row.BackColor}" />
+                                </DataTemplate>
+                            </dxg:GridColumn.CellTemplate>
+                        </dxg:GridColumn>
                         <dxg:GridColumn MinWidth="100" AllowEditing="True" AllowBestFit="false" Width="60" FieldName="Total_Earned_Percentage" Header="{Binding CurrentPercentageHeaderString}" HeaderToolTip="Cumulative % earned since the start of the project. % as benchmarked against baseline + variation. Update this to earn units for this period">
                             <!--For Masking Filters-->
                             <dxg:GridColumn.EditSettings>
                                 <dxe:SpinEditSettings Mask="p2" MaskType="Numeric" MaskUseAsDisplayFormat="True" />
                             </dxg:GridColumn.EditSettings>
                         </dxg:GridColumn>
-                        <dxg:GridColumn MinWidth="100" AllowEditing="True" AllowBestFit="false" Width="60" FieldName="Message" Header="Message" />
                     </dxg:GridControl.Columns>
                     <dxg:GridControl.TotalSummary>
                         <dxg:GridSummaryItem dx:DXSerializer.Enabled="False" Alignment="Right" SummaryType="Count" />

@@ -24,20 +24,24 @@ namespace BluePrints.Common.ViewModel.Misc
             BASELINE_ITEMProgress newBASELINE_ITEMProgress = new BASELINE_ITEMProgress();
             newBASELINE_ITEMProgress.Entity = newBASELINE_ITEMProjection;
 
-            string phase = dataRow[HeaderStringResources.PhaseHeaderString].ToString();
-            string area = dataRow[HeaderStringResources.AreaHeaderString].ToString();
-            string subArea = dataRow[HeaderStringResources.SubAreaHeaderString].ToString();
-            string discipline = dataRow[HeaderStringResources.DisciplineHeaderString].ToString();
-            string disciplineNum = dataRow[HeaderStringResources.DisciplineNumberHeaderString].ToString();
-            string docType = dataRow[HeaderStringResources.DocumentTypeHeaderString].ToString();
-            string deliverableType = dataRow[HeaderStringResources.DeliverableTypeHeaderString].ToString();
-            string department = dataRow[HeaderStringResources.DepartmentHeaderString].ToString();
-            string internalNum = dataRow[HeaderStringResources.InternalNumberHeaderString].ToString();
-            string clientNum = dataRow[HeaderStringResources.ClientNumberHeaderString].ToString();
-            string primaryTitle = dataRow[HeaderStringResources.PrimaryTitleHeaderString].ToString();
-            string secondaryTitle = dataRow[HeaderStringResources.SecondaryTitleHeaderString].ToString();
-            string comments = dataRow[HeaderStringResources.CommentsHeaderString].ToString();
-            string currentEarnedPercentage = dataRow[HeaderStringResources.CurrentPercentageHeaderString].ToString();
+            string phase = dataRow[ColumnHeaderResources.PhaseHeaderString].ToString();
+            string area = dataRow[ColumnHeaderResources.AreaHeaderString].ToString();
+            string subArea = dataRow[ColumnHeaderResources.SubAreaHeaderString].ToString();
+            string discipline = dataRow[ColumnHeaderResources.DisciplineHeaderString].ToString();
+            string disciplineNum = dataRow[ColumnHeaderResources.DisciplineNumberHeaderString].ToString();
+            string docType = dataRow[ColumnHeaderResources.DocumentTypeHeaderString].ToString();
+            string deliverableType = dataRow[ColumnHeaderResources.DeliverableTypeHeaderString].ToString();
+            string department = dataRow[ColumnHeaderResources.DepartmentHeaderString].ToString();
+            string internalNum = dataRow[ColumnHeaderResources.InternalNumberHeaderString].ToString();
+            string clientNum = dataRow[ColumnHeaderResources.ClientNumberHeaderString].ToString();
+            string primaryTitle = dataRow[ColumnHeaderResources.PrimaryTitleHeaderString].ToString();
+            string secondaryTitle = dataRow[ColumnHeaderResources.SecondaryTitleHeaderString].ToString();
+            string comments = dataRow[ColumnHeaderResources.CommentsHeaderString].ToString();
+            string currentEarnedPercentage = dataRow[ColumnHeaderResources.CurrentPercentageHeaderString].ToString();
+
+            string s;
+            if (comments != string.Empty)
+                s = string.Empty;
 
             PHASE findPHASE = PHASECollection.FirstOrDefault(x => x.INTERNAL_NUM.ToUpper() == phase.ToUpper());
             AREA findAREA = AREACollection.FirstOrDefault(x => x.INTERNAL_NUM.ToUpper() == area.ToUpper());
@@ -106,22 +110,24 @@ namespace BluePrints.Common.ViewModel.Misc
 
         public BASELINE_ITEMProgressImportWrapper(BASELINE_ITEMProgress originalProjection, BASELINE_ITEMProgress importProjection)
         {
-            Compare_GUID_PHASE = new OldNewValueCompare<Guid?>(originalProjection.Phase_Guid, importProjection.Phase_Guid);
-            Compare_GUID_AREA = new OldNewValueCompare<Guid?>(originalProjection.Area_Guid, importProjection.Area_Guid);
-            Compare_GUID_SUBAREA = new OldNewValueCompare<Guid?>(originalProjection.SubArea_Guid, importProjection.SubArea_Guid);
-            Compare_GUID_DISCIPLINE = new OldNewValueCompare<Guid?>(originalProjection.Discipline_Guid, importProjection.Discipline_Guid);
-            Compare_DISCIPLINE_NUM = new OldNewValueCompare<decimal>(originalProjection.Discipline_Number, originalProjection.Discipline_Number);
-            Compare_GUID_DOCTYPE = new OldNewValueCompare<Guid?>(originalProjection.Entity.Entity.GUID_DOCTYPE, importProjection.Entity.Entity.GUID_DOCTYPE);
-            Compare_DELIVERABLE_TYPE = new OldNewValueCompare<DeliverableType>(originalProjection.Entity.Entity.DELIVERABLE_TYPE, importProjection.Entity.Entity.DELIVERABLE_TYPE);
-            Compare_GUID_DEPARTMENT = new OldNewValueCompare<Guid?>(originalProjection.Department_Guid, importProjection.Department_Guid);
-            Compare_INTERNAL_NUM = new OldNewValueCompare<string>(originalProjection.Entity.Entity.INTERNAL_NUM, importProjection.Entity.Entity.INTERNAL_NUM);
-            Compare_CLIENT_NUM = new OldNewValueCompare<string>(originalProjection.Entity.Entity.CLIENT_NUM, importProjection.Entity.Entity.CLIENT_NUM);
-            Compare_PRIMARY_TITLE = new OldNewValueCompare<string>(originalProjection.Entity.Entity.PRIMARY_TITLE, importProjection.Entity.Entity.PRIMARY_TITLE);
-            Compare_SECONDARY_TITLE = new OldNewValueCompare<string>(originalProjection.Entity.Entity.SECONDARY_TITLE, importProjection.Entity.Entity.SECONDARY_TITLE);
-            Compare_COMMENTS = new OldNewValueCompare<string>(originalProjection.Entity.Entity.COMMENTS, importProjection.Entity.Entity.COMMENTS);
-            Compare_EARNED_PERCENTAGE = new OldNewValueCompare<decimal>(originalProjection.Total_Earned_Percentage, importProjection.Total_Earned_Percentage);
+            BASELINE_ITEMProgress compareProjection = originalProjection == null ? importProjection : originalProjection;
 
-            this.Entity = originalProjection.Entity;
+            Compare_GUID_PHASE = new OldNewValueCompare<Guid?>(compareProjection.Phase_Guid, importProjection.Phase_Guid);
+            Compare_GUID_AREA = new OldNewValueCompare<Guid?>(compareProjection.Area_Guid, importProjection.Area_Guid);
+            Compare_GUID_SUBAREA = new OldNewValueCompare<Guid?>(compareProjection.SubArea_Guid, importProjection.SubArea_Guid);
+            Compare_GUID_DISCIPLINE = new OldNewValueCompare<Guid?>(compareProjection.Discipline_Guid, importProjection.Discipline_Guid);
+            Compare_DISCIPLINE_NUM = new OldNewValueCompare<decimal>(compareProjection.Discipline_Number, compareProjection.Discipline_Number);
+            Compare_GUID_DOCTYPE = new OldNewValueCompare<Guid?>(compareProjection.Entity.Entity.GUID_DOCTYPE, importProjection.Entity.Entity.GUID_DOCTYPE);
+            Compare_DELIVERABLE_TYPE = new OldNewValueCompare<DeliverableType>(compareProjection.Entity.Entity.DELIVERABLE_TYPE, importProjection.Entity.Entity.DELIVERABLE_TYPE);
+            Compare_GUID_DEPARTMENT = new OldNewValueCompare<Guid?>(compareProjection.Department_Guid, importProjection.Department_Guid);
+            Compare_INTERNAL_NUM = new OldNewValueCompare<string>(compareProjection.Entity.Entity.INTERNAL_NUM, importProjection.Entity.Entity.INTERNAL_NUM);
+            Compare_CLIENT_NUM = new OldNewValueCompare<string>(compareProjection.Entity.Entity.CLIENT_NUM, importProjection.Entity.Entity.CLIENT_NUM);
+            Compare_PRIMARY_TITLE = new OldNewValueCompare<string>(compareProjection.Entity.Entity.PRIMARY_TITLE, importProjection.Entity.Entity.PRIMARY_TITLE);
+            Compare_SECONDARY_TITLE = new OldNewValueCompare<string>(compareProjection.Entity.Entity.SECONDARY_TITLE, importProjection.Entity.Entity.SECONDARY_TITLE);
+            Compare_COMMENTS = new OldNewValueCompare<string>(compareProjection.Entity.Entity.COMMENTS, importProjection.Entity.Entity.COMMENTS);
+            Compare_EARNED_PERCENTAGE = new OldNewValueCompare<decimal>(compareProjection.Total_Earned_Percentage, importProjection.Total_Earned_Percentage);
+
+            this.Entity = compareProjection.Entity;
         }
     }
 
@@ -161,7 +167,7 @@ namespace BluePrints.Common.ViewModel.Misc
             }
         }
 
-        public SolidColorBrush ColumnBackColor
+        public SolidColorBrush BackColor
         {
             get
             {

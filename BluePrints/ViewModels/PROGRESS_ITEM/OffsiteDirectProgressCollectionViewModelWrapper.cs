@@ -496,23 +496,23 @@ namespace BluePrints.ViewModels
             return CanExportContractorDeliverablesToExcel();
         }
 
-        public string AreaHeaderString => HeaderStringResources.AreaHeaderString;
-        public string SubAreaHeaderString => HeaderStringResources.SubAreaHeaderString;
-        public string DisciplineHeaderString => HeaderStringResources.DisciplineHeaderString;
-        public string DisciplineNumberHeaderString => HeaderStringResources.DisciplineNumberHeaderString;
-        public string DocumentTypeHeaderString => HeaderStringResources.DocumentTypeHeaderString;
-        public string DeliverableTypeHeaderString => HeaderStringResources.DeliverableTypeHeaderString;
-        public string DepartmentHeaderString => HeaderStringResources.DepartmentHeaderString;
-        public string ClientNumberHeaderString => HeaderStringResources.ClientNumberHeaderString;
-        public string PrimaryTitleHeaderString => HeaderStringResources.PrimaryTitleHeaderString;
-        public string SecondaryTitleHeaderString => HeaderStringResources.SecondaryTitleHeaderString;
-        public string CommentsHeaderString => HeaderStringResources.CommentsHeaderString;
-        public string ResourceHeaderString => HeaderStringResources.ResourceHeaderString;
-        public string SubJobHeaderString => HeaderStringResources.SubJobHeaderString;
-        public string OfficeHeaderString => HeaderStringResources.OfficeHeaderString;
-        public string PhaseHeaderString => HeaderStringResources.PhaseHeaderString;
-        public string InternalNumberHeaderString => HeaderStringResources.InternalNumberHeaderString;
-        public string CurrentPercentageHeaderString => HeaderStringResources.CurrentPercentageHeaderString;
+        public string AreaHeaderString => ColumnHeaderResources.AreaHeaderString;
+        public string SubAreaHeaderString => ColumnHeaderResources.SubAreaHeaderString;
+        public string DisciplineHeaderString => ColumnHeaderResources.DisciplineHeaderString;
+        public string DisciplineNumberHeaderString => ColumnHeaderResources.DisciplineNumberHeaderString;
+        public string DocumentTypeHeaderString => ColumnHeaderResources.DocumentTypeHeaderString;
+        public string DeliverableTypeHeaderString => ColumnHeaderResources.DeliverableTypeHeaderString;
+        public string DepartmentHeaderString => ColumnHeaderResources.DepartmentHeaderString;
+        public string ClientNumberHeaderString => ColumnHeaderResources.ClientNumberHeaderString;
+        public string PrimaryTitleHeaderString => ColumnHeaderResources.PrimaryTitleHeaderString;
+        public string SecondaryTitleHeaderString => ColumnHeaderResources.SecondaryTitleHeaderString;
+        public string CommentsHeaderString => ColumnHeaderResources.CommentsHeaderString;
+        public string ResourceHeaderString => ColumnHeaderResources.ResourceHeaderString;
+        public string SubJobHeaderString => ColumnHeaderResources.SubJobHeaderString;
+        public string OfficeHeaderString => ColumnHeaderResources.OfficeHeaderString;
+        public string PhaseHeaderString => ColumnHeaderResources.PhaseHeaderString;
+        public string InternalNumberHeaderString => ColumnHeaderResources.InternalNumberHeaderString;
+        public string CurrentPercentageHeaderString => ColumnHeaderResources.CurrentPercentageHeaderString;
         public void ImportContractorDeliverableFromExcel()
         {
             FileBrowserDialogService.Filter = "Excel Files (.xls)|*.xlsx|All Files (*.*)|*.*";
@@ -542,10 +542,6 @@ namespace BluePrints.ViewModels
                             return;
                         }
 
-                        ListImportDeliverableViewModel<BASELINE_ITEMProgressImportWrapper> viewModel = ListImportDeliverableViewModel<BASELINE_ITEMProgressImportWrapper>.Create(errorMessages, dialogTitle);
-                        if (ImportDialogService.ShowDialog(MessageButton.OKCancel, string.Empty, "ListErrorMessages", viewModel) == MessageResult.OK)
-                            return true;
-
                         List<PROGRESS_ITEM> updateProgress = new List<PROGRESS_ITEM>();
                         List<ErrorMessage> errorMessages = new List<ErrorMessage>();
                         List<BASELINE_ITEMProgressImportWrapper> importBaselineItems = new List<BASELINE_ITEMProgressImportWrapper>();
@@ -564,40 +560,48 @@ namespace BluePrints.ViewModels
                                         BASELINE_ITEMProgress findContractorDeliverable = findDeliverable.First();
                                         string totalEarnedPercentageString = string.Format("{0:P2}.", findContractorDeliverable.Total_Earned_Percentage);
                                         string newPercentageString = string.Format("{0:P2}.", newPercentage);
-                                        if (findContractorDeliverable.Total_Earned_Percentage == newPercentage)
-                                            continue;
-
-                                        if (findContractorDeliverable.Total_Earned_Percentage > newPercentage)
-                                        {
-                                            errorMessages.Add(new ErrorMessage(findContractorDeliverable.Deliverable_Name, "Contractor update % of " + newPercentageString + " is less than current % of " + totalEarnedPercentageString + ", update skipped"));
-                                            continue;
-                                        }
 
                                         BASELINE_ITEMProgressImportWrapper newBASELINE_ITEMProgressImportWrapper = new BASELINE_ITEMProgressImportWrapper(findContractorDeliverable, changeTrackingBaselineItemProgress);
                                         newBASELINE_ITEMProgressImportWrapper.Message = "Contractor update % of " + newPercentageString + " is less than current % of " + totalEarnedPercentageString;
                                         newBASELINE_ITEMProgressImportWrapper.IsError = true;
 
+                                        importBaselineItems.Add(newBASELINE_ITEMProgressImportWrapper);
                                         //IEnumerable<PROGRESS_ITEM> newPROGRESS_ITEMS = UpdateContractorDeliverableProgress(findContractorDeliverable, newPercentage);
                                         //updateProgress.AddRange(newPROGRESS_ITEMS);
                                         //errorMessages.Add(new ErrorMessage(internalNumber, "Updated from " + totalEarnedPercentageString + "% to " + newPercentageString + "%, update success"));
                                     }
                                     else if (findDeliverable.Count == 0)
                                     {
-                                        errorMessages.Add(new ErrorMessage(internalNumber, "Contractor deliverable with internal number: " + internalNumber + " is not found, updated skipped"));
+                                        BASELINE_ITEMProgressImportWrapper newBASELINE_ITEMProgressImportWrapper = new BASELINE_ITEMProgressImportWrapper(changeTrackingBaselineItemProgress, changeTrackingBaselineItemProgress);
+                                        importBaselineItems.Add(newBASELINE_ITEMProgressImportWrapper);
+                                        //errorMessages.Add(new ErrorMessage(internalNumber, "Contractor deliverable with internal number: " + internalNumber + " is not found, updated skipped"));
 
                                     }
                                     else
-                                        errorMessages.Add(new ErrorMessage(internalNumber, "More than a single contractor deliverable with internal number: " + internalNumber + " is found, updated skipped"));
+                                    {
+                                        BASELINE_ITEMProgressImportWrapper newBASELINE_ITEMProgressImportWrapper = new BASELINE_ITEMProgressImportWrapper(changeTrackingBaselineItemProgress, changeTrackingBaselineItemProgress);
+                                        newBASELINE_ITEMProgressImportWrapper.Message = "More than a single contractor deliverable with internal number: " + internalNumber + " is found, updated skipped";
+                                        newBASELINE_ITEMProgressImportWrapper.IsError = true;
 
+                                        importBaselineItems.Add(newBASELINE_ITEMProgressImportWrapper);
+                                        //errorMessages.Add(new ErrorMessage(internalNumber, "More than a single contractor deliverable with internal number: " + internalNumber + " is found, updated skipped"));
+                                    }
                                 }
                             }
                         }
 
-                        PROGRESS_ITEMSCollectionViewModel.BaseBulkSave(updateProgress);
-                        if (errorMessages.Count > 0)
-                            ShowErrorMessage("Contractor Deliverable Update Status", errorMessages);
-                        else
-                            MessageBoxService.ShowMessage("No contractor deliverable has been progressed, nothing to import", "Status", MessageButton.OK, MessageIcon.Information);
+
+                        ListImportDeliverableViewModel<BASELINE_ITEMProgressImportWrapper> viewModel = ListImportDeliverableViewModel<BASELINE_ITEMProgressImportWrapper>.Create(importBaselineItems, PHASECollection, AREACollection, DISCIPLINECollection, DOCTYPECollection, DEPARTMENTCollection);
+                        if (ImportDialogService.ShowDialog(MessageButton.OKCancel, string.Empty, "ListImportDeliverableView", viewModel) == MessageResult.OK)
+                        {
+
+                        }
+
+                        //PROGRESS_ITEMSCollectionViewModel.BaseBulkSave(updateProgress);
+                        //if (errorMessages.Count > 0)
+                        //    ShowErrorMessage("Contractor Deliverable Update Status", errorMessages);
+                        //else
+                        //    MessageBoxService.ShowMessage("No contractor deliverable has been progressed, nothing to import", "Status", MessageButton.OK, MessageIcon.Information);
                     }
                     else
                     {

@@ -18,9 +18,9 @@ namespace BaseModel.ViewModel.Dialogs
 {
     public class ListImportDeliverableViewModel<BASELINE_ITEMProgressImportWrapper>
     {
-        public static ListImportDeliverableViewModel<BASELINE_ITEMProgressImportWrapper> Create(IEnumerable<BASELINE_ITEMProgressImportWrapper> enumerableObjects)
+        public static ListImportDeliverableViewModel<BASELINE_ITEMProgressImportWrapper> Create(IEnumerable<BASELINE_ITEMProgressImportWrapper> enumerableObjects, IEnumerable<PHASE> PHASECollection, IEnumerable<AREA> AREACollection, IEnumerable<DISCIPLINE> DISCIPLINECollection, IEnumerable<DOCTYPE> DOCTYPECollection, IEnumerable<DEPARTMENT> DEPARTMENTCollection)
         {
-            return ViewModelSource.Create(() => new ListImportDeliverableViewModel<BASELINE_ITEMProgressImportWrapper>(enumerableObjects));
+            return ViewModelSource.Create(() => new ListImportDeliverableViewModel<BASELINE_ITEMProgressImportWrapper>(enumerableObjects, PHASECollection, AREACollection, DISCIPLINECollection, DOCTYPECollection, DEPARTMENTCollection));
         }
 
         [ServiceProperty(Key = "DefaultTableViewService")]
@@ -30,6 +30,7 @@ namespace BaseModel.ViewModel.Dialogs
         public virtual IGridControlService GridControlService { get { return null; } }
 
         ObservableCollection<BASELINE_ITEMProgressImportWrapper> sourceObjects;
+        public int InternalNumSortIndex => 1;
         public ObservableCollection<BASELINE_ITEMProgressImportWrapper> SourceObjects
         {
             get
@@ -73,11 +74,17 @@ namespace BaseModel.ViewModel.Dialogs
         DispatcherTimer delayedRefreshTimer;
         IEnumerable<BASELINE_ITEMProgressImportWrapper> enumerableDocuments;
 
-        protected ListImportDeliverableViewModel(IEnumerable<BASELINE_ITEMProgressImportWrapper> enumerableObjects)
+        protected ListImportDeliverableViewModel(IEnumerable<BASELINE_ITEMProgressImportWrapper> enumerableObjects, IEnumerable<PHASE> PHASECollection, IEnumerable<AREA> AREACollection, IEnumerable<DISCIPLINE> DISCIPLINECollection, IEnumerable<DOCTYPE> DOCTYPECollection, IEnumerable<DEPARTMENT> DEPARTMENTCollection)
         {
             SelectedEntities = new ObservableCollection<BASELINE_ITEMProgressImportWrapper>();
             SelectedEntities.CollectionChanged += SelectedEntities_CollectionChanged;
             enumerableDocuments = enumerableObjects;
+            this.PHASECollection = PHASECollection;
+            this.AREACollection = AREACollection;
+            this.DISCIPLINECollection = DISCIPLINECollection;
+            this.DOCTYPECollection = DOCTYPECollection;
+            this.DEPARTMENTCollection = DEPARTMENTCollection;
+
             if(enumerableDocuments != null)
             {
                 if(enumerableDocuments.Count() == 0)
@@ -129,5 +136,42 @@ namespace BaseModel.ViewModel.Dialogs
         {
             this.GetService<ICurrentDialogService>().Close();
         }
+
+        protected virtual IFolderBrowserDialogService FolderBrowserDialogService { get { return this.GetService<IFolderBrowserDialogService>(); } }
+        public virtual void ExportToExcel()
+        {
+            string ResultPath = string.Empty;
+            if (FolderBrowserDialogService.ShowDialog())
+            {
+                ResultPath = FolderBrowserDialogService.ResultPath;
+                bool result = TableViewService.ExportToXls(ResultPath + "\\DocumentsImportReport.xlsx", false);
+
+                if (!result)
+                    MessageBoxService.ShowMessage("Export failed because the file is in use", "Warning", MessageButton.OK, MessageIcon.Warning);
+            }
+        }
+
+        public IEnumerable<PHASE> PHASECollection { get; set; }
+        public IEnumerable<AREA> AREACollection { get; set; }
+        public IEnumerable<DISCIPLINE> DISCIPLINECollection { get; set; }
+        public IEnumerable<DOCTYPE> DOCTYPECollection { get; set; }
+        public IEnumerable<DEPARTMENT> DEPARTMENTCollection { get; set; }
+        public string AreaHeaderString => ColumnHeaderResources.AreaHeaderString;
+        public string SubAreaHeaderString => ColumnHeaderResources.SubAreaHeaderString;
+        public string DisciplineHeaderString => ColumnHeaderResources.DisciplineHeaderString;
+        public string DisciplineNumberHeaderString => ColumnHeaderResources.DisciplineNumberHeaderString;
+        public string DocumentTypeHeaderString => ColumnHeaderResources.DocumentTypeHeaderString;
+        public string DeliverableTypeHeaderString => ColumnHeaderResources.DeliverableTypeHeaderString;
+        public string DepartmentHeaderString => ColumnHeaderResources.DepartmentHeaderString;
+        public string ClientNumberHeaderString => ColumnHeaderResources.ClientNumberHeaderString;
+        public string PrimaryTitleHeaderString => ColumnHeaderResources.PrimaryTitleHeaderString;
+        public string SecondaryTitleHeaderString => ColumnHeaderResources.SecondaryTitleHeaderString;
+        public string CommentsHeaderString => ColumnHeaderResources.CommentsHeaderString;
+        public string ResourceHeaderString => ColumnHeaderResources.ResourceHeaderString;
+        public string SubJobHeaderString => ColumnHeaderResources.SubJobHeaderString;
+        public string OfficeHeaderString => ColumnHeaderResources.OfficeHeaderString;
+        public string PhaseHeaderString => ColumnHeaderResources.PhaseHeaderString;
+        public string InternalNumberHeaderString => ColumnHeaderResources.InternalNumberHeaderString;
+        public string CurrentPercentageHeaderString => ColumnHeaderResources.CurrentPercentageHeaderString;
     }
 }

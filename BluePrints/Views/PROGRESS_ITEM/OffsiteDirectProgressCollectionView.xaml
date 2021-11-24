@@ -173,11 +173,6 @@
                             <dxg:GridColumn FieldName="Entity.Entity.PRIMARY_TITLE" Header="{Binding PrimaryTitleHeaderString}" IsEnabled="False" ReadOnly="True" />
                             <dxg:GridColumn FieldName="Entity.Entity.SECONDARY_TITLE" Header="{Binding SecondaryTitleHeaderString}" IsEnabled="False" ReadOnly="True" />
                             <dxg:GridColumn FieldName="Entity.Entity.COMMENTS" Header="{Binding CommentsHeaderString}" ReadOnly="True" />
-                            <dxg:GridColumn Header="{Binding ResourceHeaderString}" FieldName="Entity.Entity.GUID_USER" Visible="False" ColumnFilterMode="DisplayText" SortMode="DisplayText">
-                                <dxg:GridColumn.EditSettings>
-                                    <dxe:ComboBoxEditSettings AutoComplete="True" DisplayMember="NAME" IsTextEditable="True" ItemsSource="{Binding USERCollection}" ValueMember="GUID" />
-                                </dxg:GridColumn.EditSettings>
-                            </dxg:GridColumn>
                             <dxg:GridColumn MinWidth="100" AllowEditing="True" AllowBestFit="false" Width="60" FieldName="Total_Earned_Percentage" Header="{Binding CurrentPercentageHeaderString}" HeaderToolTip="Cumulative % earned since the start of the project. % as benchmarked against baseline + variation. Update this to earn units for this period">
                                 <!--For Masking Filters-->
                                 <dxg:GridColumn.EditSettings>
