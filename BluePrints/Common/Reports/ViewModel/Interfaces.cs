@@ -14,6 +14,7 @@ namespace BluePrints.Common.ViewModel.Reporting
     {
         string DisciplineCode { get; }
         string DisciplineDesc { get; set; }
+        string PhaseCode { get; }
     }
 
     public interface IHaveWBSCodeString

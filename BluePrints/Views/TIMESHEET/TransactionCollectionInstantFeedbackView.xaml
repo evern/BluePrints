@@ -40,6 +40,34 @@
                 <custom:GridControlEx IsInstantFeedbackMode="{Binding IsInstantFeedbackMode}" x:Name="GridControl" dxc:DXSerializer.SerializationID="GridControlTransaction" dxc:DXSerializer.StoreLayoutMode="All" Style="{StaticResource InstantFeedbackGridControlTemplate}">
                     <dxg:GridControl.Bands>
                         <dxg:GridControlBand Header="{Binding BandHeaderName}">
+                            <dxg:GridColumn FieldName="MASTER_JOBNO" AllowBestFit="false" Width="110" Visible="{Binding IsYearToDate}" ShowInColumnChooser="{Binding IsYearToDate}" ReadOnly="{Binding IsReadOnly}" Header="Job">
+                                <dxg:GridColumn.CellTemplate>
+                                    <DataTemplate>
+                                        <dxg:LookUpEdit Name="PART_Editor" AutoComplete="True" AutoPopulateColumns="False" DisplayMember="JOBCODE" IncrementalFiltering="True" IsTextEditable="true" ItemsSource="{Binding View.DataContext.JOBCOST_HDRCollection}" NullValueButtonPlacement="None" PopupWidth="500" ValueMember="JOBNO">
+                                            <dxg:LookUpEdit.StyleSettings>
+                                                <dxg:SearchLookUpEditStyleSettings />
+                                            </dxg:LookUpEdit.StyleSettings>
+                                            <dxg:LookUpEdit.PopupContentTemplate>
+                                                <ControlTemplate TargetType="ContentControl">
+                                                    <dxg:GridControl x:Name="PART_GridControl" SelectionMode="Row" ShowBorder="False">
+                                                        <dxg:GridControl.Columns>
+                                                            <dxg:GridColumn FieldName="JOBCODE" Header="Code" ReadOnly="True" />
+                                                            <dxg:GridColumn FieldName="TITLE" AllowBestFit="false" Width="*" Header="Title" ReadOnly="True" />
+                                                        </dxg:GridControl.Columns>
+                                                        <dxg:GridControl.View>
+                                                            <dxg:TableView RowStyle="{StaticResource SelectionBackgroundStyle}" ShowFilterPanelMode="ShowAlways" ShowFocusedRectangle="True" ShowGroupPanel="False" ShowSelectionRectangle="True" />
+                                                        </dxg:GridControl.View>
+                                                    </dxg:GridControl>
+                                                </ControlTemplate>
+                                            </dxg:LookUpEdit.PopupContentTemplate>
+                                        </dxg:LookUpEdit>
+                                    </DataTemplate>
+                                </dxg:GridColumn.CellTemplate>
+                                <!--For Filtering-->
+                                <dxg:GridColumn.EditSettings>
+                                    <dxe:ComboBoxEditSettings AutoComplete="True" DisplayMember="JOBCODE" IsTextEditable="True" ItemsSource="{Binding JOBCOST_HDRCollection}" ValueMember="JOBNO" />
+                                </dxg:GridColumn.EditSettings>
+                            </dxg:GridColumn>
                             <custom:EditableColumn RealFieldName="JOBNO" AllowBestFit="false" Width="110" Header="Sub Job" UnboundType="Integer" UnboundExpression="[JOBNO]">
                                 <dxg:GridColumn.CellTemplate>
                                     <DataTemplate>
@@ -164,6 +192,7 @@
                                 </dxg:GridColumn.EditSettings>
                             </dxg:GridColumn>
                             <dxg:GridColumn FieldName="RESOURCE_TITLE" Width="150" AllowBestFit="false" Header="Title" ReadOnly="True" />
+                            <dxg:GridColumn FieldName="LINE_STATUS" Width="50" AllowBestFit="false" Header="Line Status" HeaderToolTip="R = Ready to invoice, W = Writeoff, I = Invoiced, X = Cancelled, A = Asset, C = Committed Stock" ReadOnly="True" />
                             <dxg:GridColumn FieldName="TRANSDATE" AllowBestFit="false" Width="80" Header="Transdate" ReadOnly="True" FilterPopupMode="DateAlt" SortOrder="Descending" SortIndex="{Binding DateSortIndex}" />
                             <dxg:GridColumn FieldName="QUANTITY" AllowBestFit="false" Width="100" Header="Quantity" ReadOnly="{Binding CanEditQuantity, Converter={StaticResource BooleanNegationConverter}}" >
                                 <dxg:GridColumn.EditSettings>

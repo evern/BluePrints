@@ -69,6 +69,9 @@
         [StringLength(60)]
         public string RESOURCE_SUPPLIER_NAME { get; set; }
 
+        [StringLength(30)]
+        public string LINE_STATUS { get; set; }
+
         [StringLength(20)]
         public string INVNO { get; set; }
 

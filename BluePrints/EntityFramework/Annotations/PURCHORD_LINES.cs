@@ -3,6 +3,7 @@ namespace BluePrints.PrimeroData
     using BaseModel.Data.Helpers;
     using BaseModel.DataModel;
     using BluePrints.Common.Projections;
+    using BluePrints.Common.Resources;
     using BluePrints.Common.ViewModel.Reporting;
     using BluePrints.Data;
     using DevExpress.Mvvm;
@@ -145,5 +146,7 @@ namespace BluePrints.PrimeroData
                 return taggedValidJobCostTypes;
             }
         }
+
+        public string PhaseCode => BluePrintsResources.ProcurementPhaseCode;
     }
 }

@@ -10,6 +10,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 
 namespace BluePrints.Common.Projections
@@ -274,6 +275,17 @@ namespace BluePrints.Common.Projections
         }
 
         public string DisciplineDesc { get; set; }
+
+        public string PhaseCode
+        {
+            get
+            {
+                if (Projection == null)
+                    return string.Empty;
+
+                return Regex.Replace(Projection.PhaseCode, @"[\d-]", string.Empty);
+            }
+        }
         #endregion
     }
 
