@@ -1,6 +1,10 @@
 ﻿using BluePrints.Common.Projections;
+using BluePrints.Common.Resources;
+using BluePrints.Common.ViewModel.Utils;
+using BluePrints.Data;
 using System;
 using System.Collections.Generic;
+using System.Data;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -8,6 +12,78 @@ using System.Windows.Media;
 
 namespace BluePrints.Common.ViewModel.Misc
 {
+    public static class BASELINE_ITEMProgressImportWrapperHelper
+    {
+        public static BASELINE_ITEMProgress ConvertDataRowToBASELINE_ITEMProgress(DataRow dataRow, 
+            IEnumerable<PHASE> PHASECollection, IEnumerable<AREA> AREACollection, IEnumerable<DISCIPLINE> DISCIPLINECollection, IEnumerable<DOCTYPE> DOCTYPECollection, IEnumerable<DEPARTMENT> DEPARTMENTCollection)
+        {
+            BASELINE_ITEM newBASELINE_ITEM = new BASELINE_ITEM();
+
+            BASELINE_ITEMProjection newBASELINE_ITEMProjection = new BASELINE_ITEMProjection();
+            newBASELINE_ITEMProjection.Entity = newBASELINE_ITEM;
+            BASELINE_ITEMProgress newBASELINE_ITEMProgress = new BASELINE_ITEMProgress();
+            newBASELINE_ITEMProgress.Entity = newBASELINE_ITEMProjection;
+
+            string phase = dataRow[HeaderStringResources.PhaseHeaderString].ToString();
+            string area = dataRow[HeaderStringResources.AreaHeaderString].ToString();
+            string subArea = dataRow[HeaderStringResources.SubAreaHeaderString].ToString();
+            string discipline = dataRow[HeaderStringResources.DisciplineHeaderString].ToString();
+            string disciplineNum = dataRow[HeaderStringResources.DisciplineNumberHeaderString].ToString();
+            string docType = dataRow[HeaderStringResources.DocumentTypeHeaderString].ToString();
+            string deliverableType = dataRow[HeaderStringResources.DeliverableTypeHeaderString].ToString();
+            string department = dataRow[HeaderStringResources.DepartmentHeaderString].ToString();
+            string internalNum = dataRow[HeaderStringResources.InternalNumberHeaderString].ToString();
+            string clientNum = dataRow[HeaderStringResources.ClientNumberHeaderString].ToString();
+            string primaryTitle = dataRow[HeaderStringResources.PrimaryTitleHeaderString].ToString();
+            string secondaryTitle = dataRow[HeaderStringResources.SecondaryTitleHeaderString].ToString();
+            string comments = dataRow[HeaderStringResources.CommentsHeaderString].ToString();
+            string currentEarnedPercentage = dataRow[HeaderStringResources.CurrentPercentageHeaderString].ToString();
+
+            PHASE findPHASE = PHASECollection.FirstOrDefault(x => x.INTERNAL_NUM.ToUpper() == phase.ToUpper());
+            AREA findAREA = AREACollection.FirstOrDefault(x => x.INTERNAL_NUM.ToUpper() == area.ToUpper());
+            AREA findSUBAREA = findAREA == null ? null : AREACollection.FirstOrDefault(x => x.GUID_PARENT == findAREA.GUID && x.INTERNAL_NUM.ToUpper() == subArea.ToUpper());
+            DISCIPLINE findDISCIPLINE = DISCIPLINECollection.FirstOrDefault(x => x.NAME.ToUpper() == discipline.ToUpper());
+
+            int? findDisciplineNum = null;
+            int parseDisciplineNum;
+            if (int.TryParse(disciplineNum, out parseDisciplineNum))
+                findDisciplineNum = parseDisciplineNum;
+
+            DOCTYPE findDOCTYPE = DOCTYPECollection.FirstOrDefault(x => x.NAME.ToUpper() == docType.ToUpper());
+
+            DeliverableType? findDeliverableType = null;
+            DeliverableType parseDeliverableType;
+            if (Enum.TryParse(deliverableType, out parseDeliverableType))
+                findDeliverableType = parseDeliverableType;
+
+            DEPARTMENT findDEPARTMENT = DEPARTMENTCollection.FirstOrDefault(x => x.NAME.ToUpper() == department.ToUpper());
+
+            decimal? findEarnedPercentage = null;
+            decimal parseEarnedPercentage = 0;
+            if (decimal.TryParse(currentEarnedPercentage, out parseEarnedPercentage))
+                findEarnedPercentage = parseEarnedPercentage;
+
+            newBASELINE_ITEM.GUID_PHASE = findPHASE == null ? (Guid?)null : findPHASE.GUID;
+            newBASELINE_ITEM.GUID_AREA = findAREA == null ? (Guid?)null : findAREA.GUID;
+            newBASELINE_ITEM.GUID_SUBAREA = findSUBAREA == null ? (Guid?)null : findSUBAREA.GUID;
+            newBASELINE_ITEM.GUID_DISCIPLINE = findDISCIPLINE == null ? (Guid?)null : findDISCIPLINE.GUID;
+            newBASELINE_ITEM.DISCIPLINE_NUM = findDisciplineNum == null ? 1 : (int)findDisciplineNum;
+            newBASELINE_ITEM.GUID_DOCTYPE = findDOCTYPE == null ? (Guid?)null : findDOCTYPE.GUID;
+            newBASELINE_ITEM.DELIVERABLE_TYPE = findDeliverableType == null ? DeliverableType.Deliverable : (DeliverableType)findDeliverableType;
+            newBASELINE_ITEM.GUID_DEPARTMENT = findDEPARTMENT == null ? (Guid?)null : findDEPARTMENT.GUID;
+            newBASELINE_ITEM.INTERNAL_NUM = internalNum;
+            newBASELINE_ITEM.CLIENT_NUM = clientNum;
+            newBASELINE_ITEM.PRIMARY_TITLE = primaryTitle;
+            newBASELINE_ITEM.SECONDARY_TITLE = secondaryTitle;
+            newBASELINE_ITEM.COMMENTS = comments;
+
+            if(findEarnedPercentage != null)
+                newBASELINE_ITEMProgress.Total_Earned_Percentage = (decimal)findEarnedPercentage;
+
+            return newBASELINE_ITEMProgress;
+        }
+    }
+
     public class BASELINE_ITEMProgressImportWrapper : BASELINE_ITEMProgress
     {
         public OldNewValueCompare<Guid?> Compare_GUID_PHASE { get; set; }
@@ -23,7 +99,10 @@ namespace BluePrints.Common.ViewModel.Misc
         public OldNewValueCompare<string> Compare_PRIMARY_TITLE { get; set; }
         public OldNewValueCompare<string> Compare_SECONDARY_TITLE { get; set; }
         public OldNewValueCompare<string> Compare_COMMENTS { get; set; }
-        public OldNewValueCompare<Guid?> Compare_GUID_SUBJOB { get; set; }
+        public OldNewValueCompare<decimal> Compare_EARNED_PERCENTAGE { get; set; }
+        public bool Import { get; set; }
+        public string Message { get; set; }
+        public bool IsError { get; set; }
 
         public BASELINE_ITEMProgressImportWrapper(BASELINE_ITEMProgress originalProjection, BASELINE_ITEMProgress importProjection)
         {
@@ -40,7 +119,9 @@ namespace BluePrints.Common.ViewModel.Misc
             Compare_PRIMARY_TITLE = new OldNewValueCompare<string>(originalProjection.Entity.Entity.PRIMARY_TITLE, importProjection.Entity.Entity.PRIMARY_TITLE);
             Compare_SECONDARY_TITLE = new OldNewValueCompare<string>(originalProjection.Entity.Entity.SECONDARY_TITLE, importProjection.Entity.Entity.SECONDARY_TITLE);
             Compare_COMMENTS = new OldNewValueCompare<string>(originalProjection.Entity.Entity.COMMENTS, importProjection.Entity.Entity.COMMENTS);
-            Compare_GUID_SUBJOB = new OldNewValueCompare<Guid?>(originalProjection.Subjob_Guid, importProjection.Subjob_Guid);
+            Compare_EARNED_PERCENTAGE = new OldNewValueCompare<decimal>(originalProjection.Total_Earned_Percentage, importProjection.Total_Earned_Percentage);
+
+            this.Entity = originalProjection.Entity;
         }
     }
 

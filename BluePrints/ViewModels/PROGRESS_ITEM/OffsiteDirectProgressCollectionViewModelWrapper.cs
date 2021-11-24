@@ -2,6 +2,7 @@
 using BaseModel.DataModel;
 using BaseModel.Misc;
 using BaseModel.ViewModel.Base;
+using BaseModel.ViewModel.Dialogs;
 using BaseModel.ViewModel.Loader;
 using BaseModel.ViewModel.Services;
 using BluePrints.BluePrintsEntitiesDataModel;
@@ -12,6 +13,7 @@ using BluePrints.Common.Misc;
 using BluePrints.Common.Projections;
 using BluePrints.Common.Reports;
 using BluePrints.Common.Resources;
+using BluePrints.Common.ViewModel.Misc;
 using BluePrints.Common.ViewModel.Reporting;
 using BluePrints.Common.ViewModel.Utils;
 using BluePrints.Data;
@@ -484,13 +486,33 @@ namespace BluePrints.ViewModels
             }
         }
 
+        private DevExpress.Mvvm.IDialogService ImportDialogService
+        {
+            get { return this.GetRequiredService<DevExpress.Mvvm.IDialogService>("ImportDialog"); }
+        }
+
         public bool CanImportContractorDeliverableFromExcel()
         {
             return CanExportContractorDeliverablesToExcel();
         }
 
-        public string InternalNumberHeaderString => "Internal Number";
-        public string CurrentPercentageHeaderString => "Current %";
+        public string AreaHeaderString => HeaderStringResources.AreaHeaderString;
+        public string SubAreaHeaderString => HeaderStringResources.SubAreaHeaderString;
+        public string DisciplineHeaderString => HeaderStringResources.DisciplineHeaderString;
+        public string DisciplineNumberHeaderString => HeaderStringResources.DisciplineNumberHeaderString;
+        public string DocumentTypeHeaderString => HeaderStringResources.DocumentTypeHeaderString;
+        public string DeliverableTypeHeaderString => HeaderStringResources.DeliverableTypeHeaderString;
+        public string DepartmentHeaderString => HeaderStringResources.DepartmentHeaderString;
+        public string ClientNumberHeaderString => HeaderStringResources.ClientNumberHeaderString;
+        public string PrimaryTitleHeaderString => HeaderStringResources.PrimaryTitleHeaderString;
+        public string SecondaryTitleHeaderString => HeaderStringResources.SecondaryTitleHeaderString;
+        public string CommentsHeaderString => HeaderStringResources.CommentsHeaderString;
+        public string ResourceHeaderString => HeaderStringResources.ResourceHeaderString;
+        public string SubJobHeaderString => HeaderStringResources.SubJobHeaderString;
+        public string OfficeHeaderString => HeaderStringResources.OfficeHeaderString;
+        public string PhaseHeaderString => HeaderStringResources.PhaseHeaderString;
+        public string InternalNumberHeaderString => HeaderStringResources.InternalNumberHeaderString;
+        public string CurrentPercentageHeaderString => HeaderStringResources.CurrentPercentageHeaderString;
         public void ImportContractorDeliverableFromExcel()
         {
             FileBrowserDialogService.Filter = "Excel Files (.xls)|*.xlsx|All Files (*.*)|*.*";
@@ -520,8 +542,13 @@ namespace BluePrints.ViewModels
                             return;
                         }
 
+                        ListImportDeliverableViewModel<BASELINE_ITEMProgressImportWrapper> viewModel = ListImportDeliverableViewModel<BASELINE_ITEMProgressImportWrapper>.Create(errorMessages, dialogTitle);
+                        if (ImportDialogService.ShowDialog(MessageButton.OKCancel, string.Empty, "ListErrorMessages", viewModel) == MessageResult.OK)
+                            return true;
+
                         List<PROGRESS_ITEM> updateProgress = new List<PROGRESS_ITEM>();
                         List<ErrorMessage> errorMessages = new List<ErrorMessage>();
+                        List<BASELINE_ITEMProgressImportWrapper> importBaselineItems = new List<BASELINE_ITEMProgressImportWrapper>();
                         foreach (DataRow dataRow in excelSourceDataTable.Rows)
                         {
                             if (dataRow[InternalNumberHeaderString] != DBNull.Value && dataRow[CurrentPercentageHeaderString] != DBNull.Value)
@@ -530,6 +557,7 @@ namespace BluePrints.ViewModels
                                 decimal newPercentage;
                                 if (decimal.TryParse(dataRow[CurrentPercentageHeaderString].ToString(), out newPercentage))
                                 {
+                                    BASELINE_ITEMProgress changeTrackingBaselineItemProgress = BASELINE_ITEMProgressImportWrapperHelper.ConvertDataRowToBASELINE_ITEMProgress(dataRow, PHASECollection, AREACollection, DISCIPLINECollection, DOCTYPECollection, DEPARTMENTCollection);
                                     List<BASELINE_ITEMProgress> findDeliverable = MainViewModel.Entities.Where(x => x.Deliverable_Name == internalNumber).ToList();
                                     if (findDeliverable.Count == 1)
                                     {
@@ -545,9 +573,13 @@ namespace BluePrints.ViewModels
                                             continue;
                                         }
 
-                                        IEnumerable<PROGRESS_ITEM> newPROGRESS_ITEMS = UpdateContractorDeliverableProgress(findContractorDeliverable, newPercentage);
-                                        updateProgress.AddRange(newPROGRESS_ITEMS);
-                                        errorMessages.Add(new ErrorMessage(internalNumber, "Updated from " + totalEarnedPercentageString + "% to " + newPercentageString + "%, update success"));
+                                        BASELINE_ITEMProgressImportWrapper newBASELINE_ITEMProgressImportWrapper = new BASELINE_ITEMProgressImportWrapper(findContractorDeliverable, changeTrackingBaselineItemProgress);
+                                        newBASELINE_ITEMProgressImportWrapper.Message = "Contractor update % of " + newPercentageString + " is less than current % of " + totalEarnedPercentageString;
+                                        newBASELINE_ITEMProgressImportWrapper.IsError = true;
+
+                                        //IEnumerable<PROGRESS_ITEM> newPROGRESS_ITEMS = UpdateContractorDeliverableProgress(findContractorDeliverable, newPercentage);
+                                        //updateProgress.AddRange(newPROGRESS_ITEMS);
+                                        //errorMessages.Add(new ErrorMessage(internalNumber, "Updated from " + totalEarnedPercentageString + "% to " + newPercentageString + "%, update success"));
                                     }
                                     else if (findDeliverable.Count == 0)
                                     {

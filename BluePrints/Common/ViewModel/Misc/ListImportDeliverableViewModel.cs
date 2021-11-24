@@ -72,8 +72,6 @@ namespace BaseModel.ViewModel.Dialogs
 
         DispatcherTimer delayedRefreshTimer;
         IEnumerable<BASELINE_ITEMProgressImportWrapper> enumerableDocuments;
-        string infoObjectStr = BluePrintsResources.ReferenceInfoLineName;
-        string infoObjectPathStr = "Press click import files or add empty row and manually enter details to add custom reference";
 
         protected ListImportDeliverableViewModel(IEnumerable<BASELINE_ITEMProgressImportWrapper> enumerableObjects)
         {
