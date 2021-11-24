@@ -58,8 +58,10 @@ namespace BluePrints.ViewModels
         }
 
         #region Database Operation
+        protected IBluePrintsEntitiesUnitOfWork bluePrintsUnitOfWork;
         protected override void resolveParameters(object parameter)
         {
+            bluePrintsUnitOfWork = BluePrintsEntitiesUnitOfWorkSource.GetUnitOfWorkFactory().CreateUnitOfWork();
             AlwaysSkipMessage = true;
             is_load_p6_task = true;
             isUseReportDate = LoginCredentials.getPermissionStatus(DataUtils.GetNameOf(() => NavigationResources.Permission_DesignDeliverables_ProgressPreviousWeeksDate)) != LoginCredentials.PermissionStatus.None;
@@ -343,6 +345,18 @@ namespace BluePrints.ViewModels
                 return collection;
             }
         }
+
+        public CollectionViewModel<WORKPACK, WORKPACK, Guid, IBluePrintsEntitiesUnitOfWork> WORKPACKSCollectionViewModel
+        {
+            get
+            {
+                if (MainViewModel == null)
+                    return null;
+
+                return (CollectionViewModel<WORKPACK, WORKPACK, Guid, IBluePrintsEntitiesUnitOfWork>)loaderCollection.GetViewModel<WORKPACK>();
+            }
+        }
+
         protected override CostGroup cost_group => CostGroup.Offsite;
 
         protected override IEnumerable<IReportable> ReportableCollection => MainViewModel == null || MainViewModel.Entities == null ? new ObservableCollection<BASELINE_ITEMProgress>() : MainViewModel.Entities;
@@ -554,16 +568,22 @@ namespace BluePrints.ViewModels
                                 if (decimal.TryParse(dataRow[CurrentPercentageHeaderString].ToString(), out newPercentage))
                                 {
                                     BASELINE_ITEMProgress changeTrackingBaselineItemProgress = BASELINE_ITEMProgressImportWrapperHelper.ConvertDataRowToBASELINE_ITEMProgress(dataRow, PHASECollection, AREACollection, DISCIPLINECollection, DOCTYPECollection, DEPARTMENTCollection);
-                                    List<BASELINE_ITEMProgress> findDeliverable = MainViewModel.Entities.Where(x => x.Deliverable_Name == internalNumber).ToList();
+                                    List<BASELINE_ITEMProgress> findDeliverable = ContractorDeliverableList.Where(x => x.Deliverable_Name == internalNumber).ToList();
                                     if (findDeliverable.Count == 1)
                                     {
                                         BASELINE_ITEMProgress findContractorDeliverable = findDeliverable.First();
-                                        string totalEarnedPercentageString = string.Format("{0:P2}.", findContractorDeliverable.Total_Earned_Percentage);
-                                        string newPercentageString = string.Format("{0:P2}.", newPercentage);
+                                        string totalEarnedPercentageString = string.Format("{0:P2}", findContractorDeliverable.Total_Earned_Percentage);
+                                        string newPercentageString = string.Format("{0:P2}", newPercentage);
 
-                                        BASELINE_ITEMProgressImportWrapper newBASELINE_ITEMProgressImportWrapper = new BASELINE_ITEMProgressImportWrapper(findContractorDeliverable, changeTrackingBaselineItemProgress);
-                                        newBASELINE_ITEMProgressImportWrapper.Message = "Contractor update % of " + newPercentageString + " is less than current % of " + totalEarnedPercentageString;
-                                        newBASELINE_ITEMProgressImportWrapper.IsError = true;
+                                        BASELINE_ITEMProgressImportWrapper newBASELINE_ITEMProgressImportWrapper = new BASELINE_ITEMProgressImportWrapper(findContractorDeliverable, changeTrackingBaselineItemProgress, PHASECollection, AREACollection, DISCIPLINECollection, DOCTYPECollection, DEPARTMENTCollection);
+
+                                        if (findContractorDeliverable.Total_Earned_Percentage > newPercentage)
+                                        {
+                                            newBASELINE_ITEMProgressImportWrapper.Message = "Contractor update of " + newPercentageString + " is less than current of " + totalEarnedPercentageString;
+                                            newBASELINE_ITEMProgressImportWrapper.IsError = true;
+                                        }
+                                        else if(!newBASELINE_ITEMProgressImportWrapper.IsSame)
+                                            newBASELINE_ITEMProgressImportWrapper.Import = true;
 
                                         importBaselineItems.Add(newBASELINE_ITEMProgressImportWrapper);
                                         //IEnumerable<PROGRESS_ITEM> newPROGRESS_ITEMS = UpdateContractorDeliverableProgress(findContractorDeliverable, newPercentage);
@@ -572,15 +592,22 @@ namespace BluePrints.ViewModels
                                     }
                                     else if (findDeliverable.Count == 0)
                                     {
-                                        BASELINE_ITEMProgressImportWrapper newBASELINE_ITEMProgressImportWrapper = new BASELINE_ITEMProgressImportWrapper(changeTrackingBaselineItemProgress, changeTrackingBaselineItemProgress);
+                                        BASELINE_ITEMProgressImportWrapper newBASELINE_ITEMProgressImportWrapper = new BASELINE_ITEMProgressImportWrapper(changeTrackingBaselineItemProgress, changeTrackingBaselineItemProgress, PHASECollection, AREACollection, DISCIPLINECollection, DOCTYPECollection, DEPARTMENTCollection);
+                                        if (MainViewModel.Entities.Where(x => x.Entity.Entity.GUID_OFFICE != ContractorOfficeGuid).Any(x => x.Deliverable_Name == newBASELINE_ITEMProgressImportWrapper.Deliverable_Name))
+                                        {
+                                            newBASELINE_ITEMProgressImportWrapper.Message = "Error: There are non-contractor deliverable(s) with the same internal number";
+                                            newBASELINE_ITEMProgressImportWrapper.IsError = true;
+                                        }
+
+                                        newBASELINE_ITEMProgressImportWrapper.IsNew = true;
                                         importBaselineItems.Add(newBASELINE_ITEMProgressImportWrapper);
                                         //errorMessages.Add(new ErrorMessage(internalNumber, "Contractor deliverable with internal number: " + internalNumber + " is not found, updated skipped"));
 
                                     }
                                     else
                                     {
-                                        BASELINE_ITEMProgressImportWrapper newBASELINE_ITEMProgressImportWrapper = new BASELINE_ITEMProgressImportWrapper(changeTrackingBaselineItemProgress, changeTrackingBaselineItemProgress);
-                                        newBASELINE_ITEMProgressImportWrapper.Message = "More than a single contractor deliverable with internal number: " + internalNumber + " is found, updated skipped";
+                                        BASELINE_ITEMProgressImportWrapper newBASELINE_ITEMProgressImportWrapper = new BASELINE_ITEMProgressImportWrapper(changeTrackingBaselineItemProgress, changeTrackingBaselineItemProgress, PHASECollection, AREACollection, DISCIPLINECollection, DOCTYPECollection, DEPARTMENTCollection);
+                                        newBASELINE_ITEMProgressImportWrapper.Message = "Multiple deliverable with internal number: " + internalNumber + " is found, please revise deliverable's list or import sheet";
                                         newBASELINE_ITEMProgressImportWrapper.IsError = true;
 
                                         importBaselineItems.Add(newBASELINE_ITEMProgressImportWrapper);
@@ -594,14 +621,74 @@ namespace BluePrints.ViewModels
                         ListImportDeliverableViewModel<BASELINE_ITEMProgressImportWrapper> viewModel = ListImportDeliverableViewModel<BASELINE_ITEMProgressImportWrapper>.Create(importBaselineItems, PHASECollection, AREACollection, DISCIPLINECollection, DOCTYPECollection, DEPARTMENTCollection);
                         if (ImportDialogService.ShowDialog(MessageButton.OKCancel, string.Empty, "ListImportDeliverableView", viewModel) == MessageResult.OK)
                         {
+                            foreach (BASELINE_ITEMProgressImportWrapper sourceObject in viewModel.SourceObjects.Where(x => x.Import))
+                            {
+                                BASELINE_ITEMProgress findDeliverable = ContractorDeliverableList.FirstOrDefault(x => x.Deliverable_Name == sourceObject.Deliverable_Name);
+                                if (findDeliverable != null)
+                                {
+                                    bool isProgressUpdated = false;
+                                    string totalEarnedPercentageString = string.Format("{0:P2}", findDeliverable.Total_Earned_Percentage);
+                                    string newPercentageString = string.Format("{0:P2}", sourceObject.Total_Earned_Percentage);
 
+                                    if (sourceObject.Total_Earned_Percentage > findDeliverable.Total_Earned_Percentage)
+                                    {
+                                        IEnumerable<PROGRESS_ITEM> newPROGRESS_ITEMS = UpdateContractorDeliverableProgress(findDeliverable, sourceObject.Total_Earned_Percentage);
+                                        updateProgress.AddRange(newPROGRESS_ITEMS);
+                                        isProgressUpdated = true;
+                                    }
+
+                                    bool isPropertiesUpdated = false;
+                                    if (sourceObject.IsAnyPropertyDifferent())
+                                    {
+                                        isPropertiesUpdated = true;
+                                        findDeliverable.Phase_Guid = sourceObject.Phase_Guid;
+                                        findDeliverable.Entity.Entity.GUID_AREA = sourceObject.Entity.Entity.GUID_AREA;
+                                        findDeliverable.Entity.Entity.GUID_SUBAREA = sourceObject.Entity.Entity.GUID_SUBAREA;
+                                        findDeliverable.Entity.Entity.GUID_DISCIPLINE = sourceObject.Entity.Entity.GUID_DISCIPLINE;
+                                        findDeliverable.Entity.Entity.DISCIPLINE_NUM = sourceObject.Entity.Entity.DISCIPLINE_NUM;
+                                        findDeliverable.Entity.Entity.DELIVERABLE_TYPE = sourceObject.Entity.Entity.DELIVERABLE_TYPE;
+                                        findDeliverable.Entity.Entity.GUID_DEPARTMENT = sourceObject.Entity.Entity.GUID_DEPARTMENT;
+                                        findDeliverable.Entity.Entity.INTERNAL_NUM = sourceObject.Entity.Entity.INTERNAL_NUM;
+                                        findDeliverable.Entity.Entity.CLIENT_NUM = sourceObject.Entity.Entity.CLIENT_NUM;
+                                        findDeliverable.Entity.Entity.PRIMARY_TITLE = sourceObject.Entity.Entity.PRIMARY_TITLE;
+                                        findDeliverable.Entity.Entity.SECONDARY_TITLE = sourceObject.Entity.Entity.SECONDARY_TITLE;
+                                        findDeliverable.Entity.Entity.COMMENTS = sourceObject.Entity.Entity.COMMENTS;
+                                        findDeliverable.ShouldSave = true;
+                                        MainViewModel.Save(findDeliverable);
+                                    }
+
+                                    if(isProgressUpdated && isPropertiesUpdated)
+                                        errorMessages.Add(new ErrorMessage(sourceObject.Deliverable_Name, "Properties updated and progress updated from " + totalEarnedPercentageString + " to " + newPercentageString + ", update success"));
+                                    else if(isProgressUpdated)
+                                        errorMessages.Add(new ErrorMessage(sourceObject.Deliverable_Name, "Progress updated from " + totalEarnedPercentageString + " to " + newPercentageString + ", update success"));
+                                    else if(isPropertiesUpdated)
+                                        errorMessages.Add(new ErrorMessage(sourceObject.Deliverable_Name, "Properties updated"));
+                                }
+                                else
+                                {
+                                    sourceObject.Live_PROGRESS = loadPROGRESS;
+                                    sourceObject.SetReportingDataDate(DataDate);
+                                    sourceObject.Entity.Entity.GUID_OFFICE = ContractorOfficeGuid;
+                                    sourceObject.Entity.Entity.BUDGET_HOURS = 99;
+                                    sourceObject.ShouldSave = true;
+                                    decimal totalEarnedPercentage = sourceObject.Total_Earned_Percentage;
+                                    //mainly for generating sub job
+                                    BluePrintsDataUtils.OnBeforeSavingBASELINE_ITEM(bluePrintsUnitOfWork, sourceObject, loadPROJECT, loadBASELINE, DeliverablesViewType.Both, PHASECollection, MainViewModel.Entities.Select(x => x.Entity.Entity), AREACollection, SUBAREACollection, DISCIPLINECollection, DOCTYPECollection, WORKPACKCollection, SUBJOBCollection, WORKPACKSCollectionViewModel, false, false);
+
+                                    //restore total earned percentage because it's being resetted when projection.Update() is called in BluePrintsDataUtils.OnBeforeSavingBASELINE_ITEM
+                                    sourceObject.Total_Earned_Percentage = totalEarnedPercentage;
+
+                                    errorMessages.Add(new ErrorMessage(sourceObject.Deliverable_Name, "Deliverable added"));
+                                    MainViewModel.Save(sourceObject);
+                                }
+                            }
                         }
 
-                        //PROGRESS_ITEMSCollectionViewModel.BaseBulkSave(updateProgress);
-                        //if (errorMessages.Count > 0)
-                        //    ShowErrorMessage("Contractor Deliverable Update Status", errorMessages);
-                        //else
-                        //    MessageBoxService.ShowMessage("No contractor deliverable has been progressed, nothing to import", "Status", MessageButton.OK, MessageIcon.Information);
+                        PROGRESS_ITEMSCollectionViewModel.BaseBulkSave(updateProgress);
+                        if (errorMessages.Count > 0)
+                            ShowErrorMessage("Contractor Deliverable Update Status", errorMessages);
+                        else
+                            MessageBoxService.ShowMessage("No update has been done", "Status", MessageButton.OK, MessageIcon.Information);
                     }
                     else
                     {
@@ -613,6 +700,27 @@ namespace BluePrints.ViewModels
                     MessageBoxService.ShowMessage("Data date cannot be determined from import spreadsheet file name, please rename it ending with " + loadPROGRESS.DATA_DATE.ToString(BluePrintsResources.ColumnDateFormat));
                 }
             }
+        }
+
+        protected override bool OnBeforeApplyingProjectionPropertiesToEntityIsContinue(BASELINE_ITEMProgress projectionEntity, BASELINE_ITEM entity)
+        {
+            if(projectionEntity.GetType() == typeof(BASELINE_ITEMProgressImportWrapper))
+            {
+                projectionEntity.Entity.Entity.GUID_BASELINE = loadBASELINE.GUID;
+                DataUtils.ShallowCopy(entity, projectionEntity.Entity.Entity);
+            }
+
+            return base.OnBeforeApplyingProjectionPropertiesToEntityIsContinue(projectionEntity, entity);
+        }
+
+        protected override void OnAfterEntitySavedCallBack(BASELINE_ITEMProgress projectionEntity, BASELINE_ITEM entity, bool isNewEntity)
+        {
+            if (projectionEntity.GetType() == typeof(BASELINE_ITEMProgressImportWrapper))
+            {
+                projectionEntity.Entity.Entity = entity;
+            }
+
+            base.OnAfterEntitySavedCallBack(projectionEntity, entity, isNewEntity);
         }
 
         private IEnumerable<PROGRESS_ITEM> UpdateContractorDeliverableProgress(BASELINE_ITEMProgress findContractorDeliverable, decimal newPercentage)

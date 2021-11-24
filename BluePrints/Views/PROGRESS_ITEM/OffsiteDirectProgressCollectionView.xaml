@@ -23,8 +23,8 @@
                 <dxc:DialogService.DialogStyle>
                     <Style TargetType="dx:DXDialogWindow">
                         <Setter Property="SizeToContent" Value="WidthAndHeight" />
-                        <Setter Property="MinWidth" Value="300" />
-                        <Setter Property="MinHeight" Value="300" />
+                        <Setter Property="MinWidth" Value="1200" />
+                        <Setter Property="MinHeight" Value="600" />
                     </Style>
                 </dxc:DialogService.DialogStyle>
             </dxc:DialogService>

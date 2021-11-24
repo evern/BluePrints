@@ -107,18 +107,6 @@ namespace BaseModel.ViewModel.Dialogs
             delayedRefreshTimer.Start();
         }
 
-        public List<BASELINE_ITEMProgressImportWrapper> GetSelectedDocuments()
-        {
-            List<BASELINE_ITEMProgressImportWrapper> returnDocuments = new List<BASELINE_ITEMProgressImportWrapper>();
-            foreach(BASELINE_ITEMProgressImportWrapper sourceObject in SourceObjects)
-            {
-                //if (sourceObject.AttachmentName != BluePrintsResources.ReferenceInfoLineName && sourceObject.AttachmentName != null && sourceObject.AttachmentName != string.Empty)
-                    returnDocuments.Add(sourceObject);
-            }
-
-            return returnDocuments;
-        }
-
         private void SelectedEntities_CollectionChanged(object sender, System.Collections.Specialized.NotifyCollectionChangedEventArgs e)
         {
             
@@ -129,6 +117,8 @@ namespace BaseModel.ViewModel.Dialogs
             if(GridControlService.GridControl != null && GridControlService.GridControl.ItemsSource != null)
             {
                 delayedRefreshTimer.Stop();
+                GridControlService.RefreshData();
+                TableViewService.ApplyBestFit();
             }
         }
 

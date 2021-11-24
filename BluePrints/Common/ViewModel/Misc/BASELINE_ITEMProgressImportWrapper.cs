@@ -1,4 +1,5 @@
-﻿using BluePrints.Common.Projections;
+﻿using BaseModel.Misc;
+using BluePrints.Common.Projections;
 using BluePrints.Common.Resources;
 using BluePrints.Common.ViewModel.Utils;
 using BluePrints.Data;
@@ -14,7 +15,7 @@ namespace BluePrints.Common.ViewModel.Misc
 {
     public static class BASELINE_ITEMProgressImportWrapperHelper
     {
-        public static BASELINE_ITEMProgress ConvertDataRowToBASELINE_ITEMProgress(DataRow dataRow, 
+        public static BASELINE_ITEMProgress ConvertDataRowToBASELINE_ITEMProgress(DataRow dataRow,
             IEnumerable<PHASE> PHASECollection, IEnumerable<AREA> AREACollection, IEnumerable<DISCIPLINE> DISCIPLINECollection, IEnumerable<DOCTYPE> DOCTYPECollection, IEnumerable<DEPARTMENT> DEPARTMENTCollection)
         {
             BASELINE_ITEM newBASELINE_ITEM = new BASELINE_ITEM();
@@ -38,10 +39,6 @@ namespace BluePrints.Common.ViewModel.Misc
             string secondaryTitle = dataRow[ColumnHeaderResources.SecondaryTitleHeaderString].ToString();
             string comments = dataRow[ColumnHeaderResources.CommentsHeaderString].ToString();
             string currentEarnedPercentage = dataRow[ColumnHeaderResources.CurrentPercentageHeaderString].ToString();
-
-            string s;
-            if (comments != string.Empty)
-                s = string.Empty;
 
             PHASE findPHASE = PHASECollection.FirstOrDefault(x => x.INTERNAL_NUM.ToUpper() == phase.ToUpper());
             AREA findAREA = AREACollection.FirstOrDefault(x => x.INTERNAL_NUM.ToUpper() == area.ToUpper());
@@ -88,16 +85,16 @@ namespace BluePrints.Common.ViewModel.Misc
         }
     }
 
-    public class BASELINE_ITEMProgressImportWrapper : BASELINE_ITEMProgress
+    public class BASELINE_ITEMProgressImportWrapper : BASELINE_ITEMProgress, IOriginalGuidEntityKey
     {
-        public OldNewValueCompare<Guid?> Compare_GUID_PHASE { get; set; }
-        public OldNewValueCompare<Guid?> Compare_GUID_AREA { get; set; }
-        public OldNewValueCompare<Guid?> Compare_GUID_SUBAREA { get; set; }
-        public OldNewValueCompare<Guid?> Compare_GUID_DISCIPLINE { get; set; }
+        public OldNewValueCompare<string> Compare_PHASE { get; set; }
+        public OldNewValueCompare<string> Compare_AREA { get; set; }
+        public OldNewValueCompare<string> Compare_SUBAREA { get; set; }
+        public OldNewValueCompare<string> Compare_DISCIPLINE { get; set; }
         public OldNewValueCompare<decimal> Compare_DISCIPLINE_NUM { get; set; }
-        public OldNewValueCompare<Guid?> Compare_GUID_DOCTYPE { get; set; }
-        public OldNewValueCompare<DeliverableType> Compare_DELIVERABLE_TYPE { get; set; }
-        public OldNewValueCompare<Guid?> Compare_GUID_DEPARTMENT { get; set; }
+        public OldNewValueCompare<string> Compare_DOCTYPE { get; set; }
+        public OldNewValueCompare<string> Compare_DELIVERABLE_TYPE { get; set; }
+        public OldNewValueCompare<string> Compare_DEPARTMENT { get; set; }
         public OldNewValueCompare<string> Compare_INTERNAL_NUM { get; set; }
         public OldNewValueCompare<string> Compare_CLIENT_NUM { get; set; }
         public OldNewValueCompare<string> Compare_PRIMARY_TITLE { get; set; }
@@ -105,29 +102,61 @@ namespace BluePrints.Common.ViewModel.Misc
         public OldNewValueCompare<string> Compare_COMMENTS { get; set; }
         public OldNewValueCompare<decimal> Compare_EARNED_PERCENTAGE { get; set; }
         public bool Import { get; set; }
+        public bool CanImport => !IsError && !IsSame;
         public string Message { get; set; }
         public bool IsError { get; set; }
+        public bool IsNew { get; set; }
+        public bool IsSame => !Compare_EARNED_PERCENTAGE.IsDifferent && !IsAnyPropertyDifferent();
 
-        public BASELINE_ITEMProgressImportWrapper(BASELINE_ITEMProgress originalProjection, BASELINE_ITEMProgress importProjection)
+        public BASELINE_ITEMProgressImportWrapper(BASELINE_ITEMProgress originalProjection, BASELINE_ITEMProgress importProjection,
+            IEnumerable<PHASE> PHASECollection, IEnumerable<AREA> AREACollection, IEnumerable<DISCIPLINE> DISCIPLINECollection, IEnumerable<DOCTYPE> DOCTYPECollection, IEnumerable<DEPARTMENT> DEPARTMENTCollection)
         {
             BASELINE_ITEMProgress compareProjection = originalProjection == null ? importProjection : originalProjection;
 
-            Compare_GUID_PHASE = new OldNewValueCompare<Guid?>(compareProjection.Phase_Guid, importProjection.Phase_Guid);
-            Compare_GUID_AREA = new OldNewValueCompare<Guid?>(compareProjection.Area_Guid, importProjection.Area_Guid);
-            Compare_GUID_SUBAREA = new OldNewValueCompare<Guid?>(compareProjection.SubArea_Guid, importProjection.SubArea_Guid);
-            Compare_GUID_DISCIPLINE = new OldNewValueCompare<Guid?>(compareProjection.Discipline_Guid, importProjection.Discipline_Guid);
+            PHASE oldPHASE = PHASECollection.FirstOrDefault(x => x.GUID == compareProjection.Phase_Guid);
+            PHASE newPHASE = PHASECollection.FirstOrDefault(x => x.GUID == importProjection.Phase_Guid);
+            Compare_PHASE = new OldNewValueCompare<string>(oldPHASE == null ? string.Empty : oldPHASE.INTERNAL_NUM, newPHASE == null ? string.Empty : newPHASE.INTERNAL_NUM);
+
+            AREA oldAREA = AREACollection.FirstOrDefault(x => x.GUID == compareProjection.SubArea_Guid);
+            AREA newAREA = AREACollection.FirstOrDefault(x => x.GUID == importProjection.SubArea_Guid);
+            Compare_AREA = new OldNewValueCompare<string>(oldAREA == null ? string.Empty : oldAREA.INTERNAL_NUM, newAREA == null ? string.Empty : newAREA.INTERNAL_NUM);
+
+            AREA oldSUBAREA = AREACollection.FirstOrDefault(x => x.GUID == compareProjection.SubArea_Guid);
+            AREA newSUBAREA = AREACollection.FirstOrDefault(x => x.GUID == importProjection.SubArea_Guid);
+            Compare_SUBAREA = new OldNewValueCompare<string>(oldSUBAREA == null ? string.Empty : oldSUBAREA.INTERNAL_NUM, newSUBAREA == null ? string.Empty : newSUBAREA.INTERNAL_NUM);
+
+            DISCIPLINE oldDISCIPLINE = DISCIPLINECollection.FirstOrDefault(x => x.GUID == compareProjection.Discipline_Guid);
+            DISCIPLINE newDISCIPLINE = DISCIPLINECollection.FirstOrDefault(x => x.GUID == importProjection.Discipline_Guid);
+            Compare_DISCIPLINE = new OldNewValueCompare<string>(oldDISCIPLINE == null ? string.Empty : oldDISCIPLINE.NAME, newDISCIPLINE == null ? string.Empty : newDISCIPLINE.NAME);
             Compare_DISCIPLINE_NUM = new OldNewValueCompare<decimal>(compareProjection.Discipline_Number, compareProjection.Discipline_Number);
-            Compare_GUID_DOCTYPE = new OldNewValueCompare<Guid?>(compareProjection.Entity.Entity.GUID_DOCTYPE, importProjection.Entity.Entity.GUID_DOCTYPE);
-            Compare_DELIVERABLE_TYPE = new OldNewValueCompare<DeliverableType>(compareProjection.Entity.Entity.DELIVERABLE_TYPE, importProjection.Entity.Entity.DELIVERABLE_TYPE);
-            Compare_GUID_DEPARTMENT = new OldNewValueCompare<Guid?>(compareProjection.Department_Guid, importProjection.Department_Guid);
+
+            DOCTYPE oldDOCTYPE = DOCTYPECollection.FirstOrDefault(x => x.GUID == compareProjection.Entity.Entity.GUID_DOCTYPE);
+            DOCTYPE newDOCTYPE = DOCTYPECollection.FirstOrDefault(x => x.GUID == importProjection.Entity.Entity.GUID_DOCTYPE);
+            Compare_DOCTYPE = new OldNewValueCompare<string>(oldDOCTYPE == null ? string.Empty : oldDOCTYPE.NAME, newDOCTYPE == null ? string.Empty : newDOCTYPE.NAME);
+
+            string oldDeliverableType = Enum.GetName(typeof(DeliverableType), compareProjection.Entity.Entity.DELIVERABLE_TYPE);
+            string newDeliverableType = Enum.GetName(typeof(DeliverableType), importProjection.Entity.Entity.DELIVERABLE_TYPE);
+            Compare_DELIVERABLE_TYPE = new OldNewValueCompare<string>(oldDeliverableType, newDeliverableType);
+
+            DEPARTMENT oldDepartment = DEPARTMENTCollection.FirstOrDefault(x => x.GUID == compareProjection.Department_Guid);
+            DEPARTMENT newDepartment = DEPARTMENTCollection.FirstOrDefault(x => x.GUID == importProjection.Department_Guid);
+            Compare_DEPARTMENT = new OldNewValueCompare<string>(oldDepartment == null ? string.Empty : oldDepartment.NAME, newDepartment == null ? string.Empty : newDepartment.NAME);
             Compare_INTERNAL_NUM = new OldNewValueCompare<string>(compareProjection.Entity.Entity.INTERNAL_NUM, importProjection.Entity.Entity.INTERNAL_NUM);
             Compare_CLIENT_NUM = new OldNewValueCompare<string>(compareProjection.Entity.Entity.CLIENT_NUM, importProjection.Entity.Entity.CLIENT_NUM);
             Compare_PRIMARY_TITLE = new OldNewValueCompare<string>(compareProjection.Entity.Entity.PRIMARY_TITLE, importProjection.Entity.Entity.PRIMARY_TITLE);
             Compare_SECONDARY_TITLE = new OldNewValueCompare<string>(compareProjection.Entity.Entity.SECONDARY_TITLE, importProjection.Entity.Entity.SECONDARY_TITLE);
             Compare_COMMENTS = new OldNewValueCompare<string>(compareProjection.Entity.Entity.COMMENTS, importProjection.Entity.Entity.COMMENTS);
-            Compare_EARNED_PERCENTAGE = new OldNewValueCompare<decimal>(compareProjection.Total_Earned_Percentage, importProjection.Total_Earned_Percentage);
+            Compare_EARNED_PERCENTAGE = new OldNewValueCompare<decimal>(compareProjection.Total_Earned_Percentage, importProjection.Total_Earned_Percentage, true);
 
-            this.Entity = compareProjection.Entity;
+            this.Entity = importProjection.Entity;
+            this.Total_Earned_Percentage = importProjection.Total_Earned_Percentage;
+        }
+
+        public bool IsAnyPropertyDifferent()
+        {
+            return Compare_PHASE.IsDifferent || Compare_AREA.IsDifferent || Compare_SUBAREA.IsDifferent || Compare_DISCIPLINE.IsDifferent || Compare_DISCIPLINE_NUM.IsDifferent || Compare_DOCTYPE.IsDifferent
+                || Compare_DELIVERABLE_TYPE.IsDifferent || Compare_DEPARTMENT.IsDifferent || Compare_INTERNAL_NUM.IsDifferent || Compare_CLIENT_NUM.IsDifferent || Compare_PRIMARY_TITLE.IsDifferent
+                || Compare_SECONDARY_TITLE.IsDifferent || Compare_COMMENTS.IsDifferent;
         }
     }
 
@@ -135,32 +164,50 @@ namespace BluePrints.Common.ViewModel.Misc
     {
         readonly T OldValue;
         readonly T NewValue;
-        public OldNewValueCompare(T OldValue, T NewValue)
+        readonly bool UsePercentageFormat;
+        public OldNewValueCompare(T OldValue, T NewValue, bool usePercentageFormat = false)
         {
             this.OldValue = OldValue;
             this.NewValue = NewValue;
+            this.UsePercentageFormat = usePercentageFormat;
         }
 
         public string ToolTip
         {
             get
             {
-                if (isDifferent && this.OldValue != null)
-                    return this.OldValue.ToString();
+                if (IsDifferent && this.OldValue != null)
+                {
+                    string displayString = this.OldValue.ToString();
+                    if (UsePercentageFormat)
+                        displayString = String.Format("{0:P2}", this.OldValue);
 
-                return string.Empty;
+                    return "Original Value :" + displayString; 
+                }
+                else if (IsDifferent && this.OldValue == null)
+                    return "Original Value is empty";
+
+                return null;
             }
         }
 
-        private bool isDifferent
+        public bool IsDifferent
         {
             get
             {
-                if (OldValue == null && NewValue != null)
+                if (OldValue == null && NewValue != null && NewValue.ToString() != string.Empty)
                     return true;
-                else if (OldValue != null && NewValue == null)
+                else if (OldValue != null && OldValue.ToString() != string.Empty && NewValue == null)
                     return true;
-                else if (OldValue.ToString() != NewValue.ToString())
+                else if(OldValue != null && NewValue != null && UsePercentageFormat)
+                {
+                    string oldDisplayString = String.Format("{0:P2}", this.OldValue);
+                    string newDisplayString = String.Format("{0:P2}", this.NewValue);
+
+                    if (oldDisplayString != newDisplayString)
+                        return true;
+                }
+                else if (OldValue != null && NewValue != null && OldValue.ToString() != NewValue.ToString())
                     return true;
 
                 return false;
@@ -171,7 +218,7 @@ namespace BluePrints.Common.ViewModel.Misc
         {
             get
             {
-                if(isDifferent)
+                if(IsDifferent)
                     return new SolidColorBrush(Colors.LightSalmon);
 
                 return new SolidColorBrush(Colors.Transparent);

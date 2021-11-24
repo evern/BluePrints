@@ -511,6 +511,132 @@ namespace BluePrints.Common.ViewModel.Utils
 
     public static class BluePrintsDataUtils
     {
+        public static void OnBeforeSavingBASELINE_ITEM(IBluePrintsEntitiesUnitOfWork bluePrintsUnitOfWork, BASELINE_ITEMProgress projection, PROJECT loadPROJECT, BASELINE loadBASELINE, DeliverablesViewType viewType, IEnumerable<PHASE> PHASECollection, IEnumerable<BASELINE_ITEM> Entities, IEnumerable<AREA> AREACollection, IEnumerable<AREA> SUBAREACollection, IEnumerable<DISCIPLINE> DISCIPLINECollection, IEnumerable<DOCTYPE> DOCTYPECollection, IEnumerable<WORKPACK> WORKPACKCollection, IEnumerable<SUBJOB> SUBJOBCollection, CollectionViewModel<WORKPACK, WORKPACK, Guid, IBluePrintsEntitiesUnitOfWork> WORKPACKSCollectionViewModel, bool allowSubJobDeletion, bool allowWorkpackDeletion)
+        {
+            if (projection.Entity.Entity.GUID_OFFICE == null)
+                projection.Entity.Entity.GUID_OFFICE = loadPROJECT.GUID_OFFICE;
+
+            //this context is inherited by variation and is used to save newly added variation
+            if (projection.Entity.Entity.GUID_BASELINE == null && projection.Entity.Entity.GUID_VARIATION == null)
+                projection.Entity.Entity.GUID_BASELINE = loadBASELINE.GUID;
+
+            PhaseType? phaseType = null;
+            ChargeType? chargeType = null;
+            PHASE defaultPHASE = null;
+            if (viewType == DeliverablesViewType.Direct || viewType == DeliverablesViewType.Both)
+            {
+                phaseType = PhaseType.Design;
+                chargeType = ChargeType.Chargeable;
+                defaultPHASE = PHASECollection.FirstOrDefault(x => x.PHASE_TYPE != null && x.PHASE_TYPE == PhaseType.Design && x.CHARGE_TYPE != null && x.CHARGE_TYPE == ChargeType.Chargeable);
+                if (viewType != DeliverablesViewType.Both && defaultPHASE != null)
+                    projection.Phase_Guid = defaultPHASE.GUID;
+            }
+            else if (viewType == DeliverablesViewType.Indirect)
+            {
+                phaseType = PhaseType.Design;
+                chargeType = ChargeType.NotChargeable;
+                PHASE indirectPHASE = PHASECollection.FirstOrDefault(x => x.PHASE_TYPE != null && x.PHASE_TYPE == PhaseType.Design && x.CHARGE_TYPE != null && x.CHARGE_TYPE == ChargeType.NotChargeable);
+                if (indirectPHASE != null)
+                    projection.Phase_Guid = indirectPHASE.GUID;
+            }
+            else if (projection.Phase_Guid == null)
+            {
+                defaultPHASE = PHASECollection.FirstOrDefault(x => x.PHASE_TYPE != null && x.PHASE_TYPE == PhaseType.Design && x.CHARGE_TYPE != null && x.CHARGE_TYPE == ChargeType.Chargeable);
+                if (defaultPHASE != null)
+                    projection.Phase_Guid = defaultPHASE.GUID;
+            }
+
+            string errorMessage = string.Empty;
+            if (projection.GUID == Guid.Empty && projection.Entity.Entity.INTERNAL_NUM == string.Empty && projection.IsInternalNumberEditable)
+                projection.Entity.Entity.INTERNAL_NUM = GenerateInternalNumber(projection, loadPROJECT, Entities, AREACollection, DISCIPLINECollection, DOCTYPECollection, out errorMessage);
+
+            assignDeliverablePhase(projection, defaultPHASE, DOCTYPECollection, PHASECollection);
+            BluePrintsDataUtils.OnBeforeSavedGenerateAndAssignSubjob(loadPROJECT, PHASECollection, AREACollection, SUBAREACollection, projection, bluePrintsUnitOfWork, phaseType, chargeType, false, allowSubJobDeletion);
+            BluePrintsDataUtils.OnBeforeSavedGenerateAndAssignWorkpack(loadPROJECT, projection, WORKPACKSCollectionViewModel, SUBJOBCollection, DISCIPLINECollection, allowWorkpackDeletion);
+            projection.Update();
+        }
+
+        private static void assignDeliverablePhase(BASELINE_ITEMProgress projection, PHASE defaultPHASE, IEnumerable<DOCTYPE> DOCTYPECollection, IEnumerable<PHASE> PHASECollection)
+        {
+            if (defaultPHASE == null)
+                return;
+
+            if (projection.Phase_Guid == null || (projection.Entity.Entity.GUID_DOCTYPE != null && IsDocTypePhaseValid(projection.Entity.Entity.GUID_DOCTYPE, projection.Phase_Guid, PHASECollection, DOCTYPECollection) != string.Empty))
+            {
+                if (projection.Entity.Entity.DOCTYPE != null)
+                {
+                    DOCTYPE findDOCTYPE = DOCTYPECollection.FirstOrDefault(x => x.GUID == projection.Entity.Entity.GUID_DOCTYPE);
+                    if (findDOCTYPE != null)
+                    {
+                        if (findDOCTYPE.IS_INDIRECT_ONLY)
+                            defaultPHASE = PHASECollection.FirstOrDefault(x => x.PHASE_TYPE != null && x.PHASE_TYPE == PhaseType.Indirect && x.CHARGE_TYPE != null && x.CHARGE_TYPE == ChargeType.Chargeable);
+                        else
+                            defaultPHASE = PHASECollection.FirstOrDefault(x => x.PHASE_TYPE != null && x.PHASE_TYPE == PhaseType.Design && x.CHARGE_TYPE != null && x.CHARGE_TYPE == ChargeType.Chargeable);
+
+                        if (defaultPHASE != null)
+                            projection.Phase_Guid = defaultPHASE.GUID;
+                    }
+                }
+                else
+                {
+                    defaultPHASE = PHASECollection.FirstOrDefault(x => x.PHASE_TYPE != null && x.PHASE_TYPE == PhaseType.Design && x.CHARGE_TYPE != null && x.CHARGE_TYPE == ChargeType.Chargeable);
+                    if (defaultPHASE != null)
+                        projection.Phase_Guid = defaultPHASE.GUID;
+                }
+            }
+        }
+
+        public static string IsDocTypePhaseValid(Guid? doctypeGuid, Guid? phaseGuid, IEnumerable<PHASE> PHASECollection, IEnumerable<DOCTYPE> DOCTYPECollection)
+        {
+            if (doctypeGuid != null && phaseGuid != null)
+            {
+                PHASE phase = PHASECollection.FirstOrDefault(x => x.GUID == phaseGuid);
+                if (phase != null)
+                {
+                    DOCTYPE doctype = DOCTYPECollection.FirstOrDefault(x => x.GUID == doctypeGuid);
+                    if (doctype != null)
+                    {
+                        if (!doctype.IS_INDIRECT_ONLY && phase.PHASE_TYPE == PhaseType.Indirect)
+                            return "Doc type cannot be assigned with indirect phase";
+                        else if (doctype.IS_INDIRECT_ONLY && phase.PHASE_TYPE == PhaseType.Design)
+                            return "Doc type must be assigned with indirect phase";
+                    }
+                }
+            }
+
+            return string.Empty;
+        }
+
+        public static string GenerateInternalNumber(BASELINE_ITEMProgress projectionEntity, PROJECT loadPROJECT, IEnumerable<BASELINE_ITEM> Entities, IEnumerable<AREA> AREACollection, IEnumerable<DISCIPLINE> DISCIPLINECollection, IEnumerable<DOCTYPE> DOCTYPECollection, out string errorMessage)
+        {
+            if (projectionEntity.Entity.Entity.INTERNAL_NUM != null && projectionEntity.Entity.Entity.INTERNAL_NUM != string.Empty)
+            {
+                errorMessage = string.Empty;
+                return projectionEntity.Entity.Entity.INTERNAL_NUM;
+            }
+
+            AREA currentItemAREA = AREACollection.FirstOrDefault(x => x.GUID == projectionEntity.Entity.Entity.GUID_AREA);
+            DISCIPLINE currentItemDISCIPLINE = DISCIPLINECollection.FirstOrDefault(x => x.GUID == projectionEntity.Entity.Entity.GUID_DISCIPLINE);
+            DOCTYPE currentItemDOCTYPE = DOCTYPECollection.FirstOrDefault(x => x.GUID == projectionEntity.Entity.Entity.GUID_DOCTYPE);
+
+            errorMessage = string.Empty;
+            if (currentItemAREA == null)
+                errorMessage += "Area, ";
+
+            if (currentItemDISCIPLINE == null)
+                errorMessage += "Discipline, ";
+
+            if (currentItemDOCTYPE == null)
+                errorMessage += "Document Type, ";
+
+            if (errorMessage.Length > 2)
+                errorMessage = errorMessage.Substring(0, errorMessage.Length - 2) + " is missing";
+
+            string internalNum = BluePrintsDataUtils.BASELINEITEM_Generate_InternalNumber(loadPROJECT, Entities, currentItemAREA, currentItemDISCIPLINE, currentItemDOCTYPE, projectionEntity.GUID);
+
+            return internalNum;
+        }
+
         public static void CreateNewProjectDefaults(PROJECT entity, IBluePrintsEntitiesUnitOfWork bluePrintsEntitiesUnitOfWork)
         {
             Tuple<DateTime, DateTime> tenderStartEndDate = BluePrintsDataUtils.GetTenderStartEndDate(entity);
