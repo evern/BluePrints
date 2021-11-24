@@ -192,7 +192,7 @@
                                 </dxg:GridColumn.EditSettings>
                             </dxg:GridColumn>
                             <dxg:GridColumn FieldName="RESOURCE_TITLE" Width="150" AllowBestFit="false" Header="Title" ReadOnly="True" />
-                            <dxg:GridColumn FieldName="LINE_STATUS" Width="50" AllowBestFit="false" Header="Line Status" HeaderToolTip="R = Ready to invoice, W = Writeoff, I = Invoiced, X = Cancelled, A = Asset, C = Committed Stock" ReadOnly="True" />
+                            <dxg:GridColumn FieldName="LINE_STATUS" Width="50" AllowBestFit="false" Header="Line Status" HeaderToolTip="R = Ready to invoice, I = Invoiced, A = Asset, C = Committed Stock" ReadOnly="True" />
                             <dxg:GridColumn FieldName="TRANSDATE" AllowBestFit="false" Width="80" Header="Transdate" ReadOnly="True" FilterPopupMode="DateAlt" SortOrder="Descending" SortIndex="{Binding DateSortIndex}" />
                             <dxg:GridColumn FieldName="QUANTITY" AllowBestFit="false" Width="100" Header="Quantity" ReadOnly="{Binding CanEditQuantity, Converter={StaticResource BooleanNegationConverter}}" >
                                 <dxg:GridColumn.EditSettings>
