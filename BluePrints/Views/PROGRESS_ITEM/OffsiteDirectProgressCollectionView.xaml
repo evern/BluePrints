@@ -173,6 +173,11 @@
                             <dxg:GridColumn FieldName="Entity.Entity.PRIMARY_TITLE" Header="{Binding PrimaryTitleHeaderString}" IsEnabled="False" ReadOnly="True" />
                             <dxg:GridColumn FieldName="Entity.Entity.SECONDARY_TITLE" Header="{Binding SecondaryTitleHeaderString}" IsEnabled="False" ReadOnly="True" />
                             <dxg:GridColumn FieldName="Entity.Entity.COMMENTS" Header="{Binding CommentsHeaderString}" ReadOnly="True" />
+                            <dxg:GridColumn FieldName="Entity.Entity.BUDGET_HOURS" AllowBestFit="false" Width="90" Header="Budget Hours" HeaderToolTip="Baseline hours">
+                                <dxg:GridColumn.EditSettings>
+                                    <dxe:SpinEditSettings Mask="n2" MaskType="Numeric" MaskUseAsDisplayFormat="True" />
+                                </dxg:GridColumn.EditSettings>
+                            </dxg:GridColumn>
                             <dxg:GridColumn MinWidth="100" AllowEditing="True" AllowBestFit="false" Width="60" FieldName="Total_Earned_Percentage" Header="{Binding CurrentPercentageHeaderString}" HeaderToolTip="Cumulative % earned since the start of the project. % as benchmarked against baseline + variation. Update this to earn units for this period">
                                 <!--For Masking Filters-->
                                 <dxg:GridColumn.EditSettings>

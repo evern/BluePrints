@@ -1,6 +1,7 @@
 ﻿using BaseModel.Data.Helpers;
 using BaseModel.ViewModel.Services;
 using BluePrints.Common.Resources;
+using BluePrints.Common.ViewModel.Misc;
 using BluePrints.Common.ViewModel.Reporting;
 using BluePrints.Data;
 using DevExpress.Mvvm;
@@ -16,11 +17,12 @@ using System.Windows.Threading;
 
 namespace BaseModel.ViewModel.Dialogs
 {
-    public class ListImportDeliverableViewModel<BASELINE_ITEMProgressImportWrapper>
+    public class ListImportDeliverableViewModel<T>
+        where T : BASELINE_ITEMProgressImportWrapper
     {
-        public static ListImportDeliverableViewModel<BASELINE_ITEMProgressImportWrapper> Create(IEnumerable<BASELINE_ITEMProgressImportWrapper> enumerableObjects, IEnumerable<PHASE> PHASECollection, IEnumerable<AREA> AREACollection, IEnumerable<DISCIPLINE> DISCIPLINECollection, IEnumerable<DOCTYPE> DOCTYPECollection, IEnumerable<DEPARTMENT> DEPARTMENTCollection)
+        public static ListImportDeliverableViewModel<T> Create(IEnumerable<T> enumerableObjects, IEnumerable<PHASE> PHASECollection, IEnumerable<AREA> AREACollection, IEnumerable<DISCIPLINE> DISCIPLINECollection, IEnumerable<DOCTYPE> DOCTYPECollection, IEnumerable<DEPARTMENT> DEPARTMENTCollection)
         {
-            return ViewModelSource.Create(() => new ListImportDeliverableViewModel<BASELINE_ITEMProgressImportWrapper>(enumerableObjects, PHASECollection, AREACollection, DISCIPLINECollection, DOCTYPECollection, DEPARTMENTCollection));
+            return ViewModelSource.Create(() => new ListImportDeliverableViewModel<T>(enumerableObjects, PHASECollection, AREACollection, DISCIPLINECollection, DOCTYPECollection, DEPARTMENTCollection));
         }
 
         [ServiceProperty(Key = "DefaultTableViewService")]
@@ -29,14 +31,14 @@ namespace BaseModel.ViewModel.Dialogs
         [ServiceProperty(Key = "DefaultGridControlService")]
         public virtual IGridControlService GridControlService { get { return null; } }
 
-        ObservableCollection<BASELINE_ITEMProgressImportWrapper> sourceObjects;
+        ObservableCollection<T> sourceObjects;
         public int InternalNumSortIndex => 1;
-        public ObservableCollection<BASELINE_ITEMProgressImportWrapper> SourceObjects
+        public ObservableCollection<T> SourceObjects
         {
             get
             {
                 if (sourceObjects == null)
-                    sourceObjects = new ObservableCollection<BASELINE_ITEMProgressImportWrapper>();
+                    sourceObjects = new ObservableCollection<T>();
 
                 return sourceObjects;
             }
@@ -44,15 +46,15 @@ namespace BaseModel.ViewModel.Dialogs
 
         public string Message { get; set; }
 
-        protected ObservableCollection<BASELINE_ITEMProgressImportWrapper> selectedentities { get; set; }
-        public ObservableCollection<BASELINE_ITEMProgressImportWrapper> SelectedEntities
+        protected ObservableCollection<T> selectedentities { get; set; }
+        public ObservableCollection<T> SelectedEntities
         {
             get { return selectedentities; }
             set { selectedentities = value; }
         }
 
-        BASELINE_ITEMProgressImportWrapper selectedEntity;
-        public virtual BASELINE_ITEMProgressImportWrapper SelectedEntity
+        T selectedEntity;
+        public virtual T SelectedEntity
         {
             get => selectedEntity;
             set
@@ -72,11 +74,11 @@ namespace BaseModel.ViewModel.Dialogs
         }
 
         DispatcherTimer delayedRefreshTimer;
-        IEnumerable<BASELINE_ITEMProgressImportWrapper> enumerableDocuments;
+        IEnumerable<T> enumerableDocuments;
 
-        protected ListImportDeliverableViewModel(IEnumerable<BASELINE_ITEMProgressImportWrapper> enumerableObjects, IEnumerable<PHASE> PHASECollection, IEnumerable<AREA> AREACollection, IEnumerable<DISCIPLINE> DISCIPLINECollection, IEnumerable<DOCTYPE> DOCTYPECollection, IEnumerable<DEPARTMENT> DEPARTMENTCollection)
+        protected ListImportDeliverableViewModel(IEnumerable<T> enumerableObjects, IEnumerable<PHASE> PHASECollection, IEnumerable<AREA> AREACollection, IEnumerable<DISCIPLINE> DISCIPLINECollection, IEnumerable<DOCTYPE> DOCTYPECollection, IEnumerable<DEPARTMENT> DEPARTMENTCollection)
         {
-            SelectedEntities = new ObservableCollection<BASELINE_ITEMProgressImportWrapper>();
+            SelectedEntities = new ObservableCollection<T>();
             SelectedEntities.CollectionChanged += SelectedEntities_CollectionChanged;
             enumerableDocuments = enumerableObjects;
             this.PHASECollection = PHASECollection;
@@ -94,7 +96,7 @@ namespace BaseModel.ViewModel.Dialogs
                 }
                 else
                 {
-                    foreach (BASELINE_ITEMProgressImportWrapper enumerableDocument in enumerableDocuments)
+                    foreach (T enumerableDocument in enumerableDocuments)
                     {
                         SourceObjects.Add(enumerableDocument);
                     }
@@ -134,10 +136,41 @@ namespace BaseModel.ViewModel.Dialogs
             if (FolderBrowserDialogService.ShowDialog())
             {
                 ResultPath = FolderBrowserDialogService.ResultPath;
-                bool result = TableViewService.ExportToXls(ResultPath + "\\DocumentsImportReport.xlsx", false);
+                bool result = TableViewService.ExportToXls(ResultPath + "\\DocumentsImportReport.xlsx", true);
 
                 if (!result)
                     MessageBoxService.ShowMessage("Export failed because the file is in use", "Warning", MessageButton.OK, MessageIcon.Warning);
+            }
+        }
+
+        public bool CanCheckSelected()
+        {
+            return SelectedEntities.Count > 0;
+        }
+
+        public void CheckSelected()
+        {
+            foreach(T selectedDeliverable in SelectedEntities)
+            {
+                if (selectedDeliverable.CanImport)
+                {
+                    selectedDeliverable.Import = true;
+                    selectedDeliverable.RaisePropertyChanged(x => x.Import);
+                }
+            }
+        }
+
+        public bool CanUncheckSelected()
+        {
+            return CanCheckSelected();
+        }
+
+        public void UncheckSelected()
+        {
+            foreach (T selectedDeliverable in SelectedEntities)
+            {
+                selectedDeliverable.Import = false;
+                selectedDeliverable.RaisePropertyChanged(x => x.Import);
             }
         }
 
@@ -163,5 +196,6 @@ namespace BaseModel.ViewModel.Dialogs
         public string PhaseHeaderString => ColumnHeaderResources.PhaseHeaderString;
         public string InternalNumberHeaderString => ColumnHeaderResources.InternalNumberHeaderString;
         public string CurrentPercentageHeaderString => ColumnHeaderResources.CurrentPercentageHeaderString;
+        public string BudgetHourHeaderString => ColumnHeaderResources.BudgetHourHeaderString;
     }
 }

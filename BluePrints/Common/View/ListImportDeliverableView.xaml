@@ -11,29 +11,43 @@
     xmlns:services="clr-namespace:BaseModel.ViewModel.Services;assembly=BaseModel"
     xmlns:dxr="http://schemas.devexpress.com/winfx/2008/xaml/ribbon" 
     xmlns:dxb="http://schemas.devexpress.com/winfx/2008/xaml/bars" 
-    Width="1500" Height="650">
-    <dxlc:LayoutControl Orientation="Vertical">
+    xmlns:dxdo="http://schemas.devexpress.com/winfx/2008/xaml/docking" 
+    Width="1500" Height="730">
+    <Grid>
         <dxmvvm:Interaction.Behaviors>
             <services:TableViewService x:Name="DefaultTableViewService" TableView="{Binding ElementName=tableView}" />
             <services:GridControlService x:Name="DefaultGridControlService" GridControl="{Binding ElementName=GridControl}" />
             <dxmvvm:FolderBrowserDialogService Description="Choose Folder" RestorePreviouslySelectedDirectory="True" RootFolder="Desktop" ShowNewFolderButton="True" />
         </dxmvvm:Interaction.Behaviors>
-        <dxlc:LayoutGroup Name="LayoutGroupContent" Height="600" Orientation="Vertical" View="Group">
-            <dxlc:LayoutItem HorizontalAlignment="Center" Height="30">
-                <Button Command="{Binding DataContext.ExportToExcelCommand, ElementName=userControl}" ToolTip="Export current view to excel. Includes grouping, sorting and column visibility preferences">
-                    <StackPanel Orientation="Horizontal">
-                        <Image Source="{dx:DXImage Image=ExportToXLSX_16x16.png}" Width="16" Height="16" Margin="0, 0, 3, 0" />
-                        <TextBlock Text="Export" VerticalAlignment="Center" />
-                    </StackPanel>
-                </Button>
-            </dxlc:LayoutItem>
-            <dxlc:LayoutItem Height="100">
-                <TextBlock TextWrapping="Wrap">
-                        Columns highlighted in red indicates values has been changed<LineBreak/><LineBreak/>Mouse over red cells to reveal old values<LineBreak/><LineBreak/>Tick 'Update' and press ok to import changes
-                </TextBlock>
-            </dxlc:LayoutItem>
-            <dxlc:LayoutItem Height="450">
-                <dxg:GridControl x:Name="GridControl" dx:DXSerializer.SerializationID="GridControlList" dx:DXSerializer.StoreLayoutMode="All" ItemsSource="{Binding SourceObjects}" SelectionMode="Row">
+        <dxb:BarManager>
+            <dxb:BarManager.Items>
+                <dxb:BarButtonItem x:Name="btnCheckSelected" Command="{Binding CheckSelectedCommand}" Content="Check Selected" Glyph="{dx:DXImage Images/Actions/Apply_16x16.png}" RibbonStyle="SmallWithText" ToolTip="Uncheck 'Update' for selected rows, use Shift + Mouse Left Click or Ctrl + Mouse Left Click to select multiple rows" />
+                <dxb:BarButtonItem x:Name="btnUncheckSelected" Command="{Binding UncheckSelectedCommand}" Content="Uncheck Selected" Glyph="{dx:DXImage Images/Actions/Cancel_16x16.png}" RibbonStyle="SmallWithText" ToolTip="Check 'Update' for selected rows, use Shift + Mouse Left Click or Ctrl + Mouse Left Click to select multiple rows" />
+                <dxb:BarButtonItem x:Name="btnExportToExcel" Command="{Binding ExportToExcelCommand}" Content="Export" Glyph="{dx:DXImage Image=ExportToXLSX_16x16.png}" RibbonStyle="SmallWithText" ToolTip="Export current view to excel" />
+            </dxb:BarManager.Items>
+            <DockPanel>
+                <dxr:RibbonControl DockPanel.Dock="Top" ApplicationButtonText="" ToolbarShowMode="Hide" RibbonHeaderVisibility="Collapsed" RibbonStyle="TabletOffice">
+                    <dxr:RibbonDefaultPageCategory MergeType="Replace" Caption="defaultCategory">
+                        <dxr:RibbonPage MergeType="Replace" Caption="">
+                            <dxr:RibbonPageGroup MergeType="Replace" Caption="Grid" >
+                                <dxb:BarButtonItemLink BarItemName="btnExportToExcel" />
+                                <dxb:BarButtonItemLink BarItemName="btnCheckSelected" />
+                                <dxb:BarButtonItemLink BarItemName="btnUncheckSelected" />
+                            </dxr:RibbonPageGroup>
+                        </dxr:RibbonPage>
+                    </dxr:RibbonDefaultPageCategory>
+                </dxr:RibbonControl>
+                <dxlc:LayoutControl DockPanel.Dock="Top">
+                    <TextBlock Height="180" VerticalAlignment="Top" TextWrapping="Wrap">
+                                    Columns highlighted in red indicates values has been changed<LineBreak/><LineBreak/>
+                                    Mouse over green cells to reveal old values<LineBreak/><LineBreak/>
+                                    Tick 'Update' and press ok to import changes<LineBreak/><LineBreak/>
+                                    Note: 'Update' will be ticked by default unless it's error or new record<LineBreak/><LineBreak/>
+                                    Note: Internal Number cannot be changed, new Internal Number will be treated as new record<LineBreak/><LineBreak/>
+                                    Note: New record will be highlighted in red
+                    </TextBlock>
+                </dxlc:LayoutControl>
+                <dxg:GridControl x:Name="GridControl" dx:DXSerializer.SerializationID="GridControlList" dx:DXSerializer.StoreLayoutMode="All" ItemsSource="{Binding SourceObjects}" SelectionMode="Row" SelectedItems="{Binding SelectedEntities}">
                     <dxg:GridControl.Columns>
                         <dxg:GridColumn FieldName="Import" FixedWidth="True" Width="50" Header="Update" HeaderToolTip="Ticked rows will be imported, however row that has error cannot be ticked" >
                             <dxg:GridColumn.CellTemplate>
@@ -52,7 +66,56 @@
                                 <dxe:CheckEditSettings />
                             </dxg:GridColumn.EditSettings>
                         </dxg:GridColumn>
-                        <dxg:GridColumn FieldName="Message" FixedWidth="False" Width="150" Header="Message" ReadOnly="True" />
+                        <dxg:GridColumn FieldName="Message" AllowBestFit="True" Header="Message" ReadOnly="True" />
+                        <dxg:GridColumn FieldName="Entity.Entity.INTERNAL_NUM" AllowBestFit="false" FixedWidth="True" Width="150" Header="{Binding InternalNumberHeaderString}" SortIndex="{Binding InternalNumSortIndex}" ReadOnly="True" >
+                            <dxg:GridColumn.CellTemplate>
+                                <DataTemplate>
+                                    <dxe:TextEdit x:Name="PART_Editor" Background="{Binding RowData.Row.Compare_INTERNAL_NUM.BackColor}" ToolTip="{Binding RowData.Row.Compare_INTERNAL_NUM.ToolTip}"/>
+                                </DataTemplate>
+                            </dxg:GridColumn.CellTemplate>
+                        </dxg:GridColumn>
+                        <dxg:GridColumn FieldName="Entity.Entity.CLIENT_NUM" Header="{Binding ClientNumberHeaderString}" AllowBestFit="True" ReadOnly="True" >
+                            <dxg:GridColumn.CellTemplate>
+                                <DataTemplate>
+                                    <dxe:TextEdit x:Name="PART_Editor" Background="{Binding RowData.Row.Compare_CLIENT_NUM.BackColor}" ToolTip="{Binding RowData.Row.Compare_CLIENT_NUM.ToolTip}"/>
+                                </DataTemplate>
+                            </dxg:GridColumn.CellTemplate>
+                        </dxg:GridColumn>
+                        <dxg:GridColumn FieldName="Entity.Entity.PRIMARY_TITLE" Header="{Binding PrimaryTitleHeaderString}" AllowBestFit="True" ReadOnly="True" >
+                            <dxg:GridColumn.CellTemplate>
+                                <DataTemplate>
+                                    <dxe:TextEdit x:Name="PART_Editor" Background="{Binding RowData.Row.Compare_PRIMARY_TITLE.BackColor}" ToolTip="{Binding RowData.Row.Compare_PRIMARY_TITLE.ToolTip}"/>
+                                </DataTemplate>
+                            </dxg:GridColumn.CellTemplate>
+                        </dxg:GridColumn>
+                        <dxg:GridColumn FieldName="Entity.Entity.SECONDARY_TITLE" Header="{Binding SecondaryTitleHeaderString}" AllowBestFit="True" ReadOnly="True" >
+                            <dxg:GridColumn.CellTemplate>
+                                <DataTemplate>
+                                    <dxe:TextEdit x:Name="PART_Editor" Background="{Binding RowData.Row.Compare_SECONDARY_TITLE.BackColor}" ToolTip="{Binding RowData.Row.Compare_SECONDARY_TITLE.ToolTip}"/>
+                                </DataTemplate>
+                            </dxg:GridColumn.CellTemplate>
+                        </dxg:GridColumn>
+                        <dxg:GridColumn FieldName="Entity.Entity.COMMENTS" Header="{Binding CommentsHeaderString}" AllowBestFit="True" ReadOnly="True" >
+                            <dxg:GridColumn.CellTemplate>
+                                <DataTemplate>
+                                    <dxe:TextEdit x:Name="PART_Editor" Background="{Binding RowData.Row.Compare_COMMENTS.BackColor}" ToolTip="{Binding RowData.Row.Compare_COMMENTS.ToolTip}"/>
+                                </DataTemplate>
+                            </dxg:GridColumn.CellTemplate>
+                        </dxg:GridColumn>
+                        <dxg:GridColumn FieldName="Entity.Entity.BUDGET_HOURS" AllowBestFit="false" Width="90" Header="Budget Hours" HeaderToolTip="Baseline hours" ReadOnly="True" >
+                            <dxg:GridColumn.CellTemplate>
+                                <DataTemplate>
+                                    <dxe:SpinEdit x:Name="PART_Editor" MaskType="Numeric" Mask="n2" MaskUseAsDisplayFormat="True" Background="{Binding RowData.Row.Compare_BUDGET_HOURS.BackColor}" ToolTip="{Binding RowData.Row.Compare_BUDGET_HOURS.ToolTip}" />
+                                </DataTemplate>
+                            </dxg:GridColumn.CellTemplate>
+                        </dxg:GridColumn>
+                        <dxg:GridColumn FixedWidth="True" Width="90" AllowEditing="True" AllowBestFit="false" FieldName="Total_Earned_Percentage" Header="{Binding CurrentPercentageHeaderString}" HeaderToolTip="Cumulative % earned since the start of the project. % as benchmarked against baseline + variation. Update this to earn units for this period" ReadOnly="True">
+                            <dxg:GridColumn.CellTemplate>
+                                <DataTemplate>
+                                    <dxe:SpinEdit x:Name="PART_Editor" MaskType="Numeric" Mask="p2" MaskUseAsDisplayFormat="True" Background="{Binding RowData.Row.Compare_EARNED_PERCENTAGE.BackColor}" ToolTip="{Binding RowData.Row.Compare_EARNED_PERCENTAGE.ToolTip}" />
+                                </DataTemplate>
+                            </dxg:GridColumn.CellTemplate>
+                        </dxg:GridColumn>
                         <dxg:GridColumn FieldName="Entity.Entity.GUID_PHASE" Header="{Binding PhaseHeaderString}" AllowBestFit="false" Width="50" HeaderToolTip="Automatically assigned field. Changing this will affect subjob name" SortMode="DisplayText" ReadOnly="True" >
                             <dxg:GridColumn.CellTemplate>
                                 <DataTemplate>
@@ -73,7 +136,7 @@
                                 <dxe:ComboBoxEditSettings AutoComplete="True" DisplayMember="INTERNAL_NUM" IsTextEditable="True" ItemsSource="{Binding DataContext.AREACollection, ElementName=userControl}" ValueMember="GUID" />
                             </dxg:GridColumn.EditSettings>
                         </dxg:GridColumn>
-                        <dxg:GridColumn FieldName="Entity.Entity.SubAreaGuid" Header="{Binding SubAreaHeaderString}" AllowBestFit="false" Width="50" ReadOnly="True" SortMode="DisplayText">
+                        <dxg:GridColumn FieldName="Entity.Entity.SubAreaGuid" Header="{Binding SubAreaHeaderString}" AllowBestFit="false" Width="60" ReadOnly="True" SortMode="DisplayText">
                             <dxg:GridColumn.CellTemplate>
                                 <DataTemplate>
                                     <dxe:ComboBoxEdit x:Name="PART_Editor" DisplayMember="INTERNAL_NUM" Background="{Binding RowData.Row.Compare_SUBAREA.BackColor}" ToolTip="{Binding RowData.Row.Compare_SUBAREA.ToolTip}" ImmediatePopup="True" IncrementalFiltering="True" ItemsSource="{Binding DataContext.AREACollection, ElementName=userControl}" NullValueButtonPlacement="Popup" ValidateOnEnterKeyPressed="True" ValidateOnTextInput="True" ValueMember="GUID" />
@@ -84,7 +147,7 @@
                                 <dxe:ComboBoxEditSettings AutoComplete="True" DisplayMember="INTERNAL_NUM" IsTextEditable="True" ItemsSource="{Binding DataContext.AREACollection, ElementName=userControl}" NullValueButtonPlacement="EditBox" ValueMember="GUID" />
                             </dxg:GridColumn.EditSettings>
                         </dxg:GridColumn>
-                        <dxg:GridColumn FieldName="Entity.Entity.GUID_DISCIPLINE" Header="{Binding DisciplineHeaderString}" AllowBestFit="false" FixedWidth="True" Width="100" ReadOnly="True" SortMode="DisplayText">
+                        <dxg:GridColumn FieldName="Entity.Entity.GUID_DISCIPLINE" Header="{Binding DisciplineHeaderString}" AllowBestFit="True" ReadOnly="True" SortMode="DisplayText">
                             <dxg:GridColumn.CellTemplate>
                                 <DataTemplate>
                                     <dxe:ComboBoxEdit x:Name="PART_Editor" DisplayMember="NAME" ValueMember="GUID" Background="{Binding RowData.Row.Compare_DISCIPLINE.BackColor}" ToolTip="{Binding RowData.Row.Compare_DISCIPLINE.ToolTip}" ItemsSource="{Binding DataContext.DISCIPLINECollection, ElementName=userControl}" />
@@ -101,7 +164,7 @@
                                 </DataTemplate>
                             </dxg:GridColumn.CellTemplate>
                         </dxg:GridColumn>
-                        <dxg:GridColumn FieldName="Entity.Entity.GUID_DOCTYPE" Header="{Binding DocumentTypeHeaderString}" ReadOnly="True" SortMode="DisplayText" AllowBestFit="false" FixedWidth="True" Width="60">
+                        <dxg:GridColumn FieldName="Entity.Entity.GUID_DOCTYPE" Header="{Binding DocumentTypeHeaderString}" ReadOnly="True" SortMode="DisplayText" AllowBestFit="True" >
                             <dxg:GridColumn.CellTemplate>
                                 <DataTemplate>
                                     <dxe:ComboBoxEdit x:Name="PART_Editor" DisplayMember="NAME" ValueMember="GUID" Background="{Binding RowData.Row.Compare_DOCTYPE.BackColor}" ToolTip="{Binding RowData.Row.Compare_DOCTYPE.ToolTip}" ItemsSource="{Binding DataContext.DOCTYPECollection, ElementName=userControl}" />
@@ -111,14 +174,14 @@
                                 <dxe:ComboBoxEditSettings AutoComplete="True" DisplayMember="NAME" IsTextEditable="True" ItemsSource="{Binding DataContext.DOCTYPECollection, ElementName=userControl}" ValueMember="GUID" />
                             </dxg:GridColumn.EditSettings>
                         </dxg:GridColumn>
-                        <dxg:GridColumn FieldName="Entity.Entity.DELIVERABLE_TYPE" Header="{Binding DeliverableTypeHeaderString}" IsEnabled="False" ReadOnly="True" AllowBestFit="false" FixedWidth="True" Width="100" >
+                        <dxg:GridColumn FieldName="Entity.Entity.DELIVERABLE_TYPE" Header="{Binding DeliverableTypeHeaderString}" ReadOnly="True" AllowBestFit="True" >
                             <dxg:GridColumn.CellTemplate>
                                 <DataTemplate>
                                     <dxe:TextEdit x:Name="PART_Editor" Background="{Binding RowData.Row.Compare_DELIVERABLE_TYPE.BackColor}" ToolTip="{Binding RowData.Row.Compare_DELIVERABLE_TYPE.ToolTip}"/>
                                 </DataTemplate>
                             </dxg:GridColumn.CellTemplate>
                         </dxg:GridColumn>
-                        <dxg:GridColumn FieldName="Entity.Entity.GUID_DEPARTMENT" Header="{Binding DepartmentHeaderString}" ReadOnly="True" AllowBestFit="false" FixedWidth="True" Width="100" SortMode="DisplayText">
+                        <dxg:GridColumn FieldName="Entity.Entity.GUID_DEPARTMENT" Header="{Binding DepartmentHeaderString}" ReadOnly="True" AllowBestFit="True" SortMode="DisplayText">
                             <dxg:GridColumn.CellTemplate>
                                 <DataTemplate>
                                     <dxe:ComboBoxEdit x:Name="PART_Editor" DisplayMember="NAME" ValueMember="GUID" Background="{Binding RowData.Row.Compare_DEPARTMENT.BackColor}" ToolTip="{Binding RowData.Row.Compare_DEPARTMENT.ToolTip}" ItemsSource="{Binding DataContext.DEPARTMENTCollection, ElementName=userControl}" />
@@ -127,48 +190,6 @@
                             <dxg:GridColumn.EditSettings>
                                 <dxe:ComboBoxEditSettings AutoComplete="True" DisplayMember="NAME" IsTextEditable="True" ItemsSource="{Binding DataContext.DEPARTMENTCollection, ElementName=userControl}" ValueMember="GUID" />
                             </dxg:GridColumn.EditSettings>
-                        </dxg:GridColumn>
-                        <dxg:GridColumn FieldName="Entity.Entity.INTERNAL_NUM" AllowBestFit="false" FixedWidth="True" Width="150" Header="{Binding InternalNumberHeaderString}" SortIndex="{Binding InternalNumSortIndex}" IsEnabled="False" ReadOnly="True" >
-                            <dxg:GridColumn.CellTemplate>
-                                <DataTemplate>
-                                    <dxe:TextEdit x:Name="PART_Editor" Background="{Binding RowData.Row.Compare_INTERNAL_NUM.BackColor}" ToolTip="{Binding RowData.Row.Compare_INTERNAL_NUM.ToolTip}"/>
-                                </DataTemplate>
-                            </dxg:GridColumn.CellTemplate>
-                        </dxg:GridColumn>
-                        <dxg:GridColumn FieldName="Entity.Entity.CLIENT_NUM" Header="{Binding ClientNumberHeaderString}" AllowBestFit="True" MinWidth="100" IsEnabled="False" ReadOnly="True" >
-                            <dxg:GridColumn.CellTemplate>
-                                <DataTemplate>
-                                    <dxe:TextEdit x:Name="PART_Editor" Background="{Binding RowData.Row.Compare_CLIENT_NUM.BackColor}" ToolTip="{Binding RowData.Row.Compare_CLIENT_NUM.ToolTip}"/>
-                                </DataTemplate>
-                            </dxg:GridColumn.CellTemplate>
-                        </dxg:GridColumn>
-                        <dxg:GridColumn FieldName="Entity.Entity.PRIMARY_TITLE" Header="{Binding PrimaryTitleHeaderString}" AllowBestFit="True" MinWidth="50" IsEnabled="False" ReadOnly="True" >
-                            <dxg:GridColumn.CellTemplate>
-                                <DataTemplate>
-                                    <dxe:TextEdit x:Name="PART_Editor" Background="{Binding RowData.Row.Compare_PRIMARY_TITLE.BackColor}" ToolTip="{Binding RowData.Row.Compare_PRIMARY_TITLE.ToolTip}"/>
-                                </DataTemplate>
-                            </dxg:GridColumn.CellTemplate>
-                        </dxg:GridColumn>
-                        <dxg:GridColumn FieldName="Entity.Entity.SECONDARY_TITLE" Header="{Binding SecondaryTitleHeaderString}" AllowBestFit="True" MinWidth="50" IsEnabled="False" ReadOnly="True" >
-                            <dxg:GridColumn.CellTemplate>
-                                <DataTemplate>
-                                    <dxe:TextEdit x:Name="PART_Editor" Background="{Binding RowData.Row.Compare_SECONDARY_TITLE.BackColor}" ToolTip="{Binding RowData.Row.Compare_SECONDARY_TITLE.ToolTip}"/>
-                                </DataTemplate>
-                            </dxg:GridColumn.CellTemplate>
-                        </dxg:GridColumn>
-                        <dxg:GridColumn FieldName="Entity.Entity.COMMENTS" Header="{Binding CommentsHeaderString}" AllowBestFit="True" MinWidth="50" MaxWidth="200" ReadOnly="True" >
-                            <dxg:GridColumn.CellTemplate>
-                                <DataTemplate>
-                                    <dxe:TextEdit x:Name="PART_Editor" Background="{Binding RowData.Row.Compare_COMMENTS.BackColor}" ToolTip="{Binding RowData.Row.Compare_COMMENTS.ToolTip}"/>
-                                </DataTemplate>
-                            </dxg:GridColumn.CellTemplate>
-                        </dxg:GridColumn>
-                        <dxg:GridColumn FixedWidth="True" Width="80" AllowEditing="True" AllowBestFit="false" FieldName="Total_Earned_Percentage" Header="{Binding CurrentPercentageHeaderString}" HeaderToolTip="Cumulative % earned since the start of the project. % as benchmarked against baseline + variation. Update this to earn units for this period" ReadOnly="True">
-                            <dxg:GridColumn.CellTemplate>
-                                <DataTemplate>
-                                    <dxe:SpinEdit x:Name="PART_Editor" MaskType="Numeric" Mask="p2" MaskUseAsDisplayFormat="True" Background="{Binding RowData.Row.Compare_EARNED_PERCENTAGE.BackColor}" ToolTip="{Binding RowData.Row.Compare_EARNED_PERCENTAGE.ToolTip}" />
-                                </DataTemplate>
-                            </dxg:GridColumn.CellTemplate>
                         </dxg:GridColumn>
                     </dxg:GridControl.Columns>
                     <dxg:GridControl.GroupSummary>
@@ -180,10 +201,23 @@
                         <dxg:GridSummaryItem DisplayFormat="n" FieldName="Entity.Entity.BUDGET_HOURS" ShowInColumn="Entity.Entity.BUDGET_HOURS" SummaryType="Sum" />
                     </dxg:GridControl.TotalSummary>
                     <dxg:GridControl.View>
-                        <dxg:TableView x:Name="tableView" ShowFixedTotalSummary="False" ShowGroupPanel="True" ShowTotalSummary="True" ShowGroupedColumns="False" />
+                        <dxg:TableView x:Name="tableView" ShowFixedTotalSummary="False" ShowGroupPanel="True" ShowTotalSummary="True" ShowGroupedColumns="False" >
+                            <dxg:TableView.RowCellMenuCustomizations>
+                                <dxb:BarButtonItemLink BarItemName="btnCheckSelected" />
+                                <dxb:BarButtonItemLink BarItemName="btnUncheckSelected" />
+                            </dxg:TableView.RowCellMenuCustomizations>
+                            <dxg:TableView.FormatConditions>
+                                <dxg:UniqueDuplicateRuleFormatCondition FieldName="Entity.Entity.INTERNAL_NUM">
+                                    <dx:Format Background="#FFFF9B98" />
+                                </dxg:UniqueDuplicateRuleFormatCondition>
+                                <dxg:FormatCondition ApplyToRow="True" Expression="[IsNew] = 'True'" FieldName="IsNew">
+                                    <dx:Format Background="Salmon" />
+                                </dxg:FormatCondition>
+                            </dxg:TableView.FormatConditions>
+                        </dxg:TableView>
                     </dxg:GridControl.View>
                 </dxg:GridControl>
-            </dxlc:LayoutItem>
-        </dxlc:LayoutGroup>
-    </dxlc:LayoutControl>
+            </DockPanel>
+        </dxb:BarManager>
+    </Grid>
 </UserControl>

@@ -120,6 +120,9 @@
   <data name="AreaHeaderString" xml:space="preserve">
     <value>Area</value>
   </data>
+  <data name="BudgetHourHeaderString" xml:space="preserve">
+    <value>Budget Hours</value>
+  </data>
   <data name="ClientNumberHeaderString" xml:space="preserve">
     <value>Client Number</value>
   </data>

@@ -3,6 +3,7 @@ using BluePrints.Common.Projections;
 using BluePrints.Common.Resources;
 using BluePrints.Common.ViewModel.Utils;
 using BluePrints.Data;
+using DevExpress.Mvvm.POCO;
 using System;
 using System.Collections.Generic;
 using System.Data;
@@ -39,6 +40,7 @@ namespace BluePrints.Common.ViewModel.Misc
             string secondaryTitle = dataRow[ColumnHeaderResources.SecondaryTitleHeaderString].ToString();
             string comments = dataRow[ColumnHeaderResources.CommentsHeaderString].ToString();
             string currentEarnedPercentage = dataRow[ColumnHeaderResources.CurrentPercentageHeaderString].ToString();
+            string budgetHours = dataRow[ColumnHeaderResources.BudgetHourHeaderString].ToString();
 
             PHASE findPHASE = PHASECollection.FirstOrDefault(x => x.INTERNAL_NUM.ToUpper() == phase.ToUpper());
             AREA findAREA = AREACollection.FirstOrDefault(x => x.INTERNAL_NUM.ToUpper() == area.ToUpper());
@@ -49,6 +51,11 @@ namespace BluePrints.Common.ViewModel.Misc
             int parseDisciplineNum;
             if (int.TryParse(disciplineNum, out parseDisciplineNum))
                 findDisciplineNum = parseDisciplineNum;
+
+            decimal? findBudgetHours = null;
+            decimal parseBudgetHours;
+            if (decimal.TryParse(budgetHours, out parseBudgetHours))
+                findBudgetHours = parseBudgetHours;
 
             DOCTYPE findDOCTYPE = DOCTYPECollection.FirstOrDefault(x => x.NAME.ToUpper() == docType.ToUpper());
 
@@ -77,6 +84,7 @@ namespace BluePrints.Common.ViewModel.Misc
             newBASELINE_ITEM.PRIMARY_TITLE = primaryTitle;
             newBASELINE_ITEM.SECONDARY_TITLE = secondaryTitle;
             newBASELINE_ITEM.COMMENTS = comments;
+            newBASELINE_ITEM.BUDGET_HOURS = findBudgetHours == null ? 0 : (decimal)findBudgetHours;
 
             if(findEarnedPercentage != null)
                 newBASELINE_ITEMProgress.Total_Earned_Percentage = (decimal)findEarnedPercentage;
@@ -100,15 +108,20 @@ namespace BluePrints.Common.ViewModel.Misc
         public OldNewValueCompare<string> Compare_PRIMARY_TITLE { get; set; }
         public OldNewValueCompare<string> Compare_SECONDARY_TITLE { get; set; }
         public OldNewValueCompare<string> Compare_COMMENTS { get; set; }
+        public OldNewValueCompare<decimal> Compare_BUDGET_HOURS { get; set; }
         public OldNewValueCompare<decimal> Compare_EARNED_PERCENTAGE { get; set; }
         public bool Import { get; set; }
-        public bool CanImport => !IsError && !IsSame;
+        public bool CanImport => IsNew || (!IsError && !IsSame);
         public string Message { get; set; }
         public bool IsError { get; set; }
         public bool IsNew { get; set; }
         public bool IsSame => !Compare_EARNED_PERCENTAGE.IsDifferent && !IsAnyPropertyDifferent();
+        public static BASELINE_ITEMProgressImportWrapper Create(BASELINE_ITEMProgress originalProjection, BASELINE_ITEMProgress importProjection, IEnumerable<PHASE> PHASECollection, IEnumerable<AREA> AREACollection, IEnumerable<DISCIPLINE> DISCIPLINECollection, IEnumerable<DOCTYPE> DOCTYPECollection, IEnumerable<DEPARTMENT> DEPARTMENTCollection)
+        {
+            return ViewModelSource.Create(() => new BASELINE_ITEMProgressImportWrapper(originalProjection, importProjection, PHASECollection, AREACollection, DISCIPLINECollection, DOCTYPECollection, DEPARTMENTCollection));
+        }
 
-        public BASELINE_ITEMProgressImportWrapper(BASELINE_ITEMProgress originalProjection, BASELINE_ITEMProgress importProjection,
+        protected BASELINE_ITEMProgressImportWrapper(BASELINE_ITEMProgress originalProjection, BASELINE_ITEMProgress importProjection,
             IEnumerable<PHASE> PHASECollection, IEnumerable<AREA> AREACollection, IEnumerable<DISCIPLINE> DISCIPLINECollection, IEnumerable<DOCTYPE> DOCTYPECollection, IEnumerable<DEPARTMENT> DEPARTMENTCollection)
         {
             BASELINE_ITEMProgress compareProjection = originalProjection == null ? importProjection : originalProjection;
@@ -147,6 +160,7 @@ namespace BluePrints.Common.ViewModel.Misc
             Compare_SECONDARY_TITLE = new OldNewValueCompare<string>(compareProjection.Entity.Entity.SECONDARY_TITLE, importProjection.Entity.Entity.SECONDARY_TITLE);
             Compare_COMMENTS = new OldNewValueCompare<string>(compareProjection.Entity.Entity.COMMENTS, importProjection.Entity.Entity.COMMENTS);
             Compare_EARNED_PERCENTAGE = new OldNewValueCompare<decimal>(compareProjection.Total_Earned_Percentage, importProjection.Total_Earned_Percentage, true);
+            Compare_BUDGET_HOURS = new OldNewValueCompare<decimal>(compareProjection.Entity.Entity.BUDGET_HOURS, importProjection.Entity.Entity.BUDGET_HOURS);
 
             this.Entity = importProjection.Entity;
             this.Total_Earned_Percentage = importProjection.Total_Earned_Percentage;
@@ -156,7 +170,7 @@ namespace BluePrints.Common.ViewModel.Misc
         {
             return Compare_PHASE.IsDifferent || Compare_AREA.IsDifferent || Compare_SUBAREA.IsDifferent || Compare_DISCIPLINE.IsDifferent || Compare_DISCIPLINE_NUM.IsDifferent || Compare_DOCTYPE.IsDifferent
                 || Compare_DELIVERABLE_TYPE.IsDifferent || Compare_DEPARTMENT.IsDifferent || Compare_INTERNAL_NUM.IsDifferent || Compare_CLIENT_NUM.IsDifferent || Compare_PRIMARY_TITLE.IsDifferent
-                || Compare_SECONDARY_TITLE.IsDifferent || Compare_COMMENTS.IsDifferent;
+                || Compare_SECONDARY_TITLE.IsDifferent || Compare_COMMENTS.IsDifferent || Compare_BUDGET_HOURS.IsDifferent;
         }
     }
 
@@ -207,6 +221,14 @@ namespace BluePrints.Common.ViewModel.Misc
                     if (oldDisplayString != newDisplayString)
                         return true;
                 }
+                else if(typeof(T) == typeof(decimal))
+                {
+                    string oldDisplayString = String.Format("{0:N2}", this.OldValue);
+                    string newDisplayString = String.Format("{0:N2}", this.NewValue);
+
+                    if (oldDisplayString != newDisplayString)
+                        return true;
+                }
                 else if (OldValue != null && NewValue != null && OldValue.ToString() != NewValue.ToString())
                     return true;
 
@@ -219,7 +241,7 @@ namespace BluePrints.Common.ViewModel.Misc
             get
             {
                 if(IsDifferent)
-                    return new SolidColorBrush(Colors.LightSalmon);
+                    return new SolidColorBrush(Colors.Chartreuse);
 
                 return new SolidColorBrush(Colors.Transparent);
             } 

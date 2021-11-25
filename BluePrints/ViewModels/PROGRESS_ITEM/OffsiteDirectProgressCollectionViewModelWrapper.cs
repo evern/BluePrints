@@ -527,6 +527,8 @@ namespace BluePrints.ViewModels
         public string PhaseHeaderString => ColumnHeaderResources.PhaseHeaderString;
         public string InternalNumberHeaderString => ColumnHeaderResources.InternalNumberHeaderString;
         public string CurrentPercentageHeaderString => ColumnHeaderResources.CurrentPercentageHeaderString;
+        public string BudgetHourHeaderString => ColumnHeaderResources.BudgetHourHeaderString;
+
         public void ImportContractorDeliverableFromExcel()
         {
             FileBrowserDialogService.Filter = "Excel Files (.xls)|*.xlsx|All Files (*.*)|*.*";
@@ -575,7 +577,7 @@ namespace BluePrints.ViewModels
                                         string totalEarnedPercentageString = string.Format("{0:P2}", findContractorDeliverable.Total_Earned_Percentage);
                                         string newPercentageString = string.Format("{0:P2}", newPercentage);
 
-                                        BASELINE_ITEMProgressImportWrapper newBASELINE_ITEMProgressImportWrapper = new BASELINE_ITEMProgressImportWrapper(findContractorDeliverable, changeTrackingBaselineItemProgress, PHASECollection, AREACollection, DISCIPLINECollection, DOCTYPECollection, DEPARTMENTCollection);
+                                        BASELINE_ITEMProgressImportWrapper newBASELINE_ITEMProgressImportWrapper = BASELINE_ITEMProgressImportWrapper.Create(findContractorDeliverable, changeTrackingBaselineItemProgress, PHASECollection, AREACollection, DISCIPLINECollection, DOCTYPECollection, DEPARTMENTCollection);
 
                                         if (findContractorDeliverable.Total_Earned_Percentage > newPercentage)
                                         {
@@ -592,7 +594,7 @@ namespace BluePrints.ViewModels
                                     }
                                     else if (findDeliverable.Count == 0)
                                     {
-                                        BASELINE_ITEMProgressImportWrapper newBASELINE_ITEMProgressImportWrapper = new BASELINE_ITEMProgressImportWrapper(changeTrackingBaselineItemProgress, changeTrackingBaselineItemProgress, PHASECollection, AREACollection, DISCIPLINECollection, DOCTYPECollection, DEPARTMENTCollection);
+                                        BASELINE_ITEMProgressImportWrapper newBASELINE_ITEMProgressImportWrapper = BASELINE_ITEMProgressImportWrapper.Create(changeTrackingBaselineItemProgress, changeTrackingBaselineItemProgress, PHASECollection, AREACollection, DISCIPLINECollection, DOCTYPECollection, DEPARTMENTCollection);
                                         if (MainViewModel.Entities.Where(x => x.Entity.Entity.GUID_OFFICE != ContractorOfficeGuid).Any(x => x.Deliverable_Name == newBASELINE_ITEMProgressImportWrapper.Deliverable_Name))
                                         {
                                             newBASELINE_ITEMProgressImportWrapper.Message = "Error: There are non-contractor deliverable(s) with the same internal number";
@@ -606,7 +608,7 @@ namespace BluePrints.ViewModels
                                     }
                                     else
                                     {
-                                        BASELINE_ITEMProgressImportWrapper newBASELINE_ITEMProgressImportWrapper = new BASELINE_ITEMProgressImportWrapper(changeTrackingBaselineItemProgress, changeTrackingBaselineItemProgress, PHASECollection, AREACollection, DISCIPLINECollection, DOCTYPECollection, DEPARTMENTCollection);
+                                        BASELINE_ITEMProgressImportWrapper newBASELINE_ITEMProgressImportWrapper = BASELINE_ITEMProgressImportWrapper.Create(changeTrackingBaselineItemProgress, changeTrackingBaselineItemProgress, PHASECollection, AREACollection, DISCIPLINECollection, DOCTYPECollection, DEPARTMENTCollection);
                                         newBASELINE_ITEMProgressImportWrapper.Message = "Multiple deliverable with internal number: " + internalNumber + " is found, please revise deliverable's list or import sheet";
                                         newBASELINE_ITEMProgressImportWrapper.IsError = true;
 
@@ -653,6 +655,7 @@ namespace BluePrints.ViewModels
                                         findDeliverable.Entity.Entity.PRIMARY_TITLE = sourceObject.Entity.Entity.PRIMARY_TITLE;
                                         findDeliverable.Entity.Entity.SECONDARY_TITLE = sourceObject.Entity.Entity.SECONDARY_TITLE;
                                         findDeliverable.Entity.Entity.COMMENTS = sourceObject.Entity.Entity.COMMENTS;
+                                        findDeliverable.Entity.Entity.BUDGET_HOURS = sourceObject.Entity.Entity.BUDGET_HOURS;
                                         findDeliverable.ShouldSave = true;
                                         MainViewModel.Save(findDeliverable);
                                     }
@@ -669,7 +672,6 @@ namespace BluePrints.ViewModels
                                     sourceObject.Live_PROGRESS = loadPROGRESS;
                                     sourceObject.SetReportingDataDate(DataDate);
                                     sourceObject.Entity.Entity.GUID_OFFICE = ContractorOfficeGuid;
-                                    sourceObject.Entity.Entity.BUDGET_HOURS = 99;
                                     sourceObject.ShouldSave = true;
                                     decimal totalEarnedPercentage = sourceObject.Total_Earned_Percentage;
                                     //mainly for generating sub job
@@ -692,7 +694,7 @@ namespace BluePrints.ViewModels
                     }
                     else
                     {
-                        MessageBoxService.ShowMessage("Import excel workbook data date of " + importSheetDate.Date.ToShortDateString() + " is less than current data date of " + DataDate.Date.ToShortDateString(), "Import Error", MessageButton.OK, MessageIcon.Warning);
+                        MessageBoxService.ShowMessage("Import excel workbook data date of " + importSheetDate.Date.ToShortDateString() + " doesn't match current data date of " + DataDate.Date.ToShortDateString(), "Import Error", MessageButton.OK, MessageIcon.Warning);
                     }
                 }
                 else

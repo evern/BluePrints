@@ -70,6 +70,15 @@ namespace BluePrints.Common.Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Budget Hours.
+        /// </summary>
+        internal static string BudgetHourHeaderString {
+            get {
+                return ResourceManager.GetString("BudgetHourHeaderString", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Client Number.
         /// </summary>
         internal static string ClientNumberHeaderString {
