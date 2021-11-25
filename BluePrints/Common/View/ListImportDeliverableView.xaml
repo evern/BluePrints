@@ -13,6 +13,41 @@
     xmlns:dxb="http://schemas.devexpress.com/winfx/2008/xaml/bars" 
     xmlns:dxdo="http://schemas.devexpress.com/winfx/2008/xaml/docking" 
     Width="1500" Height="730">
+    <UserControl.Resources>
+        <Style TargetType="dxlc:LayoutItem">
+            <Setter Property="Background" Value="Transparent"/>
+            <Setter Property="ElementSpace" Value="3"/>
+            <Setter Property="HorizontalContentAlignment" Value="Stretch"/>
+            <Setter Property="VerticalContentAlignment" Value="Stretch"/>
+            <Setter Property="IsTabStop" Value="False"/>
+            <Setter Property="VerticalAlignment" Value="Top"/>
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="dxlc:LayoutItem">
+                        <Border BorderBrush="Black" BorderThickness="0,0,0,1">
+                            <dxlc:LayoutItemPanel Margin="0" LabelPosition="{TemplateBinding LabelPosition}" ElementSpace="{TemplateBinding ElementSpace}"  
+                                               Background="{TemplateBinding Background}">
+                                <dxlc:LayoutItemPanel.Label>
+                                    <dxlc:LayoutItemLabel x:Name="LabelElement"  
+                                                       Content="{TemplateBinding ActualLabel}"  
+                                                       ContentTemplate="{TemplateBinding LabelTemplate}"  
+                                                       HorizontalContentAlignment="{TemplateBinding LabelHorizontalAlignment}"  
+                                                       VerticalContentAlignment="{TemplateBinding LabelVerticalAlignment}"  
+                                                       IsRequired="{TemplateBinding IsActuallyRequired}"  
+                                                       Visibility="{Binding CalculatedLabelVisibility, RelativeSource={RelativeSource TemplatedParent}}"/>
+                                </dxlc:LayoutItemPanel.Label>
+                                <dxlc:LayoutItemPanel.Content>
+                                    <dx:DXContentPresenter Content="{TemplateBinding Content}" Margin="{TemplateBinding Padding}"  
+                                                         HorizontalAlignment="{TemplateBinding HorizontalContentAlignment}"  
+                                                         VerticalAlignment="{TemplateBinding VerticalContentAlignment}"/>
+                                </dxlc:LayoutItemPanel.Content>
+                            </dxlc:LayoutItemPanel>
+                        </Border>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+    </UserControl.Resources>
     <Grid>
         <dxmvvm:Interaction.Behaviors>
             <services:TableViewService x:Name="DefaultTableViewService" TableView="{Binding ElementName=tableView}" />
@@ -37,15 +72,41 @@
                         </dxr:RibbonPage>
                     </dxr:RibbonDefaultPageCategory>
                 </dxr:RibbonControl>
-                <dxlc:LayoutControl DockPanel.Dock="Top">
-                    <TextBlock Height="180" VerticalAlignment="Top" TextWrapping="Wrap">
-                                    Columns highlighted in red indicates values has been changed<LineBreak/><LineBreak/>
-                                    Mouse over green cells to reveal old values<LineBreak/><LineBreak/>
-                                    Tick 'Update' and press ok to import changes<LineBreak/><LineBreak/>
-                                    Note: 'Update' will be ticked by default unless it's error or new record<LineBreak/><LineBreak/>
-                                    Note: Internal Number cannot be changed, new Internal Number will be treated as new record<LineBreak/><LineBreak/>
-                                    Note: New record will be highlighted in red
-                    </TextBlock>
+                <dxlc:LayoutControl DockPanel.Dock="Top" >
+                    <dxlc:LayoutGroup View="GroupBox" Orientation="Vertical" Header="Instructions">
+                        <dxlc:LayoutItem>
+                            <TextBlock Height="16" VerticalAlignment="Top" TextWrapping="Wrap">
+                                    Column highlighted in green indicate that value has been changed
+                            </TextBlock>
+                        </dxlc:LayoutItem>
+                        <dxlc:LayoutItem>
+                            <TextBlock Height="16" VerticalAlignment="Top" TextWrapping="Wrap">
+                                    Mouse over cell highlighted in green to reveal old value
+                            </TextBlock>
+                        </dxlc:LayoutItem>
+                        <dxlc:LayoutItem>
+                            <TextBlock Height="16" VerticalAlignment="Top" TextWrapping="Wrap">
+                                    Tick "Update" and press ok to import changes
+                            </TextBlock>
+                        </dxlc:LayoutItem>
+                    </dxlc:LayoutGroup>
+                    <dxlc:LayoutGroup View="GroupBox" Orientation="Vertical" Header="Notes">
+                        <dxlc:LayoutItem>
+                            <TextBlock Height="16" VerticalAlignment="Top" TextWrapping="Wrap">
+                                    "Update" will be ticked by default unless it has an error or if it's a new record
+                            </TextBlock>
+                        </dxlc:LayoutItem>
+                        <dxlc:LayoutItem>
+                            <TextBlock Height="16" VerticalAlignment="Top" TextWrapping="Wrap">
+                                    Internal Number cannot be changed, new Internal Number will be treated as new record
+                            </TextBlock>
+                        </dxlc:LayoutItem>
+                        <dxlc:LayoutItem>
+                            <TextBlock Height="16" VerticalAlignment="Top" TextWrapping="Wrap">
+                                    New record row will be highlighted in red
+                            </TextBlock>
+                        </dxlc:LayoutItem>
+                    </dxlc:LayoutGroup>
                 </dxlc:LayoutControl>
                 <dxg:GridControl x:Name="GridControl" dx:DXSerializer.SerializationID="GridControlList" dx:DXSerializer.StoreLayoutMode="All" ItemsSource="{Binding SourceObjects}" SelectionMode="Row" SelectedItems="{Binding SelectedEntities}">
                     <dxg:GridControl.Columns>
