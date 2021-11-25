@@ -1,6 +1,7 @@
 ﻿using BaseModel.Data.Helpers;
 using BaseModel.ViewModel.Services;
 using BluePrints.Common.Resources;
+using BluePrints.Common.ViewModel.Misc;
 using BluePrints.Common.ViewModel.Reporting;
 using BluePrints.Data;
 using DevExpress.Mvvm;
@@ -16,11 +17,12 @@ using System.Windows.Threading;
 
 namespace BaseModel.ViewModel.Dialogs
 {
-    public class ListImportDeliverableViewModel<BASELINE_ITEMProgressImportWrapper>
+    public class ListImportDeliverableViewModel<T>
+        where T : BASELINE_ITEMProgressImportWrapper
     {
-        public static ListImportDeliverableViewModel<BASELINE_ITEMProgressImportWrapper> Create(IEnumerable<BASELINE_ITEMProgressImportWrapper> enumerableObjects)
+        public static ListImportDeliverableViewModel<T> Create(IEnumerable<T> enumerableObjects, IEnumerable<PHASE> PHASECollection, IEnumerable<AREA> AREACollection, IEnumerable<DISCIPLINE> DISCIPLINECollection, IEnumerable<DOCTYPE> DOCTYPECollection, IEnumerable<DEPARTMENT> DEPARTMENTCollection)
         {
-            return ViewModelSource.Create(() => new ListImportDeliverableViewModel<BASELINE_ITEMProgressImportWrapper>(enumerableObjects));
+            return ViewModelSource.Create(() => new ListImportDeliverableViewModel<T>(enumerableObjects, PHASECollection, AREACollection, DISCIPLINECollection, DOCTYPECollection, DEPARTMENTCollection));
         }
 
         [ServiceProperty(Key = "DefaultTableViewService")]
@@ -29,13 +31,14 @@ namespace BaseModel.ViewModel.Dialogs
         [ServiceProperty(Key = "DefaultGridControlService")]
         public virtual IGridControlService GridControlService { get { return null; } }
 
-        ObservableCollection<BASELINE_ITEMProgressImportWrapper> sourceObjects;
-        public ObservableCollection<BASELINE_ITEMProgressImportWrapper> SourceObjects
+        ObservableCollection<T> sourceObjects;
+        public int InternalNumSortIndex => 1;
+        public ObservableCollection<T> SourceObjects
         {
             get
             {
                 if (sourceObjects == null)
-                    sourceObjects = new ObservableCollection<BASELINE_ITEMProgressImportWrapper>();
+                    sourceObjects = new ObservableCollection<T>();
 
                 return sourceObjects;
             }
@@ -43,15 +46,15 @@ namespace BaseModel.ViewModel.Dialogs
 
         public string Message { get; set; }
 
-        protected ObservableCollection<BASELINE_ITEMProgressImportWrapper> selectedentities { get; set; }
-        public ObservableCollection<BASELINE_ITEMProgressImportWrapper> SelectedEntities
+        protected ObservableCollection<T> selectedentities { get; set; }
+        public ObservableCollection<T> SelectedEntities
         {
             get { return selectedentities; }
             set { selectedentities = value; }
         }
 
-        BASELINE_ITEMProgressImportWrapper selectedEntity;
-        public virtual BASELINE_ITEMProgressImportWrapper SelectedEntity
+        T selectedEntity;
+        public virtual T SelectedEntity
         {
             get => selectedEntity;
             set
@@ -71,15 +74,19 @@ namespace BaseModel.ViewModel.Dialogs
         }
 
         DispatcherTimer delayedRefreshTimer;
-        IEnumerable<BASELINE_ITEMProgressImportWrapper> enumerableDocuments;
-        string infoObjectStr = BluePrintsResources.ReferenceInfoLineName;
-        string infoObjectPathStr = "Press click import files or add empty row and manually enter details to add custom reference";
+        IEnumerable<T> enumerableDocuments;
 
-        protected ListImportDeliverableViewModel(IEnumerable<BASELINE_ITEMProgressImportWrapper> enumerableObjects)
+        protected ListImportDeliverableViewModel(IEnumerable<T> enumerableObjects, IEnumerable<PHASE> PHASECollection, IEnumerable<AREA> AREACollection, IEnumerable<DISCIPLINE> DISCIPLINECollection, IEnumerable<DOCTYPE> DOCTYPECollection, IEnumerable<DEPARTMENT> DEPARTMENTCollection)
         {
-            SelectedEntities = new ObservableCollection<BASELINE_ITEMProgressImportWrapper>();
+            SelectedEntities = new ObservableCollection<T>();
             SelectedEntities.CollectionChanged += SelectedEntities_CollectionChanged;
             enumerableDocuments = enumerableObjects;
+            this.PHASECollection = PHASECollection;
+            this.AREACollection = AREACollection;
+            this.DISCIPLINECollection = DISCIPLINECollection;
+            this.DOCTYPECollection = DOCTYPECollection;
+            this.DEPARTMENTCollection = DEPARTMENTCollection;
+
             if(enumerableDocuments != null)
             {
                 if(enumerableDocuments.Count() == 0)
@@ -89,7 +96,7 @@ namespace BaseModel.ViewModel.Dialogs
                 }
                 else
                 {
-                    foreach (BASELINE_ITEMProgressImportWrapper enumerableDocument in enumerableDocuments)
+                    foreach (T enumerableDocument in enumerableDocuments)
                     {
                         SourceObjects.Add(enumerableDocument);
                     }
@@ -102,18 +109,6 @@ namespace BaseModel.ViewModel.Dialogs
             delayedRefreshTimer.Start();
         }
 
-        public List<BASELINE_ITEMProgressImportWrapper> GetSelectedDocuments()
-        {
-            List<BASELINE_ITEMProgressImportWrapper> returnDocuments = new List<BASELINE_ITEMProgressImportWrapper>();
-            foreach(BASELINE_ITEMProgressImportWrapper sourceObject in SourceObjects)
-            {
-                //if (sourceObject.AttachmentName != BluePrintsResources.ReferenceInfoLineName && sourceObject.AttachmentName != null && sourceObject.AttachmentName != string.Empty)
-                    returnDocuments.Add(sourceObject);
-            }
-
-            return returnDocuments;
-        }
-
         private void SelectedEntities_CollectionChanged(object sender, System.Collections.Specialized.NotifyCollectionChangedEventArgs e)
         {
             
@@ -124,6 +119,8 @@ namespace BaseModel.ViewModel.Dialogs
             if(GridControlService.GridControl != null && GridControlService.GridControl.ItemsSource != null)
             {
                 delayedRefreshTimer.Stop();
+                GridControlService.RefreshData();
+                TableViewService.ApplyBestFit();
             }
         }
 
@@ -131,5 +128,74 @@ namespace BaseModel.ViewModel.Dialogs
         {
             this.GetService<ICurrentDialogService>().Close();
         }
+
+        protected virtual IFolderBrowserDialogService FolderBrowserDialogService { get { return this.GetService<IFolderBrowserDialogService>(); } }
+        public virtual void ExportToExcel()
+        {
+            string ResultPath = string.Empty;
+            if (FolderBrowserDialogService.ShowDialog())
+            {
+                ResultPath = FolderBrowserDialogService.ResultPath;
+                bool result = TableViewService.ExportToXls(ResultPath + "\\DocumentsImportReport.xlsx", true);
+
+                if (!result)
+                    MessageBoxService.ShowMessage("Export failed because the file is in use", "Warning", MessageButton.OK, MessageIcon.Warning);
+            }
+        }
+
+        public bool CanCheckSelected()
+        {
+            return SelectedEntities.Count > 0;
+        }
+
+        public void CheckSelected()
+        {
+            foreach(T selectedDeliverable in SelectedEntities)
+            {
+                if (selectedDeliverable.CanImport)
+                {
+                    selectedDeliverable.Import = true;
+                    selectedDeliverable.RaisePropertyChanged(x => x.Import);
+                }
+            }
+        }
+
+        public bool CanUncheckSelected()
+        {
+            return CanCheckSelected();
+        }
+
+        public void UncheckSelected()
+        {
+            foreach (T selectedDeliverable in SelectedEntities)
+            {
+                selectedDeliverable.Import = false;
+                selectedDeliverable.RaisePropertyChanged(x => x.Import);
+            }
+        }
+
+        public IEnumerable<PHASE> PHASECollection { get; set; }
+        public IEnumerable<AREA> AREACollection { get; set; }
+        public IEnumerable<DISCIPLINE> DISCIPLINECollection { get; set; }
+        public IEnumerable<DOCTYPE> DOCTYPECollection { get; set; }
+        public IEnumerable<DEPARTMENT> DEPARTMENTCollection { get; set; }
+        public string AreaHeaderString => ColumnHeaderResources.AreaHeaderString;
+        public string SubAreaHeaderString => ColumnHeaderResources.SubAreaHeaderString;
+        public string DisciplineHeaderString => ColumnHeaderResources.DisciplineHeaderString;
+        public string DisciplineNumberHeaderString => ColumnHeaderResources.DisciplineNumberHeaderString;
+        public string DocumentTypeHeaderString => ColumnHeaderResources.DocumentTypeHeaderString;
+        public string DeliverableTypeHeaderString => ColumnHeaderResources.DeliverableTypeHeaderString;
+        public string DepartmentHeaderString => ColumnHeaderResources.DepartmentHeaderString;
+        public string ClientNumberHeaderString => ColumnHeaderResources.ClientNumberHeaderString;
+        public string PrimaryTitleHeaderString => ColumnHeaderResources.PrimaryTitleHeaderString;
+        public string SecondaryTitleHeaderString => ColumnHeaderResources.SecondaryTitleHeaderString;
+        public string CommentsHeaderString => ColumnHeaderResources.CommentsHeaderString;
+        public string ResourceHeaderString => ColumnHeaderResources.ResourceHeaderString;
+        public string SubJobHeaderString => ColumnHeaderResources.SubJobHeaderString;
+        public string OfficeHeaderString => ColumnHeaderResources.OfficeHeaderString;
+        public string PhaseHeaderString => ColumnHeaderResources.PhaseHeaderString;
+        public string InternalNumberHeaderString => ColumnHeaderResources.InternalNumberHeaderString;
+        public string CurrentPercentageHeaderString => ColumnHeaderResources.CurrentPercentageHeaderString;
+        public string BudgetHourHeaderString => ColumnHeaderResources.BudgetHourHeaderString;
     }
 }

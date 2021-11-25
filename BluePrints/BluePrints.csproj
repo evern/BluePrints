@@ -761,6 +761,11 @@
     <Compile Include="Common\Reports\XtraReportTQRegister.Designer.cs">
       <DependentUpon>XtraReportTQRegister.cs</DependentUpon>
     </Compile>
+    <Compile Include="Common\Resources\ColumnHeaderResources.Designer.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>ColumnHeaderResources.resx</DependentUpon>
+    </Compile>
     <Compile Include="Common\Resources\UserPreferences.Designer.cs">
       <DependentUpon>UserPreferences.resx</DependentUpon>
       <AutoGen>True</AutoGen>
@@ -2690,6 +2695,10 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Common\Reports\XtraReportTQRegister.resx">
       <DependentUpon>XtraReportTQRegister.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Common\Resources\ColumnHeaderResources.resx">
+      <Generator>ResXFileCodeGenerator</Generator>
+      <LastGenOutput>ColumnHeaderResources.Designer.cs</LastGenOutput>
     </EmbeddedResource>
     <EmbeddedResource Include="Common\Resources\UserPreferences.resx">
       <Generator>ResXFileCodeGenerator</Generator>

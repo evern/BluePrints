@@ -20,7 +20,6 @@ namespace BluePrints.Common.Projections
         public BASELINE_ITEMProjection()
             : base()
         {
-
         }
 
         public RATE RATE { get; set; }

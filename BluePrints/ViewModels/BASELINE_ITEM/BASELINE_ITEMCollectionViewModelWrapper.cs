@@ -706,78 +706,8 @@ namespace BluePrints.ViewModels
 
         protected override OperationInterceptMode OnBeforeProjectionSaveIsContinue(BASELINE_ITEMProgress projection, out bool isNew)
         {
-            if(projection.Entity.Entity.GUID_OFFICE == null)
-                projection.Entity.Entity.GUID_OFFICE = loadPROJECT.GUID_OFFICE;
-
-            //this context is inherited by variation and is used to save newly added variation
-            if(projection.Entity.Entity.GUID_BASELINE == null && projection.Entity.Entity.GUID_VARIATION == null)
-                projection.Entity.Entity.GUID_BASELINE = loadBASELINE.GUID;
-
-            PhaseType? phaseType = null;
-            ChargeType? chargeType = null;
-            PHASE defaultPHASE = null;
-            if (viewType == DeliverablesViewType.Direct || viewType == DeliverablesViewType.Both)
-            {
-                phaseType = PhaseType.Design;
-                chargeType = ChargeType.Chargeable;
-                defaultPHASE = PHASECollection.FirstOrDefault(x => x.PHASE_TYPE != null && x.PHASE_TYPE == PhaseType.Design && x.CHARGE_TYPE != null && x.CHARGE_TYPE == ChargeType.Chargeable);
-                if (viewType != DeliverablesViewType.Both && defaultPHASE != null)
-                    projection.Phase_Guid = defaultPHASE.GUID;
-            }
-            else if (viewType == DeliverablesViewType.Indirect)
-            {
-                phaseType = PhaseType.Design;
-                chargeType = ChargeType.NotChargeable;
-                PHASE indirectPHASE = PHASECollection.FirstOrDefault(x => x.PHASE_TYPE != null && x.PHASE_TYPE == PhaseType.Design && x.CHARGE_TYPE != null && x.CHARGE_TYPE == ChargeType.NotChargeable);
-                if (indirectPHASE != null)
-                    projection.Phase_Guid = indirectPHASE.GUID;
-            }
-            else if (projection.Phase_Guid == null)
-            {
-                defaultPHASE = PHASECollection.FirstOrDefault(x => x.PHASE_TYPE != null && x.PHASE_TYPE == PhaseType.Design && x.CHARGE_TYPE != null && x.CHARGE_TYPE == ChargeType.Chargeable);
-                if (defaultPHASE != null)
-                    projection.Phase_Guid = defaultPHASE.GUID;
-            }
-
-            string errorMessage = string.Empty;
-            if (projection.GUID == Guid.Empty && projection.Entity.Entity.INTERNAL_NUM == string.Empty && projection.IsInternalNumberEditable)
-                projection.Entity.Entity.INTERNAL_NUM = generateInternalNumber(projection, out errorMessage);
-
-            assignDeliverablePhase(projection, defaultPHASE);
-            BluePrintsDataUtils.OnBeforeSavedGenerateAndAssignSubjob(loadPROJECT, PHASECollection, AREACollection, SUBAREACollection, projection, bluePrintsUnitOfWork, phaseType, chargeType, false, allowSubJobDeletion);
-            BluePrintsDataUtils.OnBeforeSavedGenerateAndAssignWorkpack(loadPROJECT, projection, WORKPACKSCollectionViewModel, SUBJOBCollection, DISCIPLINECollection, allowWorkpackDeletion);
-            projection.Update();
+            BluePrintsDataUtils.OnBeforeSavingBASELINE_ITEM(bluePrintsUnitOfWork, projection, loadPROJECT, loadBASELINE, viewType, PHASECollection, MainViewModel.Entities.Select(x => x.Entity.Entity), AREACollection, SUBAREACollection, DISCIPLINECollection, DOCTYPECollection, WORKPACKCollection, SUBJOBCollection, WORKPACKSCollectionViewModel, allowSubJobDeletion, allowWorkpackDeletion);
             return base.OnBeforeProjectionSaveIsContinue(projection, out isNew);
-        }
-
-        private void assignDeliverablePhase(BASELINE_ITEMProgress projection, PHASE defaultPHASE)
-        {
-            if (defaultPHASE == null)
-                return;
-
-            if (projection.Phase_Guid == null || (projection.Entity.Entity.GUID_DOCTYPE != null && isDocTypePhaseValid(projection.Entity.Entity.GUID_DOCTYPE, projection.Phase_Guid) != string.Empty))
-            {
-                if (projection.Entity.Entity.DOCTYPE != null)
-                {
-                    DOCTYPE findDOCTYPE = DOCTYPECollection.FirstOrDefault(x => x.GUID == projection.Entity.Entity.GUID_DOCTYPE);
-                    if (findDOCTYPE != null)
-                    {
-                        if (findDOCTYPE.IS_INDIRECT_ONLY)
-                            defaultPHASE = PHASECollection.FirstOrDefault(x => x.PHASE_TYPE != null && x.PHASE_TYPE == PhaseType.Indirect && x.CHARGE_TYPE != null && x.CHARGE_TYPE == ChargeType.Chargeable);
-                        else
-                            defaultPHASE = PHASECollection.FirstOrDefault(x => x.PHASE_TYPE != null && x.PHASE_TYPE == PhaseType.Design && x.CHARGE_TYPE != null && x.CHARGE_TYPE == ChargeType.Chargeable);
-
-                        if (defaultPHASE != null)
-                            projection.Phase_Guid = defaultPHASE.GUID;
-                    }
-                }
-                else
-                {
-                    defaultPHASE = PHASECollection.FirstOrDefault(x => x.PHASE_TYPE != null && x.PHASE_TYPE == PhaseType.Design && x.CHARGE_TYPE != null && x.CHARGE_TYPE == ChargeType.Chargeable);
-                    if (defaultPHASE != null)
-                        projection.Phase_Guid = defaultPHASE.GUID;
-                }
-            }
         }
 
         protected override bool OnBeforeApplyingProjectionPropertiesToEntityIsContinue(BASELINE_ITEMProgress projectionEntity, BASELINE_ITEM entity)
@@ -904,7 +834,7 @@ namespace BluePrints.ViewModels
             {
                 if(newValue != null) 
                 {
-                    string errorMessage = isDocTypePhaseValid(entity.Entity.Entity.GUID_DOCTYPE, (Guid)newValue);
+                    string errorMessage = BluePrintsDataUtils.IsDocTypePhaseValid(entity.Entity.Entity.GUID_DOCTYPE, (Guid)newValue, PHASECollection, DOCTYPECollection);
                     if (errorMessage != string.Empty)
                     {
                         return errorMessage;
@@ -930,27 +860,6 @@ namespace BluePrints.ViewModels
         {
             //if(!isDocTypePhaseValid(projection.Entity.Entity.GUID_DOCTYPE, projection.Entity.Entity.GUID_PHASE))
             //    return "Only indirect phase can be selected for this document type, please change phase to direct or use a document type which is indirect";
-
-            return string.Empty;
-        }
-
-        private string isDocTypePhaseValid(Guid? doctypeGuid, Guid? phaseGuid)
-        {
-            if (doctypeGuid != null && phaseGuid != null)
-            {
-                PHASE phase = PHASECollection.FirstOrDefault(x => x.GUID == phaseGuid);
-                if (phase != null)
-                {
-                    DOCTYPE doctype = DOCTYPECollection.FirstOrDefault(x => x.GUID == doctypeGuid);
-                    if (doctype != null)
-                    {
-                        if (!doctype.IS_INDIRECT_ONLY && phase.PHASE_TYPE == PhaseType.Indirect)
-                            return "Doc type cannot be assigned with indirect phase";
-                        else if (doctype.IS_INDIRECT_ONLY && phase.PHASE_TYPE == PhaseType.Design)
-                            return "Doc type must be assigned with indirect phase";
-                    }
-                }
-            }
 
             return string.Empty;
         }
@@ -1126,7 +1035,7 @@ namespace BluePrints.ViewModels
                 {
                     string oldValue = projection.Entity.Entity.INTERNAL_NUM;
                     string errorMessage = string.Empty;
-                    string newValue = generateInternalNumber(projection, out errorMessage);
+                    string newValue = BluePrintsDataUtils.GenerateInternalNumber(projection, loadPROJECT, MainViewModel.Entities.Select(x => x.Entity.Entity), AREACollection, DISCIPLINECollection, DOCTYPECollection, out errorMessage);
                     projection.Entity.Entity.INTERNAL_NUM = newValue;
                     string internalNumberFieldName = formatFieldNameForProjectionProperty(BindableBase.GetPropertyName(() => new BASELINE_ITEMProgress().Entity.Entity.INTERNAL_NUM));
                     //when it's new this entity will be added as EntityMessageType.Added later
@@ -1463,7 +1372,7 @@ namespace BluePrints.ViewModels
                 if (fieldName == internalNumberFieldName && entity.IsInternalNumberEditable)
                 {
                     string errorMessage = string.Empty;
-                    string internalNumber = generateInternalNumber(entity, out errorMessage);
+                    string internalNumber = BluePrintsDataUtils.GenerateInternalNumber(entity, loadPROJECT, MainViewModel.Entities.Select(x => x.Entity.Entity), AREACollection, DISCIPLINECollection, DOCTYPECollection, out errorMessage);
                     if(errorMessage != string.Empty)
                         errorMessages.Add(new ErrorMessage(entity.Deliverable_Name == string.Empty ? "Internal number population error" : entity.Deliverable_Name, errorMessage));
                     else
@@ -1586,36 +1495,6 @@ namespace BluePrints.ViewModels
         {
             string cleanFieldName = DataUtils.FormatColumnFieldname(fieldName);
             return "Entity.Entity." + cleanFieldName;
-        }
-
-        private string generateInternalNumber(BASELINE_ITEMProgress projectionEntity, out string errorMessage)
-        {
-            if (projectionEntity.Entity.Entity.INTERNAL_NUM != null && projectionEntity.Entity.Entity.INTERNAL_NUM != string.Empty)
-            {
-                errorMessage = string.Empty;
-                return projectionEntity.Entity.Entity.INTERNAL_NUM;
-            }
-
-            AREA currentItemAREA = AREACollection.FirstOrDefault((x => x.GUID == projectionEntity.Entity.Entity.GUID_AREA));
-            DISCIPLINE currentItemDISCIPLINE = DISCIPLINECollection.FirstOrDefault((x => x.GUID == projectionEntity.Entity.Entity.GUID_DISCIPLINE));
-            DOCTYPE currentItemDOCTYPE = DOCTYPECollection.FirstOrDefault((x => x.GUID == projectionEntity.Entity.Entity.GUID_DOCTYPE));
-
-            errorMessage = string.Empty;
-            if (currentItemAREA == null)
-                errorMessage += "Area, ";
-
-            if (currentItemDISCIPLINE == null)
-                errorMessage += "Discipline, ";
-
-            if (currentItemDOCTYPE == null)
-                errorMessage += "Document Type, ";
-
-            if(errorMessage.Length > 2)
-                errorMessage = errorMessage.Substring(0, errorMessage.Length - 2) + " is missing";
-
-            string internalNum = BluePrintsDataUtils.BASELINEITEM_Generate_InternalNumber(loadPROJECT, MainViewModel.Entities.Select(x => x.Entity.Entity), currentItemAREA, currentItemDISCIPLINE, currentItemDOCTYPE, projectionEntity.GUID);
-
-            return internalNum;
         }
         #endregion
 
