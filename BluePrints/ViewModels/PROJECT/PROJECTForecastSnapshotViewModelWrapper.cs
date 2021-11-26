@@ -243,7 +243,20 @@ namespace BluePrints.ViewModels
         }
 
         public DateTime LoadDataDate { get; set; }
-        public DateTime FixedDataDate { get; set; }
+
+        bool isFixedDataDateSet;
+        DateTime fixedDateTime;
+        public DateTime FixedDataDate
+        {
+            get => fixedDateTime;
+            set
+            {
+                //prevent tab switching from setting this to null because it's binded to view
+                if (!isFixedDataDateSet)
+                    fixedDateTime = value;
+            }
+        }
+
         public DateTime FixedEndDate { get; set; }
         private void setProject(Data.PROJECT project)
         {
@@ -266,6 +279,7 @@ namespace BluePrints.ViewModels
             }
 
             FixedDataDate = dataDate;
+            isFixedDataDateSet = true;
 
             DateTime endDate;
             if (LoadPROJECT.FORECAST_END_DATE == null)
@@ -351,15 +365,8 @@ namespace BluePrints.ViewModels
             IsLoading = true;
             this.RaisePropertyChanged(x => x.IsLoading);
 
-            Common.LoadingScreenManager.SetMessage("Loading Job Lines...");
-            masterJob = ExoQueries.GetProjectSubJob(primeroUnitOfWork, LoadPROJECT.NUMBER, LoadPROJECT.NUMBER);
-            copyLine = ExoQueries.GetAnyProjectLineByJobNumber(primeroUnitOfWork, LoadPROJECT.NUMBER);
-            projectLines = ExoQueries.GetExoSubJobProjection(primeroUnitOfWork, LoadPROJECT);
-
-            Common.LoadingScreenManager.SetMessage("Loading PO Details...");
-            X_PURCHORD_LINE_DETAILS = PrimeroEntities.GetPurchaseOrdersDetail(primeroUnitOfWork, LoadPROJECT.NUMBER, FixedDataDateMonthEnd);
-            Common.LoadingScreenManager.CloseLoadingScreen();
-
+            loadExoMethodsData();
+            loadSummaryStats();
             refreshP6DataDateError();
 
             dataPointsTable = null;
@@ -416,17 +423,25 @@ namespace BluePrints.ViewModels
                 string commodityCode = delimited[2];
                 string variationCode = delimited[3];
 
+                ////For Debugging
+                //if (subJobCode == "20638-000-00-I1" && disciplineCode == "GP01" && commodityCode == "G50" && variationCode == "")
+                //{
+
+                //}
+
                 UniqueForecastJob uniqueForecastJob = new UniqueForecastJob(projectLines, subJobCode, disciplineCode, commodityCode, variationCode, FixedDataDate, FORECAST_JOB_HOUR_SNAPSHOTCollection);
                 uniqueForecastJob.UpdateTenderBudget(TenderBudgetCollection.AsQueryable());
                 uniqueForecastJob.UpdateErrorMessage(JOBCOST_LINES_AUDITCollection.AsQueryable());
                 uniqueForecastJobs.Add(uniqueForecastJob);
+
                 Common.LoadingScreenManager.Progress();
             });
 
-            foreach (string uniqueWBSName in uniqueWBSNames)
-            {
+            ////For Debugging
+            //foreach (string uniqueWBSName in uniqueWBSNames)
+            //{
 
-            }
+            //}
 
             Common.LoadingScreenManager.CloseLoadingScreen();
 
@@ -459,6 +474,12 @@ namespace BluePrints.ViewModels
                     Jobs.Add(forecastJobSnapshot);
                     Common.LoadingScreenManager.Progress();
                 });
+
+            ////For Debugging
+            //foreach(var uniqueForecastJob in uniqueForecastJobs)
+            //{
+
+            //}
 
             Common.LoadingScreenManager.ShowLoadingScreen(1);
             Common.LoadingScreenManager.SetMessage("Loading Forecast Overrides...");
@@ -667,6 +688,8 @@ namespace BluePrints.ViewModels
 
             job.P6RemainingUnitsOverride = P6TotalCurrentRemainingUnits;
             //updateViewForecastsOnDatesFromDb(commodityRow, false, relevantFORECASTS);
+            updateTotalUncommittedOnJob(commodityRow);
+
             return commodityRow;
         }
 
@@ -1904,6 +1927,55 @@ namespace BluePrints.ViewModels
         #endregion
 
         #region View Updates
+        private void loadExoMethodsData()
+        {
+            Common.LoadingScreenManager.SetMessage("Loading Job Lines...");
+            masterJob = ExoQueries.GetProjectSubJob(primeroUnitOfWork, LoadPROJECT.NUMBER, LoadPROJECT.NUMBER);
+            copyLine = ExoQueries.GetAnyProjectLineByJobNumber(primeroUnitOfWork, LoadPROJECT.NUMBER);
+            projectLines = ExoQueries.GetExoSubJobProjection(primeroUnitOfWork, LoadPROJECT);
+
+            Common.LoadingScreenManager.SetMessage("Loading PO Details...");
+            X_PURCHORD_LINE_DETAILS = PrimeroEntities.GetPurchaseOrdersDetail(primeroUnitOfWork, LoadPROJECT.NUMBER, FixedDataDateMonthEnd);
+            Common.LoadingScreenManager.CloseLoadingScreen();
+        }
+
+        private void loadSummaryStats()
+        {
+            IPrimeroEntitiesUnitOfWork threadSafePrimeroEntitiesUnitOfWork = PrimeroEntitiesUnitOfWorkSource.GetUnitOfWorkFactory(LoadPROJECT.OfficeNameForExo).CreateUnitOfWork();
+            List<ExoTimeAuthorisation> jobLines = new List<ExoTimeAuthorisation>();
+
+            dynamic revenueLine = ExoQueries.GetProjectRevenue(threadSafePrimeroEntitiesUnitOfWork, LoadPROJECT.NUMBER);
+            if (revenueLine != null)
+            {
+                if (LoadPROJECT.ORI_REVENUE == null)
+                    LoadPROJECT.ORI_REVENUE = Convert.ToDecimal(revenueLine.BUDGETED_REV);
+
+                savePROJECT();
+            }
+
+            FORECAST_HISTORY forecastHistory = QueryableFORECAST_HISTORYCollection.OrderByDescending(x => x.EAC_DATE).FirstOrDefault(x => x.EAC_DATE < FixedDataDateMonthEnd);
+            IEnumerable<FORECAST_EAC> forecastEACs = FORECAST_EACCollection.Where(x => x.FORECAST_DATE.Date == PreviousEACDataDate.Date);
+
+            if (forecastHistory != null)
+            {
+                ForecastSummary.Prev_Original_Revenue = forecastHistory.ORIGINAL_REVENUE;
+                ForecastSummary.Prev_Approved_Variation = forecastHistory.APPROVED_VARIATION;
+                ForecastSummary.Prev_Unapproved_Variation = forecastHistory.UNAPPROVED_VARIATION;
+                ForecastSummary.Prev_Total_Unapproved_Variation = forecastHistory.TOTAL_UNAPPROVED_VARIATION;
+                ForecastSummary.Prev_Total_EAC = forecastHistory.TOTAL_EAC == null ? forecastEACs.Sum(x => x.FORECAST_COSTS) : forecastHistory.TOTAL_EAC;
+            }
+            else
+                ForecastSummary.Prev_Total_EAC = forecastEACs.Sum(x => x.FORECAST_COSTS);
+
+            //dynamic revenueLine = ExoQueries.GetProjectRevenue(primeroEntitiesUnitOfWork, loadPROJECT.NUMBER);
+            //if (revenueLine != null)
+            ForecastSummary.Original_Revenue = LoadPROJECT.ORI_REVENUE == null ? 0 : (decimal)LoadPROJECT.ORI_REVENUE;
+            ForecastSummary.Approved_Var_Revenue = LoadPROJECT.VAR_REVENUE == null || LoadPROJECT.VAR_REVENUE == 0 ? VARIATION_CONSTRUCTIONCollection.Where(x => x.STATUS == VariationConstructionStatus.Approved).Sum(x => x.ManualApprovedEstimatedValue) : (decimal)LoadPROJECT.VAR_REVENUE;
+            ForecastSummary.Unapproved_Var_Revenue = LoadPROJECT.UNAPPROVED_VAR_REVENUE == null ? 0 : (decimal)LoadPROJECT.UNAPPROVED_VAR_REVENUE;
+            ForecastSummary.Total_Unapproved_Var_Revenue = LoadPROJECT.TOTAL_UNAPPROVED_VAR_REVENUE == null || LoadPROJECT.TOTAL_UNAPPROVED_VAR_REVENUE == 0 ? VARIATION_CONSTRUCTIONCollection.Where(x => x.STATUS == VariationConstructionStatus.Submitted).Sum(x => x.ManualApprovedEstimatedValue) : (decimal)LoadPROJECT.TOTAL_UNAPPROVED_VAR_REVENUE;
+            ForecastSummary.TotalClaims = ExoQueries.GetProjectClaims(threadSafePrimeroEntitiesUnitOfWork, LoadPROJECT.NUMBER);
+        }
+
         private void updateFloatingSummaryMembers()
         {
             delayedUpdateFloatingProjectSummaryTimer.Tick -= DelayedUpdateFloatingProjectSummaryTimer_Tick;
@@ -2570,6 +2642,9 @@ namespace BluePrints.ViewModels
         public override void FullRefresh()
         {
             alignedDataDateCollection.Clear();
+            loadExoMethodsData();
+            loadSummaryStats();
+
             //ForecastSummary.Reset();
             base.FullRefresh();
         }
@@ -2676,6 +2751,14 @@ namespace BluePrints.ViewModels
             get
             {
                 return bluePrintsUnitOfWork.FORECASTS.Where(x => x.GUID_PROJECT == LoadPROJECT.GUID);
+            }
+        }
+
+        public IQueryable<FORECAST_HISTORY> QueryableFORECAST_HISTORYCollection
+        {
+            get
+            {
+                return bluePrintsUnitOfWork.FORECAST_HISTORIES.Where(x => x.GUID_PROJECT == LoadPROJECT.GUID);
             }
         }
 
@@ -2841,10 +2924,10 @@ namespace BluePrints.ViewModels
         {
             get
             {
-                if (POForecastCollection.Count == 0)
+                if (POCollection.Count == 0)
                     return 0;
 
-                return POForecastCollection.Sum(x => x.FORECAST_QTY);
+                return POCollection.Sum(x => x.FORECAST_COST);
             }
         }
 

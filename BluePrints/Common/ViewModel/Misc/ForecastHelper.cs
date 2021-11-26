@@ -81,7 +81,7 @@ namespace BluePrints.Common.ViewModel.Misc
 
             //For Debugging
             //string s;
-            //if (projection.SubJobCode == "15671-000-00-P1" && projection.DisciplineCode == "EL01" && projection.CommodityCode == "E30" && projection.VariationCode == string.Empty)
+            //if (projection.SubJobCode == "20638-200-19-C1" && projection.DisciplineCode == "EL01" && projection.CommodityCode == "E01" && projection.VariationCode == string.Empty)
             //    s = string.Empty;
 
             List<DashboardFlatStructure> relevantDashboards;
@@ -415,6 +415,10 @@ namespace BluePrints.Common.ViewModel.Misc
             IEnumerable<COMMODITY_CODE> COMMODITY_CODELookup, IEnumerable<ExoTimeAuthorisation> ExoJobLookup, IEnumerable<JOB_COSTTYPES> JOB_COSTTYPESCollection, 
             string subJobTitle = "", string disciplineName = "", bool tryHarderOnLookup = true, string errorMessage = "")
         {
+            //For Debugging
+            //if (subJobCode != "20638-200-19-C1")
+            //    return;
+
             COMMODITY_CODE findCOMMODITY_CODE = COMMODITY_CODELookup.FirstOrDefault(x => x.CODE == commodityCode);
             string commodityCodeName = string.Empty;
             string commodityCodeDescription = string.Empty;

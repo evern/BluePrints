@@ -145,6 +145,7 @@ namespace BluePrints.ViewModels
             }
 
             FixedDataDate = dataDate;
+            isFixedDataDateSet = true;
 
             DateTime endDate;
             if (LoadPROJECT.FORECAST_END_DATE == null)
@@ -421,7 +422,20 @@ namespace BluePrints.ViewModels
         public DateTime FixedDataDateMonthEnd => FixedDataDate == null ? DateTime.Now : new DateTime(((DateTime)FixedDataDate).Year, ((DateTime)FixedDataDate).Month, 1).AddMonths(1).AddDays(-1);
         private DateTime? firstDataPointsDate { get; set; }
         public DateTime? LoadDataDate { get; set; }
-        public override DateTime? FixedDataDate { get; set; }
+
+        bool isFixedDataDateSet;
+        DateTime? fixedDateTime;
+        public override DateTime? FixedDataDate
+        {
+            get => fixedDateTime;
+            set
+            {
+                //prevent tab switching from setting this to null because it's binded to view
+                if (!isFixedDataDateSet)
+                    fixedDateTime = value;
+            }
+        }
+
         public DateTime FixedEndDate { get; set; }
 
         public bool CanSaveDateAndRefresh()

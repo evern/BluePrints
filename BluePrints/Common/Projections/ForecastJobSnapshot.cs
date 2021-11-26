@@ -347,7 +347,7 @@ namespace BluePrints.Common.Projections
         private readonly DateTime firstViewDate;
         private readonly DateTime firstForecastDate;
         readonly List<FORECAST_JOB_HOUR_SNAPSHOT> byDateForecastJobHourSnapshots;
-        public ForecastDateSnapshot(IEnumerable<FORECAST_JOB_HOUR_SNAPSHOT> byDataDateForecastJobHourSnapshots, DateTime firstViewDate, DateTime date, DateTime dataDate)
+        public ForecastDateSnapshot(IEnumerable<FORECAST_JOB_HOUR_SNAPSHOT> FORECAST_JOB_HOUR_SNAPSHOTFilteredByJob, DateTime firstViewDate, DateTime date, DateTime dataDate)
         {
             QueryDate = date; 
             
@@ -358,7 +358,7 @@ namespace BluePrints.Common.Projections
             MonthStartDate = new DateTime(date.Date.Year, date.Date.Month, 1);
             MonthEndDate = MonthStartDate.AddMonths(1).AddDays(-1);
 
-            this.byDateForecastJobHourSnapshots = byDataDateForecastJobHourSnapshots.Where(x => x.FORECAST_DATE != null &&  ((DateTime)x.FORECAST_DATE).Month == QueryDate.Month && ((DateTime)x.FORECAST_DATE).Year == QueryDate.Year).ToList();
+            this.byDateForecastJobHourSnapshots = FORECAST_JOB_HOUR_SNAPSHOTFilteredByJob.Where(x => x.FORECAST_DATE != null &&  ((DateTime)x.FORECAST_DATE).Month == QueryDate.Month && ((DateTime)x.FORECAST_DATE).Year == QueryDate.Year).ToList();
         }
 
 
