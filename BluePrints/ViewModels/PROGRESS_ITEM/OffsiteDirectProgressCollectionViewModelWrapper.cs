@@ -549,7 +549,16 @@ namespace BluePrints.ViewModels
                         excelDataSource.FileName = FileBrowserDialogService.GetFullFileName();
                         ExcelWorksheetSettings worksheetSettings = new ExcelWorksheetSettings("Sheet");
                         excelDataSource.SourceOptions = new ExcelSourceOptions(worksheetSettings);
-                        excelDataSource.Fill();
+
+                        try
+                        {
+                            excelDataSource.Fill();
+                        }
+                        catch
+                        {
+                            MessageBoxService.ShowMessage("Worksheet named 'Sheet' cannot be found", "Error", MessageButton.OK, MessageIcon.Warning);
+                            return;
+                        }
 
                         DataTable excelSourceDataTable = excelDataSource.ToDataTable();
                         if (ContractorDeliverableList == null)
@@ -706,7 +715,7 @@ namespace BluePrints.ViewModels
 
         protected override bool OnBeforeApplyingProjectionPropertiesToEntityIsContinue(BASELINE_ITEMProgress projectionEntity, BASELINE_ITEM entity)
         {
-            if(projectionEntity.GetType() == typeof(BASELINE_ITEMProgressImportWrapper))
+            if(projectionEntity.GetType().BaseType == typeof(BASELINE_ITEMProgressImportWrapper))
             {
                 projectionEntity.Entity.Entity.GUID_BASELINE = loadBASELINE.GUID;
                 DataUtils.ShallowCopy(entity, projectionEntity.Entity.Entity);
