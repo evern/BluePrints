@@ -26,16 +26,16 @@ namespace BluePrints.Common.Projections
             DateCosts = new List<ForecastDateSnapshot>();
         }
 
-        public ForecastJobSnapshot(UniqueForecastJob uniqueForecastJob, List<ExoSubJobProjection> projectLines, IEnumerable<FORECAST_JOB_SETTING> FORECAST_JOB_SETTINGCollection, IEnumerable<FORECAST_EAC> FORECAST_EACCollection, IEnumerable<COMMODITY_CODE> COMMODITY_CODECollection, DateTime previousEACDataDate, bool isBudgetReadOnly)
+        public ForecastJobSnapshot(UniqueForecastJob uniqueForecastJob, bool isBudgetReadOnly, IEnumerable<FORECAST_EAC> FORECAST_EACCollection, IEnumerable<FORECAST_EAC> FORECAST_EACPreviousCommitmentCollection, IEnumerable<FORECAST_JOB_SETTING> FORECAST_JOB_SETTINGCollection, IEnumerable<COMMODITY_CODE> COMMODITY_CODECollection, List<ExoSubJobProjection> projectLines, DateTime previousDataDate)
         {
             this.uniqueForecastJob = uniqueForecastJob;
             DateCosts = new List<ForecastDateSnapshot>();
-            PopulateCompulsoryDataForForecastJobSnapshot(FORECAST_EACCollection, COMMODITY_CODECollection, previousEACDataDate);
             SubJobCode = uniqueForecastJob.SUBJOB_CODE;
             DisciplineCode = uniqueForecastJob.DISCIPLINE_CODE;
             CommodityCode = uniqueForecastJob.COMMODITY_CODE;
             VariationCode = uniqueForecastJob.VARIATION_CODE;
             Budget = uniqueForecastJob.BudgetCosts;
+            PreviousOutstanding = uniqueForecastJob.PreviousPOOutstandingCosts;
             Outstanding = uniqueForecastJob.POOutstandingCosts;
             P6BudgetedUnits = uniqueForecastJob.P6BudgetHours;
             P6RemainingUnits = uniqueForecastJob.P6RemainingHours;
@@ -47,34 +47,15 @@ namespace BluePrints.Common.Projections
             EarnedUnits = uniqueForecastJob.EarnedCollection.Sum(x => x.FORECAST_QTY);
             PORemainingCosts = uniqueForecastJob.POCollection.Sum(x => x.FORECAST_COST);
             ProgressETC = uniqueForecastJob.ProgressETCCollection.Sum(x => x.FORECAST_QTY);
-            ActualCostsPreviousDataDate = uniqueForecastJob.ActualCollection.Sum(x => x.FORECAST_COST);
-            ActualUnitsPreviousDataDate = uniqueForecastJob.ActualCollection.Sum(x => x.FORECAST_QTY);
+            ActualCostsPreviousDataDate = uniqueForecastJob.PreviousActualCollection.Sum(x => x.FORECAST_COST);
+            ActualUnitsPreviousDataDate = uniqueForecastJob.PreviousActualCollection.Sum(x => x.FORECAST_QTY);
             ActualCostsPostDataDate = uniqueForecastJob.FutureActualCollection.Sum(x => x.FORECAST_COST);
             ActualUnitsPostDataDate = uniqueForecastJob.FutureActualCollection.Sum(x => x.FORECAST_QTY);
             IsBudgetReadOnly = isBudgetReadOnly;
-            PopulateLookupAttributes(projectLines, FORECAST_JOB_SETTINGCollection);
-        }
 
-        public void PopulateLookupAttributes(List<ExoSubJobProjection> projectLines, IEnumerable<FORECAST_JOB_SETTING> FORECAST_JOB_SETTINGCollection)
-        {
-            if (VariationCode == null || VariationCode == string.Empty)
-                ExoJob = projectLines.FirstOrDefault(x => x.SubJobCode == SubJobCode && x.DisciplineCode == DisciplineCode && x.CommodityCode == CommodityCode && (x.VariationCode == null || x.VariationCode == string.Empty));
-            else
-                ExoJob = projectLines.FirstOrDefault(x => x.SubJobCode == SubJobCode && x.DisciplineCode == DisciplineCode && x.CommodityCode == CommodityCode && x.VariationCode == VariationCode);
-
-            if (ExoJob == null)
-            {
-                ExoJob = new ExoSubJobProjection() { SubJobCode = SubJobCode, SubJobTitle = string.Empty, DisciplineCode = DisciplineCode, DisciplineName = string.Empty, CommodityCode = CommodityCode, CommodityName = string.Empty, CommodityDescription = string.Empty, CommodityUOM = string.Empty, VariationCode = VariationCode };
-            }
-
-            //set whether productivity is floating
-            if (FORECAST_JOB_SETTINGCollection.Where(x => x.SUBJOB_CODE == SubJobCode && x.DISCIPLINE_CODE == DisciplineCode && x.COMMODITY_CODE == CommodityCode && x.VARIATION_CODE == VariationCode && x.IS_FLOATING_PRODUCTIVITY).Count() > 0)
-                IsProductivityFloating = true;
-        }
-
-        public void PopulateCompulsoryDataForForecastJobSnapshot(IEnumerable<FORECAST_EAC> FORECAST_EACCollection, IEnumerable<COMMODITY_CODE> COMMODITY_CODECollection, DateTime previousEACDataDate)
-        {
-            ForecastHelper.PopulateEAC(this, FORECAST_EACCollection, previousEACDataDate);
+            ForecastHelper.PopulatePreviousEAC(this, FORECAST_EACCollection, previousDataDate);
+            ForecastHelper.PopulatePreviousCommitment(this, FORECAST_EACPreviousCommitmentCollection, previousDataDate);
+            ForecastHelper.PopulateLookupAttributes(this, projectLines, FORECAST_JOB_SETTINGCollection);
             PopulateCommodityCodes(COMMODITY_CODECollection);
         }
 

@@ -289,7 +289,7 @@ namespace BluePrints.Common.ViewModel.Misc
             }
         }
 
-        public static void PopulateEAC(ForecastJobSnapshot forecastProjection, IEnumerable<FORECAST_EAC> FORECAST_EACCollection, DateTime previousEACDataDate)
+        public static void PopulatePreviousEAC(ForecastJobSnapshot forecastProjection, IEnumerable<FORECAST_EAC> FORECAST_EACCollection, DateTime previousEACDataDate)
         {
             //populate previous estimate to completion
             FORECAST_EAC previousEAC = FORECAST_EACCollection.FirstOrDefault(x => x.SUBJOB_CODE == forecastProjection.SubJobCode && x.DISCIPLINE_CODE == forecastProjection.DisciplineCode && x.COMMODITY_CODE == forecastProjection.CommodityCode && x.VARIATION_CODE == forecastProjection.VariationCode && x.FORECAST_DATE.Date == previousEACDataDate.Date && x.TYPE == ForecastEACType.EAC);
@@ -302,6 +302,31 @@ namespace BluePrints.Common.ViewModel.Misc
             {
                 forecastProjection.PreviousEAC = 0.00m;
             }
+        }
+
+        public static void PopulatePreviousCommitment(ForecastJobSnapshot forecastProjection, IEnumerable<FORECAST_EAC> FORECAST_EACPreviousCommitmentCollection, DateTime previousDataDate)
+        {
+            //get previous total commitment
+            IEnumerable<FORECAST_EAC> PreviousCommitmentCollection = FORECAST_EACPreviousCommitmentCollection.Where(x => x.SUBJOB_CODE == forecastProjection.SubJobCode && x.DISCIPLINE_CODE == forecastProjection.DisciplineCode && x.COMMODITY_CODE == forecastProjection.CommodityCode && x.VARIATION_CODE == forecastProjection.VariationCode).Where(x => x.FORECAST_DATE == previousDataDate).ToList();
+            if (PreviousCommitmentCollection.Where(x => x.FORECAST_COSTS != null).Count() > 0)
+                forecastProjection.TotalCommitmentPreviousSaved = PreviousCommitmentCollection.Where(x => x.FORECAST_COSTS != null).Sum(x => (decimal)x.FORECAST_COSTS);
+        }
+
+        public static void PopulateLookupAttributes(ForecastJobSnapshot forecastProjection, List<ExoSubJobProjection> projectLines, IEnumerable<FORECAST_JOB_SETTING> FORECAST_JOB_SETTINGCollection)
+        {
+            if (forecastProjection.VariationCode == null || forecastProjection.VariationCode == string.Empty)
+                forecastProjection.ExoJob = projectLines.FirstOrDefault(x => x.SubJobCode == forecastProjection.SubJobCode && x.DisciplineCode == forecastProjection.DisciplineCode && x.CommodityCode == forecastProjection.CommodityCode && (x.VariationCode == null || x.VariationCode == string.Empty));
+            else
+                forecastProjection.ExoJob = projectLines.FirstOrDefault(x => x.SubJobCode == forecastProjection.SubJobCode && x.DisciplineCode == forecastProjection.DisciplineCode && x.CommodityCode == forecastProjection.CommodityCode && x.VariationCode == forecastProjection.VariationCode);
+
+            if (forecastProjection.ExoJob == null)
+            {
+                forecastProjection.ExoJob = new ExoSubJobProjection() { SubJobCode = forecastProjection.SubJobCode, SubJobTitle = string.Empty, DisciplineCode = forecastProjection.DisciplineCode, DisciplineName = string.Empty, CommodityCode = forecastProjection.CommodityCode, CommodityName = string.Empty, CommodityDescription = string.Empty, CommodityUOM = string.Empty, VariationCode = forecastProjection.VariationCode };
+            }
+
+            //set whether productivity is floating
+            if (FORECAST_JOB_SETTINGCollection.Where(x => x.SUBJOB_CODE == forecastProjection.SubJobCode && x.DISCIPLINE_CODE == forecastProjection.DisciplineCode && x.COMMODITY_CODE == forecastProjection.CommodityCode && x.VARIATION_CODE == forecastProjection.VariationCode && x.IS_FLOATING_PRODUCTIVITY).Count() > 0)
+                forecastProjection.IsProductivityFloating = true;
         }
 
         public static void PopulateTenderBudget(ForecastJobData forecastProjection, IEnumerable<FORECAST_EAC> FORECAST_EACTenderBudgetCollection)
@@ -416,7 +441,7 @@ namespace BluePrints.Common.ViewModel.Misc
             string subJobTitle = "", string disciplineName = "", bool tryHarderOnLookup = true, string errorMessage = "")
         {
             //For Debugging
-            //if (subJobCode != "20638-200-19-C1")
+            //if (subJobCode != "20638-000-00-I1" || disciplineCode != "PM01" || commodityCode != "G04" || variationCode != "")
             //    return;
 
             COMMODITY_CODE findCOMMODITY_CODE = COMMODITY_CODELookup.FirstOrDefault(x => x.CODE == commodityCode);

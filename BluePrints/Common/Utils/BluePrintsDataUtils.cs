@@ -1388,7 +1388,7 @@ namespace BluePrints.Common.ViewModel.Utils
                 LoadingScreenManager.SetMessage("Loading POs...");
             }
 
-            DateTime poCutOffDate = queryDate.Date.AddDays(1).AddMinutes(-1);
+            DateTime poCutOffDate = queryDate.Date.AddDays(1).AddSeconds(-1);
             List<X_PURCHORD_LINE> purchaseOrderLines = PrimeroEntities.GetPurchaseOrdersSummary(primeroUOW, projectNumber, poCutOffDate);
 
             if (showLoadingScreen)
