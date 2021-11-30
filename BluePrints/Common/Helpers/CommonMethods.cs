@@ -22,7 +22,7 @@ namespace BluePrints.Common.Helpers
     {
         public static void PopulateTrueP6Dates(this IHaveTrueP6Dates entity, IEnumerable<TASK> TASKS, bool isPlanned)
         {
-            if(entity.P6_Assignments != null && entity.P6_Assignments.Count > 0)
+            if (entity.P6_Assignments != null && entity.P6_Assignments.Count > 0)
             {
                 decimal maxPercentage = entity.P6_Assignments.Max(x => x.HIGH_VALUE);
                 P6_ASSIGNMENT finalP6_ASSIGNMENT = entity.P6_Assignments.First(x => x.HIGH_VALUE == maxPercentage);
