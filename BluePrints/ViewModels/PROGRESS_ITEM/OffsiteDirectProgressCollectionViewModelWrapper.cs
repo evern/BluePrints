@@ -572,10 +572,13 @@ namespace BluePrints.ViewModels
                         List<BASELINE_ITEMProgressImportWrapper> importBaselineItems = new List<BASELINE_ITEMProgressImportWrapper>();
                         foreach (DataRow dataRow in excelSourceDataTable.Rows)
                         {
-                            if (dataRow[InternalNumberHeaderString] != DBNull.Value && dataRow[CurrentPercentageHeaderString] != DBNull.Value)
+                            if (dataRow[InternalNumberHeaderString] != DBNull.Value)
                             {
                                 string internalNumber = dataRow[InternalNumberHeaderString].ToString();
                                 decimal newPercentage;
+                                if (dataRow[CurrentPercentageHeaderString] == DBNull.Value)
+                                    dataRow[CurrentPercentageHeaderString] = 0.ToString();
+
                                 if (decimal.TryParse(dataRow[CurrentPercentageHeaderString].ToString(), out newPercentage))
                                 {
                                     BASELINE_ITEMProgress changeTrackingBaselineItemProgress = BASELINE_ITEMProgressImportWrapperHelper.ConvertDataRowToBASELINE_ITEMProgress(dataRow, PHASECollection, AREACollection, DISCIPLINECollection, DOCTYPECollection, DEPARTMENTCollection);
