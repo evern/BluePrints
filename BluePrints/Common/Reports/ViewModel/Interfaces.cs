@@ -228,6 +228,7 @@ namespace BluePrints.Common.ViewModel.Reporting
         DateTime? TrueP6PlannedStartDate { get; set; }
         DateTime? TrueP6PlannedEndDate { get; set; }
         DateTime? TrueP6RemainingEndDate { get; set; }
+        string Deliverable_Name { get; }
         List<P6_ASSIGNMENT> P6_Assignments { get; }
     }
 
