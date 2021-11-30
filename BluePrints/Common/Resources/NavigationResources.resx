@@ -516,4 +516,7 @@
   <data name="Menu_EXO_JobResources" xml:space="preserve">
     <value>EXO Job Resource maintenance menu</value>
   </data>
+  <data name="Permission_DesignDeliverables_LockUnlockBudget" xml:space="preserve">
+    <value>User can lock/unlock deliverable's budget</value>
+  </data>
 </root>

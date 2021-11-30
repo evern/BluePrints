@@ -49,6 +49,7 @@ namespace BluePrints.ViewModels
         <BASELINE_ITEM, BASELINE_ITEMProgress, Guid, IBluePrintsEntitiesUnitOfWork>, ISupportFiltering<BASELINE_ITEMProgress>
     {
         public string DefaultPhaseInternalNumber { get; set; }
+        private bool canLockUnlockBudget;
         public virtual IEnumerable<BASELINE_ITEMProgress> EditableAllEntities => GetEditableAllEntitiesCallBack != null ? GetEditableAllEntitiesCallBack() : MainViewModel.Entities;
         public Func<IEnumerable<BASELINE_ITEMProgress>> GetEditableAllEntitiesCallBack { get; set; }
         protected DeliverablesViewType viewType { get; set; }
@@ -70,6 +71,7 @@ namespace BluePrints.ViewModels
         /// <param name="unitOfWorkFactory">A factory used to create a unit of work instance.</param>
         protected BASELINE_ITEMCollectionViewModelWrapper(IUnitOfWorkFactory<IBluePrintsEntitiesUnitOfWork> unitOfWorkFactory = null)
         {
+            canLockUnlockBudget = LoginCredentials.getPermissionStatus(DataUtils.GetNameOf(() => NavigationResources.Permission_DesignDeliverables_LockUnlockBudget)) == LoginCredentials.PermissionStatus.All;
         }
 
         #region Database Operations
@@ -1091,6 +1093,12 @@ namespace BluePrints.ViewModels
 
         private void LockUnlockBASELINE(bool isLock)
         {
+            if(!canLockUnlockBudget)
+            {
+                MessageBoxService.ShowMessage("You do not have permission to lock/unlock budget units", "Error", MessageButton.OK, MessageIcon.Warning);
+                return;
+            }
+
             var BASELINECollectionViewModel = (CollectionViewModel<BASELINE, BASELINE, Guid, IBluePrintsEntitiesUnitOfWork>)loaderCollection.GetViewModel<BASELINE>();
             if (!isLock)
                 loadBASELINE.BUDGETED_UNITS = 0;

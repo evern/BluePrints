@@ -1159,6 +1159,15 @@ namespace BluePrints.Common.Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to User can lock/unlock deliverable&apos;s budget.
+        /// </summary>
+        internal static string Permission_DesignDeliverables_LockUnlockBudget {
+            get {
+                return ResourceManager.GetString("Permission_DesignDeliverables_LockUnlockBudget", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Always use previous week&apos;s date for progress.
         /// </summary>
         internal static string Permission_DesignDeliverables_ProgressPreviousWeeksDate {
