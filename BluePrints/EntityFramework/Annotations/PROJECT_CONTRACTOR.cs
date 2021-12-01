@@ -19,7 +19,7 @@ namespace BluePrints.Data
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2214:DoNotCallOverridableMethodsInConstructors")]
         public PROJECT_CONTRACTOR()
         {
-            
+            BASELINE_ITEM = new HashSet<BASELINE_ITEM>();
         }
 
         [NotMapped]

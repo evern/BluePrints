@@ -41,6 +41,8 @@ namespace BluePrints.Data
 
         public Guid? GUID_OFFICE { get; set; }
 
+        public Guid? GUID_PROJECT_CONTRACTOR { get; set; }
+
         [Required]
         public int DISCIPLINE_NUM { get; set; }
 
@@ -137,6 +139,8 @@ namespace BluePrints.Data
         public virtual WORKPACK WORKPACK { get; set; }
 
         public virtual OFFICE OFFICE { get; set; }
+
+        public virtual PROJECT_CONTRACTOR PROJECT_CONTRACTOR { get; set; }
 
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
         public virtual ICollection<REGISTER_HOLD_REF> REGISTER_HOLD_REF { get; set; }

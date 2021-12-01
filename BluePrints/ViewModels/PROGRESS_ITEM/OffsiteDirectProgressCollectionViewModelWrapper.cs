@@ -27,6 +27,8 @@ using DevExpress.DataAccess.Excel;
 using DevExpress.Mvvm;
 using DevExpress.Mvvm.DataAnnotations;
 using DevExpress.Mvvm.POCO;
+using DevExpress.Spreadsheet;
+using DevExpress.SpreadsheetSource;
 using DevExpress.Xpf.Editors;
 using DevExpress.Xpf.Grid;
 using DevExpress.Xpf.Printing;
@@ -80,6 +82,7 @@ namespace BluePrints.ViewModels
                 loaderCollection.AddLoaderDescription(bluePrintsUnitOfWorkFactory, x => x.BASELINES, BASELINEProjectionFunc, x => assign_baseline(x));
             }
 
+            loaderCollection.AddLoaderDescription(bluePrintsUnitOfWorkFactory, x => x.PROJECT_CONTRACTORS, PROJECT_CONTRACTORProjectionFunc);
             loaderCollection.AddLoaderDescription(bluePrintsUnitOfWorkFactory, x => x.DELIVERABLES_STATUSES, DELIVERABLES_STATUSProjectionFunc);
             loaderCollection.AddLoaderDescription(bluePrintsUnitOfWorkFactory, x => x.DSTATUS_DOCTYPES, DSTATUS_DOCTYPEProjectionFunc);
             loaderCollection.AddLoaderDescription<DOCTYPE, DOCTYPE, Guid, IBluePrintsEntitiesUnitOfWork>(bluePrintsUnitOfWorkFactory, x => x.DOCTYPES);
@@ -115,6 +118,14 @@ namespace BluePrints.ViewModels
         }
 
         protected virtual Func<IRepositoryQuery<DELIVERABLES_STATUS>, IQueryable<DELIVERABLES_STATUS>> DELIVERABLES_STATUSProjectionFunc()
+        {
+            if (is_single_project_mode)
+                return query => query.Where(x => x.GUID_PROJECT == loadPROJECT.GUID);
+            else
+                return query => query.Where(x => x.PROJECT.STATUS == ProjectStatus.Active);
+        }
+
+        protected virtual Func<IRepositoryQuery<PROJECT_CONTRACTOR>, IQueryable<PROJECT_CONTRACTOR>> PROJECT_CONTRACTORProjectionFunc()
         {
             if (is_single_project_mode)
                 return query => query.Where(x => x.GUID_PROJECT == loadPROJECT.GUID);
@@ -199,6 +210,8 @@ namespace BluePrints.ViewModels
             if (field_name.Contains(BindableBase.GetPropertyName(() => new BASELINE_ITEMProgress().Entity.Entity.FORECAST_START_DATE)))
                 projection.ShouldSave = true;
             if (field_name.Contains(BindableBase.GetPropertyName(() => new BASELINE_ITEMProgress().Entity.Entity.TARGET_DATE)))
+                projection.ShouldSave = true;
+            if (field_name.Contains(BindableBase.GetPropertyName(() => new BASELINE_ITEMProgress().Entity.Entity.GUID_PROJECT_CONTRACTOR)))
                 projection.ShouldSave = true;
 
             base.UnifiedCellValueChanged(field_name, old_value, new_value, projection, isNew);
@@ -454,27 +467,31 @@ namespace BluePrints.ViewModels
             return !IsLoading;
         }
 
+        private PROJECT_CONTRACTOR selectedContractor;
         public IEnumerable<BASELINE_ITEMProgress> ContractorDeliverableList
         {
             get
             {
-                if (ContractorOfficeGuid == null)
+                if (selectedContractor == null)
                     return null;
                 else
-                    return Entities.Where(x => x.Entity.Entity.GUID_OFFICE == ContractorOfficeGuid);
+                    return Entities.Where(x => x.Entity.Entity.GUID_PROJECT_CONTRACTOR == selectedContractor.GUID);
             }
         }
 
-        public Guid? ContractorOfficeGuid
+        private PROJECT_CONTRACTOR ContractorExportSelection()
         {
-            get
+            var bulkEditEnumsViewModel = BulkEditEnumsViewModel.Create(PROJECT_CONTRACTORCollection, "NAME");
+            if (BulkColumnEditDialogService.ShowDialog(MessageButton.OKCancel, "Select contractor to export",
+                    "BulkEditEnums", bulkEditEnumsViewModel) == MessageResult.OK)
             {
-                OFFICE findOFFICE = OFFICECollection.FirstOrDefault(x => x.NAME.ToUpper() == BluePrintsResources.Deliverables_Contractor_Filter.ToUpper());
-                if (findOFFICE != null)
-                    return findOFFICE.GUID;
-
-                return null;
+                if (bulkEditEnumsViewModel.SelectedItem != null)
+                {
+                    return (PROJECT_CONTRACTOR)bulkEditEnumsViewModel.SelectedItem;
+                }
             }
+
+            return null;
         }
 
         [ServiceProperty(Key = "ExportTableViewService")]
@@ -482,10 +499,17 @@ namespace BluePrints.ViewModels
         public int InternalNumSortIndex => 1;
         public void ExportContractorDeliverablesToExcel()
         {
-            string ResultPath = string.Empty; 
+            string ResultPath = string.Empty;
+            selectedContractor = ContractorExportSelection();
+            this.RaisePropertyChanged(x => x.ContractorDeliverableList);
+
             if(ContractorDeliverableList == null)
             {
-                MessageBoxService.ShowMessage("There are no contractor deliverables, please assign 'Office' column in deliverables list to " + BluePrintsResources.Deliverables_Contractor_Filter, "Error", MessageButton.OK, MessageIcon.Warning);
+                if(selectedContractor == null)
+                    MessageBoxService.ShowMessage("Contractor is not selected", "Error", MessageButton.OK, MessageIcon.Warning);
+                else
+                    MessageBoxService.ShowMessage("There are no deliverable(s) for " + selectedContractor.NAME + " please assign contractor column on deliverable(s)", "Error", MessageButton.OK, MessageIcon.Warning);
+
                 return;
             }
 
@@ -493,7 +517,7 @@ namespace BluePrints.ViewModels
             if (FolderBrowserDialogService.ShowDialog())
             {
                 ResultPath = FolderBrowserDialogService.ResultPath;
-                bool result = ExportTableViewService.ExportToXls(ResultPath + "\\" + loadPROJECT.NUMBER + "_ContractorExport_" + DataDate.Date.ToString(BluePrintsResources.ColumnDateFormat) + ".xlsx", isExcelExportDataAware);
+                bool result = ExportTableViewService.ExportToXls(ResultPath + "\\" + loadPROJECT.NUMBER + "_ContractorExport_" + DataDate.Date.ToString(BluePrintsResources.ColumnDateFormat) + ".xlsx", isExcelExportDataAware, selectedContractor.NAME);
 
                 if (!result)
                     MessageBoxService.ShowMessage("Export failed because the file is in use", "Warning", MessageButton.OK, MessageIcon.Warning);
@@ -529,6 +553,17 @@ namespace BluePrints.ViewModels
         public string CurrentPercentageHeaderString => ColumnHeaderResources.CurrentPercentageHeaderString;
         public string BudgetHourHeaderString => ColumnHeaderResources.BudgetHourHeaderString;
 
+        private string GetWorkSheetNameByIndex(int p, string fileName)
+        {
+            string worksheetName = "";
+            using (ISpreadsheetSource spreadsheetSource = SpreadsheetSourceFactory.CreateSource(fileName))
+            {
+                IWorksheetCollection worksheetCollection = spreadsheetSource.Worksheets;
+                worksheetName = worksheetCollection[p].Name;
+            }
+            return worksheetName;
+        }
+
         public void ImportContractorDeliverableFromExcel()
         {
             FileBrowserDialogService.Filter = "Excel Files (.xls)|*.xlsx|All Files (*.*)|*.*";
@@ -547,19 +582,22 @@ namespace BluePrints.ViewModels
                         ExcelDataSource excelDataSource = new ExcelDataSource();
                         excelDataSource.Name = "Excel Data Source";
                         excelDataSource.FileName = FileBrowserDialogService.GetFullFileName();
-                        ExcelWorksheetSettings worksheetSettings = new ExcelWorksheetSettings("Sheet");
+                        ExcelWorksheetSettings worksheetSettings = new ExcelWorksheetSettings();
+                        worksheetSettings.WorksheetName = GetWorkSheetNameByIndex(0, fullFileName);
                         excelDataSource.SourceOptions = new ExcelSourceOptions(worksheetSettings);
 
-                        try
+                        PROJECT_CONTRACTOR findPROJECT_CONTRACTOR = PROJECT_CONTRACTORCollection.FirstOrDefault(x => x.NAME.ToUpper() == worksheetSettings.WorksheetName.ToUpper());
+
+                        if(findPROJECT_CONTRACTOR == null)
                         {
-                            excelDataSource.Fill();
-                        }
-                        catch
-                        {
-                            MessageBoxService.ShowMessage("Worksheet named 'Sheet' cannot be found", "Error", MessageButton.OK, MessageIcon.Warning);
+                            MessageBoxService.ShowMessage("Contractor " + worksheetSettings.WorksheetName + " cannot be found", "Error", MessageButton.OK, MessageIcon.Warning);
                             return;
                         }
 
+                        selectedContractor = findPROJECT_CONTRACTOR;
+                        this.RaisePropertyChanged(x => x.ContractorDeliverableList);
+
+                        excelDataSource.Fill();
                         DataTable excelSourceDataTable = excelDataSource.ToDataTable();
                         if (ContractorDeliverableList == null)
                         {
@@ -607,9 +645,9 @@ namespace BluePrints.ViewModels
                                     else if (findDeliverable.Count == 0)
                                     {
                                         BASELINE_ITEMProgressImportWrapper newBASELINE_ITEMProgressImportWrapper = BASELINE_ITEMProgressImportWrapper.Create(changeTrackingBaselineItemProgress, changeTrackingBaselineItemProgress, PHASECollection, AREACollection, DISCIPLINECollection, DOCTYPECollection, DEPARTMENTCollection);
-                                        if (MainViewModel.Entities.Where(x => x.Entity.Entity.GUID_OFFICE != ContractorOfficeGuid).Any(x => x.Deliverable_Name == newBASELINE_ITEMProgressImportWrapper.Deliverable_Name))
+                                        if (MainViewModel.Entities.Where(x => x.Entity.Entity.GUID_PROJECT_CONTRACTOR != selectedContractor.GUID).Any(x => x.Deliverable_Name == newBASELINE_ITEMProgressImportWrapper.Deliverable_Name))
                                         {
-                                            newBASELINE_ITEMProgressImportWrapper.Message = "Error: There are non-contractor deliverable(s) with the same internal number";
+                                            newBASELINE_ITEMProgressImportWrapper.Message = "Error: There are other deliverable(s) with the same internal number";
                                             newBASELINE_ITEMProgressImportWrapper.IsError = true;
                                         }
 
@@ -683,7 +721,7 @@ namespace BluePrints.ViewModels
                                 {
                                     sourceObject.Live_PROGRESS = loadPROGRESS;
                                     sourceObject.SetReportingDataDate(DataDate);
-                                    sourceObject.Entity.Entity.GUID_OFFICE = ContractorOfficeGuid;
+                                    sourceObject.Entity.Entity.GUID_PROJECT_CONTRACTOR = selectedContractor.GUID;
                                     sourceObject.ShouldSave = true;
                                     decimal totalEarnedPercentage = sourceObject.Total_Earned_Percentage;
                                     //mainly for generating sub job
@@ -747,6 +785,17 @@ namespace BluePrints.ViewModels
             }
 
             return new List<PROGRESS_ITEM>();
+        }
+
+        public IEnumerable<PROJECT_CONTRACTOR> PROJECT_CONTRACTORCollection
+        {
+            get
+            {
+                var collection = GetEntities<PROJECT_CONTRACTOR>();
+                if (collection != null)
+                    collection = collection.OrderBy(x => x.NAME);
+                return collection;
+            }
         }
 
         public override IEnumerable<IReportable> ReportingEntities => Entities;

@@ -243,6 +243,11 @@ namespace BluePrints.BluePrintsEntitiesDataModel
         IRepository<PROJECT_DISCIPLINE, Guid> PROJECT_DISCIPLINES { get; }
 
         /// <summary>
+        /// The PROJECT_CONTRACTOR entities repository.
+        /// </summary>
+        IRepository<PROJECT_CONTRACTOR, Guid> PROJECT_CONTRACTORS { get; }
+
+        /// <summary>
         /// The RA_STUDY_TYPE entities repository.
         /// </summary>
         IRepository<RA_STUDY_TYPE, Guid> RA_STUDY_TYPES { get; }

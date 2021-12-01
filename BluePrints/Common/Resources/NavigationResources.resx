@@ -519,4 +519,7 @@
   <data name="Permission_DesignDeliverables_LockUnlockBudget" xml:space="preserve">
     <value>User can lock/unlock deliverable's budget</value>
   </data>
+  <data name="Menu_Project_Contractor" xml:space="preserve">
+    <value>Project's contractor maintenance menu</value>
+  </data>
 </root>

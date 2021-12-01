@@ -782,6 +782,12 @@ namespace BluePrints.Data
                 .HasForeignKey(e => e.GUID_PROJECT)
                 .WillCascadeOnDelete(false);
 
+            modelBuilder.Entity<PROJECT_CONTRACTOR>()
+                .HasMany(e => e.BASELINE_ITEM)
+                .WithRequired(e => e.PROJECT_CONTRACTOR)
+                .HasForeignKey(e => e.GUID_PROJECT_CONTRACTOR)
+                .WillCascadeOnDelete(false);
+
             modelBuilder.Entity<DISCIPLINE>()
                 .HasMany(e => e.REGISTER_TQ)
                 .WithRequired(e => e.DISCIPLINE)

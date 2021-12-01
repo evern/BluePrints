@@ -221,6 +221,11 @@ namespace BluePrints.BluePrintsEntitiesDataModel
             get { return GetRepository(x => x.Set<PROJECT_REPORT>(), (PROJECT_REPORT x) => x.GUID); }
         }
 
+        IRepository<PROJECT_CONTRACTOR, Guid> IBluePrintsEntitiesUnitOfWork.PROJECT_CONTRACTORS
+        {
+            get { return GetRepository(x => x.Set<PROJECT_CONTRACTOR>(), (PROJECT_CONTRACTOR x) => x.GUID); }
+        }
+
         IRepository<REGISTER_CHANGE, Guid> IBluePrintsEntitiesUnitOfWork.REGISTER_CHANGE
         {
             get { return GetRepository(x => x.Set<REGISTER_CHANGE>(), (REGISTER_CHANGE x) => x.GUID); }

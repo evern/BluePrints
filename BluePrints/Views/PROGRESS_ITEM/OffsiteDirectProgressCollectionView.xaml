@@ -262,6 +262,11 @@
                                 </dxg:GridColumn>
                             </dxg:GridControlBand>
                             <dxg:GridControlBand x:Name="gcbEditableProperties" Header="Editable Properties">
+                                <dxg:GridColumn FieldName="Entity.Entity.GUID_PROJECT_CONTRACTOR" Header="Contractor" SortMode="DisplayText">
+                                    <dxg:GridColumn.EditSettings>
+                                        <dxe:ComboBoxEditSettings AutoComplete="True" DisplayMember="NAME" IsTextEditable="True" ItemsSource="{Binding PROJECT_CONTRACTORCollection}" ValueMember="GUID" />
+                                    </dxg:GridColumn.EditSettings>
+                                </dxg:GridColumn>
                                 <dxg:GridColumn FieldName="DeliverableStatusProgressGuid" Header="Gates" HeaderToolTip="From deliverables status table. Changing this value will increase current % only if the status has a higher percentage than previously earned %" SortMode="DisplayText">
                                     <dxg:GridColumn.CellTemplate>
                                         <DataTemplate>

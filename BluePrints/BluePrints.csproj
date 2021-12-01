@@ -1180,6 +1180,7 @@
     <Compile Include="ViewModels\PROGRESS_ITEM\OffsiteDirectProgressCollectionViewModelWrapper.cs" />
     <Compile Include="ViewModels\EXOSUBJOB\EXO_POCollectionViewModelWrapper.cs" />
     <Compile Include="ViewModels\PROGRESS_ITEM\SiteDirectProgressCollectionViewModelWrapper.cs" />
+    <Compile Include="ViewModels\PROJECT\PROJECT_CONTRACTORCollectionViewModelWrapper.cs" />
     <Compile Include="ViewModels\PROJECT\InstantFeedbackInvoicedCollectionViewModelWrapper.cs" />
     <Compile Include="ViewModels\PROJECT\InstantFeedbackPODetailsCollectionViewModelWrapper.cs" />
     <Compile Include="ViewModels\PROJECT\PROJECTPLCollectionViewModelWrapper.cs" />
@@ -1314,6 +1315,9 @@
     </Compile>
     <Compile Include="Views\PROGRESS_ITEM\SiteDirectProgressCollectionView.xaml.cs">
       <DependentUpon>SiteDirectProgressCollectionView.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Views\PROJECT\PROJECT_CONTRACTORCollectionView.xaml.cs">
+      <DependentUpon>PROJECT_CONTRACTORCollectionView.xaml</DependentUpon>
     </Compile>
     <Compile Include="Views\PROJECT\PROJECTPLCollectionView.xaml.cs">
       <DependentUpon>PROJECTPLCollectionView.xaml</DependentUpon>
@@ -2325,6 +2329,10 @@
       <SubType>Designer</SubType>
     </Page>
     <Page Include="Views\PROGRESS_ITEM\SiteDirectProgressCollectionView.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Views\PROJECT\PROJECT_CONTRACTORCollectionView.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>
