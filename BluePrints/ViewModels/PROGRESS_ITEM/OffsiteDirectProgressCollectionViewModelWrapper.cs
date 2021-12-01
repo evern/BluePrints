@@ -517,7 +517,7 @@ namespace BluePrints.ViewModels
             if (FolderBrowserDialogService.ShowDialog())
             {
                 ResultPath = FolderBrowserDialogService.ResultPath;
-                bool result = ExportTableViewService.ExportToXls(ResultPath + "\\" + loadPROJECT.NUMBER + "_ContractorExport_" + DataDate.Date.ToString(BluePrintsResources.ColumnDateFormat) + ".xlsx", isExcelExportDataAware, selectedContractor.NAME);
+                bool result = ExportTableViewService.ExportToXls(ResultPath + "\\" + loadPROJECT.NUMBER + "_ContractorExport_" + selectedContractor.NAME + "_" + DataDate.Date.ToString(BluePrintsResources.ColumnDateFormat) + ".xlsx", isExcelExportDataAware, selectedContractor.NAME);
 
                 if (!result)
                     MessageBoxService.ShowMessage("Export failed because the file is in use", "Warning", MessageButton.OK, MessageIcon.Warning);
