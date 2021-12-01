@@ -524,6 +524,18 @@ namespace BluePrints.ViewModels
             }
         }
 
+        public Guid? ContractorOfficeGuid
+        {
+            get
+            {
+                OFFICE findOFFICE = OFFICECollection.FirstOrDefault(x => x.NAME.ToUpper() == BluePrintsResources.Deliverables_Contractor_Filter.ToUpper());
+                if (findOFFICE != null)
+                    return findOFFICE.GUID;
+
+                return null;
+            }
+        }
+
         private DevExpress.Mvvm.IDialogService ImportDialogService
         {
             get { return this.GetRequiredService<DevExpress.Mvvm.IDialogService>("ImportDialog"); }
@@ -721,6 +733,7 @@ namespace BluePrints.ViewModels
                                 {
                                     sourceObject.Live_PROGRESS = loadPROGRESS;
                                     sourceObject.SetReportingDataDate(DataDate);
+                                    sourceObject.Entity.Entity.GUID_OFFICE = ContractorOfficeGuid;
                                     sourceObject.Entity.Entity.GUID_PROJECT_CONTRACTOR = selectedContractor.GUID;
                                     sourceObject.ShouldSave = true;
                                     decimal totalEarnedPercentage = sourceObject.Total_Earned_Percentage;
