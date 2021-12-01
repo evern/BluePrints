@@ -60,6 +60,7 @@ namespace BluePrints.Data
             STATUS = ProjectStatus.Active;
             TENDER_PROFILE = new HashSet<TENDER_PROFILE>();
             VARIATION_CONSTRUCTION = new HashSet<VARIATION_CONSTRUCTION>();
+            PROJECT_CONTRACTOR = new HashSet<PROJECT_CONTRACTOR>();
             CONTRACTTYPE = ContractType.LumpSum;
             CURRENCYCONVERSION = 1;
             REVIEWPERCENTAGE = 0.7M;
