@@ -745,6 +745,7 @@ namespace BluePrints.ViewModels
 
                                     errorMessages.Add(new ErrorMessage(sourceObject.Deliverable_Name, "Deliverable added"));
                                     MainViewModel.Save(sourceObject);
+                                    sourceObject.Update();
                                 }
                             }
                         }
@@ -780,7 +781,7 @@ namespace BluePrints.ViewModels
 
         protected override void OnAfterEntitySavedCallBack(BASELINE_ITEMProgress projectionEntity, BASELINE_ITEM entity, bool isNewEntity)
         {
-            if (projectionEntity.GetType() == typeof(BASELINE_ITEMProgressImportWrapper))
+            if (projectionEntity.GetType().BaseType == typeof(BASELINE_ITEMProgressImportWrapper))
             {
                 projectionEntity.Entity.Entity = entity;
             }
