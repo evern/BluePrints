@@ -53,7 +53,7 @@ namespace BluePrints.Common.Helpers
             }
 
             DISCIPLINE_DESC findDISCIPLINE_DESC = DISCIPLINE_DESCCollection.FirstOrDefault(x => x.NAME.ToUpper() == entity.DisciplineCode.ToUpper());
-            if (entity.PhaseCode == BluePrintsResources.ProcurementPhaseCode && findDISCIPLINE_DESC != null)
+            if ((entity.PhaseCode == BluePrintsResources.ProcurementPhaseCode || entity.PhaseCode == BluePrintsResources.IndirectPhaseCode) && findDISCIPLINE_DESC != null)
                 entity.DisciplineDesc = findDISCIPLINE_DESC.DESCRIPTION;
             else
             {
