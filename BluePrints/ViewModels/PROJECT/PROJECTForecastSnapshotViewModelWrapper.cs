@@ -283,6 +283,7 @@ namespace BluePrints.ViewModels
                 LoadDataDate = dataDate;
             }
 
+            isFixedDataDateSet = false;
             FixedDataDate = dataDate;
             isFixedDataDateSet = true;
 
@@ -1688,7 +1689,7 @@ namespace BluePrints.ViewModels
                 }
 
                 DateTime saveDateTime = (DateTime)FixedDataDate;
-                LoadPROJECT.FORECAST_DATA_DATE = new DateTime(((DateTime)saveDateTime).Year, ((DateTime)saveDateTime).Month, 1).AddMonths(1).AddDays(-1);
+                LoadPROJECT.FORECAST_DATA_DATE = new DateTime(((DateTime)saveDateTime).Year, ((DateTime)saveDateTime).Month, 1).AddMonths(2).AddDays(-1);
                 LoadPROJECT.FORECAST_END_DATE = FixedEndDate;
                 PROJECTCollectionViewModel.Save(LoadPROJECT);
                 LoadDataDate = FixedDataDate;
@@ -2643,8 +2644,20 @@ namespace BluePrints.ViewModels
             loadExoMethodsData();
             loadSummaryStats();
 
+            pause();
             //ForecastSummary.Reset();
             base.FullRefresh();
+        }
+
+        /// <summary>
+        /// wait for database to be written before refreshing
+        /// </summary>
+        private async void pause()
+        {
+            Common.LoadingScreenManager.ShowLoadingScreen(1);
+            Common.LoadingScreenManager.SetMessage("Preparing to Refresh...");
+            await Task.Delay(5000);
+            Common.LoadingScreenManager.CloseLoadingScreen();
         }
 
         public IEnumerable<FORECAST_JOB_HOUR_SNAPSHOT> FORECAST_JOB_HOUR_SNAPSHOTCollection
@@ -2972,8 +2985,8 @@ namespace BluePrints.ViewModels
             FORECAST_EAC findTenderBudget = tenderBudgetCollection.FirstOrDefault(x => x.SUBJOB_CODE == SUBJOB_CODE && x.DISCIPLINE_CODE == DISCIPLINE_CODE && x.COMMODITY_CODE == COMMODITY_CODE && x.VARIATION_CODE == VARIATION_CODE);
             if (findTenderBudget != null && findTenderBudget.FORECAST_COSTS != null)
                 tenderBudget = (decimal)findTenderBudget.FORECAST_COSTS;
-
-            tenderBudget = 0;
+            else
+                tenderBudget = 0;
         }
 
         private decimal tenderBudget;
