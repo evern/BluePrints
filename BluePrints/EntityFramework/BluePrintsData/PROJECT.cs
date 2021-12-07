@@ -112,6 +112,8 @@
 
         public bool CONSTRUCT_PROGRESS_TRACKING { get; set; }
 
+        public bool AUTO_REFRESH_FORECAST { get; set; }
+
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
         public virtual ICollection<DAYWORK> DAYWORK { get; set; }
 

@@ -243,8 +243,6 @@ namespace BluePrints.ViewModels
         }
 
         public DateTime LoadDataDate { get; set; }
-
-        bool isFixedDataDateSet;
         DateTime fixedDateTime;
         public DateTime FixedDataDate
         {
@@ -252,11 +250,11 @@ namespace BluePrints.ViewModels
             set
             {
                 //prevent tab switching from setting this to null because it's binded to view
-                if (!isFixedDataDateSet)
+                if (value != null && value.Year != new DateTime().Year)
                 {
                     DateTime rawDataDate = value;
-                    rawDataDate = new DateTime(value.Year, value.Month, value.Day);
-                    rawDataDate = rawDataDate.AddDays(1).AddSeconds(-1);
+                    rawDataDate = new DateTime(value.Year, value.Month, 1);
+                    rawDataDate = rawDataDate.AddMonths(1).AddSeconds(-1);
                     fixedDateTime = rawDataDate;
                 }
             }
@@ -283,9 +281,8 @@ namespace BluePrints.ViewModels
                 LoadDataDate = dataDate;
             }
 
-            isFixedDataDateSet = false;
             FixedDataDate = dataDate;
-            isFixedDataDateSet = true;
+            this.RaisePropertyChanged(x => x.FixedDataDate);
 
             DateTime endDate;
             if (LoadPROJECT.FORECAST_END_DATE == null)
@@ -432,11 +429,10 @@ namespace BluePrints.ViewModels
                 string variationCode = delimited[3];
 
                 //For Debugging
-                //if (subJobCode == "20638-000-00-I1" && disciplineCode == "PM01" && commodityCode == "G04" && variationCode == "")
+                //if (subJobCode == "20638-200-00-P1" && disciplineCode == "CC01" && commodityCode == "C07" && variationCode == "")
                 //{
 
                 //}
-
                 UniqueForecastJob uniqueForecastJob = new UniqueForecastJob(projectLines, subJobCode, disciplineCode, commodityCode, variationCode, FixedDataDate, PreviousDataDate, FORECAST_JOB_HOUR_SNAPSHOTCollection);
                 uniqueForecastJob.UpdateTenderBudget(TenderBudgetCollection.AsQueryable());
                 uniqueForecastJob.UpdateErrorMessage(JOBCOST_LINES_AUDITCollection.AsQueryable());
@@ -1688,8 +1684,7 @@ namespace BluePrints.ViewModels
                     }
                 }
 
-                DateTime saveDateTime = (DateTime)FixedDataDate;
-                LoadPROJECT.FORECAST_DATA_DATE = new DateTime(((DateTime)saveDateTime).Year, ((DateTime)saveDateTime).Month, 1).AddMonths(2).AddDays(-1);
+                LoadPROJECT.FORECAST_DATA_DATE = FixedDataDate;
                 LoadPROJECT.FORECAST_END_DATE = FixedEndDate;
                 PROJECTCollectionViewModel.Save(LoadPROJECT);
                 LoadDataDate = FixedDataDate;
@@ -2896,6 +2891,11 @@ namespace BluePrints.ViewModels
             PreviousActualCollection = filteredForecastJobHourSnapshot.Where(x => x.SNAPSHOT_TYPE == ForecastSnapshotValueType.Actual && x.FORECAST_DATE <= previousDataDate).ToList();
             ActualCollection = filteredForecastJobHourSnapshot.Where(x => x.SNAPSHOT_TYPE == ForecastSnapshotValueType.Actual && x.FORECAST_DATE <= dataDate).ToList();
             FutureActualCollection = filteredForecastJobHourSnapshot.Where(x => x.SNAPSHOT_TYPE == ForecastSnapshotValueType.Actual && x.FORECAST_DATE > dataDate).ToList();
+
+            string s;
+            if (FutureActualCollection.Count > 0)
+                s = string.Empty;
+
             P6RemainingCollection = filteredForecastJobHourSnapshot.Where(x => x.SNAPSHOT_TYPE == ForecastSnapshotValueType.P6Remaining).ToList();
             P6PlannedCollection = filteredForecastJobHourSnapshot.Where(x => x.SNAPSHOT_TYPE == ForecastSnapshotValueType.P6Planned).ToList();
             PreviousPOCollection = filteredForecastJobHourSnapshot.Where(x => x.SNAPSHOT_TYPE == ForecastSnapshotValueType.PreviousOutstandingPO).ToList();

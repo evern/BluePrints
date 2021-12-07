@@ -441,7 +441,7 @@ namespace BluePrints.Common.ViewModel.Misc
             string subJobTitle = "", string disciplineName = "", bool tryHarderOnLookup = true, string errorMessage = "")
         {
             //For Debugging
-            //if (subJobCode != "20638-000-00-I1" || disciplineCode != "PM01" || commodityCode != "G04" || variationCode != "")
+            //if (subJobCode != "20638-200-00-P1" || disciplineCode != "CC01" || commodityCode != "C07" || variationCode != "")
             //    return;
 
             COMMODITY_CODE findCOMMODITY_CODE = COMMODITY_CODELookup.FirstOrDefault(x => x.CODE == commodityCode);
