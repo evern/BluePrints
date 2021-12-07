@@ -466,10 +466,10 @@ namespace BluePrints.ViewModels
             Parallel.ForEach(uniqueForecastJobs,
                 uniqueForecastJob =>
                 {
-                    ForecastJobSnapshot forecastJobSnapshot = ViewModelSource.Create(() => new ForecastJobSnapshot(uniqueForecastJob, isBudgetReadOnly, FORECAST_EACCollection, FORECAST_EACPreviousCommitmentCollection, FORECAST_JOB_SETTINGCollection, COMMODITY_CODECollection, projectLines, PreviousDataDate));
+                    ForecastJobSnapshot forecastJobSnapshot = new ForecastJobSnapshot(uniqueForecastJob, isBudgetReadOnly, FORECAST_EACCollection, FORECAST_EACPreviousCommitmentCollection, FORECAST_JOB_SETTINGCollection, COMMODITY_CODECollection, projectLines, PreviousDataDate);
                     foreach (DateTime alignedDataDate in alignedDataDateCollection)
                     {
-                        ForecastDateSnapshot forecastDateSnapshot = ViewModelSource.Create(() => new ForecastDateSnapshot(uniqueForecastJob.AllCollection, firstViewDate, alignedDataDate.Date, FixedDataDate));
+                        ForecastDateSnapshot forecastDateSnapshot = new ForecastDateSnapshot(uniqueForecastJob.AllCollection, firstViewDate, alignedDataDate.Date, FixedDataDate);
                         forecastJobSnapshot.DateCosts.Add(forecastDateSnapshot);
                     }
 
@@ -533,8 +533,8 @@ namespace BluePrints.ViewModels
             compareP6CostsRemainingRow = compareDataTable.NewRow();
             compareP6UnitsRemainingRow = compareDataTable.NewRow();
 
-            compareP6UnitsRemainingRow[columnEntity] = ViewModelSource.Create(() => new ForecastJobSnapshot() { DropDownPhase = "P6 Hours", CompareMask = "n2", ExoJob = job.ExoJob, DateCosts = job.DateCosts, IsP6HoursRow = true, P6RemainingUnits = job.P6RemainingUnits, P6RemainingCosts = job.P6RemainingCosts });
-            compareP6CostsRemainingRow[columnEntity] = ViewModelSource.Create(() => new ForecastJobSnapshot() { DropDownPhase = "P6 $", CompareMask = "c0" });
+            compareP6UnitsRemainingRow[columnEntity] = new ForecastJobSnapshot() { DropDownPhase = "P6 Hours", CompareMask = "n2", ExoJob = job.ExoJob, DateCosts = job.DateCosts, IsP6HoursRow = true, P6RemainingUnits = job.P6RemainingUnits, P6RemainingCosts = job.P6RemainingCosts };
+            compareP6CostsRemainingRow[columnEntity] = new ForecastJobSnapshot() { DropDownPhase = "P6 $", CompareMask = "c0" };
 
             //update discipline desc
             job.PopulateDisciplineDesc(DISCIPLINE_DESCCollection, JOB_COSTGROUPCollection);
@@ -554,7 +554,7 @@ namespace BluePrints.ViewModels
 
             //add uncommitted row irregardless, needs to be added here because it's always the third row
             DataRow compareUncommittedRow = compareDataTable.NewRow();
-            compareUncommittedRow[columnEntity] = ViewModelSource.Create(() => new ForecastJobSnapshot() { DropDownPhase = BluePrintsResources.ForecastCompare_UncommittedRowPhase + " $", CompareMask = "c0" });
+            compareUncommittedRow[columnEntity] = new ForecastJobSnapshot() { DropDownPhase = BluePrintsResources.ForecastCompare_UncommittedRowPhase + " $", CompareMask = "c0" };
             compareDataTable.Rows.Add(compareUncommittedRow);
 
             //create rows based on unique codes for each type
@@ -569,7 +569,7 @@ namespace BluePrints.ViewModels
             foreach (KeyValuePair<string, decimal> uniquePOStockCodeAttrbutes in job.POStockCodeAttributes)
             {
                 DataRow comparePOForecastRow = compareDataTable.NewRow();
-                comparePOForecastRow[columnEntity] = ViewModelSource.Create(() => new ForecastJobSnapshot() { DropDownPhase = BluePrintsResources.ForecastCompare_PORowPhase + " [" + uniquePOStockCodeAttrbutes.Key + "] $", CompareMask = "c0", DropDownIndirectBudget = uniquePOStockCodeAttrbutes.Value });
+                comparePOForecastRow[columnEntity] = new ForecastJobSnapshot() { DropDownPhase = BluePrintsResources.ForecastCompare_PORowPhase + " [" + uniquePOStockCodeAttrbutes.Key + "] $", CompareMask = "c0", DropDownIndirectBudget = uniquePOStockCodeAttrbutes.Value };
                 poForecastRows.Add(uniquePOStockCodeAttrbutes.Key, comparePOForecastRow);
                 compareDataTable.Rows.Add(comparePOForecastRow);
             }
@@ -578,7 +578,7 @@ namespace BluePrints.ViewModels
             foreach (KeyValuePair<string, decimal> uniqueIndirectStockCode in job.IndirectStockCodeAttributes)
             {
                 DataRow compareIndirectRemainingRow = compareDataTable.NewRow();
-                compareIndirectRemainingRow[columnEntity] = ViewModelSource.Create(() => new ForecastJobSnapshot() { DropDownPhase = BluePrintsResources.ForecastCompare_IndirectRowPhase + " [" + uniqueIndirectStockCode.Key + "] $", DropDownIndirectBudget = uniqueIndirectStockCode.Value, CompareMask = "c0" });
+                compareIndirectRemainingRow[columnEntity] = new ForecastJobSnapshot() { DropDownPhase = BluePrintsResources.ForecastCompare_IndirectRowPhase + " [" + uniqueIndirectStockCode.Key + "] $", DropDownIndirectBudget = uniqueIndirectStockCode.Value, CompareMask = "c0" };
                 indirectForecastRows.Add(uniqueIndirectStockCode.Key, compareIndirectRemainingRow);
                 compareDataTable.Rows.Add(compareIndirectRemainingRow);
             }
@@ -1528,7 +1528,7 @@ namespace BluePrints.ViewModels
             {
                 commitBudget(primeroUnitOfWork, bluePrintsUnitOfWork, row, newValue, out errorMessages);
                 ForecastJobSnapshot.RefreshErrorMessage(ExoQueries.GetExoSubJobProjection(primeroUnitOfWork, LoadPROJECT.NUMBER, ForecastJobSnapshot.SubJobCode, ForecastJobSnapshot.DisciplineCode, ForecastJobSnapshot.CommodityCode, ForecastJobSnapshot.VariationCode), queryableJOBCOST_LINES_AUDITCollection);
-                ForecastJobSnapshot.RaisePropertiesChanged();
+                ForecastJobSnapshot.Update();
             }
             else if (fieldName == BindableBase.GetPropertyName(() => new ForecastJobSnapshot().TenderBudget))
             {
@@ -1537,7 +1537,7 @@ namespace BluePrints.ViewModels
                 {
                     findExistingOrAddNewEAC(FixedDataDateMonthEnd, ForecastJobSnapshot, bluePrintsUnitOfWork, newTenderBudget, true, ForecastEACType.TenderBudget);
                     ForecastJobSnapshot.TenderBudget = newTenderBudget;
-                    ForecastJobSnapshot.RaisePropertiesChanged();
+                    ForecastJobSnapshot.Update();
                 }
             }
             else if (fieldName == BindableBase.GetPropertyName(() => new ForecastJobSnapshot().DisciplineDesc))
@@ -1554,7 +1554,7 @@ namespace BluePrints.ViewModels
 
                     findExistingOrAddNewEAC(previousEACDataDate, ForecastJobSnapshot, bluePrintsUnitOfWork, newPreviousEAC, true, ForecastEACType.EAC);
                     ForecastJobSnapshot.PreviousEAC = newPreviousEAC;
-                    ForecastJobSnapshot.RaisePropertiesChanged();
+                    ForecastJobSnapshot.Update();
                 }
             }
             else if (fieldName.Contains(BindableBase.GetPropertyName(() => new ForecastJobSnapshot().Productivity)))

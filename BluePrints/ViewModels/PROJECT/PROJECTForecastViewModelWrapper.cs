@@ -1902,7 +1902,7 @@ namespace BluePrints.ViewModels
                 forecastJobData.JobErrorMessage = string.Empty;
                 entity.ForecastErrorString = string.Empty;
 
-                forecastJobData.RaisePropertiesChanged();
+                forecastJobData.Update();
             }
             else if (fieldName == BindableBase.GetPropertyName(() => new ForecastJobData().TenderBudget))
             {
@@ -1911,7 +1911,7 @@ namespace BluePrints.ViewModels
                 {
                     findExistingOrAddNewEAC(FixedDataDateMonthEnd, forecastJobData, bluePrintsUnitOfWork, newTenderBudget, true, ForecastEACType.TenderBudget);
                     forecastJobData.TenderBudget = newTenderBudget;
-                    forecastJobData.RaisePropertiesChanged();
+                    forecastJobData.Update();
                 }
             }
             else if(fieldName == BindableBase.GetPropertyName(() => new ForecastJobData().DisciplineDesc))
@@ -1928,7 +1928,7 @@ namespace BluePrints.ViewModels
 
                     findExistingOrAddNewEAC(previousEACDataDate, forecastJobData, bluePrintsUnitOfWork, newPreviousEAC, true, ForecastEACType.EAC);
                     forecastJobData.PreviousEAC = newPreviousEAC;
-                    forecastJobData.RaisePropertiesChanged();
+                    forecastJobData.Update();
                 }
             }
             else if (fieldName.Contains(BindableBase.GetPropertyName(() => new ForecastJobData().Productivity)))
