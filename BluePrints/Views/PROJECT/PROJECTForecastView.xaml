@@ -511,7 +511,7 @@
                                             </dxg:GridColumn.EditSettings>
                                         </dxg:GridColumn>
                                         <dxg:GridColumn BestFitWidth="85" Width="85" FieldName="INVOICEDATE" Header="Invoice Date" ReadOnly="True" />
-                                        <dxg:GridColumn AllowBestFit="False" Width="*" FieldName="NARRATIVE" Header="Narrative" ReadOnly="True" />
+                                        <dxg:GridColumn AllowBestFit="True" Width="300" MinWidth="300" FieldName="NARRATIVE" Header="Narrative" ReadOnly="True" />
                                     </dxg:GridControl.Columns>
                                     <dxg:GridControl.GroupSummary>
                                         <dxg:GridSummaryItem DisplayFormat="Record(s): {0:n0}" FieldName="SUB_JOBCODE" SummaryType="Count" />
