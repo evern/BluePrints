@@ -522,4 +522,7 @@
   <data name="Menu_Project_Contractor" xml:space="preserve">
     <value>Project's contractor maintenance menu</value>
   </data>
+  <data name="Permission_DesignVariation_ApproveVariations" xml:space="preserve">
+    <value>Allow user to approve variations</value>
+  </data>
 </root>

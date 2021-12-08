@@ -6,7 +6,7 @@
     using System.ComponentModel.DataAnnotations.Schema;
     using System.Data.Entity.Spatial;
 
-    public partial class X_JOB_TRANSACTIONS_DETAIL_V3
+    public partial class X_JOB_TRANSACTIONS_DETAIL_V4
     {
         [Key]
         [Column(Order = 0)]
@@ -67,7 +67,10 @@
         public string NARRATIVE { get; set; }
 
         [StringLength(60)]
-        public string RESOURCE_SUPPLIER_NAME { get; set; }
+        public string RESOURCE_NAME { get; set; }
+
+        [StringLength(60)]
+        public string SUPPLIER_NAME { get; set; }
 
         [StringLength(30)]
         public string LINE_STATUS { get; set; }

@@ -695,6 +695,10 @@ namespace BluePrints.ViewModels
                 Modules.Add(new BluePrintsEntitiesModuleDescription(DataUtils.GetNameOf(() => NavigationResources.Permission_DesignDeliverables_FinaliseNumbers), string.Empty, parentNavigationId, NavigationResources.Permission_DesignDeliverables_FinaliseNumbers, NavigationResources.Permission_DesignDeliverables_FinaliseNumbers));
                 Modules.Add(new BluePrintsEntitiesModuleDescription(DataUtils.GetNameOf(() => NavigationResources.Permission_DesignDeliverables_LockUnlockBudget), string.Empty, parentNavigationId, NavigationResources.Permission_DesignDeliverables_LockUnlockBudget, NavigationResources.Permission_DesignDeliverables_LockUnlockBudget));
             }
+            if (securityKey == DataUtils.GetNameOf(() => NavigationResources.Menu_Project_DesignVariation))
+            {
+                Modules.Add(new BluePrintsEntitiesModuleDescription(DataUtils.GetNameOf(() => NavigationResources.Permission_DesignVariation_ApproveVariations), string.Empty, parentNavigationId, NavigationResources.Permission_DesignVariation_ApproveVariations, NavigationResources.Permission_DesignVariation_ApproveVariations));
+            }
             else if (securityKey == DataUtils.GetNameOf(() => NavigationResources.Menu_Project_DesignProgress))
             {
                 Modules.Add(new BluePrintsEntitiesModuleDescription(DataUtils.GetNameOf(() => NavigationResources.Permission_DesignDeliverables_UpdateProgressByStatus), string.Empty, parentNavigationId, NavigationResources.Permission_DesignDeliverables_UpdateProgressByStatus, NavigationResources.Permission_DesignDeliverables_UpdateProgressByStatus));

@@ -67,6 +67,8 @@ namespace BluePrints.ViewModels
         private IPrimeroEntitiesUnitOfWork primeroUnitOfWork;
         public bool IsSummaryColumnsVisible { get; set; }
         public bool IsBusy => IsLoading || isSubmitting || isApproving || isSummarizing;
+        private bool canUpdateBudget;
+        private bool canApproveVariations;
         protected override void resolveParameters(object parameter)
         {
             var project_phasetype_parameter = (DualEntitiesParameter<PROJECT, PhaseTypeClass>) parameter;
@@ -78,6 +80,9 @@ namespace BluePrints.ViewModels
             exoJobCollectionViewModel.AlwaysSkipMessage = true;
             exoJobCollectionViewModel.IgnoreCostGroupCostType = true;
             exoJobCollectionViewModel.SetParentViewModel(this);
+
+            canUpdateBudget = LoginCredentials.getPermissionStatus(DataUtils.GetNameOf(() => NavigationResources.Permission_EXO_ChangeBudget)) == LoginCredentials.PermissionStatus.All;
+            canApproveVariations = LoginCredentials.getPermissionStatus(DataUtils.GetNameOf(() => NavigationResources.Permission_DesignVariation_ApproveVariations)) == LoginCredentials.PermissionStatus.All;
         }
 
         protected override void addEntitiesLoader()
@@ -510,6 +515,9 @@ namespace BluePrints.ViewModels
                 if (SelectedEntity == null)
                     errorMessage = messageEntityNotSelected;
 
+                if (!canApproveVariations)
+                    errorMessage = "You are not authorised to approve variations";
+
                 if (value && SelectedEntity.Entity.SUBMITTED == null)
                     errorMessage = "Please submit variation before approving";
 
@@ -602,7 +610,13 @@ namespace BluePrints.ViewModels
                 return;
             }
 
-            if(SelectedEntity.Entity.APPROVED == null)
+            if (!canUpdateBudget)
+            {
+                MessageBoxService.ShowMessage("You are not authorised to update budget", "Error", MessageButton.OK, MessageIcon.Exclamation);
+                return;
+            }
+
+            if (SelectedEntity.Entity.APPROVED == null)
             {
                 MessageBoxService.ShowMessage("Only approved variation budget can be updated", "Error", MessageButton.OK, MessageIcon.Exclamation);
                 return;

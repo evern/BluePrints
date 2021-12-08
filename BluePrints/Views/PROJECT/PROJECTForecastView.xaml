@@ -502,7 +502,8 @@
                                             </dxg:GridColumn.EditSettings>
                                         </dxg:GridColumn>
                                         <dxg:GridColumn BestFitWidth="85" Width="85" FieldName="TRANSDATE" Header="Date" ReadOnly="True" SortOrder="Descending" SortIndex="{Binding DateSortIndex}" />
-                                        <dxg:GridColumn BestFitWidth="200" Width="200" FieldName="RESOURCE_SUPPLIER_NAME" Header="Name" ReadOnly="True"  />
+                                        <dxg:GridColumn BestFitWidth="200" Width="200" FieldName="RESOURCE_NAME" Header="Resource" ReadOnly="True"  />
+                                        <dxg:GridColumn BestFitWidth="200" Width="200" FieldName="SUPPLIER_NAME" Header="Supplier" ReadOnly="True"  />
                                         <dxg:GridColumn BestFitWidth="150" Width="150" FieldName="QUANTITY" Header="Quantity" ReadOnly="True">
                                             <dxg:GridColumn.EditSettings>
                                                 <dxe:TextEditSettings Mask="n2" MaskType="Numeric" MaskUseAsDisplayFormat="True" />

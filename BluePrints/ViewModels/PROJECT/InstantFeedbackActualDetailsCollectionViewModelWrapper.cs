@@ -48,7 +48,7 @@ namespace BluePrints.ViewModels
     /// <summary>
     /// Represents the single PROGRESS object view model.
     /// </summary>
-    public partial class InstantFeedbackActualDetailsCollectionViewModelWrapper : BluePrintsEntitiesCollectionWrapper<X_JOB_TRANSACTIONS_DETAIL_V3, X_JOB_TRANSACTIONS_DETAIL_V3, int, IPrimeroEntitiesUnitOfWork>
+    public partial class InstantFeedbackActualDetailsCollectionViewModelWrapper : BluePrintsEntitiesCollectionWrapper<X_JOB_TRANSACTIONS_DETAIL_V4, X_JOB_TRANSACTIONS_DETAIL_V4, int, IPrimeroEntitiesUnitOfWork>
     {
         /// <summary>
         /// Creates a new instance of PROGRESS_ITEMSViewModelWrapper as a POCO view model.
@@ -98,7 +98,7 @@ namespace BluePrints.ViewModels
 
         protected override void onAuxiliaryEntitiesCollectionLoaded()
         {
-            CreateMainViewModel(primeroUnitOfWorkFactory, x => x.X_JOB_TRANSACTIONS_DETAIL_V3);
+            CreateMainViewModel(primeroUnitOfWorkFactory, x => x.X_JOB_TRANSACTIONS_DETAIL_V4);
         }
 
         protected override void OnAfterAssignedCallbackAndRaisePropertyChanged()
@@ -106,7 +106,7 @@ namespace BluePrints.ViewModels
             IsPasteCellLevel = true;
         }
 
-        protected override Func<IRepositoryQuery<X_JOB_TRANSACTIONS_DETAIL_V3>, IQueryable<X_JOB_TRANSACTIONS_DETAIL_V3>> specifyMainViewModelProjection()
+        protected override Func<IRepositoryQuery<X_JOB_TRANSACTIONS_DETAIL_V4>, IQueryable<X_JOB_TRANSACTIONS_DETAIL_V4>> specifyMainViewModelProjection()
         {
             if (loadAll)
                 return query => query.OrderByDescending(x => x.TRANSDATE);
@@ -148,12 +148,12 @@ namespace BluePrints.ViewModels
         }
         #endregion
 
-        public override string UnifiedValueValidation(X_JOB_TRANSACTIONS_DETAIL_V3 projection, string field_name, object new_value, bool isPaste)
+        public override string UnifiedValueValidation(X_JOB_TRANSACTIONS_DETAIL_V4 projection, string field_name, object new_value, bool isPaste)
         {
             return string.Empty;
         }
 
-        public override string UnifiedRowValidation(X_JOB_TRANSACTIONS_DETAIL_V3 projection)
+        public override string UnifiedRowValidation(X_JOB_TRANSACTIONS_DETAIL_V4 projection)
         {
             return string.Empty;
         }

@@ -1195,6 +1195,15 @@ namespace BluePrints.Common.Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Allow user to approve variations.
+        /// </summary>
+        internal static string Permission_DesignVariation_ApproveVariations {
+            get {
+                return ResourceManager.GetString("Permission_DesignVariation_ApproveVariations", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Change budget in EXO.
         /// </summary>
         internal static string Permission_EXO_ChangeBudget {
