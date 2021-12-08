@@ -1098,10 +1098,10 @@ namespace BluePrints.Common.ViewModel.Utils
 
                         materialDataPoint.ActualDate = jobMaterial.TRANSDATE == null ? DateTime.Now : (DateTime)jobMaterial.TRANSDATE;
                         materialDataPoint.Subjob_Name = jobMaterial.SUB_JOBCODE;
-                        materialDataPoint.ResourceName = string.Empty;
+                        materialDataPoint.ResourceName = jobMaterial.RESOURCE_NAME;
                         materialDataPoint.Quantity = qty;
                         materialDataPoint.Description = jobMaterial.DESCRIPTION;
-                        materialDataPoint.Supplier = jobMaterial.RESOURCE_SUPPLIER_NAME;
+                        materialDataPoint.Supplier = jobMaterial.SUPPLIER_NAME;
                         materialDataPoint.InvoiceNo = jobMaterial.INVNO == null ? string.Empty : jobMaterial.INVNO.ToString();
                         materialDataPoint.CostGroup = jobMaterial.DISCIPLINE_CODE.Trim();
                         materialDataPoint.Discipline_Code = jobMaterial.DISCIPLINE_CODE.Trim();
