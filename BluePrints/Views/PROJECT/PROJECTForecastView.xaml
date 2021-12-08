@@ -521,7 +521,7 @@
                                             </dxg:GridColumn.EditSettings>
                                         </dxg:GridColumn>
                                         <dxg:GridColumn BestFitWidth="85" Width="85" FieldName="INVOICEDATE" Header="Invoice Date" ReadOnly="True" />
-                                        <dxg:GridColumn AllowBestFit="False" Width="*" FieldName="NARRATIVE" Header="Narrative" ReadOnly="True" />
+                                        <dxg:GridColumn AllowBestFit="False" Width="*" MinWidth="200" FieldName="NARRATIVE" Header="Narrative" ReadOnly="True" />
                                     </dxg:GridControl.Columns>
                                     <dxg:GridControl.GroupSummary>
                                         <dxg:GridSummaryItem DisplayFormat="Record(s): {0:n0}" FieldName="SUB_JOBCODE" SummaryType="Count" />
@@ -561,7 +561,7 @@
                                         <dxg:GridColumn BestFitWidth="85" Width="85" FieldName="ORDERDATE" Header="Date" ReadOnly="True" SortOrder="Descending" SortIndex="{Binding DateSortIndex}" />
                                         <dxg:GridColumn BestFitWidth="100" Width="100" FieldName="PO_NUMBER" Header="PO Number" ReadOnly="True" />
                                         <dxg:GridColumn BestFitWidth="250" Width="150" FieldName="DESCRIPTION" Header="Commodity Desc" ReadOnly="True" />
-                                        <dxg:GridColumn AllowBestFit="False" Width="*" FieldName="NARRATIVE" Header="Narrative" ReadOnly="True" />
+                                        <dxg:GridColumn AllowBestFit="False" Width="*" MinWidth="200" FieldName="NARRATIVE" Header="Narrative" ReadOnly="True" />
                                         <dxg:GridColumn BestFitWidth="200" Width="200" FieldName="SUPPLIER_NAME" Header="Supplier" ReadOnly="True" />
                                         <dxg:GridColumn BestFitWidth="150" Width="150" FieldName="ORDER_QTY" Header="Quantity" ReadOnly="True" >
                                             <dxg:GridColumn.EditSettings>
