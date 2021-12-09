@@ -28,6 +28,7 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Linq;
+using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 
 namespace BluePrints.ViewModels
@@ -244,8 +245,13 @@ namespace BluePrints.ViewModels
             else
                 projection.Entity.GUID_ORIBASELINE = null;
 
-
+            projection.Entity.NAME = projection.Entity.NAME.Trim();
             return base.OnBeforeProjectionSaveIsContinue(projection, out isNew);
+        }
+
+        protected override void OnAfterProjectionSave(VARIATIONProjection projection, VARIATION entity, bool isNew)
+        {
+            base.OnAfterProjectionSave(projection, entity, isNew);
         }
         #endregion
 
@@ -736,7 +742,6 @@ namespace BluePrints.ViewModels
             return string.Empty;
         }
 
-
         public override string UnifiedValueValidation(VARIATIONProjection projection, string field_name, object new_value, bool isPaste)
         {
             if (field_name == BindableBase.GetPropertyName(() => new VARIATIONProjection().Entity) + "." + BindableBase.GetPropertyName(() => new VARIATIONProjection().Entity.CLIENT_APPROVED))
@@ -745,6 +750,23 @@ namespace BluePrints.ViewModels
                     return "Please check the client approve button above to client approve this variation, if you wish to edit the date you can do so after client approving it.";
                 else if (projection.Entity.CLIENT_APPROVED != null && new_value == null)
                     return "Please use the revert button above to unsubmit this variation.";
+            }
+
+            if (field_name == BindableBase.GetPropertyName(() => new VARIATIONProjection().Entity) + "." + BindableBase.GetPropertyName(() => new VARIATIONProjection().Entity.NAME))
+            {
+                if (new_value != null)
+                {
+                    string variationName = new_value.ToString();
+                    if (projection.GUID == Guid.Empty && !Regex.IsMatch(variationName, BluePrintsResources.Regex_VariationName))
+                    {
+                        return "Variation name must be in this format, 'VAR-### [Description]'";
+                    }
+
+                    if(Entities.Where(x => x.GUID != Guid.Empty).Any(x => x.Entity.NAME == variationName))
+                    {
+                        return "Variation name already exist";
+                    }
+                }
             }
 
             if (field_name == BindableBase.GetPropertyName(() => new VARIATIONProjection().Entity) + "." + BindableBase.GetPropertyName(() => new VARIATIONProjection().Entity.APPROVED))

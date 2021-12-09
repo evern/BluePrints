@@ -871,6 +871,15 @@ namespace BluePrints.Common.Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to ^VAR-\d{3}\s\w.*.
+        /// </summary>
+        internal static string Regex_VariationName {
+            get {
+                return ResourceManager.GetString("Regex_VariationName", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to -CN-.
         /// </summary>
         internal static string Register_Change_Suffix {

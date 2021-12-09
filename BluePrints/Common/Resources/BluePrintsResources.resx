@@ -414,4 +414,7 @@
   <data name="Deliverables_Contractor_Filter" xml:space="preserve">
     <value>Contractor</value>
   </data>
+  <data name="Regex_VariationName" xml:space="preserve">
+    <value>^VAR-\d{3}\s\w.*</value>
+  </data>
 </root>
