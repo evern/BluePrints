@@ -137,6 +137,12 @@ namespace BluePrints.ViewModels
 
         protected override void OnClose(CancelEventArgs e)
         {
+            if(shouldPromptForSavingSnapshot)
+            {
+                if (MessageBoxService.ShowMessage("Forecast edited, do you wish to save a snapshot?", "Save", MessageButton.YesNo) == MessageResult.Yes)
+                    SaveSnapshot();
+            }
+
             exoLoadingBackgroundWorker.CancelAsync();
             GlobalMethods.SetAccordionExpandedState?.Invoke(true);
             base.OnClose(e);
@@ -223,11 +229,11 @@ namespace BluePrints.ViewModels
             if (loadPROJECT.FORECAST_DATA_DATE != null)
             {
                 dataDate = (DateTime)loadPROJECT.FORECAST_DATA_DATE;
-                LoadDataDate = dataDate;
+                LoadDataDate = new DateTime(dataDate.Year, dataDate.Month, 1).AddMonths(1).AddSeconds(-1);
             }
             else
             {
-                DateTime endOfCurrentMonth = new DateTime(DateTime.Now.Year, DateTime.Now.Month, 1).AddMonths(1).AddDays(-1);
+                DateTime endOfCurrentMonth = new DateTime(DateTime.Now.Year, DateTime.Now.Month, 1).AddMonths(1).AddSeconds(-1);
 
                 loadPROJECT.FORECAST_DATA_DATE = endOfCurrentMonth;
                 dataDate = endOfCurrentMonth;
@@ -644,6 +650,20 @@ namespace BluePrints.ViewModels
             return allExoPos.GroupBy(x => new { x.PONumber, x.Variation_Code }).Select(group => new POLine { PONumber = group.Key.PONumber, VariationCode = group.Key.Variation_Code, DataPoints = group.ToList() }).ToList();
         }
 
+        public bool CanSaveSnapshot()
+        {
+            return !IsLoading && LoadDataDate != null;
+        }
+
+        protected bool shouldPromptForSavingSnapshot;
+        public void SaveSnapshot()
+        {
+            Common.LoadingScreenManager.ShowLoadingScreen(1);
+            Common.LoadingScreenManager.SetMessage("Saving PO Outstanding and Forecasts...");
+            BluePrintsContextHelper.RefreshAllForecastData(loadPROJECT.NUMBER, (DateTime)LoadDataDate);
+            Common.LoadingScreenManager.CloseLoadingScreen();
+        }
+
         public void AutoGeneratingColumns(AutoGeneratingColumnEventArgs e)
         {
             if (hiddenColumnFieldNames.Any(x => x == e.Column.FieldName))
@@ -691,6 +711,7 @@ namespace BluePrints.ViewModels
         {
             List<FORECAST_PO> removePOForecasts = Entities.Where(x => x.PONO == poNo && x.VARIATION_CODE == variationCode).ToList();
             MainViewModel.BaseBulkDelete(removePOForecasts);
+            shouldPromptForSavingSnapshot = true;
         }
 
         private void findExistingOrAddNewFORECAST_PO(DataRow dataRow, DateTime forecastDate, decimal? viewCosts, bool skipUpdating = false)
@@ -742,6 +763,7 @@ namespace BluePrints.ViewModels
                 }
 
                 MainViewModel.Save(findFORECAST_PO);
+                shouldPromptForSavingSnapshot = true;
             }
 
             if(!skipUpdating)
@@ -1015,6 +1037,8 @@ namespace BluePrints.ViewModels
             LoadingScreenManager.CloseLoadingScreen();
             LastAlignedDate = DateTime.Now;
             MainViewModel.BaseBulkSave(saveFORECAST_POs);
+            SaveSnapshot();
+            shouldPromptForSavingSnapshot = false;
             refreshDataTable();
         }
 
@@ -1206,6 +1230,7 @@ namespace BluePrints.ViewModels
                 string s = ex.ToString();
             }
         }
+
         public bool IsPOColumnsVisible { get; set; }
         private void setFilter(DataRowView dataRowView, GridColumn gridColumn)
         {

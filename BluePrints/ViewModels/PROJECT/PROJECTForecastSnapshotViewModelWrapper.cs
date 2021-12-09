@@ -2955,6 +2955,17 @@ namespace BluePrints.ViewModels
             }
         }
 
+        public decimal POForecastCosts
+        {
+            get
+            {
+                if (POForecastCollection.Count == 0)
+                    return 0;
+
+                return POForecastCollection.Sum(x => x.FORECAST_COST);
+            }
+        }
+
         public decimal P6RemainingHours
         {
             get

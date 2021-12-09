@@ -231,6 +231,12 @@ namespace BluePrints.Data
             RefreshForecastP6ByProject(projectNumber, dataDate, false);
 #pragma warning restore CS4014 // Because this call is not awaited, execution of the current method continues before the call is completed
         }
+        public static void RefreshPOForecastData(string projectNumber, DateTime dataDate)
+        {
+#pragma warning disable CS4014 // Because this call is not awaited, execution of the current method continues before the call is completed
+            RefreshForecastPOByProject(projectNumber, dataDate);
+#pragma warning restore CS4014 // Because this call is not awaited, execution of the current method continues before the call is completed
+        }
 
         public static void RefreshForecastBudgetByProject(string projectNumber, DateTime dataDate)
         {
