@@ -1238,6 +1238,8 @@ namespace BluePrints.ViewModels
             Common.LoadingScreenManager.SetMessage("Saving Indirect Forecast Snapshot...");
             BluePrintsContextHelper.RefreshIndirectForecastData(LoadPROJECT.NUMBER, (DateTime)LoadDataDate);
             Common.LoadingScreenManager.CloseLoadingScreen();
+
+            shouldPromptForSavingSnapshot = false;
         }
 
         /// <summary>
