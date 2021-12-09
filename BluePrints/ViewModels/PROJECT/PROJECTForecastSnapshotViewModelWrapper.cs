@@ -391,7 +391,7 @@ namespace BluePrints.ViewModels
         {
             dataPointsTable = new DataTable();
             Jobs = new ConcurrentBag<ForecastJobSnapshot>();
-            GridControlService.GridControl?.BeginDataUpdate();
+            //GridControlService.GridControl?.BeginDataUpdate();
 
             DateTime actualsEarliestDate = FORECAST_JOB_HOUR_SNAPSHOTCollection.Where(x => x.SNAPSHOT_TYPE == ForecastSnapshotValueType.Actual && x.FORECAST_DATE != null).Count() == 0 ? DateTime.Now : FORECAST_JOB_HOUR_SNAPSHOTCollection.Where(x => x.SNAPSHOT_TYPE == ForecastSnapshotValueType.Actual && x.FORECAST_DATE != null).Min(x => (DateTime)x.FORECAST_DATE);
             DateTime firstDataPointDate = isShowActualsHistory ? actualsEarliestDate : FixedDataDate;
@@ -429,14 +429,14 @@ namespace BluePrints.ViewModels
                 string variationCode = delimited[3];
 
                 //For Debugging
-                //if (subJobCode == "20638-200-00-P1" && disciplineCode == "CC01" && commodityCode == "C07" && variationCode == "")
-                //{
+                if (subJobCode == "20638-000-00-I1" && disciplineCode == "GP01" && commodityCode == "G64" && variationCode == "")
+                {
+                    UniqueForecastJob uniqueForecastJob = new UniqueForecastJob(projectLines, subJobCode, disciplineCode, commodityCode, variationCode, FixedDataDate, PreviousDataDate, FORECAST_JOB_HOUR_SNAPSHOTCollection);
+                    uniqueForecastJob.UpdateTenderBudget(TenderBudgetCollection.AsQueryable());
+                    uniqueForecastJob.UpdateErrorMessage(JOBCOST_LINES_AUDITCollection.AsQueryable());
+                    uniqueForecastJobs.Add(uniqueForecastJob);
+                }
 
-                //}
-                UniqueForecastJob uniqueForecastJob = new UniqueForecastJob(projectLines, subJobCode, disciplineCode, commodityCode, variationCode, FixedDataDate, PreviousDataDate, FORECAST_JOB_HOUR_SNAPSHOTCollection);
-                uniqueForecastJob.UpdateTenderBudget(TenderBudgetCollection.AsQueryable());
-                uniqueForecastJob.UpdateErrorMessage(JOBCOST_LINES_AUDITCollection.AsQueryable());
-                uniqueForecastJobs.Add(uniqueForecastJob);
                 Common.LoadingScreenManager.Progress();
             });
 
@@ -497,7 +497,7 @@ namespace BluePrints.ViewModels
                 Common.LoadingScreenManager.Progress();
             }
 
-            GridControlService.GridControl?.EndDataUpdate();
+            //GridControlService.GridControl?.EndDataUpdate();
             Common.LoadingScreenManager.CloseLoadingScreen();
 
             ForecastSummary.Reset();
@@ -974,21 +974,21 @@ namespace BluePrints.ViewModels
                 columns.Add(new ColumnDescriptor() { FieldName = "Entity.DropDownIndirectBudget", ReadOnly = true, Header = "Project Budget (A)", Increment = 1, Fixed = FixedStyle.Left, Width = 50, Settings = SettingsType.Budget, HeaderToolTip = "Indirect budget from Exo" });
             }
 
-            foreach (DateTime alignedDate in alignedDates)
+            foreach (DateTime alignedDate in alignedDates.OrderBy(x => x.Date))
             {
                 string columnFieldName = alignedDate.Date.ToString(BluePrintsResources.ColumnDateFormat);
                 if (alignedDate <= FixedDataDateMonthEnd)
                 {
                     //do not show actuals
                     if (isShowActualsHistory)
-                        columns.Add(new ColumnDescriptor() { FieldName = columnFieldName, ReadOnly = true, Header = columnFieldName, Fixed = FixedStyle.None, Width = 60, Settings = SettingsType.ForecastPast });
+                        columns.Add(new ColumnDescriptor() { FieldName = columnFieldName, ReadOnly = true, ColumnDate = alignedDate, Header = columnFieldName, Fixed = FixedStyle.None, Width = 60, Settings = SettingsType.ForecastPast });
                 }
                 if (alignedDate > FixedDataDateMonthEnd)
                 {
                     if (isChild)
-                        columns.Add(new ColumnDescriptor() { FieldName = columnFieldName, ReadOnly = false, Header = columnFieldName, Fixed = FixedStyle.None, Width = 60, Settings = SettingsType.ForecastChild });
+                        columns.Add(new ColumnDescriptor() { FieldName = columnFieldName, ReadOnly = false, ColumnDate = alignedDate, Header = columnFieldName, Fixed = FixedStyle.None, Width = 60, Settings = SettingsType.ForecastChild });
                     else
-                        columns.Add(new ColumnDescriptor() { FieldName = columnFieldName, ReadOnly = false, Header = columnFieldName, Fixed = FixedStyle.None, Width = 60, Settings = SettingsType.ForecastFuture });
+                        columns.Add(new ColumnDescriptor() { FieldName = columnFieldName, ReadOnly = false, ColumnDate = alignedDate, Header = columnFieldName, Fixed = FixedStyle.None, Width = 60, Settings = SettingsType.ForecastFuture });
                 }
 
                 if (!isChild)

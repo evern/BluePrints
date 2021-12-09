@@ -165,6 +165,7 @@ namespace BluePrints.ViewModels
             else
                 dataDate = (DateTime)LoadPROJECT.FORECAST_DATA_DATE;
 
+            dataDate = new DateTime(dataDate.Year, dataDate.Month, 1).AddMonths(1).AddSeconds(-1);
             LoadDataDate = dataDate;
             FixedDataDate = dataDate;
 
@@ -222,6 +223,12 @@ namespace BluePrints.ViewModels
 
         protected override void OnClose(CancelEventArgs e)
         {
+            if (shouldPromptForSavingSnapshot)
+            {
+                if (MessageBoxService.ShowMessage("Forecast edited, do you wish to save a snapshot?", "Save", MessageButton.YesNo) == MessageResult.Yes)
+                    SaveSnapshot();
+            }
+
             jobsLoadingBackgroundWorker.CancelAsync();
             GlobalMethods.SetAccordionExpandedState?.Invoke(true);
             base.OnClose(e);
@@ -606,6 +613,7 @@ namespace BluePrints.ViewModels
             }
 
             MainEntityUnitOfWork.SaveChanges();
+            shouldPromptForSavingSnapshot = true;
         }
 
         public bool CanUpdateFloatingRates()
@@ -829,6 +837,7 @@ namespace BluePrints.ViewModels
                 DataRowView row = (DataRowView)e.Row;
 
                 findExistingOrAddNewFORECAST_JOB(row.Row, true);
+                shouldPromptForSavingSnapshot = true;
                 EntitiesUndoRedoManager.AddUndo(updateForecastJobFromDataRow(row.Row), null, null, null, EntityMessageType.Added);
                 focusNewlyAddedProjectionTimer.Start();
                 //added not working well atm because when row is removed from datatable its itemarray is cleared
@@ -1024,6 +1033,10 @@ namespace BluePrints.ViewModels
 
                     updateForecastJobFromDataRow(row);
                     findExistingOrAddNewFORECAST_JOB(row, saveChanges);
+
+                    if(saveChanges)
+                        shouldPromptForSavingSnapshot = true;
+
                     updateRowReadOnlyAttributes(row);
                     return;
                 }
@@ -1055,7 +1068,10 @@ namespace BluePrints.ViewModels
                 editForecastJobHour.FORECAST_HOUR = forecastHours;
 
                 if (saveChanges)
+                {
                     forecastJob.PrepareForSaveChanges(saveChanges);
+                    shouldPromptForSavingSnapshot = true;
+                }
                 //FORECAST_JOB_HOURCollectionViewModel.Save(editForecastJobHour);
 
                 //for undo/redo
@@ -1072,7 +1088,10 @@ namespace BluePrints.ViewModels
                 DataUtils.SetNestedValue(sanitisedPropertyName, forecastJob, newValue);
 
                 if (saveChanges)
+                {
                     forecastJob.PrepareForSaveChanges(saveChanges);
+                    shouldPromptForSavingSnapshot = true;
+                }
 
                 //findExistingOrAddNewFORECAST_JOB(row);
             }
@@ -1082,7 +1101,10 @@ namespace BluePrints.ViewModels
                 mapDataTableToJobData(row);
 
                 if (saveChanges)
+                {
                     forecastJob.PrepareForSaveChanges(saveChanges);
+                    shouldPromptForSavingSnapshot = true;
+                }
 
                 //findExistingOrAddNewFORECAST_JOB(row);
             }
@@ -1209,6 +1231,15 @@ namespace BluePrints.ViewModels
             return string.Empty;
         }
 
+        protected bool shouldPromptForSavingSnapshot;
+        public void SaveSnapshot()
+        {
+            Common.LoadingScreenManager.ShowLoadingScreen(1);
+            Common.LoadingScreenManager.SetMessage("Saving Indirect Forecast Snapshot...");
+            BluePrintsContextHelper.RefreshIndirectForecastData(LoadPROJECT.NUMBER, (DateTime)LoadDataDate);
+            Common.LoadingScreenManager.CloseLoadingScreen();
+        }
+
         /// <summary>
         /// The view name to be used when saving layout for IDocumentContent
         /// </summary>
@@ -1261,6 +1292,7 @@ namespace BluePrints.ViewModels
                 foreach (KeyValuePair<string, decimal> datesForecast in entityProperty.ChangedEntity.DatesForecasts)
                     commitCellValue(datesForecast.Key, newRow, datesForecast.Value, true);
 
+                shouldPromptForSavingSnapshot = true;
                 updateRowReadOnlyAttributes(newRow);
                 dataPointsTable.Rows.Add(newRow);
             }
@@ -1302,6 +1334,7 @@ namespace BluePrints.ViewModels
                     commitCellValue(datesForecast.Key, newRow, datesForecast.Value, true);
                 }
 
+                shouldPromptForSavingSnapshot = true;
                 updateRowReadOnlyAttributes(newRow);
                 dataPointsTable.Rows.Add(newRow);
             }
@@ -1394,6 +1427,8 @@ namespace BluePrints.ViewModels
                 //save the delete reason
                 MainViewModel.Save(findFORECAST_JOB);
                 MainViewModel.Delete(findFORECAST_JOB);
+
+                shouldPromptForSavingSnapshot = true;
             }
 
             if (!EntitiesUndoRedoManager.IsInUndoRedoOperation)

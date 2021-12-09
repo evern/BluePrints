@@ -659,8 +659,8 @@ namespace BluePrints.ViewModels
         public void SaveSnapshot()
         {
             Common.LoadingScreenManager.ShowLoadingScreen(1);
-            Common.LoadingScreenManager.SetMessage("Saving PO Outstanding and Forecasts...");
-            BluePrintsContextHelper.RefreshAllForecastData(loadPROJECT.NUMBER, (DateTime)LoadDataDate);
+            Common.LoadingScreenManager.SetMessage("Saving PO Outstanding and Forecasts Snapshot...");
+            BluePrintsContextHelper.RefreshPOForecastData(loadPROJECT.NUMBER, (DateTime)LoadDataDate);
             Common.LoadingScreenManager.CloseLoadingScreen();
         }
 
