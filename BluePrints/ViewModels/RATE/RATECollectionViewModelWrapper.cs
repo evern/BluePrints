@@ -219,6 +219,9 @@ namespace BluePrints.ViewModels
             }
             else if (field_name == BindableBase.GetPropertyName(() => new RATE().VARIATION_CODE))
             {
+                if (new_value == null || new_value.ToString() == "Any")
+                    new_value = string.Empty;
+
                 if (Entities.Where(x => x.IsRateExists).Any(x => x.PHASE_TYPE == projection.PHASE_TYPE && x.CHARGE_TYPE == projection.CHARGE_TYPE && x.GUID_AREA == projection.GUID_AREA && x.GUID_SUBAREA == projection.GUID_SUBAREA && x.GUID_DEPARTMENT == projection.GUID_DEPARTMENT && x.GUID_DISCIPLINE == projection.GUID_DISCIPLINE && x.DISCIPLINE_NUM == projection.DISCIPLINE_NUM && x.COMMODITY_CODE == projection.COMMODITY_CODE && x.VARIATION_CODE == new_value.ToString() && x.GUID != projection.GUID))
                     return errorMessage;
             }
@@ -293,6 +296,12 @@ namespace BluePrints.ViewModels
             {
                 projection.SetLookupProperties(CombinedCommodityCodeCollection, DISCIPLINECollection, SUBAREACollection);
             }
+            if (field_name == BindableBase.GetPropertyName(() => new RATE().VARIATION_CODE))
+            {
+                if (new_value == null || new_value.ToString() == "Any")
+                    new_value = string.Empty;
+            }
+
             base.UnifiedCellValueChanged(field_name, old_value, new_value, projection, isNew);
         }
 
@@ -304,7 +313,7 @@ namespace BluePrints.ViewModels
             if (entity.COMMODITY_CODE == null)
                 entity.COMMODITY_CODE = string.Empty;
 
-            if (entity.VARIATION_CODE == null)
+            if (entity.VARIATION_CODE == null || entity.VARIATION_CODE == "Any")
                 entity.VARIATION_CODE = string.Empty;
 
             if (entity.IsGangRateCalculatable)

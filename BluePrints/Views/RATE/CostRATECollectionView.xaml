@@ -159,7 +159,7 @@
                         </dxg:GridColumn>
                         <dxg:GridColumn FieldName="VARIATION_CODE" Width="100" Header="Variation Code" Visible="{Binding IsVariationCodeVisible}" HeaderToolTip="Which variation code the current rate will be applied to">
                             <dxg:GridColumn.EditSettings>
-                                <dxe:ComboBoxEditSettings AutoComplete="True" IsTextEditable="True" ItemsSource="{Binding VariationCodeCollection}" NullValueButtonPlacement="EditBox" />
+                                <dxe:ComboBoxEditSettings IsTextEditable="True" ItemsSource="{Binding VariationCodeCollection}" NullValueButtonPlacement="EditBox" />
                             </dxg:GridColumn.EditSettings>
                         </dxg:GridColumn>
                         <dxg:GridColumn FieldName="RATE1" Width="90" Header="Cost Rate" HeaderToolTip="Cost rate per hour">
