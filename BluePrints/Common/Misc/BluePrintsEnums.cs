@@ -570,7 +570,9 @@ namespace BluePrints.Common
         [Display(Name = "Procurement")]
         Procurement = 4, 
         [Display(Name = "Tender")]
-        Tender = 5
+        Tender = 5,
+        [Display(Name = "Maintenance")]
+        Maintenance = 6
     }
 
     public enum ChargeType

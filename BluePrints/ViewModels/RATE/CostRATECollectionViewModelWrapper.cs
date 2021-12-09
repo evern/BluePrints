@@ -71,8 +71,8 @@ namespace BluePrints.ViewModels
             base.AssignCallBacksAndRaisePropertyChange(entities);
         }
 
-        public bool IsDepartmentVisible => loadPhaseType != PhaseType.Construct;
-        public bool IsVariationCodeVisible => loadPhaseType == PhaseType.Construct;
+        public bool IsDepartmentVisible => loadPhaseType == PhaseType.Design || loadPhaseType == PhaseType.Indirect;
+        public bool IsVariationCodeVisible => loadPhaseType == PhaseType.Construct || loadPhaseType == PhaseType.Maintenance;
         List<TransactionRate> queryTransactionRates = new List<TransactionRate>();
 
         //recommend by non area specific group of transactions

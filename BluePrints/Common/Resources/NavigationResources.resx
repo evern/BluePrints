@@ -525,4 +525,10 @@
   <data name="Permission_DesignVariation_ApproveVariations" xml:space="preserve">
     <value>Allow user to approve variations</value>
   </data>
+  <data name="Menu_Project_ConstructionMaintenanceChargeRate" xml:space="preserve">
+    <value>Maintenance charge rate maintenance menu</value>
+  </data>
+  <data name="Menu_Project_ConstructionMaintenanceCostRate" xml:space="preserve">
+    <value>Maintenance cost rate maintenance menu</value>
+  </data>
 </root>
