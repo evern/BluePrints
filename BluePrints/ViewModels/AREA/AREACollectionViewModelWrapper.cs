@@ -15,6 +15,8 @@ using BaseModel.ViewModel.Base;
 using BluePrints.Common.ViewModel.Utils;
 using BluePrints.Common.Resources;
 using DevExpress.Mvvm;
+using BluePrints.Common;
+using BaseModel.Data.Helpers;
 
 namespace BluePrints.ViewModels
 {
@@ -40,6 +42,7 @@ namespace BluePrints.ViewModels
         protected AREACollectionViewModelWrapper(
             IUnitOfWorkFactory<IBluePrintsEntitiesUnitOfWork> unitOfWorkFactory = null)
         {
+            IsReadOnly = LoginCredentials.getPermissionStatus(DataUtils.GetNameOf(() => NavigationResources.Menu_Project_Areas)) == LoginCredentials.PermissionStatus.ReadOnly;
         }
 
         #region Database Operations

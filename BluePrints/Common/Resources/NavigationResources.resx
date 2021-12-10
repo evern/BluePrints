@@ -208,7 +208,7 @@
     <value>Phases maintenance menu</value>
   </data>
   <data name="Menu_Project_Areas" xml:space="preserve">
-    <value>Project areas menu</value>
+    <value>Project areas menu  read/write</value>
   </data>
   <data name="Menu_Project_ConstructionDirectCostRate" xml:space="preserve">
     <value>Project construction direct cost rate maintenance</value>

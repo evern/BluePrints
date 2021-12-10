@@ -412,7 +412,7 @@ namespace BluePrints.Common.Resources {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Project areas menu.
+        ///   Looks up a localized string similar to Project areas menu  read/write.
         /// </summary>
         internal static string Menu_Project_Areas {
             get {
