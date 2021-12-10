@@ -170,6 +170,13 @@
                                 </DataTemplate>
                             </dxg:GridColumn.CellTemplate>
                         </dxg:GridColumn>
+                        <dxg:GridColumn FixedWidth="True" Width="100" AllowEditing="True" AllowBestFit="false" FieldName="OldPercentage" Header="% Before Import" HeaderToolTip="Current % before importing" ReadOnly="True">
+                            <dxg:GridColumn.CellTemplate>
+                                <DataTemplate>
+                                    <dxe:SpinEdit x:Name="PART_Editor" MaskType="Numeric" Mask="p2" MaskUseAsDisplayFormat="True" />
+                                </DataTemplate>
+                            </dxg:GridColumn.CellTemplate>
+                        </dxg:GridColumn>
                         <dxg:GridColumn FixedWidth="True" Width="90" AllowEditing="True" AllowBestFit="false" FieldName="Total_Earned_Percentage" Header="{Binding CurrentPercentageHeaderString}" HeaderToolTip="Cumulative % earned since the start of the project. % as benchmarked against baseline + variation. Update this to earn units for this period" ReadOnly="True">
                             <dxg:GridColumn.CellTemplate>
                                 <DataTemplate>

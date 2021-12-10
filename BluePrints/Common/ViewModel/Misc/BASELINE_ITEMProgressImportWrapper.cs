@@ -110,6 +110,7 @@ namespace BluePrints.Common.ViewModel.Misc
         public OldNewValueCompare<string> Compare_COMMENTS { get; set; }
         public OldNewValueCompare<decimal> Compare_BUDGET_HOURS { get; set; }
         public OldNewValueCompare<decimal> Compare_EARNED_PERCENTAGE { get; set; }
+        public decimal OldPercentage { get; set; }
         public bool Import { get; set; }
         public bool CanImport => IsNew || (!IsError && !IsSame);
         public string Message { get; set; }
@@ -162,6 +163,7 @@ namespace BluePrints.Common.ViewModel.Misc
             Compare_EARNED_PERCENTAGE = new OldNewValueCompare<decimal>(compareProjection.Total_Earned_Percentage, importProjection.Total_Earned_Percentage, true);
             Compare_BUDGET_HOURS = new OldNewValueCompare<decimal>(compareProjection.Entity.Entity.BUDGET_HOURS, importProjection.Entity.Entity.BUDGET_HOURS);
 
+            this.OldPercentage = compareProjection.Total_Earned_Percentage;
             this.Entity = importProjection.Entity;
             this.Total_Earned_Percentage = importProjection.Total_Earned_Percentage;
         }
