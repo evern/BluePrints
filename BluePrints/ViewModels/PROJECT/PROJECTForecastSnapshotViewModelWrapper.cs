@@ -427,16 +427,15 @@ namespace BluePrints.ViewModels
                 string disciplineCode = delimited[1];
                 string commodityCode = delimited[2];
                 string variationCode = delimited[3];
-
                 //For Debugging
-                if (subJobCode == "20638-000-00-I1" && disciplineCode == "GP01" && commodityCode == "G64" && variationCode == "")
-                {
-                    UniqueForecastJob uniqueForecastJob = new UniqueForecastJob(projectLines, subJobCode, disciplineCode, commodityCode, variationCode, FixedDataDate, PreviousDataDate, FORECAST_JOB_HOUR_SNAPSHOTCollection);
-                    uniqueForecastJob.UpdateTenderBudget(TenderBudgetCollection.AsQueryable());
-                    uniqueForecastJob.UpdateErrorMessage(JOBCOST_LINES_AUDITCollection.AsQueryable());
-                    uniqueForecastJobs.Add(uniqueForecastJob);
-                }
+                //if (subJobCode == "20638-000-00-I1" && disciplineCode == "GP01" && commodityCode == "G64" && variationCode == "")
+                //{
 
+                //}
+                UniqueForecastJob uniqueForecastJob = new UniqueForecastJob(projectLines, subJobCode, disciplineCode, commodityCode, variationCode, FixedDataDate, PreviousDataDate, FORECAST_JOB_HOUR_SNAPSHOTCollection);
+                uniqueForecastJob.UpdateTenderBudget(TenderBudgetCollection.AsQueryable());
+                uniqueForecastJob.UpdateErrorMessage(JOBCOST_LINES_AUDITCollection.AsQueryable());
+                uniqueForecastJobs.Add(uniqueForecastJob);
                 Common.LoadingScreenManager.Progress();
             });
 
@@ -1837,7 +1836,11 @@ namespace BluePrints.ViewModels
                 {
                     IEnumerable<ExoSubJobProjection> addedProjections = ExoMethods.CommitToExo(projections, MessageBoxService, masterJob, copyLine, LoadPROJECT, USERCollection, primeroUnitOfWork, bluePrintsUnitOfWork, BulkColumnEditDialogService, out errorMessages);
                     if (errorMessages.Count > 0)
+                    {
+                        job.Budget = 0;
+                        job.Update();
                         return false;
+                    }
 
                     if (addedProjections.Count() > 0)
                     {
@@ -3054,7 +3057,7 @@ namespace BluePrints.ViewModels
                     else
                         possibleErrorMessage = "Job is added since last data refresh\nBudget was created in EXO and not tracked by BluePrints";
                 }
-                else if (ProjectLine.ExoBudget != BudgetCosts)
+                else if (Math.Round(ProjectLine.ExoBudget, 0) != Math.Round(BudgetCosts, 0))
                 {
                     possibleErrorMessage = "Exo budget doesn't match previously saved budget of " + BudgetCosts;
                     if (updatedJOBCOST_LINES_AUDIT != null)
