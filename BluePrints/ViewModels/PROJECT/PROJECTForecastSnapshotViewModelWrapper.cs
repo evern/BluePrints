@@ -295,6 +295,7 @@ namespace BluePrints.ViewModels
             this.RaisePropertiesChanged();
         }
 
+
         private void savePROJECT()
         {
             delayedProjectSaveTimer.Tick -= DelayedProjectSaveTimer_Tick;
@@ -365,6 +366,12 @@ namespace BluePrints.ViewModels
         }
         protected override bool loadDataPointsTable()
         {
+            if(FORECAST_JOB_HOUR_SNAPSHOTCollection.Count() == 0)
+            {
+                RefreshAllForecastData();
+                return false;
+            }
+
             IsLoading = true;
             this.RaisePropertyChanged(x => x.IsLoading);
 
@@ -598,6 +605,7 @@ namespace BluePrints.ViewModels
 
             //use cached data if present so that it's threadsafe
             IQueryable<FORECAST> loadFORECASTCollection = CachedFORECASTCollection == null ? QueryableFORECASTCollection : CachedFORECASTCollection.AsQueryable();
+
             List<FORECAST> relevantFORECASTS = loadFORECASTCollection.Where(x => x.SUBJOB_CODE == job.SubJobCode && x.DISCIPLINE_CODE == job.DisciplineCode && x.COMMODITY_CODE == job.CommodityCode && x.VARIATION_CODE == job.VariationCode).ToList();
             foreach (ForecastDateSnapshot dateCost in job.DateCosts)
             {
@@ -2638,7 +2646,9 @@ namespace BluePrints.ViewModels
 
         public override void FullRefresh()
         {
-            alignedDataDateCollection.Clear();
+            if(alignedDataDateCollection != null)
+                alignedDataDateCollection.Clear();
+
             loadExoMethodsData();
             loadSummaryStats();
 
