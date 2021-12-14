@@ -1,5 +1,6 @@
 ﻿using BluePrints.Common.Projections;
 using BluePrints.Common.Resources;
+using BluePrints.Common.ViewModel.Reporting;
 using System;
 using System.Data;
 using System.Windows;
@@ -25,7 +26,7 @@ namespace BluePrints.Common.ViewModel.Converters
                 if(!dataRow.Table.Columns.Contains("CompareEntities"))
                     return null;
 
-                ForecastJobData jobData = (ForecastJobData)dataRow["Entity"];
+                IForecastViewModel jobData = (IForecastViewModel)dataRow["Entity"];
                 if (!jobData.IsP6HoursRow)
                     return null;
 

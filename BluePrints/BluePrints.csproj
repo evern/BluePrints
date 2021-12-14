@@ -598,6 +598,7 @@
     <Compile Include="Common\Misc\Deliverable_Milestone.cs" />
     <Compile Include="Common\Misc\Extensions.cs" />
     <Compile Include="Common\Misc\GlobalVariables.cs" />
+    <Compile Include="Common\Misc\HeatMap.cs" />
     <Compile Include="Common\Misc\LoginCredentials.cs" />
     <Compile Include="Common\Base\BluePrintsProjectionBase.cs" />
     <Compile Include="Common\Base\BluePrintsProjectionMasterDetailBase.cs" />
@@ -612,6 +613,7 @@
     <Compile Include="Common\Projections\ExoResourceProjection.cs" />
     <Compile Include="Common\Projections\ExoSubJobProjection.cs" />
     <Compile Include="Common\Projections\ForecastJobData.cs" />
+    <Compile Include="Common\Projections\ForecastJobSnapshot.cs" />
     <Compile Include="Common\Projections\HSEReportProjection.cs" />
     <Compile Include="Common\Projections\HSEProjection.cs" />
     <Compile Include="Common\Projections\MINUTE_TITLEReportingProjection.cs" />
@@ -917,7 +919,7 @@
     <Compile Include="EntityFramework\Annotations\DISCIPLINE_DESC.cs" />
     <Compile Include="EntityFramework\Annotations\DR_PRICES.cs" />
     <Compile Include="EntityFramework\Annotations\FORECAST_HISTORY.cs" />
-    <Compile Include="EntityFramework\Annotations\FORECAST_CACHE.cs" />
+    <Compile Include="EntityFramework\Annotations\FORECAST_JOB_HOUR_SNAPSHOT.cs" />
     <Compile Include="EntityFramework\Annotations\PROGRESS_ETC.cs" />
     <Compile Include="EntityFramework\Annotations\PROJECT_CONTRACTOR.cs" />
     <Compile Include="EntityFramework\Annotations\REGISTER_CHANGE_ATTACHMENT.cs" />
@@ -927,6 +929,7 @@
     <Compile Include="EntityFramework\Annotations\JOBCOST_HDR.cs" />
     <Compile Include="EntityFramework\Annotations\JOBCOST_RESOURCE.cs" />
     <Compile Include="EntityFramework\Annotations\X_DEPARTMENT.cs" />
+    <Compile Include="EntityFramework\Annotations\X_JOBCOST_LINES_AUDIT.cs" />
     <Compile Include="EntityFramework\Annotations\X_EARNED_QUERY.cs" />
     <Compile Include="EntityFramework\Annotations\X_INVOICED_V1.cs" />
     <Compile Include="EntityFramework\Annotations\X_PURCHORD_LINE_DETAILS_VIEW_V1.cs" />
@@ -1009,14 +1012,16 @@
     <Compile Include="EntityFramework\Annotations\X_JOB_TRANSACTIONS_DETAIL_SeqNo.cs" />
     <Compile Include="EntityFramework\BluePrintsData\CONSTRUCTION_STAGE.cs" />
     <Compile Include="EntityFramework\BluePrintsData\DISCIPLINE_DESC.cs" />
+    <Compile Include="EntityFramework\BluePrintsData\FORECAST.cs" />
     <Compile Include="EntityFramework\BluePrintsData\FORECAST_HISTORY.cs" />
-    <Compile Include="EntityFramework\BluePrintsData\FORECAST_CACHE.cs" />
+    <Compile Include="EntityFramework\BluePrintsData\FORECAST_JOB_HOUR.cs" />
     <Compile Include="EntityFramework\BluePrintsData\PROGRESS_ETC.cs" />
     <Compile Include="EntityFramework\BluePrintsData\PROJECT_CONTRACTOR.cs" />
     <Compile Include="EntityFramework\BluePrintsData\REGISTER_CLARIFICATION.cs" />
     <Compile Include="EntityFramework\BluePrintsData\REGISTER_TQ.cs" />
     <Compile Include="EntityFramework\BluePrintsData\REGISTER_CHANGE_ATTACHMENT.cs" />
     <Compile Include="EntityFramework\BluePrintsData\REGISTER_TQ_ATTACHMENT.cs" />
+    <Compile Include="EntityFramework\BluePrintsData\X_JOBCOST_LINES_AUDIT.cs" />
     <Compile Include="EntityFramework\BluePrintsData\X_REPORTABLES.cs" />
     <Compile Include="EntityFramework\BluePrintsData\X_EARNED_QUERY.cs" />
     <Compile Include="EntityFramework\BluePrintsData\X_WBS_GROUPED_DATAPOINT.cs" />
@@ -1028,7 +1033,6 @@
     <Compile Include="EntityFramework\BluePrintsData\PROJECT_PERMISSION.cs" />
     <Compile Include="EntityFramework\BluePrintsData\PROJECT_REVENUE.cs" />
     <Compile Include="EntityFramework\BluePrintsData\FORECAST_JOB_SETTING.cs" />
-    <Compile Include="EntityFramework\BluePrintsData\FORECAST_JOB_HOUR.cs" />
     <Compile Include="EntityFramework\BluePrintsData\FORECAST_JOB.cs" />
     <Compile Include="EntityFramework\BluePrintsData\FORECAST_PO_SETTING.cs" />
     <Compile Include="EntityFramework\BluePrintsData\FORECAST_PO.cs" />
@@ -1036,7 +1040,7 @@
     <Compile Include="EntityFramework\BluePrintsData\PROJECT_SUMMARY.cs" />
     <Compile Include="EntityFramework\BluePrintsData\CONSTRUCTION_CONFIG.cs" />
     <Compile Include="EntityFramework\BluePrintsData\DSTATUS_DOCTYPE.cs" />
-    <Compile Include="EntityFramework\BluePrintsData\FORECAST.cs" />
+    <Compile Include="EntityFramework\BluePrintsData\FORECAST_JOB_HOUR_SNAPSHOT.cs" />
     <Compile Include="EntityFramework\BluePrintsData\HSE.cs" />
     <Compile Include="EntityFramework\BluePrintsData\HSE_INCIDENT.cs" />
     <Compile Include="EntityFramework\BluePrintsData\HSE_INJURY.cs" />
@@ -1183,10 +1187,11 @@
     <Compile Include="ViewModels\PROJECT\PROJECT_CONTRACTORCollectionViewModelWrapper.cs" />
     <Compile Include="ViewModels\PROJECT\InstantFeedbackInvoicedCollectionViewModelWrapper.cs" />
     <Compile Include="ViewModels\PROJECT\InstantFeedbackPODetailsCollectionViewModelWrapper.cs" />
-    <Compile Include="ViewModels\PROJECT\PROJECTPLCollectionViewModelWrapper.cs" />
     <Compile Include="ViewModels\PROJECT\PROJECTForecastEACReportViewModelWrapper.cs" />
+    <Compile Include="ViewModels\PROJECT\PROJECTForecastSnapshotViewModelWrapper.cs" />
     <Compile Include="ViewModels\PROJECT\PROJECTPlanViewModelWrapper.cs" />
     <Compile Include="ViewModels\PROJECT\PROJECTFlatPOForecastViewModelWrapper.cs" />
+    <Compile Include="ViewModels\PROJECT\PROJECTPLCollectionViewModelWrapper.cs" />
     <Compile Include="ViewModels\PROJECT\PROJECT_REVENUECollectionViewModelWrapper.cs" />
     <Compile Include="ViewModels\PROJECT\PROJECTIndirectForecastViewModelWrapper.cs" />
     <Compile Include="ViewModels\PROJECT\POSpreadViewModel.cs" />
@@ -1324,6 +1329,9 @@
     </Compile>
     <Compile Include="Views\PROJECT\PROJECTForecastEACReportView.xaml.cs">
       <DependentUpon>PROJECTForecastEACReportView.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Views\PROJECT\PROJECTForecastSnapshotView.xaml.cs">
+      <DependentUpon>PROJECTForecastSnapshotView.xaml</DependentUpon>
     </Compile>
     <Compile Include="Views\PROJECT\PROJECTPOCollectionView.xaml.cs">
       <DependentUpon>PROJECTPOCollectionView.xaml</DependentUpon>
@@ -2341,6 +2349,10 @@
       <SubType>Designer</SubType>
     </Page>
     <Page Include="Views\PROJECT\PROJECTForecastEACReportView.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Views\PROJECT\PROJECTForecastSnapshotView.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>

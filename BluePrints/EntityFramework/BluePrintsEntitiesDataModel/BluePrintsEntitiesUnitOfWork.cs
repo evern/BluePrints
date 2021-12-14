@@ -121,11 +121,6 @@ namespace BluePrints.BluePrintsEntitiesDataModel
             get { return GetRepository(x => x.Set<FORECAST>(), (FORECAST x) => x.GUID); }
         }
 
-        IRepository<FORECAST_CACHE, Guid> IBluePrintsEntitiesUnitOfWork.FORECAST_CACHES
-        {
-            get { return GetRepository(x => x.Set<FORECAST_CACHE>(), (FORECAST_CACHE x) => x.GUID); }
-        }
-
         IRepository<FORECAST_EAC, Guid> IBluePrintsEntitiesUnitOfWork.FORECAST_EACS
         {
             get { return GetRepository(x => x.Set<FORECAST_EAC>(), (FORECAST_EAC x) => x.GUID); }
@@ -159,6 +154,11 @@ namespace BluePrints.BluePrintsEntitiesDataModel
         IRepository<FORECAST_PO_SETTING, Guid> IBluePrintsEntitiesUnitOfWork.FORECAST_PO_SETTINGS
         {
             get { return GetRepository(x => x.Set<FORECAST_PO_SETTING>(), (FORECAST_PO_SETTING x) => x.GUID); }
+        }
+
+        public IRepository<FORECAST_JOB_HOUR_SNAPSHOT, Guid> FORECAST_JOB_HOUR_SNAPSHOTS
+        {
+            get { return GetRepository(x => x.Set<FORECAST_JOB_HOUR_SNAPSHOT>(), (FORECAST_JOB_HOUR_SNAPSHOT x) => x.GUID); }
         }
 
         IRepository<ESTIMATE_ITEM, Guid> IBluePrintsEntitiesUnitOfWork.ESTIMATE_ITEMS
@@ -504,6 +504,11 @@ namespace BluePrints.BluePrintsEntitiesDataModel
         IRepository<X_VARIATION_QUERY, Guid> IBluePrintsEntitiesUnitOfWork.X_VARIATION_QUERY
         {
             get { return GetRepository(x => x.Set<X_VARIATION_QUERY>(), (X_VARIATION_QUERY x) => x.GUID); }
+        }
+            
+        IRepository<X_JOBCOST_LINES_AUDIT, Guid> IBluePrintsEntitiesUnitOfWork.X_JOBCOST_LINES_AUDIT
+        {
+            get { return GetRepository(x => x.Set<X_JOBCOST_LINES_AUDIT>(), (X_JOBCOST_LINES_AUDIT x) => x.GUID); }
         }
     }
 }

@@ -164,6 +164,11 @@
                                     </DataTemplate>
                                 </dxg:GridColumn.CellTemplate>
                             </dxg:GridColumn>
+                            <dxg:GridColumn FieldName="AUTO_REFRESH_FORECAST" Header="Auto Refresh Forecast" HeaderToolTip="Auto refresh forecast data daily">
+                                <dxg:GridColumn.EditSettings>
+                                    <dxe:CheckEditSettings />
+                                </dxg:GridColumn.EditSettings>
+                            </dxg:GridColumn>
                             <dxg:GridColumn FieldName="CONSTRUCT_PROGRESS_TRACKING" Header="Construction Progress Tracking" HeaderToolTip="Use remaining units calculated from budgeted - earned in forecast, also allows for P6 assignment of multiple budget to a single activity">
                                 <dxg:GridColumn.EditSettings>
                                     <dxe:CheckEditSettings />

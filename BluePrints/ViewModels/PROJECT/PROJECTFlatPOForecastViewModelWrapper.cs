@@ -223,7 +223,9 @@ namespace BluePrints.ViewModels
 
         protected override void clearPOForecast(string poNo, string stockCode, string variationCode)
         {
-            List<FORECAST_PO> removePOForecasts = Entities.Where(x => x.PONO == poNo && x.STOCK_CODE == stockCode && x.VARIATION_CODE == variationCode).ToList();
+            List<FORECAST_PO> removePOForecasts = Entities.Where(x => x.PONO == poNo && x.VARIATION_CODE == variationCode).ToList();
+            MainViewModel.BaseBulkDelete(removePOForecasts);
+            shouldPromptForSavingSnapshot = true;
         }
 
         protected override void findExistingOrAddNewFORECAST_PO(DataRow dataRow, DateTime forecastDate, decimal? viewCosts, bool skipUpdating = false)
@@ -275,6 +277,7 @@ namespace BluePrints.ViewModels
                 }
 
                 MainViewModel.Save(findFORECAST_PO);
+                shouldPromptForSavingSnapshot = true;
             }
 
             if(!skipUpdating)
@@ -384,6 +387,8 @@ namespace BluePrints.ViewModels
             LoadingScreenManager.CloseLoadingScreen();
             LastAlignedDate = DateTime.Now;
             MainViewModel.BaseBulkSave(saveFORECAST_POs);
+            SaveSnapshot();
+            shouldPromptForSavingSnapshot = false;
             refreshDataTable();
         }
 

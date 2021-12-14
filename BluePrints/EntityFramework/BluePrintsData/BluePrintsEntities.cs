@@ -38,12 +38,12 @@ namespace BluePrints.Data
         public virtual DbSet<ESTIMATE> ESTIMATE { get; set; }
         public virtual DbSet<ESTIMATE_ITEM> ESTIMATE_ITEM { get; set; }
         public virtual DbSet<FORECAST_PO> FORECAST_PO { get; set; }
-        public virtual DbSet<FORECAST_CACHE> FORECAST_CACHE { get; set; }
         public virtual DbSet<FORECAST_JOB> FORECAST_JOB { get; set; }
         public virtual DbSet<FORECAST_JOB_SETTING> FORECAST_JOB_SETTING { get; set; }
         public virtual DbSet<FORECAST> FORECAST { get; set; }
         public virtual DbSet<FORECAST_EAC> FORECAST_EAC { get; set; }
         public virtual DbSet<FORECAST_HISTORY> FORECAST_HISTORY { get; set; }
+        public virtual DbSet<FORECAST_JOB_HOUR_SNAPSHOT> FORECAST_JOB_HOUR_SNAPSHOT { get; set; }
         public virtual DbSet<JOBCOST_LINES_AUDIT> JOBCOST_LINES_AUDIT { get; set; }
         public virtual DbSet<HSE> HSE { get; set; }
         public virtual DbSet<HSE_INCIDENT> HSE_INCIDENT { get; set; }
@@ -101,6 +101,7 @@ namespace BluePrints.Data
         public virtual DbSet<VARIATION_CONSTRUCTION_IMPACT> VARIATION_CONSTRUCTION_IMPACT { get; set; }
         public virtual DbSet<X_VARIATION_QUERY> X_VARIATION_QUERY { get; set; }
         public virtual DbSet<X_EARNED_QUERY> X_EARNED_QUERY { get; set; }
+        public virtual DbSet<X_JOBCOST_LINES_AUDIT> X_JOBCOST_LINES_AUDIT { get; set; }
 
         protected override void OnModelCreating(DbModelBuilder modelBuilder)
         {
@@ -552,6 +553,12 @@ namespace BluePrints.Data
                 .WillCascadeOnDelete(false);
 
             modelBuilder.Entity<PROJECT>()
+                .HasMany(e => e.FORECAST_JOB_HOUR_SNAPSHOT)
+                .WithRequired(e => e.PROJECT)
+                .HasForeignKey(e => e.GUID_PROJECT)
+                .WillCascadeOnDelete(false);
+
+            modelBuilder.Entity<PROJECT>()
                 .HasMany(e => e.DAYWORK_STAFF_ROLE)
                 .WithRequired(e => e.PROJECT)
                 .HasForeignKey(e => e.GUID_PROJECT)
@@ -570,12 +577,6 @@ namespace BluePrints.Data
 
             modelBuilder.Entity<PROJECT>()
                 .HasMany(e => e.ESTIMATE)
-                .WithRequired(e => e.PROJECT)
-                .HasForeignKey(e => e.GUID_PROJECT)
-                .WillCascadeOnDelete(false);
-
-            modelBuilder.Entity<PROJECT>()
-                .HasMany(e => e.FORECAST_CACHE)
                 .WithRequired(e => e.PROJECT)
                 .HasForeignKey(e => e.GUID_PROJECT)
                 .WillCascadeOnDelete(false);

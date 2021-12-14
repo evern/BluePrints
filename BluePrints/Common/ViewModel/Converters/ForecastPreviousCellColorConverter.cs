@@ -1,5 +1,6 @@
 ﻿using BluePrints.Common.Projections;
 using BluePrints.Common.Resources;
+using BluePrints.Common.ViewModel.Reporting;
 using System;
 using System.Data;
 using System.Linq;
@@ -34,7 +35,7 @@ namespace BluePrints.Common.ViewModel.Converters
                 if (dataRow["CompareEntities"] != DBNull.Value)
                 {
                     DataTable childEntity = (DataTable)dataRow["CompareEntities"];
-                    ForecastJobData commodityJob = (ForecastJobData)dataRow["Entity"];
+                    IForecastViewModel commodityJob = (IForecastViewModel)dataRow["Entity"];
 
                     if (childEntity.TableName == BluePrintsResources.ForecastCompareTableName)
                     {

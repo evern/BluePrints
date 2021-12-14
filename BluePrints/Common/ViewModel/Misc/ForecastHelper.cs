@@ -1,4 +1,5 @@
 ﻿using BaseModel.Data.Helpers;
+using BluePrints.BluePrintsEntitiesDataModel;
 using BluePrints.Common.Misc;
 using BluePrints.Common.Projections;
 using BluePrints.Common.Resources;
@@ -10,6 +11,7 @@ using DevExpress.Mvvm.POCO;
 using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
+using System.Data;
 using System.Diagnostics;
 using System.Linq;
 using System.Text;
@@ -79,7 +81,7 @@ namespace BluePrints.Common.ViewModel.Misc
 
             //For Debugging
             //string s;
-            //if (projection.SubJobCode == "15671-000-00-P1" && projection.DisciplineCode == "EL01" && projection.CommodityCode == "E30" && projection.VariationCode == string.Empty)
+            //if (projection.SubJobCode == "20638-200-19-C1" && projection.DisciplineCode == "EL01" && projection.CommodityCode == "E01" && projection.VariationCode == string.Empty)
             //    s = string.Empty;
 
             List<DashboardFlatStructure> relevantDashboards;
@@ -203,7 +205,6 @@ namespace BluePrints.Common.ViewModel.Misc
             if (remainingStats.Count() > 0)
             {
                 remainingDataPoints.AddRange(remainingStats.SelectMany(x => x.Remaining.RemainingOnlyDataPoints));
-
                 earnedDataPoints.AddRange(earnedStats.SelectMany(x => x.Earned.DataPoints));
                 decimal p6RemainingCosts = remainingDataPoints.Sum(x => x.Costs);
                 decimal p6RemainingUnits = remainingDataPoints.Sum(x => x.Units);
@@ -286,6 +287,46 @@ namespace BluePrints.Common.ViewModel.Misc
             {
                 forecastProjection.PreviousEAC = 0.00m;
             }
+        }
+
+        public static void PopulatePreviousEAC(ForecastJobSnapshot forecastProjection, IEnumerable<FORECAST_EAC> FORECAST_EACCollection, DateTime previousEACDataDate)
+        {
+            //populate previous estimate to completion
+            FORECAST_EAC previousEAC = FORECAST_EACCollection.FirstOrDefault(x => x.SUBJOB_CODE == forecastProjection.SubJobCode && x.DISCIPLINE_CODE == forecastProjection.DisciplineCode && x.COMMODITY_CODE == forecastProjection.CommodityCode && x.VARIATION_CODE == forecastProjection.VariationCode && x.FORECAST_DATE.Date == previousEACDataDate.Date && x.TYPE == ForecastEACType.EAC);
+            if (previousEAC != null)
+            {
+                if (previousEAC.FORECAST_COSTS != null)
+                    forecastProjection.PreviousEAC = (decimal)previousEAC.FORECAST_COSTS;
+            }
+            else
+            {
+                forecastProjection.PreviousEAC = 0.00m;
+            }
+        }
+
+        public static void PopulatePreviousCommitment(ForecastJobSnapshot forecastProjection, IEnumerable<FORECAST_EAC> FORECAST_EACPreviousCommitmentCollection, DateTime previousDataDate)
+        {
+            //get previous total commitment
+            IEnumerable<FORECAST_EAC> PreviousCommitmentCollection = FORECAST_EACPreviousCommitmentCollection.Where(x => x.SUBJOB_CODE == forecastProjection.SubJobCode && x.DISCIPLINE_CODE == forecastProjection.DisciplineCode && x.COMMODITY_CODE == forecastProjection.CommodityCode && x.VARIATION_CODE == forecastProjection.VariationCode).Where(x => x.FORECAST_DATE == previousDataDate).ToList();
+            if (PreviousCommitmentCollection.Where(x => x.FORECAST_COSTS != null).Count() > 0)
+                forecastProjection.TotalCommitmentPreviousSaved = PreviousCommitmentCollection.Where(x => x.FORECAST_COSTS != null).Sum(x => (decimal)x.FORECAST_COSTS);
+        }
+
+        public static void PopulateLookupAttributes(ForecastJobSnapshot forecastProjection, List<ExoSubJobProjection> projectLines, IEnumerable<FORECAST_JOB_SETTING> FORECAST_JOB_SETTINGCollection)
+        {
+            if (forecastProjection.VariationCode == null || forecastProjection.VariationCode == string.Empty)
+                forecastProjection.ExoJob = projectLines.FirstOrDefault(x => x.SubJobCode == forecastProjection.SubJobCode && x.DisciplineCode == forecastProjection.DisciplineCode && x.CommodityCode == forecastProjection.CommodityCode && (x.VariationCode == null || x.VariationCode == string.Empty));
+            else
+                forecastProjection.ExoJob = projectLines.FirstOrDefault(x => x.SubJobCode == forecastProjection.SubJobCode && x.DisciplineCode == forecastProjection.DisciplineCode && x.CommodityCode == forecastProjection.CommodityCode && x.VariationCode == forecastProjection.VariationCode);
+
+            if (forecastProjection.ExoJob == null)
+            {
+                forecastProjection.ExoJob = new ExoSubJobProjection() { SubJobCode = forecastProjection.SubJobCode, SubJobTitle = string.Empty, DisciplineCode = forecastProjection.DisciplineCode, DisciplineName = string.Empty, CommodityCode = forecastProjection.CommodityCode, CommodityName = string.Empty, CommodityDescription = string.Empty, CommodityUOM = string.Empty, VariationCode = forecastProjection.VariationCode };
+            }
+
+            //set whether productivity is floating
+            if (FORECAST_JOB_SETTINGCollection.Where(x => x.SUBJOB_CODE == forecastProjection.SubJobCode && x.DISCIPLINE_CODE == forecastProjection.DisciplineCode && x.COMMODITY_CODE == forecastProjection.CommodityCode && x.VARIATION_CODE == forecastProjection.VariationCode && x.IS_FLOATING_PRODUCTIVITY).Count() > 0)
+                forecastProjection.IsProductivityFloating = true;
         }
 
         public static void PopulateTenderBudget(ForecastJobData forecastProjection, IEnumerable<FORECAST_EAC> FORECAST_EACTenderBudgetCollection)
@@ -391,6 +432,7 @@ namespace BluePrints.Common.ViewModel.Misc
             return combinedSubJobs.ToList();
         }
 
+
         /// <summary>
         /// Add entries to job list and also provide lookup table for looking up additional meta data because it can be empty when invoked from exo actuals
         /// </summary>
@@ -398,6 +440,10 @@ namespace BluePrints.Common.ViewModel.Misc
             IEnumerable<COMMODITY_CODE> COMMODITY_CODELookup, IEnumerable<ExoTimeAuthorisation> ExoJobLookup, IEnumerable<JOB_COSTTYPES> JOB_COSTTYPESCollection, 
             string subJobTitle = "", string disciplineName = "", bool tryHarderOnLookup = true, string errorMessage = "")
         {
+            //For Debugging
+            //if (subJobCode != "20638-200-00-P1" || disciplineCode != "CC01" || commodityCode != "C07" || variationCode != "")
+            //    return;
+
             COMMODITY_CODE findCOMMODITY_CODE = COMMODITY_CODELookup.FirstOrDefault(x => x.CODE == commodityCode);
             string commodityCodeName = string.Empty;
             string commodityCodeDescription = string.Empty;
@@ -440,6 +486,61 @@ namespace BluePrints.Common.ViewModel.Misc
             else if (!combinedSubJobs.Any(x => x.SubJobCode == subJobCode && x.DisciplineCode == disciplineCode && x.CommodityCode == commodityCode && x.VariationCode == variationCode))
             {
                 combinedSubJobs.Add(new ExoSubJobProjection() { ForecastErrorString = possibleErrorMessage, SubJobCode = subJobCode, SubJobTitle = subJobTitle, DisciplineCode = NormalizeCode(disciplineCode), DisciplineName = disciplineName, CommodityCode = NormalizeCode(commodityCode), CommodityName = commodityCodeName, CommodityDescription = commodityCodeDescription, CommodityUOM = commodityCodeUOM, VariationCode = NormalizeCode(variationCode) });
+            }
+        }
+
+        public static FORECAST_JOB_HOUR_SNAPSHOT AddOrEditForecastJobHourSnapshot(IBluePrintsEntitiesUnitOfWork bluePrintsEntitiesUnitOfWork, Guid projectGuid, string subJobCode, string disciplineCode, string commodityCode, string variationCode, ForecastSnapshotValueType forecastSnapshotType, string stockCode, DateTime dataDate, DateTime date, decimal quantity, decimal costs, decimal budget = 0, bool commitToDb = false)
+        {
+            FORECAST_JOB_HOUR_SNAPSHOT findForecastJobHourSnapshot = bluePrintsEntitiesUnitOfWork.FORECAST_JOB_HOUR_SNAPSHOTS.Where(x => x.GUID_PROJECT == projectGuid && x.DATA_DATE == dataDate).Where(x => x.SUBJOB_CODE == subJobCode && x.DISCIPLINE_CODE == disciplineCode && x.COMMODITY_CODE == commodityCode && x.VARIATION_CODE == variationCode && x.STOCK_CODE == stockCode).FirstOrDefault(x => x.SNAPSHOT_TYPE == forecastSnapshotType && x.FORECAST_DATE == date);
+
+            if (findForecastJobHourSnapshot == null)
+            {
+                findForecastJobHourSnapshot = new FORECAST_JOB_HOUR_SNAPSHOT();
+                findForecastJobHourSnapshot.GUID_PROJECT = projectGuid;
+                findForecastJobHourSnapshot.SNAPSHOT_TYPE = forecastSnapshotType;
+                findForecastJobHourSnapshot.SUBJOB_CODE = subJobCode;
+                findForecastJobHourSnapshot.DISCIPLINE_CODE = disciplineCode;
+                findForecastJobHourSnapshot.COMMODITY_CODE = commodityCode;
+                findForecastJobHourSnapshot.VARIATION_CODE = variationCode;
+                findForecastJobHourSnapshot.STOCK_CODE = stockCode;
+                findForecastJobHourSnapshot.DATA_DATE = dataDate;
+                findForecastJobHourSnapshot.FORECAST_DATE = date;
+                findForecastJobHourSnapshot.CREATED = DateTime.Now;
+                findForecastJobHourSnapshot.CREATEDBY = LoginCredentials.CurrentUserGuid;
+                bluePrintsEntitiesUnitOfWork.FORECAST_JOB_HOUR_SNAPSHOTS.Add(findForecastJobHourSnapshot);
+            }
+            else
+            {
+                findForecastJobHourSnapshot.UPDATED = DateTime.Now;
+                findForecastJobHourSnapshot.UPDATEDBY = LoginCredentials.CurrentUserGuid;
+            }
+
+            findForecastJobHourSnapshot.PROJECT_BUDGET = budget;
+            findForecastJobHourSnapshot.FORECAST_COST = costs;
+            findForecastJobHourSnapshot.FORECAST_QTY = quantity;
+
+            if (commitToDb)
+                bluePrintsEntitiesUnitOfWork.SaveChanges();
+
+            return findForecastJobHourSnapshot;
+        }
+
+        public static void GetUniqueDateCostStockCodes(ForecastJobData forecastJobData, out List<string> uniquePOStockCodes, out List<string> uniqueIndirectStockCodes, out List<string> uniqueMaterialStockCodes, out List<string> uniqueActualStockCodes)
+        {
+            if (forecastJobData.DateCosts.Count > 0)
+            {
+                ForecastDateCost commodityDateCost = forecastJobData.DateCosts.First();
+                uniquePOStockCodes = commodityDateCost.RelevantForecastPOs.Where(x => x.ViewStockCode != null).Select(x => x.ViewStockCode).Distinct().ToList();
+                uniqueIndirectStockCodes = commodityDateCost.RelevantIndirectCosts.Where(x => x.ViewStockCode != null).Select(x => x.ViewStockCode).Distinct().ToList();
+                uniqueMaterialStockCodes = commodityDateCost.RelevantMaterialDataPoints.Where(x => x.StockCode != null).Select(x => x.StockCode).Distinct().ToList();
+                uniqueActualStockCodes = commodityDateCost.RelevantActualDataPoints.Where(x => x.StockCode != null).Select(x => x.StockCode).Distinct().ToList();
+            }
+            else
+            {
+                uniquePOStockCodes = new List<string>();
+                uniqueIndirectStockCodes = new List<string>();
+                uniqueMaterialStockCodes = new List<string>();
+                uniqueActualStockCodes = new List<string>();
             }
         }
     }

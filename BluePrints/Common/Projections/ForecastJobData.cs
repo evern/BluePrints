@@ -15,7 +15,7 @@ using System.Threading.Tasks;
 
 namespace BluePrints.Common.Projections
 {
-    public class ForecastJobData : EntityBase, IHaveDisciplineDesc
+    public class ForecastJobData : EntityBase, IHaveDisciplineDesc, IForecastViewModel
     {
         public ForecastJobData()
         {
@@ -48,6 +48,8 @@ namespace BluePrints.Common.Projections
         public ExoSubJobProjection Projection { get; set; }
 
         public List<ForecastDateCost> DateCosts { get; set; }
+
+        public IEnumerable<IForecastDateCostViewModel> ForecastDateCosts => DateCosts;
 
         public List<ForecastJobData> CommodityJobs { get; set; }
 
@@ -273,7 +275,6 @@ namespace BluePrints.Common.Projections
                 return Projection.DisciplineCode;
             }
         }
-
         public string DisciplineDesc { get; set; }
 
         public string PhaseCode
@@ -289,7 +290,7 @@ namespace BluePrints.Common.Projections
         #endregion
     }
 
-    public class ForecastDateCost
+    public class ForecastDateCost : IForecastDateCostViewModel
     {
         public readonly DateTime FloorDate;
         public readonly DateTime CeilingDate;
@@ -297,7 +298,7 @@ namespace BluePrints.Common.Projections
         private readonly DateTime firstForecastDate;
         public ForecastDateCost(DateTime date, DateTime firstViewDate, DateTime dataDate, bool isWeeks)
         {
-            Date = date;
+            QueryDate = date;
             this.firstViewDate = firstViewDate;
             this.firstForecastDate = dataDate;
 
@@ -337,25 +338,27 @@ namespace BluePrints.Common.Projections
         public IEnumerable<RemainingCost> RelevantIndirectCosts => IndirectRemainingCosts.Where(x => x.ForecastDate.Date > firstViewDate);
 
         //show actuals by summing up from beginning of time on first date
-        private DateTime ActualFloorDate => Date == firstViewDate ? new DateTime(1) : FloorDate;
+        private DateTime ActualFloorDate => QueryDate == firstViewDate ? new DateTime(1) : FloorDate;
         //only show po forecast after actuals date without it summing up from beginning of time on first date
         private DateTime? POAndIndirectForecastFloorDate => FloorDate > firstViewDate ? FloorDate : (DateTime?)null;
         //only show p6 remaining after actuals date and have it summing up from beginning of time on first date
         private DateTime? P6RemainingFloorDate => CeilingDate >= firstForecastDate ? CeilingDate == firstForecastDate ? new DateTime(2010, 1, 1) : FloorDate : (DateTime?)null;
 
-        public DateTime Date { get; set; }
+        public DateTime QueryDate { get; set; }
 
         //not using this as a measure because user can override it
         public decimal ActualCosts => CurrentPeriodActualDataPoints.Sum(x => x.Costs);
+        public decimal ActualUnits => CurrentPeriodActualDataPoints.Sum(x => x.Quantity);
         public decimal MaterialCosts => CurrentPeriodMaterialDataPoints.Sum(x => x.Costs);
+        public decimal MaterialQuantity => CurrentPeriodMaterialDataPoints.Sum(x => x.Quantity);
         public decimal P6Hours => CurrentPeriodP6DataPoints.Sum(x => x.Units);
         public decimal P6Costs => CurrentPeriodP6DataPoints.Sum(x => x.Costs);
-        public decimal POForecastCosts => CurrentPeriodForecastPOs.Sum(x => (decimal)x.FORECAST_VALUE);
+        public decimal POOutstandingCosts => CurrentPeriodForecastPOs.Sum(x => (decimal)x.FORECAST_VALUE);
         public decimal EACCosts => CurrentPeriodForecastEACs.Sum(x => (decimal)x.FORECAST_COSTS);
         public decimal IndirectForecastCosts => CurrentPeriodIndirectCosts.Sum(x => x.ForecastRemainingCosts);
-        public decimal TotalCosts => ActualCosts + MaterialCosts + P6Costs + POForecastCosts + IndirectForecastCosts;
+        public decimal TotalCosts => ActualCosts + MaterialCosts + P6Costs + POOutstandingCosts + IndirectForecastCosts;
 
         //p6 costs needs to be categorised as uncommitted
-        public decimal CommittedCosts => ActualCosts + MaterialCosts + POForecastCosts;
+        public decimal CommittedCosts => ActualCosts + MaterialCosts + POOutstandingCosts;
     }
 }

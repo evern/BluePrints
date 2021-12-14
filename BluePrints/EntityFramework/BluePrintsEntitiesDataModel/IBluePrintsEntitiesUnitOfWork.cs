@@ -113,11 +113,6 @@ namespace BluePrints.BluePrintsEntitiesDataModel
         IRepository<FORECAST, Guid> FORECASTS { get; }
 
         /// <summary>
-        /// The FORECAST_CACHE entities repository.
-        /// </summary>
-        IRepository<FORECAST_CACHE, Guid> FORECAST_CACHES { get; }
-
-        /// <summary>
         /// The FORECAST_EAC entities repository.
         /// </summary>
         IRepository<FORECAST_EAC, Guid> FORECAST_EACS { get; }
@@ -141,6 +136,10 @@ namespace BluePrints.BluePrintsEntitiesDataModel
         /// The FORECAST_JOB_HOUR entities repository.
         /// </summary>
         IRepository<FORECAST_JOB_HOUR, Guid> FORECAST_JOB_HOURS { get; }
+        /// <summary>
+        /// The FORECAST_JOB_HOUR_SNAPSHOT entities repository.
+        /// </summary>
+        IRepository<FORECAST_JOB_HOUR_SNAPSHOT, Guid> FORECAST_JOB_HOUR_SNAPSHOTS { get; }
 
         /// <summary>
         /// The FORECAST_PO entities repository.
@@ -501,5 +500,10 @@ namespace BluePrints.BluePrintsEntitiesDataModel
         /// The X_VARIATION_QUERY entities repository.
         /// </summary>
         IRepository<X_VARIATION_QUERY, Guid> X_VARIATION_QUERY { get; }
+
+        /// <summary>
+        /// The X_JOBCOST_LINES_AUDIT entities repository.
+        /// </summary>
+        IRepository<X_JOBCOST_LINES_AUDIT, Guid> X_JOBCOST_LINES_AUDIT { get; }
     }
 }

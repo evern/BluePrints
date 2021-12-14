@@ -1,40 +1,36 @@
 namespace BluePrints.Data
 {
-    using BluePrints.Common;
     using System;
     using System.Collections.Generic;
     using System.ComponentModel.DataAnnotations;
     using System.ComponentModel.DataAnnotations.Schema;
     using System.Data.Entity.Spatial;
 
-    [Table("FORECAST_CACHE")]
-    public partial class FORECAST_CACHE
+    public partial class X_JOBCOST_LINES_AUDIT
     {
         [Key]
+        [Column(Order = 0)]
         public Guid GUID { get; set; }
 
-        public Guid GUID_PROJECT { get; set; }
+        public int JOBCOST_LINES_SEQNO { get; set; }
 
-        [Required]
-        [StringLength(50)]
-        public string SUBJOB_CODE { get; set; }
+        public string JOBCODE { get; set; }
 
-        [Required]
-        [StringLength(50)]
         public string DISCIPLINE_CODE { get; set; }
 
-        [Required]
-        [StringLength(50)]
         public string COMMODITY_CODE { get; set; }
 
-        [StringLength(50)]
+        public string STOCK_CODE { get; set; }
+
         public string VARIATION_CODE { get; set; }
 
-        public int CACHE_TYPE { get; set; }
+        public decimal? BUDGET_FROM { get; set; }
 
-        public decimal CACHE_VALUE { get; set; }
+        public decimal? BUDGET_TO { get; set; }
 
-        public DateTime? CACHE_DATE { get; set; }
+        public DateTime? BUDGET_UPDATED { get; set; }
+
+        public Guid? BUDGET_UPDATEDBY { get; set; }
 
         public DateTime CREATED { get; set; }
 
@@ -48,6 +44,10 @@ namespace BluePrints.Data
 
         public Guid? DELETEDBY { get; set; }
 
-        public virtual PROJECT PROJECT { get; set; }
+        [StringLength(100)]
+        public string CREATED_BY_USER { get; set; }
+
+        [StringLength(100)]
+        public string BUDGET_UPDATED_BY_USER { get; set; }
     }
 }

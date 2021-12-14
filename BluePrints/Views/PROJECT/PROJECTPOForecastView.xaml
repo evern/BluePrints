@@ -134,6 +134,7 @@
                     </dxb:BarEditItem.EditSettings>
                 </dxb:BarEditItem>
                 <dxb:BarButtonItem x:Name="biAlignPOsWithActuals" Command="{Binding AlignPOsWithActualsCommand}" Content="Align Actuals" Glyph="{dx:DXImage Images/Reports/GroupFieldCollection_16x16.png}" LargeGlyph="{dx:DXImage Images/Reports/GroupFieldCollection_32x32.png}" RibbonStyle="SmallWithText" ToolTip="Align forecast with actuals" />
+                <dxb:BarButtonItem x:Name="biSaveSnapshot" Command="{Binding SaveSnapshotCommand}" CommandParameter="{Binding ElementName=GridControl}" Content="Save Snapshot" Glyph="{dx:DXImage Images/Save/Save_16x16.png}" ToolTip="Save PO Outstanding/Forecast snapshot so that forecast snapshot can retrieve it" LargeGlyph="{dx:DXImage Images/Save/Save_32x32.png}" />
             </dxb:BarManager.Items>
             <DockPanel>
                 <dxr:RibbonControl Style="{StaticResource DefaultRibbonControlStyle}">
@@ -160,6 +161,7 @@
                                 <dxb:BarButtonItemLink BarItemName="biSaveDateAndRefresh" />
                                 <dxb:BarEditItemLink BarItemName="beLastAlignedDate" />
                                 <dxb:BarButtonItemLink BarItemName="biAlignPOsWithActuals" />
+                                <dxb:BarButtonItemLink BarItemName="biSaveSnapshot" />
                             </dxr:RibbonPageGroup>
                         </dxr:RibbonPage>
                     </dxr:RibbonDefaultPageCategory>

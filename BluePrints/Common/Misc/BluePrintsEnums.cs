@@ -92,6 +92,32 @@ namespace BluePrints.Common
         ZeroBudget
     }
 
+    public enum ForecastSnapshotValueType
+    {
+        [Display(Name = "Budget")]
+        Budget = 0,
+        [Display(Name = "Actual")]
+        Actual = 1,
+        [Display(Name = "Previous PO Outstanding")]
+        PreviousOutstandingPO = 2,
+        [Display(Name = "Current PO Outstanding")]
+        CurrentOutstandingPO = 3,
+        [Display(Name = "Forecast PO Outstanding")]
+        ForecastPO = 4, 
+        [Display(Name = "Indirect Forecast")]
+        ForecastIndirect = 5,
+        [Display(Name = "Earned Forecast")]
+        Earned = 6,
+        //P6 planned values, exists for all dates
+        [Display(Name = "P6 Planned")]
+        P6Planned = 7,
+        //P6 original values, exists for all dates
+        [Display(Name = "P6 Remaining")]
+        P6Remaining = 8,
+        [Display(Name = "Progress ETC")]
+        ProgressETC = 9
+    }
+
     public enum ForecastDataType
     {
         [Display(Name = "Cost")]

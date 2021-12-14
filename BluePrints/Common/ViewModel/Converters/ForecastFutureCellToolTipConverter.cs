@@ -6,6 +6,7 @@ using System.Data;
 using System.Windows;
 using System.Windows.Data;
 using System.Windows.Media;
+using BluePrints.Common.ViewModel.Reporting;
 
 namespace BluePrints.Common.ViewModel.Converters
 {
@@ -29,7 +30,7 @@ namespace BluePrints.Common.ViewModel.Converters
                 if (dataRow["CompareEntities"] != DBNull.Value)
                 {
                     DataTable compareDataTable = (DataTable)dataRow["CompareEntities"];
-                    ForecastJobData commodityJob = (ForecastJobData)dataRow["Entity"];
+                    IForecastViewModel commodityJob = (IForecastViewModel)dataRow["Entity"];
 
                     if (compareDataTable.TableName == BluePrintsResources.ForecastCompareTableName)
                     {
@@ -37,16 +38,15 @@ namespace BluePrints.Common.ViewModel.Converters
                         DateTime parseDateTime;
                         if (DateTime.TryParse(fieldname, out parseDateTime))
                         {
-                            ForecastDateCost dateCost = commodityJob.DateCosts.FirstOrDefault(x => x.Date.Date == parseDateTime.Date);
+                            IForecastDateCostViewModel dateCost = commodityJob.ForecastDateCosts.FirstOrDefault(x => x.QueryDate.Date == parseDateTime.Date);
                             if(dateCost != null)
                             {
                                 decimal p6RemainingCosts = dateCost.P6Costs;
-                                decimal poForecastCosts = dateCost.POForecastCosts;
+                                decimal poForecastCosts = dateCost.POOutstandingCosts;
                                 decimal indirectCosts = dateCost.IndirectForecastCosts;
-                                decimal materialCosts = dateCost.MaterialCosts;
                                 decimal actualCosts = dateCost.ActualCosts;
 
-                                decimal totalCosts = poForecastCosts + p6RemainingCosts + indirectCosts + materialCosts + actualCosts;
+                                decimal totalCosts = poForecastCosts + p6RemainingCosts + indirectCosts + actualCosts;
                                 totalCosts = Math.Round(totalCosts);
                                 decimal currentValue = (decimal)values[2];
 
@@ -58,8 +58,6 @@ namespace BluePrints.Common.ViewModel.Converters
                                     associatedCosts += "PO forecast\n";
                                 if (indirectCosts > 0)
                                     associatedCosts += "Indirect forecast\n";
-                                if (materialCosts > 0)
-                                    associatedCosts += "Material\n";
                                 if (actualCosts > 0)
                                     associatedCosts += "Actual\n";
 
