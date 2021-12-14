@@ -295,7 +295,6 @@ namespace BluePrints.ViewModels
             this.RaisePropertiesChanged();
         }
 
-
         private void savePROJECT()
         {
             delayedProjectSaveTimer.Tick -= DelayedProjectSaveTimer_Tick;
@@ -366,12 +365,6 @@ namespace BluePrints.ViewModels
         }
         protected override bool loadDataPointsTable()
         {
-            if(FORECAST_JOB_HOUR_SNAPSHOTCollection.Count() == 0)
-            {
-                RefreshAllForecastData();
-                return false;
-            }
-
             IsLoading = true;
             this.RaisePropertyChanged(x => x.IsLoading);
 
@@ -605,7 +598,6 @@ namespace BluePrints.ViewModels
 
             //use cached data if present so that it's threadsafe
             IQueryable<FORECAST> loadFORECASTCollection = CachedFORECASTCollection == null ? QueryableFORECASTCollection : CachedFORECASTCollection.AsQueryable();
-
             List<FORECAST> relevantFORECASTS = loadFORECASTCollection.Where(x => x.SUBJOB_CODE == job.SubJobCode && x.DISCIPLINE_CODE == job.DisciplineCode && x.COMMODITY_CODE == job.CommodityCode && x.VARIATION_CODE == job.VariationCode).ToList();
             foreach (ForecastDateSnapshot dateCost in job.DateCosts)
             {
@@ -2646,9 +2638,7 @@ namespace BluePrints.ViewModels
 
         public override void FullRefresh()
         {
-            if(alignedDataDateCollection != null)
-                alignedDataDateCollection.Clear();
-
+            alignedDataDateCollection.Clear();
             loadExoMethodsData();
             loadSummaryStats();
 
@@ -2904,16 +2894,11 @@ namespace BluePrints.ViewModels
             PreviousActualCollection = filteredForecastJobHourSnapshot.Where(x => x.SNAPSHOT_TYPE == ForecastSnapshotValueType.Actual && x.FORECAST_DATE <= previousDataDate).ToList();
             ActualCollection = filteredForecastJobHourSnapshot.Where(x => x.SNAPSHOT_TYPE == ForecastSnapshotValueType.Actual && x.FORECAST_DATE <= dataDate).ToList();
             FutureActualCollection = filteredForecastJobHourSnapshot.Where(x => x.SNAPSHOT_TYPE == ForecastSnapshotValueType.Actual && x.FORECAST_DATE > dataDate).ToList();
-
-            string s;
-            if (FutureActualCollection.Count > 0)
-                s = string.Empty;
-
             P6RemainingCollection = filteredForecastJobHourSnapshot.Where(x => x.SNAPSHOT_TYPE == ForecastSnapshotValueType.P6Remaining).ToList();
             P6PlannedCollection = filteredForecastJobHourSnapshot.Where(x => x.SNAPSHOT_TYPE == ForecastSnapshotValueType.P6Planned).ToList();
             PreviousPOCollection = filteredForecastJobHourSnapshot.Where(x => x.SNAPSHOT_TYPE == ForecastSnapshotValueType.PreviousOutstandingPO).ToList();
             POCollection = filteredForecastJobHourSnapshot.Where(x => x.SNAPSHOT_TYPE == ForecastSnapshotValueType.CurrentOutstandingPO).ToList();
-            POForecastCollection = filteredForecastJobHourSnapshot.Where(x => x.SNAPSHOT_TYPE == ForecastSnapshotValueType.ForecastPO).ToList();
+            //POForecastCollection = filteredForecastJobHourSnapshot.Where(x => x.SNAPSHOT_TYPE == ForecastSnapshotValueType.ForecastPO).ToList();
             ProgressETCCollection = filteredForecastJobHourSnapshot.Where(x => x.SNAPSHOT_TYPE == ForecastSnapshotValueType.ProgressETC).ToList();
             EarnedCollection = filteredForecastJobHourSnapshot.Where(x => x.SNAPSHOT_TYPE == ForecastSnapshotValueType.Earned).ToList();
             IndirectCollection = filteredForecastJobHourSnapshot.Where(x => x.SNAPSHOT_TYPE == ForecastSnapshotValueType.ForecastIndirect).ToList();
