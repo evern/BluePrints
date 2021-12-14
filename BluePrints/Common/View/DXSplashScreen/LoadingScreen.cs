@@ -12,6 +12,7 @@ namespace BluePrints.Common
 
         public static void ShowLoadingScreen(int maxProgress, bool alwaysOnTop = false)
         {
+            if (DisableLoadingScreen)
                 return;
 
             if (DXSplashScreen.IsActive || maxProgress == 0)
