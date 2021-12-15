@@ -58,6 +58,8 @@
 
         public double? LINECOST { get; set; }
 
+        public double? TOTALPRICE { get; set; }
+
         [StringLength(50)]
         public string COMMODITY_CODE_DESC { get; set; }
 

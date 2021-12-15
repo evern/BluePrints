@@ -199,12 +199,22 @@
                                     <dxe:SpinEditSettings Mask="n" MaskType="Numeric" MaskUseAsDisplayFormat="True" />
                                 </dxg:GridColumn.EditSettings>
                             </dxg:GridColumn>
-                            <dxg:GridColumn FieldName="UNITCOST" Visible="{Binding IsCostsVisible}" ShowInColumnChooser="False" Header="Unit Rate" ReadOnly="True" >
+                            <dxg:GridColumn FieldName="UNITCOST" Visible="{Binding IsCostsVisible}" ShowInColumnChooser="False" Header="Cost Rate" ReadOnly="True" >
                                 <dxg:GridColumn.EditSettings>
                                     <dxe:SpinEditSettings Mask="c0" MaskType="Numeric" MaskUseAsDisplayFormat="True" />
                                 </dxg:GridColumn.EditSettings>
                             </dxg:GridColumn>
-                            <dxg:GridColumn FieldName="LINECOST" Visible="{Binding IsCostsVisible}" ShowInColumnChooser="False" Header="Cost" ReadOnly="True" >
+                            <dxg:GridColumn FieldName="LINECOST" Visible="{Binding IsCostsVisible}" ShowInColumnChooser="False" Header="Total Cost" ReadOnly="True" >
+                                <dxg:GridColumn.EditSettings>
+                                    <dxe:SpinEditSettings Mask="c0" MaskType="Numeric" MaskUseAsDisplayFormat="True" />
+                                </dxg:GridColumn.EditSettings>
+                            </dxg:GridColumn>
+                            <dxg:GridColumn FieldName="UNITPRICE" Visible="{Binding IsCostsVisible}" ShowInColumnChooser="False" Header="Sell Rate" ReadOnly="True" >
+                                <dxg:GridColumn.EditSettings>
+                                    <dxe:SpinEditSettings Mask="c0" MaskType="Numeric" MaskUseAsDisplayFormat="True" />
+                                </dxg:GridColumn.EditSettings>
+                            </dxg:GridColumn>
+                            <dxg:GridColumn FieldName="TOTALPRICE" Visible="{Binding IsCostsVisible}" ShowInColumnChooser="False" Header="Total Sell" ReadOnly="True" >
                                 <dxg:GridColumn.EditSettings>
                                     <dxe:SpinEditSettings Mask="c0" MaskType="Numeric" MaskUseAsDisplayFormat="True" />
                                 </dxg:GridColumn.EditSettings>
