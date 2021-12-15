@@ -68,6 +68,29 @@
                             </dxg:GridColumn.EditSettings>
                         </dxg:GridColumn>
                         <dxg:GridColumn FieldName="Entity.Entity.GUID_AREA" Header="Area" AllowBestFit="false" Width="50" HeaderToolTip="Area code to be concatenated after phase code to form job code">
+                            <dxg:GridColumn.CellTemplate>
+                                <DataTemplate>
+                                    <dxg:LookUpEdit Name="PART_Editor" AutoComplete="True" AutoPopulateColumns="False" DisplayMember="INTERNAL_NUM" IncrementalFiltering="True" IsTextEditable="true" ItemsSource="{Binding View.DataContext.AREACollection}" NullValueButtonPlacement="Popup" PopupWidth="500" ValueMember="GUID">
+                                        <dxg:LookUpEdit.StyleSettings>
+                                            <dxg:SearchLookUpEditStyleSettings />
+                                        </dxg:LookUpEdit.StyleSettings>
+                                        <dxg:LookUpEdit.PopupContentTemplate>
+                                            <ControlTemplate TargetType="ContentControl">
+                                                <dxg:GridControl x:Name="PART_GridControl" SelectionMode="Row" ShowBorder="False">
+                                                    <dxg:GridControl.Columns>
+                                                        <dxg:GridColumn FieldName="INTERNAL_NUM" Header="Name" ReadOnly="True" />
+                                                        <dxg:GridColumn FieldName="TITLE" Header="Title" ReadOnly="True" />
+                                                    </dxg:GridControl.Columns>
+                                                    <dxg:GridControl.View>
+                                                        <dxg:TableView RowStyle="{StaticResource SelectionBackgroundStyle}" ShowFilterPanelMode="ShowAlways" ShowFocusedRectangle="True" ShowGroupPanel="False" ShowSelectionRectangle="True" />
+                                                    </dxg:GridControl.View>
+                                                </dxg:GridControl>
+                                            </ControlTemplate>
+                                        </dxg:LookUpEdit.PopupContentTemplate>
+                                    </dxg:LookUpEdit>
+                                </DataTemplate>
+                            </dxg:GridColumn.CellTemplate>
+                            <!--  For Filtering  -->
                             <dxg:GridColumn.EditSettings>
                                 <dxe:ComboBoxEditSettings AutoComplete="True" DisplayMember="INTERNAL_NUM" IsTextEditable="True" ItemsSource="{Binding AREACollection}" ValueMember="GUID" />
                             </dxg:GridColumn.EditSettings>

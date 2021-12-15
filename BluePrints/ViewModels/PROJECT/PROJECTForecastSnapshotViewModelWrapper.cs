@@ -2913,7 +2913,7 @@ namespace BluePrints.ViewModels
         {
             get
             {
-                if (BudgetCollection.Count == 0)
+                if (BudgetCollection == null || BudgetCollection.Count == 0)
                     return 0;
 
                 return BudgetCollection.Sum(x => x.PROJECT_BUDGET);
@@ -2924,7 +2924,7 @@ namespace BluePrints.ViewModels
         {
             get
             {
-                if (P6PlannedCollection.Count == 0)
+                if (P6PlannedCollection == null || P6PlannedCollection.Count == 0)
                     return 0;
 
                 return P6PlannedCollection.Sum(x => x.FORECAST_QTY);
@@ -2935,7 +2935,7 @@ namespace BluePrints.ViewModels
         {
             get
             {
-                if (PreviousPOCollection.Count == 0)
+                if (PreviousPOCollection == null || PreviousPOCollection.Count == 0)
                     return 0;
 
                 return PreviousPOCollection.Sum(x => x.FORECAST_COST);
@@ -2946,7 +2946,7 @@ namespace BluePrints.ViewModels
         {
             get
             {
-                if (POCollection.Count == 0)
+                if (POCollection == null || POCollection.Count == 0)
                     return 0;
 
                 return POCollection.Sum(x => x.FORECAST_COST);
@@ -2957,7 +2957,7 @@ namespace BluePrints.ViewModels
         {
             get
             {
-                if (POForecastCollection.Count == 0)
+                if (POForecastCollection == null || POForecastCollection.Count == 0)
                     return 0;
 
                 return POForecastCollection.Sum(x => x.FORECAST_COST);
@@ -2968,7 +2968,7 @@ namespace BluePrints.ViewModels
         {
             get
             {
-                if (P6RemainingCollection.Count == 0)
+                if (P6RemainingCollection == null || P6RemainingCollection.Count == 0)
                     return 0;
 
                 return P6RemainingCollection.Sum(x => x.FORECAST_QTY);
@@ -2979,7 +2979,7 @@ namespace BluePrints.ViewModels
         {
             get
             {
-                if (P6RemainingCollection.Count == 0)
+                if (P6RemainingCollection == null || P6RemainingCollection.Count == 0)
                     return 0;
 
                 return P6RemainingCollection.Sum(x => x.FORECAST_COST);
