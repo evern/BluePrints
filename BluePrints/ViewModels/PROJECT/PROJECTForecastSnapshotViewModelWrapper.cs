@@ -295,7 +295,6 @@ namespace BluePrints.ViewModels
             this.RaisePropertiesChanged();
         }
 
-
         private void savePROJECT()
         {
             delayedProjectSaveTimer.Tick -= DelayedProjectSaveTimer_Tick;
@@ -366,12 +365,6 @@ namespace BluePrints.ViewModels
         }
         protected override bool loadDataPointsTable()
         {
-            if(FORECAST_JOB_HOUR_SNAPSHOTCollection.Count() == 0)
-            {
-                RefreshAllForecastData();
-                return false;
-            }
-
             IsLoading = true;
             this.RaisePropertyChanged(x => x.IsLoading);
 
@@ -605,7 +598,6 @@ namespace BluePrints.ViewModels
 
             //use cached data if present so that it's threadsafe
             IQueryable<FORECAST> loadFORECASTCollection = CachedFORECASTCollection == null ? QueryableFORECASTCollection : CachedFORECASTCollection.AsQueryable();
-
             List<FORECAST> relevantFORECASTS = loadFORECASTCollection.Where(x => x.SUBJOB_CODE == job.SubJobCode && x.DISCIPLINE_CODE == job.DisciplineCode && x.COMMODITY_CODE == job.CommodityCode && x.VARIATION_CODE == job.VariationCode).ToList();
             foreach (ForecastDateSnapshot dateCost in job.DateCosts)
             {
@@ -2646,9 +2638,7 @@ namespace BluePrints.ViewModels
 
         public override void FullRefresh()
         {
-            if(alignedDataDateCollection != null)
-                alignedDataDateCollection.Clear();
-
+            alignedDataDateCollection.Clear();
             loadExoMethodsData();
             loadSummaryStats();
 
@@ -2904,16 +2894,11 @@ namespace BluePrints.ViewModels
             PreviousActualCollection = filteredForecastJobHourSnapshot.Where(x => x.SNAPSHOT_TYPE == ForecastSnapshotValueType.Actual && x.FORECAST_DATE <= previousDataDate).ToList();
             ActualCollection = filteredForecastJobHourSnapshot.Where(x => x.SNAPSHOT_TYPE == ForecastSnapshotValueType.Actual && x.FORECAST_DATE <= dataDate).ToList();
             FutureActualCollection = filteredForecastJobHourSnapshot.Where(x => x.SNAPSHOT_TYPE == ForecastSnapshotValueType.Actual && x.FORECAST_DATE > dataDate).ToList();
-
-            string s;
-            if (FutureActualCollection.Count > 0)
-                s = string.Empty;
-
             P6RemainingCollection = filteredForecastJobHourSnapshot.Where(x => x.SNAPSHOT_TYPE == ForecastSnapshotValueType.P6Remaining).ToList();
             P6PlannedCollection = filteredForecastJobHourSnapshot.Where(x => x.SNAPSHOT_TYPE == ForecastSnapshotValueType.P6Planned).ToList();
             PreviousPOCollection = filteredForecastJobHourSnapshot.Where(x => x.SNAPSHOT_TYPE == ForecastSnapshotValueType.PreviousOutstandingPO).ToList();
             POCollection = filteredForecastJobHourSnapshot.Where(x => x.SNAPSHOT_TYPE == ForecastSnapshotValueType.CurrentOutstandingPO).ToList();
-            POForecastCollection = filteredForecastJobHourSnapshot.Where(x => x.SNAPSHOT_TYPE == ForecastSnapshotValueType.ForecastPO).ToList();
+            //POForecastCollection = filteredForecastJobHourSnapshot.Where(x => x.SNAPSHOT_TYPE == ForecastSnapshotValueType.ForecastPO).ToList();
             ProgressETCCollection = filteredForecastJobHourSnapshot.Where(x => x.SNAPSHOT_TYPE == ForecastSnapshotValueType.ProgressETC).ToList();
             EarnedCollection = filteredForecastJobHourSnapshot.Where(x => x.SNAPSHOT_TYPE == ForecastSnapshotValueType.Earned).ToList();
             IndirectCollection = filteredForecastJobHourSnapshot.Where(x => x.SNAPSHOT_TYPE == ForecastSnapshotValueType.ForecastIndirect).ToList();
@@ -2928,7 +2913,7 @@ namespace BluePrints.ViewModels
         {
             get
             {
-                if (BudgetCollection.Count == 0)
+                if (BudgetCollection == null || BudgetCollection.Count == 0)
                     return 0;
 
                 return BudgetCollection.Sum(x => x.PROJECT_BUDGET);
@@ -2939,7 +2924,7 @@ namespace BluePrints.ViewModels
         {
             get
             {
-                if (P6PlannedCollection.Count == 0)
+                if (P6PlannedCollection == null || P6PlannedCollection.Count == 0)
                     return 0;
 
                 return P6PlannedCollection.Sum(x => x.FORECAST_QTY);
@@ -2950,7 +2935,7 @@ namespace BluePrints.ViewModels
         {
             get
             {
-                if (PreviousPOCollection.Count == 0)
+                if (PreviousPOCollection == null || PreviousPOCollection.Count == 0)
                     return 0;
 
                 return PreviousPOCollection.Sum(x => x.FORECAST_COST);
@@ -2961,7 +2946,7 @@ namespace BluePrints.ViewModels
         {
             get
             {
-                if (POCollection.Count == 0)
+                if (POCollection == null || POCollection.Count == 0)
                     return 0;
 
                 return POCollection.Sum(x => x.FORECAST_COST);
@@ -2972,7 +2957,7 @@ namespace BluePrints.ViewModels
         {
             get
             {
-                if (POForecastCollection.Count == 0)
+                if (POForecastCollection == null || POForecastCollection.Count == 0)
                     return 0;
 
                 return POForecastCollection.Sum(x => x.FORECAST_COST);
@@ -2983,7 +2968,7 @@ namespace BluePrints.ViewModels
         {
             get
             {
-                if (P6RemainingCollection.Count == 0)
+                if (P6RemainingCollection == null || P6RemainingCollection.Count == 0)
                     return 0;
 
                 return P6RemainingCollection.Sum(x => x.FORECAST_QTY);
@@ -2994,7 +2979,7 @@ namespace BluePrints.ViewModels
         {
             get
             {
-                if (P6RemainingCollection.Count == 0)
+                if (P6RemainingCollection == null || P6RemainingCollection.Count == 0)
                     return 0;
 
                 return P6RemainingCollection.Sum(x => x.FORECAST_COST);
