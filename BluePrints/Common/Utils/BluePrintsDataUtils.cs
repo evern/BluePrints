@@ -1478,6 +1478,77 @@ namespace BluePrints.Common.ViewModel.Utils
             return poDataPoints.ToList();
         }
 
+        public static List<ExoDataPoint> GetEXOPOSnapshot(IPrimeroEntitiesUnitOfWork primeroUOW, string projectNumber, DateTime queryDate, List<DateTime> alignedDataDates = null, bool showLoadingScreen = false, ExoQueryType exoQueryType = ExoQueryType.All)
+        {
+            List<ExoDataPoint> poDataPoints = new List<ExoDataPoint>();
+            if (showLoadingScreen)
+            {
+                LoadingScreenManager.ShowLoadingScreen(1);
+                LoadingScreenManager.SetMessage("Loading POs...");
+            }
+
+            List<X_PURCHORD_LINE_DETAIL> X_PURCHORD_LINE_DETAILS = PrimeroEntities.GetPurchaseOrdersDetail(primeroUOW, projectNumber, queryDate);
+            string equipmentHireStockCodeInitials = BluePrintsResources.EquipmentHireStockCodeInitials;
+            X_PURCHORD_LINE_DETAILS = exoQueryType == ExoQueryType.All ? X_PURCHORD_LINE_DETAILS : exoQueryType == ExoQueryType.EquipmentHireOnly ? X_PURCHORD_LINE_DETAILS.Where(x => x.STOCKCODE.StartsWith(equipmentHireStockCodeInitials)).ToList() : X_PURCHORD_LINE_DETAILS.Where(x => !x.STOCKCODE.StartsWith(equipmentHireStockCodeInitials)).ToList();
+
+            if (showLoadingScreen)
+            {
+                LoadingScreenManager.CloseLoadingScreen();
+                LoadingScreenManager.ShowLoadingScreen(X_PURCHORD_LINE_DETAILS.Count);
+                LoadingScreenManager.SetMessage("Loading POs...");
+            }
+
+            foreach (var po in X_PURCHORD_LINE_DETAILS)
+            {
+                ExoDataPoint poDataPoint = new ExoDataPoint();
+                poDataPoint.BudgetedUnits = 0;
+                poDataPoint.BudgetedCosts = 0;
+                decimal orderQty = ((decimal)po.ORDER_QTY);
+
+                decimal unitPrice = po.UNIT_PRICE == null ? 0 : ((decimal)po.UNIT_PRICE);
+                poDataPoint.TotalUnits = orderQty;
+
+                decimal remainingQty = Convert.ToDecimal(po.RemainingQty);
+                poDataPoint.Units = remainingQty < 0 ? 0 : remainingQty;
+                poDataPoint.Costs = po.OUTSTANDING_COSTS == null ? 0 : Convert.ToDecimal(po.OUTSTANDING_COSTS);
+                poDataPoint.CostPerQty = unitPrice;
+                poDataPoint.TotalCosts = po.LINETOTAL == null ? 0 : (decimal)po.LINETOTAL;
+                if (alignedDataDates != null)
+                    poDataPoint.ProgressDate = alignedDataDates.FirstOrDefault(dates => dates.Date >= (DateTime)po.ORDERDATE);
+
+                poDataPoint.ActualDate = po.ORDERDATE == null ? DateTime.Now : (DateTime)po.ORDERDATE;
+                poDataPoint.PURCHORD_HDRLastUpdated = po.LAST_UPDATED;
+                poDataPoint.Subjob_Name = po.SUB_JOBCODE.Trim();
+                poDataPoint.ResourceName = string.Empty;
+                poDataPoint.Quantity = poDataPoint.Units;
+                poDataPoint.Description = po.DESCRIPTION;
+                poDataPoint.Narrative = po.NARRATIVE;
+                poDataPoint.Supplier = po.SUPPLIER_NAME;
+                poDataPoint.InvoiceNo = string.Empty;
+                poDataPoint.CostGroup = po.DISCIPLINE_CODE.Trim();
+                poDataPoint.Discipline_Code = po.DISCIPLINE_CODE.Trim();
+                poDataPoint.CostType = po.COMMODITY_CODE_DESC;
+                poDataPoint.Commodity_Code = po.COMMODITY_CODE.Trim();
+                poDataPoint.StockCode = po.STOCKCODE.Trim();
+                poDataPoint.Cost_GLName = string.Empty;
+                poDataPoint.Purchase_GLName = string.Empty;
+                poDataPoint.IsPO = true;
+                poDataPoint.PONumber = po.PO_NUMBER.ToString();
+                poDataPoint.POOrderQty = Convert.ToDecimal((double)po.ORDER_QTY);
+                poDataPoint.POSuppliedQty = Convert.ToDecimal((double)po.CUT_OFF_SUPPLIED);
+                poDataPoint.Variation_Code = po.VARIATION_CODE;
+                poDataPoints.Add(poDataPoint);
+
+                if (showLoadingScreen)
+                    LoadingScreenManager.Progress();
+            }
+
+            if (showLoadingScreen)
+                LoadingScreenManager.CloseLoadingScreen();
+
+            return poDataPoints.ToList();
+        }
+
         public static void PopulateNewJobcostResourcesDefaults(JOBCOST_RESOURCE JOBCOST_RESOURCE)
         {
             JOBCOST_RESOURCE.COSTRATE0 = 0;

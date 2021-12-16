@@ -37,24 +37,24 @@ using System.Windows.Threading;
 
 namespace BluePrints.ViewModels
 {
-    public class PROJECTPOForecastViewModelWrapper : BluePrintsEntitiesCollectionWrapper<FORECAST_PO, FORECAST_PO, Guid, IBluePrintsEntitiesUnitOfWork>
+    public class PROJECTPOSnapshotForecastViewModelWrapper : BluePrintsEntitiesCollectionWrapper<FORECAST_PO, FORECAST_PO, Guid, IBluePrintsEntitiesUnitOfWork>
     {
         /// <summary>
-        /// Creates a new instance of PROJECTPOForecastViewModelWrapper as a POCO view model.
+        /// Creates a new instance of PROJECTPOSnapshotForecastViewModelWrapper as a POCO view model.
         /// </summary>
         /// <param name="unitOfWorkFactory">A factory used to create a unit of work instance.</param>
-        public static PROJECTPOForecastViewModelWrapper Create(
+        public static PROJECTPOSnapshotForecastViewModelWrapper Create(
             IUnitOfWorkFactory<IBluePrintsEntitiesUnitOfWork> unitOfWorkFactory = null)
         {
-            return ViewModelSource.Create(() => new PROJECTPOForecastViewModelWrapper(unitOfWorkFactory));
+            return ViewModelSource.Create(() => new PROJECTPOSnapshotForecastViewModelWrapper(unitOfWorkFactory));
         }
 
         /// <summary>
-        /// Initializes a new instance of the PROJECTPOForecastViewModelWrapper class.
-        /// This constructor is declared protected to avoid undesired instantiation of the PROJECTPOForecastViewModelWrapper type without the POCO proxy factory.
+        /// Initializes a new instance of the PROJECTPOSnapshotForecastViewModelWrapper class.
+        /// This constructor is declared protected to avoid undesired instantiation of the PROJECTPOSnapshotForecastViewModelWrapper type without the POCO proxy factory.
         /// </summary>
         /// <param name="unitOfWorkFactory">A factory used to create a unit of work instance.</param>
-        protected PROJECTPOForecastViewModelWrapper(
+        protected PROJECTPOSnapshotForecastViewModelWrapper(
             IUnitOfWorkFactory<IBluePrintsEntitiesUnitOfWork> unitOfWorkFactory = null)
         {
         }
@@ -67,17 +67,19 @@ namespace BluePrints.ViewModels
 
         protected PROJECT loadPROJECT;
         protected List<DateTime> alignedDataDateCollection;
-        protected List<ExoDataPoint> allExoPos = new List<ExoDataPoint>();
-        protected List<ExoDataPoint> allExoActuals = new List<ExoDataPoint>();
         protected List<string> hiddenColumnFieldNames = new List<string>();
         protected string columnEntity = "Entity";
         DispatcherTimer selectedItemsChangedDispatcher;
         DispatcherTimer closeEditorDispatcher;
-        public CriteriaOperator FilterCriteria { get; set; }
+        public CriteriaOperator POFilterCriteria { get; set; }
+        public CriteriaOperator ActualFilterCriteria { get; set; }
         DispatcherTimer delayedProjectSaveTimer;
         public bool IsWeeks => false; //used by POForecastHeaderTemplate
         BackgroundWorker exoLoadingBackgroundWorker = new BackgroundWorker();
         BackgroundWorker projectSavingBackgroundWorker = new BackgroundWorker();
+
+        List<X_PURCHORD_LINE_DETAIL> X_PURCHORD_LINE_DETAILS;
+        InstantFeedbackActualDetailsCollectionViewModelWrapper instantFeedbackActualDetailViewModel = InstantFeedbackActualDetailsCollectionViewModelWrapper.Create();
         protected override void resolveParameters(object parameter)
         {
             var PROJECTParameter = (EntitiesParameter<PROJECT>)parameter;
@@ -124,7 +126,9 @@ namespace BluePrints.ViewModels
 
             IsLoading = false;
             this.RaisePropertyChanged(x => x.IsLoading);
-            this.RaisePropertyChanged(x => x.PODetails);
+
+            //so filters will show transactions, as it is not shown during load, RaisePropertyChanged on ActualDetails will allow the grid to start showing data
+            instantFeedbackActualDetailViewModel.OnParameterChange(loadPROJECT);
             CommonMethods.AddSaveLayoutHandler(GridControlService.GetGridColumns());
             return true;
         }
@@ -169,16 +173,10 @@ namespace BluePrints.ViewModels
         protected virtual void loadExoData(IPrimeroEntitiesUnitOfWork primeroUOW)
         {
             isExoDataLoaded = false;
-            //cannot put in assigncallback mainviewmodel because it can take too long and mainviewmodel will be null
-            allExoPos = BluePrintsDataUtils.GetEXOPO(primeroUOW, loadPROJECT.NUMBER, ActualsCutOffDate, null, true, ExoQueryType.ExcludeEquipmentHire);
-            allExoActuals = BluePrintsDataUtils.GetMaterials(primeroUOW, loadPROJECT.NUMBER, ActualsCutOffDate, null, 1, true, ExoQueryType.ExcludeEquipmentHire);
-            //po remaining cost adjustment based on description
-            //foreach(ExoDataPoint exoDataPoint in allExoPos)
-            //{
-            //    IEnumerable<ExoDataPoint> exoActuals = allExoActuals.Where(x => x.PONumber == exoDataPoint.PONumber && x.Variation_Code == exoDataPoint.Variation_Code && x.Description.ToUpper() == exoDataPoint.Description.ToUpper());
-            //    exoDataPoint.Quantity = exoActuals.Sum(x => x.Quantity);
-            //    exoDataPoint.Costs = (exoDataPoint.TotalUnits - exoDataPoint.POSuppliedQty) * exoDataPoint.CostPerQty;
-            //}
+
+            Common.LoadingScreenManager.SetMessage("Loading PO Details...");
+            X_PURCHORD_LINE_DETAILS = PrimeroEntities.GetPurchaseOrdersDetail(primeroUnitOfWork, loadPROJECT.NUMBER, ActualsCutOffDate);
+            Common.LoadingScreenManager.CloseLoadingScreen();
 
             generateAlignedDataDates();
             isExoDataLoaded = true;
@@ -196,8 +194,11 @@ namespace BluePrints.ViewModels
             loaderCollection.AddLoaderDescription(bluePrintsUnitOfWorkFactory, x => x.FORECASTS, FORECASTProjectionFunc);
             loaderCollection.AddLoaderDescription(bluePrintsUnitOfWorkFactory, x => x.FORECAST_PO_SETTINGS, FORECAST_PO_SETTINGProjectionFunc);
             loaderCollection.AddLoaderDescription(bluePrintsUnitOfWorkFactory, x => x.FORECAST_EACS, FORECAST_EACProjectionFunc);
+            loaderCollection.AddLoaderDescription(bluePrintsUnitOfWorkFactory, x => x.FORECAST_JOB_HOUR_SNAPSHOTS, FORECAST_JOB_HOUR_SNAPSHOTProjectionFunc);
             loaderCollection.AddLoaderDescription<JOB_COSTGROUPS, JOB_COSTGROUPS, int, IPrimeroEntitiesUnitOfWork>(primeroUnitOfWorkFactory, x => x.JOB_COSTGROUPS);
             loaderCollection.AddLoaderDescription(bluePrintsUnitOfWorkFactory, x => x.DISCIPLINE_DESCS, DISCIPLINE_DESCProjectionFunc);
+            loaderCollection.AddLoaderDescription<STOCK_GROUPS, STOCK_GROUPS, int, IPrimeroEntitiesUnitOfWork>(primeroUnitOfWorkFactory, x => x.STOCK_GROUPS);
+            loaderCollection.AddLoaderDescription<STOCK_GROUP2S, STOCK_GROUP2S, int, IPrimeroEntitiesUnitOfWork>(primeroUnitOfWorkFactory, x => x.STOCK_GROUP2S);
         }
 
         private Func<IRepositoryQuery<DISCIPLINE_DESC>, IQueryable<DISCIPLINE_DESC>> DISCIPLINE_DESCProjectionFunc()
@@ -218,6 +219,11 @@ namespace BluePrints.ViewModels
         protected virtual Func<IRepositoryQuery<FORECAST_EAC>, IQueryable<FORECAST_EAC>> FORECAST_EACProjectionFunc()
         {
             return query => query.Where(x => x.GUID_PROJECT == loadPROJECT.GUID);
+        }
+
+        protected virtual Func<IRepositoryQuery<FORECAST_JOB_HOUR_SNAPSHOT>, IQueryable<FORECAST_JOB_HOUR_SNAPSHOT>> FORECAST_JOB_HOUR_SNAPSHOTProjectionFunc()
+        {
+            return query => query.Where(x => x.GUID_PROJECT == loadPROJECT.GUID && (x.SNAPSHOT_TYPE == ForecastSnapshotValueType.Actual || x.SNAPSHOT_TYPE == ForecastSnapshotValueType.CurrentOutstandingPO));
         }
 
         public DateTime? LoadDataDate { get; set; }
@@ -241,7 +247,7 @@ namespace BluePrints.ViewModels
                 savePROJECT();
             }
 
-            ForecastStartDate = new DateTime(((DateTime)dataDate).Year, ((DateTime)dataDate).Month, 1).AddMonths(2).AddDays(-1);
+            ForecastStartDate = new DateTime(dataDate.Year, dataDate.Month, 1).AddMonths(2).AddDays(-1);
 
             DateTime endDate;
             if (loadPROJECT.FORECAST_END_DATE != null)
@@ -377,7 +383,7 @@ namespace BluePrints.ViewModels
                     return false;
                 }
             }
-            else if(copyColumn.FieldName.Contains(BindableBase.GetPropertyName(() => new POForecastProjection().Comments)))
+            else if(copyColumn.FieldName.Contains(BindableBase.GetPropertyName(() => new POForecastSnapshotProjection().Comments)))
             {
                 if (pasteData != null)
                     findExistingOrAddNewFORECAST_JOB_SETTING(newRow, pasteData);
@@ -434,7 +440,7 @@ namespace BluePrints.ViewModels
 
                     findExistingOrAddNewFORECAST_PO(entityProperty.ChangedEntity, parseDateTime, oldValueDecimal);
                 }
-                else if (entityProperty.PropertyName.Contains(BindableBase.GetPropertyName(() => new POForecastProjection().Comments)))
+                else if (entityProperty.PropertyName.Contains(BindableBase.GetPropertyName(() => new POForecastSnapshotProjection().Comments)))
                 {
                     string oldValueString = entityProperty.OldValue == null ? string.Empty : entityProperty.OldValue.ToString();
                     findExistingOrAddNewFORECAST_JOB_SETTING(entityProperty.ChangedEntity, oldValueString);
@@ -463,7 +469,7 @@ namespace BluePrints.ViewModels
 
                     findExistingOrAddNewFORECAST_PO(entityProperty.ChangedEntity, parseDateTime, newValueDecimal);
                 }
-                else if (entityProperty.PropertyName.Contains(BindableBase.GetPropertyName(() => new POForecastProjection().Comments)))
+                else if (entityProperty.PropertyName.Contains(BindableBase.GetPropertyName(() => new POForecastSnapshotProjection().Comments)))
                 {
                     string newValueString = entityProperty.NewValue == null ? string.Empty : entityProperty.NewValue.ToString();
                     findExistingOrAddNewFORECAST_JOB_SETTING(entityProperty.ChangedEntity, newValueString);
@@ -514,7 +520,7 @@ namespace BluePrints.ViewModels
 
             //initialize datatable schema
             dataPointsTable = new DataTable();
-            dataPointsTable.Columns.Add(columnEntity, typeof(POForecastProjection));
+            dataPointsTable.Columns.Add(columnEntity, typeof(POForecastSnapshotProjection));
 
             foreach (DateTime alignedDataDate in alignedDataDateCollection)
             {
@@ -523,17 +529,16 @@ namespace BluePrints.ViewModels
             }
 
             //construction projection from grouped po lines
-            List<POLine> poLines = getPOLines();
-            List<POForecastProjection> projections = new List<POForecastProjection>();
+            List<POSnapshotLine> poLines = getPOLines();
+            LoadingScreenManager.ShowLoadingScreen(poLines.Count() + 1);
+            LoadingScreenManager.SetMessage("Loading PO Snapshot...");
+            List<POForecastSnapshotProjection> projections = new List<POForecastSnapshotProjection>();
             foreach (var poLine in poLines.OrderBy(x => x.PONumber))
             {
-                POForecastProjection newForecast = ViewModelSource.Create(() => new POForecastProjection());
+                POForecastSnapshotProjection newForecast = ViewModelSource.Create(() => new POForecastSnapshotProjection());
                 newForecast.PONO = poLine.PONumber;
                 //since it's a group it'll always contain at least a single element
-                ExoDataPoint dataPoint = poLine.DataPoints.First();
-                newForecast.Description = dataPoint.Description;
-                newForecast.Supplier = dataPoint.Supplier;
-                newForecast.ExoPOs = poLine.DataPoints;
+                newForecast.CurrentPOSnapshots = poLine.DataPoints;
                 newForecast.VariationCode = poLine.VariationCode;
 
                 //populate comment
@@ -541,18 +546,31 @@ namespace BluePrints.ViewModels
                 if (forecastPOSetting != null)
                     newForecast.Comments = forecastPOSetting.PO_COMMENTS;
 
+                IEnumerable<X_PURCHORD_LINE_DETAIL> purchaseOrderDetails = PODetail.Where(x => x.PO_NUMBER.ToString() == poLine.PONumber);
+                if(purchaseOrderDetails.Count() > 0)
+                {
+                    newForecast.Supplier = purchaseOrderDetails.First().SUPPLIER_NAME;
+                    newForecast.FirstActualDate = purchaseOrderDetails.Min(x => x.ORDERDATE);
+                }
+
                 projections.Add(newForecast);
+                LoadingScreenManager.Progress();
             }
 
+            LoadingScreenManager.ResetCurrentProgress();
+            LoadingScreenManager.SetMaxProgress(projections.Count());
+            LoadingScreenManager.SetMessage("Loading PO Forecast...");
             //gets the forecasted data into dates bucket in the row and adds to datatable
-            foreach (POForecastProjection projection in projections)
+            foreach (POForecastSnapshotProjection projection in projections)
             {
                 DataRow newRow = DataPointsTable.NewRow();
                 newRow[columnEntity] = projection;
-                updateRowPOForecast(alignedDataDateCollection, Entities, allExoActuals, ActualsCutOffDate, projection.PONO, projection.VariationCode, newRow);
+                updateRowPOForecast(alignedDataDateCollection, Entities, CutoffActual_FORECAST_JOB_HOUR_SNAPSHOTCollection, ActualsCutOffDate, projection.PONO, projection.VariationCode, newRow);
                 dataPointsTable.Rows.Add(newRow);
+                LoadingScreenManager.Progress();
             }
 
+            LoadingScreenManager.CloseLoadingScreen();
             //TableViewService.ScrollToLast();
 
             GridControlService.EndDataUpdate();
@@ -598,7 +616,7 @@ namespace BluePrints.ViewModels
 
         protected virtual void findExistingOrAddNewFORECAST_JOB_SETTING(DataRow updateRow, string comments)
         {
-            POForecastProjection forecast = ((POForecastProjection)updateRow[columnEntity]);    
+            POForecastSnapshotProjection forecast = ((POForecastSnapshotProjection)updateRow[columnEntity]);    
             FORECAST_PO_SETTING relevantFORECAST_PO_SETTING = FORECAST_PO_SETTINGCollection.FirstOrDefault(x => x.PONO == forecast.PONO && x.VARIATION_CODE == forecast.VariationCode);
             if (relevantFORECAST_PO_SETTING == null)
             {
@@ -637,22 +655,38 @@ namespace BluePrints.ViewModels
             return true;
         }
 
-        private POLine getPOLine(string poNo)
+        private POSnapshotLine getPOLine(string poNo)
         {
             return getPOLines().FirstOrDefault(x => x.PONumber == poNo);
         }
 
-        private List<POLine> getPOLines()
+        private List<POSnapshotLine> getPOLines()
         {
-            if (allExoPos == null)
-                return new List<POLine>();
+            if (CurrentPO_FORECAST_JOB_HOUR_SNAPSHOTCollection == null)
+                return new List<POSnapshotLine>();
 
-            return allExoPos.GroupBy(x => new { x.PONumber, x.Variation_Code }).Select(group => new POLine { PONumber = group.Key.PONumber, VariationCode = group.Key.Variation_Code, DataPoints = group.ToList() }).ToList();
+            return CurrentPO_FORECAST_JOB_HOUR_SNAPSHOTCollection.GroupBy(x => new { x.PO_NUMBER, x.VARIATION_CODE }).Select(group => new POSnapshotLine { PONumber = group.Key.PO_NUMBER, VariationCode = group.Key.VARIATION_CODE, DataPoints = group.ToList() }).ToList();
         }
 
         public bool CanSaveSnapshot()
         {
             return !IsLoading && LoadDataDate != null;
+        }
+
+        public bool CanLoadSnapshot()
+        {
+            return !IsLoading && LoadDataDate != null;
+        }
+
+        public void LoadSnapshot()
+        {
+            Common.LoadingScreenManager.ShowLoadingScreen(1);
+            Common.LoadingScreenManager.SetMessage("Load PO and Actual Snapshot...");
+            BluePrintsContextHelper.RefreshPOByProject(loadPROJECT.NUMBER, (DateTime)LoadDataDate);
+            Common.LoadingScreenManager.CloseLoadingScreen();
+
+            resetIsLoading();
+            FullRefresh();
         }
 
         protected bool shouldPromptForSavingSnapshot;
@@ -665,6 +699,7 @@ namespace BluePrints.ViewModels
 
             shouldPromptForSavingSnapshot = false;
         }
+
 
         public void AutoGeneratingColumns(AutoGeneratingColumnEventArgs e)
         {
@@ -698,10 +733,10 @@ namespace BluePrints.ViewModels
                 DataRowView dataRowView = (DataRowView)e.Row;
                 findExistingOrAddNewFORECAST_PO(dataRowView.Row, parseDateTime, newValue, true);
 
-                updateRowPOForecast(alignedDataDateCollection, Entities, allExoActuals, ActualsCutOffDate, string.Empty, string.Empty, dataRowView.Row);
+                updateRowPOForecast(alignedDataDateCollection, Entities, CutoffActual_FORECAST_JOB_HOUR_SNAPSHOTCollection, ActualsCutOffDate, string.Empty, string.Empty, dataRowView.Row);
                 addUndo(dataRowView.Row, e.Column.FieldName, e.OldValue, newValue, EntityMessageType.Changed);
             }
-            else if (e.Column.FieldName.Contains(BindableBase.GetPropertyName(() => new POForecastProjection().Comments)))
+            else if (e.Column.FieldName.Contains(BindableBase.GetPropertyName(() => new POForecastSnapshotProjection().Comments)))
             {
                 DataRowView dataRowView = (DataRowView)e.Row;
                 string commeentsValue = e.Value == null ? string.Empty : e.Value.ToString();
@@ -718,14 +753,14 @@ namespace BluePrints.ViewModels
 
         protected virtual void findExistingOrAddNewFORECAST_PO(DataRow dataRow, DateTime forecastDate, decimal? viewCosts, bool skipUpdating = false)
         {
-            POForecastProjection entity = (POForecastProjection)dataRow[columnEntity];
+            POForecastSnapshotProjection entity = (POForecastSnapshotProjection)dataRow[columnEntity];
 
             //each PO have multiple items, so we need to store the pro-rated value per PO items in the database
             decimal proRateOnPOItem = 1;
             if (entity.PO_RemainingPrice > 0)
                 proRateOnPOItem = (decimal)viewCosts / entity.PO_RemainingPrice;
 
-            var groupByCodesPOItems = entity.ExoPOs.GroupBy(g => new { PONumber = g.PONumber, JobCode = g.Subjob_Name, DisciplineCode = g.Discipline_Code, CommodityCode = g.Commodity_Code, g.StockCode, VariationCode = g.Variation_Code }).Select(g => new { g.Key.PONumber, g.Key.JobCode, g.Key.DisciplineCode, g.Key.CommodityCode, g.Key.StockCode, g.Key.VariationCode, RemainingCosts = g.Sum(x => x.Costs) }).ToList();
+            var groupByCodesPOItems = entity.CurrentPOSnapshots.GroupBy(g => new { PONumber = g.PO_NUMBER, JobCode = g.SUBJOB_CODE, DisciplineCode = g.DISCIPLINE_CODE, CommodityCode = g.COMMODITY_CODE, StockCode = g.STOCK_CODE, VariationCode = g.VARIATION_CODE }).Select(g => new { g.Key.PONumber, g.Key.JobCode, g.Key.DisciplineCode, g.Key.CommodityCode, g.Key.StockCode, g.Key.VariationCode, RemainingCosts = g.Sum(x => x.FORECAST_COST) }).ToList();
             decimal cumulativeTrueProRateValue = 0;
 
             for(int i = 0;i < groupByCodesPOItems.Count;i++)
@@ -769,7 +804,7 @@ namespace BluePrints.ViewModels
             }
 
             if(!skipUpdating)
-                updateRowPOForecast(alignedDataDateCollection, Entities, allExoActuals, ActualsCutOffDate, string.Empty, string.Empty, dataRow);
+                updateRowPOForecast(alignedDataDateCollection, Entities, CutoffActual_FORECAST_JOB_HOUR_SNAPSHOTCollection, ActualsCutOffDate, string.Empty, string.Empty, dataRow);
         }
 
         public bool CanShowCustomPaymentDialog
@@ -866,11 +901,11 @@ namespace BluePrints.ViewModels
 
                         DataRowView editing_row_view = (DataRowView)rowObject;
                         DataRow editing_row = editing_row_view.Row;
-                        POForecastProjection projection = (POForecastProjection)editing_row[columnEntity];
+                        POForecastSnapshotProjection projection = (POForecastSnapshotProjection)editing_row[columnEntity];
 
                         string stockCode = string.Empty;
-                        if (projection.GetType() == typeof(POFlatForecastProjection))
-                            stockCode = ((POFlatForecastProjection)projection).StockCode;
+                        if (projection.GetType() == typeof(POFlatForecastSnapshotProjection))
+                            stockCode = ((POFlatForecastSnapshotProjection)projection).StockCode;
 
                         clearPOForecast(projection.PONO, stockCode, projection.VariationCode);
                         decimal costPerPeriod = projection.PO_RemainingPrice / (decimal)spreadPeriod;
@@ -914,7 +949,7 @@ namespace BluePrints.ViewModels
 
                         if (!forceRefreshDataTable)
                         {
-                            updateRowPOForecast(alignedDataDateCollection, Entities, allExoActuals, ActualsCutOffDate, string.Empty, string.Empty, editing_row);
+                            updateRowPOForecast(alignedDataDateCollection, Entities, CutoffActual_FORECAST_JOB_HOUR_SNAPSHOTCollection, ActualsCutOffDate, string.Empty, string.Empty, editing_row);
 
                             //because grid doesn't refresh totals
                             GridControlService.RefreshData();
@@ -936,14 +971,14 @@ namespace BluePrints.ViewModels
             }
         }
 
-        private void updateRowPOForecast(List<DateTime> alignedDates, IEnumerable<FORECAST_PO> FORECAST_POCollection, IEnumerable<ExoDataPoint> cutOffActuals, DateTime cutOffDate, string POno = "", string variationCode = "", DataRow PORow = null)
+        private void updateRowPOForecast(List<DateTime> alignedDates, IEnumerable<FORECAST_PO> FORECAST_POCollection, IEnumerable<FORECAST_JOB_HOUR_SNAPSHOT> cutOffActuals, DateTime cutOffDate, string POno = "", string variationCode = "", DataRow PORow = null)
         {
             if(PORow == null && POno != string.Empty)
                 PORow = findPORow(POno, variationCode);
 
             if (PORow != null)
             {
-                POForecastProjection forecast = (POForecastProjection)PORow[columnEntity];
+                POForecastSnapshotProjection forecast = (POForecastSnapshotProjection)PORow[columnEntity];
                 forecast.UpdateForecastPayments(FORECAST_POCollection, cutOffActuals, cutOffDate);
 
                 //reset datarow dates
@@ -977,15 +1012,15 @@ namespace BluePrints.ViewModels
         public virtual void AlignPOsWithActuals()
         {
             EntitiesUndoRedoManager.Clear();
-            IEnumerable<POForecastProjection> projections = from DataRow dr in dataPointsTable.Rows
-                                                            select (POForecastProjection)dr[columnEntity];
+            IEnumerable<POForecastSnapshotProjection> projections = from DataRow dr in dataPointsTable.Rows
+                                                            select (POForecastSnapshotProjection)dr[columnEntity];
 
             List<FORECAST_PO> saveFORECAST_POs = new List<FORECAST_PO>();
             //fix codes mis-alignment
             LoadingScreenManager.ShowLoadingScreen(projections.Count());
             LoadingScreenManager.SetMessage("Aligning Actuals...");
             //fix dates mis-alignment
-            foreach (POForecastProjection projection in projections)
+            foreach (POForecastSnapshotProjection projection in projections)
             {
                 LoadingScreenManager.Progress();
                 DataRow editing_row = findPORow(projection.PONO, projection.VariationCode);
@@ -1002,7 +1037,7 @@ namespace BluePrints.ViewModels
                     foreach (FORECAST_PO FORECAST_PO in projection.FORECAST_POs.OrderBy(x => x.FORECAST_DATE))
                     {
                         //need to pro-rate costs by WBS
-                        decimal wbsRemainingCosts = projection.ExoPOs.Where(x => x.Subjob_Name == FORECAST_PO.JOB_CODE && x.Discipline_Code == FORECAST_PO.DISCIPLINE_CODE && x.Commodity_Code == FORECAST_PO.COMMODITY_CODE && x.StockCode == FORECAST_PO.STOCK_CODE).Sum(x => x.Costs);
+                        decimal wbsRemainingCosts = projection.CurrentPOSnapshots.Where(x => x.SUBJOB_CODE == FORECAST_PO.JOB_CODE && x.DISCIPLINE_CODE == FORECAST_PO.DISCIPLINE_CODE && x.COMMODITY_CODE == FORECAST_PO.COMMODITY_CODE && x.STOCK_CODE == FORECAST_PO.STOCK_CODE).Sum(x => x.FORECAST_COST);
                         //forecast POs already filtered by variation code
                         decimal wbsForecastCosts = projection.FORECAST_POs.Where(x => x.JOB_CODE == FORECAST_PO.JOB_CODE && x.DISCIPLINE_CODE == FORECAST_PO.DISCIPLINE_CODE && x.COMMODITY_CODE == FORECAST_PO.COMMODITY_CODE && x.STOCK_CODE == FORECAST_PO.STOCK_CODE).Where(x => x.FORECAST_DATE.Date > ActualsCutOffDate.Date && x.FORECAST_VALUE != null).Sum(x => (decimal)x.FORECAST_VALUE);
                         decimal wbsCostDifference = wbsRemainingCosts - wbsForecastCosts;
@@ -1060,7 +1095,7 @@ namespace BluePrints.ViewModels
         private DataRow findPORow(string PONumber, string variationCode)
         {
             return (from DataRow dr in dataPointsTable.Rows
-                    where ((POForecastProjection)dr[columnEntity]).PONO == PONumber && ((POForecastProjection)dr[columnEntity]).VariationCode == variationCode
+                    where ((POForecastSnapshotProjection)dr[columnEntity]).PONO == PONumber && ((POForecastSnapshotProjection)dr[columnEntity]).VariationCode == variationCode
                     select dr).FirstOrDefault();
         }
         
@@ -1071,7 +1106,6 @@ namespace BluePrints.ViewModels
 
             EntitiesUndoRedoManager.Clear();
             dataPointsTable = null;
-            allPODetails = null;
             //loadExoData();
             IsLoading = true;
             this.RaisePropertyChanged(x => x.IsLoading);
@@ -1087,7 +1121,7 @@ namespace BluePrints.ViewModels
                 else
                 {
                     DateTime forecastStartDate = (DateTime)ForecastStartDate;
-                    return new DateTime(forecastStartDate.Year, forecastStartDate.Month, 1).AddDays(-1);
+                    return new DateTime(forecastStartDate.Year, forecastStartDate.Month, 1).AddSeconds(-1);
                 }
             }
         }
@@ -1184,30 +1218,6 @@ namespace BluePrints.ViewModels
             //this.RaisePropertyChanged(x => x.PODetails);
         }
 
-        List<ExoDataPoint> allPODetails;
-        public IEnumerable<ExoDataPoint> PODetails
-        {
-            get
-            {
-                if (IsLoading)
-                    return new List<ExoDataPoint>();
-
-                if(allPODetails == null)
-                {
-                    allPODetails = new List<ExoDataPoint>();
-                    allPODetails.AddRange(allExoPos);
-                    allPODetails.AddRange(allExoActuals);
-
-                    foreach(ExoDataPoint poDetail in allPODetails)
-                    {
-                        poDetail.PopulateDisciplineDesc(DISCIPLINE_DESCCollection, JOB_COSTGROUPSCollection);
-                    }
-                }
-
-                return allPODetails;
-            }
-        }
-
         /// <summary>
         /// Because grid alternate between showing editor and focused row, use mousedown to invoke set filter
         /// </summary>
@@ -1238,7 +1248,13 @@ namespace BluePrints.ViewModels
             }
         }
 
-        public bool IsPOColumnsVisible { get; set; }
+        public IListSource ActualsDetail => instantFeedbackActualDetailViewModel.InstantFeedbackEntities;
+        public List<X_PURCHORD_LINE_DETAIL> PODetail => X_PURCHORD_LINE_DETAILS;
+        public Visibility ActualDetailsVisibility => !IsPoDetailsVisible ? Visibility.Visible : Visibility.Collapsed;
+        public Visibility PODetailsVisibility => IsPoDetailsVisible ? Visibility.Visible : Visibility.Collapsed;
+        public bool IsPoDetailsVisible { get; set; }
+        public bool IsHidden { get; set; }
+        public int DateSortIndex => 1;
         private void setFilter(DataRowView dataRowView, GridColumn gridColumn)
         {
             if (gridColumn == null || SelectedDataRows == null || SelectedDataRows.Count == 0)
@@ -1246,31 +1262,68 @@ namespace BluePrints.ViewModels
 
             if (gridColumn.FieldName.ToUpper().Contains("PO_REMAININGPRICE"))
             {
-                POForecastProjection entity = (POForecastProjection)dataRowView[columnEntity];
-                FilterCriteria = CriteriaOperator.Parse("[PONumber] = '" + entity.PONO + "' AND [Variation_Code] = '" + entity.VariationCode + "' And [IsPO] = 'True'");
+                POForecastSnapshotProjection entity = (POForecastSnapshotProjection)dataRowView[columnEntity];
+                POFilterCriteria = CriteriaOperator.Parse("[PO_NUMBER] = '" + entity.PONO + "' AND [VARIATION_CODE] = '" + entity.VariationCode + "'"); 
+                IsHidden = false;
+                IsPoDetailsVisible = true;
+
+                this.RaisePropertyChanged(x => x.PODetail);
+                this.RaisePropertyChanged(x => x.POFilterCriteria);
             }
             else if (gridColumn.FieldName.ToUpper().Contains("PO_TOTALPRICE"))
             {
-                POForecastProjection entity = (POForecastProjection)dataRowView[columnEntity];
-                FilterCriteria = CriteriaOperator.Parse("[PONumber] = '" + entity.PONO + "' AND [Variation_Code] = '" + entity.VariationCode + "'");
+                POForecastSnapshotProjection entity = (POForecastSnapshotProjection)dataRowView[columnEntity];
+                POFilterCriteria = CriteriaOperator.Parse("[PO_NUMBER] = '" + entity.PONO + "' AND [VARIATION_CODE] = '" + entity.VariationCode + "'");
+                IsHidden = false;
+                IsPoDetailsVisible = true;
+
+                this.RaisePropertyChanged(x => x.PODetail);
+                this.RaisePropertyChanged(x => x.POFilterCriteria);
             }
             else if (gridColumn.FieldName.ToUpper().Contains("PO_INVOICED"))
             {
-                POForecastProjection entity = (POForecastProjection)dataRowView[columnEntity];
-                FilterCriteria = CriteriaOperator.Parse("[PONumber] = '" + entity.PONO + "' AND [Variation_Code] = '" + entity.VariationCode + "' And [IsPO] = 'False'");
+                POForecastSnapshotProjection entity = (POForecastSnapshotProjection)dataRowView[columnEntity];
+                ActualFilterCriteria = CriteriaOperator.Parse("[PO_NUMBER] = " + entity.PONO + " AND [VARIATION_CODE] = '" + entity.VariationCode + "' AND [TRANSDATE] <= #" + ActualsCutOffDate.Year + "-" + ActualsCutOffDate.Month + "-" + ActualsCutOffDate.Day + "#");
+                IsHidden = false;
+                IsPoDetailsVisible = false;
+
+                this.RaisePropertyChanged(x => x.ActualsDetail);
+                this.RaisePropertyChanged(x => x.ActualFilterCriteria);
             }
 
+            this.RaisePropertyChanged(x => x.ActualDetailsVisibility);
+            this.RaisePropertyChanged(x => x.PODetailsVisibility);
+            this.RaisePropertyChanged(x => x.DateSortIndex);
+        }
 
-
-            IsPOColumnsVisible = false;
-            this.RaisePropertyChanged(x => x.FilterCriteria);
-            this.RaisePropertyChanged(x => x.IsPOColumnsVisible);
+        public void DetailGridKeyDown(System.Windows.Input.KeyEventArgs e)
+        {
+            if (Keyboard.Modifiers == ModifierKeys.Control)
+            {
+                if (e.Key == Key.F)
+                {
+                    clearFilter();
+                }
+            }
         }
 
         private void clearFilter()
         {
-            FilterCriteria = null;
-            this.RaisePropertyChanged(x => x.FilterCriteria);
+            IsHidden = false;
+
+            //workaround for when detail grid doesn't show anything when it's first loaded, bug on devexpress
+            ActualFilterCriteria = CriteriaOperator.Parse("[SUB_JOBCODE] = 'x'");
+            POFilterCriteria = CriteriaOperator.Parse("[SUB_JOBCODE] = 'x'");
+            this.RaisePropertyChanged(x => x.ActualFilterCriteria);
+            this.RaisePropertyChanged(x => x.POFilterCriteria);
+
+            ActualFilterCriteria = CriteriaOperator.Parse("");
+            POFilterCriteria = CriteriaOperator.Parse("");
+            this.RaisePropertyChanged(x => x.IsHidden);
+            this.RaisePropertyChanged(x => x.ActualFilterCriteria);
+            this.RaisePropertyChanged(x => x.POFilterCriteria);
+            this.RaisePropertyChanged(x => x.ActualsDetail);
+            this.RaisePropertyChanged(x => x.PODetail);
         }
 
         public override bool CanExportToExcel()
@@ -1423,17 +1476,6 @@ namespace BluePrints.ViewModels
             }
         }
 
-        public void DetailGridKeyDown(System.Windows.Input.KeyEventArgs e)
-        {
-            if (Keyboard.Modifiers == ModifierKeys.Control)
-            {
-                if (e.Key == Key.F)
-                {
-                    clearFilter();
-                }
-            }
-        }
-
         public override void KeyboardCopy()
         {
             System.Windows.Forms.SendKeys.SendWait("^c");
@@ -1505,6 +1547,30 @@ namespace BluePrints.ViewModels
             }
         }
 
+        public IEnumerable<FORECAST_JOB_HOUR_SNAPSHOT> CurrentPO_FORECAST_JOB_HOUR_SNAPSHOTCollection
+        {
+            get
+            {
+                var collection = GetEntities<FORECAST_JOB_HOUR_SNAPSHOT>();
+                if (collection != null)
+                    collection = collection.Where(x => x.SNAPSHOT_TYPE == ForecastSnapshotValueType.CurrentOutstandingPO);
+
+                return collection;
+            }
+        }
+
+        public IEnumerable<FORECAST_JOB_HOUR_SNAPSHOT> CutoffActual_FORECAST_JOB_HOUR_SNAPSHOTCollection
+        {
+            get
+            {
+                var collection = GetEntities<FORECAST_JOB_HOUR_SNAPSHOT>();
+                if (collection != null)
+                    collection = collection.Where(x => x.SNAPSHOT_TYPE == ForecastSnapshotValueType.Actual).Where(x => x.FORECAST_DATE <= ActualsCutOffDate);
+
+                return collection;
+            }
+        }
+
         public CollectionViewModel<DISCIPLINE_DESC, DISCIPLINE_DESC, Guid, IBluePrintsEntitiesUnitOfWork> DISCIPLINE_DESCCollectionViewModel
         {
             get
@@ -1516,25 +1582,42 @@ namespace BluePrints.ViewModels
             }
         }
 
+        public IEnumerable<STOCK_GROUP2S> STOCK_GROUP2SCollection
+        {
+            get
+            {
+                var collection = GetEntities<STOCK_GROUP2S>();
+                if (collection != null)
+                    collection = collection.OrderBy(x => x.GROUPNO);
+                return collection;
+            }
+        }
+
+        public IEnumerable<STOCK_GROUPS> STOCK_GROUPSCollection
+        {
+            get
+            {
+                var collection = GetEntities<STOCK_GROUPS>();
+                if (collection != null)
+                    collection = collection.OrderBy(x => x.GROUPNO);
+                return collection;
+            }
+        }
+
         /// <summary>
         /// The view name to be used when saving layout for IDocumentContent
         /// </summary>
         public override string ViewName
         {
-            get { return "PROJECTPOForecastViewModelWrapper_v2"; }
+            get { return "PROJECTPOSnapshotForecastViewModelWrapper_v2"; }
         }
         #endregion
     }
 
-    public class POFlatLine : POLine
-    {
-        public string StockCode { get; set; }
-    }
-
-    public class POLine
+    public class POSnapshotLine
     {
         public string PONumber { get; set; }
         public string VariationCode { get; set; }
-        public List<ExoDataPoint> DataPoints { get; set; }
+        public List<FORECAST_JOB_HOUR_SNAPSHOT> DataPoints { get; set; }
     }
 }

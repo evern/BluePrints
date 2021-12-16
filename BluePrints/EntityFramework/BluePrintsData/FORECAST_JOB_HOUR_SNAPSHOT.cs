@@ -63,6 +63,11 @@ namespace BluePrints.Data
 
         public Guid? DELETEDBY { get; set; }
 
+        public decimal? PO_TOTAL { get; set; }
+
+        [StringLength(50)]
+        public string PO_NUMBER { get; set; }
+
         public virtual PROJECT PROJECT { get; set; }
     }
 }

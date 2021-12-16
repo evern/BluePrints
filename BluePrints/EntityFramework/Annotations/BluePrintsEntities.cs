@@ -224,6 +224,7 @@ namespace BluePrints.Data
 #pragma warning disable CS4014 // Because this call is not awaited, execution of the current method continues before the call is completed
             RefreshForecastBudgetByProject(projectNumber, dataDate);
             RefreshForecastActualsByProject(projectNumber, dataDate);
+            RefreshPOByProject(projectNumber, dataDate);
             RefreshForecastPOByProject(projectNumber, dataDate);
             RefreshForecastIndirectByProject(projectNumber, dataDate);
             RefreshEarnedByProject(projectNumber, dataDate);
@@ -231,10 +232,19 @@ namespace BluePrints.Data
             RefreshForecastP6ByProject(projectNumber, dataDate, false);
 #pragma warning restore CS4014 // Because this call is not awaited, execution of the current method continues before the call is completed
         }
-        public static void RefreshPOForecastData(string projectNumber, DateTime dataDate)
+
+        public static void SavePOForecastData(string projectNumber, DateTime dataDate)
         {
 #pragma warning disable CS4014 // Because this call is not awaited, execution of the current method continues before the call is completed
             RefreshForecastPOByProject(projectNumber, dataDate);
+#pragma warning restore CS4014 // Because this call is not awaited, execution of the current method continues before the call is completed
+        }
+
+        public static void RefreshPOForecastData(string projectNumber, DateTime dataDate)
+        {
+#pragma warning disable CS4014 // Because this call is not awaited, execution of the current method continues before the call is completed
+            RefreshForecastActualsByProject(projectNumber, dataDate);
+            RefreshPOByProject(projectNumber, dataDate);
 #pragma warning restore CS4014 // Because this call is not awaited, execution of the current method continues before the call is completed
         }
         public static void RefreshIndirectForecastData(string projectNumber, DateTime dataDate)
@@ -302,6 +312,19 @@ namespace BluePrints.Data
                 SqlParameter isPlannedParameter = new SqlParameter("@IS_PLANNED", isPlanned);
                 SqlParameter userGuidParameter = new SqlParameter("@USER_GUID", LoginCredentials.CurrentUserGuid);
                 dbContext.Database.ExecuteSqlCommand("RefreshForecastP6s @PROJECT_NUMBER, @DATA_DATE, @IS_PLANNED, @USER_GUID", projectNumberParameter, dataDateParameter, isPlannedParameter, userGuidParameter);
+            }
+        }
+
+
+        public static void RefreshPOByProject(string projectNumber, DateTime dataDate)
+        {
+            using (BluePrintsEntities dbContext = new BluePrintsEntities())
+            {
+                dbContext.Database.CommandTimeout = 5000;
+                SqlParameter projectNumberParameter = new SqlParameter("@PROJECT_NUMBER", projectNumber);
+                SqlParameter dataDateParameter = new SqlParameter("@DATA_DATE", dataDate);
+                SqlParameter userGuidParameter = new SqlParameter("@USER_GUID", LoginCredentials.CurrentUserGuid);
+                dbContext.Database.ExecuteSqlCommand("RefreshPOs @PROJECT_NUMBER, @DATA_DATE, @USER_GUID", projectNumberParameter, dataDateParameter, userGuidParameter);
             }
         }
 

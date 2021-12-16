@@ -28,4 +28,21 @@ namespace BluePrints.Common.Projections
             return allActuals.Where(x => x.PONumber == this.PONO && x.Variation_Code == this.VariationCode && x.StockCode == this.StockCode).ToList();
         }
     }
+
+    public class POFlatForecastSnapshotProjection : POForecastSnapshotProjection
+    {
+        public string StockCode { get; set; }
+        public string Narrative { get; set; }
+        public DateTime? LastUpdated { get; set; }
+
+        protected override List<FORECAST_PO> getPOForecasts(IEnumerable<FORECAST_PO> allFORECAST_POs)
+        {
+            return allFORECAST_POs.Where(x => x.PONO == this.PONO && x.VARIATION_CODE == this.VariationCode && x.STOCK_CODE == this.StockCode).ToList();
+        }
+
+        protected override List<FORECAST_JOB_HOUR_SNAPSHOT> getCurrentActuals(IEnumerable<FORECAST_JOB_HOUR_SNAPSHOT> cutOffActuals)
+        {
+            return cutOffActuals.Where(x => x.PO_NUMBER == this.PONO && x.VARIATION_CODE == this.VariationCode && x.STOCK_CODE == this.StockCode).ToList();
+        }
+    }
 }
