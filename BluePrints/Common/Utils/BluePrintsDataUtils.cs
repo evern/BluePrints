@@ -2370,6 +2370,11 @@ namespace BluePrints.Common.ViewModel.Utils
             PROGRESS_ITEMSCollectionViewModel.BaseBulkSave(updateProgress);
         }
 
+        public static string GetFormattedColumnName(DateTime dateTime)
+        {
+            return dateTime.ToString(BluePrintsResources.ColumnDateFormat);
+        }
+
         public static void SaveUserPreference(string preferenceName, string preferenceValue)
         {
             if (LoginCredentials.IsAdmin)

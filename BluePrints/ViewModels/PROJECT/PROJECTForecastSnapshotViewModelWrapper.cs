@@ -9,6 +9,7 @@ using BluePrints.BluePrintsEntitiesDataModel;
 using BluePrints.Common;
 using BluePrints.Common.Base;
 using BluePrints.Common.Helpers;
+using BluePrints.Common.Misc;
 using BluePrints.Common.Projections;
 using BluePrints.Common.Resources;
 using BluePrints.Common.ViewModel.Misc;
@@ -75,6 +76,11 @@ namespace BluePrints.ViewModels
             P6ErrorMessage = "P6 Data Date is less than data date, please change data date in P6 and press 'Refresh P6' so that PF is accurate";
             IsHidden = true;
             canEditConstructionUncommitted = LoginCredentials.getPermissionStatus(DataUtils.GetNameOf(() => NavigationResources.Permission_ConstructionUncommitted)) == LoginCredentials.PermissionStatus.All;
+
+            dataModellingBackgroundWorker = new BackgroundWorker();
+            dataModellingBackgroundWorker.DoWork += dataModellingBackgroundWorker_DoWork; ;
+            dataModellingBackgroundWorker.RunWorkerCompleted += dataModellingBackgroundWorker_RunWorkerCompleted; ;
+            dataModellingBackgroundWorker.WorkerSupportsCancellation = true;
         }
 
         #region Database Operations
@@ -89,6 +95,7 @@ namespace BluePrints.ViewModels
         DispatcherTimer delayedProjectSaveTimer;
         DispatcherTimer delayedGridUpdateTimer;
         DispatcherTimer delayedUpdateFloatingProjectSummaryTimer;
+        BackgroundWorker dataModellingBackgroundWorker;
         public Data.PROJECT LoadPROJECT { get; set; }
         bool isWeeks;
         public bool IsWeeks
@@ -365,20 +372,18 @@ namespace BluePrints.ViewModels
         }
         protected override bool loadDataPointsTable()
         {
+            //Auto refresh forecast data on load
+            if (FORECAST_JOB_HOUR_SNAPSHOTCollection.Count() == 0)
+            {
+                RefreshAllForecastData();
+                return false;
+            }
+
             IsLoading = true;
             this.RaisePropertyChanged(x => x.IsLoading);
 
-            loadExoMethodsData();
-            loadSummaryStats();
-            refreshP6DataDateError();
-
-            dataPointsTable = null;
-
-            updateDataPointsTable();
-            this.RaisePropertyChanged(x => x.DataPointsTable);
-
-            IsLoading = false;
-            this.RaisePropertyChanged(x => x.IsLoading);
+            initializeDataTable();
+            dataModellingBackgroundWorker.RunWorkerAsync();
 
             //so filters will show transactions, as it is not shown during load, RaisePropertyChanged on ActualDetails will allow the grid to start showing data
             instantFeedbackActualDetailViewModel.OnParameterChange(LoadPROJECT);
@@ -386,19 +391,64 @@ namespace BluePrints.ViewModels
             return true;
         }
 
-
-        private void updateDataPointsTable()
+        private void initializeDataTable()
         {
             dataPointsTable = new DataTable();
-            Jobs = new ConcurrentBag<ForecastJobSnapshot>();
-            //GridControlService.GridControl?.BeginDataUpdate();
+            //construct data points table
+            dataPointsTable.Columns.Add(columnEntity, typeof(ForecastJobSnapshot));
+            dataPointsTable.Columns.Add(columnCompare, typeof(DataTable));
 
             DateTime actualsEarliestDate = FORECAST_JOB_HOUR_SNAPSHOTCollection.Where(x => x.SNAPSHOT_TYPE == ForecastSnapshotValueType.Actual && x.FORECAST_DATE != null).Count() == 0 ? DateTime.Now : FORECAST_JOB_HOUR_SNAPSHOTCollection.Where(x => x.SNAPSHOT_TYPE == ForecastSnapshotValueType.Actual && x.FORECAST_DATE != null).Min(x => (DateTime)x.FORECAST_DATE);
             DateTime firstDataPointDate = isShowActualsHistory ? actualsEarliestDate : FixedDataDate;
             alignedDataDateCollection = generateDates(firstDataPointDate);
-            InitializeColumnSource(ParentViewColumns, ParentSummaries, alignedDataDateCollection, false);
-            InitializeColumnSource(ChildViewColumns, ChildSummaries, alignedDataDateCollection, true);
+            foreach (DateTime alignedDataDate in alignedDataDateCollection)
+            {
+                string columnFieldName = alignedDataDate.Date.ToString(BluePrintsResources.ColumnDateFormat);
+                dataPointsTable.Columns.Add(columnFieldName, typeof(decimal));
+            }
+        }
 
+        private void initializeGridColumns(ObservableCollection<ColumnDescriptor> parentViewColumns, ObservableCollection<SummaryDescriptor> parentSummaries, ObservableCollection<ColumnDescriptor> childViewColumns, ObservableCollection<SummaryDescriptor> childSummaries, IEnumerable<DateTime> alignedDataDates)
+        {
+            InitializeColumnSource(parentViewColumns, parentSummaries, alignedDataDates, false);
+            InitializeColumnSource(childViewColumns, childSummaries, alignedDataDates, true);
+        }
+
+        private void updateForecastSummary(IEnumerable<ForecastJobSnapshot> jobs)
+        {
+            ForecastSummary.Reset();
+
+            //calculate project summary, needs to be done after uncommitted is calculated
+            ForecastSummary.Budget_Cost = jobs.Sum(x => x.Budget);
+            ForecastSummary.Current_Cost = jobs.Sum(x => x.ActualCosts);
+            ForecastSummary.Commitments = jobs.Sum(x => x.Outstanding);
+            ForecastSummary.Uncommitted_Forecast = jobs.Sum(x => x.Uncommitted);
+            ForecastSummary.OriginalEstimateAtCompletion = jobs.Sum(x => x.OriginalEstimateAtCompletion);
+            ForecastSummary.EstimateAtCompletion = jobs.Sum(x => x.EstimateAtCompletion);
+            ForecastSummary.CurrentEstimateAtCompletion = jobs.Sum(x => x.CurrentEstimateAtCompletion);
+            ForecastSummary.Contingency = jobs.Where(x => x.IsContingency).Sum(x => x.EstimateAtCompletion);
+            this.RaisePropertyChanged(x => x.ForecastSummary);
+        }
+
+        private void dataModellingBackgroundWorker_DoWork(object sender, DoWorkEventArgs e)
+        {
+            if (dataModellingBackgroundWorker.CancellationPending)
+            {
+                e.Cancel = true;
+                return;
+            }
+
+            Common.LoadingScreenManager.ShowLoadingScreen(1);
+            Common.LoadingScreenManager.SetMessage("Loading EXO Data...");
+            loadExoMethodsData();
+
+            Jobs = new ConcurrentBag<ForecastJobSnapshot>();
+            Common.LoadingScreenManager.SetMessage("Loading Tender Budget...");
+            refreshTenderBudgetCollection();
+            refreshJOBCOST_LINES_AUDIT();
+
+
+            Common.LoadingScreenManager.SetMessage("Loading Unique Jobs...");
             //data relevant to job
             HashSet<string> uniqueWBSNames = new HashSet<string>();
 
@@ -409,16 +459,10 @@ namespace BluePrints.ViewModels
             foreach (string uniqueWBSName in projectLines.Select(x => x.ForecastViewCode).Distinct())
                 uniqueWBSNames.Add(uniqueWBSName);
 
+            Common.LoadingScreenManager.SetMaxProgress(uniqueWBSNames.Count() + 1);
+            Common.LoadingScreenManager.ResetCurrentProgress();
+            Common.LoadingScreenManager.SetMessage("Loading Data for Jobs...");
             ConcurrentBag<UniqueForecastJob> uniqueForecastJobs = new ConcurrentBag<UniqueForecastJob>();
-
-            Common.LoadingScreenManager.ShowLoadingScreen(1);
-            Common.LoadingScreenManager.SetMessage("Loading Tender Budgets/Job History...");
-            refreshTenderBudgetCollection();
-            refreshJOBCOST_LINES_AUDIT();
-            Common.LoadingScreenManager.CloseLoadingScreen();
-
-            Common.LoadingScreenManager.ShowLoadingScreen(uniqueForecastJobs.Count());
-            Common.LoadingScreenManager.SetMessage("Generating Unique Job Codes...");
             Parallel.ForEach(uniqueWBSNames,
             uniqueWBSName =>
             {
@@ -427,39 +471,23 @@ namespace BluePrints.ViewModels
                 string disciplineCode = delimited[1];
                 string commodityCode = delimited[2];
                 string variationCode = delimited[3];
-                //For Debugging
-                //if (subJobCode == "20638-000-00-I1" && disciplineCode == "GP01" && commodityCode == "G64" && variationCode == "")
-                //{
-
-                //}
                 UniqueForecastJob uniqueForecastJob = new UniqueForecastJob(projectLines, subJobCode, disciplineCode, commodityCode, variationCode, FixedDataDate, PreviousDataDate, FORECAST_JOB_HOUR_SNAPSHOTCollection);
                 uniqueForecastJob.UpdateTenderBudget(TenderBudgetCollection.AsQueryable());
                 uniqueForecastJob.UpdateErrorMessage(JOBCOST_LINES_AUDITCollection.AsQueryable());
                 uniqueForecastJobs.Add(uniqueForecastJob);
                 Common.LoadingScreenManager.Progress();
+
+                //For Debugging
+                //if (subJobCode == "20638-000-00-I1" && disciplineCode == "GP01" && commodityCode == "G64" && variationCode == "")
+                //{
+
+                //}
             });
 
-            ////For Debugging
-            //foreach (string uniqueWBSName in uniqueWBSNames)
-            //{
-
-            //}
-
-            Common.LoadingScreenManager.CloseLoadingScreen();
-
-            Common.LoadingScreenManager.ShowLoadingScreen(uniqueForecastJobs.Count());
+            Common.LoadingScreenManager.SetMaxProgress(uniqueForecastJobs.Count() + 1);
+            Common.LoadingScreenManager.ResetCurrentProgress();
             Common.LoadingScreenManager.SetMessage("Preparing View...");
-            //construct data points table
-            dataPointsTable.Columns.Add(columnEntity, typeof(ForecastJobSnapshot));
-            dataPointsTable.Columns.Add(columnCompare, typeof(DataTable));
-
             DateTime firstViewDate = alignedDataDateCollection.Count == 0 ? DateTime.Now : alignedDataDateCollection.First();
-            foreach (DateTime alignedDataDate in alignedDataDateCollection)
-            {
-                string columnFieldName = alignedDataDate.Date.ToString(BluePrintsResources.ColumnDateFormat);
-                dataPointsTable.Columns.Add(columnFieldName, typeof(decimal));
-            }
-
             bool isBudgetReadOnly = LoginCredentials.getPermissionStatus(DataUtils.GetNameOf(() => NavigationResources.Permission_EXO_ChangeBudget)) == LoginCredentials.PermissionStatus.None;
             //child data table is used to record original value of actuals + committed + remaining values before it is overridden by forecasts
             Parallel.ForEach(uniqueForecastJobs,
@@ -481,36 +509,32 @@ namespace BluePrints.ViewModels
             //{
 
             //}
+        }
 
-            Common.LoadingScreenManager.ShowLoadingScreen(1);
-            Common.LoadingScreenManager.SetMessage("Loading Forecast Overrides...");
+        private void dataModellingBackgroundWorker_RunWorkerCompleted(object sender, RunWorkerCompletedEventArgs e)
+        {
+            Common.LoadingScreenManager.SetMessage("Caching User Forecast Override(s)...");
             List<FORECAST> cachedFORECASTCollection = QueryableFORECASTCollection.ToList();
-            Common.LoadingScreenManager.CloseLoadingScreen();
 
-            Common.LoadingScreenManager.ShowLoadingScreen(Jobs.Count());
             Common.LoadingScreenManager.SetMessage("Updating View...");
+            Common.LoadingScreenManager.SetMaxProgress(Jobs.Count());
+            Common.LoadingScreenManager.ResetCurrentProgress();
 
-            foreach(ForecastJobSnapshot job in Jobs)
+            foreach (ForecastJobSnapshot job in Jobs)
             {
                 DataRow jobRow = updateDataTable(job, cachedFORECASTCollection);
                 Common.LoadingScreenManager.Progress();
             }
 
-            //GridControlService.GridControl?.EndDataUpdate();
+            initializeGridColumns(ParentViewColumns, ParentSummaries, ChildViewColumns, ChildSummaries, alignedDataDateCollection);
+            Common.LoadingScreenManager.SetMessage("Updating Summary...");
+            updateForecastSummary(Jobs);
+            loadSummaryStats();
+            refreshP6DataDateError();
             Common.LoadingScreenManager.CloseLoadingScreen();
 
-            ForecastSummary.Reset();
-
-            //calculate project summary, needs to be done after uncommitted is calculated
-            ForecastSummary.Budget_Cost = Jobs.Sum(x => x.Budget);
-            ForecastSummary.Current_Cost = Jobs.Sum(x => x.ActualCosts);
-            ForecastSummary.Commitments = Jobs.Sum(x => x.Outstanding);
-            ForecastSummary.Uncommitted_Forecast = Jobs.Sum(x => x.Uncommitted);
-            ForecastSummary.OriginalEstimateAtCompletion = Jobs.Sum(x => x.OriginalEstimateAtCompletion);
-            ForecastSummary.EstimateAtCompletion = Jobs.Sum(x => x.EstimateAtCompletion);
-            ForecastSummary.CurrentEstimateAtCompletion = Jobs.Sum(x => x.CurrentEstimateAtCompletion);
-            ForecastSummary.Contingency = Jobs.Where(x => x.IsContingency).Sum(x => x.EstimateAtCompletion);
-            this.RaisePropertyChanged(x => x.ForecastSummary);
+            IsLoading = false;
+            this.RaisePropertiesChanged();
         }
 
         private DataRow updateDataTable(ForecastJobSnapshot job, List<FORECAST> CachedFORECASTCollection = null)
@@ -891,7 +915,7 @@ namespace BluePrints.ViewModels
             }
         }
 
-        private void InitializeColumnSource(ObservableCollection<ColumnDescriptor> columns, ObservableCollection<SummaryDescriptor> summaries, List<DateTime> alignedDates, bool isChild)
+        private void InitializeColumnSource(ObservableCollection<ColumnDescriptor> columns, ObservableCollection<SummaryDescriptor> summaries, IEnumerable<DateTime> alignedDates, bool isChild)
         {
             columns.Clear();
             summaries.Clear();
@@ -1926,14 +1950,10 @@ namespace BluePrints.ViewModels
         #region View Updates
         private void loadExoMethodsData()
         {
-            Common.LoadingScreenManager.SetMessage("Loading Job Lines...");
             masterJob = ExoQueries.GetProjectSubJob(primeroUnitOfWork, LoadPROJECT.NUMBER, LoadPROJECT.NUMBER);
             copyLine = ExoQueries.GetAnyProjectLineByJobNumber(primeroUnitOfWork, LoadPROJECT.NUMBER);
             projectLines = ExoQueries.GetExoSubJobProjection(primeroUnitOfWork, LoadPROJECT);
-
-            Common.LoadingScreenManager.SetMessage("Loading PO Details...");
             X_PURCHORD_LINE_DETAILS = PrimeroEntities.GetPurchaseOrdersDetail(primeroUnitOfWork, LoadPROJECT.NUMBER, FixedDataDateMonthEnd);
-            Common.LoadingScreenManager.CloseLoadingScreen();
         }
 
         private void loadSummaryStats()
@@ -2638,13 +2658,27 @@ namespace BluePrints.ViewModels
 
         public override void FullRefresh()
         {
-            alignedDataDateCollection.Clear();
+            if(alignedDataDateCollection != null)
+                alignedDataDateCollection.Clear();
+
             loadExoMethodsData();
             loadSummaryStats();
 
+            Common.LoadingScreenManager.ShowLoadingScreen(1);
+            Common.LoadingScreenManager.SetMessage("Preparing to Refresh...");
             pause();
+            Common.LoadingScreenManager.CloseLoadingScreen();
+
+            IsLoading = true;
+            this.RaisePropertyChanged(x => x.IsLoading);
             //ForecastSummary.Reset();
             base.FullRefresh();
+        }
+
+        protected override void OnClose(CancelEventArgs e)
+        {
+            dataModellingBackgroundWorker.CancelAsync();
+            base.OnClose(e);
         }
 
         /// <summary>
@@ -2652,10 +2686,7 @@ namespace BluePrints.ViewModels
         /// </summary>
         private async void pause()
         {
-            Common.LoadingScreenManager.ShowLoadingScreen(1);
-            Common.LoadingScreenManager.SetMessage("Preparing to Refresh...");
             await Task.Delay(5000);
-            Common.LoadingScreenManager.CloseLoadingScreen();
         }
 
         public IEnumerable<FORECAST_JOB_HOUR_SNAPSHOT> FORECAST_JOB_HOUR_SNAPSHOTCollection
