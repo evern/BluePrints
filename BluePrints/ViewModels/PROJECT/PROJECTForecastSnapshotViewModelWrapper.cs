@@ -422,9 +422,8 @@ namespace BluePrints.ViewModels
             Common.LoadingScreenManager.SetMessage("Loading Tender Budgets/Job History...");
             refreshTenderBudgetCollection();
             refreshJOBCOST_LINES_AUDIT();
-            Common.LoadingScreenManager.CloseLoadingScreen();
 
-            Common.LoadingScreenManager.ShowLoadingScreen(uniqueForecastJobs.Count());
+            Common.LoadingScreenManager.ShowLoadingScreen(uniqueForecastJobs.Count() + 1);
             Common.LoadingScreenManager.SetMessage("Generating Unique Job Codes...");
             Parallel.ForEach(uniqueWBSNames,
             uniqueWBSName =>
@@ -452,9 +451,8 @@ namespace BluePrints.ViewModels
 
             //}
 
-            Common.LoadingScreenManager.CloseLoadingScreen();
-
-            Common.LoadingScreenManager.ShowLoadingScreen(uniqueForecastJobs.Count());
+            Common.LoadingScreenManager.SetMaxProgress(uniqueForecastJobs.Count() + 1);
+            Common.LoadingScreenManager.ResetCurrentProgress();
             Common.LoadingScreenManager.SetMessage("Preparing View...");
             //construct data points table
             dataPointsTable.Columns.Add(columnEntity, typeof(ForecastJobSnapshot));
@@ -492,9 +490,9 @@ namespace BluePrints.ViewModels
             Common.LoadingScreenManager.ShowLoadingScreen(1);
             Common.LoadingScreenManager.SetMessage("Loading Forecast Overrides...");
             List<FORECAST> cachedFORECASTCollection = QueryableFORECASTCollection.ToList();
-            Common.LoadingScreenManager.CloseLoadingScreen();
 
-            Common.LoadingScreenManager.ShowLoadingScreen(Jobs.Count());
+            Common.LoadingScreenManager.ResetCurrentProgress();
+            Common.LoadingScreenManager.SetMaxProgress(Jobs.Count() + 1);
             Common.LoadingScreenManager.SetMessage("Updating View...");
 
             foreach(ForecastJobSnapshot job in Jobs)
