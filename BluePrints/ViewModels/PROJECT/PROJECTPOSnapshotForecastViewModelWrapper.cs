@@ -689,6 +689,7 @@ namespace BluePrints.ViewModels
         {
             Common.LoadingScreenManager.ShowLoadingScreen(1);
             Common.LoadingScreenManager.SetMessage("Load PO and Actual Snapshot...");
+            BluePrintsContextHelper.RefreshForecastActualsByProject(loadPROJECT.NUMBER, (DateTime)LoadDataDate);
             BluePrintsContextHelper.RefreshPOByProject(loadPROJECT.NUMBER, (DateTime)LoadDataDate);
             Common.LoadingScreenManager.CloseLoadingScreen();
 
