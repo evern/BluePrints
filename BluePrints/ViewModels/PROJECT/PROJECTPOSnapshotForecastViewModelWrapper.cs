@@ -699,6 +699,10 @@ namespace BluePrints.ViewModels
             FullRefresh();
         }
 
+        public bool CanRefreshAllForecastData()
+        {
+            return !IsLoading;
+        }
 
         public void RefreshAllForecastData()
         {
