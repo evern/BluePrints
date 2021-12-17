@@ -16,6 +16,7 @@ namespace BluePrints.Common.Projections
     public class POForecastSnapshotProjection
     {
         public string PONO { get; set; }
+        public string Description { get; set; }
         public string Supplier { get; set; }
         public string VariationCode { get; set; }
         public string Comments { get; set; }

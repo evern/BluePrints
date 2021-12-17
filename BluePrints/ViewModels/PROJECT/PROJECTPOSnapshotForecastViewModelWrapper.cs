@@ -78,8 +78,8 @@ namespace BluePrints.ViewModels
         BackgroundWorker exoLoadingBackgroundWorker = new BackgroundWorker();
         BackgroundWorker projectSavingBackgroundWorker = new BackgroundWorker();
 
-        List<X_PURCHORD_LINE_DETAIL> X_PURCHORD_LINE_DETAILS;
-        InstantFeedbackActualDetailsCollectionViewModelWrapper instantFeedbackActualDetailViewModel = InstantFeedbackActualDetailsCollectionViewModelWrapper.Create();
+        protected List<X_PURCHORD_LINE_DETAIL> X_PURCHORD_LINE_DETAILS;
+        protected InstantFeedbackActualDetailsCollectionViewModelWrapper instantFeedbackActualDetailViewModel = InstantFeedbackActualDetailsCollectionViewModelWrapper.Create();
         protected override void resolveParameters(object parameter)
         {
             var PROJECTParameter = (EntitiesParameter<PROJECT>)parameter;
@@ -1612,6 +1612,11 @@ namespace BluePrints.ViewModels
             get { return "PROJECTPOSnapshotForecastViewModelWrapper_v2"; }
         }
         #endregion
+    }
+
+    public class POFlatSnapshotLine : POSnapshotLine
+    {
+        public string StockCode { get; set; }
     }
 
     public class POSnapshotLine
