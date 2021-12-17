@@ -115,7 +115,14 @@ namespace BluePrints.ViewModels
         }
 
         protected override bool loadDataPointsTable()
-        {
+        {            
+            //Auto refresh forecast data on load
+            if (CurrentPO_FORECAST_JOB_HOUR_SNAPSHOTCollection.Count() == 0 && LoadDataDate != null)
+            {
+                RefreshAllForecastData();
+                return false;
+            }
+
             IsLoading = true;
             this.RaisePropertyChanged(x => x.IsLoading);
 
@@ -683,6 +690,25 @@ namespace BluePrints.ViewModels
             Common.LoadingScreenManager.ShowLoadingScreen(1);
             Common.LoadingScreenManager.SetMessage("Load PO and Actual Snapshot...");
             BluePrintsContextHelper.RefreshPOByProject(loadPROJECT.NUMBER, (DateTime)LoadDataDate);
+            Common.LoadingScreenManager.CloseLoadingScreen();
+
+            resetIsLoading();
+            FullRefresh();
+        }
+
+
+        public void RefreshAllForecastData()
+        {
+            IsLoading = true;
+            Common.LoadingScreenManager.ShowLoadingScreen(1);
+            //Common.LoadingScreenManager.SetMessage("Fetching P6 remaining data...");
+            //await BluePrintsContextHelper.RefreshDeliverablesRemainingDataPointsByProject(LoadPROJECT.NUMBER, true);
+
+            //Common.LoadingScreenManager.SetMessage("Fetching P6 planned data...");
+            //await BluePrintsContextHelper.RefreshDeliverablesPlannedDataPointsByProject(LoadPROJECT.NUMBER, true);
+
+            Common.LoadingScreenManager.SetMessage("Updating actuals, indirect, P6 and PO data...");
+            BluePrintsContextHelper.RefreshAllForecastData(loadPROJECT.NUMBER, (DateTime)LoadDataDate);
             Common.LoadingScreenManager.CloseLoadingScreen();
 
             resetIsLoading();

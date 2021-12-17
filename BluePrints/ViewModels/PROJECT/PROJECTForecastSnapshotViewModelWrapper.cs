@@ -364,7 +364,14 @@ namespace BluePrints.ViewModels
 
         }
         protected override bool loadDataPointsTable()
-        {
+        {            
+            //Auto refresh forecast data on load
+            if (FORECAST_JOB_HOUR_SNAPSHOTCollection.Count() == 0)
+            {
+                RefreshAllForecastData();
+                return false;
+            }
+
             IsLoading = true;
             this.RaisePropertyChanged(x => x.IsLoading);
 
