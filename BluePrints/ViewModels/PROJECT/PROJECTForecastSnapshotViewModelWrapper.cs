@@ -342,6 +342,21 @@ namespace BluePrints.ViewModels
                 return LoadPROJECT.P6FORECAST_DATADATE;
             }
         }
+
+        private DateTime? snapshotLastUpdated;
+        public DateTime? SnapshotLastUpdated
+        {
+            get
+            {
+                if (LoadPROJECT == null)
+                    return null;
+
+                if (snapshotLastUpdated != null)
+                    return snapshotLastUpdated;
+
+                return LoadPROJECT.SNAPSHOT_LAST_UPDATED;
+            }
+        }
         #endregion
 
         #region DataTable Population
@@ -2625,6 +2640,9 @@ namespace BluePrints.ViewModels
 
         public void RefreshAllForecastData()
         {
+            if (MessageBoxService.ShowMessage("Are you sure you want to update snapshot data? This may cause forecast result of PO/EH PO's and Indirect's inaccurate", "Warning", MessageButton.YesNo, MessageIcon.Warning) == MessageResult.No)
+                return;
+
             IsLoading = true;
             Common.LoadingScreenManager.ShowLoadingScreen(1);
             //Common.LoadingScreenManager.SetMessage("Fetching P6 remaining data...");
@@ -2636,6 +2654,8 @@ namespace BluePrints.ViewModels
             Common.LoadingScreenManager.SetMessage("Updating actuals, indirect, P6 and PO data...");
             BluePrintsContextHelper.RefreshAllForecastData(LoadPROJECT.NUMBER, FixedDataDate);
             Common.LoadingScreenManager.CloseLoadingScreen();
+            snapshotLastUpdated = DateTime.Now;
+            this.RaisePropertyChanged(x => x.SnapshotLastUpdated);
 
             resetIsLoading();
             FullRefresh();

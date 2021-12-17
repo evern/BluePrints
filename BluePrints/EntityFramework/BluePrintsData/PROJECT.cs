@@ -114,6 +114,10 @@
 
         public bool AUTO_REFRESH_FORECAST { get; set; }
 
+        public DateTime? SNAPSHOT_LAST_UPDATED { get; set; }
+
+        public Guid? SNAPSHOT_LAST_UPDATED_BY { get; set; }
+
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
         public virtual ICollection<DAYWORK> DAYWORK { get; set; }
 

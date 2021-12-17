@@ -363,6 +363,11 @@
                 <dxb:BarCheckItem x:Name="biShowActuals" Content="Show Actuals History" Glyph="{dxc:DXImage Images/Scheduling/SwitchTimeScalesTo_16x16.png}" IsChecked="{Binding IsShowActualsHistory, Mode=TwoWay}" IsEnabled="{Binding IsLoading, Converter={StaticResource BooleanNegationConverter}}" LargeGlyph="{dxc:DXImage Images/Scheduling/SwitchTimeScalesTo_32x32.png}" RibbonStyle="SmallWithText" ToolTip="Toggle historical actuals visibility" />
                 <dxb:BarButtonItem x:Name="biSaveSummary" Command="{Binding SaveSummaryCommand}" Content="Save Excel Summary" Glyph="{dx:DXImage Image=SpreadsheetInsertTable_16x16.png}" LargeGlyph="{dx:DXImage Image=SpreadsheetInsertTable_32x32.png}" RibbonStyle="SmallWithText" ToolTip="Saves the summary for excel macro to retrieve values" />
                 <dxb:BarButtonItem x:Name="biRefreshAllData" Command="{Binding RefreshAllForecastDataCommand}" Content="Refresh Data" LargeGlyph="{dx:DXImage Images/Toolbox Items/PictureBox_32x32.png}" RibbonStyle="SmallWithText" ToolTip="Refresh budget, earned, actuals, indirect's forecast, PO outstanding and PO forecast snapshot" Glyph="{dxc:DXImage Images/Toolbox Items/PictureBox_16x16.png}" />
+                <dxb:BarEditItem x:Name="beLastRUpdated" Content="Data Refreshed" Glyph="{dxc:DXImage Image=Time2_16x16.png}" LargeGlyph="{dxc:DXImage Image=Time2_32x32.png}" IsReadOnly="True" EditValue="{Binding SnapshotLastUpdated, Mode=OneWay}" ToolTip="Budget, Actuals, Earned, PO Outstanding, PO Forecast, Indirect Forecast last updated date">
+                    <dxb:BarEditItem.EditSettings>
+                        <dxe:TextEditSettings DisplayFormat="d" IsEnabled="False" />
+                    </dxb:BarEditItem.EditSettings>
+                </dxb:BarEditItem>
             </dxb:BarManager.Items>
             <DockPanel>
                 <dxr:RibbonControl Style="{StaticResource DefaultRibbonControlStyle}">
@@ -403,6 +408,7 @@
                                 <dxb:BarButtonItemLink BarItemName="biLastRefreshedError" />
                                 <dxb:BarEditItemLink BarItemName="beLastRefreshed" />
                                 <dxb:BarButtonItemLink BarItemName="biRefreshAllData" />
+                                <dxb:BarEditItemLink BarItemName="beLastRUpdated" />
                                 <dxb:BarButtonItemLink BarItemName="biReloadP6" />
                             </dxr:RibbonPageGroup>
                         </dxr:RibbonPage>

@@ -689,10 +689,14 @@ namespace BluePrints.ViewModels
 
         public void LoadSnapshot()
         {
+            if (MessageBoxService.ShowMessage("Are you sure you want to update actuals and PO outstanding data? This may cause forecast result of EH PO's and Indirects inaccurate", "Warning", MessageButton.YesNo, MessageIcon.Warning) == MessageResult.No)
+                return;
+
             Common.LoadingScreenManager.ShowLoadingScreen(1);
             Common.LoadingScreenManager.SetMessage("Load PO and Actual Snapshot...");
             BluePrintsContextHelper.RefreshForecastActualsByProject(loadPROJECT.NUMBER, (DateTime)LoadDataDate);
             BluePrintsContextHelper.RefreshPOByProject(loadPROJECT.NUMBER, (DateTime)LoadDataDate);
+            BluePrintsContextHelper.UpdateProjectSnapshotDateByProject(loadPROJECT.NUMBER);
             Common.LoadingScreenManager.CloseLoadingScreen();
 
             resetIsLoading();

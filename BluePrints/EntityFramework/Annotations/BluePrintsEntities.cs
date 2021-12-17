@@ -230,6 +230,7 @@ namespace BluePrints.Data
             RefreshEarnedByProject(projectNumber, dataDate);
             RefreshForecastP6ByProject(projectNumber, dataDate, true);
             RefreshForecastP6ByProject(projectNumber, dataDate, false);
+            UpdateProjectSnapshotDateByProject(projectNumber);
 #pragma warning restore CS4014 // Because this call is not awaited, execution of the current method continues before the call is completed
         }
 
@@ -349,6 +350,17 @@ namespace BluePrints.Data
                 SqlParameter dataDateParameter = new SqlParameter("@DATA_DATE", dataDate);
                 SqlParameter userGuidParameter = new SqlParameter("@USER_GUID", LoginCredentials.CurrentUserGuid);
                 dbContext.Database.ExecuteSqlCommand("RefreshForecastETC @PROJECT_NUMBER, @DATA_DATE, @USER_GUID", projectNumberParameter, dataDateParameter, userGuidParameter);
+            }
+        }
+
+        public static void UpdateProjectSnapshotDateByProject(string projectNumber)
+        {
+            using (BluePrintsEntities dbContext = new BluePrintsEntities())
+            {
+                dbContext.Database.CommandTimeout = 5000;
+                SqlParameter projectNumberParameter = new SqlParameter("@PROJECT_NUMBER", projectNumber);
+                SqlParameter userGuidParameter = new SqlParameter("@USER_GUID", LoginCredentials.CurrentUserGuid);
+                dbContext.Database.ExecuteSqlCommand("UpdateProjectSnapshotDate @PROJECT_NUMBER, @USER_GUID", projectNumberParameter, userGuidParameter);
             }
         }
     }
