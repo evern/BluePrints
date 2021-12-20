@@ -2642,7 +2642,9 @@ namespace BluePrints.ViewModels
             LoadingScreenManager.SetMessage("Saving changes...");
             bluePrintsUnitOfWork.SaveChanges();
             LoadingScreenManager.CloseLoadingScreen();
+            isFixedDataDateSet = false;
             FixedDataDate = FixedDataDateMonthEnd.AddMonths(1);
+            isFixedDataDateSet = true;
             LoadDataDate = FixedDataDate;
             SaveDateAndRefresh();
         }
