@@ -71,6 +71,8 @@ namespace BluePrints.Data
 
         public int? EXO_STAFF_ID_REMOTE { get; set; }
 
+        public int? EXO_STAFF_ID_USA { get; set; }
+
         public DateTime CREATED { get; set; }
 
         public Guid CREATEDBY { get; set; }

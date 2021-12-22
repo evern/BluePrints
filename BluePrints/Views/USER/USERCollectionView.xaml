@@ -138,6 +138,27 @@
                                 </dxg:LookUpEditSettings>
                             </dxg:GridColumn.EditSettings>
                         </dxg:GridColumn>
+                        <dxg:GridColumn FieldName="EXO_STAFF_ID_USA" Header="USA EXO" HeaderToolTip="User name in USA's Exo">
+                            <dxg:GridColumn.EditSettings>
+                                <dxg:LookUpEditSettings AutoComplete="True" AutoPopulateColumns="False" DisplayMember="NAME" IsTextEditable="True" ItemsSource="{Binding USASTAFFCollection}" NullValueButtonPlacement="Popup" ValueMember="STAFFNO" >
+                                    <dxg:LookUpEditSettings.StyleSettings>
+                                        <dxg:SearchLookUpEditStyleSettings />
+                                    </dxg:LookUpEditSettings.StyleSettings>
+                                    <dxg:LookUpEditSettings.PopupContentTemplate>
+                                        <ControlTemplate TargetType="ContentControl">
+                                            <dxg:GridControl x:Name="PART_GridControl" SelectionMode="Row" ShowBorder="False">
+                                                <dxg:GridControl.Columns>
+                                                    <dxg:GridColumn FieldName="NAME" Header="Name" ReadOnly="True" />
+                                                </dxg:GridControl.Columns>
+                                                <dxg:GridControl.View>
+                                                    <dxg:TableView AutoWidth="True" RowStyle="{StaticResource SelectionBackgroundStyle}" ShowFilterPanelMode="ShowAlways" ShowFocusedRectangle="True" ShowGroupPanel="False" ShowSelectionRectangle="True" />
+                                                </dxg:GridControl.View>
+                                            </dxg:GridControl>
+                                        </ControlTemplate>
+                                    </dxg:LookUpEditSettings.PopupContentTemplate>
+                                </dxg:LookUpEditSettings>
+                            </dxg:GridColumn.EditSettings>
+                        </dxg:GridColumn>
                         <dxg:GridColumn FieldName="GUID_APPROVER" Header="Approver" HeaderToolTip="Approver">
                             <dxg:GridColumn.EditSettings>
                                 <dxe:ComboBoxEditSettings AutoComplete="True" DisplayMember="NAME" IsTextEditable="True" ItemsSource="{Binding Entities}" NullValueButtonPlacement="Popup" ValueMember="GUID" />

@@ -344,6 +344,8 @@ namespace BluePrints.Common.ViewModel.Utils
 
             if (officeName == BluePrintsResources.OfficeMontreal)
                 return currentUser.EXO_STAFF_ID_REMOTE;
+            else if (officeName == BluePrintsResources.OfficeUSA)
+                return currentUser.EXO_STAFF_ID_USA;
             else
                 return currentUser.EXO_STAFF_ID;
         }

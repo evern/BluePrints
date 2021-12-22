@@ -84,8 +84,14 @@ namespace BluePrints.Data
             {
                 if (ProjectLocale == string.Empty || ProjectLocale == null)
                     return null;
-                
-;               return ProjectLocale == BluePrintsResources.OfficeMontreal ? EXO_STAFF_ID_REMOTE : EXO_STAFF_ID;
+
+                if (ProjectLocale == BluePrintsResources.OfficeMontreal)
+                    return EXO_STAFF_ID_REMOTE;
+
+                if (ProjectLocale == BluePrintsResources.OfficeUSA)
+                    return EXO_STAFF_ID_USA;
+
+;               return EXO_STAFF_ID;
             }
             set
             {
@@ -94,8 +100,10 @@ namespace BluePrints.Data
 
                 if (ProjectLocale == BluePrintsResources.OfficePerth)
                     EXO_STAFF_ID = value;
-                else
+                else if (ProjectLocale == BluePrintsResources.OfficeMontreal)
                     EXO_STAFF_ID_REMOTE = value;
+                else
+                    EXO_STAFF_ID_USA = value;
             }
         }
 

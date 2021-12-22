@@ -53,8 +53,10 @@ namespace BluePrints.ViewModels
         private IUnitOfWorkFactory<IBluePrintsEntitiesUnitOfWork> bluePrintsUnitOfWorkFactory = BluePrintsEntitiesUnitOfWorkSource.GetUnitOfWorkFactory();
         private IUnitOfWorkFactory<IPrimeroEntitiesUnitOfWork> primeroUnitOfWorkFactory = PrimeroEntitiesUnitOfWorkSource.GetUnitOfWorkFactory();
         private IUnitOfWorkFactory<IPrimeroEntitiesUnitOfWork> pgaUnitOfWorkFactory = PrimeroEntitiesUnitOfWorkSource.GetUnitOfWorkFactory(BluePrintsResources.OfficeMontreal);
+        private IUnitOfWorkFactory<IPrimeroEntitiesUnitOfWork> usaUnitOfWorkFactory = PrimeroEntitiesUnitOfWorkSource.GetUnitOfWorkFactory(BluePrintsResources.OfficeUSA);
         IPrimeroEntitiesUnitOfWork primeroUnitOfWork;
         IPrimeroEntitiesUnitOfWork pgaUnitOfWork;
+        IPrimeroEntitiesUnitOfWork usaUnitOfWork;
         IBluePrintsEntitiesUnitOfWork bluePrintsUnitOfWork;
         //timer to scan serial port
         protected override void resolveParameters(object parameter)
@@ -62,6 +64,7 @@ namespace BluePrints.ViewModels
             bluePrintsUnitOfWork = bluePrintsUnitOfWorkFactory.CreateUnitOfWork();
             primeroUnitOfWork = primeroUnitOfWorkFactory.CreateUnitOfWork();
             pgaUnitOfWork = pgaUnitOfWorkFactory.CreateUnitOfWork();
+            usaUnitOfWork = pgaUnitOfWorkFactory.CreateUnitOfWork();
         }
 
         protected override void addEntitiesLoader()
@@ -182,7 +185,7 @@ namespace BluePrints.ViewModels
 
         protected override void OnAfterProjectionSave(USER projection, USER entity, bool isNew)
         {
-            if (isNew && (entity.EXO_STAFF_ID == null || entity.EXO_STAFF_ID_REMOTE == null))
+            if (isNew && (entity.EXO_STAFF_ID == null || entity.EXO_STAFF_ID_REMOTE == null || entity.EXO_STAFF_ID_USA == null))
             {
                 entity.START_DATE = DateTime.Now;
 
@@ -191,6 +194,9 @@ namespace BluePrints.ViewModels
 
                 if (entity.EXO_STAFF_ID_REMOTE == null)
                     entity.EXO_STAFF_ID_REMOTE = getExoStaffId(entity, MontrealSTAFFCollection);
+
+                if (entity.EXO_STAFF_ID_USA == null)
+                    entity.EXO_STAFF_ID_USA = getExoStaffId(entity, USASTAFFCollection);
             }
 
             saveProjectAssignments(entity);
@@ -276,14 +282,14 @@ namespace BluePrints.ViewModels
             List<USER> userToSave = new List<USER>();
             foreach(USER entity in SelectedEntities)
             {
-                if (PopulateUserStaffIds(entity, PerthSTAFFCollection, MontrealSTAFFCollection))
+                if (PopulateUserStaffIds(entity, PerthSTAFFCollection, MontrealSTAFFCollection, USASTAFFCollection))
                     userToSave.Add(entity);
             }
 
             MainViewModel.BaseBulkSave(userToSave);
         }
 
-        public static bool PopulateUserStaffIds(USER entity, IEnumerable<STAFF> PerthSTAFFCollection, IEnumerable<STAFF> MontrealSTAFFCollection)
+        public static bool PopulateUserStaffIds(USER entity, IEnumerable<STAFF> PerthSTAFFCollection, IEnumerable<STAFF> MontrealSTAFFCollection, IEnumerable<STAFF> USASTAFFCollection)
         {
             int? exoPerthId = getExoStaffId(entity, PerthSTAFFCollection);
             bool shouldSave = false;
@@ -297,6 +303,13 @@ namespace BluePrints.ViewModels
             if (exoMontrealId != null)
             {
                 entity.EXO_STAFF_ID_REMOTE = exoMontrealId;
+                shouldSave = true;
+            }
+
+            int? exoUSAId = getExoStaffId(entity, USASTAFFCollection);
+            if (exoUSAId != null)
+            {
+                entity.EXO_STAFF_ID_USA = exoUSAId;
                 shouldSave = true;
             }
 
@@ -320,6 +333,8 @@ namespace BluePrints.ViewModels
                     STAFF STAFF;
                     if (entity.QueryOfficeName.ToUpper() == BluePrintsResources.OfficePerth)
                         STAFF = PerthSTAFFCollection.FirstOrDefault(x => x.STAFFNO == entity.EXO_STAFF_ID);
+                    else if(entity.QueryOfficeName.ToUpper() == BluePrintsResources.OfficeUSA)
+                        STAFF = USASTAFFCollection.FirstOrDefault(x => x.STAFFNO == entity.EXO_STAFF_ID_USA);
                     else
                         STAFF = MontrealSTAFFCollection.FirstOrDefault(x => x.STAFFNO == entity.EXO_STAFF_ID_REMOTE);
 
@@ -392,6 +407,26 @@ namespace BluePrints.ViewModels
                 }
 
                 return perthStaffCollection;
+            }
+        }
+
+        List<STAFF> usaStaffCollection;
+        public IEnumerable<STAFF> USASTAFFCollection
+        {
+            get
+            {
+                if (usaUnitOfWork == null)
+                    return null;
+
+                if (usaStaffCollection == null)
+                {
+                    //LoadingScreenManager.ShowLoadingScreen(1);
+                    //LoadingScreenManager.SetMessage("Loading Montreal Active Staffs");
+                    usaStaffCollection = new List<STAFF>(usaUnitOfWork.STAFF.Where(x => x.ISACTIVE == "Y").OrderBy(x => x.NAME));
+                    //LoadingScreenManager.CloseLoadingScreen();
+                }
+
+                return usaStaffCollection;
             }
         }
 

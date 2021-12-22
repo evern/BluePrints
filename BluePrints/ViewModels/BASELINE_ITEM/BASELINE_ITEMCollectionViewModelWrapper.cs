@@ -505,6 +505,8 @@ namespace BluePrints.ViewModels
             int? authorisationId = null;
             if (loadPROJECT.OfficeNameForExo == BluePrintsResources.OfficeMontreal)
                 authorisationId = LoginCredentials.CurrentUser.EXO_STAFF_ID_REMOTE;
+            else if (loadPROJECT.OfficeNameForExo == BluePrintsResources.OfficeUSA)
+                authorisationId = LoginCredentials.CurrentUser.EXO_STAFF_ID_USA;
             else
                 authorisationId = LoginCredentials.CurrentUser.EXO_STAFF_ID;
 
