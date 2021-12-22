@@ -64,7 +64,7 @@ namespace BluePrints.ViewModels
             bluePrintsUnitOfWork = bluePrintsUnitOfWorkFactory.CreateUnitOfWork();
             primeroUnitOfWork = primeroUnitOfWorkFactory.CreateUnitOfWork();
             pgaUnitOfWork = pgaUnitOfWorkFactory.CreateUnitOfWork();
-            usaUnitOfWork = pgaUnitOfWorkFactory.CreateUnitOfWork();
+            usaUnitOfWork = usaUnitOfWorkFactory.CreateUnitOfWork();
         }
 
         protected override void addEntitiesLoader()
