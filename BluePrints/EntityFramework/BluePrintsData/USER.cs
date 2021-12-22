@@ -67,9 +67,9 @@ namespace BluePrints.Data
         [StringLength(100)]
         public string EMAIL { get; set; }
 
-        public int? EXO_STAFF_ID { get; set; }
+        public int? EXO_STAFF_ID_PERTH { get; set; }
 
-        public int? EXO_STAFF_ID_REMOTE { get; set; }
+        public int? EXO_STAFF_ID_MONTREAL { get; set; }
 
         public int? EXO_STAFF_ID_USA { get; set; }
 

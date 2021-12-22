@@ -321,11 +321,11 @@ namespace BluePrints.Common.Base
                     {
                         int? userIdForAuthorisation = null;
                         if (project.OfficeNameForExo == BluePrintsResources.OfficeMontreal)
-                            userIdForAuthorisation = LoginCredentials.CurrentUser.EXO_STAFF_ID_REMOTE;
+                            userIdForAuthorisation = LoginCredentials.CurrentUser.EXO_STAFF_ID_MONTREAL;
                         else if(project.OfficeNameForExo == BluePrintsResources.OfficeUSA)
                             userIdForAuthorisation = LoginCredentials.CurrentUser.EXO_STAFF_ID_USA;
                         else
-                            userIdForAuthorisation = LoginCredentials.CurrentUser.EXO_STAFF_ID;
+                            userIdForAuthorisation = LoginCredentials.CurrentUser.EXO_STAFF_ID_PERTH;
 
                         if (!userIdContexts.Any(x => x.Id == userIdForAuthorisation))
                         {

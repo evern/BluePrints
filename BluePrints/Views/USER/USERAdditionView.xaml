@@ -81,13 +81,19 @@
             <dxlc:LayoutGroup View="Group">
                 <dxlc:LayoutItem Label="Perth EXO" />
                 <dxlc:LayoutItem >
-                    <dxe:ComboBoxEdit EditValue="{Binding USER.EXO_STAFF_ID}" ItemsSource="{Binding LocalSTAFFCollection}" DisplayMember="NAME" ValueMember="STAFFNO" />
+                    <dxe:ComboBoxEdit EditValue="{Binding USER.EXO_STAFF_ID_PERTH}" ItemsSource="{Binding LocalSTAFFCollection}" DisplayMember="NAME" ValueMember="STAFFNO" />
                 </dxlc:LayoutItem>
             </dxlc:LayoutGroup>
             <dxlc:LayoutGroup View="Group">
                 <dxlc:LayoutItem Label="Montreal EXO" />
                 <dxlc:LayoutItem >
-                    <dxe:ComboBoxEdit EditValue="{Binding USER.EXO_STAFF_ID_REMOTE}" ItemsSource="{Binding RemoteSTAFFCollection}" DisplayMember="NAME" ValueMember="STAFFNO" />
+                    <dxe:ComboBoxEdit EditValue="{Binding USER.EXO_STAFF_ID_MONTREAL}" ItemsSource="{Binding MontrealSTAFFCollection}" DisplayMember="NAME" ValueMember="STAFFNO" />
+                </dxlc:LayoutItem>
+            </dxlc:LayoutGroup>
+            <dxlc:LayoutGroup View="Group">
+                <dxlc:LayoutItem Label="USA EXO" />
+                <dxlc:LayoutItem >
+                    <dxe:ComboBoxEdit EditValue="{Binding USER.EXO_STAFF_ID_USA}" ItemsSource="{Binding USASTAFFCollection}" DisplayMember="NAME" ValueMember="STAFFNO" />
                 </dxlc:LayoutItem>
             </dxlc:LayoutGroup>
             <dxlc:LayoutGroup View="Group">

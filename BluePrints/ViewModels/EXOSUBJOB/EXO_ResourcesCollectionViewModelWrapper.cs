@@ -49,26 +49,59 @@ namespace BluePrints.ViewModels
         }
 
         #region Database Operations
-#if MONTREAL
-        private readonly IUnitOfWorkFactory<IPrimeroEntitiesUnitOfWork> primeroUnitOfWorkFactory = PrimeroEntitiesUnitOfWorkSource.GetUnitOfWorkFactory(BluePrintsResources.OfficeMontreal);
-        private readonly IPrimeroEntitiesUnitOfWork localUnitOfWork = PrimeroEntitiesUnitOfWorkSource.GetUnitOfWorkFactory(BluePrintsResources.OfficeMontreal).CreateUnitOfWork();
-        private readonly IPrimeroEntitiesUnitOfWork remoteUnitOfWork = PrimeroEntitiesUnitOfWorkSource.GetUnitOfWorkFactory(BluePrintsResources.OfficePerth).CreateUnitOfWork();
-#else
-    #if USA
-            private readonly IUnitOfWorkFactory<IPrimeroEntitiesUnitOfWork> primeroUnitOfWorkFactory = PrimeroEntitiesUnitOfWorkSource.GetUnitOfWorkFactory(BluePrintsResources.OfficeUSA);
-            private readonly IPrimeroEntitiesUnitOfWork localUnitOfWork = PrimeroEntitiesUnitOfWorkSource.GetUnitOfWorkFactory(BluePrintsResources.OfficeUSA).CreateUnitOfWork();
-            private readonly IPrimeroEntitiesUnitOfWork remoteUnitOfWork = PrimeroEntitiesUnitOfWorkSource.GetUnitOfWorkFactory(BluePrintsResources.OfficeMontreal).CreateUnitOfWork();
-    #else
-        private readonly IUnitOfWorkFactory<IPrimeroEntitiesUnitOfWork> primeroUnitOfWorkFactory = PrimeroEntitiesUnitOfWorkSource.GetUnitOfWorkFactory(BluePrintsResources.OfficePerth);
-        private readonly IPrimeroEntitiesUnitOfWork localUnitOfWork = PrimeroEntitiesUnitOfWorkSource.GetUnitOfWorkFactory(BluePrintsResources.OfficePerth).CreateUnitOfWork();
-        private readonly IPrimeroEntitiesUnitOfWork remoteUnitOfWork = PrimeroEntitiesUnitOfWorkSource.GetUnitOfWorkFactory(BluePrintsResources.OfficeMontreal).CreateUnitOfWork();
-    #endif
-#endif
-
+        private IUnitOfWorkFactory<IPrimeroEntitiesUnitOfWork> primeroUnitOfWorkFactory;
+        private IPrimeroEntitiesUnitOfWork localUnitOfWork;
+        private IPrimeroEntitiesUnitOfWork remoteUnitOfWork1;
+        private IPrimeroEntitiesUnitOfWork remoteUnitOfWork2;
+        private IQueryable<STAFF> PerthSTAFFCollection;
+        private IQueryable<STAFF> MontrealSTAFFCollection;
+        private IQueryable<STAFF> USASTAFFCollection;
+        private Func<USER, int?> getSTAFFIDFunc;
         private readonly IUnitOfWorkFactory<IBluePrintsEntitiesUnitOfWork> bluePrintsUnitOfWorkFactory = BluePrintsEntitiesUnitOfWorkSource.GetUnitOfWorkFactory();
         List<USER> activeDirectoryUSERS;
         protected override void resolveParameters(object parameter)
         {
+            string officeName = (string)parameter;
+            if(officeName == BluePrintsResources.OfficePerth)
+            {
+                primeroUnitOfWorkFactory = PrimeroEntitiesUnitOfWorkSource.GetUnitOfWorkFactory(BluePrintsResources.OfficePerth);
+                localUnitOfWork = PrimeroEntitiesUnitOfWorkSource.GetUnitOfWorkFactory(BluePrintsResources.OfficePerth).CreateUnitOfWork();
+                remoteUnitOfWork1 = PrimeroEntitiesUnitOfWorkSource.GetUnitOfWorkFactory(BluePrintsResources.OfficeMontreal).CreateUnitOfWork();
+                remoteUnitOfWork2 = PrimeroEntitiesUnitOfWorkSource.GetUnitOfWorkFactory(BluePrintsResources.OfficeUSA).CreateUnitOfWork();
+
+                PerthSTAFFCollection = localUnitOfWork.STAFF;
+                MontrealSTAFFCollection = remoteUnitOfWork1.STAFF;
+                USASTAFFCollection = remoteUnitOfWork2.STAFF;
+
+                getSTAFFIDFunc = x => x.EXO_STAFF_ID_PERTH;
+            }
+            else if (officeName == BluePrintsResources.OfficeMontreal)
+            {
+                primeroUnitOfWorkFactory = PrimeroEntitiesUnitOfWorkSource.GetUnitOfWorkFactory(BluePrintsResources.OfficeMontreal);
+                localUnitOfWork = PrimeroEntitiesUnitOfWorkSource.GetUnitOfWorkFactory(BluePrintsResources.OfficeMontreal).CreateUnitOfWork();
+                remoteUnitOfWork1 = PrimeroEntitiesUnitOfWorkSource.GetUnitOfWorkFactory(BluePrintsResources.OfficePerth).CreateUnitOfWork();
+                remoteUnitOfWork2 = PrimeroEntitiesUnitOfWorkSource.GetUnitOfWorkFactory(BluePrintsResources.OfficeUSA).CreateUnitOfWork();
+
+                PerthSTAFFCollection = remoteUnitOfWork1.STAFF;
+                MontrealSTAFFCollection = localUnitOfWork.STAFF;
+                USASTAFFCollection = remoteUnitOfWork2.STAFF;
+
+                getSTAFFIDFunc = x => x.EXO_STAFF_ID_MONTREAL;
+            }
+            else if (officeName == BluePrintsResources.OfficeUSA)
+            {
+                primeroUnitOfWorkFactory = PrimeroEntitiesUnitOfWorkSource.GetUnitOfWorkFactory(BluePrintsResources.OfficeUSA);
+                localUnitOfWork = PrimeroEntitiesUnitOfWorkSource.GetUnitOfWorkFactory(BluePrintsResources.OfficeUSA).CreateUnitOfWork();
+                remoteUnitOfWork1 = PrimeroEntitiesUnitOfWorkSource.GetUnitOfWorkFactory(BluePrintsResources.OfficePerth).CreateUnitOfWork();
+                remoteUnitOfWork2 = PrimeroEntitiesUnitOfWorkSource.GetUnitOfWorkFactory(BluePrintsResources.OfficeMontreal).CreateUnitOfWork();
+
+                PerthSTAFFCollection = remoteUnitOfWork1.STAFF;
+                MontrealSTAFFCollection = remoteUnitOfWork2.STAFF;
+                USASTAFFCollection = localUnitOfWork.STAFF;
+
+                getSTAFFIDFunc = x => x.EXO_STAFF_ID_USA;
+            }
+
             AlwaysSkipMessage = true;
         }
 
@@ -96,7 +129,7 @@ namespace BluePrints.ViewModels
 
         protected override Func<IRepositoryQuery<JOBCOST_RESOURCE>, IQueryable<ExoResourceProjection>> specifyMainViewModelProjection()
         {
-            return query => ExoQueries.GetResources(localUnitOfWork, USERCollection);
+            return query => ExoQueries.GetResources(localUnitOfWork, USERCollection, getSTAFFIDFunc);
         }
 
         protected override void AssignCallBacksAndRaisePropertyChange(IEnumerable<ExoResourceProjection> entities)
@@ -289,7 +322,7 @@ namespace BluePrints.ViewModels
             {
                 if((bool)new_value)
                 {
-                    USER newUSER = USERCollection.FirstOrDefault(x => x.EXO_STAFF_ID == projection.STAFFNO);
+                    USER newUSER = USERCollection.FirstOrDefault(x => getSTAFFIDFunc(x) == projection.STAFFNO);
                     if (newUSER == null && userAdditionViewModel != null)
                     {
                         newUSER = userAdditionViewModel.GetNewUser();
@@ -325,7 +358,7 @@ namespace BluePrints.ViewModels
                     {
                         if (((bool)new_value))
                         {
-                            USER newUSER = USERCollection.FirstOrDefault(x => x.EXO_STAFF_ID == projection.STAFFNO);
+                            USER newUSER = USERCollection.FirstOrDefault(x => x.EXO_STAFF_ID_PERTH == projection.STAFFNO);
                             if (newUSER == null)
                             {
                                 USER activeDirectoryUSER = getActiveDirectoryUser(projection.RESOURCENAME);
@@ -335,7 +368,7 @@ namespace BluePrints.ViewModels
                                 {
                                     if (MessageBoxService.ShowMessage("Are you sure you add " + projection.RESOURCENAME + " to BluePrints?", "Confirmation", MessageButton.OKCancel, MessageIcon.Warning) == MessageResult.OK)
                                     {
-                                        userAdditionViewModel = USERAdditionViewModel.Create(activeDirectoryUSER, DEPARTMENTCollection, DISCIPLINECollection, USERCollection, OFFICECollection, activeDirectoryUSER.TITLE, activeDirectoryUSER.DESCRIPTION, localUnitOfWork.STAFF, remoteUnitOfWork.STAFF);
+                                        userAdditionViewModel = USERAdditionViewModel.Create(activeDirectoryUSER, DEPARTMENTCollection, DISCIPLINECollection, USERCollection, OFFICECollection, activeDirectoryUSER.TITLE, activeDirectoryUSER.DESCRIPTION, PerthSTAFFCollection, MontrealSTAFFCollection, USASTAFFCollection);
                                         userAdditionViewModel.PopulateUSERStaffId();
                                         if (USERAddDialogService.ShowDialog(MessageButton.OKCancel, "New User", "USERAdditionView", userAdditionViewModel) == MessageResult.Cancel)
                                         {

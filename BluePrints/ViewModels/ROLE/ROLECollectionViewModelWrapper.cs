@@ -148,7 +148,8 @@ namespace BluePrints.ViewModels
                         if (isSelectedRoleHasPermission)
                             isPermissionReadOnly = findROLE_PERMISSION.ISREADONLY;
 
-                        permissions.Add(ViewModelSource.Create(() => new RolePermissionAssignment() { DisplayName = module.NavigationTitle, SecurityKey = module.SecurityKey, PermissionId = module.NavigationId, PermissionParentId = module.ParentId, IsAssigned = isSelectedRoleHasPermission, IsReadOnly = isPermissionReadOnly, CanAssign = !module.SecurityKey.ToUpper().Contains("CATEGORY"), CanAssignReadOnly = permissionHasReadOnlyMode(module.SecurityKey) }));
+                        if(!permissions.Any(x => x.PermissionId == module.NavigationId))
+                            permissions.Add(ViewModelSource.Create(() => new RolePermissionAssignment() { DisplayName = module.NavigationTitle, SecurityKey = module.SecurityKey, PermissionId = module.NavigationId, PermissionParentId = module.ParentId, IsAssigned = isSelectedRoleHasPermission, IsReadOnly = isPermissionReadOnly, CanAssign = !module.SecurityKey.ToUpper().Contains("CATEGORY"), CanAssignReadOnly = permissionHasReadOnlyMode(module.SecurityKey) }));
                     }
                 }
 

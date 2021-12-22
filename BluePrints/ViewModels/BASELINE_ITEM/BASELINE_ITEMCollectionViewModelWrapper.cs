@@ -504,11 +504,11 @@ namespace BluePrints.ViewModels
 
             int? authorisationId = null;
             if (loadPROJECT.OfficeNameForExo == BluePrintsResources.OfficeMontreal)
-                authorisationId = LoginCredentials.CurrentUser.EXO_STAFF_ID_REMOTE;
+                authorisationId = LoginCredentials.CurrentUser.EXO_STAFF_ID_MONTREAL;
             else if (loadPROJECT.OfficeNameForExo == BluePrintsResources.OfficeUSA)
                 authorisationId = LoginCredentials.CurrentUser.EXO_STAFF_ID_USA;
             else
-                authorisationId = LoginCredentials.CurrentUser.EXO_STAFF_ID;
+                authorisationId = LoginCredentials.CurrentUser.EXO_STAFF_ID_PERTH;
 
             contextIdForAuthorisation.Add(new UserIdsAuthorisationContext(loadPROJECT.OfficeNameForExo, authorisationId));
             BluePrintsUtils.LoadExoAuthorisation<BASELINE_ITEMProgress>(Entities, ref exoAuthorisations, projectContexts, contextIdForAuthorisation, LoginCredentials.getPermissionStatus(DataUtils.GetNameOf(() => NavigationResources.Permission_DesignDeliverables_BookTimeForOthers)) != LoginCredentials.PermissionStatus.None);

@@ -2276,7 +2276,7 @@ namespace BluePrints.Common.Projections
             return timesheetLineNarratives.Select(x => x.Narrative).Distinct().OrderBy(x => x).ToList();
         }
 
-        public static IQueryable<ExoResourceProjection> GetResources(IPrimeroEntitiesUnitOfWork primeroUnitOfWork, IEnumerable<USER> USERCollection)
+        public static IQueryable<ExoResourceProjection> GetResources(IPrimeroEntitiesUnitOfWork primeroUnitOfWork, IEnumerable<USER> USERCollection, Func<USER, int?> getEXO_STAFF_IDFunc)
         {
             var resources = from JOBCOST_RESOURCE in primeroUnitOfWork.JOBCOST_RESOURCE
                             join STAFF in primeroUnitOfWork.STAFF
@@ -2289,7 +2289,7 @@ namespace BluePrints.Common.Projections
             List<ExoResourceProjection> exoResources = resources.ToList().Select(x => ViewModelSource.Create(() => new ExoResourceProjection() { GUID = Guid.NewGuid(), STAFFNO = x.STAFFNO, PAYROLL_ID = x.PAYROLL_ID, RESOURCE_SEQNO = x.SEQNO, RESOURCENAME = x.RESOURCENAME, TITLE = x.TITLE, DEFAULT_STOCKCODE = x.DEFAULT_STOCKCODE, SECURITYPROFILEID = x.SECURITYPROFILEID, USERPROFILEID = x.USERPROFILEID, REPORTS_TO_STAFFNO = x.REPORTS_TO_STAFFNO, SHORTCODE = x.SHORTCODE, IsViewNewRow = false, STDCOST = x.STDCOST, SELLPRICE1 = x.SELLPRICE1, SALES_GL_CODE = x.SALES_GL_CODE, PURCH_GL_CODE = x.PURCH_GL_CODE, COS_GL_CODE = x.COS_GL_CODE, COSTGROUP = x.COSTGROUP, COSTTYPE = x.COSTTYPE, DEPARTMENT = x.X_DEPARTMENT, STOCKGROUP = x.STOCKGROUP, STOCKGROUP2 = x.STOCKGROUP2 })).ToList();
             foreach(ExoResourceProjection exoResource in exoResources)
             {
-                if (USERCollection.Any(x => x.EXO_STAFF_ID == exoResource.STAFFNO))
+                if (USERCollection.Any(x => getEXO_STAFF_IDFunc(x) == exoResource.STAFFNO))
                     exoResource.IsExistInBP = true;
             }
             

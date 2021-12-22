@@ -1592,7 +1592,7 @@ CREATE TABLE [dbo].[USER](
 	[CODE] [nvarchar](50) NULL,
 	[PHONE] [nvarchar](50) NULL,
 	[EMAIL] [nvarchar](100) NULL,
-	[EXO_STAFF_ID] [int] NULL,
+	[EXO_STAFF_ID_PERTH] [int] NULL,
 	[CREATED] [datetime] NOT NULL,
 	[CREATEDBY] [uniqueidentifier] NOT NULL,
 	[UPDATED] [datetime] NULL,

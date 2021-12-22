@@ -185,15 +185,15 @@ namespace BluePrints.ViewModels
 
         protected override void OnAfterProjectionSave(USER projection, USER entity, bool isNew)
         {
-            if (isNew && (entity.EXO_STAFF_ID == null || entity.EXO_STAFF_ID_REMOTE == null || entity.EXO_STAFF_ID_USA == null))
+            if (isNew && (entity.EXO_STAFF_ID_PERTH == null || entity.EXO_STAFF_ID_MONTREAL == null || entity.EXO_STAFF_ID_USA == null))
             {
                 entity.START_DATE = DateTime.Now;
 
-                if (entity.EXO_STAFF_ID == null)
-                    entity.EXO_STAFF_ID = getExoStaffId(entity, PerthSTAFFCollection);
+                if (entity.EXO_STAFF_ID_PERTH == null)
+                    entity.EXO_STAFF_ID_PERTH = getExoStaffId(entity, PerthSTAFFCollection);
 
-                if (entity.EXO_STAFF_ID_REMOTE == null)
-                    entity.EXO_STAFF_ID_REMOTE = getExoStaffId(entity, MontrealSTAFFCollection);
+                if (entity.EXO_STAFF_ID_MONTREAL == null)
+                    entity.EXO_STAFF_ID_MONTREAL = getExoStaffId(entity, MontrealSTAFFCollection);
 
                 if (entity.EXO_STAFF_ID_USA == null)
                     entity.EXO_STAFF_ID_USA = getExoStaffId(entity, USASTAFFCollection);
@@ -295,14 +295,14 @@ namespace BluePrints.ViewModels
             bool shouldSave = false;
             if (exoPerthId != null)
             {
-                entity.EXO_STAFF_ID = exoPerthId;
+                entity.EXO_STAFF_ID_PERTH = exoPerthId;
                 shouldSave = true;
             }
 
             int? exoMontrealId = getExoStaffId(entity, MontrealSTAFFCollection);
             if (exoMontrealId != null)
             {
-                entity.EXO_STAFF_ID_REMOTE = exoMontrealId;
+                entity.EXO_STAFF_ID_MONTREAL = exoMontrealId;
                 shouldSave = true;
             }
 
@@ -332,11 +332,11 @@ namespace BluePrints.ViewModels
                 {
                     STAFF STAFF;
                     if (entity.QueryOfficeName.ToUpper() == BluePrintsResources.OfficePerth)
-                        STAFF = PerthSTAFFCollection.FirstOrDefault(x => x.STAFFNO == entity.EXO_STAFF_ID);
+                        STAFF = PerthSTAFFCollection.FirstOrDefault(x => x.STAFFNO == entity.EXO_STAFF_ID_PERTH);
                     else if(entity.QueryOfficeName.ToUpper() == BluePrintsResources.OfficeUSA)
                         STAFF = USASTAFFCollection.FirstOrDefault(x => x.STAFFNO == entity.EXO_STAFF_ID_USA);
                     else
-                        STAFF = MontrealSTAFFCollection.FirstOrDefault(x => x.STAFFNO == entity.EXO_STAFF_ID_REMOTE);
+                        STAFF = MontrealSTAFFCollection.FirstOrDefault(x => x.STAFFNO == entity.EXO_STAFF_ID_MONTREAL);
 
                     if (STAFF != null)
                     {

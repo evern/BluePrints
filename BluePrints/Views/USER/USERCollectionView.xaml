@@ -96,7 +96,7 @@
                                 <dxe:ComboBoxEditSettings AutoComplete="True" DisplayMember="NAME" IsTextEditable="True" ItemsSource="{Binding OFFICECollection}" ValueMember="GUID" />
                             </dxg:GridColumn.EditSettings>
                         </dxg:GridColumn>
-                        <dxg:GridColumn FieldName="EXO_STAFF_ID" Header="Perth EXO" HeaderToolTip="User name in Perth's Exo">
+                        <dxg:GridColumn FieldName="EXO_STAFF_ID_PERTH" Header="Perth EXO" HeaderToolTip="User name in Perth's Exo">
                             <dxg:GridColumn.EditSettings>
                                 <dxg:LookUpEditSettings AutoComplete="True" AutoPopulateColumns="False" DisplayMember="NAME" IsTextEditable="True" ItemsSource="{Binding PerthSTAFFCollection}" NullValueButtonPlacement="Popup" ValueMember="STAFFNO" >
                                     <dxg:LookUpEditSettings.StyleSettings>
@@ -117,7 +117,7 @@
                                 </dxg:LookUpEditSettings>
                             </dxg:GridColumn.EditSettings>
                         </dxg:GridColumn>
-                        <dxg:GridColumn FieldName="EXO_STAFF_ID_REMOTE" Header="Montreal EXO" HeaderToolTip="User name in Montreal's Exo">
+                        <dxg:GridColumn FieldName="EXO_STAFF_ID_MONTREAL" Header="Montreal EXO" HeaderToolTip="User name in Montreal's Exo">
                             <dxg:GridColumn.EditSettings>
                                 <dxg:LookUpEditSettings AutoComplete="True" AutoPopulateColumns="False" DisplayMember="NAME" IsTextEditable="True" ItemsSource="{Binding MontrealSTAFFCollection}" NullValueButtonPlacement="Popup" ValueMember="STAFFNO" >
                                     <dxg:LookUpEditSettings.StyleSettings>

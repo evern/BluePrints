@@ -12,9 +12,9 @@ namespace BaseModel.ViewModel.Dialogs
 {
     public class USERAdditionViewModel
     {
-        public static USERAdditionViewModel Create(USER activeDirectoryUSER, IEnumerable<DEPARTMENT> departments, IEnumerable<DISCIPLINE> disciplines, IEnumerable<USER> users, IEnumerable<OFFICE> offices, string title, string description, IEnumerable<STAFF> localSTAFF, IEnumerable<STAFF> remoteSTAFF)
+        public static USERAdditionViewModel Create(USER activeDirectoryUSER, IEnumerable<DEPARTMENT> departments, IEnumerable<DISCIPLINE> disciplines, IEnumerable<USER> users, IEnumerable<OFFICE> offices, string title, string description, IEnumerable<STAFF> perthSTAFF, IEnumerable<STAFF> montrealSTAFF, IEnumerable<STAFF> usaSTAFF)
         {
-            return ViewModelSource.Create(() => new USERAdditionViewModel(activeDirectoryUSER, departments.OrderBy(x => x.NAME), disciplines.OrderBy(x => x.NAME), users.OrderBy(x => x.NAME), offices.OrderBy(x => x.NAME), title, description, localSTAFF, remoteSTAFF));
+            return ViewModelSource.Create(() => new USERAdditionViewModel(activeDirectoryUSER, departments.OrderBy(x => x.NAME), disciplines.OrderBy(x => x.NAME), users.OrderBy(x => x.NAME), offices.OrderBy(x => x.NAME), title, description, perthSTAFF, montrealSTAFF, usaSTAFF));
         }
 
         public USER USER { get; set; }
@@ -23,9 +23,10 @@ namespace BaseModel.ViewModel.Dialogs
         public IEnumerable<USER> USERCollection { get; set; }
         public IEnumerable<OFFICE> OFFICECollection { get; set; }
         public IEnumerable<STAFF> LocalSTAFFCollection { get; set; }
-        public IEnumerable<STAFF> RemoteSTAFFCollection { get; set; }
+        public IEnumerable<STAFF> MontrealSTAFFCollection { get; set; }
+        public IEnumerable<STAFF> USASTAFFCollection { get; set; }
         public string Label { get; set; }
-        protected USERAdditionViewModel(USER activeDirectoryUSER, IEnumerable<DEPARTMENT> departments, IEnumerable<DISCIPLINE> disciplines, IEnumerable<USER> users, IEnumerable<OFFICE> offices, string title, string description, IEnumerable<STAFF> localSTAFF, IEnumerable<STAFF> remoteSTAFF)
+        protected USERAdditionViewModel(USER activeDirectoryUSER, IEnumerable<DEPARTMENT> departments, IEnumerable<DISCIPLINE> disciplines, IEnumerable<USER> users, IEnumerable<OFFICE> offices, string title, string description, IEnumerable<STAFF> localSTAFF, IEnumerable<STAFF> montrealSTAFF, IEnumerable<STAFF> usaSTAFF)
         {
             USER = new USER();
 
@@ -34,7 +35,8 @@ namespace BaseModel.ViewModel.Dialogs
             USERCollection = users;
             OFFICECollection = offices;
             LocalSTAFFCollection = localSTAFF;
-            RemoteSTAFFCollection = remoteSTAFF;
+            MontrealSTAFFCollection = montrealSTAFF;
+            USASTAFFCollection = usaSTAFF;
 
             USER.NAME = activeDirectoryUSER.NAME;
             USER.TITLE = activeDirectoryUSER.TITLE;
@@ -53,7 +55,7 @@ namespace BaseModel.ViewModel.Dialogs
         {
             LoadingScreenManager.ShowLoadingScreen(1);
             LoadingScreenManager.SetMessage("Looking up user's EXO id...");
-            USERCollectionViewModelWrapper.PopulateUserStaffIds(USER, LocalSTAFFCollection, RemoteSTAFFCollection);
+            USERCollectionViewModelWrapper.PopulateUserStaffIds(USER, LocalSTAFFCollection, MontrealSTAFFCollection, USASTAFFCollection);
             LoadingScreenManager.CloseLoadingScreen();
         }
 

@@ -343,11 +343,11 @@ namespace BluePrints.Common.ViewModel.Utils
                 return null;
 
             if (officeName == BluePrintsResources.OfficeMontreal)
-                return currentUser.EXO_STAFF_ID_REMOTE;
+                return currentUser.EXO_STAFF_ID_MONTREAL;
             else if (officeName == BluePrintsResources.OfficeUSA)
                 return currentUser.EXO_STAFF_ID_USA;
             else
-                return currentUser.EXO_STAFF_ID;
+                return currentUser.EXO_STAFF_ID_PERTH;
         }
 
         public static void BookTime(IDeliverable deliverable, IPrimeroEntitiesUnitOfWork primeroUnitOfWork, List<ExoTimeAuthorisation> exoAuthorisations, string defaultNarrative, IMessageBoxService MessageBoxService, IDialogService BookTimeDialogService, PROJECT project, IEnumerable<USER> USERCollection)
