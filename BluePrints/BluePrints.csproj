@@ -1213,13 +1213,13 @@
     <Compile Include="ViewModels\DISCIPLINE\DISCIPLINE_DESCCollectionViewModelWrapper.cs" />
     <Compile Include="ViewModels\EXO\JOBCOST_RESOURCECollectionViewModelWrapper.cs" />
     <Compile Include="ViewModels\EXO\STOCK_ITEMSCollectionViewModelWrapper.cs" />
-    <Compile Include="ViewModels\EXOSUBJOB\EXO_PricesCollectionViewModelWrapper.cs" />
-    <Compile Include="ViewModels\EXOSUBJOB\EXO_JobHistoryCollectionViewModelWrapper.cs" />
-    <Compile Include="ViewModels\EXOSUBJOB\EXO_ConstructionSubjobCollectionViewModelWrapper.cs" />
-    <Compile Include="ViewModels\EXOSUBJOB\EXO_ResourcesCollectionViewModelWrapper.cs" />
-    <Compile Include="ViewModels\EXOSUBJOB\EXO_JobPermissionCollectionViewModelWrapper.cs" />
-    <Compile Include="ViewModels\EXOSUBJOB\EXO_SubjobCollectionViewModelWrapper.cs" />
-    <Compile Include="ViewModels\EXOSUBJOB\EXO_DesignSubjobCollectionViewModelWrapper.cs" />
+    <Compile Include="ViewModels\EXO\EXO_PricesCollectionViewModelWrapper.cs" />
+    <Compile Include="ViewModels\EXO\EXO_JobHistoryCollectionViewModelWrapper.cs" />
+    <Compile Include="ViewModels\EXO\EXO_ConstructionSubjobCollectionViewModelWrapper.cs" />
+    <Compile Include="ViewModels\EXO\EXO_ResourcesCollectionViewModelWrapper.cs" />
+    <Compile Include="ViewModels\EXO\EXO_JobPermissionCollectionViewModelWrapper.cs" />
+    <Compile Include="ViewModels\EXO\EXO_SubjobCollectionViewModelWrapper.cs" />
+    <Compile Include="ViewModels\EXO\EXO_DesignSubjobCollectionViewModelWrapper.cs" />
     <Compile Include="ViewModels\HOLIDAY\HOLIDAYCollectionViewModelWrapper.cs" />
     <Compile Include="ViewModels\HSE\HSECollectionViewModelWrapper.cs" />
     <Compile Include="ViewModels\HSE\HSESingleObjectViewModelWrapper.cs" />
@@ -1232,7 +1232,7 @@
     <Compile Include="ViewModels\OFFICE\OFFICECollectionViewModelWrapper.cs" />
     <Compile Include="ViewModels\PROGRESS_ITEM\OffsiteDirectDistributionCollectionViewModelWrapper.cs" />
     <Compile Include="ViewModels\PROGRESS_ITEM\OffsiteDirectProgressCollectionViewModelWrapper.cs" />
-    <Compile Include="ViewModels\EXOSUBJOB\EXO_POCollectionViewModelWrapper.cs" />
+    <Compile Include="ViewModels\EXO\EXO_POCollectionViewModelWrapper.cs" />
     <Compile Include="ViewModels\PROGRESS_ITEM\SiteDirectProgressCollectionViewModelWrapper.cs" />
     <Compile Include="ViewModels\PROJECT\PROJECTFlatPOSnapshotForecastViewModelWrapper.cs" />
     <Compile Include="ViewModels\PROJECT\PROJECTPOSnapshotForecastViewModelWrapper.cs" />
@@ -1271,7 +1271,7 @@
     <Compile Include="ViewModels\TENDER_PROFILE\TENDER_PROFILECollectionViewModelWrapper.cs" />
     <Compile Include="ViewModels\TIMESHEET\DesignTimesheetEntryCollectionViewModelWrapper.cs" />
     <Compile Include="ViewModels\TIMESHEET\TimesheetQueryCollectionViewModelWrapper.cs" />
-    <Compile Include="ViewModels\TIMESHEET\TransactionCollectionViewModelWrapper.cs" />
+    <Compile Include="ViewModels\EXO\TransactionCollectionViewModelWrapper.cs" />
     <Compile Include="ViewModels\TIMESHEET\TimesheetEntryCollectionViewModelWrapper.cs" />
     <Compile Include="ViewModels\USER\USERAdditionViewModel.cs" />
     <Compile Include="ViewModels\USER\PROJECT_USERDashboardViewModelWrapper.cs" />
@@ -1313,28 +1313,28 @@
     <Compile Include="Views\EXO\STOCK_ITEMSCollectionView.xaml.cs">
       <DependentUpon>STOCK_ITEMSCollectionView.xaml</DependentUpon>
     </Compile>
-    <Compile Include="Views\EXOSUBJOB\EXO_PricesCollectionView.xaml.cs">
+    <Compile Include="Views\EXO\EXO_PricesCollectionView.xaml.cs">
       <DependentUpon>EXO_PricesCollectionView.xaml</DependentUpon>
     </Compile>
-    <Compile Include="Views\EXOSUBJOB\EXO_JobHistoryCollectionView.xaml.cs">
+    <Compile Include="Views\EXO\EXO_JobHistoryCollectionView.xaml.cs">
       <DependentUpon>EXO_JobHistoryCollectionView.xaml</DependentUpon>
     </Compile>
-    <Compile Include="Views\EXOSUBJOB\EXO_ConstructionSubjobCollectionView.xaml.cs">
+    <Compile Include="Views\EXO\EXO_ConstructionSubjobCollectionView.xaml.cs">
       <DependentUpon>EXO_ConstructionSubjobCollectionView.xaml</DependentUpon>
     </Compile>
-    <Compile Include="Views\EXOSUBJOB\EXO_ResourcesCollectionView.xaml.cs">
+    <Compile Include="Views\EXO\EXO_ResourcesCollectionView.xaml.cs">
       <DependentUpon>EXO_ResourcesCollectionView.xaml</DependentUpon>
     </Compile>
-    <Compile Include="Views\EXOSUBJOB\EXO_JobPermissionCollectionView.xaml.cs">
+    <Compile Include="Views\EXO\EXO_JobPermissionCollectionView.xaml.cs">
       <DependentUpon>EXO_JobPermissionCollectionView.xaml</DependentUpon>
     </Compile>
-    <Compile Include="Views\EXOSUBJOB\EXO_SubJobCollectionView.xaml.cs">
+    <Compile Include="Views\EXO\EXO_SubJobCollectionView.xaml.cs">
       <DependentUpon>EXO_SubJobCollectionView.xaml</DependentUpon>
     </Compile>
-    <Compile Include="Views\EXOSUBJOB\EXO_DesignSubjobCollectionView.xaml.cs">
+    <Compile Include="Views\EXO\EXO_DesignSubjobCollectionView.xaml.cs">
       <DependentUpon>EXO_DesignSubjobCollectionView.xaml</DependentUpon>
     </Compile>
-    <Compile Include="Views\EXOSUBJOB\EXO_POCollectionView.xaml.cs">
+    <Compile Include="Views\EXO\EXO_POCollectionView.xaml.cs">
       <DependentUpon>EXO_POCollectionView.xaml</DependentUpon>
     </Compile>
     <Compile Include="Views\HOLIDAY\HOLIDAYCollectionView.xaml.cs">
@@ -2058,10 +2058,10 @@
     <Compile Include="Views\TIMESHEET\TimesheetQueryCollectionView.xaml.cs">
       <DependentUpon>TimesheetQueryCollectionView.xaml</DependentUpon>
     </Compile>
-    <Compile Include="Views\TIMESHEET\TransactionCollectionInstantFeedbackView.xaml.cs">
+    <Compile Include="Views\EXO\TransactionCollectionInstantFeedbackView.xaml.cs">
       <DependentUpon>TransactionCollectionInstantFeedbackView.xaml</DependentUpon>
     </Compile>
-    <Compile Include="Views\TIMESHEET\TransactionCollectionView.xaml.cs">
+    <Compile Include="Views\EXO\TransactionCollectionView.xaml.cs">
       <DependentUpon>TransactionCollectionView.xaml</DependentUpon>
     </Compile>
     <Compile Include="Views\TIMESHEET\TimesheetEntryCollectionView.xaml.cs">
@@ -2318,35 +2318,35 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>
-    <Page Include="Views\EXOSUBJOB\EXO_PricesCollectionView.xaml">
+    <Page Include="Views\EXO\EXO_PricesCollectionView.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>
-    <Page Include="Views\EXOSUBJOB\EXO_JobHistoryCollectionView.xaml">
+    <Page Include="Views\EXO\EXO_JobHistoryCollectionView.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>
-    <Page Include="Views\EXOSUBJOB\EXO_ConstructionSubjobCollectionView.xaml">
+    <Page Include="Views\EXO\EXO_ConstructionSubjobCollectionView.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>
-    <Page Include="Views\EXOSUBJOB\EXO_ResourcesCollectionView.xaml">
+    <Page Include="Views\EXO\EXO_ResourcesCollectionView.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>
-    <Page Include="Views\EXOSUBJOB\EXO_JobPermissionCollectionView.xaml">
+    <Page Include="Views\EXO\EXO_JobPermissionCollectionView.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>
-    <Page Include="Views\EXOSUBJOB\EXO_SubJobCollectionView.xaml">
+    <Page Include="Views\EXO\EXO_SubJobCollectionView.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>
-    <Page Include="Views\EXOSUBJOB\EXO_DesignSubjobCollectionView.xaml">
+    <Page Include="Views\EXO\EXO_DesignSubjobCollectionView.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>
-    <Page Include="Views\EXOSUBJOB\EXO_POCollectionView.xaml">
+    <Page Include="Views\EXO\EXO_POCollectionView.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>
@@ -2566,11 +2566,11 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>
-    <Page Include="Views\TIMESHEET\TransactionCollectionInstantFeedbackView.xaml">
+    <Page Include="Views\EXO\TransactionCollectionInstantFeedbackView.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>
-    <Page Include="Views\TIMESHEET\TransactionCollectionView.xaml">
+    <Page Include="Views\EXO\TransactionCollectionView.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>
@@ -5559,6 +5559,7 @@
     <Content Include="DatabaseScript.sql" />
   </ItemGroup>
   <ItemGroup>
+    <Folder Include="ViewModels\EXOSUBJOB\" />
     <Folder Include="Views\ESTIMATE_ITEM\" />
     <Folder Include="Views\STOCK_CODE\" />
     <Folder Include="Views\STOCK_GROUP\" />
