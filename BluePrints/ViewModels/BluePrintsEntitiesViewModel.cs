@@ -58,11 +58,7 @@ namespace BluePrints.ViewModels
 #if PERTH
                 return "Perth";
 #else
-#if MONTREAL
-                return "Montreal";
-#else
-                return "USA";
-#endif
+                return "Montreal/USA";
 #endif
             }
         }
