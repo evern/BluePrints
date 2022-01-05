@@ -169,6 +169,7 @@
                 <dxa:AccordionControl x:Name="TreeListControl" dx:DXSerializer.SerializationID="NavigationTree" ExpandMode="Multiple" MaxWidth="400" Background="Transparent" BorderThickness="0" ChildrenPath="ChildModules" CollapsedItemClickAction="ShowItems" ExpandItemOnHeaderClick="False" IsCollapseButtonVisible="True" IsExpanded="{Binding AccordionExpanded}" ItemsSource="{Binding Modules}" ScrollViewer.HorizontalScrollBarVisibility="Disabled" SelectedItem="{Binding SelectedModule}" ShowSearchControl="True">
                     <dxmvvm:Interaction.Behaviors>
                         <dxmvvm:EventToCommand Command="{Binding NavigateCommand}" EventName="MouseDoubleClick" />
+                        <dxmvvm:EventToCommand Command="{Binding ItemExpandedCommand}" EventName="ItemExpanded" PassEventArgsToCommand="True" />
                     </dxmvvm:Interaction.Behaviors>
                     <dxa:AccordionControl.ItemContainerStyle>
                         <Style TargetType="dxa:AccordionItem">

@@ -30,6 +30,7 @@ using BluePrints.View;
 using BluePrints.Common.Helpers;
 using System.Deployment.Application;
 using BluePrints.Common.ViewModel.Utils;
+using DevExpress.Xpf.Accordion;
 
 namespace BluePrints.ViewModels
 {
@@ -256,7 +257,7 @@ namespace BluePrints.ViewModels
             {
                 foreach (var project in projects)
                 {
-                    CreateProjectTree(project, isSecurityModule);
+                    createProjectTree(project, isSecurityModule);
                 }
             }
 
@@ -264,6 +265,19 @@ namespace BluePrints.ViewModels
             Modules.AddRange(CreateDataModules(isSecurityModule));
         }
         
+        public void ItemExpanded(AccordionItemExpandedEventArgs e)
+        {
+            BluePrintsEntitiesModuleDescription projectModuleDescription = e.Item as BluePrintsEntitiesModuleDescription;
+            if(projectModuleDescription != null)
+            {
+                if(projectModuleDescription.PROJECT != null)
+                {
+                    projectModuleDescription.ChildModules.Clear();
+                    populateProjectTree(projectModuleDescription.PROJECT, projectModuleDescription, false);
+                }
+            }
+        }
+
         private void loadNavigationModules(IEnumerable<PROJECT> PROJECTS)
         {
             CreateModules(PROJECTS, false);
@@ -496,7 +510,7 @@ namespace BluePrints.ViewModels
             ReportDialogService.ShowDialog(MessageButton.OK, "Sync Status", "SyncScreen", viewModel);
         }
 
-        private void CreateProjectTree(PROJECT entity, bool isSecurityModule)
+        private void createProjectTree(PROJECT entity, bool isSecurityModule)
         {
             //List<BluePrintsEntitiesModuleDescription> newModules = new List<BluePrintsEntitiesModuleDescription>();
             string projectTitle = entity.NUMBER + " " + entity.NAME;
@@ -550,7 +564,7 @@ namespace BluePrints.ViewModels
             projectModuleContextMenuItems.Add(projectEstimateMenuItem);
             projectModuleContextMenuItems.Add(projectProgressMenuItem);
 
-            if(!isSecurityModule && LoginCredentials.CurrentUser.PROJECT_PERMISSION.Count > 0 && !LoginCredentials.CurrentUser.PROJECT_PERMISSION.Any(x => x.GUID_PROJECT == entity.GUID))
+            if (!isSecurityModule && LoginCredentials.CurrentUser.PROJECT_PERMISSION.Count > 0 && !LoginCredentials.CurrentUser.PROJECT_PERMISSION.Any(x => x.GUID_PROJECT == entity.GUID))
             {
                 BluePrintsEntitiesModuleDescription unauthorisedProjectModuleDescription = new BluePrintsEntitiesModuleDescription(DataUtils.GetNameOf(() => NavigationResources.Menu_Project_Dashboard), projectSpecificKey, parentId, projectTitle, null, null, null, null, false, false, @"Programming\ProjectDirectory_16x16.png");
                 BluePrintsEntitiesModuleDescription unauthorisedMessageModuleDescription = new BluePrintsEntitiesModuleDescription(DataUtils.GetNameOf(() => NavigationResources.Category_Unauthorised), projectSpecificKey, unauthorisedProjectModuleDescription.NavigationId, "Contact " + BluePrintsResources.ITEmail + " for authorisation", null, null, null, null, false, false, @"Business Objects\BORules_16x16.png");
@@ -560,8 +574,23 @@ namespace BluePrints.ViewModels
                 return;
             }
 
-            BluePrintsEntitiesModuleDescription projectModuleDescription = new BluePrintsEntitiesModuleDescription(DataUtils.GetNameOf(() => NavigationResources.Menu_Project_Dashboard), projectSpecificKey, parentId, projectTitle, "PROJECTView", new DualEntitiesParameter<PROJECT, Action<object>>(entity, NavigateCoreCommand), null, null, false, false, @"Programming\ProjectDirectory_16x16.png", projectModuleContextMenuItems, NavigateCoreCommand, false, null, "Double click to view S-Curve. Right click to access more items");
+            BluePrintsEntitiesModuleDescription projectModuleDescription = new BluePrintsEntitiesModuleDescription(DataUtils.GetNameOf(() => NavigationResources.Menu_Project_Dashboard), projectSpecificKey, parentId, projectTitle, "PROJECTView", new DualEntitiesParameter<PROJECT, Action<object>>(entity, NavigateCoreCommand), null, null, false, false, @"Programming\ProjectDirectory_16x16.png", projectModuleContextMenuItems, NavigateCoreCommand, false, null, "Double click to view S-Curve. Right click to access more items", entity);
             moduleAdder(projectStatusDescription, projectModuleDescription, isSecurityModule, true);
+
+            //add a dummy menu so that accordion expand button is shown
+            BluePrintsEntitiesModuleDescription dummyCategoryDescription = new BluePrintsEntitiesModuleDescription("dummy", projectSpecificKey, parentId, projectTitle, null, null, null, null, false, false, string.Empty);
+            moduleAdder(projectModuleDescription, dummyCategoryDescription, isSecurityModule, true);
+
+            if (isSecurityModule)
+                populateProjectTree(entity, projectModuleDescription, isSecurityModule);
+        }
+
+        private void populateProjectTree(PROJECT entity, BluePrintsEntitiesModuleDescription projectModuleDescription, bool isSecurityModule)
+        {
+            //List<BluePrintsEntitiesModuleDescription> newModules = new List<BluePrintsEntitiesModuleDescription>();
+            string projectTitle = entity.NUMBER + " " + entity.NAME;
+            string childTitlePrefix = "[" + entity.NUMBER + "] ";
+            string projectSpecificKey = entity.GUID.ToString();
 
             BluePrintsEntitiesModuleDescription design_category_description = new BluePrintsEntitiesModuleDescription(DataUtils.GetNameOf(() => NavigationResources.Category_Project_Design), projectSpecificKey, projectModuleDescription.NavigationId, "Design", null, null, null, null, false, false, @"Miscellaneous\Design_16x16.png");
             BluePrintsEntitiesModuleDescription construct_category_description = new BluePrintsEntitiesModuleDescription(DataUtils.GetNameOf(() => NavigationResources.Category_Project_Construct), projectSpecificKey, projectModuleDescription.NavigationId, "Construct", null, null, null, null, false, false, @"Programming\IDE_16x16.png");
@@ -571,7 +600,7 @@ namespace BluePrints.ViewModels
             BluePrintsEntitiesModuleDescription registerCategoryDescription = new BluePrintsEntitiesModuleDescription(DataUtils.GetNameOf(() => NavigationResources.Category_Register), string.Empty, projectModuleDescription.NavigationId, "Registers", null, null, null, null, false, false, @"Miscellaneous\Content_16x16.png");
             BluePrintsEntitiesModuleDescription designRateCategoryDescription = new BluePrintsEntitiesModuleDescription(DataUtils.GetNameOf(() => NavigationResources.Category_Project_Design_Rate), string.Empty, projectModuleDescription.NavigationId, "Rates", null, null, null, null, false, false, @"Spreadsheet\FunctionsFinancial_16x16.png");
             BluePrintsEntitiesModuleDescription constructRateCategoryDescription = new BluePrintsEntitiesModuleDescription(DataUtils.GetNameOf(() => NavigationResources.Category_Project_Construct_Rate), string.Empty, projectModuleDescription.NavigationId, "Rates", null, null, null, null, false, false, @"Spreadsheet\FunctionsFinancial_16x16.png");
-
+            
             moduleAdder(projectModuleDescription, design_category_description, isSecurityModule, true);
             moduleAdder(projectModuleDescription, construct_category_description, isSecurityModule, true);
             moduleAdder(projectModuleDescription, exo_category_description, isSecurityModule, true);
@@ -613,10 +642,10 @@ namespace BluePrints.ViewModels
             moduleAdder(exo_category_description, new BluePrintsEntitiesModuleDescription(DataUtils.GetNameOf(() => NavigationResources.Menu_Project_EXO_SellPrices), projectSpecificKey, exo_category_description.NavigationId, childTitlePrefix + "Sell Prices", "EXO_PricesCollectionView", new EntitiesParameter<PROJECT>(entity), null, "Sell Prices", false, false, @"XAF\BO_Price.png", null, null, false, null, "Add/Delete/Edit Sell Rates"), isSecurityModule);
 
             moduleAdder(forecast_category_description, new BluePrintsEntitiesModuleDescription(DataUtils.GetNameOf(() => NavigationResources.Menu_Project_Forecast), projectSpecificKey, forecast_category_description.NavigationId, childTitlePrefix + "Forecast", "PROJECTForecastView", new DualEntitiesParameter<PROJECT, Action<object>>(entity, NavigateCoreCommand), null, "Forecast", false, false, @"Function Library\Statistical_16x16.png"), isSecurityModule);
-            
-            if(!isSecurityModule)
+
+            if (!isSecurityModule)
                 moduleAdder(forecast_category_description, new BluePrintsEntitiesModuleDescription(DataUtils.GetNameOf(() => NavigationResources.Menu_Project_Forecast), projectSpecificKey, forecast_category_description.NavigationId, childTitlePrefix + "Forecast Snapshot", "PROJECTForecastSnapshotView", new EntitiesParameter<PROJECT>(entity), null, "Forecast Snapshot", false, false, @"PDF Viewer\MarqueeZoom_16x16.png"), isSecurityModule);
-            
+
             moduleAdder(forecast_category_description, new BluePrintsEntitiesModuleDescription(DataUtils.GetNameOf(() => NavigationResources.Menu_Project_Forecast_PO), projectSpecificKey, forecast_category_description.NavigationId, childTitlePrefix + "PO Forecast", "PROJECTPOForecastView", new EntitiesParameter<PROJECT>(entity), null, "PO Forecast", false, false, @"Business Objects\BOOrderItem_16x16.png", null, null, false, null, "Forecasting of PO's Outstanding Amounts Excluding PO's Related to Equipment Hires"), isSecurityModule);
             moduleAdder(forecast_category_description, new BluePrintsEntitiesModuleDescription(DataUtils.GetNameOf(() => NavigationResources.Menu_Project_Forecast_PO), projectSpecificKey, forecast_category_description.NavigationId, childTitlePrefix + "PO Snapshot Forecast", "PROJECTPOSnapshotForecastView", new EntitiesParameter<PROJECT>(entity), null, "PO Snapshot Forecast", false, false, @"Business Objects\BOOrderItem_16x16.png", null, null, false, null, "Forecasting of a Snapshot of PO's Outstanding Amounts Excluding PO's Related to Equipment Hires"), isSecurityModule);
             moduleAdder(forecast_category_description, new BluePrintsEntitiesModuleDescription(DataUtils.GetNameOf(() => NavigationResources.Menu_Project_Forecast_Flat_PO), projectSpecificKey, forecast_category_description.NavigationId, childTitlePrefix + "EH PO Forecast", "PROJECTFlatPOForecastView", new EntitiesParameter<PROJECT>(entity), null, "EH PO Forecast", false, false, @"Business Objects\BOOrderItem_16x16.png", null, null, false, null, "Forecasting of PO's Outstanding Amounts Related to Equipment Hires"), isSecurityModule);
@@ -751,7 +780,8 @@ namespace BluePrints.Common.ViewModel
         List<BluePrintsEntitiesModuleDescription> menuItems;
         Action<object> navigateAction;
         public bool Animate { get; set; }
-        public BluePrintsEntitiesModuleDescription(string id, string projectSpecificKey, string parentId, string title, string documentType = null, object documentParameter = null, ImageSource image = null, string navigationTitle = null, bool treeViewIsExpanded = true, bool showInCollapseMode = false, string imagePath = "", List<BluePrintsEntitiesModuleDescription> menuItems = null, Action<object> navigateAction = null, bool showAnimation = false, Func<string> preferredDocumentType = null, string toolTip = "")
+        public readonly PROJECT PROJECT;
+        public BluePrintsEntitiesModuleDescription(string id, string projectSpecificKey, string parentId, string title, string documentType = null, object documentParameter = null, ImageSource image = null, string navigationTitle = null, bool treeViewIsExpanded = true, bool showInCollapseMode = false, string imagePath = "", List<BluePrintsEntitiesModuleDescription> menuItems = null, Action<object> navigateAction = null, bool showAnimation = false, Func<string> preferredDocumentType = null, string toolTip = "", PROJECT project = null)
             : base(id, projectSpecificKey, parentId, title, documentType, documentParameter, image, navigationTitle, treeViewIsExpanded, showInCollapseMode, preferredDocumentType)
         {
             if (toolTip != string.Empty)
@@ -781,6 +811,8 @@ namespace BluePrints.Common.ViewModel
                 else
                     Image = new BitmapImage(new Uri("pack://application:,,,/DevExpress.Images.v19.2;component/Images/Actions/Open_16x16.png"));
             }
+
+            this.PROJECT = project;
         }
 
         public string Caption => this.NavigationTitle;
