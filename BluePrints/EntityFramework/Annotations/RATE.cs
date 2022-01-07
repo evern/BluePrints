@@ -160,6 +160,33 @@ namespace BluePrints.Data
         {
             get
             {
+                if (this.ManagerPercent > 0 && this.ManagerRate == 0)
+                    return false;
+                if (this.ManagerPercent == 0 && this.ManagerRate > 0)
+                    return false;
+                if (this.PrincipalPercent > 0 && this.PrincipalRate == 0)
+                    return false;
+                if (this.PrincipalPercent == 0 && this.PrincipalRate > 0)
+                    return false;
+                if (this.LeadPercent > 0 && this.LeadRate == 0)
+                    return false;
+                if (this.SeniorPercent == 0 && this.SeniorRate > 0)
+                    return false;
+                if (this.SeniorPercent > 0 && this.SeniorRate == 0)
+                    return false;
+                if (this.EngineerPercent == 0 && this.EngineerRate > 0)
+                    return false;
+                if (this.EngineerPercent > 0 && this.EngineerRate == 0)
+                    return false;
+                if (this.GraduatePercent == 0 && this.GraduateRate > 0)
+                    return false;
+                if (this.GraduatePercent > 0 && this.GraduateRate == 0)
+                    return false;
+                if (this.UndergraduatePercent == 0 && this.UndergraduateRate > 0)
+                    return false;
+                if (this.UndergraduatePercent > 0 && this.UndergraduateRate == 0)
+                    return false;
+
                 return TotalPercent == 1;
             }
         }
@@ -245,6 +272,8 @@ namespace BluePrints.Data
             return ratesTable;
         }
 
+        private string rateError = "Rate must be set in order for gang rate to be calculated";
+        private string percentError = "Percent must be set in order for gang rate to be calculated";
         public void GetPropertyError(string propertyName, ErrorInfo info)
         {
             if (propertyName.Contains(BindableBase.GetPropertyName(() => new RATE().COMMODITY_CODE)))
@@ -270,6 +299,84 @@ namespace BluePrints.Data
                         info.ErrorText = commodityName + " is not valid for selected department and discipline";
                     }
                 }
+            }
+            else if (propertyName.Contains(BindableBase.GetPropertyName(() => new RATE().RATE1)))
+            {
+                if (TotalPercent < 1 && (ManagerPercent > 0 || PrincipalPercent > 0 || LeadPercent > 0 || LeadPercent > 0 || SeniorPercent > 0 || EngineerPercent > 0 || GraduatePercent > 0 || UndergraduatePercent > 0))
+                {
+                    decimal remainingPercent = 1 - TotalPercent;
+                    info.ErrorText = String.Format("{0:P2}.", remainingPercent) + " remaining for gang rate to be calculatable";
+                }
+            }
+            else if (propertyName.Contains(BindableBase.GetPropertyName(() => new RATE().MANAGER_RATE)))
+            {
+                if (ManagerPercent > 0 && ManagerRate == 0)
+                    info.ErrorText = rateError;
+            }
+            else if (propertyName.Contains(BindableBase.GetPropertyName(() => new RATE().PRINCIPAL_RATE)))
+            {
+                if (PrincipalPercent > 0 && PrincipalRate == 0)
+                    info.ErrorText = rateError;
+            }
+            else if (propertyName.Contains(BindableBase.GetPropertyName(() => new RATE().LEAD_RATE)))
+            {
+                if (LeadPercent > 0 && LeadRate == 0)
+                    info.ErrorText = rateError;
+            }
+            else if (propertyName.Contains(BindableBase.GetPropertyName(() => new RATE().SENIOR_RATE)))
+            {
+                if (SeniorPercent > 0 && SeniorRate == 0)
+                    info.ErrorText = rateError;
+            }
+            else if (propertyName.Contains(BindableBase.GetPropertyName(() => new RATE().ENGINEER_RATE)))
+            {
+                if (EngineerPercent > 0 && EngineerRate == 0)
+                    info.ErrorText = rateError;
+            }
+            else if (propertyName.Contains(BindableBase.GetPropertyName(() => new RATE().GRADUATE_RATE)))
+            {
+                if (GraduatePercent > 0 && GraduateRate == 0)
+                    info.ErrorText = rateError;
+            }
+            else if (propertyName.Contains(BindableBase.GetPropertyName(() => new RATE().UNDERGRADUATE_RATE)))
+            {
+                if (UndergraduatePercent > 0 && UndergraduateRate == 0)
+                    info.ErrorText = rateError;
+            }
+            else if (propertyName.Contains(BindableBase.GetPropertyName(() => new RATE().MANAGER_PERCENT)))
+            {
+                if (ManagerPercent == 0 && ManagerRate > 0)
+                    info.ErrorText = percentError;
+            }
+            else if (propertyName.Contains(BindableBase.GetPropertyName(() => new RATE().PRINCIPAL_PERCENT)))
+            {
+                if (PrincipalPercent == 0 && PrincipalRate > 0)
+                    info.ErrorText = percentError;
+            }
+            else if (propertyName.Contains(BindableBase.GetPropertyName(() => new RATE().LEAD_PERCENT)))
+            {
+                if (LeadPercent == 0 && LeadRate > 0)
+                    info.ErrorText = percentError;
+            }
+            else if (propertyName.Contains(BindableBase.GetPropertyName(() => new RATE().SENIOR_PERCENT)))
+            {
+                if (SeniorPercent == 0 && SeniorRate > 0)
+                    info.ErrorText = percentError;
+            }
+            else if (propertyName.Contains(BindableBase.GetPropertyName(() => new RATE().ENGINEER_PERCENT)))
+            {
+                if (EngineerPercent == 0 && EngineerRate > 0)
+                    info.ErrorText = percentError;
+            }
+            else if (propertyName.Contains(BindableBase.GetPropertyName(() => new RATE().GRADUATE_PERCENT)))
+            {
+                if (GraduatePercent == 0 && GraduateRate > 0)
+                    info.ErrorText = percentError;
+            }
+            else if (propertyName.Contains(BindableBase.GetPropertyName(() => new RATE().UNDERGRADUATE_PERCENT)))
+            {
+                if (UndergraduatePercent == 0 && UndergraduateRate > 0)
+                    info.ErrorText = percentError;
             }
         }
 
