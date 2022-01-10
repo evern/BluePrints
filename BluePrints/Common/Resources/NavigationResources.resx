@@ -528,4 +528,13 @@
   <data name="Menu_Project_ConstructionMaintenanceCostRate" xml:space="preserve">
     <value>Maintenance cost rate maintenance menu</value>
   </data>
+  <data name="Menu_Project_Snapshot_Forecast" xml:space="preserve">
+    <value>Project forecast snapshot menu</value>
+  </data>
+  <data name="Menu_Project_Snapshot_Forecast_Flat_PO" xml:space="preserve">
+    <value>Project equipment hire PO forecast maintenance menu</value>
+  </data>
+  <data name="Menu_Project_Snapshot_Forecast_PO" xml:space="preserve">
+    <value>Project PO forecast maintenance menu</value>
+  </data>
 </root>

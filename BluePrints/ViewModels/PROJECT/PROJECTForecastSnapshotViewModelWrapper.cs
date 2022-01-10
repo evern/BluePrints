@@ -252,6 +252,7 @@ namespace BluePrints.ViewModels
                 //prevent tab switching from setting this to null because it's binded to view
                 if (value != null && value.Year != new DateTime().Year)
                 {
+                    //always set date to end of month
                     DateTime rawDataDate = value;
                     rawDataDate = new DateTime(value.Year, value.Month, 1);
                     rawDataDate = rawDataDate.AddMonths(1).AddSeconds(-1);
@@ -383,7 +384,8 @@ namespace BluePrints.ViewModels
             //Auto refresh forecast data on load
             if (FORECAST_JOB_HOUR_SNAPSHOTCollection.Count() == 0)
             {
-                RefreshAllForecastData();
+                MessageBoxService.ShowMessage("Since this is the first time snapshot forecast is used, a snapshot needs to be created, please wait for snapshot to be generated after closing this message", "Info", MessageButton.OK, MessageIcon.Information);
+                RefreshAllForecastData(true);
                 return false;
             }
 
@@ -449,10 +451,11 @@ namespace BluePrints.ViewModels
                 string commodityCode = delimited[2];
                 string variationCode = delimited[3];
                 //For Debugging
-                //if (subJobCode == "20638-000-00-I1" && disciplineCode == "GP01" && commodityCode == "G64" && variationCode == "")
+                //if (subJobCode == "23902-210-00-P1" && disciplineCode == "ME21" && commodityCode == "M58" && variationCode == "")
                 //{
 
                 //}
+
                 UniqueForecastJob uniqueForecastJob = new UniqueForecastJob(projectLines, subJobCode, disciplineCode, commodityCode, variationCode, FixedDataDate, PreviousDataDate, FORECAST_JOB_HOUR_SNAPSHOTCollection);
                 uniqueForecastJob.UpdateTenderBudget(TenderBudgetCollection.AsQueryable());
                 uniqueForecastJob.UpdateErrorMessage(JOBCOST_LINES_AUDITCollection.AsQueryable());
@@ -1447,7 +1450,9 @@ namespace BluePrints.ViewModels
             Common.LoadingScreenManager.SetMessage("Saving changes...");
             bluePrintsUnitOfWork.SaveChanges();
             Common.LoadingScreenManager.CloseLoadingScreen();
-            FixedDataDate = FixedDataDateMonthEnd.AddMonths(1);
+
+            DateTime nextDataDate = (DateTime)FixedDataDate;
+            FixedDataDate = new DateTime(nextDataDate.Year, nextDataDate.Month, 1).AddMonths(1).AddSeconds(-1);
             LoadDataDate = FixedDataDate;
             SaveDateAndRefresh();
         }
@@ -2638,10 +2643,11 @@ namespace BluePrints.ViewModels
             }
         }
 
-        public void RefreshAllForecastData()
+        public void RefreshAllForecastData(bool disableMessage = false)
         {
-            if (MessageBoxService.ShowMessage("Are you sure you want to update snapshot data? This may cause forecast result of PO/EH PO's and Indirect's inaccurate", "Warning", MessageButton.YesNo, MessageIcon.Warning) == MessageResult.No)
-                return;
+            if(!disableMessage)
+                if (MessageBoxService.ShowMessage("Are you sure you want to update snapshot data? This may cause forecast result of PO/EH PO's and Indirect's inaccurate", "Warning", MessageButton.YesNo, MessageIcon.Warning) == MessageResult.No)
+                    return;
 
             IsLoading = true;
             Common.LoadingScreenManager.ShowLoadingScreen(1);
@@ -2663,7 +2669,9 @@ namespace BluePrints.ViewModels
 
         public override void FullRefresh()
         {
-            alignedDataDateCollection.Clear();
+            if(alignedDataDateCollection != null)
+                alignedDataDateCollection.Clear();
+
             loadExoMethodsData();
             loadSummaryStats();
 

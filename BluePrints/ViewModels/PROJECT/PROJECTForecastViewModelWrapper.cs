@@ -147,7 +147,6 @@ namespace BluePrints.ViewModels
             }
 
             FixedDataDate = dataDate;
-            isFixedDataDateSet = true;
 
             DateTime endDate;
             if (LoadPROJECT.FORECAST_END_DATE == null)
@@ -428,7 +427,6 @@ namespace BluePrints.ViewModels
         private DateTime? firstDataPointsDate { get; set; }
         public DateTime? LoadDataDate { get; set; }
 
-        bool isFixedDataDateSet;
         DateTime? fixedDateTime;
         public override DateTime? FixedDataDate
         {
@@ -436,8 +434,14 @@ namespace BluePrints.ViewModels
             set
             {
                 //prevent tab switching from setting this to null because it's binded to view
-                if (!isFixedDataDateSet)
-                    fixedDateTime = value;
+                if (value != null && ((DateTime)value).Year != new DateTime().Year)
+                {
+                    //always set date to end of month
+                    DateTime rawDataDate = (DateTime)value;
+                    rawDataDate = new DateTime(rawDataDate.Year, rawDataDate.Month, 1);
+                    rawDataDate = rawDataDate.AddMonths(1).AddSeconds(-1);
+                    fixedDateTime = rawDataDate;
+                }
             }
         }
 
@@ -876,7 +880,7 @@ namespace BluePrints.ViewModels
 
             //For Debugging
             //string s;
-            //if (commodityJob.Projection.SubJobCode == "20638-000-00-C1" && commodityJob.DisciplineCode == "EL01" && commodityJob.Projection.CommodityCode == "E90" && commodityJob.Projection.VariationCode == "VR-247 Camp Relocation West Angelas")
+            //if (commodityJob.Projection.SubJobCode == "23902-200-00-D1" && commodityJob.DisciplineCode == "CC51" && commodityJob.Projection.CommodityCode == "MTO" && commodityJob.Projection.VariationCode == "")
             //    s = string.Empty;
             //else
             //    return commodityRow;
@@ -2642,9 +2646,9 @@ namespace BluePrints.ViewModels
             LoadingScreenManager.SetMessage("Saving changes...");
             bluePrintsUnitOfWork.SaveChanges();
             LoadingScreenManager.CloseLoadingScreen();
-            isFixedDataDateSet = false;
-            FixedDataDate = FixedDataDateMonthEnd.AddMonths(1);
-            isFixedDataDateSet = true;
+
+            DateTime nextDataDate = (DateTime)FixedDataDate;
+            FixedDataDate = new DateTime(nextDataDate.Year, nextDataDate.Month, 1).AddMonths(2).AddSeconds(-1);
             LoadDataDate = FixedDataDate;
             SaveDateAndRefresh();
         }
@@ -2654,7 +2658,7 @@ namespace BluePrints.ViewModels
         /// </summary>
         private void saveProjectBudgetToTenderBudget()
         {
-            LoadingScreenManager.ShowLoadingScreen(DataPointsTable.Rows.Count);
+            LoadingScreenManager.ShowLoadingScreen(DataPointsTable.Rows.Count, true);
             LoadingScreenManager.SetMessage("Copying project budget to tender budget...");
             foreach (DataRow masterRow in DataPointsTable.Rows)
             {
@@ -2677,7 +2681,7 @@ namespace BluePrints.ViewModels
         private void saveEACToProjectBudget()
         {
             List<ErrorMessage> errorMessages = new List<ErrorMessage>();
-            LoadingScreenManager.ShowLoadingScreen(DataPointsTable.Rows.Count);
+            LoadingScreenManager.ShowLoadingScreen(DataPointsTable.Rows.Count, true);
             LoadingScreenManager.SetMessage("Copying EAC to project budget...");
             foreach (DataRow forecastRow in DataPointsTable.Rows)
             {
