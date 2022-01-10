@@ -12,6 +12,10 @@ namespace BluePrints.Common
 
         public static void ShowLoadingScreen(int maxProgress, bool alwaysOnTop = false)
         {
+
+#if DEBUG
+            return;
+#endif
             if (DisableLoadingScreen)
                 return;
 
