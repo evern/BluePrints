@@ -69,6 +69,7 @@ namespace BluePrints.ViewModels
         protected List<DateTime> alignedDataDateCollection;
         protected List<string> hiddenColumnFieldNames = new List<string>();
         protected string columnEntity = "Entity";
+        protected string columnComments = "Comments";
         DispatcherTimer selectedItemsChangedDispatcher;
         DispatcherTimer closeEditorDispatcher;
         public CriteriaOperator POFilterCriteria { get; set; }
@@ -392,10 +393,14 @@ namespace BluePrints.ViewModels
                     return false;
                 }
             }
-            else if(copyColumn.FieldName.Contains(BindableBase.GetPropertyName(() => new POForecastSnapshotProjection().Comments)))
+            else if (copyColumn.FieldName == columnComments)
             {
                 if (pasteData != null)
+                {
+                    addUndo(newRow, copyColumn.FieldName, newRow[copyColumn.FieldName], pasteData, EntityMessageType.Changed);
                     findExistingOrAddNewFORECAST_JOB_SETTING(newRow, pasteData);
+                    newRow[columnComments] = pasteData;
+                }
             }
             else if (copyColumn.FieldType == typeof(string))
             {
@@ -411,6 +416,10 @@ namespace BluePrints.ViewModels
             {
                 decimal? undoDecimalValue = viewNewValue == null ? (decimal?)null : (decimal)viewNewValue;
                 EntitiesUndoRedoManager.AddUndo(changedEntity, fieldName, oldValue, undoDecimalValue, entityMessageType);
+            }
+            else if (viewNewValue.GetType() == typeof(string))
+            {
+                EntitiesUndoRedoManager.AddUndo(changedEntity, fieldName, oldValue, viewNewValue, entityMessageType);
             }
         }
 
@@ -449,10 +458,11 @@ namespace BluePrints.ViewModels
 
                     findExistingOrAddNewFORECAST_PO(entityProperty.ChangedEntity, parseDateTime, oldValueDecimal);
                 }
-                else if (entityProperty.PropertyName.Contains(BindableBase.GetPropertyName(() => new POForecastSnapshotProjection().Comments)))
+                else if (entityProperty.PropertyName == columnComments)
                 {
                     string oldValueString = entityProperty.OldValue == null ? string.Empty : entityProperty.OldValue.ToString();
                     findExistingOrAddNewFORECAST_JOB_SETTING(entityProperty.ChangedEntity, oldValueString);
+                    entityProperty.ChangedEntity[columnComments] = oldValueString;
                 }
             }
 
@@ -478,10 +488,11 @@ namespace BluePrints.ViewModels
 
                     findExistingOrAddNewFORECAST_PO(entityProperty.ChangedEntity, parseDateTime, newValueDecimal);
                 }
-                else if (entityProperty.PropertyName.Contains(BindableBase.GetPropertyName(() => new POForecastSnapshotProjection().Comments)))
+                else if (entityProperty.PropertyName == columnComments)
                 {
                     string newValueString = entityProperty.NewValue == null ? string.Empty : entityProperty.NewValue.ToString();
                     findExistingOrAddNewFORECAST_JOB_SETTING(entityProperty.ChangedEntity, newValueString);
+                    entityProperty.ChangedEntity[columnComments] = newValueString;
                 }
             }
 
@@ -530,6 +541,7 @@ namespace BluePrints.ViewModels
             //initialize datatable schema
             dataPointsTable = new DataTable();
             dataPointsTable.Columns.Add(columnEntity, typeof(POForecastSnapshotProjection));
+            dataPointsTable.Columns.Add(columnComments, typeof(string));
 
             foreach (DateTime alignedDataDate in alignedDataDateCollection)
             {
@@ -544,17 +556,11 @@ namespace BluePrints.ViewModels
             List<POForecastSnapshotProjection> projections = new List<POForecastSnapshotProjection>();
             foreach (var poLine in poLines.OrderBy(x => x.PONumber))
             {
-                POForecastSnapshotProjection newForecast = ViewModelSource.Create(() => new POForecastSnapshotProjection());
+                POForecastSnapshotProjection newForecast = new POForecastSnapshotProjection();
                 newForecast.PONO = poLine.PONumber;
                 //since it's a group it'll always contain at least a single element
                 newForecast.CurrentPOSnapshots = poLine.DataPoints;
                 newForecast.VariationCode = poLine.VariationCode;
-
-                //populate comment
-                FORECAST_PO_SETTING forecastPOSetting = FORECAST_PO_SETTINGCollection.FirstOrDefault(x => x.PONO == poLine.PONumber && x.VARIATION_CODE == poLine.VariationCode && (x.STOCK_CODE == null || x.STOCK_CODE == string.Empty));
-                if (forecastPOSetting != null)
-                    newForecast.Comments = forecastPOSetting.PO_COMMENTS;
-
                 IEnumerable<X_PURCHORD_LINE_DETAIL> purchaseOrderDetails = PODetail.Where(x => x.PO_NUMBER.ToString() == poLine.PONumber);
                 if(purchaseOrderDetails.Count() > 0)
                 {
@@ -575,6 +581,12 @@ namespace BluePrints.ViewModels
                 DataRow newRow = DataPointsTable.NewRow();
                 newRow[columnEntity] = projection;
                 updateRowPOForecast(alignedDataDateCollection, Entities, CutoffActual_FORECAST_JOB_HOUR_SNAPSHOTCollection, ActualsCutOffDate, projection.PONO, projection.VariationCode, newRow);
+
+                //populate comment
+                FORECAST_PO_SETTING forecastPOSetting = FORECAST_PO_SETTINGCollection.FirstOrDefault(x => x.PONO == projection.PONO && x.VARIATION_CODE == projection.VariationCode && (x.STOCK_CODE == null || x.STOCK_CODE == string.Empty));
+                if (forecastPOSetting != null)
+                    newRow[columnComments] = forecastPOSetting.PO_COMMENTS;
+
                 dataPointsTable.Rows.Add(newRow);
                 LoadingScreenManager.Progress();
             }
@@ -613,7 +625,7 @@ namespace BluePrints.ViewModels
             summaries.Add(new SummaryDescriptor() { FieldName = "Entity.TotalForecast", DisplayFormat = "c", Type = SummaryItemType.Sum });
             columns.Add(new ColumnDescriptor() { FieldName = "Entity.Unforecasted", Header = "Not Forecasted", Mask = "c", ReadOnly = true, Fixed = FixedStyle.Left, Width = 70, Settings = SettingsType.Unforecasted });
             summaries.Add(new SummaryDescriptor() { FieldName = "Entity.Unforecasted", DisplayFormat = "c", Type = SummaryItemType.Sum });
-            columns.Add(new ColumnDescriptor() { FieldName = "Entity.Comments", Header = "Comments", ReadOnly = false, Fixed = FixedStyle.Left, Width = 200, Settings = SettingsType.Default });
+            columns.Add(new ColumnDescriptor() { FieldName = columnComments, Header = "Comments", ReadOnly = false, Fixed = FixedStyle.Left, Width = 200, Settings = SettingsType.Default });
 
             foreach (DateTime alignedDate in alignedDates.OrderBy(x => x))
             {
@@ -773,7 +785,7 @@ namespace BluePrints.ViewModels
                 updateRowPOForecast(alignedDataDateCollection, Entities, CutoffActual_FORECAST_JOB_HOUR_SNAPSHOTCollection, ActualsCutOffDate, string.Empty, string.Empty, dataRowView.Row);
                 addUndo(dataRowView.Row, e.Column.FieldName, e.OldValue, newValue, EntityMessageType.Changed);
             }
-            else if (e.Column.FieldName.Contains(BindableBase.GetPropertyName(() => new POForecastSnapshotProjection().Comments)))
+            else if (e.Column.FieldName == columnComments)
             {
                 DataRowView dataRowView = (DataRowView)e.Row;
                 string commeentsValue = e.Value == null ? string.Empty : e.Value.ToString();

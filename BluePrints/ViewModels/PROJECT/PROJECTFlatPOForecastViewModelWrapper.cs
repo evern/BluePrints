@@ -91,7 +91,7 @@ namespace BluePrints.ViewModels
             //initialize datatable schema
             dataPointsTable = new DataTable();
             dataPointsTable.Columns.Add(columnEntity, typeof(POFlatForecastProjection));
-
+            dataPointsTable.Columns.Add(columnComments, typeof(string));
             foreach (DateTime alignedDataDate in alignedDataDateCollection)
             {
                 string columnFieldName = alignedDataDate.Date.ToString(BluePrintsResources.ColumnDateFormat);
@@ -115,11 +115,6 @@ namespace BluePrints.ViewModels
                 newFlatForecastProjection.VariationCode = POFlatLine.VariationCode;
                 newFlatForecastProjection.StockCode = POFlatLine.StockCode;
 
-                //populate comment
-                FORECAST_PO_SETTING forecastPOSetting = FORECAST_PO_SETTINGCollection.FirstOrDefault(x => x.PONO == POFlatLine.PONumber && x.VARIATION_CODE == POFlatLine.VariationCode && x.STOCK_CODE == POFlatLine.StockCode);
-                if (forecastPOSetting != null)
-                    newFlatForecastProjection.Comments = forecastPOSetting.PO_COMMENTS;
-
                 projections.Add(newFlatForecastProjection);
             }
 
@@ -129,6 +124,12 @@ namespace BluePrints.ViewModels
                 DataRow newRow = DataPointsTable.NewRow();
                 newRow[columnEntity] = projection;
                 updateRowPOForecast(alignedDataDateCollection, Entities, allExoActuals, ActualsCutOffDate, projection.PONO, projection.StockCode, projection.VariationCode, newRow);
+
+                //populate comment
+                FORECAST_PO_SETTING forecastPOSetting = FORECAST_PO_SETTINGCollection.FirstOrDefault(x => x.PONO == projection.PONO && x.VARIATION_CODE == projection.VariationCode && x.STOCK_CODE == projection.StockCode);
+                if (forecastPOSetting != null)
+                    newRow[columnComments] = forecastPOSetting.PO_COMMENTS;
+
                 dataPointsTable.Rows.Add(newRow);
             }
 
@@ -162,7 +163,7 @@ namespace BluePrints.ViewModels
             summaries.Add(new SummaryDescriptor() { FieldName = "Entity.TotalForecast", DisplayFormat = "c", Type = SummaryItemType.Sum });
             columns.Add(new ColumnDescriptor() { FieldName = "Entity.Unforecasted", Header = "Not Forecasted", Mask = "c", ReadOnly = true, Fixed = FixedStyle.Left, Width = 70, Settings = SettingsType.Unforecasted });
             summaries.Add(new SummaryDescriptor() { FieldName = "Entity.Unforecasted", DisplayFormat = "c", Type = SummaryItemType.Sum });
-            columns.Add(new ColumnDescriptor() { FieldName = "Entity.Comments", Header = "Comments", ReadOnly = false, Fixed = FixedStyle.Left, Width = 200, Settings = SettingsType.Default });
+            columns.Add(new ColumnDescriptor() { FieldName = columnComments, Header = "Comments", ReadOnly = false, Fixed = FixedStyle.Left, Width = 200, Settings = SettingsType.Default });
 
             foreach (DateTime alignedDate in alignedDates.OrderBy(x => x))
             {

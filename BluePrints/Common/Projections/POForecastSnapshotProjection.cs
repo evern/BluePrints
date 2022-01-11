@@ -13,7 +13,7 @@ using System.Threading.Tasks;
 
 namespace BluePrints.Common.Projections
 {
-    public class POForecastSnapshotProjection
+    public class POForecastSnapshotProjection : EntityBase
     {
         public string PONO { get; set; }
         public string Description { get; set; }
@@ -51,7 +51,7 @@ namespace BluePrints.Common.Projections
                     FORECAST_POs.Add(currentPOForecast);
             }
 
-            this.RaisePropertiesChanged();
+            this.Update();
         }
 
         protected virtual List<FORECAST_PO> getPOForecasts(IEnumerable<FORECAST_PO> allFORECAST_POs)
