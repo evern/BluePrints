@@ -346,6 +346,7 @@ namespace BluePrints.ViewModels
             loaderCollection.AddLoaderDescription(bluePrintsUnitOfWorkFactory, x => x.COMMODITY_CODES, COMMODITY_CODEProjectionFunc);
             loaderCollection.AddLoaderDescription<REGISTER_HOLD_REF, REGISTER_HOLD_REF, Guid, IBluePrintsEntitiesUnitOfWork>(bluePrintsUnitOfWorkFactory, x => x.REGISTER_HOLD_REF);
             loaderCollection.AddLoaderDescription<OFFICE, OFFICE, Guid, IBluePrintsEntitiesUnitOfWork>(bluePrintsUnitOfWorkFactory, x => x.OFFICES);
+            loaderCollection.AddLoaderDescription(bluePrintsUnitOfWorkFactory, x => x.PROJECT_CONTRACTORS, PROJECT_CONTRACTORProjectionFunc);
         }
 
         private Func<IRepositoryQuery<VARIATION>, IQueryable<VARIATION>> VARIATIONProjectionFunc()
@@ -405,6 +406,11 @@ namespace BluePrints.ViewModels
                 return query => query.Where(x => !x.IS_INDIRECT_ONLY);
             else
                 return query => query;
+        }
+
+        protected virtual Func<IRepositoryQuery<PROJECT_CONTRACTOR>, IQueryable<PROJECT_CONTRACTOR>> PROJECT_CONTRACTORProjectionFunc()
+        {
+            return query => query.Where(x => x.GUID_PROJECT == loadPROJECT.GUID);
         }
 
         protected virtual Func<IRepositoryQuery<BASELINE>, IQueryable<BASELINE>> BASELINEProjectionFunc()
@@ -2197,6 +2203,16 @@ namespace BluePrints.ViewModels
             return loadPROJECT.NUMBER + "_Baseline_Rev_" + loadBASELINE.REVISION;
         }
 
+        public IEnumerable<PROJECT_CONTRACTOR> PROJECT_CONTRACTORCollection
+        {
+            get
+            {
+                var collection = GetEntities<PROJECT_CONTRACTOR>();
+                if (collection != null)
+                    collection = collection.OrderBy(x => x.NAME);
+                return collection;
+            }
+        }
         #endregion
 
         #region For Variation Usage

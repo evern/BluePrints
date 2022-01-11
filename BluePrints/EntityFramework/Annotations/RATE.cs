@@ -343,41 +343,41 @@ namespace BluePrints.Data
                 if (UndergraduatePercent > 0 && UndergraduateRate == 0)
                     info.ErrorText = rateError;
             }
-            else if (propertyName.Contains(BindableBase.GetPropertyName(() => new RATE().MANAGER_PERCENT)))
-            {
-                if (ManagerPercent == 0 && ManagerRate > 0)
-                    info.ErrorText = percentError;
-            }
-            else if (propertyName.Contains(BindableBase.GetPropertyName(() => new RATE().PRINCIPAL_PERCENT)))
-            {
-                if (PrincipalPercent == 0 && PrincipalRate > 0)
-                    info.ErrorText = percentError;
-            }
-            else if (propertyName.Contains(BindableBase.GetPropertyName(() => new RATE().LEAD_PERCENT)))
-            {
-                if (LeadPercent == 0 && LeadRate > 0)
-                    info.ErrorText = percentError;
-            }
-            else if (propertyName.Contains(BindableBase.GetPropertyName(() => new RATE().SENIOR_PERCENT)))
-            {
-                if (SeniorPercent == 0 && SeniorRate > 0)
-                    info.ErrorText = percentError;
-            }
-            else if (propertyName.Contains(BindableBase.GetPropertyName(() => new RATE().ENGINEER_PERCENT)))
-            {
-                if (EngineerPercent == 0 && EngineerRate > 0)
-                    info.ErrorText = percentError;
-            }
-            else if (propertyName.Contains(BindableBase.GetPropertyName(() => new RATE().GRADUATE_PERCENT)))
-            {
-                if (GraduatePercent == 0 && GraduateRate > 0)
-                    info.ErrorText = percentError;
-            }
-            else if (propertyName.Contains(BindableBase.GetPropertyName(() => new RATE().UNDERGRADUATE_PERCENT)))
-            {
-                if (UndergraduatePercent == 0 && UndergraduateRate > 0)
-                    info.ErrorText = percentError;
-            }
+            //else if (propertyName.Contains(BindableBase.GetPropertyName(() => new RATE().MANAGER_PERCENT)))
+            //{
+            //    if (ManagerPercent == 0 && ManagerRate > 0)
+            //        info.ErrorText = percentError;
+            //}
+            //else if (propertyName.Contains(BindableBase.GetPropertyName(() => new RATE().PRINCIPAL_PERCENT)))
+            //{
+            //    if (PrincipalPercent == 0 && PrincipalRate > 0)
+            //        info.ErrorText = percentError;
+            //}
+            //else if (propertyName.Contains(BindableBase.GetPropertyName(() => new RATE().LEAD_PERCENT)))
+            //{
+            //    if (LeadPercent == 0 && LeadRate > 0)
+            //        info.ErrorText = percentError;
+            //}
+            //else if (propertyName.Contains(BindableBase.GetPropertyName(() => new RATE().SENIOR_PERCENT)))
+            //{
+            //    if (SeniorPercent == 0 && SeniorRate > 0)
+            //        info.ErrorText = percentError;
+            //}
+            //else if (propertyName.Contains(BindableBase.GetPropertyName(() => new RATE().ENGINEER_PERCENT)))
+            //{
+            //    if (EngineerPercent == 0 && EngineerRate > 0)
+            //        info.ErrorText = percentError;
+            //}
+            //else if (propertyName.Contains(BindableBase.GetPropertyName(() => new RATE().GRADUATE_PERCENT)))
+            //{
+            //    if (GraduatePercent == 0 && GraduateRate > 0)
+            //        info.ErrorText = percentError;
+            //}
+            //else if (propertyName.Contains(BindableBase.GetPropertyName(() => new RATE().UNDERGRADUATE_PERCENT)))
+            //{
+            //    if (UndergraduatePercent == 0 && UndergraduateRate > 0)
+            //        info.ErrorText = percentError;
+            //}
         }
 
         private bool IsNotValidByAllAttributes => !ValidCommodityCodes.Any(x => x.Code == COMMODITY_CODE);

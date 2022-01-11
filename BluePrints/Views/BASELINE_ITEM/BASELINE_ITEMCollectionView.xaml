@@ -371,6 +371,11 @@
                                     <dxe:CheckEditSettings />
                                 </dxg:GridColumn.EditSettings>
                             </dxg:GridColumn>-->
+                            <dxg:GridColumn FieldName="Entity.Entity.GUID_PROJECT_CONTRACTOR" Header="Contractor" SortMode="DisplayText">
+                                <dxg:GridColumn.EditSettings>
+                                    <dxe:ComboBoxEditSettings AutoComplete="True" DisplayMember="NAME" IsTextEditable="True" ItemsSource="{Binding PROJECT_CONTRACTORCollection}" ValueMember="GUID" />
+                                </dxg:GridColumn.EditSettings>
+                            </dxg:GridColumn>
                         </dxg:GridControlBand>
                         <dxg:GridControlBand x:Name="gcbDates" Header="Dates">
                             <dxg:GridColumn FieldName="Entity.Entity.TENDER_START_DATE" Visible="{Binding IsTender}" AllowBestFit="false" Width="80" Header="Tender Start" FilterPopupMode="DateAlt" HeaderToolTip="Tender date when the deliverable is going to start, this will override deliverable start date, only affects planned S-Curve">
