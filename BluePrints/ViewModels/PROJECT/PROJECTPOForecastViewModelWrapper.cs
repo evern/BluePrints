@@ -889,7 +889,8 @@ namespace BluePrints.ViewModels
                                 if (lastProcessedDate == null)
                                     continue;
 
-                                parseFieldName = ((DateTime)lastProcessedDate).AddMonths((int)spreadInterval).AddDays(-1).ToString(BluePrintsResources.ColumnDateFormat);
+                                DateTime beginningOfMonth = new DateTime(((DateTime)lastProcessedDate).Year, ((DateTime)lastProcessedDate).Month, 1);
+                                parseFieldName = beginningOfMonth.AddMonths((int)spreadInterval).AddMonths(1).AddDays(-1).ToString(BluePrintsResources.ColumnDateFormat);
                                 oldValue = 0.00m;
                                 forceRefreshDataTable = true;
                             }
@@ -1355,7 +1356,7 @@ namespace BluePrints.ViewModels
 
         public void Window_KeyDown(System.Windows.Input.KeyEventArgs e)
         {
-            if (Keyboard.Modifiers == ModifierKeys.Shift)
+            if (Keyboard.Modifiers == ModifierKeys.Control)
             {
                 if (spreadInterval == null)
                     spreadInterval = 1;

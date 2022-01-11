@@ -103,7 +103,7 @@ namespace BluePrints.ViewModels
             List<POFlatForecastProjection> projections = new List<POFlatForecastProjection>();
             foreach (POFlatLine POFlatLine in POFlatLines.OrderBy(x => x.PONumber))
             {
-                POFlatForecastProjection newFlatForecastProjection = ViewModelSource.Create(() => new POFlatForecastProjection());
+                POFlatForecastProjection newFlatForecastProjection = new POFlatForecastProjection();
                 newFlatForecastProjection.PONO = POFlatLine.PONumber;
                 //since it's a group it'll always contain at least a single element
                 ExoDataPoint dataPoint = POFlatLine.DataPoints.First();
@@ -223,7 +223,7 @@ namespace BluePrints.ViewModels
 
         protected override void clearPOForecast(string poNo, string stockCode, string variationCode)
         {
-            List<FORECAST_PO> removePOForecasts = Entities.Where(x => x.PONO == poNo && x.VARIATION_CODE == variationCode).ToList();
+            List<FORECAST_PO> removePOForecasts = Entities.Where(x => x.PONO == poNo && x.STOCK_CODE == stockCode && x.VARIATION_CODE == variationCode).ToList();
             MainViewModel.BaseBulkDelete(removePOForecasts);
             shouldPromptForSavingSnapshot = true;
         }

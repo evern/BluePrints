@@ -116,7 +116,7 @@
         <dxb:BarManager>
             <dxb:BarManager.Items>
                 <dxb:BarSubItem ItemLinksSource="{StaticResource RibbonDefaultGridButtons}" />
-                <dxb:BarButtonItem x:Name="biPaymentSpread" Command="{Binding PaymentSpreadCommand}" CommandParameter="{Binding ElementName=GridControl}" Content="Distribute Remaining Costs" Glyph="{dx:DXImage Image=MergeCenter_16x16.png}" LargeGlyph="{dx:DXImage Image=MergeCenter_32x32.png}" ToolTip="Distribute remaining costs on months" />
+                <dxb:BarButtonItem x:Name="biPaymentSpread" Command="{Binding PaymentSpreadCommand}" CommandParameter="{Binding ElementName=GridControl}" Content="Distribute Remaining Costs" Glyph="{dx:DXImage Image=MergeCenter_16x16.png}" LargeGlyph="{dx:DXImage Image=MergeCenter_32x32.png}" ToolTip="Distribute remaining costs on months, Shortcut key Ctrl + (Num Key = Spread in Months), i.e. Ctrl + 1 for spreading cost across a month, interval is defined in the dialog" />
                 <dxb:BarEditItem x:Name="beForecastStart" Content="Forecast Start" IsEnabled="{Binding IsLoading, Converter={dxmvvm:BooleanNegationConverter}}" Glyph="{dx:DXImage Image=Calendar_16x16.png}" LargeGlyph="{dx:DXImage Image=Calendar_32x32.png}" EditValue="{Binding ForecastStartDate}" ToolTip="Data date">
                     <dxb:BarEditItem.EditSettings>
                         <dxe:DateEditSettings />
