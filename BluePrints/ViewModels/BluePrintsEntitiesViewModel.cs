@@ -338,7 +338,8 @@ namespace BluePrints.ViewModels
 
         public void LogOut()
         {
-            BluePrintsGlobalMethods.LogOut();
+            if(MessageBoxService.ShowMessage("Are you sure you wish to log out?", "Confirmation", MessageButton.YesNo) == MessageResult.Yes)
+                BluePrintsGlobalMethods.LogOut();
         }
 
         public bool IsApplicationWindowMaximized => windowState == WindowState.Maximized;
@@ -361,7 +362,8 @@ namespace BluePrints.ViewModels
 
         public void ApplicationShutDown()
         {
-            BluePrintsGlobalMethods.ApplicationShutDown();
+            if (MessageBoxService.ShowMessage("Are you sure you wish to close the program?", "Confirmation", MessageButton.YesNo) == MessageResult.Yes)
+                BluePrintsGlobalMethods.ApplicationShutDown();
         }
 
         private void RemoveProjectModule(Guid primaryKey)

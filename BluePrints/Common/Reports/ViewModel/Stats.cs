@@ -694,7 +694,15 @@ namespace BluePrints.Common.ViewModel.Reporting
                 if (BudgetedUnits == 0 || Units == 0)
                     return 0;
                 else
-                    return Units / BudgetedUnits;
+                {
+                    decimal budgetUnitsPercentage = Units / BudgetedUnits;
+
+                    //fix rounding issue where it goes beyond 100%
+                    if (budgetUnitsPercentage > 1)
+                        budgetUnitsPercentage = 1;
+
+                    return budgetUnitsPercentage;
+                }
             }
         }
 
@@ -705,7 +713,15 @@ namespace BluePrints.Common.ViewModel.Reporting
                 if (TotalUnits == 0 || Units == 0)
                     return 0;
                 else
-                    return Units / TotalUnits;
+                {
+                    decimal totalUnitsPercentage = Units / TotalUnits;
+
+                    //fix rounding issue where it goes beyond 100%
+                    if (totalUnitsPercentage > 1)
+                        totalUnitsPercentage = 1;
+
+                    return totalUnitsPercentage;
+                }
             }
         }
 
@@ -716,7 +732,15 @@ namespace BluePrints.Common.ViewModel.Reporting
                 if (BudgetedCosts == 0 || Costs == 0)
                     return 0;
                 else
-                    return Costs / BudgetedCosts;
+                {
+                    decimal budgetCostsPercentage = Costs / BudgetedCosts;
+
+                    //fix rounding issue where it goes beyond 100%
+                    if (budgetCostsPercentage > 1)
+                        budgetCostsPercentage = 1;
+
+                    return budgetCostsPercentage;
+                }
             }
         }
 
@@ -727,7 +751,15 @@ namespace BluePrints.Common.ViewModel.Reporting
                 if (TotalCosts == 0 || Costs == 0)
                     return 0;
                 else
-                    return Costs / TotalCosts;
+                {
+                    decimal costsPercentage = Costs / TotalCosts;
+
+                    //fix rounding issue where it goes beyond 100%
+                    if (costsPercentage > 1)
+                        costsPercentage = 1;
+
+                    return costsPercentage;
+                }
             }
         }
 
