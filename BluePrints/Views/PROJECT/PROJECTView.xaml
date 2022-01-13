@@ -60,10 +60,6 @@
                             </DataTemplate>
                         </dxb:BarButtonItem.GlyphTemplate>
                     </dxb:BarButtonItem>
-                    <dxb:BarButtonItem x:Name="biExportPlanned" Content="Export Planned" ToolTip="Export planned datapoints to excel" Command="{Binding ExportPlannedCommand}" LargeGlyph="{dx:DXImage Image=ExportToXLSX_32x32.png}" Glyph="{dx:DXImage Image=ExportToXLSX_16x16.png}" />
-                    <dxb:BarButtonItem x:Name="biExportCurrent" Content="Export Current" ToolTip="Export current (planned including variation) datapoints to excel" Command="{Binding ExportCurrentCommand}" LargeGlyph="{dx:DXImage Image=ExportToXLSX_32x32.png}" Glyph="{dx:DXImage Image=ExportToXLSX_16x16.png}" />
-                    <dxb:BarButtonItem x:Name="biExportEarned" Content="Export Earned" ToolTip="Export earned datapoints to excel" Command="{Binding ExportEarnedCommand}" LargeGlyph="{dx:DXImage Image=ExportToXLSX_32x32.png}" Glyph="{dx:DXImage Image=ExportToXLSX_16x16.png}" />
-                    <dxb:BarButtonItem x:Name="biExportRemaining" Content="Export Remaining" ToolTip="Export remaining datapoints to excel" Command="{Binding ExportRemainingCommand}" LargeGlyph="{dx:DXImage Image=ExportToXLSX_32x32.png}" Glyph="{dx:DXImage Image=ExportToXLSX_16x16.png}" />
                     <dxb:BarButtonItem x:Name="biHealthCheck" Command="{Binding ProjectHealthCheckCommand}" CommandParameter="{Binding Mode=OneWay, RelativeSource={RelativeSource Self}}" Content="Health Check" ToolTip="Check S-Curve accuracy">
                         <dxb:BarButtonItem.GlyphTemplate>
                             <DataTemplate>
@@ -160,10 +156,6 @@
                             <dxr:RibbonPage MergeType="Replace" Caption="Detailed Export">
                                 <dxr:RibbonPageGroup MergeType="Replace" Caption="Project Details">
                                     <dxb:BarButtonItemLink BarItemName="biLocalExportToExcel" />
-                                    <dxb:BarButtonItemLink BarItemName="biExportPlanned" />
-                                    <dxb:BarButtonItemLink BarItemName="biExportCurrent" />
-                                    <dxb:BarButtonItemLink BarItemName="biExportEarned" />
-                                    <dxb:BarButtonItemLink BarItemName="biExportRemaining" />
                                 </dxr:RibbonPageGroup>
                             </dxr:RibbonPage>
                             <dxr:RibbonPage MergeType="Replace" Caption="Project Detail">

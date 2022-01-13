@@ -388,60 +388,6 @@ namespace BluePrints.ViewModels
             exportFileName = LoadPROJECT.NUMBER + "_" + "All_BP_Export" + ((DateTime)designDataDate).ToString("yyyyMMdd");
         }
 
-        public bool CanExportRemaining()
-        {
-            return CanExportToExcel();
-        }
-
-        public void ExportRemaining()
-        {
-            export(StatsType.Remaining);
-        }
-
-        public bool CanExportEarned()
-        {
-            return CanExportToExcel();
-        }
-
-        public void ExportEarned()
-        {
-            export(StatsType.Earned);
-        }
-
-        public bool CanExportPlanned()
-        {
-            return CanExportToExcel();
-        }
-
-        public void ExportPlanned()
-        {
-            export(StatsType.Planned);
-        }
-
-        public bool CanExportCurrent()
-        {
-            return CanExportToExcel();
-        }
-
-        public void ExportCurrent()
-        {
-            export(StatsType.Current);
-        }
-
-        private void export(StatsType statsType)
-        {
-            LoadingScreenManager.ShowLoadingScreen(1);
-            PROJECT_Dashboard dashboard = Entities.First();
-            dashboard.Export_Data = DashboardHelpers.BuildExportDataByType(statsType, LoadPROJECT.NUMBER, dashboard);
-            IsExportInternalNameVisible = true;
-            this.RaisePropertyChanged(x => x.IsExportInternalNameVisible);
-            this.RaisePropertyChanged(x => x.ExcelExportData);
-            LoadingScreenManager.CloseLoadingScreen();
-
-            exportFileName = LoadPROJECT.NUMBER + "_" + statsType.ToString() +  "_BP_Export" + ((DateTime)designDataDate).ToString("yyyyMMdd");
-            base.ExportToExcel();
-        }
-
         public bool CanProjectHealthCheck()
         {
             return CanExportToExcel() && HealthCheckIconName == "Warning";
