@@ -692,7 +692,7 @@ namespace BluePrints.ViewModels
 
         public bool CanSaveSnapshot()
         {
-            return !IsLoading && LoadDataDate != null;
+            return !IsLoading && LoadDataDate != null && shouldPromptForSavingSnapshot;
         }
 
         public bool CanLoadSnapshot()
