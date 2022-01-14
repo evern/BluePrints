@@ -384,8 +384,9 @@ namespace BluePrints.ViewModels
             //Auto refresh forecast data on load
             if (FORECAST_JOB_HOUR_SNAPSHOTCollection.Count() == 0)
             {
-                MessageBoxService.ShowMessage("Since this is the first time snapshot forecast is used, a snapshot needs to be created, please wait for snapshot to be generated after closing this message", "Info", MessageButton.OK, MessageIcon.Information);
-                RefreshAllForecastData(true);
+                if(MessageBoxService.ShowMessage("It appears that snapshot for " + FixedDataDate.ToShortDateString() + " hasn't been created, do you wish to create a snapshot for this data date?", "Info", MessageButton.YesNo, MessageIcon.Information) == MessageResult.Yes)
+                    RefreshAllForecastData(true);
+
                 return false;
             }
 
