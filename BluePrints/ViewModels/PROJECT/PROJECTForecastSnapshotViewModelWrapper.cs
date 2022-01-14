@@ -1455,7 +1455,7 @@ namespace BluePrints.ViewModels
             Common.LoadingScreenManager.CloseLoadingScreen();
 
             DateTime nextDataDate = (DateTime)FixedDataDate;
-            FixedDataDate = new DateTime(nextDataDate.Year, nextDataDate.Month, 1).AddMonths(1).AddSeconds(-1);
+            FixedDataDate = new DateTime(nextDataDate.Year, nextDataDate.Month, 1).AddMonths(2).AddSeconds(-1);
             LoadDataDate = FixedDataDate;
             SaveDateAndRefresh();
         }
@@ -2934,7 +2934,7 @@ namespace BluePrints.ViewModels
             P6PlannedCollection = filteredForecastJobHourSnapshot.Where(x => x.SNAPSHOT_TYPE == ForecastSnapshotValueType.P6Planned).ToList();
             PreviousPOCollection = filteredForecastJobHourSnapshot.Where(x => x.SNAPSHOT_TYPE == ForecastSnapshotValueType.PreviousOutstandingPO).ToList();
             POCollection = filteredForecastJobHourSnapshot.Where(x => x.SNAPSHOT_TYPE == ForecastSnapshotValueType.CurrentOutstandingPO).ToList();
-            //POForecastCollection = filteredForecastJobHourSnapshot.Where(x => x.SNAPSHOT_TYPE == ForecastSnapshotValueType.ForecastPO).ToList();
+            POForecastCollection = filteredForecastJobHourSnapshot.Where(x => x.SNAPSHOT_TYPE == ForecastSnapshotValueType.ForecastPO).ToList();
             ProgressETCCollection = filteredForecastJobHourSnapshot.Where(x => x.SNAPSHOT_TYPE == ForecastSnapshotValueType.ProgressETC).ToList();
             EarnedCollection = filteredForecastJobHourSnapshot.Where(x => x.SNAPSHOT_TYPE == ForecastSnapshotValueType.Earned).ToList();
             IndirectCollection = filteredForecastJobHourSnapshot.Where(x => x.SNAPSHOT_TYPE == ForecastSnapshotValueType.ForecastIndirect).ToList();
