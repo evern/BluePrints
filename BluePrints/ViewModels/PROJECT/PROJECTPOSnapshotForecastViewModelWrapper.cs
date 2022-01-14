@@ -117,12 +117,13 @@ namespace BluePrints.ViewModels
 
         bool isRefreshedAllData;
         protected override bool loadDataPointsTable()
-        {            
+        {                        
             //Auto refresh forecast data on load
-            if (!isRefreshedAllData && CurrentPO_FORECAST_JOB_HOUR_SNAPSHOTCollection.Count() == 0 && LoadDataDate != null)
+            if (!isRefreshedAllData && LoadDataDate != null && FORECAST_JOB_HOUR_SNAPSHOTCollection.Count() == 0)
             {
-                RefreshAllForecastData();
-                isRefreshedAllData = true;
+                if (MessageBoxService.ShowMessage("It appears that snapshot for " + ((DateTime)LoadDataDate).ToShortDateString() + " hasn't been created, do you wish to create a snapshot for this data date?", "Info", MessageButton.YesNo, MessageIcon.Information) == MessageResult.Yes)
+                    RefreshAllForecastData();
+
                 return false;
             }
 
@@ -233,7 +234,7 @@ namespace BluePrints.ViewModels
 
         protected virtual Func<IRepositoryQuery<FORECAST_JOB_HOUR_SNAPSHOT>, IQueryable<FORECAST_JOB_HOUR_SNAPSHOT>> FORECAST_JOB_HOUR_SNAPSHOTProjectionFunc()
         {
-            return query => query.Where(x => x.GUID_PROJECT == loadPROJECT.GUID && (x.SNAPSHOT_TYPE == ForecastSnapshotValueType.Actual || x.SNAPSHOT_TYPE == ForecastSnapshotValueType.CurrentOutstandingPO));
+            return query => query.Where(x => x.GUID_PROJECT == loadPROJECT.GUID && x.DATA_DATE == LoadDataDate && (x.SNAPSHOT_TYPE == ForecastSnapshotValueType.Actual || x.SNAPSHOT_TYPE == ForecastSnapshotValueType.CurrentOutstandingPO));
         }
 
         public DateTime? LoadDataDate { get; set; }
@@ -1187,12 +1188,14 @@ namespace BluePrints.ViewModels
         public void SaveDateAndRefresh()
         {
             DateTime? changedDate = ForecastStartDate;
+            //rewind a month because data date is a month behind forecast date
+            changedDate = new DateTime(((DateTime)changedDate).Year, ((DateTime)changedDate).Month, 1);
+            changedDate = ((DateTime)changedDate).AddSeconds(-1);
             BluePrintsDataUtils.SaveDateAndRefresh(loadPROJECT, LoadDataDate, ref changedDate, ForecastEndDate, FORECAST_EACCollection, PROJECTCollectionViewModel, MessageBoxService);
 
             EntitiesUndoRedoManager.Clear();
-            refreshDataTable();
+            FullRefresh();
 
-            ForecastStartDate = changedDate;
             this.RaisePropertyChanged(x => x.ForecastStartDate);
             this.RaisePropertyChanged(x => x.ForecastEndDate);
         }
@@ -1594,6 +1597,14 @@ namespace BluePrints.ViewModels
                 if (collection != null)
                     collection = collection.OrderBy(x => x.NAME);
                 return collection;
+            }
+        }
+
+        public IEnumerable<FORECAST_JOB_HOUR_SNAPSHOT> FORECAST_JOB_HOUR_SNAPSHOTCollection
+        {
+            get
+            {
+                return GetEntities<FORECAST_JOB_HOUR_SNAPSHOT>();
             }
         }
 
