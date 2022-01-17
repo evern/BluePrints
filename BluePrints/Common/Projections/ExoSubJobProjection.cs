@@ -835,6 +835,7 @@ namespace BluePrints.Common.Projections
             STOCK_ITEMS stock_item = ExoQueries.FindSTOCK_ITEM(pUnitOfWork, shortCode);
             if (stock_item != null)
             {
+                stock_item.DESCRIPTION = description;
                 stock_item.ISACTIVE = "Y";
                 stock_item.SELLPRICE1 = sellPrice == null ? 0 : sellPrice;
                 stock_item.SALES_GL_CODE = salesGLCode;
@@ -871,7 +872,10 @@ namespace BluePrints.Common.Projections
                 resource.RESOURCENAME = uppercaseName;
                 resource.TITLE = uppercaseTitle;
                 resource.DEFAULT_STOCKCODE = uppercaseDefaultStockCode == string.Empty ? resource.DEFAULT_STOCKCODE : uppercaseDefaultStockCode;
-                resource.SHORTCODE = uppercaseShortCode == string.Empty ? resource.SHORTCODE : uppercaseShortCode;
+
+                if(resource.SHORTCODE == null || resource.SHORTCODE == string.Empty)
+                    resource.SHORTCODE = uppercaseShortCode == string.Empty ? resource.SHORTCODE : uppercaseShortCode;
+
                 return resource;
             }
             else
