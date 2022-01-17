@@ -206,7 +206,11 @@ namespace BluePrints.ViewModels
                         BluePrintsEntitiesModuleDescription deliverableModuleDescription = projectChildModuleDescriptions.FirstOrDefault(x => x.NavigationId.Contains(deliverablesListIdentifier));
                         if (deliverableModuleDescription != null)
                             NavigateCore(deliverableModuleDescription);
+                        else
+                            MessageBoxService.ShowMessage("Deliverables list for " + projectNumber + " failed to open because you do not have authorisation to access it", "Error", MessageButton.OK, MessageIcon.Warning);
                     }
+                    else
+                        MessageBoxService.ShowMessage("Deliverables list for " + projectNumber + " failed to open because project isn't found or you do not have authorisation to access it, please make sure project status is not closed and authorisation has been granted", "Error", MessageButton.OK, MessageIcon.Warning);
                 }
             }
         }

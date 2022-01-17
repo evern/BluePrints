@@ -221,7 +221,12 @@ namespace BluePrints.Common.Helpers
                 {
                     XElement findAutoInvokeElement = findAppElement.Element(IntegrationAutoInvokeProjectElementName);
                     if (findAutoInvokeElement != null && findAutoInvokeElement.Value.ToString() == "1")
+                    {
+                        //save it as disabled because it's acknowledged to auto invoke once
+                        findAutoInvokeElement.Value = "0";
+                        doc.Save(IntegrationSettingsXMLFilePath());
                         return true;
+                    }
                 }
             }
 
