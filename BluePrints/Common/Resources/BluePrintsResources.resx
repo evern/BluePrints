@@ -417,4 +417,10 @@
   <data name="Regex_VariationName" xml:space="preserve">
     <value>^VAR-\d{3}\s\w.*</value>
   </data>
+  <data name="IntegrationXMLDirectory" xml:space="preserve">
+    <value>cadData</value>
+  </data>
+  <data name="IntegrationXMLFilename" xml:space="preserve">
+    <value>userSettingsCAD.xml</value>
+  </data>
 </root>

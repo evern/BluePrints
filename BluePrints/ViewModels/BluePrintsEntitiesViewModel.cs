@@ -190,6 +190,25 @@ namespace BluePrints.ViewModels
 
             if (LoginCredentials.CurrentUser != null && LoginCredentials.CurrentUserGuid != Guid.Empty && LoginCredentials.getPermissionStatus(DataUtils.GetNameOf(() => NavigationResources.Menu_UserDeliverables)) != LoginCredentials.PermissionStatus.None)
                 NavigateCore(myDeliverablesDescription);
+
+            if(XMLHelpers.GetIntegrationSettings_AutoInvokeProject())
+            {
+                string projectNumber = XMLHelpers.GetIntegrationSettings_ProjectNumber();
+                if(projectNumber != null && projectNumber != string.Empty)
+                {
+                    BluePrintsEntitiesModuleDescription projectModuleDescription = autoInvokeProjects.Where(x => x.PROJECT != null).FirstOrDefault(x => x.PROJECT.NUMBER == projectNumber);
+                    if(projectModuleDescription != null)
+                    {
+                        populateProjectTree(projectModuleDescription.PROJECT, projectModuleDescription, false);
+                        List<BluePrintsEntitiesModuleDescription> projectChildModuleDescriptions = getAllNodes(projectModuleDescription);
+
+                        string deliverablesListIdentifier = DataUtils.GetNameOf(() => NavigationResources.Menu_Project_DesignDeliverables);
+                        BluePrintsEntitiesModuleDescription deliverableModuleDescription = projectChildModuleDescriptions.FirstOrDefault(x => x.NavigationId.Contains(deliverablesListIdentifier));
+                        if (deliverableModuleDescription != null)
+                            NavigateCore(deliverableModuleDescription);
+                    }
+                }
+            }
         }
 
         private void showChangeLogWindow()
@@ -253,6 +272,8 @@ namespace BluePrints.ViewModels
                 .ToArray()
                 .AsEnumerable();
 
+            //clear integration auto invoke before adding projects to list
+            autoInvokeProjects.Clear();
             if (projects.Any())
             {
                 foreach (var project in projects)
@@ -512,6 +533,8 @@ namespace BluePrints.ViewModels
             ReportDialogService.ShowDialog(MessageButton.OK, "Sync Status", "SyncScreen", viewModel);
         }
 
+        //store projects in collection for auto invoke to automatically start items in project
+        List<BluePrintsEntitiesModuleDescription> autoInvokeProjects = new List<BluePrintsEntitiesModuleDescription>();
         private void createProjectTree(PROJECT entity, bool isSecurityModule)
         {
             //List<BluePrintsEntitiesModuleDescription> newModules = new List<BluePrintsEntitiesModuleDescription>();
@@ -578,6 +601,7 @@ namespace BluePrints.ViewModels
 
             BluePrintsEntitiesModuleDescription projectModuleDescription = new BluePrintsEntitiesModuleDescription(DataUtils.GetNameOf(() => NavigationResources.Menu_Project_Dashboard), projectSpecificKey, parentId, projectTitle, "PROJECTView", new DualEntitiesParameter<PROJECT, Action<object>>(entity, NavigateCoreCommand), null, null, false, false, @"Programming\ProjectDirectory_16x16.png", projectModuleContextMenuItems, NavigateCoreCommand, false, null, "Double click to view S-Curve. Right click to access more items", entity);
             moduleAdder(projectStatusDescription, projectModuleDescription, isSecurityModule, true);
+            autoInvokeProjects.Add(projectModuleDescription);
 
             //add a dummy menu so that accordion expand button is shown
             BluePrintsEntitiesModuleDescription dummyCategoryDescription = new BluePrintsEntitiesModuleDescription("dummy", projectSpecificKey, parentId, projectTitle, null, null, null, null, false, false, string.Empty);
@@ -707,6 +731,18 @@ namespace BluePrints.ViewModels
                 if (existingModule.ChildModules.Count == 0 && parentModule.ChildModules.Contains(existingModule))
                     parentModule.ChildModules.Remove(existingModule);
             }
+        }
+
+        private List<BluePrintsEntitiesModuleDescription> getAllNodes(BluePrintsEntitiesModuleDescription parentModule)
+        {
+            List<BluePrintsEntitiesModuleDescription> result = new List<BluePrintsEntitiesModuleDescription>();
+            result.Add(parentModule);
+            foreach (BluePrintsEntitiesModuleDescription child in parentModule.ChildModules)
+            {
+                result.AddRange(getAllNodes(child));
+            }
+
+            return result;
         }
 
         private void moduleAdder(BluePrintsEntitiesModuleDescription parentModule, BluePrintsEntitiesModuleDescription newModule, bool isSecurityModule, bool isCompulsory = false)

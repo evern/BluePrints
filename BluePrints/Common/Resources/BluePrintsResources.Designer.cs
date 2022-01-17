@@ -664,6 +664,24 @@ namespace BluePrints.Common.Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to cadData.
+        /// </summary>
+        internal static string IntegrationXMLDirectory {
+            get {
+                return ResourceManager.GetString("IntegrationXMLDirectory", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to userSettingsCAD.xml.
+        /// </summary>
+        internal static string IntegrationXMLFilename {
+            get {
+                return ResourceManager.GetString("IntegrationXMLFilename", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to service.desk@primero.com.au.
         /// </summary>
         internal static string ITEmail {

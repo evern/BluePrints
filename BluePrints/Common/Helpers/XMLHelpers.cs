@@ -2,8 +2,10 @@
 using BluePrints.Common.ViewModel;
 using BluePrints.Common.ViewModel.Utils;
 using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Text.RegularExpressions;
 using System.Xml.Linq;
 
 namespace BluePrints.Common.Helpers
@@ -14,6 +16,10 @@ namespace BluePrints.Common.Helpers
         public static string SettingsRootName = "Settings_v2";
         public static string UsernameElementName = "Username";
         public static string PasswordElementName = "Password";
+
+        public static string IntegrationAppElementName = "BluePrints";
+        public static string IntegrationProjectElementName = "Project";
+        public static string IntegrationAutoInvokeProjectElementName = "AutoInvokeProject";
         public static string LastChangeLogDisplayVersionElementName = "LastChangeLogDisplayVersion";
 
         /// <summary>
@@ -21,16 +27,30 @@ namespace BluePrints.Common.Helpers
         /// </summary>
         public static string SettingsXMLFilePath(bool createDirectory)
         {
-            var localAppData = Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData);
+            string localAppData = Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData);
 
-            var userFilePath = Path.Combine(localAppData, BluePrintsResources.Default_XML_Directory);
+            string userFilePath = Path.Combine(localAppData, BluePrintsResources.Default_XML_Directory);
 
             if (!Directory.Exists(userFilePath) && createDirectory)
                 Directory.CreateDirectory(userFilePath);
 
-            var destFilePath = Path.Combine(userFilePath, BluePrintsResources.Default_XML_Filename);
+            string destFilePath = Path.Combine(userFilePath, BluePrintsResources.Default_XML_Filename);
 
             return destFilePath;
+        }
+
+        public static string IntegrationSettingsXMLFilePath()
+        {
+            string localIntegrationAppData = Environment.GetFolderPath(Environment.SpecialFolder.UserProfile);
+
+            string intgrationXMLPath = Path.Combine(localIntegrationAppData, BluePrintsResources.IntegrationXMLDirectory);
+
+            if (!Directory.Exists(intgrationXMLPath))
+                Directory.CreateDirectory(intgrationXMLPath);
+
+            var integrationXMLFilePath = Path.Combine(intgrationXMLPath, BluePrintsResources.IntegrationXMLFilename);
+
+            return integrationXMLFilePath;
         }
 
         public static void ClearSettings()
@@ -100,6 +120,16 @@ namespace BluePrints.Common.Helpers
                 );
                 doc.Save(xmlFilePath);
             }
+
+            return doc;
+        }
+
+        public static XDocument GetIntegrationSettingsXML()
+        {
+            var xmlFilePath = IntegrationSettingsXMLFilePath();
+            XDocument doc = null;
+            if (File.Exists(xmlFilePath))
+                    doc = XDocument.Load(xmlFilePath);
 
             return doc;
         }
@@ -179,6 +209,41 @@ namespace BluePrints.Common.Helpers
             }
 
             return password;
+        }
+
+        public static bool GetIntegrationSettings_AutoInvokeProject()
+        {
+            XDocument doc = GetIntegrationSettingsXML();
+            if (doc != null)
+            {
+                XElement findAppElement = doc.Root.Element(IntegrationAppElementName);
+                if (findAppElement != null)
+                {
+                    XElement findAutoInvokeElement = findAppElement.Element(IntegrationAutoInvokeProjectElementName);
+                    if (findAutoInvokeElement != null && findAutoInvokeElement.Value.ToString() == "1")
+                        return true;
+                }
+            }
+
+            return false;
+        }
+
+        public static string GetIntegrationSettings_ProjectNumber()
+        {
+            XDocument doc = GetIntegrationSettingsXML();
+            string projectNumber = string.Empty;
+            if (doc != null)
+            {
+                XElement findProjectElement = doc.Root.Element(IntegrationProjectElementName);
+                if (findProjectElement != null)
+                {
+                    projectNumber = findProjectElement.Value;
+                    string regexString = @"\d{5}";
+                    projectNumber = Regex.Match(projectNumber, regexString).Value;
+                }
+            }
+
+            return projectNumber;
         }
     }
 }
