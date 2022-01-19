@@ -285,6 +285,7 @@
     </UserControl.Resources>
     <Grid Style="{StaticResource CollectionView.RootContainer}">
         <dxmvvm:Interaction.Behaviors>
+            <services:TableViewService x:Name="ActualTableViewService" TableView="{Binding ElementName=tableViewActualDetail}" />
             <dxc:DialogService x:Name="DefaultTenderProfileSelectionDialog">
                 <dxc:DialogService.DialogStyle>
                     <Style TargetType="dx:DXDialogWindow">
@@ -307,6 +308,7 @@
         <dxb:BarManager>
             <dxb:BarManager.Items>
                 <dxb:BarSubItem ItemLinksSource="{StaticResource RibbonDefaultGridButtons}" />
+                <dxb:BarButtonItem x:Name="biExportAllActuals" Command="{Binding ExportAllActualsToExcelCommand}" Content="Export All Actuals" Glyph="{dx:DXImage Image=ExportToXLSX_16x16.png}" LargeGlyph="{dx:DXImage Image=ExportToXLSX_32x32.png}" RibbonStyle="SmallWithText" ToolTip="Export all actuals to excel. Includes grouping, sorting and column visibility preferences" />
                 <dxb:BarButtonItem x:Name="biResetForecast" Command="{Binding ResetCellContentCommand}" Content="Reset Forecast" Glyph="{dx:DXImage Image=Reset_16x16.png}" LargeGlyph="{dx:DXImage Image=Reset_32x32.png}" RibbonStyle="SmallWithText" ToolTip="Reset forecast costs to it's underlying immutable values (PO, indirect, actuals, materials). Shortcut: [Delete] Key" />
                 <dxb:BarButtonItem x:Name="biApplyPF" Command="{Binding ApplyCurrentPFCommand}" Content="Apply PF" Glyph="{dxc:DXImage Images/People/PublicFix_32x32.png}" LargeGlyph="{dx:DXImage Images/People/PublicFix_16x16.png}" RibbonStyle="SmallWithText" ToolTip="Apply current PF to selected rows" />
                 <dxb:BarButtonItem x:Name="biUpdatePF" Command="{Binding UpdateCurrentPFCommand}" Content="Update All PF" Glyph="{dxc:DXImage Images/RichEdit/UpdateTableOfContents_32x32.png}" LargeGlyph="{dx:DXImage Images/RichEdit/UpdateTableOfContents_16x16.png}" RibbonStyle="SmallWithText" ToolTip="Update PF for all jobs that had current PF applied before, to verify which job will get updated, right click on columns, find Show Column Chooser and tick Floating PF" />
@@ -318,23 +320,28 @@
                         <dxe:DateEditSettings />
                     </dxb:BarEditItem.EditSettings>
                 </dxb:BarEditItem>
+                <dxb:BarEditItem x:Name="beFixedTimesheetDataDate" Content="Timesheet Data Date" IsReadOnly="True" IsEnabled="{Binding IsLoading, Converter={StaticResource BooleanNegationConverter}}" Glyph="{dxc:DXImage Image=Calendar_16x16.png}" LargeGlyph="{dxc:DXImage Image=Calendar_32x32.png}" EditValue="{Binding FixedMonthEndingSundayDate, Mode=OneWay}" ToolTip="Timesheet Data date">
+                    <dxb:BarEditItem.EditSettings>
+                        <dxe:DateEditSettings />
+                    </dxb:BarEditItem.EditSettings>
+                </dxb:BarEditItem>
                 <dxb:BarEditItem x:Name="beFixedEndDate" Content="End Date" IsEnabled="{Binding IsLoading, Converter={StaticResource BooleanNegationConverter}}" Glyph="{dxc:DXImage Image=AlignVerticalRight2_16x16.png}" LargeGlyph="{dxc:DXImage Image=AlignVerticalRight2_32x32.png}" EditValue="{Binding FixedEndDate}" ToolTip="End date">
                     <dxb:BarEditItem.EditSettings>
                         <dxe:DateEditSettings />
                     </dxb:BarEditItem.EditSettings>
                 </dxb:BarEditItem>
-                <dxb:BarButtonItem x:Name="biSaveDateAndRefresh" Command="{Binding SaveDateAndRefreshCommand}" Content="Save Dates" Glyph="{dx:DXImage Image=Save_16x16.png}" LargeGlyph="{dx:DXImage Image=Save_32x32.png}" RibbonStyle="SmallWithText" ToolTip="Saves the data date, end date and refreshes this view" />
+                <dxb:BarButtonItem x:Name="biSaveDateAndRefresh" Command="{Binding SaveDateAndRefreshCommand}" IsEnabled="{Binding IsLoading, Converter={StaticResource BooleanNegationConverter}}" Content="Save Dates" Glyph="{dx:DXImage Image=Save_16x16.png}" LargeGlyph="{dx:DXImage Image=Save_32x32.png}" RibbonStyle="SmallWithText" ToolTip="Saves the data date, end date and refreshes this view" />
                 <dxb:BarEditItem x:Name="beForecastProject" Content="P6 Schedule" IsEnabled="{Binding IsLoading, Converter={StaticResource BooleanNegationConverter}}" Glyph="{dxc:DXImage Image=3DColumn_16x16.png}" LargeGlyph="{dxc:DXImage Image=3DColumn_32x32.png}" EditValue="{Binding P6ForecastProject}" ToolTip="P6 Forecast Schedule">
                     <dxb:BarEditItem.EditSettings>
                         <dxe:ComboBoxEditSettings AutoComplete="True" DisplayMember="wbs_short_name" IsTextEditable="True" ItemsSource="{Binding P6PROJECTSCollection}" NullValueButtonPlacement="Popup" ValueMember="wbs_short_name" />
                     </dxb:BarEditItem.EditSettings>
                 </dxb:BarEditItem>
-                <dxb:BarEditItem x:Name="beLastRefreshed" Content="P6 Data Date" Glyph="{dxc:DXImage Image=Time2_16x16.png}" LargeGlyph="{dxc:DXImage Image=Time2_32x32.png}" IsReadOnly="True" EditValue="{Binding P6DataDate, Mode=OneWay}" ToolTip="P6 Last Recalc Date">
+                <dxb:BarEditItem x:Name="beLastRefreshed" Content="P6 Data Date" IsEnabled="{Binding IsLoading, Converter={StaticResource BooleanNegationConverter}}" Glyph="{dxc:DXImage Image=Time2_16x16.png}" LargeGlyph="{dxc:DXImage Image=Time2_32x32.png}" IsReadOnly="True" EditValue="{Binding P6DataDate, Mode=OneWay}" ToolTip="P6 Last Recalc Date">
                     <dxb:BarEditItem.EditSettings>
                         <dxe:TextEditSettings DisplayFormat="d" IsEnabled="False" />
                     </dxb:BarEditItem.EditSettings>
                 </dxb:BarEditItem>
-                <dxb:BarButtonItem x:Name="biReloadP6" Command="{Binding ReloadP6ForecastCommand}" Content="Refresh P6" Glyph="{dx:DXImage Image=Reset2_16x16.png}" LargeGlyph="{dx:DXImage Image=Reset2_32x32.png}" ToolTip="Reload from P6. Must be performed after pressing F9 in P6" />
+                <dxb:BarButtonItem x:Name="biReloadP6" Command="{Binding ReloadP6ForecastCommand}" Content="Refresh P6" IsEnabled="{Binding IsLoading, Converter={StaticResource BooleanNegationConverter}}" Glyph="{dx:DXImage Image=Reset2_16x16.png}" LargeGlyph="{dx:DXImage Image=Reset2_32x32.png}" ToolTip="Reload from P6. Must be performed after pressing F9 in P6" />
                 <dxb:BarButtonItem x:Name="biLastRefreshedError" Content="Error" IsVisible="{Binding IsP6DataDateError}" Command="{Binding ShowP6ErrorMessageCommand}" ToolTip="{Binding P6ErrorMessage}" >
                     <dxb:BarButtonItem.GlyphTemplate>
                         <DataTemplate>
@@ -362,12 +369,14 @@
                 </dxb:BarButtonItem>
                 <dxb:BarCheckItem x:Name="biShowActuals" Content="Show Actuals History" Glyph="{dxc:DXImage Images/Scheduling/SwitchTimeScalesTo_16x16.png}" IsChecked="{Binding IsShowActualsHistory, Mode=TwoWay}" IsEnabled="{Binding IsLoading, Converter={StaticResource BooleanNegationConverter}}" LargeGlyph="{dxc:DXImage Images/Scheduling/SwitchTimeScalesTo_32x32.png}" RibbonStyle="SmallWithText" ToolTip="Toggle historical actuals visibility" />
                 <dxb:BarButtonItem x:Name="biSaveSummary" Command="{Binding SaveSummaryCommand}" Content="Save Excel Summary" Glyph="{dx:DXImage Image=SpreadsheetInsertTable_16x16.png}" LargeGlyph="{dx:DXImage Image=SpreadsheetInsertTable_32x32.png}" RibbonStyle="SmallWithText" ToolTip="Saves the summary for excel macro to retrieve values" />
-                <dxb:BarButtonItem x:Name="biRefreshAllData" Command="{Binding RefreshAllForecastDataCommand}" Content="Refresh Data" LargeGlyph="{dx:DXImage Images/Toolbox Items/PictureBox_32x32.png}" RibbonStyle="SmallWithText" ToolTip="Refresh budget, earned, actuals, indirect's forecast, PO outstanding and PO forecast snapshot" Glyph="{dxc:DXImage Images/Toolbox Items/PictureBox_16x16.png}" />
-                <dxb:BarEditItem x:Name="beLastRUpdated" Content="Data Refreshed" Glyph="{dxc:DXImage Image=Time2_16x16.png}" LargeGlyph="{dxc:DXImage Image=Time2_32x32.png}" IsReadOnly="True" EditValue="{Binding SnapshotLastUpdated, Mode=OneWay}" ToolTip="Budget, Actuals, Earned, PO Outstanding, PO Forecast, Indirect Forecast last updated date">
+                <dxb:BarButtonItem x:Name="biRefreshActualData" Command="{Binding RefreshAllActualDataCommand}" Content="Update Actuals" IsEnabled="{Binding IsLoading, Converter={StaticResource BooleanNegationConverter}}" LargeGlyph="{dxc:DXImage Images/Spreadsheet/EditingFillLeft_32x32.png}" RibbonStyle="SmallWithText" ToolTip="Refresh budget, earned, actuals, indirect's forecast, PO outstanding and PO forecast snapshot" Glyph="{dxc:DXImage Images/Spreadsheet/EditingFillLeft_16x16.png}" />
+                <dxb:BarButtonItem x:Name="biRefreshForecastData" Command="{Binding RefreshForecastDataCommand}" Content="Update Forecast" IsEnabled="{Binding IsLoading, Converter={StaticResource BooleanNegationConverter}}" LargeGlyph="{dxc:DXImage Images/Spreadsheet/EditingFillRight_32x32.png}" RibbonStyle="SmallWithText" ToolTip="Refresh budget, earned, actuals, indirect's forecast, PO outstanding and PO forecast snapshot" Glyph="{dxc:DXImage Images/Spreadsheet/EditingFillRight_16x16.png}" />
+                <dxb:BarEditItem x:Name="beLastRUpdated" Content="Data Refreshed" IsEnabled="{Binding IsLoading, Converter={StaticResource BooleanNegationConverter}}" Glyph="{dxc:DXImage Image=Time2_16x16.png}" LargeGlyph="{dxc:DXImage Image=Time2_32x32.png}" IsReadOnly="True" EditValue="{Binding SnapshotLastUpdated, Mode=OneWay}" ToolTip="Budget, Actuals, Earned, PO Outstanding, PO Forecast, Indirect Forecast last updated date">
                     <dxb:BarEditItem.EditSettings>
                         <dxe:TextEditSettings DisplayFormat="d" IsEnabled="False" />
                     </dxb:BarEditItem.EditSettings>
                 </dxb:BarEditItem>
+                <dxb:BarButtonItem x:Name="biCleanUpOutdatedUncommitted" Command="{Binding CleanUpOutdatedUncommittedCommand}" Content="Clean Outdated Forecasts" LargeGlyph="{dx:DXImage Images/Actions/ClearTableStyle_32x32.png}" RibbonStyle="SmallWithText" ToolTip="Clean outdated uncommitted forecasts costs when it's lower than PO forecast costs" Glyph="{dxc:DXImage Images/Actions/ClearTableStyle_16x16.png}" />
             </dxb:BarManager.Items>
             <DockPanel>
                 <dxr:RibbonControl Style="{StaticResource DefaultRibbonControlStyle}">
@@ -387,29 +396,36 @@
                                     <dxb:BarButtonItemLink BarItemName="biCollapseAllGroups1" />
                                     <dxb:BarButtonItemLink BarItemName="biExportToExcel1" />
                                 </dxb:BarSubItem>
-                                <dxb:BarSubItem Content="PF Functions" IsEnabled="{Binding IsLoading, Converter={StaticResource BooleanNegationConverter}}" Glyph="{dx:DXImage Image=GaugeStyleFullCircular_16x16.png}" LargeGlyph="{dx:DXImage Image=GaugeStyleFullCircular_32x32.png}" RibbonStyle="SmallWithText" ToolTip="Grid interaction tools">
-                                    <dxb:BarButtonItemLink BarItemName="biApplyPF" />
-                                    <dxb:BarButtonItemLink BarItemName="biUpdatePF" />
-                                </dxb:BarSubItem>
-                                <dxb:BarCheckItemLink BarItemName="biShowActuals" />
                                 <!--Disabled because of memory issue-->
                                 <!--<dxb:BarCheckItemLink BarItemName="biWeeks" />-->
                             </dxr:RibbonPageGroup>
                             <dxr:RibbonPageGroup MergeType="Replace" Caption="Forecast Tools">
-                                <dxb:BarButtonItemLink BarItemName="biBaselineBudget" />
-                                <dxb:BarButtonItemLink BarItemName="biSaveEAC" />
-                                <dxb:BarButtonItemLink BarItemName="biSaveSummary" />
                                 <dxb:BarEditItemLink BarItemName="beFixedDataDate" />
                                 <dxb:BarEditItemLink BarItemName="beFixedEndDate" />
                                 <dxb:BarButtonItemLink BarItemName="biSaveDateAndRefresh" />
+                                <dxb:BarEditItemLink BarItemName="beFixedTimesheetDataDate" />
                             </dxr:RibbonPageGroup>
                             <dxr:RibbonPageGroup MergeType="Replace" Caption="P6 Tools">
                                 <dxb:BarEditItemLink BarItemName="beForecastProject" />
                                 <dxb:BarButtonItemLink BarItemName="biLastRefreshedError" />
                                 <dxb:BarEditItemLink BarItemName="beLastRefreshed" />
-                                <dxb:BarButtonItemLink BarItemName="biRefreshAllData" />
+                                <dxb:BarButtonItemLink BarItemName="biRefreshActualData" />
+                                <dxb:BarButtonItemLink BarItemName="biRefreshForecastData" />
                                 <dxb:BarEditItemLink BarItemName="beLastRUpdated" />
                                 <dxb:BarButtonItemLink BarItemName="biReloadP6" />
+                            </dxr:RibbonPageGroup>
+                        </dxr:RibbonPage>
+                        <dxr:RibbonPage MergeType="Replace" Caption="Tools">
+                            <dxr:RibbonPageGroup MergeType="Replace" Caption="Tools">
+                                <dxb:BarSubItem Content="PF Functions" IsEnabled="{Binding IsLoading, Converter={StaticResource BooleanNegationConverter}}" Glyph="{dx:DXImage Image=GaugeStyleFullCircular_16x16.png}" LargeGlyph="{dx:DXImage Image=GaugeStyleFullCircular_32x32.png}" RibbonStyle="SmallWithText" ToolTip="Grid interaction tools">
+                                    <dxb:BarButtonItemLink BarItemName="biApplyPF" />
+                                    <dxb:BarButtonItemLink BarItemName="biUpdatePF" />
+                                </dxb:BarSubItem>
+                                <dxb:BarCheckItemLink BarItemName="biShowActuals" />
+                                <dxb:BarButtonItemLink BarItemName="biBaselineBudget" />
+                                <dxb:BarButtonItemLink BarItemName="biSaveEAC" />
+                                <dxb:BarButtonItemLink BarItemName="biCleanUpOutdatedUncommitted" />
+                                <dxb:BarButtonItemLink BarItemName="biSaveSummary" />
                             </dxr:RibbonPageGroup>
                         </dxr:RibbonPage>
                     </dxr:RibbonDefaultPageCategory>
@@ -501,8 +517,15 @@
                                     </dxg:GridControl.GroupSummary>
                                 </local:GridControlEx>
                             </dxdo:LayoutPanel>
-                            <dxdo:LayoutPanel FontFamily="Calibri" FontSize="12" ItemHeight="30" ShowControlBox="False" ShowCloseButton="False" ShowCollapseButton="False" ShowPinButton="False">
-                                <dxlc:LayoutItem HorizontalAlignment="Center" Label="Click anywhere on the table below and press CTRL + F to clear filter and search for any actuals and POs" LabelPosition="Left" />
+                            <dxdo:LayoutPanel FontFamily="Calibri" FontSize="13" Margin="0" Padding="0" MinHeight="30" ItemHeight="30" ShowControlBox="False" ShowCloseButton="False" ShowCollapseButton="False" ShowPinButton="False">
+                                <dxlc:LayoutItem HorizontalAlignment="Center" VerticalAlignment="Top" Padding="0" Margin="0, -30, 0, 0" >
+                                    <Button Command="{Binding ExportAllActualsToExcelCommand}" ToolTip="Export all actuals to excel. Includes grouping, sorting and column visibility preferences">
+                                        <StackPanel Orientation="Horizontal">
+                                            <Image Source="{dx:DXImage Image=ExportToXLSX_16x16.png}" Width="16" Height="16" Margin="0, 0, 3, 0" />
+                                            <TextBlock Text="Export Actuals" VerticalAlignment="Center" />
+                                        </StackPanel>
+                                    </Button>
+                                </dxlc:LayoutItem>
                             </dxdo:LayoutPanel>
                             <dxdo:LayoutPanel x:Name="Actual_Details" dx:DXSerializer.Enabled="False" AutoHidden="False" ShowHideButton="True" ShowCloseButton="False" Visibility="{Binding ActualDetailsVisibility}">
                                 <dxg:GridControl x:Name="gridControlActualDetails" FontFamily="Calibri" FontSize="12" ShowAllTableValuesInCheckedFilterPopup="False" AutoGenerateColumns="None" FilterCriteria="{Binding ActualFilterCriteria, Mode=TwoWay}" ItemsSource="{Binding ActualsDetail}" SelectionMode="Row" ShowLoadingPanel="{Binding IsLoading}">
@@ -559,6 +582,9 @@
                                     </dxg:GridControl.TotalSummary>
                                     <dxg:GridControl.View>
                                         <dxg:TableView x:Name="tableViewActualDetail" GroupSummaryDisplayMode="AlignByColumns" TotalSummaryContentStyle="{StaticResource TotalSummaryStyle}" GroupColumnSummaryContentStyle="{StaticResource GroupSummaryStyle}" ColumnHeaderTemplate="{StaticResource ForecastHeaderTemplate}" NewItemRowPosition="None" ShowGroupedColumns="False" ShowTotalSummary="True" Style="{StaticResource DefaultMinimalTableViewTemplate}" >
+                                            <dxg:TableView.RowCellMenuCustomizations>
+                                                <dxb:BarButtonItemLink BarItemName="biExportAllActuals" />
+                                            </dxg:TableView.RowCellMenuCustomizations>
                                         </dxg:TableView>
                                     </dxg:GridControl.View>
                                 </dxg:GridControl>
@@ -690,7 +716,7 @@
                                             <dxlc:LayoutItem Label="Contingency" LabelPosition="Left">
                                                 <dxe:TextEdit IsReadOnly="True" Mask="c0" MaskType="Numeric" MaskUseAsDisplayFormat="True" Text="{Binding ForecastSummary.Contingency, Mode=OneWay}" />
                                             </dxlc:LayoutItem>
-                                            <dxlc:LayoutGroup Header="Non-PF Influenced" View="GroupBox" Orientation="Vertical">
+                                            <!--<dxlc:LayoutGroup Header="Non-PF Influenced" View="GroupBox" Orientation="Vertical">
                                                 <dxlc:LayoutItem Label="EAC Cost" LabelPosition="Left" ToolTip="Actuals + Commitments + Uncommitted Forecasts">
                                                     <dxe:TextEdit IsReadOnly="True" Mask="c0" MaskType="Numeric" MaskUseAsDisplayFormat="True" Text="{Binding ForecastSummary.OriginalEstimateAtCompletion, Mode=OneWay}" />
                                                 </dxlc:LayoutItem>
@@ -700,7 +726,7 @@
                                                 <dxlc:LayoutItem Label="EAC %" LabelPosition="Left">
                                                     <dxe:TextEdit IsReadOnly="True" Mask="p2" MaskType="Numeric" MaskUseAsDisplayFormat="True" Foreground="Black" Background="{Binding ForecastSummary.OriginalEAC_Margin_Percent_Background}" Text="{Binding ForecastSummary.OriginalEAC_Margin_Percent, Mode=OneWay}" />
                                                 </dxlc:LayoutItem>
-                                            </dxlc:LayoutGroup>
+                                            </dxlc:LayoutGroup>-->
                                             <dxlc:LayoutGroup Header="PF Influenced" View="GroupBox" Orientation="Vertical">
                                                 <dxlc:LayoutItem Label="EAC Cost" LabelPosition="Left" ToolTip="Actuals + Commitments + Uncommitted Forecasts">
                                                     <dxe:TextEdit IsReadOnly="True" Mask="c0" MaskType="Numeric" MaskUseAsDisplayFormat="True" Text="{Binding ForecastSummary.CurrentEstimateAtCompletion, Mode=OneWay}" />

@@ -86,6 +86,16 @@ namespace BluePrints.Common.Helpers
 
     public static class CommonMethods
     {
+        public static DateTime GetLastWeekdayOfMonth(DateTime date, DayOfWeek day)
+        {
+            DateTime lastDayOfMonth = new DateTime(date.Year, date.Month, 1)
+                .AddMonths(1).AddDays(-1);
+            int wantedDay = (int)day;
+            int lastDay = (int)lastDayOfMonth.DayOfWeek;
+            return lastDayOfMonth.AddDays(
+                lastDay >= wantedDay ? wantedDay - lastDay : wantedDay - lastDay - 7);
+        }
+
         public static DateTime GetStartOfWeek(this DateTime dt, DayOfWeek startOfWeek)
         {
             int diff = dt.DayOfWeek - startOfWeek;

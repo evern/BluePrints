@@ -4,6 +4,7 @@ using BaseModel.Misc;
 using BaseModel.View;
 using BaseModel.ViewModel.Base;
 using BaseModel.ViewModel.Loader;
+using BaseModel.ViewModel.Services;
 using BaseModel.ViewModel.UndoRedo;
 using BluePrints.BluePrintsEntitiesDataModel;
 using BluePrints.Common;
@@ -22,6 +23,7 @@ using BluePrints.PrimeroData.PrimeroEntitiesDataModel;
 using DevExpress.Data;
 using DevExpress.Data.Filtering;
 using DevExpress.Mvvm;
+using DevExpress.Mvvm.DataAnnotations;
 using DevExpress.Mvvm.POCO;
 using DevExpress.Xpf.Editors;
 using DevExpress.Xpf.Grid;
@@ -72,7 +74,7 @@ namespace BluePrints.ViewModels
             delayedGridUpdateTimer.Interval = new TimeSpan(0, 0, 0, 0, 10);
 
             P6ErrorIconName = "Warning";
-            P6ErrorMessage = "P6 Data Date is less than data date, please change data date in P6 and press 'Refresh P6' so that PF is accurate";
+            P6ErrorMessage = "P6 Data Date is not last sunday of month, please change data date in P6 and press 'Refresh P6' so that PF is accurate";
             IsHidden = true;
             canEditConstructionUncommitted = LoginCredentials.getPermissionStatus(DataUtils.GetNameOf(() => NavigationResources.Permission_ConstructionUncommitted)) == LoginCredentials.PermissionStatus.All;
         }
@@ -257,11 +259,27 @@ namespace BluePrints.ViewModels
                     rawDataDate = new DateTime(value.Year, value.Month, 1);
                     rawDataDate = rawDataDate.AddMonths(1).AddSeconds(-1);
                     fixedDateTime = rawDataDate;
+                    FixedMonthEndingSundayDate = CommonMethods.GetLastWeekdayOfMonth(fixedDateTime, DayOfWeek.Sunday);
                 }
             }
         }
 
-        public DateTime FixedEndDate { get; set; }
+        public DateTime FixedMonthEndingSundayDate { get; set; }
+
+        DateTime fixedEndDate;
+        public DateTime FixedEndDate
+        {
+            get => fixedEndDate;
+            set
+            {
+                //always set date to end of month
+                DateTime rawDataDate = value;
+                rawDataDate = new DateTime(value.Year, value.Month, 1);
+                rawDataDate = rawDataDate.AddMonths(1).AddSeconds(-1);
+                fixedEndDate = rawDataDate;
+            }
+        }
+
         private void setProject(Data.PROJECT project)
         {
             LoadPROJECT = project;
@@ -284,6 +302,7 @@ namespace BluePrints.ViewModels
 
             FixedDataDate = dataDate;
             this.RaisePropertyChanged(x => x.FixedDataDate);
+            this.RaisePropertyChanged(x => x.FixedMonthEndingSundayDate);
 
             DateTime endDate;
             if (LoadPROJECT.FORECAST_END_DATE == null)
@@ -385,7 +404,7 @@ namespace BluePrints.ViewModels
             if (FORECAST_JOB_HOUR_SNAPSHOTCollection.Count() == 0)
             {
                 if(MessageBoxService.ShowMessage("It appears that snapshot for " + FixedDataDate.ToShortDateString() + " hasn't been created, do you wish to create a snapshot for this data date?", "Info", MessageButton.YesNo, MessageIcon.Information) == MessageResult.Yes)
-                    RefreshAllForecastData(true);
+                    RefreshAllActualData(true);
 
                 return false;
             }
@@ -556,8 +575,8 @@ namespace BluePrints.ViewModels
             compareP6CostsRemainingRow = compareDataTable.NewRow();
             compareP6UnitsRemainingRow = compareDataTable.NewRow();
 
-            compareP6UnitsRemainingRow[columnEntity] = new ForecastJobSnapshot() { DropDownPhase = "P6 Hours", CompareMask = "n2", ExoJob = job.ExoJob, DateCosts = job.DateCosts, IsP6HoursRow = true, P6RemainingUnits = job.P6RemainingUnits, P6RemainingCosts = job.P6RemainingCosts };
-            compareP6CostsRemainingRow[columnEntity] = new ForecastJobSnapshot() { DropDownPhase = "P6 $", CompareMask = "c0" };
+            compareP6UnitsRemainingRow[columnEntity] = new ForecastJobSnapshot() { DropDownPhase = "P6 Hours", CompareMask = "n2", SubJobCode = job.SubJobCode, DisciplineCode = job.DisciplineCode, CommodityCode = job.CommodityCode, VariationCode = job.VariationCode, ExoJob = job.ExoJob, DateCosts = job.DateCosts, IsP6HoursRow = true, P6RemainingUnits = job.P6RemainingUnits, P6RemainingCosts = job.P6RemainingCosts };
+            compareP6CostsRemainingRow[columnEntity] = new ForecastJobSnapshot() { DropDownPhase = "P6 $", CompareMask = "c0", SubJobCode = job.SubJobCode, DisciplineCode = job.DisciplineCode, CommodityCode = job.CommodityCode, VariationCode = job.VariationCode };
 
             //update discipline desc
             job.PopulateDisciplineDesc(DISCIPLINE_DESCCollection, JOB_COSTGROUPCollection);
@@ -698,7 +717,10 @@ namespace BluePrints.ViewModels
 
                     //when there aren't any P6 overrides then parent value will be purely uncommitted value, it's either this or P6 override which isn't categorised as uncommitted
                     if (forecastCostsOverrides.Count > 0 && forecastUnitsOverrides.Count == 0)
-                        compareUncommittedRow[dateCost.QueryDate.ToString(BluePrintsResources.ColumnDateFormat)] = viewCost - dateCost.TotalCosts;
+                    {
+                        decimal viewUncommittedCosts = viewCost - dateCost.TotalCosts;
+                        compareUncommittedRow[dateCost.QueryDate.ToString(BluePrintsResources.ColumnDateFormat)] = viewUncommittedCosts < 0 ? 0 : viewUncommittedCosts;
+                    }
                     else
                         compareUncommittedRow[dateCost.QueryDate.ToString(BluePrintsResources.ColumnDateFormat)] = 0;
                 }
@@ -709,6 +731,43 @@ namespace BluePrints.ViewModels
             updateTotalUncommittedOnJob(commodityRow);
 
             return commodityRow;
+        }
+
+        public bool CanCleanUpOutdatedUncommitted()
+        {
+            return !IsLoading;
+        }
+
+        public void CleanUpOutdatedUncommitted()
+        {
+            Common.LoadingScreenManager.ShowLoadingScreen(DataPointsTable.Rows.Count);
+            Common.LoadingScreenManager.SetMessage("Removing deprecated uncommitted values...");
+            foreach (DataRow dataRow in DataPointsTable.Rows)
+            {
+                ForecastJobSnapshot job = ((ForecastJobSnapshot)dataRow[columnEntity]);
+                foreach (ForecastDateSnapshot dateCost in job.DateCosts)
+                {
+                    string dateColumnString = dateCost.QueryDate.ToString(BluePrintsResources.ColumnDateFormat);
+                    object viewObject = dataRow[dateColumnString];
+                    if(viewObject != null)
+                    {
+                        string viewObjectString = viewObject.ToString();
+                        decimal viewCost;
+                        if(decimal.TryParse(viewObjectString, out viewCost))
+                        {
+                            if(dateCost.TotalCosts > viewCost)
+                            {
+                                resetViewRemainingOnJob(dataRow, dateColumnString, true);
+                                findExistingOrAddNewForecast(dataRow, dateCost.QueryDate, null);
+                            }
+                        }
+                    }
+                }
+
+                Common.LoadingScreenManager.Progress();
+            }
+
+            Common.LoadingScreenManager.CloseLoadingScreen();
         }
 
         /// <summary>
@@ -765,7 +824,11 @@ namespace BluePrints.ViewModels
                                 uncommittedCostRow[alignedDateField] = 0;
                             }
                             else
-                                uncommittedCostRow[alignedDateField] = overrideCostOnDataDate - dateCost.P6Costs - dateCost.ActualCosts - dateCost.IndirectForecastCosts - dateCost.POOutstandingCosts;
+                            {
+                                decimal calculateUncommittedCosts = overrideCostOnDataDate - dateCost.P6Costs - dateCost.ActualCosts - dateCost.IndirectForecastCosts - dateCost.POOutstandingCosts;
+                                calculateUncommittedCosts = calculateUncommittedCosts < 0 ? 0 : calculateUncommittedCosts;
+                                uncommittedCostRow[alignedDateField] = calculateUncommittedCosts;
+                            }
                         }
                     }
                 }
@@ -852,6 +915,9 @@ namespace BluePrints.ViewModels
         {
             List<FORECAST_JOB_HOUR_SNAPSHOT> snapShots = FORECAST_JOB_HOUR_SNAPSHOTCollection.Where(x => x.FORECAST_DATE != null).ToList();
             DateTime endDateToGenerate = snapShots.Count == 0 ? DateTime.Now.AddMonths(1) : snapShots.Max(x => (DateTime)x.FORECAST_DATE);
+            if (FixedEndDate > endDateToGenerate)
+                endDateToGenerate = FixedEndDate;
+
             DateTime firstDateToGenerateFrom = new DateTime();
             firstDateToGenerateFrom = firstDataPointDate;
 
@@ -1078,7 +1144,8 @@ namespace BluePrints.ViewModels
 
         private void refreshP6DataDateError()
         {
-            IsP6DataDateError = P6DataDate < FixedDataDate;
+            DateTime lastSundayOfMonth = CommonMethods.GetLastWeekdayOfMonth(FixedDataDate, DayOfWeek.Sunday);
+            IsP6DataDateError = P6DataDate == null || ((DateTime)P6DataDate).Date != lastSundayOfMonth.Date;
             Animate = true;
             this.RaisePropertyChanged(x => x.IsP6DataDateError);
             this.RaisePropertyChanged(x => x.P6ErrorMessage);
@@ -1097,11 +1164,11 @@ namespace BluePrints.ViewModels
         public bool Animate { get; set; }
         public void ApplyCurrentPF()
         {
-            if (P6DataDate < FixedDataDate)
-            {
-                ShowP6ErrorMessage();
-                return;
-            }
+            //if (P6DataDate < FixedDataDate)
+            //{
+            //    ShowP6ErrorMessage();
+            //    return;
+            //}
 
             EntitiesUndoRedoManager.PauseActionId();
             GridControl gridControl = GridControlService.GridControl;
@@ -1688,6 +1755,7 @@ namespace BluePrints.ViewModels
                                     MessageBoxService.ShowMessage("Cannot move data date backwards because EAC is finalised for " + ((DateTime)lastEACDataDate).ToShortDateString(), "Error", MessageButton.OK, MessageIcon.Exclamation);
                                     FixedDataDate = LoadDataDate;
                                     this.RaisePropertyChanged(x => x.FixedDataDate);
+                                    this.RaisePropertyChanged(x => x.FixedMonthEndingSundayDate);
                                     return;
                                 }
                             }
@@ -1705,6 +1773,7 @@ namespace BluePrints.ViewModels
                                 MessageBoxService.ShowMessage("Cannot move data date forward because EAC isn't saved for " + ((DateTime)LoadDataDate).ToShortDateString(), "Error", MessageButton.OK, MessageIcon.Exclamation);
                                 FixedDataDate = LoadDataDate;
                                 this.RaisePropertyChanged(x => x.FixedDataDate);
+                                this.RaisePropertyChanged(x => x.FixedMonthEndingSundayDate);
                                 return;
                             }
                         }
@@ -1920,6 +1989,27 @@ namespace BluePrints.ViewModels
             }
 
             return false;
+        }
+
+        public bool CanExportAllActualsToExcel()
+        {
+            return !IsLoading;
+        }
+
+        [ServiceProperty(Key = "ActualTableViewService")]
+        protected virtual ITableViewService ActualTableViewService { get { return null; } }
+        public void ExportAllActualsToExcel()
+        {
+            string ResultPath = string.Empty;
+            if (FolderBrowserDialogService.ShowDialog())
+            {
+                clearFilter();
+                ResultPath = FolderBrowserDialogService.ResultPath;
+                bool result = ActualTableViewService.ExportToXls(ResultPath + "\\" + LoadPROJECT.NUMBER + "_Actuals.xlsx", true);
+
+                if (!result)
+                    MessageBoxService.ShowMessage("Export failed because the file is in use", "Warning", MessageButton.OK, MessageIcon.Warning);
+            }
         }
 
         public bool CanSaveSummary()
@@ -2404,13 +2494,16 @@ namespace BluePrints.ViewModels
                 }
             }
 
-            job.Uncommitted = uncommittedPOValues + uncommitedP6Values + job.P6RemainingCosts;
+            decimal calculateUncommitted = uncommittedPOValues + uncommitedP6Values + job.P6RemainingCosts;
+            job.Uncommitted = calculateUncommitted < 0 ? 0 : calculateUncommitted;
             if (job.CurrentProductivity > 0)
                 job.CurrentUncommitted = uncommittedPOValues + uncommitedP6Values + (job.P6RemainingCosts / job.CurrentProductivity);
             else
                 job.CurrentUncommitted = job.Uncommitted;
 
+            job.CurrentUncommitted = job.CurrentUncommitted < 0 ? 0 : job.CurrentUncommitted;
             job.OriginalUncommitted = uncommittedPOValues + uncommitedP6Values + job.P6RemainingCosts;
+            job.OriginalUncommitted = job.OriginalUncommitted < 0 ? 0 : job.OriginalUncommitted;
         }
 
         public bool IsManualApprovedVariationRevenue
@@ -2646,10 +2739,15 @@ namespace BluePrints.ViewModels
             }
         }
 
-        public void RefreshAllForecastData(bool disableMessage = false)
+        public bool CanRefreshAllActualData(bool disableMessage = false)
+        {
+            return !IsLoading;
+        }
+
+        public void RefreshAllActualData(bool disableMessage = false)
         {
             if(!disableMessage)
-                if (MessageBoxService.ShowMessage("Are you sure you want to update snapshot data? This may cause forecast result of PO/EH PO's and Indirect's inaccurate", "Warning", MessageButton.YesNo, MessageIcon.Warning) == MessageResult.No)
+                if (MessageBoxService.ShowMessage("Are you sure you want to update actuals? This may cause forecast result of PO/EH PO's and Indirect's inaccurate", "Warning", MessageButton.YesNo, MessageIcon.Warning) == MessageResult.No)
                     return;
 
             IsLoading = true;
@@ -2661,10 +2759,33 @@ namespace BluePrints.ViewModels
             //await BluePrintsContextHelper.RefreshDeliverablesPlannedDataPointsByProject(LoadPROJECT.NUMBER, true);
 
             Common.LoadingScreenManager.SetMessage("Updating actuals, indirect, P6 and PO data...");
-            BluePrintsContextHelper.RefreshAllForecastData(LoadPROJECT.NUMBER, FixedDataDate);
+            BluePrintsContextHelper.RefreshAllDataExceptForecast(LoadPROJECT.NUMBER, FixedDataDate);
             Common.LoadingScreenManager.CloseLoadingScreen();
             snapshotLastUpdated = DateTime.Now;
             this.RaisePropertyChanged(x => x.SnapshotLastUpdated);
+
+            resetIsLoading();
+            FullRefresh();
+        }
+
+        public bool CanRefreshForecastData()
+        {
+            return !IsLoading;
+        }
+
+        public void RefreshForecastData()
+        {
+            IsLoading = true;
+            Common.LoadingScreenManager.ShowLoadingScreen(1);
+            //Common.LoadingScreenManager.SetMessage("Fetching P6 remaining data...");
+            //await BluePrintsContextHelper.RefreshDeliverablesRemainingDataPointsByProject(LoadPROJECT.NUMBER, true);
+
+            //Common.LoadingScreenManager.SetMessage("Fetching P6 planned data...");
+            //await BluePrintsContextHelper.RefreshDeliverablesPlannedDataPointsByProject(LoadPROJECT.NUMBER, true);
+
+            Common.LoadingScreenManager.SetMessage("Updating forecasts...");
+            BluePrintsContextHelper.RefreshForecastData(LoadPROJECT.NUMBER, FixedDataDate);
+            Common.LoadingScreenManager.CloseLoadingScreen();
 
             resetIsLoading();
             FullRefresh();

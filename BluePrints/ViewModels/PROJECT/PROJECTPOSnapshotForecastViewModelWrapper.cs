@@ -115,13 +115,12 @@ namespace BluePrints.ViewModels
             this.RaisePropertyChanged(x => x.IsLoading);
         }
 
-        bool isRefreshedAllData;
         protected override bool loadDataPointsTable()
         {                        
             //Auto refresh forecast data on load
-            if (!isRefreshedAllData && LoadDataDate != null && FORECAST_JOB_HOUR_SNAPSHOTCollection.Count() == 0)
+            if (LoadDataDate != null && FORECAST_JOB_HOUR_SNAPSHOTCollection.Count() == 0)
             {
-                if (MessageBoxService.ShowMessage("It appears that snapshot for " + ((DateTime)LoadDataDate).ToShortDateString() + " hasn't been created, do you wish to create a snapshot for this data date?", "Info", MessageButton.YesNo, MessageIcon.Information) == MessageResult.Yes)
+                if (MessageBoxService.ShowMessage("It appears that forecast for " + ((DateTime)LoadDataDate).ToShortDateString() + " hasn't been created, do you wish to create a template for this data date?", "Info", MessageButton.YesNo, MessageIcon.Information) == MessageResult.Yes)
                     RefreshAllForecastData();
 
                 return false;
@@ -154,7 +153,7 @@ namespace BluePrints.ViewModels
         {
             if(shouldPromptForSavingSnapshot)
             {
-                if (MessageBoxService.ShowMessage("Forecast edited, do you wish to save a snapshot?", "Save", MessageButton.YesNo) == MessageResult.Yes)
+                if (MessageBoxService.ShowMessage("Forecast edited, do you wish to upload forecast?", "Save", MessageButton.YesNo) == MessageResult.Yes)
                     SaveSnapshot();
             }
 
@@ -258,7 +257,7 @@ namespace BluePrints.ViewModels
                 savePROJECT();
             }
 
-            ForecastStartDate = new DateTime(dataDate.Year, dataDate.Month, 1).AddMonths(2).AddDays(-1);
+            ForecastStartDate = new DateTime(dataDate.Year, dataDate.Month, 1).AddMonths(2).AddSeconds(-1);
 
             DateTime endDate;
             if (loadPROJECT.FORECAST_END_DATE != null)
@@ -733,7 +732,7 @@ namespace BluePrints.ViewModels
             //await BluePrintsContextHelper.RefreshDeliverablesPlannedDataPointsByProject(LoadPROJECT.NUMBER, true);
 
             Common.LoadingScreenManager.SetMessage("Updating actuals, indirect, P6 and PO data...");
-            BluePrintsContextHelper.RefreshAllForecastData(loadPROJECT.NUMBER, (DateTime)LoadDataDate);
+            BluePrintsContextHelper.RefreshAllDataExceptForecast(loadPROJECT.NUMBER, (DateTime)LoadDataDate);
             Common.LoadingScreenManager.CloseLoadingScreen();
 
             resetIsLoading();
@@ -1188,6 +1187,18 @@ namespace BluePrints.ViewModels
 
         public void SaveDateAndRefresh()
         {
+            //always set date to end of month
+            DateTime startDateMonthEnd = (DateTime)ForecastStartDate;
+            startDateMonthEnd = new DateTime(startDateMonthEnd.Year, startDateMonthEnd.Month, 1);
+            startDateMonthEnd = startDateMonthEnd.AddMonths(1).AddSeconds(-1);
+
+            DateTime endDateMonthEnd = ForecastEndDate;
+            endDateMonthEnd = new DateTime(endDateMonthEnd.Year, endDateMonthEnd.Month, 1);
+            endDateMonthEnd = endDateMonthEnd.AddMonths(1).AddSeconds(-1);
+
+            ForecastStartDate = startDateMonthEnd;
+            ForecastEndDate = endDateMonthEnd;
+
             DateTime? changedDate = ForecastStartDate;
             //rewind a month because data date is a month behind forecast date
             changedDate = new DateTime(((DateTime)changedDate).Year, ((DateTime)changedDate).Month, 1);

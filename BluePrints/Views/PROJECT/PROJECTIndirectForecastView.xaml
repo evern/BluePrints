@@ -234,7 +234,7 @@
                 </dxb:BarEditItem>
                 <dxb:BarButtonItem x:Name="biSaveDateAndRefresh" Command="{Binding SaveDateAndRefreshCommand}" Content="Save Dates" Glyph="{dx:DXImage Image=Save_16x16.png}" LargeGlyph="{dx:DXImage Image=Save_32x32.png}" RibbonStyle="SmallWithText" ToolTip="Saves the forecast start, end date and refreshes this view" />
                 <dxb:BarButtonItem x:Name="biUpdateFloating" Command="{Binding UpdateFloatingRatesCommand}" Content="Update Floating Rates" Glyph="{dxc:DXImage Images/Actions/ConvertToRange_16x16.png}" LargeGlyph="{dxc:DXImage Images/Actions/ConvertToRange_32x32.png}" ToolTip="Apply recommended rate to floating rates" />
-                <dxb:BarButtonItem x:Name="biSaveSnapshot" Command="{Binding SaveSnapshotCommand}" Content="Save Snapshot" Glyph="{dx:DXImage Images/Save/Save_16x16.png}" ToolTip="Save Indirect forecast snapshot so that forecast snapshot can retrieve it" LargeGlyph="{dx:DXImage Images/Save/Save_32x32.png}" />
+                <dxb:BarButtonItem x:Name="biSaveSnapshot" Command="{Binding SaveSnapshotCommand}" Content="Upload Indirects Forecast" Glyph="{dx:DXImage Images/Save/Save_16x16.png}" ToolTip="Upload Indirect forecast snapshot so that forecast can retrieve it" LargeGlyph="{dx:DXImage Images/Save/Save_32x32.png}" />
             </dxb:BarManager.Items>
             <DockPanel>
                 <dxr:RibbonControl Style="{StaticResource DefaultRibbonControlStyle}">

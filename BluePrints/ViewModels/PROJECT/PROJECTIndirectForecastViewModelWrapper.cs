@@ -80,7 +80,11 @@ namespace BluePrints.ViewModels
                 if (((DateTime)value).Year == new DateTime().Year)
                     return;
 
-                fixedDataDate = value;
+                DateTime fixedDataDateEndOfday = (DateTime)value;
+                fixedDataDateEndOfday = new DateTime(fixedDataDateEndOfday.Year, fixedDataDateEndOfday.Month, fixedDataDateEndOfday.Day);
+                fixedDataDateEndOfday = fixedDataDateEndOfday.AddDays(1).AddSeconds(-1);
+
+                fixedDataDate = fixedDataDateEndOfday;
                 this.RaisePropertyChanged(x => x.FixedDataDate);
             }
         }
@@ -95,7 +99,11 @@ namespace BluePrints.ViewModels
                 if (value.Year == new DateTime().Year)
                     return;
 
-                fixedEndDate = value;
+                DateTime fixedEndDateEndOfDay = value;
+                fixedEndDateEndOfDay = new DateTime(fixedEndDateEndOfDay.Year, fixedEndDateEndOfDay.Month, fixedEndDateEndOfDay.Day);
+                fixedEndDateEndOfDay = fixedEndDateEndOfDay.AddDays(1).AddSeconds(-1);
+                fixedEndDate = fixedEndDateEndOfDay;
+
                 this.RaisePropertyChanged(x => x.FixedEndDate);
             }
         }
@@ -226,7 +234,7 @@ namespace BluePrints.ViewModels
         {
             if (shouldPromptForSavingSnapshot)
             {
-                if (MessageBoxService.ShowMessage("Forecast edited, do you wish to save a snapshot?", "Save", MessageButton.YesNo) == MessageResult.Yes)
+                if (MessageBoxService.ShowMessage("Forecast edited, do you wish to upload indirects forecast?", "Save", MessageButton.YesNo) == MessageResult.Yes)
                     SaveSnapshot();
             }
 
@@ -1454,6 +1462,24 @@ namespace BluePrints.ViewModels
 
         public void SaveDateAndRefresh()
         {
+            //always set date to end of month
+            DateTime startDateMonthEnd = (DateTime)FixedDataDate;
+            startDateMonthEnd = new DateTime(startDateMonthEnd.Year, startDateMonthEnd.Month, 1);
+            startDateMonthEnd = startDateMonthEnd.AddMonths(1).AddSeconds(-1);
+
+            DateTime endDateMonthEnd = FixedEndDate;
+            endDateMonthEnd = new DateTime(endDateMonthEnd.Year, endDateMonthEnd.Month, 1);
+            endDateMonthEnd = endDateMonthEnd.AddMonths(1).AddSeconds(-1);
+
+            if(startDateMonthEnd != FixedDataDate || endDateMonthEnd != FixedEndDate)
+            {
+                if (MessageBoxService.ShowMessage("Start date/End date will be automatically set to end of month, if you wish to forecast earlier please set a month before, do you wish to continue?", "Information", MessageButton.YesNo) == MessageResult.No)
+                    return;
+
+                FixedDataDate = startDateMonthEnd;
+                FixedEndDate = endDateMonthEnd;
+            }
+
             DateTime? changedDate = FixedDataDate;
             BluePrintsDataUtils.SaveDateAndRefresh(LoadPROJECT, LoadDataDate, ref changedDate, FixedEndDate, FORECAST_EACCollection, PROJECTCollectionViewModel, MessageBoxService);
 
