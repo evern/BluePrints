@@ -226,7 +226,8 @@ namespace BluePrints.ViewModels
             if (CurrentPO_FORECAST_JOB_HOUR_SNAPSHOTCollection == null)
                 return new List<POFlatSnapshotLine>();
 
-            return CurrentPO_FORECAST_JOB_HOUR_SNAPSHOTCollection.GroupBy(x => new { x.PO_NUMBER, x.VARIATION_CODE, x.STOCK_CODE }).Select(group => new POFlatSnapshotLine { PONumber = group.Key.PO_NUMBER, VariationCode = group.Key.VARIATION_CODE, StockCode = group.Key.STOCK_CODE, DataPoints = group.ToList() }).ToList();
+            string equipmentHireStockCodeInitials = BluePrintsResources.EquipmentHireStockCodeInitials;
+            return CurrentPO_FORECAST_JOB_HOUR_SNAPSHOTCollection.Where(x => x.STOCK_CODE.StartsWith(equipmentHireStockCodeInitials)).GroupBy(x => new { x.PO_NUMBER, x.VARIATION_CODE, x.STOCK_CODE }).Select(group => new POFlatSnapshotLine { PONumber = group.Key.PO_NUMBER, VariationCode = group.Key.VARIATION_CODE, StockCode = group.Key.STOCK_CODE, DataPoints = group.ToList() }).ToList();
         }
 
         protected override void clearPOForecast(string poNo, string stockCode, string variationCode)
