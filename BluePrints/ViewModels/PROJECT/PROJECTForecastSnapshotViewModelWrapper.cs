@@ -34,6 +34,7 @@ using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Data;
 using System.Linq;
+using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Input;
@@ -235,6 +236,147 @@ namespace BluePrints.ViewModels
             this.RaisePropertyChanged(x => x.IsPasteCellLevel);
             this.RaisePropertyChanged(x => x.SelectMode);
             base.AssignCallBacksAndRaisePropertyChange(entities);
+        }
+        #endregion
+
+        #region Copy Paste
+        public override void PastingFromClipboard(PastingFromClipboardEventArgs e)
+        {
+            GridControl gridControl = (GridControl)e.Source;
+            TableView gridTableView = (TableView)gridControl.View;
+            string newValueString = Clipboard.GetText().ToString();
+
+            List<ErrorMessage> errorMessages = new List<ErrorMessage>();
+            //remove tab in front
+            if (newValueString != string.Empty)
+            {
+                if (newValueString.Substring(0, 1) == "\t")
+                {
+                    newValueString = newValueString.Substring(1, newValueString.Length - 1);
+                }
+
+                string[] RowData = DataUtils.ExcelSplit(newValueString).ToArray();
+                pasteCellData(gridControl, gridTableView, RowData, out errorMessages);
+
+                refreshGridData();
+                e.Handled = true;
+            }
+
+            ShowErrorMessage("Errors", errorMessages);
+        }
+
+        private void pasteCellData(GridControl gridControl, TableView gridTableView, string[] RowData, out List<ErrorMessage> errorMessages)
+        {
+            EntitiesUndoRedoManager.PauseActionId();
+            List<DataRow> editedRows = GridControlHelpers.PasteCellData(gridControl, gridTableView, RowData, basePasteData, out errorMessages, true);
+
+            Common.LoadingScreenManager.ShowLoadingScreen(editedRows.Count);
+            Common.LoadingScreenManager.SetMessage("Summarizing Data...");
+            foreach (DataRow editedRow in editedRows)
+            {
+                updateViewForecastsOnDatesFromDb(editedRow, true, null);
+                updateTotalUncommittedOnJob(editedRow, true);
+                Common.LoadingScreenManager.Progress();
+            }
+
+            bluePrintsUnitOfWork.SaveChanges();
+            Common.LoadingScreenManager.CloseLoadingScreen();
+            updateFloatingSummaryMembers();
+            EntitiesUndoRedoManager.UnpauseActionId();
+        }
+
+        private bool basePasteData(DataRow newRow, ColumnBase copyColumn, string pasteData, bool isLastRow, out List<ErrorMessage> errorMessages)
+        {
+            errorMessages = new List<ErrorMessage>();
+            if (copyColumn.FieldType == typeof(decimal))
+            {
+                var rgx = new Regex(BluePrintsResources.Regex_NumbersOnly);
+                var cleanColumnString = rgx.Replace(pasteData, string.Empty);
+                decimal decimal_value;
+                if (decimal.TryParse(cleanColumnString, out decimal_value))
+                {
+                    List<ErrorMessage> commitCellErrorMessage;
+                    if (copyColumn.FieldName.ToUpper() == "ENTITY.BUDGET")
+                    {
+                        ForecastJobSnapshot job = (ForecastJobSnapshot)newRow[columnEntity];
+                        decimal oldValue = job.Budget;
+
+                        commitCellValue(copyColumn.FieldName, newRow, oldValue, decimal_value, out commitCellErrorMessage, true);
+                        errorMessages.AddRange(commitCellErrorMessage);
+                    }
+                    else if (copyColumn.FieldName.ToUpper() == "ENTITY.TENDERBUDGET")
+                    {
+                        ForecastJobSnapshot job = (ForecastJobSnapshot)newRow[columnEntity];
+                        decimal oldValue = job.TenderBudget;
+
+                        commitCellValue(copyColumn.FieldName, newRow, oldValue, decimal_value, out commitCellErrorMessage, true);
+                        errorMessages.AddRange(commitCellErrorMessage);
+                    }
+                    else if (copyColumn.FieldName == "Entity." + BindableBase.GetPropertyName(() => new ForecastJobData().Productivity))
+                    {
+                        ForecastJobSnapshot job = ((ForecastJobSnapshot)newRow[columnEntity]);
+                        decimal oldValue = job.Productivity;
+
+                        commitCellValue(copyColumn.FieldName, newRow, oldValue, decimal_value, out commitCellErrorMessage, true);
+                        findExistingOrAddNewForecastJobSetting(newRow, false);
+                        errorMessages.AddRange(commitCellErrorMessage);
+                    }
+                    else if (copyColumn.FieldName == "Entity." + BindableBase.GetPropertyName(() => new ForecastJobData().PreviousEAC))
+                    {
+                        ForecastJobSnapshot job = ((ForecastJobSnapshot)newRow[columnEntity]);
+                        decimal oldValue = job.PreviousEAC;
+
+                        commitCellValue(copyColumn.FieldName, newRow, oldValue, decimal_value, out commitCellErrorMessage, true);
+                        EntitiesUndoRedoManager.AddUndo(newRow, copyColumn.FieldName, oldValue, decimal_value, EntityMessageType.Changed);
+                        errorMessages.AddRange(commitCellErrorMessage);
+                    }
+                    else
+                    {
+                        decimal? oldValue = newRow[copyColumn.FieldName] == DBNull.Value ? (decimal?)null : (decimal)newRow[copyColumn.FieldName];
+                        DateTime columnDateTime;
+                        if (DateTime.TryParse(copyColumn.FieldName, out columnDateTime))
+                        {
+                            DataTable compareDataTable = (DataTable)newRow["CompareEntities"];
+                            //when this is called from parent grid
+                            if (compareDataTable.TableName == BluePrintsResources.ForecastCompareTableName)
+                            {
+                                ForecastJobSnapshot job = (ForecastJobSnapshot)newRow[columnEntity];
+                                decimal totalCosts = 0;
+                                if (!job.IsIndirect && (canEditConstructionUncommitted && job.IsConstruction) || job.IsContingency || (P6ForecastProject == null && (job.IsProcurement || job.IsConstruction)) || (P6ForecastProject != null && job.IsProcurement))
+                                {
+                                    totalCosts = getMasterRowResetValue(compareDataTable, copyColumn.FieldName);
+
+                                    if (decimal_value >= totalCosts)
+                                    {
+                                        findExistingOrAddNewForecast(newRow, columnDateTime, decimal_value, newRow[copyColumn.FieldName], !isLastRow);
+                                        EntitiesUndoRedoManager.AddUndo(newRow, copyColumn.FieldName, oldValue, decimal_value, EntityMessageType.Changed);
+                                        newRow[copyColumn.FieldName] = decimal_value;
+                                    }
+                                }
+                            }
+                            //when this called from child grid no validation required
+                            else
+                            {
+                                findExistingOrAddNewForecast(newRow, columnDateTime, decimal_value, newRow[copyColumn.FieldName], !isLastRow);
+                                newRow[copyColumn.FieldName] = decimal_value;
+                            }
+                        }
+                    }
+                }
+                else
+                {
+                    resetViewRemainingOnJob(newRow, copyColumn.FieldName, true);
+                    return false;
+                }
+            }
+            else if (copyColumn.FieldType == typeof(string))
+            {
+                string oldValue = newRow[copyColumn.FieldName].ToString();
+                newRow[copyColumn.FieldName] = pasteData;
+                EntitiesUndoRedoManager.AddUndo(newRow, copyColumn.FieldName, oldValue, pasteData, EntityMessageType.Changed);
+            }
+
+            return true;
         }
         #endregion
 
