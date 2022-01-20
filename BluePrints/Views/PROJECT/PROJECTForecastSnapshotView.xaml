@@ -343,7 +343,7 @@
                         <dxe:TextEditSettings DisplayFormat="d" IsEnabled="False" />
                     </dxb:BarEditItem.EditSettings>
                 </dxb:BarEditItem>
-                <dxb:BarButtonItem x:Name="biReloadP6" Command="{Binding ReloadP6ForecastCommand}" Content="Refresh P6" IsEnabled="{Binding IsLoading, Converter={StaticResource BooleanNegationConverter}}" Glyph="{dx:DXImage Image=Reset2_16x16.png}" LargeGlyph="{dx:DXImage Image=Reset2_32x32.png}" ToolTip="Reload from P6. Must be performed after pressing F9 in P6" />
+                <dxb:BarButtonItem x:Name="biReloadP6" Command="{Binding ReloadP6ForecastCommand}" Content="Refresh P6" IsEnabled="{Binding IsLoading, Converter={StaticResource BooleanNegationConverter}}" Glyph="{dx:DXImage Image=Reset2_16x16.png}" LargeGlyph="{dx:DXImage Image=Reset2_32x32.png}" ToolTip="Calculate planned and remaining from P6 and load earned for PF. Must be performed after pressing F9 in P6" />
                 <dxb:BarButtonItem x:Name="biLastRefreshedError" Content="Error" IsVisible="{Binding IsP6DataDateError}" Command="{Binding ShowP6ErrorMessageCommand}" ToolTip="{Binding P6ErrorMessage}" >
                     <dxb:BarButtonItem.GlyphTemplate>
                         <DataTemplate>
@@ -371,9 +371,9 @@
                 </dxb:BarButtonItem>
                 <dxb:BarCheckItem x:Name="biShowActuals" Content="Show Actuals History" Glyph="{dxc:DXImage Images/Scheduling/SwitchTimeScalesTo_16x16.png}" IsChecked="{Binding IsShowActualsHistory, Mode=TwoWay}" IsEnabled="{Binding IsLoading, Converter={StaticResource BooleanNegationConverter}}" LargeGlyph="{dxc:DXImage Images/Scheduling/SwitchTimeScalesTo_32x32.png}" RibbonStyle="SmallWithText" ToolTip="Toggle historical actuals visibility" />
                 <dxb:BarButtonItem x:Name="biSaveSummary" Command="{Binding SaveSummaryCommand}" Content="Save Excel Summary" Glyph="{dx:DXImage Image=SpreadsheetInsertTable_16x16.png}" LargeGlyph="{dx:DXImage Image=SpreadsheetInsertTable_32x32.png}" RibbonStyle="SmallWithText" ToolTip="Saves the summary for excel macro to retrieve values" />
-                <dxb:BarButtonItem x:Name="biRefreshActualData" Command="{Binding RefreshAllActualDataCommand}" Content="Update Actuals" IsEnabled="{Binding IsLoading, Converter={StaticResource BooleanNegationConverter}}" LargeGlyph="{dxc:DXImage Images/Spreadsheet/EditingFillLeft_32x32.png}" RibbonStyle="SmallWithText" ToolTip="Refresh budget, earned, actuals, indirect's forecast, PO outstanding and PO forecast snapshot" Glyph="{dxc:DXImage Images/Spreadsheet/EditingFillLeft_16x16.png}" />
-                <dxb:BarButtonItem x:Name="biRefreshForecastData" Command="{Binding RefreshForecastDataCommand}" Content="Update Forecast" IsEnabled="{Binding IsLoading, Converter={StaticResource BooleanNegationConverter}}" LargeGlyph="{dxc:DXImage Images/Spreadsheet/EditingFillRight_32x32.png}" RibbonStyle="SmallWithText" ToolTip="Refresh budget, earned, actuals, indirect's forecast, PO outstanding and PO forecast snapshot" Glyph="{dxc:DXImage Images/Spreadsheet/EditingFillRight_16x16.png}" />
-                <dxb:BarEditItem x:Name="beLastRUpdated" Content="Data Refreshed" IsEnabled="{Binding IsLoading, Converter={StaticResource BooleanNegationConverter}}" Glyph="{dxc:DXImage Image=Time2_16x16.png}" LargeGlyph="{dxc:DXImage Image=Time2_32x32.png}" IsReadOnly="True" EditValue="{Binding SnapshotLastUpdated, Mode=OneWay}" ToolTip="Budget, Actuals, Earned, PO Outstanding, PO Forecast, Indirect Forecast last updated date">
+                <dxb:BarButtonItem x:Name="biRefreshActualData" Command="{Binding RefreshAllActualDataCommand}" Content="Update Actuals" IsEnabled="{Binding IsLoading, Converter={StaticResource BooleanNegationConverter}}" LargeGlyph="{dxc:DXImage Images/Spreadsheet/EditingFillLeft_32x32.png}" RibbonStyle="SmallWithText" ToolTip="Refresh Budget, Material, Timesheet and POs" Glyph="{dxc:DXImage Images/Spreadsheet/EditingFillLeft_16x16.png}" />
+                <dxb:BarButtonItem x:Name="biRefreshForecastData" Command="{Binding RefreshForecastDataCommand}" Content="Update Forecast" IsEnabled="{Binding IsLoading, Converter={StaticResource BooleanNegationConverter}}" LargeGlyph="{dxc:DXImage Images/Spreadsheet/EditingFillRight_32x32.png}" RibbonStyle="SmallWithText" ToolTip="Refresh PO Forecast, EH PO Forecast and Indirect forecast" Glyph="{dxc:DXImage Images/Spreadsheet/EditingFillRight_16x16.png}" />
+                <dxb:BarEditItem x:Name="beLastRUpdated" Content="Data Refreshed" IsEnabled="{Binding IsLoading, Converter={StaticResource BooleanNegationConverter}}" Glyph="{dxc:DXImage Image=Time2_16x16.png}" LargeGlyph="{dxc:DXImage Image=Time2_32x32.png}" IsReadOnly="True" EditValue="{Binding SnapshotLastUpdated, Mode=OneWay}" ToolTip="Budget, Material, Timesheet and POs last updated date">
                     <dxb:BarEditItem.EditSettings>
                         <dxe:TextEditSettings DisplayFormat="d" IsEnabled="False" />
                     </dxb:BarEditItem.EditSettings>
@@ -542,13 +542,13 @@
                                     <dxg:GridControl.Columns>
                                         <dxg:GridColumn BestFitWidth="100" Width="100" FieldName="SUB_JOBCODE" Header="Subjob" ReadOnly="True" />
                                         <dxg:GridColumn BestFitWidth="75" Width="75" FieldName="DEPARTMENT_NAME" Header="Department" ReadOnly="True" />
-                                        <dxg:GridColumn BestFitWidth="50" Width="50" FieldName="DISCIPLINE_CODE" Header="Discipline" ReadOnly="True" />
+                                        <dxg:GridColumn BestFitWidth="70" Width="70" FieldName="DISCIPLINE_CODE" Header="Discipline" ReadOnly="True" />
                                         <dxg:GridColumn BestFitWidth="100" Width="100" FieldName="DISCIPLINE_CODE" Header="Package" ReadOnly="True" >
                                             <dxg:GridColumn.EditSettings>
                                                 <dxe:ComboBoxEditSettings AutoComplete="True" DisplayMember="DESCRIPTION" IsTextEditable="True" ItemsSource="{Binding DISCIPLINE_DESCCollection}" ValueMember="NAME" />
                                             </dxg:GridColumn.EditSettings>
                                         </dxg:GridColumn>
-                                        <dxg:GridColumn BestFitWidth="50" Width="50" FieldName="COMMODITY_CODE" Header="Commodity" ReadOnly="True" />
+                                        <dxg:GridColumn BestFitWidth="70" Width="70" FieldName="COMMODITY_CODE" Header="Commodity" ReadOnly="True" />
                                         <dxg:GridColumn BestFitWidth="150" Width="150" FieldName="COMMODITY_CODE_DESC" Header="Commodity Desc" ReadOnly="True" />
                                         <dxg:GridColumn BestFitWidth="250" Width="250" FieldName="VARIATION_CODE" Header="Variation" ReadOnly="True" />
                                         <dxg:GridColumn BestFitWidth="75" Width="75" FieldName="STOCKCODE" Header="Stock Code" ReadOnly="True" />
@@ -603,13 +603,13 @@
                                     </dxmvvm:Interaction.Behaviors>
                                     <dxg:GridControl.Columns>
                                         <dxg:GridColumn BestFitWidth="100" Width="100" FieldName="SUB_JOBCODE" Header="Subjob" ReadOnly="True" />
-                                        <dxg:GridColumn BestFitWidth="50" Width="50" FieldName="DISCIPLINE_CODE" Header="Discipline" ReadOnly="True" />
+                                        <dxg:GridColumn BestFitWidth="70" Width="70" FieldName="DISCIPLINE_CODE" Header="Discipline" ReadOnly="True" />
                                         <dxg:GridColumn BestFitWidth="100" Width="100" FieldName="DISCIPLINE_CODE" Header="Package" ReadOnly="True" >
                                             <dxg:GridColumn.EditSettings>
                                                 <dxe:ComboBoxEditSettings AutoComplete="True" DisplayMember="DESCRIPTION" IsTextEditable="True" ItemsSource="{Binding DISCIPLINE_DESCCollection}" ValueMember="NAME" />
                                             </dxg:GridColumn.EditSettings>
                                         </dxg:GridColumn>
-                                        <dxg:GridColumn BestFitWidth="50" Width="50" FieldName="COMMODITY_CODE" Header="Commodity" ReadOnly="True" />
+                                        <dxg:GridColumn BestFitWidth="70" Width="70" FieldName="COMMODITY_CODE" Header="Commodity" ReadOnly="True" />
                                         <dxg:GridColumn BestFitWidth="150" Width="150" FieldName="COMMODITY_CODE_DESC" Header="Commodity Desc" ReadOnly="True" />
                                         <dxg:GridColumn BestFitWidth="250" Width="250" FieldName="VARIATION_CODE" Header="Variation" ReadOnly="True" />
                                         <dxg:GridColumn BestFitWidth="75" Width="75" FieldName="STOCKCODE" Header="Stock Code" ReadOnly="True" />

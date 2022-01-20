@@ -150,8 +150,8 @@
                     </dxb:BarEditItem.EditSettings>
                 </dxb:BarEditItem>
                 <dxb:BarButtonItem x:Name="biAlignPOsWithActuals" Command="{Binding AlignPOsWithActualsCommand}" Content="Align Actuals" Glyph="{dx:DXImage Images/Reports/GroupFieldCollection_16x16.png}" LargeGlyph="{dx:DXImage Images/Reports/GroupFieldCollection_32x32.png}" RibbonStyle="SmallWithText" ToolTip="Align forecast with actuals" />
-                <dxb:BarButtonItem x:Name="biLoadPO" Command="{Binding LoadSnapshotCommand}" Content="Update Actuals" ToolTip="Load PO outstanding and actuals for forecasting" LargeGlyph="{dx:DXImage Images/Actions/Refresh_16x16.png}" Glyph="{dx:DXImage Images/Actions/Refresh_32x32.png}" />
-                <dxb:BarButtonItem x:Name="biSaveSnapshot" Command="{Binding SaveSnapshotCommand}" Content="Upload PO Forecast" Glyph="{dx:DXImage Images/Save/Save_16x16.png}" ToolTip="Upload PO Forecast so that forecast can retrieve it" LargeGlyph="{dx:DXImage Images/Save/Save_32x32.png}" />
+                <dxb:BarButtonItem x:Name="biLoadPO" Command="{Binding LoadSnapshotCommand}" Content="Update Actuals" ToolTip="Load PO outstanding and actuals for forecasting" LargeGlyph="{dx:DXImage Images/Spreadsheet/EditingFillLeft_16x16.png}" Glyph="{dx:DXImage Images/Spreadsheet/EditingFillLeft_32x32.png}" />
+                <dxb:BarButtonItem x:Name="biSaveSnapshot" Command="{Binding SaveSnapshotCommand}" Content="Upload PO Forecast" Glyph="{dx:DXImage Images/Spreadsheet/EditingFillRight_16x16.png}" ToolTip="Upload PO Forecast so that forecast can retrieve it" LargeGlyph="{dx:DXImage Images/Spreadsheet/EditingFillRight_32x32.png}" />
             </dxb:BarManager.Items>
             <DockPanel>
                 <dxr:RibbonControl Style="{StaticResource DefaultRibbonControlStyle}">
@@ -294,13 +294,13 @@
                                 </dxmvvm:Interaction.Behaviors>
                                 <dxg:GridControl.Columns>
                                     <dxg:GridColumn BestFitWidth="100" Width="100" FieldName="SUB_JOBCODE" Header="Subjob" ReadOnly="True" />
-                                    <dxg:GridColumn BestFitWidth="50" Width="50" FieldName="DISCIPLINE_CODE" Header="Discipline" ReadOnly="True" />
+                                    <dxg:GridColumn BestFitWidth="70" Width="70" FieldName="DISCIPLINE_CODE" Header="Discipline" ReadOnly="True" />
                                     <dxg:GridColumn BestFitWidth="100" Width="100" FieldName="DISCIPLINE_CODE" Header="Package" ReadOnly="True" >
                                         <dxg:GridColumn.EditSettings>
                                             <dxe:ComboBoxEditSettings AutoComplete="True" DisplayMember="DESCRIPTION" IsTextEditable="True" ItemsSource="{Binding DISCIPLINE_DESCCollection}" ValueMember="NAME" />
                                         </dxg:GridColumn.EditSettings>
                                     </dxg:GridColumn>
-                                    <dxg:GridColumn BestFitWidth="50" Width="50" FieldName="COMMODITY_CODE" Header="Commodity" ReadOnly="True" />
+                                    <dxg:GridColumn BestFitWidth="70" Width="70" FieldName="COMMODITY_CODE" Header="Commodity" ReadOnly="True" />
                                     <dxg:GridColumn BestFitWidth="150" Width="150" FieldName="COMMODITY_CODE_DESC" Header="Commodity Desc" ReadOnly="True" />
                                     <dxg:GridColumn BestFitWidth="250" Width="250" FieldName="VARIATION_CODE" Header="Variation" ReadOnly="True" />
                                     <dxg:GridColumn BestFitWidth="75" Width="75" FieldName="STOCKCODE" Header="Stock Code" ReadOnly="True" />

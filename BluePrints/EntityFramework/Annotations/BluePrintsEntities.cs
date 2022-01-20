@@ -225,9 +225,6 @@ namespace BluePrints.Data
             RefreshForecastBudgetByProject(projectNumber, dataDate);
             RefreshForecastActualsByProject(projectNumber, dataDate);
             RefreshPOByProject(projectNumber, dataDate);
-            RefreshForecastPOByProject(projectNumber, dataDate);
-            RefreshForecastIndirectByProject(projectNumber, dataDate);
-            RefreshEarnedByProject(projectNumber, dataDate);
             RefreshForecastP6ByProject(projectNumber, dataDate, true);
             RefreshForecastP6ByProject(projectNumber, dataDate, false);
             UpdateProjectSnapshotDateByProject(projectNumber);
@@ -239,8 +236,6 @@ namespace BluePrints.Data
 #pragma warning disable CS4014 // Because this call is not awaited, execution of the current method continues before the call is completed
             RefreshForecastPOByProject(projectNumber, dataDate);
             RefreshForecastIndirectByProject(projectNumber, dataDate);
-            RefreshForecastP6ByProject(projectNumber, dataDate, true);
-            RefreshForecastP6ByProject(projectNumber, dataDate, false);
 #pragma warning restore CS4014 // Because this call is not awaited, execution of the current method continues before the call is completed
         }
 
