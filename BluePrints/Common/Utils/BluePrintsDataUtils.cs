@@ -2151,14 +2151,14 @@ namespace BluePrints.Common.ViewModel.Utils
             return totalDurationInDays;
         }
 
-        public static string GetPhaseCode(string subjobCode)
+        public static string GetPhaseCode(string subJobcode)
         {
-            if (subjobCode == string.Empty || subjobCode == null)
+            if (subJobcode == string.Empty || subJobcode == null)
                 return string.Empty;
-            else if (subjobCode.Length < 15)
+            else if (subJobcode.Length < 15)
                 return string.Empty;
 
-            return subjobCode.Substring(13, 2);
+            return subJobcode.Substring(13, 2);
         }
 
         public static string GetAreaCode(string subJobcode)

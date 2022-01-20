@@ -26,13 +26,32 @@ namespace BluePrints.Common.Projections
             DateCosts = new List<ForecastDateSnapshot>();
         }
 
-        public ForecastJobSnapshot(UniqueForecastJob uniqueForecastJob, bool isBudgetReadOnly, IEnumerable<FORECAST_EAC> FORECAST_EACCollection, IEnumerable<FORECAST_EAC> FORECAST_EACPreviousCommitmentCollection, IEnumerable<FORECAST_JOB_SETTING> FORECAST_JOB_SETTINGCollection, IEnumerable<COMMODITY_CODE> COMMODITY_CODECollection, List<ExoSubJobProjection> projectLines, DateTime previousDataDate)
+        public ForecastJobSnapshot(UniqueForecastJob uniqueForecastJob, bool isBudgetReadOnly, IEnumerable<FORECAST_EAC> FORECAST_EACCollection, IEnumerable<FORECAST_EAC> FORECAST_EACPreviousCommitmentCollection, IEnumerable<FORECAST_JOB_SETTING> FORECAST_JOB_SETTINGCollection, IEnumerable<COMMODITY_CODE> COMMODITY_CODECollection, IEnumerable<AREA> AREACollection, PROJECT project, List<ExoSubJobProjection> projectLines, DateTime previousDataDate)
         {
             this.uniqueForecastJob = uniqueForecastJob;
             DateCosts = new List<ForecastDateSnapshot>();
             SubJobCode = uniqueForecastJob.SUBJOB_CODE;
+
+            ProjectName = string.Concat(project.NUMBER, " - ", project.NAME);
+            AREA findAREA = AREACollection.FirstOrDefault(x => x.INTERNAL_NUM == AreaCode);
+            if (findAREA != null)
+            {
+                AreaName = string.Concat(AreaCode, " - ", findAREA.TITLE);
+                AREA findSUBAREA = AREACollection.Where(x => x.GUID_PARENT == findAREA.GUID).FirstOrDefault(x => x.INTERNAL_NUM == SubAreaCode);
+                if (findSUBAREA != null)
+                    SubAreaName = string.Concat(SubAreaCode, " - ", findSUBAREA.TITLE);
+                else
+                    SubAreaName = "00 - Default Sub Area";
+            }
+
             DisciplineCode = uniqueForecastJob.DISCIPLINE_CODE;
             CommodityCode = uniqueForecastJob.COMMODITY_CODE;
+            COMMODITY_CODE findCOMMODITY_CODE = COMMODITY_CODECollection.FirstOrDefault(x => x.CODE == commodityCode);
+            if(findCOMMODITY_CODE != null)
+            {
+                CommodityName = findCOMMODITY_CODE.NAME;
+            }
+
             VariationCode = uniqueForecastJob.VARIATION_CODE;
             Budget = uniqueForecastJob.BudgetCosts;
             PreviousOutstanding = uniqueForecastJob.PreviousPOOutstandingCosts;
@@ -75,13 +94,16 @@ namespace BluePrints.Common.Projections
         public string AreaCode => BluePrintsDataUtils.GetAreaCode(SubJobCode);
 
         public string SubAreaCode => BluePrintsDataUtils.GetSubAreaCode(SubJobCode);
+        public string ProjectName { get; set; }
+        public string AreaName { get; set; }
+        public string SubAreaName { get; set; }
         public ExoSubJobProjection ExoJob { get; set; }
 
         public string SubJobCode { get; set; }
         public string DisciplineCode { get; set; }
         public string DisciplineDesc { get; set; }
         public string CommodityCode { get; set; }
-        public string CommodityName => ExoJob == null ? string.Empty : ExoJob.CommodityName;
+        public string CommodityName { get; set; }
         public string VariationCode { get; set; }
         public string DropDownPhase { get; set; }
         public decimal TenderBudget { get; set; }

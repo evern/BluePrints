@@ -154,6 +154,7 @@ namespace BluePrints.ViewModels
             loaderCollection.AddLoaderDescription(bluePrintsUnitOfWorkFactory, x => x.PROJECTS, PROJECTProjectionFunc, x => setProject(x));
             loaderCollection.AddLoaderDescription(bluePrintsUnitOfWorkFactory, x => x.FORECAST_JOB_HOUR_SNAPSHOTS, FORECAST_JOB_HOUR_SNAPSHOTProjectionFunc);
             loaderCollection.AddLoaderDescription(bluePrintsUnitOfWorkFactory, x => x.DISCIPLINE_DESCS, DISCIPLINE_DESCProjectionFunc);
+            loaderCollection.AddLoaderDescription(bluePrintsUnitOfWorkFactory, x => x.AREAS, AREAProjectionFunc);
             loaderCollection.AddLoaderDescription(bluePrintsUnitOfWorkFactory, x => x.COMMODITY_CODES, COMMODITY_CODEProjectionFunc);
             loaderCollection.AddLoaderDescription(bluePrintsUnitOfWorkFactory, x => x.FORECAST_EACS, FORECAST_EACProjectionFunc);
             loaderCollection.AddLoaderDescription<JOB_COSTGROUPS, JOB_COSTGROUPS, int, IPrimeroEntitiesUnitOfWork>(primeroUnitOfWorkFactory, x => x.JOB_COSTGROUPS);
@@ -174,6 +175,12 @@ namespace BluePrints.ViewModels
         {
             return query => query.Where(x => x.GUID == LoadPROJECT.GUID);
         }
+
+        private Func<IRepositoryQuery<Data.AREA>, IQueryable<Data.AREA>> AREAProjectionFunc()
+        {
+            return query => query.Where(x => x.GUID_PROJECT == LoadPROJECT.GUID);
+        }
+
         protected virtual Func<IRepositoryQuery<FORECAST_EAC>, IQueryable<FORECAST_EAC>> FORECAST_EACProjectionFunc()
         {
             return query => query.Where(x => x.GUID_PROJECT == LoadPROJECT.GUID);
@@ -508,7 +515,7 @@ namespace BluePrints.ViewModels
             Parallel.ForEach(uniqueForecastJobs,
                 uniqueForecastJob =>
                 {
-                    ForecastJobSnapshot forecastJobSnapshot = new ForecastJobSnapshot(uniqueForecastJob, isBudgetReadOnly, FORECAST_EACCollection, FORECAST_EACPreviousCommitmentCollection, FORECAST_JOB_SETTINGCollection, COMMODITY_CODECollection, projectLines, PreviousDataDate);
+                    ForecastJobSnapshot forecastJobSnapshot = new ForecastJobSnapshot(uniqueForecastJob, isBudgetReadOnly, FORECAST_EACCollection, FORECAST_EACPreviousCommitmentCollection, FORECAST_JOB_SETTINGCollection, COMMODITY_CODECollection, AREACollection, LoadPROJECT, projectLines, PreviousDataDate);
                     foreach (DateTime alignedDataDate in alignedDataDateCollection)
                     {
                         ForecastDateSnapshot forecastDateSnapshot = new ForecastDateSnapshot(uniqueForecastJob.AllCollection, firstViewDate, alignedDataDate.Date, FixedDataDate);
@@ -990,13 +997,16 @@ namespace BluePrints.ViewModels
             {
                 bool isPreviousEACReadOnly = LoginCredentials.getPermissionStatus(DataUtils.GetNameOf(() => NavigationResources.Permission_Forecast_EditPreviousEAC)) == LoginCredentials.PermissionStatus.None;
 
-                columns.Add(new ColumnDescriptor() { FieldName = "Entity.PhaseCode", ReadOnly = true, Header = "Phase", Fixed = FixedStyle.Left, Width = 50, Settings = SettingsType.Default });
+                columns.Add(new ColumnDescriptor() { FieldName = "Entity.ProjectName", ReadOnly = true, Header = "Project", Fixed = FixedStyle.Left, Width = 100, Settings = SettingsType.Default, GroupIndex = 1, SortIndex = 1 });
+                columns.Add(new ColumnDescriptor() { FieldName = "Entity.PhaseCode", ReadOnly = true, Header = "Phase", Fixed = FixedStyle.Left, Width = 50, Settings = SettingsType.Default, GroupIndex = 4, SortIndex = 4 });
                 columns.Add(new ColumnDescriptor() { FieldName = "Entity.SubJobCode", ReadOnly = true, Header = "Subjob", Fixed = FixedStyle.Left, Width = 110, Settings = SettingsType.JobError });
                 columns.Add(new ColumnDescriptor() { FieldName = "Entity.AreaCode", ReadOnly = true, Visible = false, Header = "Area", Fixed = FixedStyle.Left, Width = 60, Settings = SettingsType.Default });
-                columns.Add(new ColumnDescriptor() { FieldName = "Entity.DisciplineCode", ReadOnly = true, Header = "Discipline", Fixed = FixedStyle.Left, Width = 38, Settings = SettingsType.Default });
-                columns.Add(new ColumnDescriptor() { FieldName = "Entity.DisciplineDesc", ReadOnly = true, Header = "Package", Fixed = FixedStyle.Left, Width = 100, Settings = SettingsType.Default });
+                columns.Add(new ColumnDescriptor() { FieldName = "Entity.AreaName", ReadOnly = true, Visible = false, Header = "Area Name", Fixed = FixedStyle.Left, Width = 100, Settings = SettingsType.Default, GroupIndex = 2, SortIndex = 2 });
+                columns.Add(new ColumnDescriptor() { FieldName = "Entity.SubAreaName", ReadOnly = true, Visible = false, Header = "Sub Area Name", Fixed = FixedStyle.Left, Width = 100, Settings = SettingsType.Default, GroupIndex = 3, SortIndex = 3 });
+                columns.Add(new ColumnDescriptor() { FieldName = "Entity.DisciplineCode", ReadOnly = true, Header = "Discipline Code", Fixed = FixedStyle.Left, Width = 38, Settings = SettingsType.Default });
+                columns.Add(new ColumnDescriptor() { FieldName = "Entity.DisciplineDesc", ReadOnly = true, Header = "Discipline/Package", Fixed = FixedStyle.Left, Width = 100, Settings = SettingsType.Default, GroupIndex = 4, SortIndex = 4 });
                 columns.Add(new ColumnDescriptor() { FieldName = "Entity.CommodityCode", ReadOnly = true, Header = "Commodity", Fixed = FixedStyle.Left, Width = 35, Settings = SettingsType.CommodityCode });
-                columns.Add(new ColumnDescriptor() { FieldName = "Entity.CommodityName", ReadOnly = true, Header = "Commodity Name", Fixed = FixedStyle.Left, Width = 50, Settings = SettingsType.Default });
+                columns.Add(new ColumnDescriptor() { FieldName = "Entity.CommodityName", ReadOnly = true, Header = "Commodity Name", Fixed = FixedStyle.Left, Width = 50, Settings = SettingsType.Default, GroupIndex = 5, SortIndex = 5 });
                 columns.Add(new ColumnDescriptor() { FieldName = "Entity.VariationCode", ReadOnly = true, Header = "Variation", Fixed = FixedStyle.Left, Width = 60, Settings = SettingsType.Default });
                 columns.Add(new ColumnDescriptor() { FieldName = "Entity.TenderBudget", ReadOnly = false, Header = "Tender Budget (H)", Increment = 1, Fixed = FixedStyle.Left, Width = 75, Settings = SettingsType.Budget, Mask = "c0", HeaderToolTip = "Budget saved here during Roll Over" });
                 summaries.Add(new SummaryDescriptor() { FieldName = "Entity.TenderBudget", DisplayFormat = "c0", Type = SummaryItemType.Sum });
@@ -3008,6 +3018,15 @@ namespace BluePrints.ViewModels
             get
             {
                 return GetEntities<FORECAST_JOB_SETTING>();
+            }
+        }
+
+        public IEnumerable<AREA> AREACollection
+        {
+            get
+            {
+                var collection = GetEntities<AREA>();
+                return collection;
             }
         }
 

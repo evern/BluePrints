@@ -8,6 +8,8 @@
             <DataTemplate x:Key="DefaultColumnTemplate">
                 <ContentControl>
                     <dxg:GridColumn AllowBestFit="False" ColumnFilterMode="DisplayText" FieldName="{Binding Path=(dxci:DependencyObjectExtensions.DataContext).FieldName, RelativeSource={RelativeSource Self}}" 
+                        GroupIndex="{Binding Path=(dxci:DependencyObjectExtensions.DataContext).GroupIndex, RelativeSource={RelativeSource Self}}"
+                        SortIndex="{Binding Path=(dxci:DependencyObjectExtensions.DataContext).SortIndex, RelativeSource={RelativeSource Self}}"
                         Header="{Binding Path=(dxci:DependencyObjectExtensions.DataContext).Header, RelativeSource={RelativeSource Self}}" 
                         Width="{Binding Path=(dxci:DependencyObjectExtensions.DataContext).Width, RelativeSource={RelativeSource Self}}"
                         Fixed="{Binding Path=(dxci:DependencyObjectExtensions.DataContext).Fixed, RelativeSource={RelativeSource Self}}"
@@ -482,6 +484,11 @@
                                     </dxg:GridControl.DetailDescriptor>
                                     <dxg:GridControl.View>
                                         <dxg:TableView x:Name="tableView" ShowFilterPanelMode="ShowAlways" RowStyle="{StaticResource TableRowStyle}" TotalSummaryContentStyle="{StaticResource TotalSummaryStyle}" GroupColumnSummaryContentStyle="{StaticResource GroupSummaryStyle}" ColumnHeaderTemplate="{StaticResource ForecastHeaderTemplate}" ShowGroupedColumns="False" custom:GroupChildSelector.Mode="Hierarchical" GroupSummaryDisplayMode="AlignByColumns" NewItemRowPosition="None" PrintAllDetails="True" ShowEditFormOnDoubleClick="True" ShowTotalSummary="True" Style="{StaticResource DefaultMinimalTableViewTemplate}" ScrollBarAnnotationMode="None">
+                                            <dxg:TableView.GroupValueTemplate>
+                                                <DataTemplate>
+                                                    <TextBlock Text="{Binding Value}" Margin="10,0,0,0"/>
+                                                </DataTemplate>
+                                            </dxg:TableView.GroupValueTemplate>
                                             <dxg:TableView.FormatConditions>
                                                 <dxg:FormatCondition FieldName="Entity.PeriodMovement" Value1="-1" ValueRule="Less">
                                                     <dxc:Format Background="#FFFF9B98"/>

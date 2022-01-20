@@ -22,6 +22,8 @@ namespace BluePrints.Common.ViewModel.Misc
         {
             Increment = 1;
             Visible = true;
+            GroupIndex = null;
+            SortIndex = null;
         }
 
         public string FieldName { get; set; }
@@ -40,8 +42,9 @@ namespace BluePrints.Common.ViewModel.Misc
         public object ItemsSource { get; set; }
         public string NullText { get; set; }
         public string Tag { get; set; }
+        public int? GroupIndex { get; set; }
         public int VisibleIndex { get; set; }
-        public int SortIndex { get; set; }
+        public int? SortIndex { get; set; }
         public decimal MinValue { get; set; }
         public decimal MaxValue { get; set; }
         //only have value when column is a date
