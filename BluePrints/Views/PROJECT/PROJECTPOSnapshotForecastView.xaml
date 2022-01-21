@@ -173,9 +173,6 @@
                             </dxr:RibbonPageGroup>
                             <dxr:RibbonPageGroup MergeType="Replace" Caption="Forecast Tools">
                                 <dxb:BarButtonItemLink BarItemName="biPaymentSpread" />
-                                <dxb:BarEditItemLink BarItemName="beForecastStart" />
-                                <dxb:BarEditItemLink BarItemName="beForecastEnd" />
-                                <dxb:BarButtonItemLink BarItemName="biSaveDateAndRefresh" />
                                 <dxb:BarEditItemLink BarItemName="beLastAlignedDate" />
                                 <dxb:BarButtonItemLink BarItemName="biAlignPOsWithActuals" />
                                 <dxb:BarButtonItemLink BarItemName="biLoadPO" />

@@ -334,7 +334,7 @@ namespace BluePrints.ViewModels
                 AREA newAREA = new AREA();
                 newAREA.GUID_PROJECT = loadPROJECT.GUID;
                 newAREA.INTERNAL_NUM = areaCode;
-                newAREA.TITLE = "Generated";
+                newAREA.TITLE = BluePrintsResources.AutoGenerateString;
                 AREACollectionViewModel.Save(newAREA);
                 findAREA = newAREA;
             }
@@ -351,7 +351,7 @@ namespace BluePrints.ViewModels
                 newSUBAREA.GUID_PROJECT = loadPROJECT.GUID;
                 newSUBAREA.GUID_PARENT = areaGuid;
                 newSUBAREA.INTERNAL_NUM = subAreaCode;
-                newSUBAREA.TITLE = "Generated";
+                newSUBAREA.TITLE = BluePrintsResources.AutoGenerateString;
                 AREACollectionViewModel.Save(newSUBAREA);
                 findSUBAREA = newSUBAREA;
             }
@@ -367,7 +367,7 @@ namespace BluePrints.ViewModels
                 findDISCIPLINE = new DISCIPLINE();
                 findDISCIPLINE.GUID = Guid.Empty;
                 findDISCIPLINE.CODE = disciplineCode;
-                findDISCIPLINE.NAME = "Generated";
+                findDISCIPLINE.NAME = BluePrintsResources.AutoGenerateString;
                 DISCIPLINECollectionViewModel.Save(findDISCIPLINE);
             }
 

@@ -405,7 +405,6 @@
                                 <dxb:BarEditItemLink BarItemName="beFixedDataDate" />
                                 <dxb:BarEditItemLink BarItemName="beFixedEndDate" />
                                 <dxb:BarButtonItemLink BarItemName="biSaveDateAndRefresh" />
-                                <dxb:BarEditItemLink BarItemName="beFixedTimesheetDataDate" />
                             </dxr:RibbonPageGroup>
                             <dxr:RibbonPageGroup MergeType="Replace" Caption="P6 Tools">
                                 <dxb:BarEditItemLink BarItemName="beForecastProject" />

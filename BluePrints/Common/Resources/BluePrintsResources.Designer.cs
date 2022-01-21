@@ -70,6 +70,15 @@ namespace BluePrints.Common.Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Generated.
+        /// </summary>
+        internal static string AutoGenerateString {
+            get {
+                return ResourceManager.GetString("AutoGenerateString", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to dd-MMM-yy.
         /// </summary>
         internal static string ColumnDateFormat {
