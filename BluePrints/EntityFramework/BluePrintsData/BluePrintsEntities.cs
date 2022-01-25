@@ -479,6 +479,12 @@ namespace BluePrints.Data
                 .HasPrecision(10, 2);
 
             modelBuilder.Entity<PROJECT>()
+                .HasMany(e => e.TRANSACTION_AUDIT)
+                .WithRequired(e => e.PROJECT)
+                .HasForeignKey(e => e.GUID_PROJECT)
+                .WillCascadeOnDelete(false);
+
+            modelBuilder.Entity<PROJECT>()
                 .Property(e => e.REVIEWPERCENTAGE)
                 .HasPrecision(2, 2);
 
