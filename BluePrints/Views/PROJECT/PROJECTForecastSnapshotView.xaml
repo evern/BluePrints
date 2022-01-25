@@ -385,7 +385,6 @@
                     <dxr:RibbonDefaultPageCategory MergeType="Replace" Caption="defaultCategory">
                         <dxr:RibbonPage MergeType="Replace" Caption="Grid">
                             <dxr:RibbonPageGroup MergeType="Replace" Caption="Grid">
-                                <dxb:BarButtonItemLink BarItemName="biFullRefresh1" />
                                 <dxb:BarCheckItemLink BarItemName="biCellSelection1" />
                                 <dxb:BarSubItem Content="Grid Functions" IsEnabled="{Binding IsLoading, Converter={StaticResource BooleanNegationConverter}}" Glyph="{dx:DXImage Image=Grid_16x16.png}" LargeGlyph="{dx:DXImage Image=Grid_32x32.png}" RibbonStyle="SmallWithText" ToolTip="Grid interaction functions">
                                     <dxb:BarButtonItemLink BarItemName="biUndo1" />
@@ -482,7 +481,7 @@
                                         </dxg:DataControlDetailDescriptor>
                                     </dxg:GridControl.DetailDescriptor>
                                     <dxg:GridControl.View>
-                                        <dxg:TableView x:Name="tableView" ShowFilterPanelMode="ShowAlways" RowStyle="{StaticResource TableRowStyle}" TotalSummaryContentStyle="{StaticResource TotalSummaryStyle}" GroupColumnSummaryContentStyle="{StaticResource GroupSummaryStyle}" ColumnHeaderTemplate="{StaticResource ForecastHeaderTemplate}" ShowGroupedColumns="False" custom:GroupChildSelector.Mode="Hierarchical" GroupSummaryDisplayMode="AlignByColumns" NewItemRowPosition="None" PrintAllDetails="True" ShowEditFormOnDoubleClick="True" ShowTotalSummary="True" Style="{StaticResource DefaultMinimalTableViewTemplate}" ScrollBarAnnotationMode="None">
+                                        <dxg:TableView x:Name="tableView" ShowFilterPanelMode="ShowAlways" RowStyle="{StaticResource TableRowStyle}" TotalSummaryContentStyle="{StaticResource TotalSummaryStyle}" GroupColumnSummaryContentStyle="{StaticResource GroupSummaryStyle}" ColumnHeaderTemplate="{StaticResource ForecastHeaderTemplate}" ShowGroupedColumns="True" custom:GroupChildSelector.Mode="Hierarchical" GroupSummaryDisplayMode="AlignByColumns" NewItemRowPosition="None" PrintAllDetails="True" ShowEditFormOnDoubleClick="True" ShowTotalSummary="True" Style="{StaticResource DefaultMinimalTableViewTemplate}" ScrollBarAnnotationMode="None">
                                             <dxg:TableView.GroupValueTemplate>
                                                 <DataTemplate>
                                                     <TextBlock Text="{Binding Value}" Margin="10,0,0,0"/>

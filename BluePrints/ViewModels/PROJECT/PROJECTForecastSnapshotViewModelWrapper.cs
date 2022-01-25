@@ -620,15 +620,14 @@ namespace BluePrints.ViewModels
                 string commodityCode = delimited[2];
                 string variationCode = delimited[3];
                 //For Debugging
-                //if (subJobCode == "23902-210-00-P1" && disciplineCode == "ME21" && commodityCode == "M58" && variationCode == "")
+                //if (subJobCode == "03608-000-00-I1" && disciplineCode == "PM01" && commodityCode == "G01" && variationCode == "")
                 //{
-
                 //}
-
                 UniqueForecastJob uniqueForecastJob = new UniqueForecastJob(projectLines, subJobCode, disciplineCode, commodityCode, variationCode, FixedDataDate, PreviousDataDate, FORECAST_JOB_HOUR_SNAPSHOTCollection);
                 uniqueForecastJob.UpdateTenderBudget(TenderBudgetCollection.AsQueryable());
                 uniqueForecastJob.UpdateErrorMessage(JOBCOST_LINES_AUDITCollection.AsQueryable());
                 uniqueForecastJobs.Add(uniqueForecastJob);
+
                 Common.LoadingScreenManager.Progress();
             });
 
@@ -748,6 +747,14 @@ namespace BluePrints.ViewModels
             compareUncommittedRow[columnEntity] = new ForecastJobSnapshot() { DropDownPhase = BluePrintsResources.ForecastCompare_UncommittedRowPhase + " $", CompareMask = "c0" };
             compareDataTable.Rows.Add(compareUncommittedRow);
 
+            DataRow actualRow = compareDataTable.NewRow();
+            if (IsShowActualsHistory)
+            {
+                //add actual row
+                actualRow[columnEntity] = new ForecastJobSnapshot() { DropDownPhase = BluePrintsResources.ForecastCompare_ActualRowPhase + " $", CompareMask = "c0" };
+                compareDataTable.Rows.Add(actualRow);
+            }
+
             //create rows based on unique codes for each type
             Dictionary<string, DataRow> poForecastRows = new Dictionary<string, DataRow>();
             Dictionary<string, DataRow> indirectForecastRows = new Dictionary<string, DataRow>();
@@ -855,6 +862,9 @@ namespace BluePrints.ViewModels
                 //only describe actuals when it's less than data date
                 if (dateCost.QueryDate <= FixedDataDateMonthEnd)
                 {
+                    if(IsShowActualsHistory)
+                        actualRow[dateCost.QueryDate.ToString(BluePrintsResources.ColumnDateFormat)] = dateCost.ActualCosts;
+
                     commodityRow[dateCost.QueryDate.ToString(BluePrintsResources.ColumnDateFormat)] = dateCost.ActualCosts;
 
                     //describe previously forecasted costs
