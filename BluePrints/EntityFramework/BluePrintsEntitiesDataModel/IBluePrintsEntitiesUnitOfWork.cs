@@ -487,6 +487,11 @@ namespace BluePrints.BluePrintsEntitiesDataModel
         IRepository<MINUTE_TITLE, Guid> MINUTE_TITLES { get; }
 
         /// <summary>
+        /// The TRANSACTION_AUDIT entities repository.
+        /// </summary>
+        IRepository<TRANSACTION_AUDIT, Guid> TRANSACTION_AUDITS { get; }
+
+        /// <summary>
         /// CLIENT_PROJECT entities repository.
         /// </summary>
         IRepository<CLIENT_PROJECT, Guid> CLIENT_PROJECTS { get; }

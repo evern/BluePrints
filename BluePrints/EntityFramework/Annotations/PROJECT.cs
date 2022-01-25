@@ -7,6 +7,7 @@ namespace BluePrints.Data
     using BluePrints.Common.Resources;
     using BluePrints.Common.ViewModel.Reporting;
     using Common;
+    using DevExpress.Data.Filtering;
     using DevExpress.Mvvm;
     using System;
     using System.Collections.Generic;
@@ -62,6 +63,7 @@ namespace BluePrints.Data
             VARIATION_CONSTRUCTION = new HashSet<VARIATION_CONSTRUCTION>();
             FORECAST_JOB_HOUR_SNAPSHOT = new HashSet<FORECAST_JOB_HOUR_SNAPSHOT>();
             PROJECT_CONTRACTOR = new HashSet<PROJECT_CONTRACTOR>();
+            TRANSACTION_AUDIT = new HashSet<TRANSACTION_AUDIT>();
             CONTRACTTYPE = ContractType.LumpSum;
             CURRENCYCONVERSION = 1;
             REVIEWPERCENTAGE = 0.7M;

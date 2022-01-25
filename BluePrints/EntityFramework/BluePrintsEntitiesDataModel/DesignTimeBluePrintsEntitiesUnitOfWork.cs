@@ -513,5 +513,10 @@ namespace BluePrints.BluePrintsEntitiesDataModel
         {
             get { return GetRepository((X_JOBCOST_LINES_AUDIT x) => x.GUID); }
         }
+
+        IRepository<TRANSACTION_AUDIT, Guid> IBluePrintsEntitiesUnitOfWork.TRANSACTION_AUDITS
+        {
+            get { return GetRepository((TRANSACTION_AUDIT x) => x.GUID); }
+        }
     }
 }

@@ -15,6 +15,7 @@ using BluePrints.Common.ViewModel.Utils;
 using BluePrints.Data;
 using BluePrints.PrimeroData;
 using BluePrints.PrimeroData.PrimeroEntitiesDataModel;
+using DevExpress.Data.Filtering;
 using DevExpress.Mvvm;
 using DevExpress.Mvvm.POCO;
 using DevExpress.Xpf.Editors;
@@ -100,7 +101,7 @@ namespace BluePrints.ViewModels
             loaderCollection.AddLoaderDescription(bluePrintsUnitOfWorkFactory, x => x.AREAS, AREAProjectionFunc);
             loaderCollection.AddLoaderDescription(bluePrintsUnitOfWorkFactory, x => x.BASELINE_ITEMS, BASELINE_ITEMProjectionFunc);
             loaderCollection.AddLoaderDescription<DOCTYPE, DOCTYPE, Guid, IBluePrintsEntitiesUnitOfWork>(bluePrintsUnitOfWorkFactory, x => x.DOCTYPES);
-            loaderCollection.AddLoaderDescription<USER, USER, Guid, IBluePrintsEntitiesUnitOfWork>(bluePrintsUnitOfWorkFactory, x => x.USERS);
+            loaderCollection.AddLoaderDescription(bluePrintsUnitOfWorkFactory, x => x.USERS, USERProjectionFunc);
             loaderCollection.AddLoaderDescription<OFFICE, OFFICE, Guid, IBluePrintsEntitiesUnitOfWork>(bluePrintsUnitOfWorkFactory, x => x.OFFICES);
         }
 
@@ -205,6 +206,11 @@ namespace BluePrints.ViewModels
         private Func<IRepositoryQuery<WORKPACK>, IQueryable<WORKPACK>> WORKPACKProjectionFunc()
         {
             return query => query.Take(1);
+        }
+
+        protected virtual Func<IRepositoryQuery<USER>, IQueryable<USER>> USERProjectionFunc()
+        {
+            return query => query.Where(x => x.LEAVE_DATE == null || x.LEAVE_DATE > DateTime.Now);
         }
 
         /// <summary>
@@ -548,16 +554,7 @@ namespace BluePrints.ViewModels
             }
         }
 
-        public IEnumerable<USER> MANAGERCollection
-        {
-            get
-            {
-                var collection = GetEntities<USER>();
-                if (collection != null)
-                    collection = collection.Where(x => x.ROLE != null && x.ROLE.ISMANAGER).OrderBy(x => x.NAME);
-                return collection;
-            }
-        }
+        public IEnumerable<USER> USERCollection => GetEntities<USER>();
 
         public CollectionViewModel<BASELINE, BASELINE, Guid, IBluePrintsEntitiesUnitOfWork> BASELINEViewModel
         {
@@ -852,6 +849,8 @@ namespace BluePrints.ViewModels
 
             DocumentManagerService.ShowExistingEntityDocumentWithLogging(DocumentInfo, this);
         }
+
+        public CriteriaOperator ResourceFilterCriteria => CriteriaOperator.Parse("[ROLE.ISMANAGER] In (True)");
 
         public IEnumerable<OFFICE> OFFICECollection
         {

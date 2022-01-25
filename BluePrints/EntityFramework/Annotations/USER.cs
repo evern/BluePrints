@@ -6,6 +6,7 @@ namespace BluePrints.Data
     using BluePrints.Common.Base;
     using BluePrints.Common.Resources;
     using BluePrints.PrimeroData;
+    using DevExpress.Data.Filtering;
     using DevExpress.Mvvm;
     using System;
     using System.Collections.Generic;
