@@ -159,7 +159,6 @@
                                 <dxb:BarEditItemLink BarItemName="beLastAlignedDate" />
                                 <dxb:BarButtonItemLink BarItemName="biAlignPOsWithActuals" />
                                 <dxb:BarButtonItemLink BarItemName="biLoadPO" />
-                                <dxb:BarButtonItemLink BarItemName="biSaveSnapshot" />
                             </dxr:RibbonPageGroup>
                         </dxr:RibbonPage>
                     </dxr:RibbonDefaultPageCategory>

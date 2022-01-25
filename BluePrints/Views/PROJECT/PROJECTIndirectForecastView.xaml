@@ -259,7 +259,6 @@
                             <dxr:RibbonPageGroup MergeType="Replace" Caption="Forecast Tools">
                                 <dxb:BarEditItemLink BarItemName="beFixedEndDate" />
                                 <dxb:BarButtonItemLink BarItemName="biSaveDateAndRefresh" />
-                                <dxb:BarButtonItemLink BarItemName="biSaveSnapshot" />
                             </dxr:RibbonPageGroup>
                         </dxr:RibbonPage>
                     </dxr:RibbonDefaultPageCategory>

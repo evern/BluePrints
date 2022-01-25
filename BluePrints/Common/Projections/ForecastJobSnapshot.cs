@@ -349,12 +349,16 @@ namespace BluePrints.Common.Projections
         public readonly DateTime MonthEndDate;
         private readonly DateTime firstViewDate;
         private readonly DateTime firstForecastDate;
+        private readonly DateTime actualsCutOffDate;
         readonly List<FORECAST_JOB_HOUR_SNAPSHOT> byDateForecastJobHourSnapshots;
         public ForecastDateSnapshot(IEnumerable<FORECAST_JOB_HOUR_SNAPSHOT> FORECAST_JOB_HOUR_SNAPSHOTFilteredByJob, DateTime firstViewDate, DateTime date, DateTime dataDate)
         {
             QueryDate = date; 
             
             this.firstViewDate = firstViewDate;
+
+            //do not show actuals on forecast columns
+            this.actualsCutOffDate = dataDate;
             this.firstForecastDate = dataDate;
 
             firstForecastDate = new DateTime(dataDate.Date.Year, dataDate.Date.Month, 1).AddMonths(2).AddDays(-1);
@@ -367,8 +371,7 @@ namespace BluePrints.Common.Projections
 
         public IEnumerable<FORECAST_JOB_HOUR_SNAPSHOT> POForecastSnapshots => byDateForecastJobHourSnapshots.Where(x => x.SNAPSHOT_TYPE == ForecastSnapshotValueType.ForecastPO);
         public IEnumerable<FORECAST_JOB_HOUR_SNAPSHOT> IndirectForecastSnapshots => byDateForecastJobHourSnapshots.Where(x => x.SNAPSHOT_TYPE == ForecastSnapshotValueType.ForecastIndirect);
-
-        public IEnumerable<FORECAST_JOB_HOUR_SNAPSHOT> ActualSnapshots => byDateForecastJobHourSnapshots.Where(x => x.SNAPSHOT_TYPE == ForecastSnapshotValueType.Actual).Where(x => x.FORECAST_DATE <= firstViewDate);
+        public IEnumerable<FORECAST_JOB_HOUR_SNAPSHOT> ActualSnapshots => byDateForecastJobHourSnapshots.Where(x => x.SNAPSHOT_TYPE == ForecastSnapshotValueType.Actual).Where(x => x.FORECAST_DATE < actualsCutOffDate);
         public IEnumerable<FORECAST_JOB_HOUR_SNAPSHOT> P6ForecastSnapshots => byDateForecastJobHourSnapshots.Where(x => x.SNAPSHOT_TYPE == ForecastSnapshotValueType.P6Remaining);
 
         public DateTime QueryDate { get; set; }
