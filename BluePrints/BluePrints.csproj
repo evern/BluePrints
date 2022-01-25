@@ -1309,6 +1309,9 @@
     <Compile Include="Views\DISCIPLINE\DISCIPLINE_DESCCollectionView.xaml.cs">
       <DependentUpon>DISCIPLINE_DESCCollectionView.xaml</DependentUpon>
     </Compile>
+    <Compile Include="Views\EXO\EXO_TransactionHistoryCollectionView.xaml.cs">
+      <DependentUpon>EXO_TransactionHistoryCollectionView.xaml</DependentUpon>
+    </Compile>
     <Compile Include="Views\EXO\JOBCOST_RESOURCECollectionView.xaml.cs">
       <DependentUpon>JOBCOST_RESOURCECollectionView.xaml</DependentUpon>
     </Compile>
@@ -2309,6 +2312,10 @@
       <SubType>Designer</SubType>
     </Page>
     <Page Include="Views\DISCIPLINE\DISCIPLINE_DESCCollectionView.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Views\EXO\EXO_TransactionHistoryCollectionView.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>

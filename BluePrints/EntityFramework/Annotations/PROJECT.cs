@@ -7,6 +7,7 @@ namespace BluePrints.Data
     using BluePrints.Common.Resources;
     using BluePrints.Common.ViewModel.Reporting;
     using Common;
+    using DevExpress.Data.Filtering;
     using DevExpress.Mvvm;
     using System;
     using System.Collections.Generic;
