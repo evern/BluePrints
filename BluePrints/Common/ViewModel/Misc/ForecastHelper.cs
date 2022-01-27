@@ -81,7 +81,7 @@ namespace BluePrints.Common.ViewModel.Misc
 
             //For Debugging
             //string s;
-            //if (projection.SubJobCode == "20638-200-19-C1" && projection.DisciplineCode == "EL01" && projection.CommodityCode == "E01" && projection.VariationCode == string.Empty)
+            //if (projection.SubJobCode == "30202-000-00-I1" && projection.DisciplineCode == "PM01" && projection.CommodityCode == "G02" && projection.VariationCode == string.Empty)
             //    s = string.Empty;
 
             List<DashboardFlatStructure> relevantDashboards;

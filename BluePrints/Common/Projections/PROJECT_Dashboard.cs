@@ -44,11 +44,18 @@ namespace BluePrints.Common.Projections
                 List<X_REPORTABLES> reportables = BluePrintsContextHelper.GetReportablesSummary(project_number, IsVariationSeparated);
                 List<WBSReportable> WBSSummaries;
                 if (!IsVariationSeparated)
-                    WBSSummaries = reportables.GroupBy(x => new { x.SubJobCode, x.DisciplineCode, x.CommodityCode }).Select(x => new WBSReportable(x.Key.SubJobCode, x.Key.DisciplineCode, x.Key.CommodityCode, string.Empty, (DateTime)latest_data_date, reporting_interval, (DateTime)earliest_first_aligned_data_date, Convert.ToDecimal(x.Sum(r => r.BUDGET_UNITS)), Convert.ToDecimal(x.Sum(r => r.TOTAL_UNITS)), Convert.ToDecimal(x.Sum(r => r.BUDGET_UNITS)), Convert.ToDecimal(x.Sum(r => r.TOTAL_UNITS)), Convert.ToDecimal(x.Sum(r => r.BUDGET_COSTS)), Convert.ToDecimal(x.Sum(r => r.TOTAL_COSTS)), forceRetrieveRemainingDataPoints)).ToList();
+                    WBSSummaries = reportables.GroupBy(x => new { x.SubJobCode, x.DisciplineCode, x.CommodityCode }).Distinct().Select(x => new WBSReportable(x.Key.SubJobCode, x.Key.DisciplineCode, x.Key.CommodityCode, string.Empty, (DateTime)latest_data_date, reporting_interval, (DateTime)earliest_first_aligned_data_date, Convert.ToDecimal(x.Sum(r => r.BUDGET_UNITS)), Convert.ToDecimal(x.Sum(r => r.TOTAL_UNITS)), Convert.ToDecimal(x.Sum(r => r.BUDGET_UNITS)), Convert.ToDecimal(x.Sum(r => r.TOTAL_UNITS)), Convert.ToDecimal(x.Sum(r => r.BUDGET_COSTS)), Convert.ToDecimal(x.Sum(r => r.TOTAL_COSTS)), forceRetrieveRemainingDataPoints)).ToList();
                 else
                     WBSSummaries = reportables.Select(x => new WBSReportable(x.SubJobCode, x.DisciplineCode, x.CommodityCode, x.VariationCode, (DateTime)latest_data_date, reporting_interval, (DateTime)earliest_first_aligned_data_date, Convert.ToDecimal(x.BUDGET_UNITS), Convert.ToDecimal(x.TOTAL_UNITS), Convert.ToDecimal(x.BUDGET_UNITS), Convert.ToDecimal(x.TOTAL_UNITS), Convert.ToDecimal(x.BUDGET_COSTS), Convert.ToDecimal(x.TOTAL_COSTS), forceRetrieveRemainingDataPoints)).ToList();
-                
-                Stats = new ProjectSummaryStats(WBSSummaries, (DateTime)latest_data_date, reporting_interval, (DateTime)earliest_first_aligned_data_date, forceRetrieveRemainingDataPoints, false);
+
+                //some jobs can exist both in design and construction, so group it up to make sure uniqueness
+                var groupedWBSSummaries = WBSSummaries.GroupBy(x => new { x.SUBJOB_CODE, x.DISCIPLINE_CODE, x.COMMODITY_CODE, x.VARIATION_CODE }).Select(group => group.ToList());
+                List<WBSReportable> uniqueWBSSummaries = groupedWBSSummaries.Select(x => x.First()).ToList();
+                //For Debugging
+                //List<WBSReportable> wbsReportables = uniqueWBSSummaries.Where(x => x.SUBJOB_CODE == "30202-000-00-I1" && x.DISCIPLINE_CODE == "PM01" && x.COMMODITY_CODE == "G02" && x.VARIATION_CODE == string.Empty).ToList();
+                //string s = wbsReportables.Count.ToString();
+
+                Stats = new ProjectSummaryStats(uniqueWBSSummaries, (DateTime)latest_data_date, reporting_interval, (DateTime)earliest_first_aligned_data_date, forceRetrieveRemainingDataPoints, false);
                 projectSummarizer = new FullSummarizer((ProjectSummaryStats)Stats, fullStatsBuilder, project_number, true);
             }
         }
