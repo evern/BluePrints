@@ -6,6 +6,7 @@ using BaseModel.ViewModel.Loader;
 using BluePrints.BluePrintsEntitiesDataModel;
 using BluePrints.Common.Projections;
 using BluePrints.Common.Resources;
+using BluePrints.Common.Utils;
 using BluePrints.Common.ViewModel;
 using BluePrints.Common.ViewModel.Reporting;
 using BluePrints.Data;
@@ -35,6 +36,10 @@ namespace BluePrints.Common.Base
         void Save_Task(TASK task);
         IEnumerable<TASKPRED> TASKPRED_Source { get; }
         bool IsBudget { get; set; }
+
+        P6Data.PROJECT P6PROJECT { get; }
+
+        IP6EntitiesUnitOfWork P6UnitOfWork { get; }
     }
 
     public abstract class BluePrintsEntitiesSchedulingCollectionWrapper<TMainEntity, TMainProjectionEntity, TMainEntityPrimaryKey,
@@ -45,7 +50,8 @@ namespace BluePrints.Common.Base
         where TMainEntityUnitOfWork : IUnitOfWork
     {
         protected IUnitOfWorkFactory<IBluePrintsEntitiesUnitOfWork> bluePrintsUnitOfWorkFactory = BluePrintsEntitiesUnitOfWorkSource.GetUnitOfWorkFactory();
-        protected IUnitOfWorkFactory<IP6EntitiesUnitOfWork> p6UnitOfWorkFactory = P6EntitiesUnitOfWorkSource.GetUnitOfWorkFactory();
+        protected IUnitOfWorkFactory<IP6EntitiesUnitOfWork> p6UnitOfWorkFactory;
+        protected IP6EntitiesUnitOfWork p6EntitiesUnitOfWork;
         protected override void addEntitiesLoader()
         {
             loaderCollection.AddLoaderDescription(bluePrintsUnitOfWorkFactory, x => x.PROGRESSES, PROGRESSProjectionFunc, assign_progress);
@@ -983,7 +989,8 @@ namespace BluePrints.Common.Base
                 if (MainViewModel != null && activities_source == null)
                 {
                     activities_source = new List<P6_Activity>();
-                    if(P6TASKCollection.Count() > 0)
+
+                    if (P6TASKCollection.Count() > 0)
                     {
                         var p6_task_collection_by_start_date = P6TASKCollection.OrderBy(x => x.target_start_date).Select(x => P6_Activity.Create(x, this));
                         if(p6_task_collection_by_start_date != null)
@@ -1016,6 +1023,8 @@ namespace BluePrints.Common.Base
             }
         }
 
+        public P6Data.PROJECT P6PROJECT => loadP6PROJECT;
+
         public IEnumerable<TASKPRED> TASKPRED_Source => GetEntities<TASKPRED>();
         
         public virtual DateTime Beg { get; set; }
@@ -1037,28 +1046,26 @@ namespace BluePrints.Common.Base
         #region P6 Interaction
         public void PushToP6()
         {
-            var IP6EntitiesUnitOfWork = P6EntitiesUnitOfWorkSource.GetUnitOfWorkFactory().CreateUnitOfWork();
-
             string ProjectName;
             if (mappingType == BaselineMappingSelectionType.Modified)
                 ProjectName = iHaveP6BaselinesEntity.P6_Mod_Baseline_Name;
             else
                 ProjectName = iHaveP6BaselinesEntity.P6_Baseline_Name;
 
-            P6Data.PROJECT P6_PROJECT = IP6EntitiesUnitOfWork.PROJECT.FirstOrDefault(x => x.proj_short_name == ProjectName && x.delete_date == null);
-
+            P6Data.PROJECT P6_PROJECT = p6EntitiesUnitOfWork.PROJECT.FirstOrDefault(x => x.proj_short_name == ProjectName && x.delete_date == null);
             IEnumerable<TASK> actual_tasks = P6_PROJECT.TASK.Where(x => TASK_Source.Any(task => task.task_code == x.task_code)).AsEnumerable();
             foreach (TASK Task in actual_tasks)
             {
-                TASKRSRC primaryTASKRSRC = P6_PROJECT.TASKRSRC.Where(x => x.delete_session_id == null).FirstOrDefault(x => x.task_id == Task.task_id);
-                if(primaryTASKRSRC != null)
+                IEnumerable<TASKRSRC> P6TASKRSRCS = P6_PROJECT.TASKRSRC.Where(x => x.delete_session_id == null).Where(x => x.task_id == Task.task_id);
+                foreach(TASKRSRC P6TASKRSRC in P6TASKRSRCS)
                 {
-                    primaryTASKRSRC.remain_qty = 0;
-                    primaryTASKRSRC.target_qty = 0;
-                    primaryTASKRSRC.remain_qty_per_hr = 0;
-                    primaryTASKRSRC.remain_cost = 0;
-                    primaryTASKRSRC.target_cost = 0;
-                    primaryTASKRSRC.act_reg_qty = 0;
+                    //do not set target qty or costs zero because we might use this for re-baseline pro-rate
+                    //P6TASKRSRC.target_qty = 0;
+                    //P6TASKRSRC.target_cost = 0;
+                    P6TASKRSRC.remain_qty = 0;
+                    P6TASKRSRC.remain_qty_per_hr = 0;
+                    P6TASKRSRC.remain_cost = 0;
+                    P6TASKRSRC.act_reg_qty = 0;
                 }
 
                 Task.act_work_qty = 0;
@@ -1072,44 +1079,7 @@ namespace BluePrints.Common.Base
             if (mappingMode == BaselineMappingMode.Default)
             {
                 LoadingScreenManager.ShowLoadingScreen(Deliverables_Source.Count());
-                foreach (ICanAssignP6 deliverable in Deliverables_Source)
-                {
-                    IEnumerable<P6_ASSIGNMENT> deliverable_assignments = deliverable.P6_Assignments;
-
-                    foreach (P6_ASSIGNMENT deliverable_assignment in deliverable_assignments)
-                    {
-                        TASK actual_context_task = actual_tasks.FirstOrDefault(x => x.task_code == deliverable_assignment.P6_ACTIVITYID && x.delete_date == null);
-
-                        P6_AssignmentProjection p6_assignment = new P6_AssignmentProjection(deliverable, deliverable_assignment, IsBudget);
-
-                        if (actual_context_task != null)
-                        {
-                            actual_context_task.target_work_qty += p6_assignment.UNITS;
-                            actual_context_task.remain_work_qty += p6_assignment.UNITS;
-                            //foreach (TASKRSRC task_resource in actual_context_task.TASKRSRC)
-                            //{
-                            //    ExistingTaskResource.Add(task_resource);
-                            //}
-
-                            TASKRSRC actual_context_taskrsrc = P6_PROJECT.TASKRSRC.Where(x => x.delete_session_id == null).FirstOrDefault(x => x.task_id == actual_context_task.task_id);
-                            if(actual_context_taskrsrc != null)
-                            {
-                                actual_context_taskrsrc.remain_qty += p6_assignment.UNITS;
-                                actual_context_taskrsrc.target_qty += p6_assignment.UNITS;
-
-                                if(actual_context_task.target_drtn_hr_cnt != null && actual_context_task.target_drtn_hr_cnt != 0)
-                                    actual_context_taskrsrc.remain_qty_per_hr = actual_context_taskrsrc.target_qty / actual_context_task.target_drtn_hr_cnt;
-                            }
-                        }
-                        else
-                        {
-                            missing_activities.Add(p6_assignment);
-                        }
-                    }
-
-                    LoadingScreenManager.Progress();
-                }
-
+                P6DataUtils.AssignP6BudgetedUnits(Deliverables_Source, P6PROJECT, p6EntitiesUnitOfWork, IsBudget, missing_activities);
                 LoadingScreenManager.CloseLoadingScreen();
             }
             else
@@ -1157,7 +1127,7 @@ namespace BluePrints.Common.Base
             //}
 
             //LoadingScreenManager.CloseLoadingScreen();
-            ((P6EntitiesUnitOfWork)IP6EntitiesUnitOfWork).Context.SaveChanges();
+            p6EntitiesUnitOfWork.SaveChanges();
             if (missing_activities.Count > 0)
             {
                 DialogCollectionViewModel<P6_AssignmentProjection> missing_activities_viewmodel = DialogCollectionViewModel<P6_AssignmentProjection>.Create(missing_activities);
@@ -1298,6 +1268,15 @@ namespace BluePrints.Common.Base
             P6TASKCollectionViewModel.Save(task);
         }
 
+        //implement this in initialisation of child viewmodels and initialise P6EntitiesUnitOfWork and P6EntitiesUnitOfWorkFactory
+        protected abstract void CreateP6UnitOfWork();
+        protected void createP6UnitOfWork()
+        {
+            p6EntitiesUnitOfWork = P6EntitiesUnitOfWorkSource.GetUnitOfWorkFactory().CreateUnitOfWork();
+            p6UnitOfWorkFactory = P6EntitiesUnitOfWorkSource.GetUnitOfWorkFactory(p6EntitiesUnitOfWork);
+        }
+
+
         protected CollectionViewModel<P6_ASSIGNMENT, P6_ASSIGNMENT, Guid, IBluePrintsEntitiesUnitOfWork> P6_ASSIGNMENTSCollectionViewModel
         {
             get
@@ -1408,6 +1387,8 @@ namespace BluePrints.Common.Base
                 return collection;
             }
         }
+
+        public IP6EntitiesUnitOfWork P6UnitOfWork => p6EntitiesUnitOfWork;
         #endregion
     }
 }

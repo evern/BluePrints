@@ -2,7 +2,7 @@
 using BaseModel.Misc;
 using BluePrints.BluePrintsEntitiesDataModel;
 using BluePrints.Common.ViewModel.Reporting;
-using BluePrints.Common.ViewModel.Utils;
+using BluePrints.Common.Utils;
 using BluePrints.Data;
 using DevExpress.Mvvm.POCO;
 using System;

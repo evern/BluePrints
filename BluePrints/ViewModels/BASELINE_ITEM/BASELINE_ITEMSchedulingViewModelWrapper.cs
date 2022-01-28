@@ -11,7 +11,7 @@ using BluePrints.Common.Projections;
 using BluePrints.Common.Reports;
 using BluePrints.Common.Resources;
 using BluePrints.Common.ViewModel.Reporting;
-using BluePrints.Common.ViewModel.Utils;
+using BluePrints.Common.Utils;
 using BluePrints.Data;
 using BluePrints.P6Data;
 using BluePrints.P6EntitiesDataModel;
@@ -58,6 +58,7 @@ namespace BluePrints.ViewModels
         protected BASELINE_ITEMSchedulingViewModelWrapper(
             IUnitOfWorkFactory<IBluePrintsEntitiesUnitOfWork> unitOfWorkFactory = null)
         {
+            CreateP6UnitOfWork();
         }
 
         #region Database Operations
@@ -779,6 +780,11 @@ namespace BluePrints.ViewModels
         protected override string ExportFilename()
         {
             return loadPROJECT.NUMBER + "_Baseline_Rev_" + loadBASELINE.REVISION;
+        }
+
+        protected override void CreateP6UnitOfWork()
+        {
+            createP6UnitOfWork();
         }
         #endregion
 

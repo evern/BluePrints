@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace BluePrints.Common.Helpers
+namespace BluePrints.Common.Utils
 {
     public static class BluePrintsStringFormatUtils
     {

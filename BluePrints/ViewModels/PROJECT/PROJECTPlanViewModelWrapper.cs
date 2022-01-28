@@ -14,7 +14,7 @@ using BluePrints.Common.Resources;
 using BluePrints.Common.ViewModel;
 using BluePrints.Common.ViewModel.Misc;
 using BluePrints.Common.ViewModel.Reporting;
-using BluePrints.Common.ViewModel.Utils;
+using BluePrints.Common.Utils;
 using BluePrints.Data;
 using BluePrints.PrimeroData.PrimeroEntitiesDataModel;
 using DevExpress.Data;

@@ -3,7 +3,7 @@ using BaseModel.Misc;
 using BluePrints.Common.Base;
 using BluePrints.Common.Misc;
 using BluePrints.Common.Projections;
-using BluePrints.Common.ViewModel.Utils;
+using BluePrints.Common.Utils;
 using BluePrints.Data;
 using DevExpress.Mvvm;
 using DevExpress.XtraEditors.DXErrorProvider;

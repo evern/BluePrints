@@ -18,7 +18,7 @@ using BluePrints.P6EntitiesDataModel;
 using DevExpress.Data.Filtering;
 using BaseModel.Data.Helpers;
 using DevExpress.Xpf.Grid;
-using BluePrints.Common.ViewModel.Utils;
+using BluePrints.Common.Utils;
 
 namespace BluePrints.ViewModels
 {

@@ -16,7 +16,9 @@ namespace BluePrints.Common
 #if DEBUG
             return;
 #endif
+#pragma warning disable CS0162 // Unreachable code detected
             if (DisableLoadingScreen)
+#pragma warning restore CS0162 // Unreachable code detected
                 return;
 
             if (DXSplashScreen.IsActive || maxProgress == 0)

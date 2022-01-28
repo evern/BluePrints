@@ -23,7 +23,7 @@
     <UpdatePeriodically>false</UpdatePeriodically>
     <UpdateRequired>true</UpdateRequired>
     <MapFileExtensions>true</MapFileExtensions>
-    <MinimumRequiredVersion>1.0.8.131</MinimumRequiredVersion>
+    <MinimumRequiredVersion>1.0.8.132</MinimumRequiredVersion>
     <ApplicationRevision>132</ApplicationRevision>
     <ApplicationVersion>1.0.8.%2a</ApplicationVersion>
     <UseApplicationTrust>false</UseApplicationTrust>
@@ -836,6 +836,8 @@
     <Compile Include="Common\SpellCheck\SpellCheckerHelper.cs" />
     <Compile Include="Common\SpellCheck\SpellCheckerModule.cs" />
     <Compile Include="Common\Utils\BluePrintsStringFormatUtils.cs" />
+    <Compile Include="Common\Utils\BluePrintsUtils.cs" />
+    <Compile Include="Common\Utils\P6DataUtils.cs" />
     <Compile Include="Common\ViewModel\Converters\DataPointsTableFieldNameConverter.cs" />
     <Compile Include="Common\ViewModel\Converters\DynamicDateColumnDisplayStringConverter.cs" />
     <Compile Include="Common\ViewModel\Converters\ForecastChildCellMaskConverter.cs" />

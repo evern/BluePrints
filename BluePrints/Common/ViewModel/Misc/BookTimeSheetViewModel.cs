@@ -13,7 +13,7 @@ using BluePrints.Common.Projections;
 using DevExpress.Mvvm;
 using BluePrints.Common.Resources;
 using BluePrints.Common.Misc;
-using BluePrints.Common.ViewModel.Utils;
+using BluePrints.Common.Utils;
 using BaseModel.Data.Helpers;
 
 namespace BaseModel.ViewModel.Dialogs

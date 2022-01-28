@@ -29,7 +29,7 @@ using System.Threading;
 using BluePrints.View;
 using BluePrints.Common.Helpers;
 using System.Deployment.Application;
-using BluePrints.Common.ViewModel.Utils;
+using BluePrints.Common.Utils;
 using DevExpress.Xpf.Accordion;
 
 namespace BluePrints.ViewModels

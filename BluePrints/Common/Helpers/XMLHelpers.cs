@@ -1,6 +1,6 @@
 ﻿using BluePrints.Common.Resources;
 using BluePrints.Common.ViewModel;
-using BluePrints.Common.ViewModel.Utils;
+using BluePrints.Common.Utils;
 using System;
 using System.Collections.Generic;
 using System.IO;

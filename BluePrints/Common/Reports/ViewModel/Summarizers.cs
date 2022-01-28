@@ -7,7 +7,7 @@ using static BluePrints.Data.BluePrintsEntities;
 using System;
 using System.Diagnostics;
 using BaseModel.Data.Helpers;
-using BluePrints.Common.ViewModel.Utils;
+using BluePrints.Common.Utils;
 using BluePrints.PrimeroData.PrimeroEntitiesDataModel;
 using BluePrints.Common.Misc;
 

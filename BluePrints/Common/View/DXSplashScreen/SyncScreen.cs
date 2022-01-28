@@ -18,7 +18,7 @@ using System.Windows.Threading;
 using BluePrints.Common.Resources;
 using System.Threading.Tasks;
 using System.ComponentModel;
-using BluePrints.Common.ViewModel.Utils;
+using BluePrints.Common.Utils;
 
 namespace BluePrints.Common
 {

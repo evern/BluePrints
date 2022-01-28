@@ -46,6 +46,11 @@ namespace BluePrints.ViewModels
             return ViewModelSource.Create(() => new BUDGET_ITEMSchedulingViewModelWrapper());
         }
 
+        protected BUDGET_ITEMSchedulingViewModelWrapper()
+        {
+            CreateP6UnitOfWork();
+        }
+
         #region Database Operation
         protected override PhaseType phase_type => PhaseType.Construct;
         private ESTIMATE loadESTIMATE;
@@ -180,6 +185,11 @@ namespace BluePrints.ViewModels
 
             P6_ASSIGNMENTSCollectionViewModel.BaseBulkSave(save_assignments);
             FullRefresh();
+        }
+
+        protected override void CreateP6UnitOfWork()
+        {
+            createP6UnitOfWork();
         }
 
         /// <summary>

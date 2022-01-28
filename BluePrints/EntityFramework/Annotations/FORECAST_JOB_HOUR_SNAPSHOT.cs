@@ -8,7 +8,7 @@ namespace BluePrints.Data
     using BluePrints.Common.Projections;
     using BluePrints.Common.Resources;
     using BluePrints.Common.ViewModel.Reporting;
-    using BluePrints.Common.ViewModel.Utils;
+    using BluePrints.Common.Utils;
     using DevExpress.Mvvm;
     using System;
     using System.Collections.Generic;

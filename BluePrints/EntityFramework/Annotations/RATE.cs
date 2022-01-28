@@ -273,7 +273,10 @@ namespace BluePrints.Data
         }
 
         private string rateError = "Rate must be set in order for gang rate to be calculated";
+
+#pragma warning disable CS0414 // Unused variables
         private string percentError = "Percent must be set in order for gang rate to be calculated";
+#pragma warning disable CS0414 // Unused variables
         public void GetPropertyError(string propertyName, ErrorInfo info)
         {
             if (propertyName.Contains(BindableBase.GetPropertyName(() => new RATE().COMMODITY_CODE)))

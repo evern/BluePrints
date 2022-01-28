@@ -43,7 +43,7 @@ using System.Windows.Threading;
 using System.Windows.Media;
 using DevExpress.Xpf.Core.Serialization;
 using System.Windows.Input;
-using BluePrints.Common.ViewModel.Utils;
+using BluePrints.Common.Utils;
 using BluePrints.Common.Helpers;
 
 namespace BluePrints.ViewModels

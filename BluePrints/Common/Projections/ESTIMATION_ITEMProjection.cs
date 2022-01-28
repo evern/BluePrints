@@ -3,7 +3,7 @@ using BaseModel.Data.Helpers;
 using BluePrints.Common.Base;
 using BluePrints.Common.Resources;
 using BluePrints.Common.ViewModel.Reporting;
-using BluePrints.Common.ViewModel.Utils;
+using BluePrints.Common.Utils;
 using BluePrints.Data;
 using System;
 using System.Collections.Generic;

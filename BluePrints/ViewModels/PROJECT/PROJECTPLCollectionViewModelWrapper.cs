@@ -179,7 +179,9 @@ namespace BluePrints.ViewModels
                 if (clickRowData != null)
                     setFilter((X_PL_SUMMARY_V1)clickRowData.Row, hi.Column);
             }
+#pragma warning disable CS0168 // Variable is declared but never used
             catch (Exception ex)
+#pragma warning restore CS0168 // Variable is declared but never used
             {
             }
         }

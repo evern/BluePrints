@@ -23,7 +23,7 @@ using BaseModel.ViewModel.Dialogs;
 using System.Text.RegularExpressions;
 using System.Data.Linq.SqlClient;
 using BluePrints.Common.Misc;
-using BluePrints.Common.ViewModel.Utils;
+using BluePrints.Common.Utils;
 using BluePrints.BluePrintsEntitiesDataModel;
 
 namespace BluePrints.Common.Projections

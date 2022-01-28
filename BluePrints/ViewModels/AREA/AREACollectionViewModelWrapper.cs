@@ -12,7 +12,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.ComponentModel;
 using BaseModel.ViewModel.Base;
-using BluePrints.Common.ViewModel.Utils;
+using BluePrints.Common.Utils;
 using BluePrints.Common.Resources;
 using DevExpress.Mvvm;
 using BluePrints.Common;

@@ -1,6 +1,6 @@
 ﻿using BluePrints.BluePrintsEntitiesDataModel;
 using BluePrints.Common.Base;
-using BluePrints.Common.ViewModel.Utils;
+using BluePrints.Common.Utils;
 using BluePrints.Data;
 using System;
 using System.Collections.Generic;

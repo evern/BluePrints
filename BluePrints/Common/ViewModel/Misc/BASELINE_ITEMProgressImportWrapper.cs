@@ -1,7 +1,7 @@
 ﻿using BaseModel.Misc;
 using BluePrints.Common.Projections;
 using BluePrints.Common.Resources;
-using BluePrints.Common.ViewModel.Utils;
+using BluePrints.Common.Utils;
 using BluePrints.Data;
 using DevExpress.Mvvm.POCO;
 using System;

@@ -3,7 +3,7 @@ using BaseModel.DataModel;
 using BaseModel.Misc;
 using BluePrints.Common.Misc;
 using BluePrints.Common.Resources;
-using BluePrints.Common.ViewModel.Utils;
+using BluePrints.Common.Utils;
 using BluePrints.Data;
 using DevExpress.Mvvm;
 using System;
