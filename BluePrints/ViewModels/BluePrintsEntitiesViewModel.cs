@@ -807,6 +807,7 @@ namespace BluePrints.ViewModels
                 Modules.Add(new BluePrintsEntitiesModuleDescription(DataUtils.GetNameOf(() => NavigationResources.Permission_Forecast_SaveEAC), string.Empty, parentNavigationId, NavigationResources.Permission_Forecast_SaveEAC, NavigationResources.Permission_Forecast_SaveEAC));
                 Modules.Add(new BluePrintsEntitiesModuleDescription(DataUtils.GetNameOf(() => NavigationResources.Permission_Forecast_EditPreviousEAC), securityKey, parentNavigationId, NavigationResources.Permission_Forecast_EditPreviousEAC, NavigationResources.Permission_Forecast_EditPreviousEAC));
                 Modules.Add(new BluePrintsEntitiesModuleDescription(DataUtils.GetNameOf(() => NavigationResources.Permission_ConstructionUncommitted), securityKey, parentNavigationId, NavigationResources.Permission_ConstructionUncommitted, NavigationResources.Permission_ConstructionUncommitted));
+                Modules.Add(new BluePrintsEntitiesModuleDescription(DataUtils.GetNameOf(() => NavigationResources.Permission_Forecast_FilterUninvoicedOnly), securityKey, parentNavigationId, NavigationResources.Permission_Forecast_FilterUninvoicedOnly, NavigationResources.Permission_Forecast_FilterUninvoicedOnly));
             }
         }
     }

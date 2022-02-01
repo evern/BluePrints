@@ -537,4 +537,7 @@
   <data name="Menu_Project_Snapshot_Forecast_PO" xml:space="preserve">
     <value>Project PO forecast maintenance menu</value>
   </data>
+  <data name="Permission_Forecast_FilterUninvoicedOnly" xml:space="preserve">
+    <value>Filter actuals by uninvoiced only</value>
+  </data>
 </root>

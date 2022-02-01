@@ -1294,6 +1294,15 @@ namespace BluePrints.Common.Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Filter actuals by uninvoiced only.
+        /// </summary>
+        internal static string Permission_Forecast_FilterUninvoicedOnly {
+            get {
+                return ResourceManager.GetString("Permission_Forecast_FilterUninvoicedOnly", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Move forecast data date forward and backward.
         /// </summary>
         internal static string Permission_Forecast_MoveDataDate {
