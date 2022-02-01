@@ -538,6 +538,6 @@
     <value>Project PO forecast maintenance menu</value>
   </data>
   <data name="Permission_Forecast_FilterUninvoicedOnly" xml:space="preserve">
-    <value>Filter actuals by uninvoiced only</value>
+    <value>Allow actuals to be filtered by uninvoiced only</value>
   </data>
 </root>

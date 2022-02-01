@@ -1294,7 +1294,7 @@ namespace BluePrints.Common.Resources {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Filter actuals by uninvoiced only.
+        ///   Looks up a localized string similar to Allow actuals to be filtered by uninvoiced only.
         /// </summary>
         internal static string Permission_Forecast_FilterUninvoicedOnly {
             get {
