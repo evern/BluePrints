@@ -68,6 +68,9 @@ namespace BluePrints.Data
         [StringLength(50)]
         public string PO_NUMBER { get; set; }
 
+        [StringLength(5)]
+        public string STATUS_CODE { get; set; }
+
         public virtual PROJECT PROJECT { get; set; }
     }
 }

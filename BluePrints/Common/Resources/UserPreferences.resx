@@ -135,6 +135,9 @@
   <data name="Forecast_ShowActuals" xml:space="preserve">
     <value>Show actuals on forecast</value>
   </data>
+  <data name="Forecast_ShowUninvoicedOnly" xml:space="preserve">
+    <value>Show uninvoiced actuals only in forecast</value>
+  </data>
   <data name="Global_HideUserDeliverablesOnStartup" xml:space="preserve">
     <value>Do not show user deliverables list on startup</value>
   </data>
