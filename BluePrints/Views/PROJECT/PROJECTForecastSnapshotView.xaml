@@ -370,6 +370,7 @@
                     </dxb:BarButtonItem.GlyphTemplate>
                 </dxb:BarButtonItem>
                 <dxb:BarCheckItem x:Name="biShowActuals" Content="Show Actuals History" Glyph="{dxc:DXImage Images/Scheduling/SwitchTimeScalesTo_16x16.png}" IsChecked="{Binding IsShowActualsHistory, Mode=TwoWay}" IsEnabled="{Binding IsLoading, Converter={StaticResource BooleanNegationConverter}}" LargeGlyph="{dxc:DXImage Images/Scheduling/SwitchTimeScalesTo_32x32.png}" RibbonStyle="SmallWithText" ToolTip="Toggle historical actuals visibility" />
+                <dxb:BarCheckItem x:Name="biUninvoicedOnly" Content="Filter Actual by Uninvoiced" IsChecked="{Binding IsShowUninvoicedOnly, Mode=TwoWay}" IsEnabled="{Binding IsLoading, Converter={StaticResource BooleanNegationConverter}}" LargeGlyph="{dxc:DXImage Images/Spreadsheet/ReapplyFilter_32x32.png}" RibbonStyle="SmallWithText" ToolTip="Actuals are filtered by uninvoiced only" Glyph="{dxc:DXImage Images/Spreadsheet/ReapplyFilter_16x16.png}" />
                 <dxb:BarButtonItem x:Name="biSaveSummary" Command="{Binding SaveSummaryCommand}" Content="Save Excel Summary" Glyph="{dx:DXImage Image=SpreadsheetInsertTable_16x16.png}" LargeGlyph="{dx:DXImage Image=SpreadsheetInsertTable_32x32.png}" RibbonStyle="SmallWithText" ToolTip="Saves the summary for excel macro to retrieve values" />
                 <dxb:BarButtonItem x:Name="biRefreshActualData" Command="{Binding RefreshAllActualDataCommand}" Content="Update Actuals" IsEnabled="{Binding IsLoading, Converter={StaticResource BooleanNegationConverter}}" LargeGlyph="{dxc:DXImage Images/Spreadsheet/EditingFillLeft_32x32.png}" RibbonStyle="SmallWithText" ToolTip="Refresh Budget, Material, Timesheet and POs" Glyph="{dxc:DXImage Images/Spreadsheet/EditingFillLeft_16x16.png}" />
                 <dxb:BarButtonItem x:Name="biRefreshForecastData" Command="{Binding RefreshForecastDataCommand}" Content="Update Forecast" IsEnabled="{Binding IsLoading, Converter={StaticResource BooleanNegationConverter}}" LargeGlyph="{dxc:DXImage Images/Spreadsheet/EditingFillRight_32x32.png}" RibbonStyle="SmallWithText" ToolTip="Refresh PO Forecast, EH PO Forecast and Indirect forecast" Glyph="{dxc:DXImage Images/Spreadsheet/EditingFillRight_16x16.png}" />
@@ -422,6 +423,7 @@
                                     <dxb:BarButtonItemLink BarItemName="biUpdatePF" />
                                 </dxb:BarSubItem>
                                 <dxb:BarCheckItemLink BarItemName="biShowActuals" />
+                                <dxb:BarCheckItemLink BarItemName="biUninvoicedOnly" />
                                 <dxb:BarButtonItemLink BarItemName="biBaselineBudget" />
                                 <dxb:BarButtonItemLink BarItemName="biSaveEAC" />
                                 <dxb:BarButtonItemLink BarItemName="biCleanUpOutdatedUncommitted" />
@@ -564,6 +566,7 @@
                                             </dxg:GridColumn.EditSettings>
                                         </dxg:GridColumn>
                                         <dxg:GridColumn BestFitWidth="100" Width="100" FieldName="PO_NUMBER" Header="PO Number" ReadOnly="True" />
+                                        <dxg:GridColumn BestFitWidth="85" Width="85" FieldName="LINE_STATUS" Header="Line Status" ReadOnly="True" />
                                         <dxg:GridColumn BestFitWidth="100" Width="100" FieldName="INVNO" Header="Invoice Number" ReadOnly="True" />
                                         <dxg:GridColumn BestFitWidth="150" Width="150" FieldName="INVOICED" Header="Invoiced" ReadOnly="True" >
                                             <dxg:GridColumn.EditSettings>

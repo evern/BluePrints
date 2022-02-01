@@ -115,6 +115,15 @@ namespace BluePrints.Common.Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Show uninvoiced actuals only in forecast.
+        /// </summary>
+        internal static string Forecast_ShowUninvoicedOnly {
+            get {
+                return ResourceManager.GetString("Forecast_ShowUninvoicedOnly", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Do not show user deliverables list on startup.
         /// </summary>
         internal static string Global_HideUserDeliverablesOnStartup {
