@@ -2758,6 +2758,9 @@ namespace BluePrints.ViewModels
                 parseEndDate = parseEndDate.AddDays(1).AddSeconds(-1);
                 EndSelectionDate = parseEndDate;
 
+                if (EndSelectionDate.Year == FixedMonthEndingSundayDate.Year && EndSelectionDate.Month == FixedMonthEndingSundayDate.Month)
+                    EndSelectionDate = FixedMonthEndingSundayDate;
+
                 if (IsWeeks)
                     StartSelectionDate = EndSelectionDate.AddDays(-6);
                 else
