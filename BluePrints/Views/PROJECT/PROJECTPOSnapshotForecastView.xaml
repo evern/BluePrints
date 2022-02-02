@@ -175,7 +175,6 @@
                                 <dxb:BarButtonItemLink BarItemName="biPaymentSpread" />
                                 <dxb:BarEditItemLink BarItemName="beLastAlignedDate" />
                                 <dxb:BarButtonItemLink BarItemName="biAlignPOsWithActuals" />
-                                <dxb:BarButtonItemLink BarItemName="biLoadPO" />
                             </dxr:RibbonPageGroup>
                         </dxr:RibbonPage>
                     </dxr:RibbonDefaultPageCategory>
