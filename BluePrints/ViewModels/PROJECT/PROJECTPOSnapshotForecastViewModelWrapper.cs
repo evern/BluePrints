@@ -686,7 +686,8 @@ namespace BluePrints.ViewModels
             if (CurrentPO_FORECAST_JOB_HOUR_SNAPSHOTCollection == null)
                 return new List<POSnapshotLine>();
 
-            return CurrentPO_FORECAST_JOB_HOUR_SNAPSHOTCollection.GroupBy(x => new { x.PO_NUMBER, x.VARIATION_CODE }).Select(group => new POSnapshotLine { PONumber = group.Key.PO_NUMBER, VariationCode = group.Key.VARIATION_CODE, DataPoints = group.ToList() }).ToList();
+            string equipmentHireStockCodeInitials = BluePrintsResources.EquipmentHireStockCodeInitials;
+            return CurrentPO_FORECAST_JOB_HOUR_SNAPSHOTCollection.Where(x => !x.STOCK_CODE.StartsWith(equipmentHireStockCodeInitials)).GroupBy(x => new { x.PO_NUMBER, x.VARIATION_CODE }).Select(group => new POSnapshotLine { PONumber = group.Key.PO_NUMBER, VariationCode = group.Key.VARIATION_CODE, DataPoints = group.ToList() }).ToList();
         }
 
         public bool CanSaveSnapshot()
