@@ -2046,7 +2046,7 @@ namespace BluePrints.ViewModels
                 populateAlignedDataDate(tenderProfilesDataPointsTable, dataPointsDateCollection);
             }
 
-            tenderProfilesDataPointsTable.Clear();
+            //tenderProfilesDataPointsTable.Clear();
 
             IEnumerable<TENDER_PROFILE_ITEM> tenderProfileItems = entity.TENDER_PROFILE_ITEMS.OrderBy(x => x.CREATED);
             bool isTotalPercentageError = tenderProfileItems.Sum(x => x.HOURS_PERCENTAGE) > 1.01m;
@@ -2055,14 +2055,17 @@ namespace BluePrints.ViewModels
             if (entity.TENDER_PROFILE_ITEMS != null)
                 foreach (TENDER_PROFILE_ITEM tenderProfileItem in tenderProfileItems)
                 {
+                    DataRow tenderProfileDataRow = findTenderProfileItemRow(tenderProfileItem, tenderProfilesDataPointsTable);
                     //set hours percentage error when total percentage is more than 1
                     tenderProfileItem.IsPercentageError = isTotalPercentageError;
 
-                    DataRow tenderProfileDataRow = tenderProfilesDataPointsTable.NewRow();
+                    if(tenderProfileDataRow == null)
+                    {
+                        tenderProfileDataRow = tenderProfilesDataPointsTable.NewRow();
+                        tenderProfilesDataPointsTable.Rows.Add(tenderProfileDataRow);
+                    }
 
                     tenderProfileDataRow[columnTenderProfile] = tenderProfileItem;
-                    tenderProfilesDataPointsTable.Rows.Add(tenderProfileDataRow);
-
                     List<Common.ViewModel.Reporting.DataPoint> profileItemDataPoints = tenderProfileItem.DataPoints == null ? new List<Common.ViewModel.Reporting.DataPoint>() : tenderProfileItem.DataPoints;
                     //format dates row to numbers
                     for (int i = 0; i < tenderProfileDataRow.ItemArray.Count(); i++)
@@ -2082,9 +2085,20 @@ namespace BluePrints.ViewModels
                 }
 
             newDataRow[columnTenderProfileDataTable] = tenderProfilesDataPointsTable;
-
             if (!isUpdate)
                 dataPointsTable.Rows.Add(newDataRow);
+        }
+
+        private DataRow findTenderProfileItemRow(TENDER_PROFILE_ITEM TENDER_PROFILE_ITEM, DataTable tenderProfileDataTable)
+        {
+            IEnumerable<DataRow> tenderProfileRows = (from DataRow dr in tenderProfileDataTable.Rows
+                                                         where ((TENDER_PROFILE_ITEM)dr[columnTenderProfile]).GUID_DEPARTMENT == TENDER_PROFILE_ITEM.GUID_DEPARTMENT && (((TENDER_PROFILE_ITEM)dr[columnTenderProfile])).GUID_DISCIPLINE == TENDER_PROFILE_ITEM.GUID_DISCIPLINE
+                                                         select dr);
+
+            if (tenderProfileRows.Count() == 0)
+                return null;
+
+            return tenderProfileRows.First();
         }
 
         private void InitializeParentColumnSource(ObservableCollection<ColumnDescriptor> columns, ObservableCollection<SummaryDescriptor> summaries, List<DateTime> alignedDates)
