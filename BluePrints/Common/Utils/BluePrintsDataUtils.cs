@@ -1930,7 +1930,7 @@ namespace BluePrints.Common.Utils
                         decimal newPercentage = (decimal)autoPercentage;
 
                         deliverable.Total_Earned_Percentage = newPercentage;
-                        IEnumerable<PROGRESS_ITEM> newPRORESS_ITEMS = deliverable.GetExistingOrNewEditedProgresses(PROGRESS_ITEMSCollectionViewModel.FindActualProjectionByExpression);
+                        IEnumerable<PROGRESS_ITEM> newPRORESS_ITEMS = deliverable.GetExistingOrNewEditedProgresses(PROGRESS_ITEMSCollectionViewModel);
                         updateProgress.AddRange(newPRORESS_ITEMS);
                     }
                 }

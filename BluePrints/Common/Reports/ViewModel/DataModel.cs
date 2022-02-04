@@ -1,5 +1,7 @@
 ﻿using BaseModel.Attributes;
 using BaseModel.Misc;
+using BaseModel.ViewModel.Base;
+using BluePrints.BluePrintsEntitiesDataModel;
 using BluePrints.Common.Base;
 using BluePrints.Common.Misc;
 using BluePrints.Common.Projections;
@@ -223,7 +225,10 @@ namespace BluePrints.Common.ViewModel.Reporting
 
         public virtual PROGRESS_ITEM PROGRESS_ITEM_Current => PROGRESS_ITEMS.FirstOrDefault(y => y.EARNED_DATE.Date == ReportingDataDate.Date);
 
+        public virtual IEnumerable<PROGRESS_ITEM> Current_PROGRESS_ITEMS => PROGRESS_ITEMS.Where(y => y.EARNED_DATE.Date == ReportingDataDate.Date);
+
         public virtual PROGRESS_ETC PROGRESS_ETC_Current => PROGRESS_ETCS.FirstOrDefault(y => y.ETC_DATE.Date == ReportingDataDate.Date);
+        public virtual IEnumerable<PROGRESS_ETC> Current_PROGRESS_ETCS => PROGRESS_ETCS.Where(y => y.ETC_DATE.Date == ReportingDataDate.Date);
 
         public virtual IEnumerable<PROGRESS_ITEM> PROGRESS_ITEM_UpToCurrentDataDate => PROGRESS_ITEMS.Where(y => y.EARNED_DATE.Date <= ReportingDataDate.Date);
 
@@ -641,13 +646,24 @@ namespace BluePrints.Common.ViewModel.Reporting
             Entity.SetOriginalEntityKey(newGuid);
         }
 
-        public virtual IEnumerable<PROGRESS_ITEM> GetExistingOrNewEditedProgresses(Func<Expression<Func<PROGRESS_ITEM, bool>>, PROGRESS_ITEM> repository_find_actual_func)
+        public virtual IEnumerable<PROGRESS_ITEM> GetExistingOrNewEditedProgresses(CollectionViewModel<PROGRESS_ITEM, PROGRESS_ITEM, Guid, IBluePrintsEntitiesUnitOfWork> PROGRESS_ITEMCollectionViewModel)
         {
             PROGRESS_ITEM edit_PROGRESS_ITEM;
             if (PROGRESS_ITEM_Current != null)
+            {
                 edit_PROGRESS_ITEM = PROGRESS_ITEM_Current;
+
+                //find duplicate records and remove it
+                if(Current_PROGRESS_ITEMS.Count() > 1)
+                {
+                    IEnumerable<PROGRESS_ITEM> findDuplicatePROGRESS_ITEMS = Current_PROGRESS_ITEMS.Where(x => x.GUID != PROGRESS_ITEM_Current.GUID);
+
+                    if(findDuplicatePROGRESS_ITEMS.Count() > 0)
+                        PROGRESS_ITEMCollectionViewModel.BaseBulkDelete(findDuplicatePROGRESS_ITEMS);
+                }
+            }
             else
-                edit_PROGRESS_ITEM = createNewProgress(repository_find_actual_func);
+                edit_PROGRESS_ITEM = createNewProgress(PROGRESS_ITEMCollectionViewModel.FindActualProjectionByExpression);
 
 
             edit_PROGRESS_ITEM.EarnedUnits = getCurrentPeriodEarnedUnits(getNewPercentage());
@@ -659,13 +675,24 @@ namespace BluePrints.Common.ViewModel.Reporting
             return editPROGRESS_ITEMS;
         }
 
-        public virtual IEnumerable<PROGRESS_ETC> GetExistingOrNewEditedProgressETCs(Func<Expression<Func<PROGRESS_ETC, bool>>, PROGRESS_ETC> repository_find_actual_func)
+        public IEnumerable<PROGRESS_ETC> GetExistingOrNewEditedProgressETCs(CollectionViewModel<PROGRESS_ETC, PROGRESS_ETC, Guid, IBluePrintsEntitiesUnitOfWork> PROGRESS_ETCCollectionViewModel)
         {
             PROGRESS_ETC edit_PROGRESS_ETC;
             if (PROGRESS_ETC_Current != null)
+            {
                 edit_PROGRESS_ETC = PROGRESS_ETC_Current;
+
+                //find duplicate records and remove it
+                if (Current_PROGRESS_ETCS.Count() > 1)
+                {
+                    IEnumerable<PROGRESS_ETC> findDuplicatePROGRESS_ETCS = Current_PROGRESS_ETCS.Where(x => x.GUID != PROGRESS_ITEM_Current.GUID);
+
+                    if(findDuplicatePROGRESS_ETCS.Count() > 0)
+                        PROGRESS_ETCCollectionViewModel.BaseBulkDelete(findDuplicatePROGRESS_ETCS);
+                }
+            }
             else
-                edit_PROGRESS_ETC = createNewProgressETC(repository_find_actual_func);
+                edit_PROGRESS_ETC = createNewProgressETC(PROGRESS_ETCCollectionViewModel.FindActualProjectionByExpression);
 
 
             edit_PROGRESS_ETC.ETC_UNITS = set_progress_etc == null ? 0 : (decimal)set_progress_etc;
@@ -676,6 +703,7 @@ namespace BluePrints.Common.ViewModel.Reporting
 
             return editPROGRESS_ETCS;
         }
+
 
         protected virtual decimal getNewPercentage()
         {

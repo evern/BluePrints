@@ -1,4 +1,6 @@
 ﻿using BaseModel.Misc;
+using BaseModel.ViewModel.Base;
+using BluePrints.BluePrintsEntitiesDataModel;
 using BluePrints.Common.Projections;
 using BluePrints.Data;
 using System;
@@ -158,8 +160,8 @@ namespace BluePrints.Common.ViewModel.Reporting
         bool ShouldSaveProgressETC { get; }
         decimal MinEstimateUnits { get; }
 
-        IEnumerable<PROGRESS_ITEM> GetExistingOrNewEditedProgresses(Func<Expression<Func<PROGRESS_ITEM, bool>>, PROGRESS_ITEM> repository_find_actual_func);
-        IEnumerable<PROGRESS_ETC> GetExistingOrNewEditedProgressETCs(Func<Expression<Func<PROGRESS_ETC, bool>>, PROGRESS_ETC> repository_find_actual_func);
+        IEnumerable<PROGRESS_ITEM> GetExistingOrNewEditedProgresses(CollectionViewModel<PROGRESS_ITEM, PROGRESS_ITEM, Guid, IBluePrintsEntitiesUnitOfWork> PROGRESS_ITEMCollectionViewModel);
+        IEnumerable<PROGRESS_ETC> GetExistingOrNewEditedProgressETCs(CollectionViewModel<PROGRESS_ETC, PROGRESS_ETC, Guid, IBluePrintsEntitiesUnitOfWork> PROGRESS_ETCCollectionViewModel);
 
         void SetReportingDataDate(DateTime dataDate);
         void SetProgressItems(List<PROGRESS_ITEM> progresses);

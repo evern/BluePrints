@@ -363,13 +363,13 @@ namespace BluePrints.Common.Base
 
         private void saveProgressItem(TMainProjectionEntity projection)
         {
-            IEnumerable<PROGRESS_ITEM> newPRORESS_ITEMS = projection.GetExistingOrNewEditedProgresses(PROGRESS_ITEMSCollectionViewModel.FindActualProjectionByExpression);
+            IEnumerable<PROGRESS_ITEM> newPRORESS_ITEMS = projection.GetExistingOrNewEditedProgresses(PROGRESS_ITEMSCollectionViewModel);
             PROGRESS_ITEMSCollectionViewModel.Save(newPRORESS_ITEMS.First());
         }
 
         private void saveProgressETC(TMainProjectionEntity projection)
         {
-            IEnumerable<PROGRESS_ETC> newPROGRESS_ETCs = projection.GetExistingOrNewEditedProgressETCs(PROGRESS_ETCSCollectionViewModel.FindActualProjectionByExpression);
+            IEnumerable<PROGRESS_ETC> newPROGRESS_ETCs = projection.GetExistingOrNewEditedProgressETCs(PROGRESS_ETCSCollectionViewModel);
             PROGRESS_ETCSCollectionViewModel.Save(newPROGRESS_ETCs.First());
         }
 
@@ -382,7 +382,7 @@ namespace BluePrints.Common.Base
             }
 
             TMainProjectionEntity projectionEntity = (TMainProjectionEntity)e.Argument;
-            IEnumerable<PROGRESS_ITEM> newPRORESS_ITEMS = projectionEntity.GetExistingOrNewEditedProgresses(PROGRESS_ITEMSCollectionViewModel.FindActualProjectionByExpression);
+            IEnumerable<PROGRESS_ITEM> newPRORESS_ITEMS = projectionEntity.GetExistingOrNewEditedProgresses(PROGRESS_ITEMSCollectionViewModel);
             PROGRESS_ITEMSCollectionViewModel.Save(newPRORESS_ITEMS.First());
         }
 

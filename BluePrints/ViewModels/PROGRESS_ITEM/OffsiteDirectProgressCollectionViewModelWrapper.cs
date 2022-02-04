@@ -794,7 +794,7 @@ namespace BluePrints.ViewModels
             if(findContractorDeliverable != null)
             {
                 findContractorDeliverable.Total_Earned_Percentage = newPercentage;
-                IEnumerable<PROGRESS_ITEM> newPRORESS_ITEMS = findContractorDeliverable.GetExistingOrNewEditedProgresses(PROGRESS_ITEMSCollectionViewModel.FindActualProjectionByExpression);
+                IEnumerable<PROGRESS_ITEM> newPRORESS_ITEMS = findContractorDeliverable.GetExistingOrNewEditedProgresses(PROGRESS_ITEMSCollectionViewModel);
                 return newPRORESS_ITEMS;
             }
 

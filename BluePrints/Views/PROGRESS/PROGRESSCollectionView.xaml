@@ -81,7 +81,7 @@
                                 <dxe:DateEditSettings MaxValue="12/31/9999 23:59:59" MinValue="1753-01-01" />
                             </dxg:GridColumn.EditSettings>
                         </dxg:GridColumn>
-                        <dxg:GridColumn Header="Disable Auto Report Date" FieldName="DISABLE_AUTO_REPORT_DATE" AllowBestFit="false" Width="75" HeaderToolTip="Disable report date to automatically move to end of previous period when opening this screen">
+                        <dxg:GridColumn Header="Disable Auto Report Date" FieldName="DISABLE_AUTO_REPORT_DATE" AllowBestFit="false" Width="75" HeaderToolTip="Disable report date to automatically move to end of previous period when opening this screen, this overrides preference for users with role that always uses previous report date, so report date is managed instead of being automated">
                             <dxg:GridColumn.EditSettings>
                                 <dxe:CheckEditSettings />
                             </dxg:GridColumn.EditSettings>

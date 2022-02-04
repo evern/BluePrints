@@ -1,4 +1,6 @@
 ﻿using BaseModel.Attributes;
+using BaseModel.ViewModel.Base;
+using BluePrints.BluePrintsEntitiesDataModel;
 using BluePrints.Common.Base;
 using BluePrints.Common.ViewModel.Reporting;
 using BluePrints.Data;
@@ -168,16 +170,6 @@ namespace BluePrints.Common.Projections
             throw new NotImplementedException();
         }
 
-        public IEnumerable<PROGRESS_ITEM> GetExistingOrNewEditedProgresses(Func<Expression<Func<PROGRESS_ITEM, bool>>, PROGRESS_ITEM> repository_find_actual_func)
-        {
-            throw new NotImplementedException();
-        }
-
-        public IEnumerable<PROGRESS_ETC> GetExistingOrNewEditedProgressETCs(Func<Expression<Func<PROGRESS_ETC, bool>>, PROGRESS_ETC> repository_find_actual_func)
-        {
-            throw new NotImplementedException();
-        }
-
         public void SetOriginalEntityKey(Guid newGuid)
         {
             throw new NotImplementedException();
@@ -199,6 +191,16 @@ namespace BluePrints.Common.Projections
         }
 
         public decimal GetPeriodETC(DateTime? latestReportingDate = null)
+        {
+            throw new NotImplementedException();
+        }
+
+        public IEnumerable<PROGRESS_ITEM> GetExistingOrNewEditedProgresses(CollectionViewModel<PROGRESS_ITEM, PROGRESS_ITEM, Guid, IBluePrintsEntitiesUnitOfWork> PROGRESS_ITEMCollectionViewModel)
+        {
+            throw new NotImplementedException();
+        }
+
+        public IEnumerable<PROGRESS_ETC> GetExistingOrNewEditedProgressETCs(CollectionViewModel<PROGRESS_ETC, PROGRESS_ETC, Guid, IBluePrintsEntitiesUnitOfWork> PROGRESS_ETCCollectionViewModel)
         {
             throw new NotImplementedException();
         }
