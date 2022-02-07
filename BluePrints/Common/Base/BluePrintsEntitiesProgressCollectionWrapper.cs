@@ -1547,8 +1547,8 @@ namespace BluePrints.Common.Base
 
                         IEnumerable<TASKRSRC> uowTASKRSRCS = uowTASK.TASKRSRC.Where(x => x.delete_session_id == null).Where(x => x.task_id == uowTASK.task_id);
                         decimal totalTargetQuantity = uowTASKRSRCS.Where(x => x.target_qty != null).Sum(x => (decimal)x.target_qty);
-                        bool isUseProRataMode = totalTargetQuantity > 0;
                         decimal p6TaskRsrcCount = uowTASKRSRCS.Count();
+                        bool isUseProRataMode = totalTargetQuantity > 0;
 
                         foreach (TASKRSRC uowTASKRSRC in uowTASKRSRCS)
                         {
@@ -1568,6 +1568,7 @@ namespace BluePrints.Common.Base
                                     uowTASKRSRC.remain_qty = 0;
                                 }
                             }
+                            //this mode will only run once as target_qty will be updated on next iteration
                             else
                             {
                                 uowTASKRSRC.act_reg_qty = uowTASK.remain_work_qty / p6TaskRsrcCount;
@@ -1707,11 +1708,6 @@ namespace BluePrints.Common.Base
                     }
                 }
             }
-
-            //for troubleshooting
-            //string test = periodAssignedUnitsForTaskFound.ToString();
-            //string test2 = periodAssignedUnitsOnMapping.ToString();
-            //string test3 = periodAssignedUnits.ToString();
 
             viewModelP6UOW.SaveChanges();
             LoadingScreenManager.CloseLoadingScreen();

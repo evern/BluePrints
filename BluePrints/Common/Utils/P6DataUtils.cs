@@ -49,11 +49,11 @@ namespace BluePrints.Common.Utils
                         IEnumerable<TASKRSRC> uowTASKRSRCS = taskRsrcSource.Where(x => x.delete_session_id == null).Where(x => x.task_id == uowTASK.task_id);
                         decimal totalTargetQuantity = uowTASKRSRCS.Where(x => x.target_qty != null).Sum(x => (decimal)x.target_qty);
                         decimal p6TaskRsrcCount = uowTASKRSRCS.Count();
-                        bool useProRataMode = totalTargetQuantity > 0;
+                        bool isUseProRataMode = totalTargetQuantity > 0;
 
                         foreach (TASKRSRC uowTASKRSRC in uowTASKRSRCS)
                         {
-                            if (useProRataMode)
+                            if (isUseProRataMode)
                             {
                                 if (uowTASKRSRC.target_qty != null)
                                 {
@@ -70,8 +70,8 @@ namespace BluePrints.Common.Utils
                                     }
                                     else
                                     {
-                                        uowTASKRSRC.target_qty = p6_assignment.UNITS * proRateRemainingQty;
-                                        uowTASKRSRC.remain_qty = p6_assignment.UNITS * proRateRemainingQty;
+                                        uowTASKRSRC.target_qty += p6_assignment.UNITS * proRateRemainingQty;
+                                        uowTASKRSRC.remain_qty += p6_assignment.UNITS * proRateRemainingQty;
                                     }
                                 }
                                 else
@@ -80,6 +80,7 @@ namespace BluePrints.Common.Utils
                                     uowTASKRSRC.remain_qty = 0;
                                 }
                             }
+                            //this mode will only run once as target_qty will be updated on next iteration
                             else
                             {
                                 //check if it's first assignment to reset qty instead of adding onto it
