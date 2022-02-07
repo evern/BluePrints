@@ -6,6 +6,7 @@ using BaseModel.ViewModel.Loader;
 using BluePrints.BluePrintsEntitiesDataModel;
 using BluePrints.Common.Projections;
 using BluePrints.Common.Resources;
+using BluePrints.Common.Utils;
 using BluePrints.Common.ViewModel;
 using BluePrints.Common.ViewModel.Reporting;
 using BluePrints.Data;
@@ -35,6 +36,10 @@ namespace BluePrints.Common.Base
         void Save_Task(TASK task);
         IEnumerable<TASKPRED> TASKPRED_Source { get; }
         bool IsBudget { get; set; }
+
+        P6Data.PROJECT P6PROJECT { get; }
+
+        IP6EntitiesUnitOfWork P6UnitOfWork { get; }
     }
 
     public abstract class BluePrintsEntitiesSchedulingCollectionWrapper<TMainEntity, TMainProjectionEntity, TMainEntityPrimaryKey,
@@ -45,7 +50,8 @@ namespace BluePrints.Common.Base
         where TMainEntityUnitOfWork : IUnitOfWork
     {
         protected IUnitOfWorkFactory<IBluePrintsEntitiesUnitOfWork> bluePrintsUnitOfWorkFactory = BluePrintsEntitiesUnitOfWorkSource.GetUnitOfWorkFactory();
-        protected IUnitOfWorkFactory<IP6EntitiesUnitOfWork> p6UnitOfWorkFactory = P6EntitiesUnitOfWorkSource.GetUnitOfWorkFactory();
+        protected IUnitOfWorkFactory<IP6EntitiesUnitOfWork> p6UnitOfWorkFactory;
+        protected IP6EntitiesUnitOfWork p6EntitiesUnitOfWork;
         protected override void addEntitiesLoader()
         {
             loaderCollection.AddLoaderDescription(bluePrintsUnitOfWorkFactory, x => x.PROGRESSES, PROGRESSProjectionFunc, assign_progress);
@@ -198,7 +204,7 @@ namespace BluePrints.Common.Base
                 IEnumerable<P6_Activity> activities_with_start_date = Activities_Source.Where(x => x.Start != null);
                 IEnumerable<P6_Activity> activities_with_end_date = Activities_Source.Where(x => x.End != null);
 
-                if (activities_with_start_date.Count() > 0 && activities_with_end_date.Count() > 0)
+                if(activities_with_start_date.Count() > 0 && activities_with_end_date.Count() > 0)
                 {
                     Beg = activities_with_start_date.Min(x => (DateTime)x.Start);
                     End = activities_with_end_date.Max(x => (DateTime)x.End);
@@ -375,10 +381,10 @@ namespace BluePrints.Common.Base
         }
 
         private P6_Activity selected_activity;
-        public P6_Activity Selected_Activity
+        public P6_Activity Selected_Activity 
         {
-            get => selected_activity;
-            set { selected_activity = value; this.RaisePropertyChanged(x => x.Selected_Activity); }
+            get => selected_activity; 
+            set { selected_activity = value; this.RaisePropertyChanged(x => x.Selected_Activity); } 
         }
 
         public abstract IEnumerable<ICanAssignP6> Deliverables_Source { get; }
@@ -505,7 +511,7 @@ namespace BluePrints.Common.Base
                     return 0;
 
                 decimal total_quantity = Selected_Deliverable.P6_Assignment_Total_Quantity;
-                decimal remaining_percentage = 1 - Selected_Deliverable.Assigned_Percentage;
+                decimal remaining_percentage = 1- Selected_Deliverable.Assigned_Percentage;
                 return remaining_percentage < 0 ? 0 : remaining_percentage * total_quantity;
             }
         }
@@ -610,7 +616,7 @@ namespace BluePrints.Common.Base
                 if (deliverable.Assigned_Percentage == Assignment_Value)
                 {
                     string P6AssignmentsString = string.Empty;
-                    foreach (var p6Assignment in deliverable.P6_Assignments)
+                    foreach(var p6Assignment in deliverable.P6_Assignments)
                     {
                         P6AssignmentsString += p6Assignment.P6_ACTIVITYID + "\n";
                     }
@@ -623,7 +629,7 @@ namespace BluePrints.Common.Base
                 }
 
                 //because when multiple deliverable's are assigned to a single activity the remaining units cannot be reliably pro-rated into jobs
-                if (disableMultipleDeliverablesToOneActivityAssignment)
+                if(disableMultipleDeliverablesToOneActivityAssignment)
                 {
                     List<ICanAssignP6> assignedDeliverables = new List<ICanAssignP6>();
                     IEnumerable<P6_ASSIGNMENT> otherAssignments = P6_ASSIGNMENTSCollectionViewModel.Entities.Where(x => x.P6_ACTIVITYID == Selected_Activity.P6_ActivityId && x.GUID_ORIGINAL != deliverable.GUID);
@@ -631,7 +637,7 @@ namespace BluePrints.Common.Base
                     if (otherAssignments.Count() > 0)
                     {
                         string assignedDeliverableNames = string.Empty;
-                        foreach (P6_ASSIGNMENT otherAssignment in otherAssignments)
+                        foreach(P6_ASSIGNMENT otherAssignment in otherAssignments)
                         {
                             ICanAssignP6 assignedDeliverable = Entities.FirstOrDefault(x => x.OriginalEntityKey == otherAssignment.GUID_ORIGINAL);
                             if (assignedDeliverable != null)
@@ -648,16 +654,16 @@ namespace BluePrints.Common.Base
                             continue;
 
                         //remove assignments on the deliverables
-                        foreach (ICanAssignP6 assignedDeliverable in assignedDeliverables)
+                        foreach(ICanAssignP6 assignedDeliverable in assignedDeliverables)
                         {
                             List<P6_ASSIGNMENT> removeAssignments = new List<P6_ASSIGNMENT>();
-                            foreach (P6_ASSIGNMENT p6Assignments in assignedDeliverable.P6_Assignments)
+                            foreach(P6_ASSIGNMENT p6Assignments in assignedDeliverable.P6_Assignments)
                             {
                                 if (p6Assignments.P6_ACTIVITYID == Selected_Activity.P6_ActivityId)
                                     removeAssignments.Add(p6Assignments);
                             }
 
-                            foreach (P6_ASSIGNMENT removeAssignment in removeAssignments)
+                            foreach(P6_ASSIGNMENT removeAssignment in removeAssignments)
                                 assignedDeliverable.P6_Assignments.Remove(removeAssignment);
                         }
 
@@ -685,7 +691,7 @@ namespace BluePrints.Common.Base
             summarize_wbs_parent_unit(Selected_Activity);
 
             IEnumerable<P6_ASSIGNMENT> save_assignments = active_deliverables.SelectMany(x => x.P6_Assignments.Where(y => y.GUID == Guid.Empty));
-            foreach (P6_ASSIGNMENT save_assignment in save_assignments)
+            foreach(P6_ASSIGNMENT save_assignment in save_assignments)
             {
                 P6_ASSIGNMENTSCollectionViewModel.EntitiesUndoRedoManager.AddUndo(save_assignment, null, null, null, EntityMessageType.Added);
             }
@@ -695,7 +701,7 @@ namespace BluePrints.Common.Base
             raise_deliverable_assignment_changes();
             raiseQuantityAssignmentPropertiesChanged();
 
-            if (errorMessages.Count > 0)
+            if(errorMessages.Count > 0)
             {
                 DialogCollectionViewModel<ErrorMessage> viewModel = DialogCollectionViewModel<ErrorMessage>.Create(errorMessages, "Cannot create assignments due to the following error");
                 ErrorMessagesDialogService.ShowDialog(MessageButton.OK, string.Empty, "ListErrorMessages", viewModel);
@@ -708,9 +714,9 @@ namespace BluePrints.Common.Base
         {
             LoadingScreenManager.ShowLoadingScreen(1);
             excelExportData = new List<P6_AssignmentProjection>();
-            foreach (ICanAssignP6 entity in Entities.OrderBy(x => x.P6AssignmentName))
+            foreach(ICanAssignP6 entity in Entities.OrderBy(x => x.P6AssignmentName))
             {
-                foreach (P6_ASSIGNMENT assignment in entity.P6_Assignments.OrderBy(x => x.LOW_VALUE))
+                foreach(P6_ASSIGNMENT assignment in entity.P6_Assignments.OrderBy(x => x.LOW_VALUE))
                 {
                     P6_AssignmentProjection p6_assignment = new P6_AssignmentProjection(entity, assignment, IsBudget);
                     p6_assignment.Deliverable_Description = entity.P6AssignmentDescription;
@@ -794,7 +800,7 @@ namespace BluePrints.Common.Base
             }
 
             LoadingScreenManager.CloseLoadingScreen();
-            foreach (P6_Activity activity in summarizeActivity)
+            foreach(P6_Activity activity in summarizeActivity)
             {
                 summarize_wbs_parent_unit(activity);
             }
@@ -890,7 +896,7 @@ namespace BluePrints.Common.Base
 
             //because refresh creates new instance, need to find it
             P6_ASSIGNMENTProjection refreshedP6Assignment = P6_Assignments.FirstOrDefault(x => x.GUID == swap_assignment_selection.GUID);
-            if (refreshedP6Assignment != null)
+            if(refreshedP6Assignment != null)
             {
                 Selected_P6_Assignments.Add(refreshedP6Assignment);
                 Selected_P6_Assignment = refreshedP6Assignment;
@@ -983,17 +989,18 @@ namespace BluePrints.Common.Base
                 if (MainViewModel != null && activities_source == null)
                 {
                     activities_source = new List<P6_Activity>();
+
                     if (P6TASKCollection.Count() > 0)
                     {
                         var p6_task_collection_by_start_date = P6TASKCollection.OrderBy(x => x.target_start_date).Select(x => P6_Activity.Create(x, this));
-                        if (p6_task_collection_by_start_date != null)
+                        if(p6_task_collection_by_start_date != null)
                             activities_source.AddRange(p6_task_collection_by_start_date);
                     }
 
-                    if (P6PROJWBSCollection.Count() > 0)
+                    if(P6PROJWBSCollection.Count() > 0)
                     {
                         var p6_task_collection_by_wbs_short_name = P6PROJWBSCollection.OrderBy(x => x.wbs_short_name).Select(x => P6_Activity.Create(x, this));
-                        if (p6_task_collection_by_wbs_short_name != null)
+                        if(p6_task_collection_by_wbs_short_name != null)
                             activities_source.AddRange(p6_task_collection_by_wbs_short_name);
                     }
 
@@ -1016,8 +1023,10 @@ namespace BluePrints.Common.Base
             }
         }
 
-        public IEnumerable<TASKPRED> TASKPRED_Source => GetEntities<TASKPRED>();
+        public P6Data.PROJECT P6PROJECT => loadP6PROJECT;
 
+        public IEnumerable<TASKPRED> TASKPRED_Source => GetEntities<TASKPRED>();
+        
         public virtual DateTime Beg { get; set; }
         public virtual DateTime End { get; set; }
         public virtual DateTime VisBeg { get; set; }
@@ -1037,28 +1046,26 @@ namespace BluePrints.Common.Base
         #region P6 Interaction
         public void PushToP6()
         {
-            var IP6EntitiesUnitOfWork = P6EntitiesUnitOfWorkSource.GetUnitOfWorkFactory().CreateUnitOfWork();
-
             string ProjectName;
             if (mappingType == BaselineMappingSelectionType.Modified)
                 ProjectName = iHaveP6BaselinesEntity.P6_Mod_Baseline_Name;
             else
                 ProjectName = iHaveP6BaselinesEntity.P6_Baseline_Name;
 
-            P6Data.PROJECT P6_PROJECT = IP6EntitiesUnitOfWork.PROJECT.FirstOrDefault(x => x.proj_short_name == ProjectName && x.delete_date == null);
-
+            P6Data.PROJECT P6_PROJECT = p6EntitiesUnitOfWork.PROJECT.FirstOrDefault(x => x.proj_short_name == ProjectName && x.delete_date == null);
             IEnumerable<TASK> actual_tasks = P6_PROJECT.TASK.Where(x => TASK_Source.Any(task => task.task_code == x.task_code)).AsEnumerable();
             foreach (TASK Task in actual_tasks)
             {
-                TASKRSRC primaryTASKRSRC = P6_PROJECT.TASKRSRC.Where(x => x.delete_session_id == null).FirstOrDefault(x => x.task_id == Task.task_id);
-                if (primaryTASKRSRC != null)
+                IEnumerable<TASKRSRC> P6TASKRSRCS = P6_PROJECT.TASKRSRC.Where(x => x.delete_session_id == null).Where(x => x.task_id == Task.task_id);
+                foreach(TASKRSRC P6TASKRSRC in P6TASKRSRCS)
                 {
-                    primaryTASKRSRC.remain_qty = 0;
-                    primaryTASKRSRC.target_qty = 0;
-                    primaryTASKRSRC.remain_qty_per_hr = 0;
-                    primaryTASKRSRC.remain_cost = 0;
-                    primaryTASKRSRC.target_cost = 0;
-                    primaryTASKRSRC.act_reg_qty = 0;
+                    //do not set target qty or costs zero because we might use this for re-baseline pro-rate
+                    //P6TASKRSRC.target_qty = 0;
+                    //P6TASKRSRC.target_cost = 0;
+                    P6TASKRSRC.remain_qty = 0;
+                    P6TASKRSRC.remain_qty_per_hr = 0;
+                    P6TASKRSRC.remain_cost = 0;
+                    P6TASKRSRC.act_reg_qty = 0;
                 }
 
                 Task.act_work_qty = 0;
@@ -1072,44 +1079,7 @@ namespace BluePrints.Common.Base
             if (mappingMode == BaselineMappingMode.Default)
             {
                 LoadingScreenManager.ShowLoadingScreen(Deliverables_Source.Count());
-                foreach (ICanAssignP6 deliverable in Deliverables_Source)
-                {
-                    IEnumerable<P6_ASSIGNMENT> deliverable_assignments = deliverable.P6_Assignments;
-
-                    foreach (P6_ASSIGNMENT deliverable_assignment in deliverable_assignments)
-                    {
-                        TASK actual_context_task = actual_tasks.FirstOrDefault(x => x.task_code == deliverable_assignment.P6_ACTIVITYID && x.delete_date == null);
-
-                        P6_AssignmentProjection p6_assignment = new P6_AssignmentProjection(deliverable, deliverable_assignment, IsBudget);
-
-                        if (actual_context_task != null)
-                        {
-                            actual_context_task.target_work_qty += p6_assignment.UNITS;
-                            actual_context_task.remain_work_qty += p6_assignment.UNITS;
-                            //foreach (TASKRSRC task_resource in actual_context_task.TASKRSRC)
-                            //{
-                            //    ExistingTaskResource.Add(task_resource);
-                            //}
-
-                            TASKRSRC actual_context_taskrsrc = P6_PROJECT.TASKRSRC.Where(x => x.delete_session_id == null).FirstOrDefault(x => x.task_id == actual_context_task.task_id);
-                            if (actual_context_taskrsrc != null)
-                            {
-                                actual_context_taskrsrc.remain_qty += p6_assignment.UNITS;
-                                actual_context_taskrsrc.target_qty += p6_assignment.UNITS;
-
-                                if (actual_context_task.target_drtn_hr_cnt != null && actual_context_task.target_drtn_hr_cnt != 0)
-                                    actual_context_taskrsrc.remain_qty_per_hr = actual_context_taskrsrc.target_qty / actual_context_task.target_drtn_hr_cnt;
-                            }
-                        }
-                        else
-                        {
-                            missing_activities.Add(p6_assignment);
-                        }
-                    }
-
-                    LoadingScreenManager.Progress();
-                }
-
+                P6DataUtils.AssignP6BudgetedUnits(Deliverables_Source, P6PROJECT, p6EntitiesUnitOfWork, IsBudget, missing_activities);
                 LoadingScreenManager.CloseLoadingScreen();
             }
             else
@@ -1118,7 +1088,7 @@ namespace BluePrints.Common.Base
                 foreach (WORKPACKProjection workpack in Deliverables_Source)
                 {
                     IEnumerable<P6_ASSIGNMENT> deliverable_assignments = workpack.P6_Assignments;
-                    foreach (ICanAssignP6 deliverable in workpack.Deliverables)
+                    foreach(ICanAssignP6 deliverable in workpack.Deliverables)
                     {
                         foreach (P6_ASSIGNMENT deliverable_assignment in deliverable_assignments)
                         {
@@ -1157,7 +1127,7 @@ namespace BluePrints.Common.Base
             //}
 
             //LoadingScreenManager.CloseLoadingScreen();
-            ((P6EntitiesUnitOfWork)IP6EntitiesUnitOfWork).Context.SaveChanges();
+            p6EntitiesUnitOfWork.SaveChanges();
             if (missing_activities.Count > 0)
             {
                 DialogCollectionViewModel<P6_AssignmentProjection> missing_activities_viewmodel = DialogCollectionViewModel<P6_AssignmentProjection>.Create(missing_activities);
@@ -1226,7 +1196,7 @@ namespace BluePrints.Common.Base
             List<P6_ASSIGNMENT> missingAssignments = getMissingDeliverablesAssignments();
 
             int deletedDeliverablesAssignmentCount = 0;
-            if (missingAssignments.Count > 0)
+            if(missingAssignments.Count > 0)
             {
                 deletedDeliverablesAssignmentCount = missingAssignments.Count;
                 P6_ASSIGNMENTSCollectionViewModel.BaseBulkDelete(missingAssignments);
@@ -1243,7 +1213,7 @@ namespace BluePrints.Common.Base
                     FullRefresh();
                 }
             }
-            else if (deletedDeliverablesAssignmentCount > 0)
+            else if(deletedDeliverablesAssignmentCount > 0)
                 MessageBoxService.ShowMessage(deletedDeliverablesAssignmentCount + " invalid assignment(s) has been removed", "Information", MessageButton.OK, MessageIcon.Information);
             else
                 MessageBoxService.ShowMessage("All Assignments Valid", "Information", MessageButton.OK, MessageIcon.Information);
@@ -1297,6 +1267,15 @@ namespace BluePrints.Common.Base
         {
             P6TASKCollectionViewModel.Save(task);
         }
+
+        //implement this in initialisation of child viewmodels and initialise P6EntitiesUnitOfWork and P6EntitiesUnitOfWorkFactory
+        protected abstract void CreateP6UnitOfWork();
+        protected void createP6UnitOfWork()
+        {
+            p6EntitiesUnitOfWork = P6EntitiesUnitOfWorkSource.GetUnitOfWorkFactory().CreateUnitOfWork();
+            p6UnitOfWorkFactory = P6EntitiesUnitOfWorkSource.GetUnitOfWorkFactory(p6EntitiesUnitOfWork);
+        }
+
 
         protected CollectionViewModel<P6_ASSIGNMENT, P6_ASSIGNMENT, Guid, IBluePrintsEntitiesUnitOfWork> P6_ASSIGNMENTSCollectionViewModel
         {
@@ -1408,6 +1387,8 @@ namespace BluePrints.Common.Base
                 return collection;
             }
         }
+
+        public IP6EntitiesUnitOfWork P6UnitOfWork => p6EntitiesUnitOfWork;
         #endregion
     }
 }

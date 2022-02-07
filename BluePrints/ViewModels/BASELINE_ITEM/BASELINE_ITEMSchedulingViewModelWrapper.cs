@@ -58,7 +58,7 @@ namespace BluePrints.ViewModels
         protected BASELINE_ITEMSchedulingViewModelWrapper(
             IUnitOfWorkFactory<IBluePrintsEntitiesUnitOfWork> unitOfWorkFactory = null)
         {
-            //CreateP6UnitOfWork();
+            CreateP6UnitOfWork();
         }
 
         #region Database Operations
@@ -782,10 +782,10 @@ namespace BluePrints.ViewModels
             return loadPROJECT.NUMBER + "_Baseline_Rev_" + loadBASELINE.REVISION;
         }
 
-        //protected override void CreateP6UnitOfWork()
-        //{
-        //    createP6UnitOfWork();
-        //}
+        protected override void CreateP6UnitOfWork()
+        {
+            createP6UnitOfWork();
+        }
         #endregion
 
         #region For Variation Usage

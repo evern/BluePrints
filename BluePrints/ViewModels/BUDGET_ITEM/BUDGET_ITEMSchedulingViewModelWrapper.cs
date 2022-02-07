@@ -48,7 +48,7 @@ namespace BluePrints.ViewModels
 
         protected BUDGET_ITEMSchedulingViewModelWrapper()
         {
-            //CreateP6UnitOfWork();
+            CreateP6UnitOfWork();
         }
 
         #region Database Operation
@@ -187,10 +187,10 @@ namespace BluePrints.ViewModels
             FullRefresh();
         }
 
-        //protected override void CreateP6UnitOfWork()
-        //{
-        //    createP6UnitOfWork();
-        //}
+        protected override void CreateP6UnitOfWork()
+        {
+            createP6UnitOfWork();
+        }
 
         /// <summary>
         /// The view name to be used when saving layout for IDocumentContent
