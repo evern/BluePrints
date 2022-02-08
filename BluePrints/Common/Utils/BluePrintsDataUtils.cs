@@ -729,7 +729,7 @@ namespace BluePrints.Common.Utils
                             burnedDataPoint.CostType = jobTransaction.COMMODITY_CODE;
                             burnedDataPoint.Commodity_Code = jobTransaction.COMMODITY_CODE;
                             //stock code is not required for time since it indicates person booked to it
-                            //burnedDataPoint.StockCode = jobTransaction.StockCode;
+                            //burnedDataPoint.StockCode = jobTransaction.STOCK_CODE;
                             burnedDataPoint.Narrative = string.Empty;
                             burnedDataPoint.Variation_Code = jobTransaction.VARIATION_CODE;
                             burnedDataPoint.InvoiceNo = string.Empty;

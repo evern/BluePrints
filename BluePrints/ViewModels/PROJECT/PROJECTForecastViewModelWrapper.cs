@@ -880,7 +880,7 @@ namespace BluePrints.ViewModels
 
             //For Debugging
             //string s;
-            //if (commodityJob.Projection.SubJobCode == "23902-200-00-D1" && commodityJob.DisciplineCode == "CC51" && commodityJob.Projection.CommodityCode == "MTO" && commodityJob.Projection.VariationCode == "")
+            //if (commodityJob.Projection.SubJobCode == "37102-000-00-I1" && commodityJob.DisciplineCode == "PM01" && commodityJob.Projection.CommodityCode == "G01" && commodityJob.Projection.VariationCode == "")
             //    s = string.Empty;
             //else
             //    return commodityRow;
@@ -1059,6 +1059,11 @@ namespace BluePrints.ViewModels
                 foreach (string uniqueActualStockCode in uniqueActualStockCodes)
                 {
                     DataRow actualStockCodeDataRow = actualForecastRows.First(x => x.Key == uniqueActualStockCode).Value;
+                    IEnumerable<ExoDataPoint> currentPeriodStockCodeDataPoints = dateCost.CurrentPeriodActualDataPoints.Where(x => x.StockCode == uniqueActualStockCode);
+                    foreach(ExoDataPoint currentPeriodStockCodeDataPoint in currentPeriodStockCodeDataPoints)
+                    {
+                        Debug.Print(currentPeriodStockCodeDataPoint.StockCode + ";" + currentPeriodStockCodeDataPoint.ActualDate + ";" + currentPeriodStockCodeDataPoint.Costs);
+                    }
                     actualStockCodeDataRow[dateCost.QueryDate.ToString(BluePrintsResources.ColumnDateFormat)] = dateCost.CurrentPeriodActualDataPoints.Where(x => x.StockCode == uniqueActualStockCode).Sum(x => x.Costs);
                 }
 

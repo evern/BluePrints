@@ -376,7 +376,8 @@
                                 <dxb:BarButtonItemLink BarItemName="biReloadP6" />
                             </dxr:RibbonPageGroup>
                             <dxr:RibbonPageGroup MergeType="Replace" Caption="View Preference">
-                                <dxb:BarCheckItemLink BarItemName="biWeeks" />
+                                <!--Removed because data is group by month and year-->
+                                <!--<dxb:BarCheckItemLink BarItemName="biWeeks" />-->
                                 <dxb:BarCheckItemLink BarItemName="biShowActuals" />
                                 <dxb:BarCheckItemLink BarItemName="biAutoHideSummary" />
                             </dxr:RibbonPageGroup>
