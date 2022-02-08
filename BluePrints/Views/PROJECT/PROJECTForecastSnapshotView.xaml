@@ -374,7 +374,7 @@
                 <dxb:BarButtonItem x:Name="biSaveSummary" Command="{Binding SaveSummaryCommand}" Content="Save Excel Summary" Glyph="{dx:DXImage Image=SpreadsheetInsertTable_16x16.png}" LargeGlyph="{dx:DXImage Image=SpreadsheetInsertTable_32x32.png}" RibbonStyle="SmallWithText" ToolTip="Saves the summary for excel macro to retrieve values" />
                 <dxb:BarButtonItem x:Name="biRefreshActualData" Command="{Binding RefreshAllActualDataCommand}" Content="Update Actuals" IsEnabled="{Binding IsLoading, Converter={StaticResource BooleanNegationConverter}}" LargeGlyph="{dxc:DXImage Images/Spreadsheet/EditingFillLeft_32x32.png}" RibbonStyle="SmallWithText" ToolTip="Refresh Budget, Material, Timesheet and POs" Glyph="{dxc:DXImage Images/Spreadsheet/EditingFillLeft_16x16.png}" />
                 <dxb:BarButtonItem x:Name="biRefreshForecastData" Command="{Binding RefreshForecastDataCommand}" Content="Update Forecast" IsEnabled="{Binding IsLoading, Converter={StaticResource BooleanNegationConverter}}" LargeGlyph="{dxc:DXImage Images/Spreadsheet/EditingFillRight_32x32.png}" RibbonStyle="SmallWithText" ToolTip="Refresh PO Forecast, EH PO Forecast and Indirect forecast" Glyph="{dxc:DXImage Images/Spreadsheet/EditingFillRight_16x16.png}" />
-                <dxb:BarEditItem x:Name="beLastRUpdated" Content="Data Refreshed" IsEnabled="{Binding IsLoading, Converter={StaticResource BooleanNegationConverter}}" Glyph="{dxc:DXImage Image=Time2_16x16.png}" LargeGlyph="{dxc:DXImage Image=Time2_32x32.png}" IsReadOnly="True" EditValue="{Binding SnapshotLastUpdated, Mode=OneWay}" ToolTip="Budget, Material, Timesheet and POs last updated date">
+                <dxb:BarEditItem x:Name="beLastUpdated" Content="Data Refreshed" IsEnabled="{Binding IsLoading, Converter={StaticResource BooleanNegationConverter}}" Glyph="{dxc:DXImage Image=Time2_16x16.png}" LargeGlyph="{dxc:DXImage Image=Time2_32x32.png}" IsReadOnly="True" EditValue="{Binding SnapshotLastUpdated, Mode=OneWay}" ToolTip="Budget, Material, Timesheet and POs last updated date">
                     <dxb:BarEditItem.EditSettings>
                         <dxe:TextEditSettings DisplayFormat="d" IsEnabled="False" />
                     </dxb:BarEditItem.EditSettings>
@@ -412,7 +412,7 @@
                                 <dxb:BarEditItemLink BarItemName="beLastRefreshed" />
                                 <dxb:BarButtonItemLink BarItemName="biRefreshActualData" />
                                 <dxb:BarButtonItemLink BarItemName="biRefreshForecastData" />
-                                <dxb:BarEditItemLink BarItemName="beLastRUpdated" />
+                                <dxb:BarEditItemLink BarItemName="beLastUpdated" />
                                 <dxb:BarButtonItemLink BarItemName="biReloadP6" />
                             </dxr:RibbonPageGroup>
                         </dxr:RibbonPage>

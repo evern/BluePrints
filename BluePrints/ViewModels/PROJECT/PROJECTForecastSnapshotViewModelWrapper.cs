@@ -3024,7 +3024,6 @@ namespace BluePrints.ViewModels
             BluePrintsContextHelper.RefreshForecastData(LoadPROJECT.NUMBER, FixedDataDate);
             Common.LoadingScreenManager.CloseLoadingScreen();
 
-            resetIsLoading();
             FullRefresh();
         }
 
@@ -3033,6 +3032,7 @@ namespace BluePrints.ViewModels
             if(alignedDataDateCollection != null)
                 alignedDataDateCollection.Clear();
 
+            resetIsLoading();
             loadExoMethodsData();
             loadSummaryStats();
 
@@ -3048,7 +3048,7 @@ namespace BluePrints.ViewModels
         {
             Common.LoadingScreenManager.ShowLoadingScreen(1);
             Common.LoadingScreenManager.SetMessage("Preparing to Refresh...");
-            await Task.Delay(5000);
+            await Task.Delay(10000);
             Common.LoadingScreenManager.CloseLoadingScreen();
         }
 
