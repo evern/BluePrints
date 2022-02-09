@@ -1996,6 +1996,9 @@ namespace BluePrints.ViewModels
         /// </summary>
         private void saveProjectBudgetToTenderBudget()
         {
+            //remove current data date tender budget so we can revert it manually in database should error happens
+            removeCurrentDataDateTenderBudgets(bluePrintsUnitOfWork, FixedDataDateMonthEnd, ForecastEACType.TenderBudget);
+
             Common.LoadingScreenManager.ShowLoadingScreen(DataPointsTable.Rows.Count);
             Common.LoadingScreenManager.SetMessage("Copying project budget to tender budget...");
             foreach (DataRow masterRow in DataPointsTable.Rows)
@@ -2011,6 +2014,19 @@ namespace BluePrints.ViewModels
             Common.LoadingScreenManager.SetMessage("Saving changes...");
             bluePrintsUnitOfWork.SaveChanges();
             Common.LoadingScreenManager.CloseLoadingScreen();
+        }
+
+        private void removeCurrentDataDateTenderBudgets(IBluePrintsEntitiesUnitOfWork bluePrintsEntitiesUnitOfWork, DateTime forecastDate, ForecastEACType forecastEACType)
+        {
+            IQueryable<FORECAST_EAC> jobFORECAST_EACs = bluePrintsEntitiesUnitOfWork.FORECAST_EACS.Where(x => x.GUID_PROJECT == LoadPROJECT.GUID && x.FORECAST_DATE == forecastDate && x.TYPE == forecastEACType);
+
+            foreach(FORECAST_EAC jobFORECAST_EAC in jobFORECAST_EACs)
+            {
+                jobFORECAST_EAC.DELETED = DateTime.Now;
+                jobFORECAST_EAC.DELETEDBY = LoginCredentials.CurrentUserGuid;
+            }
+
+            bluePrintsEntitiesUnitOfWork.SaveChanges();
         }
 
         /// <summary>
@@ -2044,17 +2060,15 @@ namespace BluePrints.ViewModels
                 return;
 
             string normalizedVariationCode = DataUtils.NormalizeString(entity.VariationCode);
-            IQueryable<FORECAST_EAC> jobFORECAST_EACs = bluePrintsEntitiesUnitOfWork.FORECAST_EACS.Where(x => x.GUID_PROJECT == LoadPROJECT.GUID && x.SUBJOB_CODE == entity.SubJobCode && x.DISCIPLINE_CODE == entity.DisciplineCode && x.COMMODITY_CODE == entity.CommodityCode && x.VARIATION_CODE == normalizedVariationCode && x.TYPE == forecastEACType);
-            FORECAST_EAC forecast_EAC;
-            if (forecastEACType == ForecastEACType.TenderBudget)
-                forecast_EAC = jobFORECAST_EACs.FirstOrDefault(x => x.TYPE == forecastEACType);
-            else
-                forecast_EAC = jobFORECAST_EACs.FirstOrDefault(x => x.FORECAST_DATE == forecastDate.Date && x.TYPE == forecastEACType);
+            IQueryable<FORECAST_EAC> jobFORECAST_EACs = bluePrintsEntitiesUnitOfWork.FORECAST_EACS.Where(x => x.GUID_PROJECT == LoadPROJECT.GUID && x.SUBJOB_CODE == entity.SubJobCode && x.DISCIPLINE_CODE == entity.DisciplineCode && x.COMMODITY_CODE == entity.CommodityCode && x.VARIATION_CODE == normalizedVariationCode && x.TYPE == forecastEACType && x.DELETED == null && x.FORECAST_DATE == forecastDate);
+            FORECAST_EAC forecast_EAC = jobFORECAST_EACs.FirstOrDefault();
 
             if (forecast_EAC != null)
             {
                 forecast_EAC.FORECAST_COSTS = newPreviousEAC;
                 forecast_EAC.TYPE = forecastEACType;
+                forecast_EAC.UPDATED = DateTime.Now;
+                forecast_EAC.UPDATEDBY = LoginCredentials.CurrentUserGuid;
                 if (save)
                     bluePrintsEntitiesUnitOfWork.SaveChanges();
             }
