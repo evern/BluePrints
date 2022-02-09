@@ -3227,7 +3227,7 @@ namespace BluePrints.ViewModels
         {
             get
             {
-                return bluePrintsUnitOfWork.FORECAST_EACS.Where(x => x.GUID_PROJECT == LoadPROJECT.GUID && x.TYPE == ForecastEACType.TenderBudget);
+                return bluePrintsUnitOfWork.FORECAST_EACS.Where(x => x.GUID_PROJECT == LoadPROJECT.GUID && x.TYPE == ForecastEACType.TenderBudget).OrderByDescending(x => x.FORECAST_DATE);
             }
         }
 

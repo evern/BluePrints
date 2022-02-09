@@ -3330,7 +3330,7 @@ namespace BluePrints.ViewModels
         {
             get
             {
-                return GetEntities<FORECAST_EAC>().Where(x => x.TYPE == ForecastEACType.TenderBudget);
+                return GetEntities<FORECAST_EAC>().Where(x => x.TYPE == ForecastEACType.TenderBudget).OrderByDescending(x => x.FORECAST_DATE);
             }
         }
 
