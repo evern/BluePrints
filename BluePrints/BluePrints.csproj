@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?>
+﻿<?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="12.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
   <PropertyGroup>
@@ -1238,6 +1238,7 @@
     <Compile Include="ViewModels\PROGRESS_ITEM\OffsiteDirectProgressCollectionViewModelWrapper.cs" />
     <Compile Include="ViewModels\EXO\EXO_POCollectionViewModelWrapper.cs" />
     <Compile Include="ViewModels\PROGRESS_ITEM\SiteDirectProgressCollectionViewModelWrapper.cs" />
+    <Compile Include="ViewModels\PROJECT\PROJECTPOInvoicedViewModelWrapper.cs" />
     <Compile Include="ViewModels\PROJECT\PROJECTFlatPOSnapshotForecastViewModelWrapper.cs" />
     <Compile Include="ViewModels\PROJECT\PROJECTPOSnapshotForecastViewModelWrapper.cs" />
     <Compile Include="ViewModels\PROJECT\PROJECT_CONTRACTORCollectionViewModelWrapper.cs" />
@@ -1382,6 +1383,9 @@
     </Compile>
     <Compile Include="Views\PROJECT\PROJECTFlatPOSnapshotForecastView.xaml.cs">
       <DependentUpon>PROJECTFlatPOSnapshotForecastView.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Views\PROJECT\PROJECTPOInvoicedView.xaml.cs">
+      <DependentUpon>PROJECTPOInvoicedView.xaml</DependentUpon>
     </Compile>
     <Compile Include="Views\PROJECT\PROJECTPOSnapshotForecastView.xaml.cs">
       <DependentUpon>PROJECTPOSnapshotForecastView.xaml</DependentUpon>
@@ -2410,6 +2414,10 @@
       <SubType>Designer</SubType>
     </Page>
     <Page Include="Views\PROJECT\PROJECTFlatPOSnapshotForecastView.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Views\PROJECT\PROJECTPOInvoicedView.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>

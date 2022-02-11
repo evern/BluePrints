@@ -126,7 +126,7 @@ namespace BluePrints.ViewModels
             //gets the forecasted data into dates bucket in the row and adds to datatable
             foreach (POFlatForecastSnapshotProjection projection in projections)
             {
-                DataRow newRow = DataPointsTable.NewRow();
+                DataRow newRow = dataPointsTable.NewRow();
                 newRow[columnEntity] = projection;
                 updateRowPOForecast(alignedDataDateCollection, Entities, CutoffActual_FORECAST_JOB_HOUR_SNAPSHOTCollection, ActualsCutOffDate, projection.PONO, projection.StockCode, projection.VariationCode, newRow);
 
@@ -156,16 +156,21 @@ namespace BluePrints.ViewModels
             columns.Add(new ColumnDescriptor() { FieldName = "Entity.Description", Header = "Description", ReadOnly = true, Fixed = FixedStyle.Left, Width = 200, Settings = SettingsType.Default });
             columns.Add(new ColumnDescriptor() { FieldName = "Entity.Narrative", Header = "Narrative", ReadOnly = true, Fixed = FixedStyle.Left, Width = 200, Settings = SettingsType.Default });
             columns.Add(new ColumnDescriptor() { FieldName = "Entity.Supplier", Header = "Supplier", ReadOnly = true, Fixed = FixedStyle.Left, Width = 150, Settings = SettingsType.Default });
-            columns.Add(new ColumnDescriptor() { FieldName = "Entity.InvoicedLastMonth", Header = "Invoiced Prior Month", HeaderToolTip = "Invoice amount of month before cut off", Mask = "c", ReadOnly = true, Fixed = FixedStyle.Left, Width = 70, Settings = SettingsType.Number });
             columns.Add(new ColumnDescriptor() { FieldName = "Entity.FirstActualDate", Header = "First Raised", ReadOnly = true, Fixed = FixedStyle.Left, Width = 70, Settings = SettingsType.Date });
             columns.Add(new ColumnDescriptor() { FieldName = "Entity.LastUpdated", Header = "PO Hdr Last Updated", ReadOnly = true, Fixed = FixedStyle.Left, Width = 70, Settings = SettingsType.Date });
             //columns.Add(new ColumnDescriptor() { FieldName = "Entity.FirstInvoiceDate", Header = "First Invoiced", ReadOnly = true, Fixed = FixedStyle.Left, Width = 70, Settings = SettingsType.Date });
             columns.Add(new ColumnDescriptor() { FieldName = "Entity.PO_OrderQuantity", Header = "Total Qty", Mask = "n", ReadOnly = true, Fixed = FixedStyle.Left, Width = 70, Settings = SettingsType.Number });
+            summaries.Add(new SummaryDescriptor() { FieldName = "Entity.PO_OrderQuantity", DisplayFormat = "n", Type = SummaryItemType.Sum });
             columns.Add(new ColumnDescriptor() { FieldName = "Entity.PO_TotalPrice", Header = "Total Cost", Mask = "c", ReadOnly = true, Fixed = FixedStyle.Left, Width = 70, Settings = SettingsType.Number });
+            summaries.Add(new SummaryDescriptor() { FieldName = "Entity.PO_TotalPrice", DisplayFormat = "c", Type = SummaryItemType.Sum });
             columns.Add(new ColumnDescriptor() { FieldName = "Entity.PO_SuppliedQty", Header = "Cut Off Invoiced Qty", Mask = "n", ReadOnly = true, Fixed = FixedStyle.Left, Width = 70, Settings = SettingsType.Number });
+            summaries.Add(new SummaryDescriptor() { FieldName = "Entity.PO_SuppliedQty", DisplayFormat = "n", Type = SummaryItemType.Sum });
             columns.Add(new ColumnDescriptor() { FieldName = "Entity.PO_Invoiced", Header = "Cut Off Invoiced", Mask = "c", ReadOnly = true, Fixed = FixedStyle.Left, Width = 70, Settings = SettingsType.Number });
+            summaries.Add(new SummaryDescriptor() { FieldName = "Entity.PO_Invoiced", DisplayFormat = "c", Type = SummaryItemType.Sum });
             columns.Add(new ColumnDescriptor() { FieldName = "Entity.PO_Quantity", Header = "Cut Off Outstanding Qty", Mask = "n", ReadOnly = true, Fixed = FixedStyle.Left, Width = 70, Settings = SettingsType.Number });
+            summaries.Add(new SummaryDescriptor() { FieldName = "Entity.PO_Quantity", DisplayFormat = "n", Type = SummaryItemType.Sum });
             columns.Add(new ColumnDescriptor() { FieldName = "Entity.PO_RemainingPrice", Header = "Cut Off Outstanding", Mask = "c", ReadOnly = true, Fixed = FixedStyle.Left, Width = 70, Settings = SettingsType.Number });
+            summaries.Add(new SummaryDescriptor() { FieldName = "Entity.PO_RemainingPrice", DisplayFormat = "c", Type = SummaryItemType.Sum });
             columns.Add(new ColumnDescriptor() { FieldName = "Entity.TotalForecast", Header = "Forecasted", Mask = "c", ReadOnly = true, Fixed = FixedStyle.Left, Width = 70, Settings = SettingsType.Number });
             summaries.Add(new SummaryDescriptor() { FieldName = "Entity.TotalForecast", DisplayFormat = "c", Type = SummaryItemType.Sum });
             columns.Add(new ColumnDescriptor() { FieldName = "Entity.Unforecasted", Header = "Not Forecasted", Mask = "c", ReadOnly = true, Fixed = FixedStyle.Left, Width = 70, Settings = SettingsType.Unforecasted });
@@ -205,7 +210,7 @@ namespace BluePrints.ViewModels
             forecast.Comments = comments;
         }
 
-        private bool generateAlignedDataDates()
+        protected virtual bool generateAlignedDataDates()
         {
             if (MainViewModel == null || ForecastStartDate == null)
                 return false;
@@ -221,7 +226,7 @@ namespace BluePrints.ViewModels
             return true;
         }
 
-        private List<POFlatSnapshotLine> getPOFlatLines()
+        protected List<POFlatSnapshotLine> getPOFlatLines()
         {
             if (CurrentPO_FORECAST_JOB_HOUR_SNAPSHOTCollection == null)
                 return new List<POFlatSnapshotLine>();
@@ -293,7 +298,7 @@ namespace BluePrints.ViewModels
                 updateRowPOForecast(alignedDataDateCollection, Entities, CutoffActual_FORECAST_JOB_HOUR_SNAPSHOTCollection, ActualsCutOffDate, string.Empty, string.Empty, string.Empty, dataRow);
         }
 
-        private void updateRowPOForecast(List<DateTime> alignedDates, IEnumerable<FORECAST_PO> FORECAST_POCollection, IEnumerable<FORECAST_JOB_HOUR_SNAPSHOT> cutOffActuals, DateTime cutOffDate, string POno = "", string stockCode = "", string variationCode = "", DataRow PORow = null)
+        protected virtual void updateRowPOForecast(List<DateTime> alignedDates, IEnumerable<FORECAST_PO> FORECAST_POCollection, IEnumerable<FORECAST_JOB_HOUR_SNAPSHOT> cutOffActuals, DateTime cutOffDate, string POno = "", string stockCode = "", string variationCode = "", DataRow PORow = null)
         {
             if(PORow == null && POno != string.Empty)
                 PORow = findPORow(POno, stockCode, variationCode);
@@ -401,13 +406,13 @@ namespace BluePrints.ViewModels
             refreshDataTable();
         }
 
-        private DataRow findPORow(string PONumber, string stockCode, string variationCode)
+        protected DataRow findPORow(string PONumber, string stockCode, string variationCode)
         {
             return (from DataRow dr in dataPointsTable.Rows
                     where ((POFlatForecastSnapshotProjection)dr[columnEntity]).PONO == PONumber && ((POFlatForecastSnapshotProjection)dr[columnEntity]).VariationCode == variationCode && ((POFlatForecastSnapshotProjection)dr[columnEntity]).StockCode == stockCode
                     select dr).FirstOrDefault();
         }
-        
+
         /// <summary>
         /// The view name to be used when saving layout for IDocumentContent
         /// </summary>

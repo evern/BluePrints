@@ -1320,7 +1320,7 @@ namespace BluePrints.ViewModels
         public bool IsPoDetailsVisible { get; set; }
         public bool IsHidden { get; set; }
         public int DateSortIndex => 1;
-        private void setFilter(DataRowView dataRowView, GridColumn gridColumn)
+        protected virtual void setFilter(DataRowView dataRowView, GridColumn gridColumn)
         {
             if (gridColumn == null || SelectedDataRows == null || SelectedDataRows.Count == 0)
                 return;
