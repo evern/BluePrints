@@ -715,11 +715,26 @@ namespace BluePrints.Common.ViewModel.Reporting
                 else
                 {
                     decimal totalUnitsPercentage = Units / TotalUnits;
-
+                    
                     //fix rounding issue where it goes beyond 100%
                     if (totalUnitsPercentage > 1)
                         totalUnitsPercentage = 1;
 
+                    return totalUnitsPercentage;
+                }
+            }
+        }
+
+
+        public decimal DistributionUnitsPercentage
+        {
+            get
+            {
+                if (TotalUnits == 0 || Units == 0)
+                    return 0;
+                else
+                {
+                    decimal totalUnitsPercentage = Units / TotalUnits;
                     return totalUnitsPercentage;
                 }
             }

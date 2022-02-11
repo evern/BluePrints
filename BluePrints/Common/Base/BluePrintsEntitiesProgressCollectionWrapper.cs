@@ -1488,6 +1488,17 @@ namespace BluePrints.Common.Base
                     TASK uowTASK = PROJECTTASK.FirstOrDefault(P6Task => P6Task.task_code == p6_assignment.P6_ACTIVITYID);
                     if (uowTASK != null && uowTASK.delete_date == null)
                     {
+                        if (!processedP6Task.Any(x => x.task_code == uowTASK.task_code))
+                        {
+                            uowTASK.act_work_qty = 0;
+                            uowTASK.remain_work_qty = 0;
+                            uowTASK.status_code = P6TASKSTATUS.TK_NotStart.ToString();
+                            uowTASK.act_start_date = null;
+                            uowTASK.act_end_date = null;
+                            uowTASK.duration_type = P6DURATION_TYPE.DT_FixedQty.ToString();
+                            uowTASK.complete_pct_type = P6COMPLETE_TYPE.CP_Units.ToString();
+                        }
+
                         //defines how much percentage of units this assignment will take up when it is fully assigned, so that we can estimate the total duration to apply productivity to
                         decimal current_task_to_activity_percentage = (uowTASK.target_work_qty == null || uowTASK.target_work_qty == 0) ? 0 : full_assignment_units / (decimal)uowTASK.target_work_qty;
 
@@ -1742,13 +1753,13 @@ namespace BluePrints.Common.Base
             {
                 //do not set target qty or costs zero because we might use this for re-baseline pro-rate
                 //task.target_work_qty = 0;
-                task.act_work_qty = 0;
-                task.remain_work_qty = 0;
-                task.status_code = P6TASKSTATUS.TK_NotStart.ToString();
-                task.act_start_date = null;
-                task.act_end_date = null;
-                task.duration_type = P6DURATION_TYPE.DT_FixedQty.ToString();
-                task.complete_pct_type = P6COMPLETE_TYPE.CP_Units.ToString();
+                //task.act_work_qty = 0;
+                //task.remain_work_qty = 0;
+                //task.status_code = P6TASKSTATUS.TK_NotStart.ToString();
+                //task.act_start_date = null;
+                //task.act_end_date = null;
+                //task.duration_type = P6DURATION_TYPE.DT_FixedQty.ToString();
+                //task.complete_pct_type = P6COMPLETE_TYPE.CP_Units.ToString();
 
                 //do not set target qty or costs zero because we might use this for re-baseline pro-rate
                 //IEnumerable<TASKRSRC> P6TASKRSRCS = p6UOW.TASKRSRC.Where(x => x.delete_session_id == null).Where(x => x.task_id == task.task_id);

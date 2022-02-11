@@ -1011,7 +1011,7 @@ namespace BluePrints.ViewModels
                     string dateField = progress.ProgressDate.Date.ToShortDateString();
                     if (dataPointsTable.Columns.Contains(dateField))
                     {
-                        newDataRow[dateField] = progress.UnitsPercentage;
+                        newDataRow[dateField] = progress.DistributionUnitsPercentage;
                     }
                 }
 
