@@ -57,6 +57,8 @@ namespace BluePrints.ViewModels
         protected PROJECTPOSnapshotForecastViewModelWrapper(
             IUnitOfWorkFactory<IBluePrintsEntitiesUnitOfWork> unitOfWorkFactory = null)
         {
+            bool? isFilterInvoicePreference = LoginCredentials.GetUserPreferenceBool(DataUtils.GetNameOf(() => UserPreferences.Forecast_FilterInvoices));
+            isFilterInvoice = isFilterInvoicePreference == null ? false : (bool)isFilterInvoicePreference;
         }
 
         #region Database Operations
@@ -72,6 +74,7 @@ namespace BluePrints.ViewModels
         protected string columnComments = "Comments";
         DispatcherTimer selectedItemsChangedDispatcher;
         DispatcherTimer closeEditorDispatcher;
+        public CriteriaOperator MainGridFilterCriteria { get; set; }
         public CriteriaOperator POFilterCriteria { get; set; }
         public CriteriaOperator ActualFilterCriteria { get; set; }
         DispatcherTimer delayedProjectSaveTimer;
@@ -196,6 +199,17 @@ namespace BluePrints.ViewModels
         {
             closeEditorDispatcher.Stop();
             GridControlService.GridControl.View.CloseEditor();
+        }
+
+        protected bool isFilterInvoice;
+        public bool IsFilterInvoice
+        {
+            get => isFilterInvoice;
+            set
+            {
+                isFilterInvoice = value;
+                BluePrintsDataUtils.SaveUserPreference(DataUtils.GetNameOf(() => UserPreferences.Forecast_FilterInvoices), value ? UserPreferences.PreferenceTrueValue : UserPreferences.PreferenceFalseValue);
+            }
         }
 
         protected override void addEntitiesLoader()
@@ -1235,7 +1249,6 @@ namespace BluePrints.ViewModels
         }
 
         public DataRowView SelectedDataRow { get; set; }
-
         ObservableCollection<DataRowView> selectedDataRows { get; set; }
         public ObservableCollection<DataRowView> SelectedDataRows
         {
@@ -1274,13 +1287,6 @@ namespace BluePrints.ViewModels
                     (CollectionViewModel<PROJECT, PROJECT, Guid, IBluePrintsEntitiesUnitOfWork>)
                     loaderCollection.GetViewModel<PROJECT>();
             }
-        }
-
-        private void SelectedItemsChangedDispatcher_Tick(object sender, EventArgs e)
-        {
-            selectedItemsChangedDispatcher.Stop();
-            //setFilter();
-            //this.RaisePropertyChanged(x => x.PODetails);
         }
 
         /// <summary>
@@ -1554,6 +1560,28 @@ namespace BluePrints.ViewModels
         protected IDialogService CustomPODialogService
         {
             get { return this.GetRequiredService<IDialogService>("CustomPODialogService"); }
+        }
+
+        //sends message to PO Invoice screen to filter list by selected entity
+        protected virtual void SelectedItemsChangedDispatcher_Tick(object sender, EventArgs e)
+        {
+            selectedItemsChangedDispatcher.Stop();
+            if (!isFilterInvoice)
+                return;
+
+            if (SelectedDataRow[columnEntity] == DBNull.Value)
+                return;
+
+            if(SelectedDataRow[columnEntity].GetType() == typeof(POForecastSnapshotProjection))
+            {
+                POForecastSnapshotProjection forecast = (POForecastSnapshotProjection)SelectedDataRow[columnEntity];
+                Messenger.Default.Send(new POFilterMessage(forecast.PONO, string.Empty));
+            }
+            else if (SelectedDataRow[columnEntity].GetType() == typeof(POFlatForecastSnapshotProjection))
+            {
+                POFlatForecastSnapshotProjection forecast = (POFlatForecastSnapshotProjection)SelectedDataRow[columnEntity];
+                Messenger.Default.Send(new POFilterMessage(forecast.PONO, forecast.StockCode));
+            }
         }
 
         public IEnumerable<FORECAST> FORECASTCollection

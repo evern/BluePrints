@@ -93,6 +93,7 @@
                     </dxg:GridColumn>
                 </ContentControl>
             </DataTemplate>
+            <dxmvvm:BooleanNegationConverter x:Key="BooleanNegationConverter" />
             <ResourceDictionary.MergedDictionaries>
                 <ResourceDictionary Source="pack://application:,,,/Common/View/ResourceDictionaries/GridColumnResourceDictionary.xaml" />
                 <ResourceDictionary Source="pack://application:,,,/BaseModel;component/View/ResourceDictionaries/DefaultControlResourceDictionary.xaml" />
@@ -132,6 +133,7 @@
                         <dxe:DateEditSettings />
                     </dxb:BarEditItem.EditSettings>
                 </dxb:BarEditItem>
+                <dxb:BarCheckItem x:Name="biFilterInvoice" Content="Filter Invoice" IsChecked="{Binding IsFilterInvoice, Mode=TwoWay}" LargeGlyph="{dx:DXImage Images/Filter/MasterFilter_32x32.png}" IsEnabled="{Binding IsLoading, Converter={StaticResource BooleanNegationConverter}}"  RibbonStyle="SmallWithText" ToolTip="Filter PO Invoice by selected PO here" Glyph="{dx:DXImage Images/Filter/MasterFilter_16x16.png}" />
                 <dxb:BarButtonItem x:Name="biAlignPOsWithActuals" Command="{Binding AlignPOsWithActualsCommand}" Content="Align Actuals" Glyph="{dx:DXImage Images/Reports/GroupFieldCollection_16x16.png}" LargeGlyph="{dx:DXImage Images/Reports/GroupFieldCollection_32x32.png}" RibbonStyle="SmallWithText" ToolTip="Align forecast with actuals" />
                 <dxb:BarButtonItem x:Name="biLoadPO" Command="{Binding LoadSnapshotCommand}" Content="Update Actuals" ToolTip="Load PO outstanding and actuals for forecasting" LargeGlyph="{dx:DXImage Images/Spreadsheet/EditingFillLeft_16x16.png}" Glyph="{dx:DXImage Images/Spreadsheet/EditingFillLeft_32x32.png}" />
                 <dxb:BarButtonItem x:Name="biSaveSnapshot" Command="{Binding SaveSnapshotCommand}" Content="Upload PO Forecast" Glyph="{dx:DXImage Images/Spreadsheet/EditingFillRight_16x16.png}" ToolTip="Upload PO Forecast so that forecast can retrieve it" LargeGlyph="{dx:DXImage Images/Spreadsheet/EditingFillRight_32x32.png}" />
@@ -158,6 +160,7 @@
                                 <dxb:BarButtonItemLink BarItemName="biPaymentSpread" />
                                 <dxb:BarEditItemLink BarItemName="beLastAlignedDate" />
                                 <dxb:BarButtonItemLink BarItemName="biAlignPOsWithActuals" />
+                                <dxb:BarCheckItemLink BarItemName="biFilterInvoice" />
                             </dxr:RibbonPageGroup>
                         </dxr:RibbonPage>
                     </dxr:RibbonDefaultPageCategory>

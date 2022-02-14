@@ -179,7 +179,7 @@
                             GroupSummarySource="{Binding SummaryDescriptors}"
                             GroupSummaryGeneratorTemplate="{StaticResource SummaryTemplate}" 
                             ColumnGeneratorTemplateSelector="{StaticResource ColumnTemplateSelector}" ColumnsSource="{Binding ColumnDescriptors}" 
-                                dx:DXSerializer.StoreLayoutMode="All" ShowAllTableValuesInCheckedFilterPopup="False" ItemsSource="{Binding DataPointsTable}" ShowLoadingPanel="{Binding IsLoading}" CurrentItem="{Binding SelectedDataRow}" SelectedItems="{Binding SelectedDataRows, Mode=TwoWay}">
+                                dx:DXSerializer.StoreLayoutMode="All" ShowAllTableValuesInCheckedFilterPopup="False" ItemsSource="{Binding DataPointsTable}" FilterCriteria="{Binding MainGridFilterCriteria, Mode=TwoWay}" ShowLoadingPanel="{Binding IsLoading}" CurrentItem="{Binding SelectedDataRow}" SelectedItems="{Binding SelectedDataRows, Mode=TwoWay}">
                                 <dxmvvm:Interaction.Behaviors>
                                     <dxmvvm:EventToCommand Command="{Binding PastingFromClipboardCommand}" EventName="PastingFromClipboard" PassEventArgsToCommand="True" />
                                     <dxmvvm:EventToCommand Command="{Binding AutoGeneratingColumnsCommand}" EventName="AutoGeneratingColumn" PassEventArgsToCommand="True" />

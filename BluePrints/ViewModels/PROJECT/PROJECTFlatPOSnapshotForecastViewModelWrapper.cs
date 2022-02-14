@@ -57,6 +57,8 @@ namespace BluePrints.ViewModels
         protected PROJECTFlatPOSnapshotForecastViewModelWrapper(
             IUnitOfWorkFactory<IBluePrintsEntitiesUnitOfWork> unitOfWorkFactory = null)
         {
+            bool? isFilterInvoicePreference = LoginCredentials.GetUserPreferenceBool(DataUtils.GetNameOf(() => UserPreferences.Forecast_FilterInvoices));
+            isFilterInvoice = isFilterInvoicePreference == null ? false : (bool)isFilterInvoicePreference;
         }
 
         #region Database Operations
@@ -226,7 +228,7 @@ namespace BluePrints.ViewModels
             return true;
         }
 
-        protected List<POFlatSnapshotLine> getPOFlatLines()
+        protected virtual List<POFlatSnapshotLine> getPOFlatLines()
         {
             if (CurrentPO_FORECAST_JOB_HOUR_SNAPSHOTCollection == null)
                 return new List<POFlatSnapshotLine>();
