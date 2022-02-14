@@ -1576,12 +1576,12 @@ namespace BluePrints.ViewModels
             if(SelectedDataRow[columnEntity].GetType() == typeof(POForecastSnapshotProjection))
             {
                 POForecastSnapshotProjection forecast = (POForecastSnapshotProjection)SelectedDataRow[columnEntity];
-                Messenger.Default.Send(new POFilterMessage(forecast.PONO, string.Empty));
+                Messenger.Default.Send(new POFilterMessage(forecast.PONO, string.Empty, forecast.VariationCode));
             }
             else if (SelectedDataRow[columnEntity].GetType() == typeof(POFlatForecastSnapshotProjection))
             {
                 POFlatForecastSnapshotProjection forecast = (POFlatForecastSnapshotProjection)SelectedDataRow[columnEntity];
-                Messenger.Default.Send(new POFilterMessage(forecast.PONO, forecast.StockCode));
+                Messenger.Default.Send(new POFilterMessage(forecast.PONO, forecast.StockCode, forecast.VariationCode));
             }
         }
 

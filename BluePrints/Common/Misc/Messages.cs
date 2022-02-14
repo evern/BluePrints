@@ -11,14 +11,16 @@ namespace BluePrints.Common.Misc
 {
     public class POFilterMessage
     {
-        public POFilterMessage(string PONumber, string StockCode)
+        public POFilterMessage(string PONumber, string StockCode, string VariationCode)
         {
             this.PONumber = PONumber;
             this.StockCode = StockCode;
+            this.VariationCode = VariationCode;
         }
 
         public string PONumber { get; private set; }
         public string StockCode { get; private set; }
+        public string VariationCode { get; private set; }
     }
 
     public class ContextBASELINE_ITEMProjectionsMessage

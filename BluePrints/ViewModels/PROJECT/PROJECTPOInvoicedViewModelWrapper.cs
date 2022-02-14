@@ -224,9 +224,9 @@ namespace BluePrints.ViewModels
         private void OnPOFilterMessage(POFilterMessage pOFilterMessage)
         {
             if(pOFilterMessage.StockCode == string.Empty)
-                MainGridFilterCriteria = CriteriaOperator.Parse("[Entity.PONO] = '" + pOFilterMessage.PONumber + "'");
+                MainGridFilterCriteria = CriteriaOperator.Parse("[Entity.PONO] = '" + pOFilterMessage.PONumber + "' AND [Entity.VariationCode] = '" + pOFilterMessage.VariationCode + "'");
             else
-                MainGridFilterCriteria = CriteriaOperator.Parse("[Entity.PONO] = '" + pOFilterMessage.PONumber + "' AND [Entity.StockCode] = '" + pOFilterMessage.StockCode + "'");
+                MainGridFilterCriteria = CriteriaOperator.Parse("[Entity.PONO] = '" + pOFilterMessage.PONumber + "' AND [Entity.VariationCode] = '" + pOFilterMessage.VariationCode + "' AND [Entity.StockCode] = '" + pOFilterMessage.StockCode + "'");
 
             this.RaisePropertyChanged(x => x.MainGridFilterCriteria);
         }
