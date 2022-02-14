@@ -34,6 +34,7 @@ using System.Windows;
 using System.Windows.Forms;
 using System.Windows.Input;
 using System.Windows.Threading;
+using BluePrints.Common.Misc;
 
 namespace BluePrints.ViewModels
 {

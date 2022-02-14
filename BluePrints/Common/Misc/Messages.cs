@@ -9,6 +9,18 @@ using System.Threading.Tasks;
 
 namespace BluePrints.Common.Misc
 {
+    public class POFilterMessage
+    {
+        public POFilterMessage(string PONumber, string StockCode)
+        {
+            this.PONumber = PONumber;
+            this.StockCode = StockCode;
+        }
+
+        public string PONumber { get; private set; }
+        public string StockCode { get; private set; }
+    }
+
     public class ContextBASELINE_ITEMProjectionsMessage
     {
         public ContextBASELINE_ITEMProjectionsMessage(IEnumerable<BASELINE_ITEMProjection> contextCollection)
