@@ -1540,6 +1540,7 @@ namespace BluePrints.Common.Base
                         {
                             uowTASK.act_start_date = null;
                             uowTASK.act_end_date = null;
+                            uowTASK.remain_work_qty = uowTASK.target_work_qty;
                             uowTASK.status_code = P6TASKSTATUS.TK_NotStart.ToString();
                             break;
                         }
