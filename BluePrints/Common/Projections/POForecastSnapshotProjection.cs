@@ -97,15 +97,72 @@ namespace BluePrints.Common.Projections
             }
         }
 
+        List<ExoDataPoint> forecastActuals { get; set; }
+        public IEnumerable<ExoDataPoint> ForecastActuals
+        {
+            get
+            {
+                if (forecastActuals == null)
+                {
+                    forecastActuals = new List<ExoDataPoint>();
+                    if (CurrentActualSnapshots != null)
+                    {
+                        var groupByDateFORECASTS = CurrentActualSnapshots.Where(x => x.FORECAST_DATE != null).GroupBy(x => x.FORECAST_DATE).Select(g => new { ForecastDate = (DateTime)g.Key, ForecastCost = g.Where(x => x.FORECAST_DATE != null).Sum(x => (decimal)x.FORECAST_COST) }).OrderBy(x => x.ForecastDate);
+                        foreach (var groupByDateFORECAST in groupByDateFORECASTS)
+                        {
+                            ExoDataPoint forecastPaymentPoint = new ExoDataPoint();
+
+                            forecastPaymentPoint.Costs = groupByDateFORECAST.ForecastCost;
+                            forecastPaymentPoint.ActualDate = groupByDateFORECAST.ForecastDate;
+
+                            forecastActuals.Add(forecastPaymentPoint);
+                        }
+                    }
+                }
+
+                return forecastActuals;
+            }
+        }
+
         public void ResetPaymentDates()
         {
             forecastPayments = null;
+        }
+
+        public decimal PO_SuppliedQty
+        {
+            get
+            {
+                if (CurrentActualSnapshots == null)
+                    return 0;
+
+                return CurrentActualSnapshots.Sum(x => x.FORECAST_QTY);
+            }
+        }
+
+        public decimal PO_OrderQuantity
+        {
+            get
+            {
+                if (CurrentPOSnapshots == null)
+                    return 0;
+
+                return CurrentPOSnapshots.Sum(x => x.FORECAST_QTY);
+            }
+        }
+
+        public decimal PO_Quantity
+        {
+            get => PO_OrderQuantity - PO_SuppliedQty;
         }
 
         public decimal PO_RemainingPrice
         {
             get
             {
+                if (CurrentActualSnapshots == null)
+                    return 0;
+
                 return CurrentPOSnapshots.Sum(x => x.FORECAST_COST);
             }
         }
@@ -114,6 +171,9 @@ namespace BluePrints.Common.Projections
         {
             get
             {
+                if (CurrentActualSnapshots == null)
+                    return 0;
+
                 return CurrentActualSnapshots.Sum(x => x.FORECAST_COST);
             }
         }
@@ -122,6 +182,9 @@ namespace BluePrints.Common.Projections
         {
             get
             {
+                if (CurrentActualSnapshots == null)
+                    return 0;
+
                 IEnumerable<FORECAST_JOB_HOUR_SNAPSHOT> POSnapshotsWithTotal = CurrentPOSnapshots.Where(x => x.PO_TOTAL != null);
                 if (POSnapshotsWithTotal.Count() > 0)
                     return (decimal)POSnapshotsWithTotal.Sum(x => x.PO_TOTAL);

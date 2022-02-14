@@ -66,7 +66,6 @@ namespace BluePrints.Common.Utils
                                     {
                                         uowTASKRSRC.target_qty = p6_assignment.UNITS * proRateRemainingQty;
                                         uowTASKRSRC.remain_qty = p6_assignment.UNITS * proRateRemainingQty;
-                                        taskRsrcFirstAssignmentRegister.Add(uowTASKRSRC.taskrsrc_id);
                                     }
                                     else
                                     {
@@ -99,6 +98,8 @@ namespace BluePrints.Common.Utils
 
                             if (uowTASK.target_drtn_hr_cnt != null && uowTASK.target_drtn_hr_cnt != 0)
                                 uowTASKRSRC.remain_qty_per_hr = uowTASKRSRC.target_qty / uowTASK.target_drtn_hr_cnt;
+
+                            taskRsrcFirstAssignmentRegister.Add(uowTASKRSRC.taskrsrc_id);
                         }
                     }
                     else if (missing_activities != null)

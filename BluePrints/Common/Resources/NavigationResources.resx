@@ -540,4 +540,7 @@
   <data name="Permission_Forecast_FilterUninvoicedOnly" xml:space="preserve">
     <value>Allow actuals to be filtered by uninvoiced only</value>
   </data>
+  <data name="Menu_Project_Snapshot_PO_Invoice" xml:space="preserve">
+    <value>Project PO invoice menu</value>
+  </data>
 </root>

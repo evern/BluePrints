@@ -961,6 +961,15 @@ namespace BluePrints.Common.Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Project PO invoice menu.
+        /// </summary>
+        internal static string Menu_Project_Snapshot_PO_Invoice {
+            get {
+                return ResourceManager.GetString("Menu_Project_Snapshot_PO_Invoice", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Project studies maintenance.
         /// </summary>
         internal static string Menu_Project_Studies {
