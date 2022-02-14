@@ -57,6 +57,7 @@ namespace BluePrints.ViewModels
         protected PROJECTPOInvoicedViewModelWrapper (
             IUnitOfWorkFactory<IBluePrintsEntitiesUnitOfWork> unitOfWorkFactory = null)
         {
+            Messenger.Default.Register<POFilterMessage>(this, x => OnPOFilterMessage(x));
         }
 
         #region Database Operations
@@ -109,6 +110,14 @@ namespace BluePrints.ViewModels
             alignedDataDateCollection = ChronologicalHelpers.GenerateEndDatesCollection(earliestDateBeginningOfMonth, ForecastEndDate);
 
             return true;
+        }
+
+        protected override List<POFlatSnapshotLine> getPOFlatLines()
+        {
+            if (CurrentPO_FORECAST_JOB_HOUR_SNAPSHOTCollection == null)
+                return new List<POFlatSnapshotLine>();
+
+            return CurrentPO_FORECAST_JOB_HOUR_SNAPSHOTCollection.GroupBy(x => new { x.PO_NUMBER, x.VARIATION_CODE, x.STOCK_CODE }).Select(group => new POFlatSnapshotLine { PONumber = group.Key.PO_NUMBER, VariationCode = group.Key.VARIATION_CODE, StockCode = group.Key.STOCK_CODE, DataPoints = group.ToList() }).ToList();
         }
 
         protected override void updateRowPOForecast(List<DateTime> alignedDates, IEnumerable<FORECAST_PO> FORECAST_POCollection, IEnumerable<FORECAST_JOB_HOUR_SNAPSHOT> cutOffActuals, DateTime cutOffDate, string POno = "", string stockCode = "", string variationCode = "", DataRow PORow = null)
@@ -195,6 +204,30 @@ namespace BluePrints.ViewModels
             this.RaisePropertyChanged(x => x.ActualDetailsVisibility);
             this.RaisePropertyChanged(x => x.PODetailsVisibility);
             this.RaisePropertyChanged(x => x.DateSortIndex);
+        }
+
+        protected override void OnClose(CancelEventArgs e)
+        {
+            try
+            {
+                Messenger.Default.Unregister(this);
+            }
+            catch
+            {
+
+            }
+
+            base.OnClose(e);
+        }
+
+        private void OnPOFilterMessage(POFilterMessage pOFilterMessage)
+        {
+            if(pOFilterMessage.StockCode == string.Empty)
+                MainGridFilterCriteria = CriteriaOperator.Parse("[Entity.PONO] = '" + pOFilterMessage.PONumber + "'");
+            else
+                MainGridFilterCriteria = CriteriaOperator.Parse("[Entity.PONO] = '" + pOFilterMessage.PONumber + "' AND [Entity.StockCode] = '" + pOFilterMessage.StockCode + "'");
+
+            this.RaisePropertyChanged(x => x.MainGridFilterCriteria);
         }
 
         /// <summary>

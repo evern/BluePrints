@@ -106,6 +106,15 @@ namespace BluePrints.Common.Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Filter invoice screen by selected PO or EH PO forecast line.
+        /// </summary>
+        internal static string Forecast_FilterInvoices {
+            get {
+                return ResourceManager.GetString("Forecast_FilterInvoices", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Show actuals on forecast.
         /// </summary>
         internal static string Forecast_ShowActuals {

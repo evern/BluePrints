@@ -132,6 +132,9 @@
   <data name="Forecast_AutoHideSummary" xml:space="preserve">
     <value>Auto hide summary on forecast</value>
   </data>
+  <data name="Forecast_FilterInvoices" xml:space="preserve">
+    <value>Filter invoice screen by selected PO or EH PO forecast line</value>
+  </data>
   <data name="Forecast_ShowActuals" xml:space="preserve">
     <value>Show actuals on forecast</value>
   </data>
