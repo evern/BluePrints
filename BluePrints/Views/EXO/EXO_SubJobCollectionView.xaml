@@ -152,11 +152,6 @@
                                 <dxe:SpinEditSettings Increment="100" IsFloatValue="False" IsTextEditable="True" Mask="c0" MaskType="Numeric" MaskUseAsDisplayFormat="True" />
                             </dxg:GridColumn.EditSettings>
                         </dxg:GridColumn>
-                        <dxg:GridColumn FieldName="Category" AllowBestFit="True" Visible="False" Width="50" Header="Category" HeaderToolTip="Sub job category">
-                            <dxg:GridColumn.EditSettings>
-                                <dxe:ComboBoxEditSettings AutoComplete="False" IsTextEditable="False" DisplayMember="CATDESC" ItemsSource="{Binding JOB_CATEGORIESCollection}" ValueMember="CATNO" NullText="Leave empty to auto populate" ShowNullText="True"  />
-                            </dxg:GridColumn.EditSettings>
-                        </dxg:GridColumn>
                         <dxg:GridColumn FieldName="IsLineExistsInExo" Visible="False" Header="Exo" HeaderToolTip="Is this line setup in exo and available to be booked by authorised personnel" ReadOnly="True" />
                         <dxg:GridColumn FieldName="HasBudget" Header="Planned" HeaderToolTip="Is planned in deliverable's list" ReadOnly="True" />
                         <dxg:GridColumn FieldName="SubJobActualCostSummary" Header="Actual Costs" HeaderToolTip="Actual costs from EXO" ReadOnly="True" Visible="{Binding IsActualCostSummaryVisible}">
@@ -175,6 +170,11 @@
                             </dxg:GridColumn.EditSettings>
                         </dxg:GridColumn>
                         <dxg:GridColumn FieldName="FullCodeIncludeStockCode" Header="Full Code" ReadOnly="True" Visible="False" />
+                        <dxg:GridColumn FieldName="Category" AllowBestFit="True" Visible="True" Width="150" Header="Category" HeaderToolTip="Sub job category">
+                            <dxg:GridColumn.EditSettings>
+                                <dxe:ComboBoxEditSettings AutoComplete="False" IsTextEditable="False" DisplayMember="CATDESC" ItemsSource="{Binding JOB_CATEGORIESCollection}" ValueMember="CATNO" NullText="Leave empty to auto populate" ShowNullText="True"  />
+                            </dxg:GridColumn.EditSettings>
+                        </dxg:GridColumn>
                     </dxg:GridControl.Columns>
                     <dxg:GridControl.TotalSummary>
                         <dxg:GridSummaryItem FieldName="SubJobCode" dxc:DXSerializer.Enabled="False" DisplayFormat="{}{0} Record(s)" SummaryType="Count" />
