@@ -118,7 +118,7 @@ namespace BluePrints.ViewModels
             if (CurrentPO_FORECAST_JOB_HOUR_SNAPSHOTCollection == null)
                 return new List<POFlatSnapshotLine>();
 
-            return CurrentPO_FORECAST_JOB_HOUR_SNAPSHOTCollection.Where(x => x.PO_NUMBER == "106783" && x.STOCK_CODE == "EH-SI-011" && x.VARIATION_CODE == "VAR-005 REMOVAL OF SITE WASTE").GroupBy(x => new { x.PO_NUMBER, x.VARIATION_CODE, x.STOCK_CODE }).Select(group => new POFlatSnapshotLine { PONumber = group.Key.PO_NUMBER, VariationCode = group.Key.VARIATION_CODE, StockCode = group.Key.STOCK_CODE, DataPoints = group.ToList() }).ToList();
+            return CurrentPO_FORECAST_JOB_HOUR_SNAPSHOTCollection.GroupBy(x => new { x.PO_NUMBER, x.VARIATION_CODE, x.STOCK_CODE }).Select(group => new POFlatSnapshotLine { PONumber = group.Key.PO_NUMBER, VariationCode = group.Key.VARIATION_CODE, StockCode = group.Key.STOCK_CODE, DataPoints = group.ToList() }).ToList();
         }
 
         protected override void updateRowPOForecast(List<DateTime> alignedDates, IEnumerable<FORECAST_PO> FORECAST_POCollection, IEnumerable<FORECAST_JOB_HOUR_SNAPSHOT> cutOffActuals, DateTime cutOffDate, string POno = "", string stockCode = "", string variationCode = "", DataRow PORow = null)
