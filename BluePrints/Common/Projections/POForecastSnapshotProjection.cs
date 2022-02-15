@@ -107,13 +107,13 @@ namespace BluePrints.Common.Projections
                     forecastActuals = new List<ExoDataPoint>();
                     if (CurrentActualSnapshots != null)
                     {
-                        var groupByDateFORECASTS = CurrentActualSnapshots.Where(x => x.FORECAST_DATE != null).GroupBy(x => x.FORECAST_DATE).Select(g => new { ForecastDate = (DateTime)g.Key, ForecastCost = g.Where(x => x.FORECAST_DATE != null).Sum(x => (decimal)x.FORECAST_COST) }).OrderBy(x => x.ForecastDate);
+                        var groupByDateFORECASTS = CurrentActualSnapshots.Where(x => x.FORECAST_DATE != null).GroupBy(x => new { ((DateTime)x.FORECAST_DATE).Year, ((DateTime)x.FORECAST_DATE).Month }).Select(g => new { g.Key.Year, g.Key.Month, Forecasts = g.ToList() });
                         foreach (var groupByDateFORECAST in groupByDateFORECASTS)
                         {
                             ExoDataPoint forecastPaymentPoint = new ExoDataPoint();
 
-                            forecastPaymentPoint.Costs = groupByDateFORECAST.ForecastCost;
-                            forecastPaymentPoint.ActualDate = groupByDateFORECAST.ForecastDate;
+                            forecastPaymentPoint.Costs = groupByDateFORECAST.Forecasts.Sum(x => x.FORECAST_COST);
+                            forecastPaymentPoint.ActualDate = new DateTime(groupByDateFORECAST.Year, groupByDateFORECAST.Month, 1);
 
                             forecastActuals.Add(forecastPaymentPoint);
                         }
