@@ -10,5 +10,7 @@
     public partial class X_JOB_TRANSACTIONS_DETAIL_V5 : EntityBase
     {
 
+        [NotMapped]
+        public bool QtyEdited { get; set; }
     }
 }
