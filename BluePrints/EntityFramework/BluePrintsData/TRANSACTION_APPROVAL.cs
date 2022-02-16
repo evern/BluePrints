@@ -13,6 +13,8 @@ namespace BluePrints.Data
 
         public Guid GUID_PROJECT { get; set; }
 
+        public int JOB_TRANSACTION_SEQNO { get; set; }
+
         [Required]
         [StringLength(15)]
         public string OLD_SUBJOB_CODE { get; set; }
