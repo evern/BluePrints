@@ -441,6 +441,11 @@ namespace BluePrints.BluePrintsEntitiesDataModel
             get { return GetRepository(x => x.Set<SUBJOB>(), (SUBJOB x) => x.GUID); }
         }
 
+        IRepository<TRANSACTION_APPROVAL, Guid> IBluePrintsEntitiesUnitOfWork.TRANSACTION_APPROVALS
+        {
+            get { return GetRepository(x => x.Set<TRANSACTION_APPROVAL>(), (TRANSACTION_APPROVAL x) => x.GUID); }
+        }
+
         IRepository<CLIENT, Guid> IBluePrintsEntitiesUnitOfWork.CLIENTS
         {
             get { return GetRepository(x => x.Set<CLIENT>(), (CLIENT x) => x.GUID); }

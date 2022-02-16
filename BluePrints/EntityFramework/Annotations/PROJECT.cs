@@ -64,6 +64,7 @@ namespace BluePrints.Data
             FORECAST_JOB_HOUR_SNAPSHOT = new HashSet<FORECAST_JOB_HOUR_SNAPSHOT>();
             PROJECT_CONTRACTOR = new HashSet<PROJECT_CONTRACTOR>();
             TRANSACTION_AUDIT = new HashSet<TRANSACTION_AUDIT>();
+            TRANSACTION_APPROVAL = new HashSet<TRANSACTION_APPROVAL>();
             CONTRACTTYPE = ContractType.LumpSum;
             CURRENCYCONVERSION = 1;
             REVIEWPERCENTAGE = 0.7M;

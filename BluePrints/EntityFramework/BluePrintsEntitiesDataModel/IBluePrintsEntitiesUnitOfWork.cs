@@ -392,6 +392,11 @@ namespace BluePrints.BluePrintsEntitiesDataModel
         IRepository<TENDER_PROFILE_ITEM, Guid> TENDER_PROFILE_ITEMS { get; }
 
         /// <summary>
+        /// The TRANSACTION_APPROVAL entities repository.
+        /// </summary>
+        IRepository<TRANSACTION_APPROVAL, Guid> TRANSACTION_APPROVALS { get; }
+
+        /// <summary>
         /// The COMMODITY_CODES entities repository.
         /// </summary>
         IRepository<COMMODITY_CODE, Guid> COMMODITY_CODES { get; }
