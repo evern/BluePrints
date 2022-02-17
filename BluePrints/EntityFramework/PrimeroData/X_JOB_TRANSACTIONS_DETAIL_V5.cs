@@ -107,19 +107,44 @@
 
         public int? STOCKGROUP2 { get; set; }
 
+        public int? NEW_JOBNO { get; set; }
+
         [StringLength(15)]
-        public string NEW_SUBJOB_CODE { get; set; }
+        public string OLD_JOBCODE { get; set; }
 
+        public int? NEW_COST_GROUP_NO { get; set; }
 
-        [StringLength(4)]
-        public string NEW_DISCIPLINE_CODE { get; set; }
-
-
-        [StringLength(3)]
-        public string NEW_COMMODITY_CODE { get; set; }
-
+        public int? NEW_COST_TYPE_NO { get; set; }
 
         [StringLength(20)]
         public string NEW_STOCK_CODE { get; set; }
+
+        [NotMapped]
+        public int? ViewJOBNO
+        {
+            get
+            {
+                if (NEW_JOBNO != null)
+                    return NEW_JOBNO;
+
+                return JOBNO;
+            }
+            set
+            {
+                NEW_JOBNO = value;
+            }
+        }
+
+        public bool IsSubJobCodeEdited => NEW_JOBNO != null;
+
+        public string SubJobToolTip => NEW_JOBNO == null ? null : "Previous Job code : " + OLD_JOBCODE;
+
+        public bool IsTransactionFinalised
+        {
+            get
+            {
+                return NEW_JOBNO == null && NEW_COST_GROUP_NO == null && NEW_COST_GROUP_NO == null && NEW_STOCK_CODE == null;
+            }
+        }
     }
 }

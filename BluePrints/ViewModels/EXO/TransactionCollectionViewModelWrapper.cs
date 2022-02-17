@@ -96,6 +96,7 @@ namespace BluePrints.ViewModels
         private readonly IUnitOfWorkFactory<IBluePrintsEntitiesUnitOfWork> bluePrintsUnitOfWorkFactory = BluePrintsEntitiesUnitOfWorkSource.GetUnitOfWorkFactory();
         private IUnitOfWorkFactory<IPrimeroEntitiesUnitOfWork> primeroUnitOfWorkFactory;
         private IPrimeroEntitiesUnitOfWork primeroUnitOfWork;
+        private IBluePrintsEntitiesUnitOfWork bluePrintsUnitOfWork;
         JOBCOST_HDR loadJOBCOST_HDR;
         bool isYearToDate = false;
         bool is2020Onwards = false;
@@ -128,6 +129,7 @@ namespace BluePrints.ViewModels
             else
                 primeroUnitOfWorkFactory = PrimeroEntitiesUnitOfWorkSource.GetUnitOfWorkFactory(loadPROJECT.OfficeNameForExo);
 
+            bluePrintsUnitOfWork = bluePrintsUnitOfWorkFactory.CreateUnitOfWork();
             primeroUnitOfWork = primeroUnitOfWorkFactory.CreateUnitOfWork();
         }
 
@@ -205,43 +207,72 @@ namespace BluePrints.ViewModels
 
         protected override void ApplyInstantFeedbackEntityPropertiesToOtherUnitOfWorkEntity(X_JOB_TRANSACTIONS_DETAIL_V5 projection)
         {
-            JOB_TRANSACTIONS findJOB_TRANSACTION = primeroUnitOfWork.JOB_TRANSACTIONS.FirstOrDefault(x => x.SEQNO == projection.SEQNO);
-            if(findJOB_TRANSACTION != null)
+            if(!projection.IsTransactionFinalised)
             {
-                findJOB_TRANSACTION.JOBNO = projection.JOBNO;
-                findJOB_TRANSACTION.COST_GROUP = projection.COST_GROUP_NO;
-                findJOB_TRANSACTION.COST_TYPE = projection.COST_TYPE_NO;
-                findJOB_TRANSACTION.STOCKCODE = projection.STOCKCODE;
-                findJOB_TRANSACTION.X_VARIATIONCODE = projection.VARIATION_CODE;
-                findJOB_TRANSACTION.DESCRIPTION = projection.DESCRIPTION;
-                findJOB_TRANSACTION.STAFFNO = projection.ACCNO;
-                findJOB_TRANSACTION.QUANTITY = projection.QUANTITY;
-                findJOB_TRANSACTION.STOCKCODE = projection.STOCKCODE;
-
-                if(projection.QtyEdited && CanEditQuantity)
+                TRANSACTION_APPROVAL findTRANSACTION_APPROVAL = bluePrintsUnitOfWork.TRANSACTION_APPROVALS.FirstOrDefault(x => x.JOB_TRANSACTION_SEQNO == projection.SEQNO && x.STATUS == TransactionApprovalStatus.Pending);
+                if(findTRANSACTION_APPROVAL != null)
                 {
-                    if (findJOB_TRANSACTION.QUANTITY != null)
+                    if (projection.IsSubJobCodeEdited)
                     {
-                        if (findJOB_TRANSACTION.UNITCOST != null)
-                            findJOB_TRANSACTION.LINECOST = findJOB_TRANSACTION.UNITCOST * findJOB_TRANSACTION.QUANTITY;
-
-                        if (findJOB_TRANSACTION.UNITPRICE != null)
-                        {
-                            findJOB_TRANSACTION.LINECHARGE = findJOB_TRANSACTION.UNITPRICE * findJOB_TRANSACTION.QUANTITY;
-                            findJOB_TRANSACTION.LINETOTAL = findJOB_TRANSACTION.LINECHARGE;
-                        }
-
-                        findJOB_TRANSACTION.LINETOTAL_TAX = (double)((findJOB_TRANSACTION.LINETOTAL * findJOB_TRANSACTION.TAXRATE) / 100);
-                        findJOB_TRANSACTION.LINE_TAX = findJOB_TRANSACTION.LINETOTAL_TAX;
-
-                        findJOB_TRANSACTION.LINETOTAL_INCTAX = findJOB_TRANSACTION.LINETOTAL + findJOB_TRANSACTION.LINETOTAL_TAX;
-                        projection.LINECOST = findJOB_TRANSACTION.LINECOST;
-                        projection.Update();
+                        findTRANSACTION_APPROVAL.OLD_JOBCODE = projection.SUB_JOBCODE;
+                        findTRANSACTION_APPROVAL.OLD_JOBNO = projection.JOBNO;
+                        findTRANSACTION_APPROVAL.NEW_JOBNO = projection.NEW_JOBNO;
                     }
                 }
-            }
+                else
+                {
+                    findTRANSACTION_APPROVAL = new TRANSACTION_APPROVAL();
+                    findTRANSACTION_APPROVAL.JOB_TRANSACTION_SEQNO = projection.SEQNO;
+                    findTRANSACTION_APPROVAL.GUID_PROJECT = loadPROJECT.GUID;
+                    findTRANSACTION_APPROVAL.CREATED = DateTime.Now;
+                    findTRANSACTION_APPROVAL.CREATEDBY = LoginCredentials.CurrentUserGuid;
+                    findTRANSACTION_APPROVAL.OLD_JOBCODE = projection.SUB_JOBCODE;
+                    findTRANSACTION_APPROVAL.OLD_JOBNO = projection.JOBNO;
+                    findTRANSACTION_APPROVAL.NEW_JOBNO = projection.NEW_JOBNO;
+                    findTRANSACTION_APPROVAL.STATUS = TransactionApprovalStatus.Pending;
+                    bluePrintsUnitOfWork.TRANSACTION_APPROVALS.Add(findTRANSACTION_APPROVAL);
+                }
 
-            projection.QtyEdited = false;
+                projection.Update();
+                bluePrintsUnitOfWork.SaveChanges();
+            }
+            //JOB_TRANSACTIONS findJOB_TRANSACTION = primeroUnitOfWork.JOB_TRANSACTIONS.FirstOrDefault(x => x.SEQNO == projection.SEQNO);
+            //if(findJOB_TRANSACTION != null)
+            //{
+            //    findJOB_TRANSACTION.JOBNO = projection.JOBNO;
+            //    findJOB_TRANSACTION.COST_GROUP = projection.COST_GROUP_NO;
+            //    findJOB_TRANSACTION.COST_TYPE = projection.COST_TYPE_NO;
+            //    findJOB_TRANSACTION.STOCKCODE = projection.STOCKCODE;
+            //    findJOB_TRANSACTION.X_VARIATIONCODE = projection.VARIATION_CODE;
+            //    findJOB_TRANSACTION.DESCRIPTION = projection.DESCRIPTION;
+            //    findJOB_TRANSACTION.STAFFNO = projection.ACCNO;
+            //    findJOB_TRANSACTION.QUANTITY = projection.QUANTITY;
+            //    findJOB_TRANSACTION.STOCKCODE = projection.STOCKCODE;
+
+            //    if(projection.QtyEdited && CanEditQuantity)
+            //    {
+            //        if (findJOB_TRANSACTION.QUANTITY != null)
+            //        {
+            //            if (findJOB_TRANSACTION.UNITCOST != null)
+            //                findJOB_TRANSACTION.LINECOST = findJOB_TRANSACTION.UNITCOST * findJOB_TRANSACTION.QUANTITY;
+
+            //            if (findJOB_TRANSACTION.UNITPRICE != null)
+            //            {
+            //                findJOB_TRANSACTION.LINECHARGE = findJOB_TRANSACTION.UNITPRICE * findJOB_TRANSACTION.QUANTITY;
+            //                findJOB_TRANSACTION.LINETOTAL = findJOB_TRANSACTION.LINECHARGE;
+            //            }
+
+            //            findJOB_TRANSACTION.LINETOTAL_TAX = (double)((findJOB_TRANSACTION.LINETOTAL * findJOB_TRANSACTION.TAXRATE) / 100);
+            //            findJOB_TRANSACTION.LINE_TAX = findJOB_TRANSACTION.LINETOTAL_TAX;
+
+            //            findJOB_TRANSACTION.LINETOTAL_INCTAX = findJOB_TRANSACTION.LINETOTAL + findJOB_TRANSACTION.LINETOTAL_TAX;
+            //            projection.LINECOST = findJOB_TRANSACTION.LINECOST;
+            //            projection.Update();
+            //        }
+            //    }
+            //}
+
+            //projection.QtyEdited = false;
         }
 
         public override void FullRefresh()

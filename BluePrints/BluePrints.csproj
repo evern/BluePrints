@@ -848,6 +848,7 @@
     <Compile Include="Common\ViewModel\Converters\ForecastFutureChildCellColorConverter.cs" />
     <Compile Include="Common\ViewModel\Converters\ForecastFutureCellMinValueConverter.cs" />
     <Compile Include="Common\ViewModel\Converters\ForecastPreviousCellToolTipConverter.cs" />
+    <Compile Include="Common\ViewModel\Converters\TransactionAttributeCellColorConverter.cs" />
     <Compile Include="Common\ViewModel\Converters\ProjectSummaryCellReadOnlyConverter.cs" />
     <Compile Include="Common\ViewModel\Converters\ProjectSummaryCellColorConverter.cs" />
     <Compile Include="Common\ViewModel\Converters\ForecastFutureCellColorConverter.cs" />
