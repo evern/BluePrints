@@ -207,35 +207,36 @@ namespace BluePrints.ViewModels
 
         protected override void ApplyInstantFeedbackEntityPropertiesToOtherUnitOfWorkEntity(X_JOB_TRANSACTIONS_DETAIL_V5 projection)
         {
-            if(!projection.IsTransactionFinalised)
+            if(!projection.IsJobNoFinalised)
             {
-                TRANSACTION_APPROVAL findTRANSACTION_APPROVAL = bluePrintsUnitOfWork.TRANSACTION_APPROVALS.FirstOrDefault(x => x.JOB_TRANSACTION_SEQNO == projection.SEQNO && x.STATUS == TransactionApprovalStatus.Pending);
-                if(findTRANSACTION_APPROVAL != null)
+                if (projection.SubJobCodeStatus == TransactionAttributeStatus.Pending)
                 {
-                    if (projection.IsSubJobCodeEdited)
+                    TRANSACTION_APPROVAL findTRANSACTION_APPROVAL = bluePrintsUnitOfWork.TRANSACTION_APPROVALS.FirstOrDefault(x => x.JOB_TRANSACTION_SEQNO == projection.SEQNO && x.STATUS == TransactionApprovalStatus.Pending);
+                    if(findTRANSACTION_APPROVAL != null)
                     {
+                            findTRANSACTION_APPROVAL.OLD_JOBCODE = projection.SUB_JOBCODE;
+                            findTRANSACTION_APPROVAL.OLD_JOBNO = projection.JOBNO;
+                            findTRANSACTION_APPROVAL.NEW_JOBNO = projection.NEW_JOBNO;
+                    }
+                    else
+                    {
+                        findTRANSACTION_APPROVAL = new TRANSACTION_APPROVAL();
+                        findTRANSACTION_APPROVAL.JOB_TRANSACTION_SEQNO = projection.SEQNO;
+                        findTRANSACTION_APPROVAL.GUID_PROJECT = loadPROJECT.GUID;
+                        findTRANSACTION_APPROVAL.CREATED = DateTime.Now;
+                        findTRANSACTION_APPROVAL.CREATEDBY = LoginCredentials.CurrentUserGuid;
                         findTRANSACTION_APPROVAL.OLD_JOBCODE = projection.SUB_JOBCODE;
                         findTRANSACTION_APPROVAL.OLD_JOBNO = projection.JOBNO;
                         findTRANSACTION_APPROVAL.NEW_JOBNO = projection.NEW_JOBNO;
+                        findTRANSACTION_APPROVAL.STATUS = TransactionApprovalStatus.Pending;
+                        bluePrintsUnitOfWork.TRANSACTION_APPROVALS.Add(findTRANSACTION_APPROVAL);
                     }
-                }
-                else
-                {
-                    findTRANSACTION_APPROVAL = new TRANSACTION_APPROVAL();
-                    findTRANSACTION_APPROVAL.JOB_TRANSACTION_SEQNO = projection.SEQNO;
-                    findTRANSACTION_APPROVAL.GUID_PROJECT = loadPROJECT.GUID;
-                    findTRANSACTION_APPROVAL.CREATED = DateTime.Now;
-                    findTRANSACTION_APPROVAL.CREATEDBY = LoginCredentials.CurrentUserGuid;
-                    findTRANSACTION_APPROVAL.OLD_JOBCODE = projection.SUB_JOBCODE;
-                    findTRANSACTION_APPROVAL.OLD_JOBNO = projection.JOBNO;
-                    findTRANSACTION_APPROVAL.NEW_JOBNO = projection.NEW_JOBNO;
-                    findTRANSACTION_APPROVAL.STATUS = TransactionApprovalStatus.Pending;
-                    bluePrintsUnitOfWork.TRANSACTION_APPROVALS.Add(findTRANSACTION_APPROVAL);
                 }
 
                 projection.Update();
                 bluePrintsUnitOfWork.SaveChanges();
             }
+
             //JOB_TRANSACTIONS findJOB_TRANSACTION = primeroUnitOfWork.JOB_TRANSACTIONS.FirstOrDefault(x => x.SEQNO == projection.SEQNO);
             //if(findJOB_TRANSACTION != null)
             //{

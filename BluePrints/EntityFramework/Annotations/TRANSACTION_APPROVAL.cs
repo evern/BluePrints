@@ -18,6 +18,9 @@ namespace BluePrints.Data
             set { CREATED = value; }
         }
 
+        [NotMapped]
+        public bool IsNotApproved => APPROVEDON == null;
+
         public string Office => BluePrintsResources.GlobalOffice;
     }
 }

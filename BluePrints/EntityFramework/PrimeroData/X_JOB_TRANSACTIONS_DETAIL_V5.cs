@@ -1,5 +1,6 @@
 ﻿namespace BluePrints.PrimeroData
 {
+    using BluePrints.Common;
     using System;
     using System.Collections.Generic;
     using System.ComponentModel.DataAnnotations;
@@ -131,19 +132,34 @@
             }
             set
             {
-                NEW_JOBNO = value;
+                //prevent IsTransactionFinalised to register false value
+                if (value != JOBNO)
+                    NEW_JOBNO = value;
+                else
+                    JOBNO = value;
             }
         }
 
-        public bool IsSubJobCodeEdited => NEW_JOBNO != null;
-
-        public string SubJobToolTip => NEW_JOBNO == null ? null : "Previous Job code : " + OLD_JOBCODE;
-
-        public bool IsTransactionFinalised
+        public TransactionAttributeStatus SubJobCodeStatus
         {
             get
             {
-                return NEW_JOBNO == null && NEW_COST_GROUP_NO == null && NEW_COST_GROUP_NO == null && NEW_STOCK_CODE == null;
+                if (NEW_JOBNO == null)
+                    return TransactionAttributeStatus.Original;
+                else if (NEW_JOBNO == JOBNO)
+                    return TransactionAttributeStatus.Approved;
+                else
+                    return TransactionAttributeStatus.Pending;
+            }
+        }
+
+        public string SubJobToolTip => SubJobCodeStatus != TransactionAttributeStatus.Original ? "Previous Job code : " + OLD_JOBCODE : null;
+
+        public bool IsJobNoFinalised
+        {
+            get
+            {
+                return NEW_JOBNO == null || NEW_JOBNO == JOBNO;
             }
         }
     }

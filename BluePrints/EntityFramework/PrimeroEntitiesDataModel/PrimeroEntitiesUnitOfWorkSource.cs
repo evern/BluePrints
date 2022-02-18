@@ -21,6 +21,11 @@ namespace BluePrints.PrimeroData.PrimeroEntitiesDataModel
             return GetUnitOfWorkFactory(ViewModelBase.IsInDesignMode, getDatabaseLocaleFromOfficeName(officeName));
         }
 
+        public static IUnitOfWorkFactory<IPrimeroEntitiesUnitOfWork> GetUnitOfWorkFactory(IPrimeroEntitiesUnitOfWork primeroEntitiesUnitOfWork)
+        {
+            return GetUnitOfWorkFactory(ViewModelBase.IsInDesignMode, primeroEntitiesUnitOfWork);
+        }
+
         private static DatabaseLocale getDatabaseLocaleFromOfficeName(string officeName)
         {
             string officeNameUpper = officeName.ToUpper();
@@ -60,6 +65,17 @@ namespace BluePrints.PrimeroData.PrimeroEntitiesDataModel
                 return
                     new DbUnitOfWorkFactory<IPrimeroEntitiesUnitOfWork>(
                         () => new PrimeroEntitiesUnitOfWork(() => new PrimeroEntities()));
+        }
+
+        public static IUnitOfWorkFactory<IPrimeroEntitiesUnitOfWork> GetUnitOfWorkFactory(bool isInDesignTime, IPrimeroEntitiesUnitOfWork primeroEntitiesUnitOfWork)
+        {
+            if (isInDesignTime)
+                return new DesignTimeUnitOfWorkFactory<IPrimeroEntitiesUnitOfWork>(() => new PrimeroEntitiesDesignTimeUnitOfWork());
+
+            if (primeroEntitiesUnitOfWork != null)
+                return new DbUnitOfWorkFactory<IPrimeroEntitiesUnitOfWork>(() => primeroEntitiesUnitOfWork);
+            else
+                return new DbUnitOfWorkFactory<IPrimeroEntitiesUnitOfWork>(() => new PrimeroEntitiesUnitOfWork(() => new PrimeroEntities()));
         }
     }
 }

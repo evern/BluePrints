@@ -47,6 +47,8 @@ namespace BluePrints.Data
 
         public DateTime? APPROVEDON { get; set; }
 
+        public Guid? APPROVEDBY { get; set; }
+
         public DateTime CREATED { get; set; }
 
         public Guid CREATEDBY { get; set; }

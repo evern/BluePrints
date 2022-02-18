@@ -14,11 +14,15 @@ namespace BluePrints.Common.ViewModel.Converters
             if (value == DependencyProperty.UnsetValue || value == null)
                 return transparentColor;
 
-            SolidColorBrush valuePendingColor = new SolidColorBrush(Colors.Chartreuse);
-            if ((bool)value)
+            SolidColorBrush valuePendingColor = new SolidColorBrush(Colors.LemonChiffon);
+            SolidColorBrush valueApprovedColor = new SolidColorBrush(Colors.Chartreuse);
+            TransactionAttributeStatus status = (TransactionAttributeStatus)value;
+            if (status == TransactionAttributeStatus.Original)
+                return transparentColor;
+            else if (status == TransactionAttributeStatus.Pending)
                 return valuePendingColor;
             else
-                return transparentColor;
+                return valueApprovedColor;
         }
 
         public object ConvertBack(object value, Type targetType, object parameter,

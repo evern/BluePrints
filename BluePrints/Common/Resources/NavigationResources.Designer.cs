@@ -754,6 +754,15 @@ namespace BluePrints.Common.Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Project EXO transactions approval menu.
+        /// </summary>
+        internal static string Menu_Project_EXO_TransactionsApproval {
+            get {
+                return ResourceManager.GetString("Menu_Project_EXO_TransactionsApproval", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Project forecast menu.
         /// </summary>
         internal static string Menu_Project_Forecast {

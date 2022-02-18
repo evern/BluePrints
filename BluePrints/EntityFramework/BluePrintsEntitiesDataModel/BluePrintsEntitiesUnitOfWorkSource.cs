@@ -14,22 +14,26 @@ namespace BluePrints.BluePrintsEntitiesDataModel
         /// <summary>
         /// Returns the IUnitOfWorkFactory implementation based on the current mode (run-time or design-time).
         /// </summary>
-        public static IUnitOfWorkFactory<IBluePrintsEntitiesUnitOfWork> GetUnitOfWorkFactory()
+        public static IUnitOfWorkFactory<IBluePrintsEntitiesUnitOfWork> GetUnitOfWorkFactory(IBluePrintsEntitiesUnitOfWork bluePrintsEntitiesUnitOfWork = null)
         {
-            return GetUnitOfWorkFactory(ViewModelBase.IsInDesignMode);
+            return GetUnitOfWorkFactory(ViewModelBase.IsInDesignMode, bluePrintsEntitiesUnitOfWork);
         }
 
         /// <summary>
         /// Returns the IUnitOfWorkFactory implementation based on the given mode (run-time or design-time).
         /// </summary>
         /// <param name="isInDesignTime">Used to determine which implementation of IUnitOfWorkFactory should be returned.</param>
-        public static IUnitOfWorkFactory<IBluePrintsEntitiesUnitOfWork> GetUnitOfWorkFactory(bool isInDesignTime)
+        public static IUnitOfWorkFactory<IBluePrintsEntitiesUnitOfWork> GetUnitOfWorkFactory(bool isInDesignTime, IBluePrintsEntitiesUnitOfWork bluePrintsEntitiesUnitOfWork = null)
         {
             if (isInDesignTime)
                 return
                     new DesignTimeUnitOfWorkFactory<IBluePrintsEntitiesUnitOfWork>(
                         () => new BluePrintsEntitiesDesignTimeUnitOfWork());
-            return
+
+            if (bluePrintsEntitiesUnitOfWork != null)
+                return new DbUnitOfWorkFactory<IBluePrintsEntitiesUnitOfWork>(() => bluePrintsEntitiesUnitOfWork);
+            else
+                return
                 new DbUnitOfWorkFactory<IBluePrintsEntitiesUnitOfWork>(
                     () => new BluePrintsEntitiesUnitOfWork(() => new BluePrintsEntities()));
         }

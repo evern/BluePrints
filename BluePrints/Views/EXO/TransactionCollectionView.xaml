@@ -72,7 +72,7 @@
                             <dxg:GridColumn FieldName="ViewJOBNO" AllowBestFit="false" Width="110" Header="Sub Job" ReadOnly="{Binding IsReadOnly}" >
                                 <dxg:GridColumn.CellTemplate>
                                     <DataTemplate>
-                                        <dxg:LookUpEdit Name="PART_Editor" AutoComplete="True" AutoPopulateColumns="False" DisplayMember="JOBCODE" IncrementalFiltering="True" IsTextEditable="true" ItemsSource="{Binding View.DataContext.JOBCOST_HDRCollection}" NullValueButtonPlacement="None" PopupWidth="500" ValueMember="JOBNO" Background="{Binding RowData.Row.IsSubJobCodeEdited, Converter={StaticResource TransactionAttributeCellColorConverter}}" ToolTip="{Binding RowData.Row.SubJobToolTip}">
+                                        <dxg:LookUpEdit Name="PART_Editor" AutoComplete="True" AutoPopulateColumns="False" DisplayMember="JOBCODE" IncrementalFiltering="True" IsTextEditable="true" ItemsSource="{Binding View.DataContext.JOBCOST_HDRCollection}" NullValueButtonPlacement="None" PopupWidth="500" ValueMember="JOBNO" Background="{Binding RowData.Row.SubJobCodeStatus, Converter={StaticResource TransactionAttributeCellColorConverter}}" ToolTip="{Binding RowData.Row.SubJobToolTip}">
                                             <dxg:LookUpEdit.StyleSettings>
                                                 <dxg:SearchLookUpEditStyleSettings />
                                             </dxg:LookUpEdit.StyleSettings>
