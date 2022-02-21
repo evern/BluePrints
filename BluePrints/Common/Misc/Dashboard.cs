@@ -316,6 +316,11 @@ namespace BluePrints.Common.Misc
 
             foreach (WBSReportable wbsReportable in projectSummaryStats.WBSReportables)
             {
+                //for debug
+                //string s;
+                //if (wbsReportable.SUBJOB_CODE == "31510-000-00-P1" && wbsReportable.DISCIPLINE_CODE == "CC01" && wbsReportable.COMMODITY_CODE == "C05")
+                //    s = string.Empty;
+
                 //assign actuals to reportables
                 wbsReportable.AssignWBSReportableData(x => x.Burned.SetData, groupedBurnedDataPoints, isVariationSeparated);
                 wbsReportable.AssignWBSReportableData(x => x.Actual.SetData, groupedActualDataPoints, isVariationSeparated);

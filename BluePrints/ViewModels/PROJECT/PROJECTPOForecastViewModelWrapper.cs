@@ -1101,7 +1101,7 @@ namespace BluePrints.ViewModels
                 else
                 {
                     DateTime forecastStartDate = (DateTime)ForecastStartDate;
-                    return new DateTime(forecastStartDate.Year, forecastStartDate.Month, 1).AddDays(-1);
+                    return new DateTime(forecastStartDate.Year, forecastStartDate.Month, 1).AddSeconds(-1);
                 }
             }
         }
