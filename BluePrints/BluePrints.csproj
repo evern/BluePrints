@@ -979,11 +979,13 @@
     <Compile Include="EntityFramework\Annotations\REGISTER_TQ_ATTACHMENT.cs" />
     <Compile Include="EntityFramework\Annotations\JOBCOST_HDR.cs" />
     <Compile Include="EntityFramework\Annotations\JOBCOST_RESOURCE.cs" />
+    <Compile Include="EntityFramework\Annotations\TRANSACTION_APPROVAL.cs" />
     <Compile Include="EntityFramework\Annotations\TRANSACTION_AUDIT.cs" />
     <Compile Include="EntityFramework\Annotations\X_DEPARTMENT.cs" />
     <Compile Include="EntityFramework\Annotations\X_JOBCOST_LINES_AUDIT.cs" />
     <Compile Include="EntityFramework\Annotations\X_EARNED_QUERY.cs" />
     <Compile Include="EntityFramework\Annotations\X_INVOICED_V1.cs" />
+    <Compile Include="EntityFramework\Annotations\X_JOB_TRANSACTIONS_DETAIL_V5.cs" />
     <Compile Include="EntityFramework\Annotations\X_PURCHORD_LINE_DETAILS_VIEW_V1.cs" />
     <Compile Include="EntityFramework\Annotations\X_JOB_TRANSACTIONS_DETAIL_V4.cs" />
     <Compile Include="EntityFramework\Annotations\X_PL_SUMMARY_V1.cs" />
@@ -1074,6 +1076,7 @@
     <Compile Include="EntityFramework\BluePrintsData\REGISTER_CHANGE_ATTACHMENT.cs" />
     <Compile Include="EntityFramework\BluePrintsData\REGISTER_TQ_ATTACHMENT.cs" />
     <Compile Include="EntityFramework\BluePrintsData\TRANSACTION_AUDIT.cs" />
+    <Compile Include="EntityFramework\BluePrintsData\TRANSACTION_APPROVAL.cs" />
     <Compile Include="EntityFramework\BluePrintsData\X_JOBCOST_LINES_AUDIT.cs" />
     <Compile Include="EntityFramework\BluePrintsData\X_REPORTABLES.cs" />
     <Compile Include="EntityFramework\BluePrintsData\X_EARNED_QUERY.cs" />
@@ -1198,6 +1201,7 @@
     <Compile Include="EntityFramework\PrimeroData\X_DEPARTMENT.cs" />
     <Compile Include="EntityFramework\PrimeroData\X_JOB_TIMESHEETS.cs" />
     <Compile Include="EntityFramework\PrimeroData\X_INVOICED_V1.cs" />
+    <Compile Include="EntityFramework\PrimeroData\X_JOB_TRANSACTIONS_DETAIL_V5.cs" />
     <Compile Include="EntityFramework\PrimeroData\X_PURCHORD_LINE_STOCKCODE.cs" />
     <Compile Include="EntityFramework\PrimeroData\X_PURCHORD_LINE_DETAILS_VIEW_V1.cs" />
     <Compile Include="EntityFramework\PrimeroData\X_JOB_TRANSACTIONS_DETAIL_V4.cs" />

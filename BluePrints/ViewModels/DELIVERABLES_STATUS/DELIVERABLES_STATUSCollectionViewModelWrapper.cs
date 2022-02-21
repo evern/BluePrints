@@ -40,15 +40,16 @@ namespace BluePrints.ViewModels
         protected DELIVERABLES_STATUSCollectionViewModelWrapper(
             IUnitOfWorkFactory<IBluePrintsEntitiesUnitOfWork> unitOfWorkFactory = null)
         {
+            bluePrintsEntitiesUnitOfWork = BluePrintsEntitiesUnitOfWorkSource.GetUnitOfWorkFactory().CreateUnitOfWork();
+            bluePrintsUnitOfWorkFactory = BluePrintsEntitiesUnitOfWorkSource.GetUnitOfWorkFactory(bluePrintsEntitiesUnitOfWork);
         }
 
         #region Database Operations
 
         private PROJECT loadPROJECT;
         private bool isProjectSpecific;
-        private IUnitOfWorkFactory<IBluePrintsEntitiesUnitOfWork> bluePrintsUnitOfWorkFactory =
-            BluePrintsEntitiesUnitOfWorkSource.GetUnitOfWorkFactory();
-
+        private IUnitOfWorkFactory<IBluePrintsEntitiesUnitOfWork> bluePrintsUnitOfWorkFactory;
+        private IBluePrintsEntitiesUnitOfWork bluePrintsEntitiesUnitOfWork;
         protected override void resolveParameters(object parameter)
         {
             if (parameter != null)
@@ -121,6 +122,14 @@ namespace BluePrints.ViewModels
             return string.Empty;
         }
 
+        protected override OperationInterceptMode OnBeforeProjectionDeleteIsContinue(DELIVERABLES_STATUS projection, out List<ErrorMessage> errorMessages)
+        {
+            //have to delete relationship to prevent EF relationship error
+            //although it has been defined by EF WillCascadeOnDelete(false) it still throws error when it's not manually deleted
+            DeleteProjectionDocTypes(projection, true);
+            return base.OnBeforeProjectionDeleteIsContinue(projection, out errorMessages);
+        }
+
         protected override OperationInterceptMode OnBeforeProjectionSaveIsContinue(DELIVERABLES_STATUS projection, out bool isNew)
         {
             if (isProjectSpecific)
@@ -131,13 +140,13 @@ namespace BluePrints.ViewModels
         //Save assigned document types on projection
         protected override void OnAfterProjectionSave(DELIVERABLES_STATUS projection, DELIVERABLES_STATUS entity, bool isNew)
         {
-            DeleteProjectionDocTypes(projection);
+            DeleteProjectionDocTypes(projection, false);
             SaveProjectionDocTypes(projection);
 
             base.OnAfterProjectionSave(projection, entity, isNew);
         }
 
-        private void DeleteProjectionDocTypes(DELIVERABLES_STATUS projectionEntity)
+        private void DeleteProjectionDocTypes(DELIVERABLES_STATUS projectionEntity, bool forceDeleteAll)
         {
             List<DOCTYPE> projectionDocTypes = projectionEntity.GetAssignedDocTypes();
             List<DOCTYPE> assignedDocTypes = projectionDocTypes == null ? new List<DOCTYPE>() : projectionDocTypes.Select(x => x).ToList();
@@ -145,7 +154,9 @@ namespace BluePrints.ViewModels
 
             foreach (DSTATUS_DOCTYPE statusDocType in DSTATUS_DOCTYPECollection.Where(x => x.GUID_STATUS == projectionEntity.GUID))
             {
-                if (assignedDocTypes.Count == 0)
+                if(forceDeleteAll)
+                    deleteStatusDocTypes.Add(statusDocType);
+                else if (assignedDocTypes.Count == 0)
                     deleteStatusDocTypes.Add(statusDocType);
                 else
                 {
@@ -157,6 +168,8 @@ namespace BluePrints.ViewModels
 
             foreach(DSTATUS_DOCTYPE deleteStatusDocType in deleteStatusDocTypes)
             {
+                //need to remove from EF to prevent relationship errors
+                projectionEntity.DSTATUS_DOCTYPE.Remove(deleteStatusDocType);
                 DSTATUS_DOCTYPECollectionViewModel.Delete(deleteStatusDocType);
             }
         }

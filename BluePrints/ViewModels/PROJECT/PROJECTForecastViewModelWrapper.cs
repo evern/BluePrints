@@ -880,7 +880,7 @@ namespace BluePrints.ViewModels
 
             //For Debugging
             //string s;
-            //if (commodityJob.Projection.SubJobCode == "37102-000-00-I1" && commodityJob.DisciplineCode == "PM01" && commodityJob.Projection.CommodityCode == "G01" && commodityJob.Projection.VariationCode == "")
+            //if (commodityJob.Projection.SubJobCode == "31510-000-00-P1" && commodityJob.DisciplineCode == "CC01" && commodityJob.Projection.CommodityCode == "C05" && commodityJob.Projection.VariationCode == "")
             //    s = string.Empty;
             //else
             //    return commodityRow;

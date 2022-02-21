@@ -399,6 +399,11 @@ namespace BluePrints.BluePrintsEntitiesDataModel
             get { return GetRepository((TENDER_PROFILE_ITEM x) => x.GUID); }
         }
 
+        IRepository<TRANSACTION_APPROVAL, Guid> IBluePrintsEntitiesUnitOfWork.TRANSACTION_APPROVALS
+        {
+            get { return GetRepository((TRANSACTION_APPROVAL x) => x.GUID); }
+        }
+
         IRepository<UOM, Guid> IBluePrintsEntitiesUnitOfWork.UOMS
         {
             get { return GetRepository((UOM x) => x.GUID); }

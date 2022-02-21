@@ -97,6 +97,7 @@ namespace BluePrints.Data
         public virtual DbSet<SUBJOB> SUBJOB { get; set; }
         public virtual DbSet<SUBJOB_ASSIGNMENT> SUBJOB_ASSIGNMENT { get; set; }
         public virtual DbSet<TRANSACTION_AUDIT> TRANSACTION_AUDIT { get; set; }
+        public virtual DbSet<TRANSACTION_APPROVAL> TRANSACTION_APPROVAL { get; set; }
         public virtual DbSet<VARIATION_CONSTRUCTION> VARIATION_CONSTRUCTION { get; set; }
         public virtual DbSet<VARIATION_CONSTRUCTION_ITEM> VARIATION_CONSTRUCTION_ITEM { get; set; }
         public virtual DbSet<VARIATION_CONSTRUCTION_IMPACT> VARIATION_CONSTRUCTION_IMPACT { get; set; }
@@ -786,6 +787,24 @@ namespace BluePrints.Data
 
             modelBuilder.Entity<PROJECT>()
                 .HasMany(e => e.REGISTER_TQ)
+                .WithRequired(e => e.PROJECT)
+                .HasForeignKey(e => e.GUID_PROJECT)
+                .WillCascadeOnDelete(false);
+
+            modelBuilder.Entity<PROJECT>()
+                .Property(e => e.CURRENCYCONVERSION)
+                .HasPrecision(10, 2);
+
+            modelBuilder.Entity<PROJECT>()
+                .Property(e => e.REVIEWPERCENTAGE)
+                .HasPrecision(2, 2);
+
+            modelBuilder.Entity<PROJECT>()
+                .Property(e => e.REVIEWPERIOD)
+                .HasPrecision(2, 0);
+
+            modelBuilder.Entity<PROJECT>()
+                .HasMany(e => e.TRANSACTION_APPROVAL)
                 .WithRequired(e => e.PROJECT)
                 .HasForeignKey(e => e.GUID_PROJECT)
                 .WillCascadeOnDelete(false);

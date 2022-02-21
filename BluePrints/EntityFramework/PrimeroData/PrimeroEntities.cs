@@ -392,6 +392,7 @@ namespace BluePrints.PrimeroData
         public virtual DbSet<X_JOB_TRANSACTIONS_DETAIL> X_JOB_TRANSACTIONS_DETAIL { get; set; }
         public virtual DbSet<X_JOB_TRANSACTIONS_DETAIL_SeqNo> X_JOB_TRANSACTIONS_DETAIL_SeqNo { get; set; }
         public virtual DbSet<X_JOB_TRANSACTIONS_DETAIL_V4> X_JOB_TRANSACTIONS_DETAIL_V4 { get; set; }
+        public virtual DbSet<X_JOB_TRANSACTIONS_DETAIL_V5> X_JOB_TRANSACTIONS_DETAIL_V5 { get; set; }
         public virtual DbSet<X_JOB_TIMESHEETS> X_JOB_TIMESHEETS { get; set; }
         public virtual DbSet<X_PL_SUMMARY_V1> X_PL_SUMMARY_V1 { get; set; }
         public virtual DbSet<X_PURCHORD_LINE_DETAILS_VIEW_V1> X_PURCHORD_LINE_DETAILS_VIEW_V1 { get; set; }

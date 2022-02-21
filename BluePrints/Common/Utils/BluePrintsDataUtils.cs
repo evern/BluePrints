@@ -768,7 +768,7 @@ namespace BluePrints.Common.Utils
         {
             List<ExoDataPoint> materialDataPoints = new List<ExoDataPoint>();
             primeroUOW.AutoDetectChangesEnabled(false);
-            DateTime invoiceCutOffDate = dataDate.Date.AddDays(1).AddHours(-1);
+            DateTime invoiceCutOffDate = dataDate.Date.AddDays(1).AddSeconds(-1);
 
             using (var t = new TransactionScope(TransactionScopeOption.Required, new TransactionOptions { IsolationLevel = System.Transactions.IsolationLevel.ReadUncommitted }))
             {

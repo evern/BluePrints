@@ -48,7 +48,7 @@ namespace BluePrints.ViewModels
     /// <summary>
     /// Represents the single PROGRESS object view model.
     /// </summary>
-    public partial class TransactionCollectionViewModelWrapper : BluePrintsEntitiesCollectionWrapper<X_JOB_TRANSACTIONS_DETAIL_V4, X_JOB_TRANSACTIONS_DETAIL_V4, int, IPrimeroEntitiesUnitOfWork>
+    public partial class TransactionCollectionViewModelWrapper : BluePrintsEntitiesCollectionWrapper<X_JOB_TRANSACTIONS_DETAIL_V5, X_JOB_TRANSACTIONS_DETAIL_V5, int, IPrimeroEntitiesUnitOfWork>
     {
         /// <summary>
         /// Creates a new instance of PROGRESS_ITEMSViewModelWrapper as a POCO view model.
@@ -69,6 +69,7 @@ namespace BluePrints.ViewModels
             CanEditQuantity = !IsReadOnly && LoginCredentials.getPermissionStatus(DataUtils.GetNameOf(() => NavigationResources.Permission_EXO_Transactions_ChangeQuantity)) == LoginCredentials.PermissionStatus.All;
 
             bool? isUsePreloadModePreference = LoginCredentials.GetUserPreferenceBool(DataUtils.GetNameOf(() => UserPreferences.EXO_PreloadTransactions));
+
             isUsePreloadMode = isUsePreloadModePreference == null ? false : (bool)isUsePreloadModePreference;
             IsInstantFeedbackMode = !IsUsePreloadMode;
         }
@@ -159,7 +160,7 @@ namespace BluePrints.ViewModels
         public ObservableCollection<JOB_TRANSACTIONS> JOB_TRANSACTIONS = new ObservableCollection<JOB_TRANSACTIONS>();
         protected override void onAuxiliaryEntitiesCollectionLoaded()
         {
-            CreateMainViewModel(primeroUnitOfWorkFactory, x => x.X_JOB_TRANSACTIONS_DETAIL_V4);
+            CreateMainViewModel(primeroUnitOfWorkFactory, x => x.X_JOB_TRANSACTIONS_DETAIL_V5);
         }
 
         protected override void OnAfterAssignedCallbackAndRaisePropertyChanged()
@@ -167,7 +168,7 @@ namespace BluePrints.ViewModels
             IsPasteCellLevel = true;
         }
 
-        protected override Func<IRepositoryQuery<X_JOB_TRANSACTIONS_DETAIL_V4>, IQueryable<X_JOB_TRANSACTIONS_DETAIL_V4>> specifyMainViewModelProjection()
+        protected override Func<IRepositoryQuery<X_JOB_TRANSACTIONS_DETAIL_V5>, IQueryable<X_JOB_TRANSACTIONS_DETAIL_V5>> specifyMainViewModelProjection()
         {
             if (isYearToDate)
             {
@@ -189,20 +190,20 @@ namespace BluePrints.ViewModels
             base.InstantFeedbackOtherUnitOfWorkSaveChanges();
         }
 
-        protected override OperationInterceptMode OnBeforeProjectionSaveIsContinue(X_JOB_TRANSACTIONS_DETAIL_V4 projection, out bool isNew)
+        protected override OperationInterceptMode OnBeforeProjectionSaveIsContinue(X_JOB_TRANSACTIONS_DETAIL_V5 projection, out bool isNew)
         {
             isNew = false;
             ApplyInstantFeedbackEntityPropertiesToOtherUnitOfWorkEntity(projection);
             return OperationInterceptMode.SkipOneAndAllDbSaves;
         }
 
-        protected override void OnAfterProjectionsSave(IEnumerable<X_JOB_TRANSACTIONS_DETAIL_V4> projections)
+        protected override void OnAfterProjectionsSave(IEnumerable<X_JOB_TRANSACTIONS_DETAIL_V5> projections)
         {
             primeroUnitOfWork.SaveChanges();
             base.OnAfterProjectionsSave(projections);
         }
 
-        protected override void ApplyInstantFeedbackEntityPropertiesToOtherUnitOfWorkEntity(X_JOB_TRANSACTIONS_DETAIL_V4 projection)
+        protected override void ApplyInstantFeedbackEntityPropertiesToOtherUnitOfWorkEntity(X_JOB_TRANSACTIONS_DETAIL_V5 projection)
         {
             JOB_TRANSACTIONS findJOB_TRANSACTION = primeroUnitOfWork.JOB_TRANSACTIONS.FirstOrDefault(x => x.SEQNO == projection.SEQNO);
             if(findJOB_TRANSACTION != null)
@@ -280,20 +281,20 @@ namespace BluePrints.ViewModels
         }
         #endregion
 
-        public override void UnifiedCellValueChanged(string field_name, object old_value, object new_value, X_JOB_TRANSACTIONS_DETAIL_V4 projection, bool isNew)
+        public override void UnifiedCellValueChanged(string field_name, object old_value, object new_value, X_JOB_TRANSACTIONS_DETAIL_V5 projection, bool isNew)
         {
-            if (field_name == BindableBase.GetPropertyName(() => new X_JOB_TRANSACTIONS_DETAIL_V4().QUANTITY))
+            if (field_name == BindableBase.GetPropertyName(() => new X_JOB_TRANSACTIONS_DETAIL_V5().QUANTITY))
                 projection.QtyEdited = true;
 
             base.UnifiedCellValueChanged(field_name, old_value, new_value, projection, isNew);
         }
 
-        public override string UnifiedValueValidation(X_JOB_TRANSACTIONS_DETAIL_V4 projection, string field_name, object new_value, bool isPaste)
+        public override string UnifiedValueValidation(X_JOB_TRANSACTIONS_DETAIL_V5 projection, string field_name, object new_value, bool isPaste)
         {
             return string.Empty;
         }
 
-        public override string UnifiedRowValidation(X_JOB_TRANSACTIONS_DETAIL_V4 projection)
+        public override string UnifiedRowValidation(X_JOB_TRANSACTIONS_DETAIL_V5 projection)
         {
             return string.Empty;
         }
@@ -389,11 +390,11 @@ namespace BluePrints.ViewModels
             }
         }
 
-        public IEnumerable<X_JOB_TRANSACTIONS_DETAIL_V4> X_JOB_TRANSACTIONS_DETAILCollection
+        public IEnumerable<X_JOB_TRANSACTIONS_DETAIL_V5> X_JOB_TRANSACTIONS_DETAILCollection
         {
             get
             {
-                return GetEntities<X_JOB_TRANSACTIONS_DETAIL_V4>();
+                return GetEntities<X_JOB_TRANSACTIONS_DETAIL_V5>();
             }
         }
 
