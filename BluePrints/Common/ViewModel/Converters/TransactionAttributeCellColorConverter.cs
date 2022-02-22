@@ -16,10 +16,10 @@ namespace BluePrints.Common.ViewModel.Converters
 
             SolidColorBrush valuePendingColor = new SolidColorBrush(Colors.LemonChiffon);
             SolidColorBrush valueApprovedColor = new SolidColorBrush(Colors.Chartreuse);
-            TransactionAttributeStatus status = (TransactionAttributeStatus)value;
-            if (status == TransactionAttributeStatus.Original)
+            ChangeTrackablePropertyStatus status = (ChangeTrackablePropertyStatus)value;
+            if (status == ChangeTrackablePropertyStatus.Original)
                 return transparentColor;
-            else if (status == TransactionAttributeStatus.Pending)
+            else if (status == ChangeTrackablePropertyStatus.Pending)
                 return valuePendingColor;
             else
                 return valueApprovedColor;

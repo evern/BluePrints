@@ -188,7 +188,7 @@ namespace BluePrints.ViewModels
                     LoginCredentials.CurrentUser = new USER() { NAME = BluePrintsResources.Default_AdminUsername };
                     //USER_PREFERENCE transactionPreloadPreference = new USER_PREFERENCE();
                     //transactionPreloadPreference.PREFERENCE_NAME = DataUtils.GetNameOf(() => UserPreferences.EXO_PreloadTransactions);
-                    //transactionPreloadPreference.PREFERENCE_VALUE = UserPreferences.PreferenceFalseValue;
+                    //transactionPreloadPreference.PREFERENCE_VALUE = UserPreferences.PreferenceTrueValue;
                     //LoginCredentials.CurrentUser.UserPreferences.Add(transactionPreloadPreference);
                     //forecastActualPreference.PREFERENCE_NAME = DataUtils.GetNameOf(() => UserPreferences.Forecast_ShowActuals);
                     //forecastActualPreference.PREFERENCE_VALUE = UserPreferences.PreferenceTrueValue;

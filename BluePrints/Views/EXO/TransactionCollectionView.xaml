@@ -69,10 +69,10 @@
                                     <dxe:ComboBoxEditSettings AutoComplete="True" DisplayMember="JOBCODE" IsTextEditable="True" ItemsSource="{Binding JOBCOST_HDRCollection}" ValueMember="JOBNO" />
                                 </dxg:GridColumn.EditSettings>
                             </dxg:GridColumn>
-                            <dxg:GridColumn FieldName="ViewJOBNO" AllowBestFit="false" Width="110" Header="Sub Job" ReadOnly="{Binding IsReadOnly}" >
+                            <dxg:GridColumn FieldName="JobNoChangeTracking.TrackableProperty" AllowBestFit="false" Width="110" Header="Sub Job" ReadOnly="{Binding IsReadOnly}" >
                                 <dxg:GridColumn.CellTemplate>
                                     <DataTemplate>
-                                        <dxg:LookUpEdit Name="PART_Editor" AutoComplete="True" AutoPopulateColumns="False" DisplayMember="JOBCODE" IncrementalFiltering="True" IsTextEditable="true" ItemsSource="{Binding View.DataContext.JOBCOST_HDRCollection}" NullValueButtonPlacement="None" PopupWidth="500" ValueMember="JOBNO" Background="{Binding RowData.Row.SubJobCodeStatus, Converter={StaticResource TransactionAttributeCellColorConverter}}" ToolTip="{Binding RowData.Row.SubJobToolTip}">
+                                        <dxg:LookUpEdit Name="PART_Editor" AutoComplete="True" AutoPopulateColumns="False" DisplayMember="JOBCODE" IncrementalFiltering="True" IsTextEditable="true" ItemsSource="{Binding View.DataContext.JOBCOST_HDRCollection}" NullValueButtonPlacement="None" PopupWidth="500" ValueMember="JOBNO" Background="{Binding RowData.Row.JobNoChangeTracking.ChangeTrackingPropertyStatus, Converter={StaticResource TransactionAttributeCellColorConverter}}" ToolTip="{Binding RowData.Row.JobNoChangeTracking.ChangeTrackingToolTip}">
                                             <dxg:LookUpEdit.StyleSettings>
                                                 <dxg:SearchLookUpEditStyleSettings />
                                             </dxg:LookUpEdit.StyleSettings>
@@ -97,10 +97,10 @@
                                     <dxe:ComboBoxEditSettings AutoComplete="True" DisplayMember="JOBCODE" IsTextEditable="True" ItemsSource="{Binding JOBCOST_HDRCollection}" ValueMember="JOBNO" />
                                 </dxg:GridColumn.EditSettings>
                             </dxg:GridColumn>
-                            <dxg:GridColumn FieldName="COST_GROUP_NO" AllowBestFit="false" Header="Discipline Code" Width="200" ReadOnly="{Binding IsReadOnly}" >
+                            <dxg:GridColumn FieldName="CostGroupChangeTracking.TrackableProperty" AllowBestFit="false" Header="Discipline Code" Width="200" ReadOnly="{Binding IsReadOnly}" >
                                 <dxg:GridColumn.CellTemplate>
                                     <DataTemplate>
-                                        <dxg:LookUpEdit Name="PART_Editor" AutoComplete="True" AutoPopulateColumns="False" DisplayMember="COSTDESC" IncrementalFiltering="True" IsTextEditable="true" ItemsSource="{Binding View.DataContext.JOB_COSTGROUPSCollection}" NullValueButtonPlacement="None" PopupWidth="500" ValueMember="SEQNO">
+                                        <dxg:LookUpEdit Name="PART_Editor" AutoComplete="True" AutoPopulateColumns="False" DisplayMember="COSTDESC" IncrementalFiltering="True" IsTextEditable="true" ItemsSource="{Binding View.DataContext.JOB_COSTGROUPSCollection}" NullValueButtonPlacement="None" PopupWidth="500" ValueMember="SEQNO" Background="{Binding RowData.Row.CostGroupChangeTracking.ChangeTrackingPropertyStatus, Converter={StaticResource TransactionAttributeCellColorConverter}}" ToolTip="{Binding RowData.Row.CostGroupChangeTracking.ChangeTrackingToolTip}">
                                             <dxg:LookUpEdit.StyleSettings>
                                                 <dxg:SearchLookUpEditStyleSettings />
                                             </dxg:LookUpEdit.StyleSettings>
@@ -125,10 +125,10 @@
                                     <dxe:ComboBoxEditSettings AutoComplete="True" DisplayMember="SHORTCODE" IsTextEditable="True" ItemsSource="{Binding JOB_COSTGROUPSCollection}" ValueMember="SEQNO" />
                                 </dxg:GridColumn.EditSettings>
                             </dxg:GridColumn>
-                            <dxg:GridColumn FieldName="COST_TYPE_NO" AllowBestFit="false" Width="200" Header="Commodity Code" ReadOnly="{Binding IsReadOnly}" >
+                            <dxg:GridColumn FieldName="CostTypeChangeTracking.TrackableProperty" AllowBestFit="false" Width="200" Header="Commodity Code" ReadOnly="{Binding IsReadOnly}" >
                                 <dxg:GridColumn.CellTemplate>
                                     <DataTemplate>
-                                        <dxg:LookUpEdit Name="PART_Editor" AutoComplete="True" AutoPopulateColumns="False" DisplayMember="COSTDESC" IncrementalFiltering="True" IsTextEditable="true" ItemsSource="{Binding View.DataContext.JOB_COSTTYPESCollection}" NullValueButtonPlacement="Popup" PopupWidth="500" ValueMember="SEQNO">
+                                        <dxg:LookUpEdit Name="PART_Editor" AutoComplete="True" AutoPopulateColumns="False" DisplayMember="COSTDESC" IncrementalFiltering="True" IsTextEditable="true" ItemsSource="{Binding View.DataContext.JOB_COSTTYPESCollection}" NullValueButtonPlacement="Popup" PopupWidth="500" ValueMember="SEQNO" Background="{Binding RowData.Row.CostTypeChangeTracking.ChangeTrackingPropertyStatus, Converter={StaticResource TransactionAttributeCellColorConverter}}" ToolTip="{Binding RowData.Row.CostTypeChangeTracking.ChangeTrackingToolTip}">
                                             <dxg:LookUpEdit.StyleSettings>
                                                 <dxg:SearchLookUpEditStyleSettings />
                                             </dxg:LookUpEdit.StyleSettings>
@@ -153,10 +153,10 @@
                                     <dxe:ComboBoxEditSettings AutoComplete="True" DisplayMember="SHORTCODE" IsTextEditable="True" ItemsSource="{Binding JOB_COSTTYPESCollection}" NullValueButtonPlacement="EditBox" ValueMember="SEQNO" />
                                 </dxg:GridColumn.EditSettings>
                             </dxg:GridColumn>
-                            <dxg:GridColumn FieldName="STOCKCODE" Header="Stock Code" Width="200" ReadOnly="{Binding IsReadOnly}" >
+                            <dxg:GridColumn FieldName="StockCodeChangeTracking.TrackableProperty" Header="Stock Code" Width="200" ReadOnly="{Binding IsReadOnly}" >
                                 <dxg:GridColumn.CellTemplate>
                                     <DataTemplate>
-                                        <dxg:LookUpEdit Name="PART_Editor" AutoComplete="True" AutoPopulateColumns="False" DisplayMember="STOCKCODE" IncrementalFiltering="True" IsTextEditable="true" ItemsSource="{Binding View.DataContext.STOCK_ITEMCollection}" NullValueButtonPlacement="Popup" PopupWidth="500" ValueMember="STOCKCODE">
+                                        <dxg:LookUpEdit Name="PART_Editor" AutoComplete="True" AutoPopulateColumns="False" DisplayMember="STOCKCODE" IncrementalFiltering="True" IsTextEditable="true" ItemsSource="{Binding View.DataContext.STOCK_ITEMCollection}" NullValueButtonPlacement="Popup" PopupWidth="500" ValueMember="STOCKCODE" Background="{Binding RowData.Row.StockCodeChangeTracking.ChangeTrackingPropertyStatus, Converter={StaticResource TransactionAttributeCellColorConverter}}" ToolTip="{Binding RowData.Row.StockCodeChangeTracking.ChangeTrackingToolTip}">
                                             <dxg:LookUpEdit.StyleSettings>
                                                 <dxg:SearchLookUpEditStyleSettings />
                                             </dxg:LookUpEdit.StyleSettings>
@@ -181,7 +181,13 @@
                                     <dxe:ComboBoxEditSettings AutoComplete="True" DisplayMember="STOCKCODE" IsTextEditable="True" ItemsSource="{Binding STOCK_ITEMCollection}" NullValueButtonPlacement="EditBox" ValueMember="STOCKCODE" />
                                 </dxg:GridColumn.EditSettings>
                             </dxg:GridColumn>
-                            <dxg:GridColumn FieldName="VARIATION_CODE" AllowBestFit="false" Width="150" Header="Variation Code" ReadOnly="{Binding IsReadOnly}" />
+                            <dxg:GridColumn FieldName="VariationCodeChangeTracking.TrackableProperty" AllowBestFit="false" Width="150" Header="Variation Code" ReadOnly="{Binding IsReadOnly}" >
+                                <dxg:GridColumn.CellTemplate>
+                                    <DataTemplate>
+                                        <dxe:TextEdit Name="PART_Editor" Background="{Binding RowData.Row.VariationCodeChangeTracking.ChangeTrackingPropertyStatus, Converter={StaticResource TransactionAttributeCellColorConverter}}" ToolTip="{Binding RowData.Row.VariationCodeChangeTracking.ChangeTrackingToolTip}"/>
+                                    </DataTemplate>
+                                </dxg:GridColumn.CellTemplate>
+                            </dxg:GridColumn>
                             <dxg:GridColumn FieldName="DESCRIPTION" Width="300" AllowBestFit="false" Header="Description" ReadOnly="{Binding IsReadOnly}" />
                         </dxg:GridControlBand>
                         <dxg:GridControlBand Header="Read Only (Any changes will be updated on refresh)" >

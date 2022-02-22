@@ -43,6 +43,12 @@ namespace BluePrints.Data
         [StringLength(20)]
         public string NEW_STOCK_CODE { get; set; }
 
+        [StringLength(100)]
+        public string OLD_VARIATION_CODE { get; set; }
+
+        [StringLength(100)]
+        public string NEW_VARIATION_CODE { get; set; }
+
         public TransactionApprovalStatus STATUS { get; set; }
 
         public DateTime? APPROVEDON { get; set; }

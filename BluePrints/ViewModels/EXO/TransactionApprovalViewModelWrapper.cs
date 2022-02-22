@@ -114,7 +114,22 @@ namespace BluePrints.ViewModels
                     JOB_TRANSACTIONS findJOB_TRANSACTION = primeroUnitOfWork.JOB_TRANSACTIONS.FirstOrDefault(x => x.SEQNO == projection.JOB_TRANSACTION_SEQNO);
                     if(findJOB_TRANSACTION != null)
                     {
-                        findJOB_TRANSACTION.JOBNO = projection.NEW_JOBNO;
+                        if(projection.NEW_JOBNO != null)
+                            findJOB_TRANSACTION.JOBNO = projection.NEW_JOBNO;
+
+                        if (projection.NEW_COST_GROUP_NO != null)
+                            findJOB_TRANSACTION.COST_GROUP = projection.NEW_COST_GROUP_NO;
+
+                        if (projection.NEW_COST_TYPE_NO != null)
+                            findJOB_TRANSACTION.COST_TYPE = projection.NEW_COST_TYPE_NO;
+
+                        if (projection.NEW_STOCK_CODE != null)
+                            findJOB_TRANSACTION.STOCKCODE = projection.NEW_STOCK_CODE;
+
+                        if (projection.NEW_VARIATION_CODE != null)
+                            findJOB_TRANSACTION.X_VARIATIONCODE = projection.NEW_VARIATION_CODE;
+
+                        projection.STATUS = TransactionApprovalStatus.Approved;
                         projection.APPROVEDON = DateTime.Now;
                         projection.APPROVEDBY = LoginCredentials.CurrentUserGuid;
                         projection.Update();
@@ -161,6 +176,31 @@ namespace BluePrints.ViewModels
                 var collection = GetEntities<USER>();
                 if (collection != null)
                     collection = collection.OrderBy(x => x.NAME);
+                return collection;
+            }
+        }
+
+        public IEnumerable<JOB_COSTGROUPS> JOB_COSTGROUPSCollection
+        {
+            get
+            {
+                var collection = GetEntities<JOB_COSTGROUPS>();
+                if (collection != null)
+                    collection = collection.OrderBy(x => x.SHORTCODE);
+
+                return collection;
+            }
+        }
+
+
+        public IEnumerable<JOB_COSTTYPES> JOB_COSTTYPESCollection
+        {
+            get
+            {
+                var collection = GetEntities<JOB_COSTTYPES>();
+                if (collection != null)
+                    collection = collection.OrderBy(x => x.SHORTCODE);
+
                 return collection;
             }
         }

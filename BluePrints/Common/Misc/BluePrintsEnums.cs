@@ -336,7 +336,7 @@ namespace BluePrints.Common
         [Display(Name = "Approved")] Approved = 1
     }
 
-    public enum TransactionAttributeStatus
+    public enum ChangeTrackablePropertyStatus
     {
         [Display(Name = "Original")] Original = 0,
         [Display(Name = "Pending")] Pending = 1,
