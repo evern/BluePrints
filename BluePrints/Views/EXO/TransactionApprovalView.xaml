@@ -73,6 +73,16 @@
                             <dxg:GridColumn Header="New Variation Code" FieldName="NEW_VARIATION_CODE" HeaderToolTip="Variation code for approval" ReadOnly="True"/>
                         </dxg:GridControlBand>
                         <dxg:GridControlBand x:Name="gcbStatus" Header="Status">
+                            <dxg:GridColumn Header="Created" FieldName="CREATED" AllowSearchPanel="False" HeaderToolTip="When the transaction change is created" ReadOnly="True">
+                                <dxg:GridColumn.EditSettings>
+                                    <dxe:DateEditSettings />
+                                </dxg:GridColumn.EditSettings>
+                            </dxg:GridColumn>
+                            <dxg:GridColumn AllowSearchPanel="False" FieldName="CREATEDBY" Header="Created By" HeaderToolTip="Person creating the transaction change" ReadOnly="True" SortMode="DisplayText">
+                                <dxg:GridColumn.EditSettings>
+                                    <dxe:ComboBoxEditSettings AutoComplete="True" DisplayMember="NAME" IsTextEditable="True" ItemsSource="{Binding USERCollection}" ValueMember="GUID" />
+                                </dxg:GridColumn.EditSettings>
+                            </dxg:GridColumn>
                             <dxg:GridColumn Header="Approved On" FieldName="APPROVEDON" AllowSearchPanel="False" HeaderToolTip="When the transaction is approved" ReadOnly="True">
                                 <dxg:GridColumn.EditSettings>
                                     <dxe:DateEditSettings />

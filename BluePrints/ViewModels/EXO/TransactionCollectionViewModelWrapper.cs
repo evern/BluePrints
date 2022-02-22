@@ -226,7 +226,7 @@ namespace BluePrints.ViewModels
 
         protected override void ApplyInstantFeedbackEntityPropertiesToOtherUnitOfWorkEntity(X_JOB_TRANSACTIONS_DETAIL_V5 projection)
         {
-            if (!projection.JobNoChangeTracking.IsPropertyFinalised || !projection.CostGroupChangeTracking.IsPropertyFinalised || !projection.CostTypeChangeTracking.IsPropertyFinalised || !projection.StockCodeChangeTracking.IsPropertyFinalised || !projection.VariationCodeChangeTracking.IsPropertyFinalised)
+            if (!projection.JobNoChangeTracking.IsChanged || !projection.CostGroupChangeTracking.IsChanged || !projection.CostTypeChangeTracking.IsChanged || !projection.StockCodeChangeTracking.IsChanged || !projection.VariationCodeChangeTracking.IsChanged)
             {
                 TRANSACTION_APPROVAL findTRANSACTION_APPROVAL = bluePrintsUnitOfWork.TRANSACTION_APPROVALS.FirstOrDefault(x => x.JOB_TRANSACTION_SEQNO == projection.SEQNO && x.STATUS == TransactionApprovalStatus.Pending);
                 if(findTRANSACTION_APPROVAL == null)
@@ -239,7 +239,15 @@ namespace BluePrints.ViewModels
                     findTRANSACTION_APPROVAL.STATUS = TransactionApprovalStatus.Pending;
                 }
 
-                if (!projection.JobNoChangeTracking.IsPropertyFinalised)
+                if (projection.JobNoChangeTracking.IsSameAsOriginal)
+                {
+                    projection.OLD_JOBCODE = null;
+                    findTRANSACTION_APPROVAL.OLD_JOBCODE = null;
+                    findTRANSACTION_APPROVAL.OLD_JOBNO = null;
+                    findTRANSACTION_APPROVAL.NEW_JOBNO = null;
+                    projection.JobNoChangeTracking.ResetChangeTracking();
+                }
+                else if (!projection.JobNoChangeTracking.IsChanged)
                 {
                     //for tool tip to show old code without refreshing view
                     projection.OLD_JOBCODE = projection.SUB_JOBCODE;
@@ -248,7 +256,15 @@ namespace BluePrints.ViewModels
                     findTRANSACTION_APPROVAL.NEW_JOBNO = projection.JobNoChangeTracking.TrackableProperty;
                 }
 
-                if (!projection.CostGroupChangeTracking.IsPropertyFinalised)
+                if(projection.CostGroupChangeTracking.IsSameAsOriginal)
+                {
+                    projection.OLD_DISCIPLINECODE = null;
+                    findTRANSACTION_APPROVAL.OLD_DISCIPLINECODE = null;
+                    findTRANSACTION_APPROVAL.OLD_COST_GROUP_NO = null;
+                    findTRANSACTION_APPROVAL.NEW_COST_GROUP_NO = null;
+                    projection.CostGroupChangeTracking.ResetChangeTracking();
+                }
+                else if (!projection.CostGroupChangeTracking.IsChanged)
                 {
                     //for tool tip to show old code without refreshing view
                     projection.OLD_DISCIPLINECODE = projection.DISCIPLINE_CODE;
@@ -257,7 +273,15 @@ namespace BluePrints.ViewModels
                     findTRANSACTION_APPROVAL.NEW_COST_GROUP_NO = projection.CostGroupChangeTracking.TrackableProperty;
                 }
 
-                if (!projection.CostTypeChangeTracking.IsPropertyFinalised)
+                if (projection.CostTypeChangeTracking.IsSameAsOriginal)
+                {
+                    projection.OLD_COMMODITYCODE = null;
+                    findTRANSACTION_APPROVAL.OLD_COMMODITYCODE = null;
+                    findTRANSACTION_APPROVAL.OLD_COST_TYPE_NO = null;
+                    findTRANSACTION_APPROVAL.NEW_COST_TYPE_NO = null;
+                    projection.CostTypeChangeTracking.ResetChangeTracking();
+                }
+                else if (!projection.CostTypeChangeTracking.IsChanged)
                 {
                     //for tool tip to show old code without refreshing view
                     projection.OLD_COMMODITYCODE = projection.COMMODITY_CODE;
@@ -266,7 +290,14 @@ namespace BluePrints.ViewModels
                     findTRANSACTION_APPROVAL.NEW_COST_TYPE_NO = projection.CostTypeChangeTracking.TrackableProperty;
                 }
 
-                if (!projection.StockCodeChangeTracking.IsPropertyFinalised)
+                if (projection.StockCodeChangeTracking.IsSameAsOriginal)
+                {
+                    projection.OLD_STOCK_CODE = null;
+                    findTRANSACTION_APPROVAL.OLD_STOCK_CODE = null;
+                    findTRANSACTION_APPROVAL.NEW_STOCK_CODE = null;
+                    projection.StockCodeChangeTracking.ResetChangeTracking();
+                }
+                else if (!projection.StockCodeChangeTracking.IsChanged)
                 {
                     //for tool tip to show old code without refreshing view
                     projection.OLD_STOCK_CODE = projection.STOCKCODE;
@@ -274,7 +305,14 @@ namespace BluePrints.ViewModels
                     findTRANSACTION_APPROVAL.NEW_STOCK_CODE = projection.StockCodeChangeTracking.TrackableProperty;
                 }
 
-                if (!projection.VariationCodeChangeTracking.IsPropertyFinalised)
+                if (projection.VariationCodeChangeTracking.IsSameAsOriginal)
+                {
+                    projection.OLD_VARIATION_CODE = null;
+                    findTRANSACTION_APPROVAL.OLD_VARIATION_CODE = null;
+                    findTRANSACTION_APPROVAL.NEW_VARIATION_CODE = null;
+                    projection.VariationCodeChangeTracking.ResetChangeTracking();
+                }
+                else if (!projection.VariationCodeChangeTracking.IsChanged)
                 {
                     //for tool tip to show old code without refreshing view
                     projection.OLD_VARIATION_CODE = projection.VARIATION_CODE;
@@ -284,8 +322,11 @@ namespace BluePrints.ViewModels
 
                 projection.Update();
 
-                //use view model so that message can be invoked for instant refresh of Transaction Approval view
-                TRANSACTION_APPROVALViewModel.Save(findTRANSACTION_APPROVAL);
+                if (findTRANSACTION_APPROVAL.NEW_JOBNO == null && findTRANSACTION_APPROVAL.NEW_COST_GROUP_NO == null && findTRANSACTION_APPROVAL.NEW_COST_TYPE_NO == null && findTRANSACTION_APPROVAL.NEW_STOCK_CODE == null && findTRANSACTION_APPROVAL.NEW_VARIATION_CODE == null)
+                    TRANSACTION_APPROVALViewModel.Delete(findTRANSACTION_APPROVAL);
+                else
+                    //use view model so that message can be invoked for instant refresh of Transaction Approval view
+                    TRANSACTION_APPROVALViewModel.Save(findTRANSACTION_APPROVAL);
                 //bluePrintsUnitOfWork.SaveChanges();
             }
 

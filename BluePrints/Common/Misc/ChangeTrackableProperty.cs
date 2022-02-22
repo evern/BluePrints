@@ -38,9 +38,7 @@ namespace BluePrints.Common.Misc
             }
             set
             {
-                //prevent IsTransactionFinalised to register false value
-                if (!value.Equals(OriginalPropertyFunc()))
-                    RunTimeChangeTrackingProperty = value;
+                RunTimeChangeTrackingProperty = value;
             }
         }
 
@@ -61,12 +59,28 @@ namespace BluePrints.Common.Misc
 
         public string ChangeTrackingToolTip => ChangeTrackingPropertyStatus != ChangeTrackablePropertyStatus.Original && OriginalDescriptionFunc() != null ? "Previous Value : " + OriginalDescriptionFunc() : null;
 
-        public bool IsPropertyFinalised
+        public bool IsChanged
         {
             get
             {
-                return RunTimeChangeTrackingProperty == null || RunTimeChangeTrackingProperty.Equals(OriginalPropertyFunc());
+                return RunTimeChangeTrackingProperty == null;
             }
+        }
+
+        public bool IsSameAsOriginal
+        {
+            get
+            {
+                if (RunTimeChangeTrackingProperty == null)
+                    return false;
+
+                return RunTimeChangeTrackingProperty.Equals(OriginalPropertyFunc());
+            }
+        }
+
+        public void ResetChangeTracking()
+        {
+            RunTimeChangeTrackingProperty = default(T);
         }
     }
 }
