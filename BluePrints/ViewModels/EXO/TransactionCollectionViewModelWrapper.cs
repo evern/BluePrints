@@ -114,6 +114,7 @@ namespace BluePrints.ViewModels
                 isYearToDate = true;
                 is2020Onwards = (bool)PROJECTParameter.GetSecondEntity();
                 isUsePreloadMode = false;
+                IsInstantFeedbackMode = true;
 
                 DatabaseLocale dbLocale = (DatabaseLocale)PROJECTParameter.GetThirdEntity();
                 if (dbLocale == DatabaseLocale.Perth)

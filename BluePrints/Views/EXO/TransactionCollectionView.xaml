@@ -186,6 +186,11 @@
                         <dxg:GridControlBand Header="Read Only (Any changes will be updated on refresh)" >
                             <dxg:GridColumn FieldName="DEPARTMENT_NAME" Width="100" AllowBestFit="false" Header="Department" ReadOnly="True" />
                             <dxg:GridColumn FieldName="COMMODITY_CODE_DESC" AllowBestFit="false" Width="100" Header="Commodity Code Desc" ReadOnly="True" />
+                            <dxg:GridColumn FieldName="STOCKCODE" Header="Stock Code Desc" Width="200" ReadOnly="True" >
+                                <dxg:GridColumn.EditSettings>
+                                    <dxe:ComboBoxEditSettings AutoComplete="True" DisplayMember="DESCRIPTION" IsTextEditable="True" ItemsSource="{Binding STOCK_ITEMCollection}" NullValueButtonPlacement="EditBox" ValueMember="STOCKCODE" />
+                                </dxg:GridColumn.EditSettings>
+                            </dxg:GridColumn>
                             <dxg:GridColumn FieldName="ACCNO" Header="Resource" AllowBestFit="false" Width="150" ReadOnly="true" >
                                 <dxg:GridColumn.EditSettings>
                                     <dxe:ComboBoxEditSettings AutoComplete="True" DisplayMember="RESOURCENAME" IsTextEditable="True" ItemsSource="{Binding JOBCOST_RESOURCECollection}" ValueMember="SEQNO" />
