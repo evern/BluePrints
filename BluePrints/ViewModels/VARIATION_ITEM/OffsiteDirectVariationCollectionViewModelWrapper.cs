@@ -92,9 +92,9 @@ namespace BluePrints.ViewModels
         {
             if (loadVARIATION.APPROVED == null)
                 //When variation is not approved, retrieve current live deliverables and variation deliverables
-                //Also x.GUID_VARIATION != loadVARIATION.GUID prevents deliverable from getting shown twice due to it not being removed from the live deliverable's list because other variation has units on it
-                //(x.VARIATION.GUID_PROJECT == loadPROJECT.GUID && x.GUID_BASELINE == null) gets variation that belongs to this project, can come from any other variation that's not approved, approved variation will already be in the live baseline
-                return query.Where(x => (x.GUID_BASELINE == load_context_guid && x.GUID_VARIATION != loadVARIATION.GUID) || (x.VARIATION.GUID_PROJECT == loadPROJECT.GUID && x.VARIATION.APPROVED == null && x.GUID_BASELINE == null));
+                //(x.GUID_BASELINE == load_context_guid) gets current deliverables list
+                //(x.GUID_VARIATION == loadVARIATION.GUID && x.GUID_BASELINE == null) gets unapproved deliverables from current list
+                return query.Where(x => (x.GUID_BASELINE == load_context_guid) || (x.GUID_VARIATION == loadVARIATION.GUID && x.GUID_BASELINE == null));
             else
                 //When variation is approved, retrieve deliverables from variation connected baseline
                 return query.Where(x => x.GUID_BASELINE == loadVARIATION.GUID_BASELINE);
