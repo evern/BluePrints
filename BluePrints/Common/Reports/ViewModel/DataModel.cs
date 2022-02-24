@@ -225,8 +225,6 @@ namespace BluePrints.Common.ViewModel.Reporting
 
         public virtual PROGRESS_ITEM PROGRESS_ITEM_Current => PROGRESS_ITEMS.FirstOrDefault(y => y.EARNED_DATE.Date == ReportingDataDate.Date);
 
-        public virtual IEnumerable<PROGRESS_ITEM> Current_PROGRESS_ITEMS => PROGRESS_ITEMS.Where(y => y.EARNED_DATE.Date == ReportingDataDate.Date);
-
         public virtual PROGRESS_ETC PROGRESS_ETC_Current => PROGRESS_ETCS.FirstOrDefault(y => y.ETC_DATE.Date == ReportingDataDate.Date);
         public virtual IEnumerable<PROGRESS_ETC> Current_PROGRESS_ETCS => PROGRESS_ETCS.Where(y => y.ETC_DATE.Date == ReportingDataDate.Date);
 
@@ -652,14 +650,17 @@ namespace BluePrints.Common.ViewModel.Reporting
             if (PROGRESS_ITEM_Current != null)
             {
                 edit_PROGRESS_ITEM = PROGRESS_ITEM_Current;
+                //must use UnitOfWork to query because duplicate might happen on another session
+                //please practice caution when editing this because we might delete all progresses
+                IEnumerable<PROGRESS_ITEM> repositoryPROGRESS_ITEMSExcludingCurrent = PROGRESS_ITEMCollectionViewModel.UnitOfWork.PROGRESS_ITEMS.Where(x => x.GUID_PROGRESS == PROGRESS_ITEM_Current.GUID_PROGRESS)
+                    .Where(x => x.GUID_ORIBASEITEM == PROGRESS_ITEM_Current.GUID_ORIBASEITEM)
+                    .Where(x => x.EARNED_DATE == PROGRESS_ITEM_Current.EARNED_DATE)
+                    .Where(x => x.GUID != PROGRESS_ITEM_Current.GUID);
 
                 //find duplicate records and remove it
-                if(Current_PROGRESS_ITEMS.Count() > 1)
+                if (repositoryPROGRESS_ITEMSExcludingCurrent.Count() > 1)
                 {
-                    IEnumerable<PROGRESS_ITEM> findDuplicatePROGRESS_ITEMS = Current_PROGRESS_ITEMS.Where(x => x.GUID != PROGRESS_ITEM_Current.GUID);
-
-                    if(findDuplicatePROGRESS_ITEMS.Count() > 0)
-                        PROGRESS_ITEMCollectionViewModel.BaseBulkDelete(findDuplicatePROGRESS_ITEMS);
+                    PROGRESS_ITEMCollectionViewModel.BaseBulkDelete(repositoryPROGRESS_ITEMSExcludingCurrent);
                 }
             }
             else
