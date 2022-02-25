@@ -687,7 +687,7 @@ namespace BluePrints.Common.Utils
             return burnedDataPoints;
         }
 
-        public static List<ExoDataPoint> GetTimeByWBS(IPrimeroEntitiesUnitOfWork primeroUOW, string projectNumber, DateTime dataDate, IEnumerable<string> qualifiedSubjobs = null, List<SUBJOB> missingSUBJOBS = null, decimal currencyConversion = 1, bool showLoadingScreen = false)
+        public static List<ExoDataPoint> GetTimeByWBS(IPrimeroEntitiesUnitOfWork primeroUOW, string projectNumber, DateTime dataDate, IEnumerable<string> qualifiedSubjobs = null, List<SUBJOB> missingSUBJOBS = null, decimal currencyConversion = 1, bool showLoadingScreen = false, bool isByWeek = false)
         {
             List<ExoDataPoint> burnedDataPoints = new List<ExoDataPoint>();
             HashSet<string> missingSubJobNames = new HashSet<string>();
@@ -695,7 +695,7 @@ namespace BluePrints.Common.Utils
             primeroUOW.AutoDetectChangesEnabled(false);
             using (var t = new TransactionScope(TransactionScopeOption.Required, new TransactionOptions { IsolationLevel = System.Transactions.IsolationLevel.ReadUncommitted }))
             {
-                List<X_TRANSACTION> timeLines = PrimeroEntities.GetTimeSummary(primeroUOW, projectNumber, dataDate);
+                List<X_TRANSACTION> timeLines = PrimeroEntities.GetTimeSummary(primeroUOW, projectNumber, dataDate, isByWeek);
                 if (showLoadingScreen)
                 {
                     LoadingScreenManager.ShowLoadingScreen(timeLines.Count());
@@ -837,7 +837,7 @@ namespace BluePrints.Common.Utils
             return materialDataPoints;
         }
 
-        public static List<ExoDataPoint> GetMaterialsByWBS(IPrimeroEntitiesUnitOfWork primeroUOW, string projectNumber, DateTime dataDate, List<DateTime> alignedDataDates = null, decimal currencyConversion = 1, bool showLoadingScreen = false, ExoQueryType materialQueryType = ExoQueryType.All, bool groupByMonth = false)
+        public static List<ExoDataPoint> GetMaterialsByWBS(IPrimeroEntitiesUnitOfWork primeroUOW, string projectNumber, DateTime dataDate, List<DateTime> alignedDataDates = null, decimal currencyConversion = 1, bool showLoadingScreen = false, ExoQueryType materialQueryType = ExoQueryType.All, bool isByWeek = false)
         {
             List<ExoDataPoint> materialDataPoints = new List<ExoDataPoint>();
             primeroUOW.AutoDetectChangesEnabled(false);
@@ -845,7 +845,7 @@ namespace BluePrints.Common.Utils
 
             using (var t = new TransactionScope(TransactionScopeOption.Required, new TransactionOptions { IsolationLevel = System.Transactions.IsolationLevel.ReadUncommitted }))
             {
-                List<X_TRANSACTION> materialLines = PrimeroEntities.GetMaterialSummary(primeroUOW, projectNumber, invoiceCutOffDate);
+                List<X_TRANSACTION> materialLines = PrimeroEntities.GetMaterialSummary(primeroUOW, projectNumber, invoiceCutOffDate, isByWeek);
                 if (showLoadingScreen)
                 {
                     LoadingScreenManager.ShowLoadingScreen(materialLines.Count());

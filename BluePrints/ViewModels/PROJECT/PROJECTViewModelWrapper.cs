@@ -299,7 +299,7 @@ namespace BluePrints.ViewModels
             
             if(project != null)
             {
-                project.BuildStats(DashboardEXOQueryType, ShowLoadingScreen, 1, ForceRetrieveAllJobs, ForceRetrieveAllUnits, ForceRetrieveAllPOs, getForecastTypes(), UseProductivityFactorOnRemaining, IsVariationSeparated);
+                project.BuildStats(DashboardEXOQueryType, ShowLoadingScreen, 1, ForceRetrieveAllJobs, ForceRetrieveAllUnits, ForceRetrieveAllPOs, getForecastTypes(), UseProductivityFactorOnRemaining, IsVariationSeparated, true);
                 project.RecalculateStats(false, true);
                 project.Subjob_Dashboards = getDashboardStructure(project, IsVariationSeparated, ForceRetrieveRemainingDataPoints);
                 project.Update();

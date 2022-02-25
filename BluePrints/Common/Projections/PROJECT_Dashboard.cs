@@ -69,7 +69,7 @@ namespace BluePrints.Common.Projections
             set { SetProperty(() => Stats, value); }
         }
 
-        public void BuildStats(DashboardEXOQueryType dashboardEXOQueryType = DashboardEXOQueryType.TimeAndMaterial, bool showLoadingScreen = true, decimal weightingPortion = 1, bool forceRetrieveAllJobs = false, bool forceRetrieveAllUnits = false, bool forceRetrieveAllPOs = false, List<StatsCalculationType> calcTypes = null, bool useProductivityFactorOnRemaining = false, bool isVariationSeparated = false)
+        public void BuildStats(DashboardEXOQueryType dashboardEXOQueryType = DashboardEXOQueryType.TimeAndMaterial, bool showLoadingScreen = true, decimal weightingPortion = 1, bool forceRetrieveAllJobs = false, bool forceRetrieveAllUnits = false, bool forceRetrieveAllPOs = false, List<StatsCalculationType> calcTypes = null, bool useProductivityFactorOnRemaining = false, bool isVariationSeparated = false, bool isByWeek = false)
         {
             if (projectSummarizer == null)
                 return;
@@ -81,7 +81,7 @@ namespace BluePrints.Common.Projections
 
             if (calcTypes.Contains(StatsCalculationType.Burned))
                 //Build burned must come after build so that remaining can be retrieved for remaining actual
-                projectSummarizer.BuildBurnedDataPoints(dashboardEXOQueryType, true, showLoadingScreen, forceRetrieveAllJobs, forceRetrieveAllUnits, forceRetrieveAllPOs);
+                projectSummarizer.BuildBurnedDataPoints(dashboardEXOQueryType, true, showLoadingScreen, forceRetrieveAllJobs, forceRetrieveAllUnits, forceRetrieveAllPOs, isByWeek);
 
             this.RaisePropertiesChanged();
         }

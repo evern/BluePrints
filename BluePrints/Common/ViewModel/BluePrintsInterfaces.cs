@@ -5,7 +5,7 @@ namespace BluePrints.Common.ViewModel
 {
     public interface IHaveSummary : IHaveStats
     {
-        void BuildStats(DashboardEXOQueryType dashboardEXOQueryType = DashboardEXOQueryType.TimeAndMaterial, bool showLoadingScreen = true, decimal weightingPortion = 1, bool forceRetrieveAllJobs = false, bool forceRetrieveAllUnits = false, bool forceRetrieveAllPOs = false, List<StatsCalculationType> calcTypes = null, bool useProductivityFactorOnRemaining = false, bool IsVariationSeparated = false);
+        void BuildStats(DashboardEXOQueryType dashboardEXOQueryType = DashboardEXOQueryType.TimeAndMaterial, bool showLoadingScreen = true, decimal weightingPortion = 1, bool forceRetrieveAllJobs = false, bool forceRetrieveAllUnits = false, bool forceRetrieveAllPOs = false, List<StatsCalculationType> calcTypes = null, bool useProductivityFactorOnRemaining = false, bool IsVariationSeparated = false, bool IsByWeek = false);
         void RecalculateStats(bool isCosts, bool showLoadingScreen);
     }
 

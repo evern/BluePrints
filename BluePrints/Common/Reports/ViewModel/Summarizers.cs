@@ -412,12 +412,12 @@ namespace BluePrints.Common.ViewModel.Reporting
             FullStatsBuilder = fullStatsBuilder;
         }
 
-        public void BuildBurnedDataPoints(DashboardEXOQueryType dashboardEXOQueryType = DashboardEXOQueryType.TimeAndMaterial, bool isGroupByWBS = false, bool showLoadingScreen = false, bool forceRetrieveAllJobs = false, bool forceRetrieveAllUnits = false, bool forceRetrieveAllPOs = false)
+        public void BuildBurnedDataPoints(DashboardEXOQueryType dashboardEXOQueryType = DashboardEXOQueryType.TimeAndMaterial, bool isGroupByWBS = false, bool showLoadingScreen = false, bool forceRetrieveAllJobs = false, bool forceRetrieveAllUnits = false, bool forceRetrieveAllPOs = false, bool isByWeek = false)
         {
             ProjectSummaryStats projectSummaryStats = this.SummaryStats as ProjectSummaryStats;
 
             if (projectSummaryStats != null)
-                FullStatsBuilder.BuildExoDataPoints(FullStatsBuilder.PrimeroUOW, projectSummaryStats, dashboardEXOQueryType, isGroupByWBS, showLoadingScreen, forceRetrieveAllJobs, forceRetrieveAllUnits, forceRetrieveAllPOs);
+                FullStatsBuilder.BuildExoDataPoints(FullStatsBuilder.PrimeroUOW, projectSummaryStats, dashboardEXOQueryType, isGroupByWBS, showLoadingScreen, forceRetrieveAllJobs, forceRetrieveAllUnits, forceRetrieveAllPOs, isByWeek);
         }
 
         public void RecalculateStats(bool isCosts)

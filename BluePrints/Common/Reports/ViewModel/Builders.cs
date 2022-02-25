@@ -35,7 +35,7 @@ namespace BluePrints.Common.ViewModel.Reporting
             this.projectSUBJOBS = SUBJOBS;
         }
 
-        public void BuildExoDataPoints(IPrimeroEntitiesUnitOfWork primeroUOW, ProjectSummaryStats summaryObject, DashboardEXOQueryType dashboardEXOQueryType = DashboardEXOQueryType.All, bool isGroupByWBS = false, bool showLoadingScreen = false, bool forceRetrieveAllJobs = false, bool forceRetrieveAllUnits = false, bool forceRetrieveAllPOs = false)
+        public void BuildExoDataPoints(IPrimeroEntitiesUnitOfWork primeroUOW, ProjectSummaryStats summaryObject, DashboardEXOQueryType dashboardEXOQueryType = DashboardEXOQueryType.All, bool isGroupByWBS = false, bool showLoadingScreen = false, bool forceRetrieveAllJobs = false, bool forceRetrieveAllUnits = false, bool forceRetrieveAllPOs = false, bool isByWeek = false)
         {
             try
             {
@@ -68,7 +68,7 @@ namespace BluePrints.Common.ViewModel.Reporting
                 List<SUBJOB> missingSUBJOBS = new List<SUBJOB>();
 
                 if(isGroupByWBS)
-                    burnedDataPoints = BluePrintsDataUtils.GetTimeByWBS(primeroUOW, projectNumber, actualsDataDate, qualifiedSubjobs, missingSUBJOBS, CurrencyConversion, showLoadingScreen);
+                    burnedDataPoints = BluePrintsDataUtils.GetTimeByWBS(primeroUOW, projectNumber, actualsDataDate, qualifiedSubjobs, missingSUBJOBS, CurrencyConversion, showLoadingScreen, isByWeek);
                 else
                 {
                     burnedDataPoints = BluePrintsDataUtils.GetBurned(primeroUOW, projectNumber, actualsDataDate, qualifiedSubjobs, missingSUBJOBS, CurrencyConversion, showLoadingScreen);
@@ -86,7 +86,7 @@ namespace BluePrints.Common.ViewModel.Reporting
                 if(dashboardEXOQueryType != DashboardEXOQueryType.TimeOnly)
                 {
                     if (isGroupByWBS)
-                        materialDataPoints = BluePrintsDataUtils.GetMaterialsByWBS(primeroUOW, projectNumber, actualsDataDate, null, CurrencyConversion, showLoadingScreen);
+                        materialDataPoints = BluePrintsDataUtils.GetMaterialsByWBS(primeroUOW, projectNumber, actualsDataDate, null, CurrencyConversion, showLoadingScreen, ExoQueryType.All, isByWeek);
                     else
                         materialDataPoints = BluePrintsDataUtils.GetMaterials(primeroUOW, projectNumber, actualsDataDate, null, CurrencyConversion, showLoadingScreen);
 

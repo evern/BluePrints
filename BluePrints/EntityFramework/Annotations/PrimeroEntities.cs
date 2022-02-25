@@ -41,25 +41,39 @@ namespace BluePrints.PrimeroData
             return purchaseOrderLines;
         }
 
-        public static List<X_TRANSACTION> GetTimeSummary(IPrimeroEntitiesUnitOfWork primeroEntitiesUnitOfWork, string projectNumber, DateTime cutOffDate)
+        public static List<X_TRANSACTION> GetTimeSummary(IPrimeroEntitiesUnitOfWork primeroEntitiesUnitOfWork, string projectNumber, DateTime cutOffDate, bool isByWeek)
         {
             if (cutOffDate.Year < 1800)
                 cutOffDate = DateTime.Now;
 
+            DateTime queryDate = new DateTime(cutOffDate.Year, cutOffDate.Month, cutOffDate.Day);
+            queryDate = queryDate.AddDays(1).AddSeconds(-1);
             SqlParameter projectNumberParameter = new SqlParameter("@ProjectNumber", projectNumber);
-            SqlParameter cutOffDateParameter = new SqlParameter("@CutOffDate", cutOffDate);
-            List<X_TRANSACTION> timeLines = primeroEntitiesUnitOfWork.DbContext.Database.SqlQuery<X_TRANSACTION>("X_TIME_TRANSACTIONS_V1 @ProjectNumber, @CutOffDate", projectNumberParameter, cutOffDateParameter).ToList();
+            SqlParameter cutOffDateParameter = new SqlParameter("@CutOffDate", queryDate);
+            List<X_TRANSACTION> timeLines;
+            if(isByWeek)
+                timeLines = primeroEntitiesUnitOfWork.DbContext.Database.SqlQuery<X_TRANSACTION>("X_TIME_TRANSACTIONS_V1_BYWEEK @ProjectNumber, @CutOffDate", projectNumberParameter, cutOffDateParameter).ToList();
+            else
+                timeLines = primeroEntitiesUnitOfWork.DbContext.Database.SqlQuery<X_TRANSACTION>("X_TIME_TRANSACTIONS_V1 @ProjectNumber, @CutOffDate", projectNumberParameter, cutOffDateParameter).ToList();
+
             return timeLines;
         }
 
-        public static List<X_TRANSACTION> GetMaterialSummary(IPrimeroEntitiesUnitOfWork primeroEntitiesUnitOfWork, string projectNumber, DateTime cutOffDate)
+        public static List<X_TRANSACTION> GetMaterialSummary(IPrimeroEntitiesUnitOfWork primeroEntitiesUnitOfWork, string projectNumber, DateTime cutOffDate, bool isByWeek)
         {
             if (cutOffDate.Year < 1800)
                 cutOffDate = DateTime.Now;
 
+            DateTime queryDate = new DateTime(cutOffDate.Year, cutOffDate.Month, cutOffDate.Day);
+            queryDate = queryDate.AddDays(1).AddSeconds(-1);
             SqlParameter projectNumberParameter = new SqlParameter("@ProjectNumber", projectNumber);
-            SqlParameter cutOffDateParameter = new SqlParameter("@CutOffDate", cutOffDate);
-            List<X_TRANSACTION> materialLines = primeroEntitiesUnitOfWork.DbContext.Database.SqlQuery<X_TRANSACTION>("X_MATERIAL_TRANSACTIONS_V1 @ProjectNumber, @CutOffDate", projectNumberParameter, cutOffDateParameter).ToList();
+            SqlParameter cutOffDateParameter = new SqlParameter("@CutOffDate", queryDate);
+            List<X_TRANSACTION> materialLines;
+            if(isByWeek)
+                materialLines = primeroEntitiesUnitOfWork.DbContext.Database.SqlQuery<X_TRANSACTION>("X_MATERIAL_TRANSACTIONS_V1_BYWEEK @ProjectNumber, @CutOffDate", projectNumberParameter, cutOffDateParameter).ToList();
+            else
+                materialLines = primeroEntitiesUnitOfWork.DbContext.Database.SqlQuery<X_TRANSACTION>("X_MATERIAL_TRANSACTIONS_V1 @ProjectNumber, @CutOffDate", projectNumberParameter, cutOffDateParameter).ToList();
+
             return materialLines;
         }
     }
