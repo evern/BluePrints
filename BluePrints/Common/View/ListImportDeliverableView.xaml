@@ -163,13 +163,6 @@
                                 </DataTemplate>
                             </dxg:GridColumn.CellTemplate>
                         </dxg:GridColumn>
-                        <dxg:GridColumn FieldName="Entity.Entity.BUDGET_HOURS" AllowBestFit="false" Width="90" Header="Budget Hours" HeaderToolTip="Baseline hours" ReadOnly="True" >
-                            <dxg:GridColumn.CellTemplate>
-                                <DataTemplate>
-                                    <dxe:SpinEdit x:Name="PART_Editor" MaskType="Numeric" Mask="n2" MaskUseAsDisplayFormat="True" Background="{Binding RowData.Row.Compare_BUDGET_HOURS.BackColor}" ToolTip="{Binding RowData.Row.Compare_BUDGET_HOURS.ToolTip}" />
-                                </DataTemplate>
-                            </dxg:GridColumn.CellTemplate>
-                        </dxg:GridColumn>
                         <dxg:GridColumn FixedWidth="True" Width="100" AllowEditing="True" AllowBestFit="false" FieldName="OldPercentage" Header="% Before Import" HeaderToolTip="Current % before importing" ReadOnly="True">
                             <dxg:GridColumn.CellTemplate>
                                 <DataTemplate>
@@ -262,11 +255,9 @@
                     </dxg:GridControl.Columns>
                     <dxg:GridControl.GroupSummary>
                         <dxg:GridSummaryItem DisplayFormat="Total {0} Records" FieldName="Entity.Entity.INTERNAL_NUM" SummaryType="Count" />
-                        <dxg:GridSummaryItem DisplayFormat="n" FieldName="Entity.Entity.BUDGET_HOURS" ShowInColumn="Entity.Entity.BUDGET_HOURS" SummaryType="Sum" />
                     </dxg:GridControl.GroupSummary>
                     <dxg:GridControl.TotalSummary>
                         <dxg:GridSummaryItem DisplayFormat="Total {0} Records" FieldName="Entity.Entity.INTERNAL_NUM" SummaryType="Count" />
-                        <dxg:GridSummaryItem DisplayFormat="n" FieldName="Entity.Entity.BUDGET_HOURS" ShowInColumn="Entity.Entity.BUDGET_HOURS" SummaryType="Sum" />
                     </dxg:GridControl.TotalSummary>
                     <dxg:GridControl.View>
                         <dxg:TableView x:Name="tableView" ShowFixedTotalSummary="False" ShowGroupPanel="True" ShowTotalSummary="True" ShowGroupedColumns="False" >

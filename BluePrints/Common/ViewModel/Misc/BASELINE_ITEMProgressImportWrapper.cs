@@ -40,7 +40,6 @@ namespace BluePrints.Common.ViewModel.Misc
             string secondaryTitle = dataRow[ColumnHeaderResources.SecondaryTitleHeaderString].ToString();
             string comments = dataRow[ColumnHeaderResources.CommentsHeaderString].ToString();
             string currentEarnedPercentage = dataRow[ColumnHeaderResources.CurrentPercentageHeaderString].ToString();
-            string budgetHours = dataRow[ColumnHeaderResources.BudgetHourHeaderString].ToString();
 
             PHASE findPHASE = PHASECollection.FirstOrDefault(x => x.INTERNAL_NUM.ToUpper() == phase.ToUpper());
             AREA findAREA = AREACollection.FirstOrDefault(x => x.INTERNAL_NUM.ToUpper() == area.ToUpper());
@@ -51,11 +50,6 @@ namespace BluePrints.Common.ViewModel.Misc
             int parseDisciplineNum;
             if (int.TryParse(disciplineNum, out parseDisciplineNum))
                 findDisciplineNum = parseDisciplineNum;
-
-            decimal? findBudgetHours = null;
-            decimal parseBudgetHours;
-            if (decimal.TryParse(budgetHours, out parseBudgetHours))
-                findBudgetHours = parseBudgetHours;
 
             DOCTYPE findDOCTYPE = DOCTYPECollection.FirstOrDefault(x => x.NAME.ToUpper() == docType.ToUpper());
 
@@ -84,7 +78,7 @@ namespace BluePrints.Common.ViewModel.Misc
             newBASELINE_ITEM.PRIMARY_TITLE = primaryTitle;
             newBASELINE_ITEM.SECONDARY_TITLE = secondaryTitle;
             newBASELINE_ITEM.COMMENTS = comments;
-            newBASELINE_ITEM.BUDGET_HOURS = findBudgetHours == null ? 0 : (decimal)findBudgetHours;
+            newBASELINE_ITEM.BUDGET_HOURS = 0;
 
             if(findEarnedPercentage != null)
                 newBASELINE_ITEMProgress.Total_Earned_Percentage = (decimal)findEarnedPercentage;
@@ -125,8 +119,6 @@ namespace BluePrints.Common.ViewModel.Misc
                 errorMessages.Add(new ErrorMessage(errorMessagePrefix, ColumnHeaderResources.CommentsHeaderString));
             if (!ContainColumn(ColumnHeaderResources.CurrentPercentageHeaderString, dataTable))
                 errorMessages.Add(new ErrorMessage(errorMessagePrefix, ColumnHeaderResources.CurrentPercentageHeaderString));
-            if (!ContainColumn(ColumnHeaderResources.BudgetHourHeaderString, dataTable))
-                errorMessages.Add(new ErrorMessage(errorMessagePrefix, ColumnHeaderResources.BudgetHourHeaderString));
 
             if (errorMessages.Count > 0)
                 return false;
@@ -161,7 +153,6 @@ namespace BluePrints.Common.ViewModel.Misc
         public OldNewValueCompare<string> Compare_PRIMARY_TITLE { get; set; }
         public OldNewValueCompare<string> Compare_SECONDARY_TITLE { get; set; }
         public OldNewValueCompare<string> Compare_COMMENTS { get; set; }
-        public OldNewValueCompare<decimal> Compare_BUDGET_HOURS { get; set; }
         public OldNewValueCompare<decimal> Compare_EARNED_PERCENTAGE { get; set; }
         public decimal OldPercentage { get; set; }
         public bool Import { get; set; }
@@ -214,7 +205,6 @@ namespace BluePrints.Common.ViewModel.Misc
             Compare_SECONDARY_TITLE = new OldNewValueCompare<string>(compareProjection.Entity.Entity.SECONDARY_TITLE, importProjection.Entity.Entity.SECONDARY_TITLE);
             Compare_COMMENTS = new OldNewValueCompare<string>(compareProjection.Entity.Entity.COMMENTS, importProjection.Entity.Entity.COMMENTS);
             Compare_EARNED_PERCENTAGE = new OldNewValueCompare<decimal>(compareProjection.Total_Earned_Percentage, importProjection.Total_Earned_Percentage, true);
-            Compare_BUDGET_HOURS = new OldNewValueCompare<decimal>(compareProjection.Entity.Entity.BUDGET_HOURS, importProjection.Entity.Entity.BUDGET_HOURS);
 
             this.OldPercentage = compareProjection.Total_Earned_Percentage;
             this.Entity = importProjection.Entity;
@@ -225,7 +215,7 @@ namespace BluePrints.Common.ViewModel.Misc
         {
             return Compare_PHASE.IsDifferent || Compare_AREA.IsDifferent || Compare_SUBAREA.IsDifferent || Compare_DISCIPLINE.IsDifferent || Compare_DISCIPLINE_NUM.IsDifferent || Compare_DOCTYPE.IsDifferent
                 || Compare_DELIVERABLE_TYPE.IsDifferent || Compare_DEPARTMENT.IsDifferent || Compare_INTERNAL_NUM.IsDifferent || Compare_CLIENT_NUM.IsDifferent || Compare_PRIMARY_TITLE.IsDifferent
-                || Compare_SECONDARY_TITLE.IsDifferent || Compare_COMMENTS.IsDifferent || Compare_BUDGET_HOURS.IsDifferent;
+                || Compare_SECONDARY_TITLE.IsDifferent || Compare_COMMENTS.IsDifferent;
         }
     }
 

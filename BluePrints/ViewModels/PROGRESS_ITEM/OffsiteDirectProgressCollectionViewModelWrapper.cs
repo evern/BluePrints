@@ -725,7 +725,6 @@ namespace BluePrints.ViewModels
                                         findDeliverable.Entity.Entity.PRIMARY_TITLE = sourceObject.Entity.Entity.PRIMARY_TITLE;
                                         findDeliverable.Entity.Entity.SECONDARY_TITLE = sourceObject.Entity.Entity.SECONDARY_TITLE;
                                         findDeliverable.Entity.Entity.COMMENTS = sourceObject.Entity.Entity.COMMENTS;
-                                        findDeliverable.Entity.Entity.BUDGET_HOURS = sourceObject.Entity.Entity.BUDGET_HOURS;
                                         findDeliverable.ShouldSave = true;
                                         MainViewModel.Save(findDeliverable);
                                     }
