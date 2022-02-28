@@ -1750,6 +1750,7 @@ namespace BluePrints.Common.Base
             #region reset budgeted on progress
             IEnumerable<TASK> task_source = scheduling_view_model.TASK_Source;
 
+            //removed this because users have issues with it. Issue is activities that were once managed will have earned units stuck
             //reset all tasks target to 0
             //foreach (TASK task in task_source)
             //{
