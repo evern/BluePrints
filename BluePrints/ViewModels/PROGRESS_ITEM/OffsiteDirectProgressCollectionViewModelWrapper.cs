@@ -620,6 +620,14 @@ namespace BluePrints.ViewModels
                         List<PROGRESS_ITEM> updateProgress = new List<PROGRESS_ITEM>();
                         List<ErrorMessage> errorMessages = new List<ErrorMessage>();
                         List<BASELINE_ITEMProgressImportWrapper> importBaselineItems = new List<BASELINE_ITEMProgressImportWrapper>();
+                        List<ErrorMessage> columnHeaderErrorMessages = new List<ErrorMessage>();
+                        BASELINE_ITEMProgressImportWrapperHelper.IsColumnHeadersExists(excelSourceDataTable, out columnHeaderErrorMessages);
+                        if(columnHeaderErrorMessages.Count > 0)
+                        {
+                            ShowErrorMessage("Missing columns in Excel", columnHeaderErrorMessages);
+                            return;
+                        }
+
                         foreach (DataRow dataRow in excelSourceDataTable.Rows)
                         {
                             if (dataRow[InternalNumberHeaderString] != DBNull.Value)

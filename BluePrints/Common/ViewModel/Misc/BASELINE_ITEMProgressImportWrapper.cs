@@ -91,6 +91,59 @@ namespace BluePrints.Common.ViewModel.Misc
 
             return newBASELINE_ITEMProgress;
         }
+
+        public static bool IsColumnHeadersExists(DataTable dataTable, out List<ErrorMessage> errorMessages)
+        {
+            errorMessages = new List<ErrorMessage>();
+            string errorMessagePrefix = "Missing Column";
+
+            if (!ContainColumn(ColumnHeaderResources.PhaseHeaderString, dataTable))
+                errorMessages.Add(new ErrorMessage(errorMessagePrefix, ColumnHeaderResources.PhaseHeaderString));
+            if (!ContainColumn(ColumnHeaderResources.AreaHeaderString, dataTable))
+                errorMessages.Add(new ErrorMessage(errorMessagePrefix, ColumnHeaderResources.AreaHeaderString));
+            if (!ContainColumn(ColumnHeaderResources.SubAreaHeaderString, dataTable))
+                errorMessages.Add(new ErrorMessage(errorMessagePrefix, ColumnHeaderResources.SubAreaHeaderString));
+            if (!ContainColumn(ColumnHeaderResources.DisciplineHeaderString, dataTable))
+                errorMessages.Add(new ErrorMessage(errorMessagePrefix, ColumnHeaderResources.DisciplineHeaderString));
+            if (!ContainColumn(ColumnHeaderResources.DisciplineNumberHeaderString, dataTable))
+                errorMessages.Add(new ErrorMessage(errorMessagePrefix, ColumnHeaderResources.DisciplineNumberHeaderString));
+            if (!ContainColumn(ColumnHeaderResources.DocumentTypeHeaderString, dataTable))
+                errorMessages.Add(new ErrorMessage(errorMessagePrefix, ColumnHeaderResources.DocumentTypeHeaderString));
+            if (!ContainColumn(ColumnHeaderResources.DeliverableTypeHeaderString, dataTable))
+                errorMessages.Add(new ErrorMessage(errorMessagePrefix, ColumnHeaderResources.DeliverableTypeHeaderString));
+            if (!ContainColumn(ColumnHeaderResources.DepartmentHeaderString, dataTable))
+                errorMessages.Add(new ErrorMessage(errorMessagePrefix, ColumnHeaderResources.DepartmentHeaderString));
+            if (!ContainColumn(ColumnHeaderResources.InternalNumberHeaderString, dataTable))
+                errorMessages.Add(new ErrorMessage(errorMessagePrefix, ColumnHeaderResources.InternalNumberHeaderString));
+            if (!ContainColumn(ColumnHeaderResources.ClientNumberHeaderString, dataTable))
+                errorMessages.Add(new ErrorMessage(errorMessagePrefix, ColumnHeaderResources.ClientNumberHeaderString));
+            if (!ContainColumn(ColumnHeaderResources.PrimaryTitleHeaderString, dataTable))
+                errorMessages.Add(new ErrorMessage(errorMessagePrefix, ColumnHeaderResources.PrimaryTitleHeaderString));
+            if (!ContainColumn(ColumnHeaderResources.SecondaryTitleHeaderString, dataTable))
+                errorMessages.Add(new ErrorMessage(errorMessagePrefix, ColumnHeaderResources.SecondaryTitleHeaderString));
+            if (!ContainColumn(ColumnHeaderResources.CommentsHeaderString, dataTable))
+                errorMessages.Add(new ErrorMessage(errorMessagePrefix, ColumnHeaderResources.CommentsHeaderString));
+            if (!ContainColumn(ColumnHeaderResources.CurrentPercentageHeaderString, dataTable))
+                errorMessages.Add(new ErrorMessage(errorMessagePrefix, ColumnHeaderResources.CurrentPercentageHeaderString));
+            if (!ContainColumn(ColumnHeaderResources.BudgetHourHeaderString, dataTable))
+                errorMessages.Add(new ErrorMessage(errorMessagePrefix, ColumnHeaderResources.BudgetHourHeaderString));
+
+            if (errorMessages.Count > 0)
+                return false;
+
+            return true;
+        }
+
+        private static bool ContainColumn(string columnName, DataTable table)
+        {
+            DataColumnCollection columns = table.Columns;
+            if (columns.Contains(columnName))
+            {
+                return true;
+            }
+
+            return false;
+        }
     }
 
     public class BASELINE_ITEMProgressImportWrapper : BASELINE_ITEMProgress, IOriginalGuidEntityKey
