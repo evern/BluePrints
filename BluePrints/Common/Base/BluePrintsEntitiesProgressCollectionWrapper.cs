@@ -1489,16 +1489,16 @@ namespace BluePrints.Common.Base
                     if (uowTASK != null && uowTASK.delete_date == null)
                     {
                         //this is reset in onSchedulingViewModelLoaded for all task because task that have assignment being removed won't be managed, causing act_work_qty to retain previously pushed units
-                        //if (!processedP6Task.Any(x => x.task_code == uowTASK.task_code))
-                        //{
-                        //    uowTASK.act_work_qty = 0;
-                        //    uowTASK.remain_work_qty = 0;
-                        //    uowTASK.status_code = P6TASKSTATUS.TK_NotStart.ToString();
-                        //    uowTASK.act_start_date = null;
-                        //    uowTASK.act_end_date = null;
-                        //    uowTASK.duration_type = P6DURATION_TYPE.DT_FixedQty.ToString();
-                        //    uowTASK.complete_pct_type = P6COMPLETE_TYPE.CP_Units.ToString();
-                        //}
+                        if (!processedP6Task.Any(x => x.task_code == uowTASK.task_code))
+                        {
+                            uowTASK.act_work_qty = 0;
+                            uowTASK.remain_work_qty = 0;
+                            uowTASK.status_code = P6TASKSTATUS.TK_NotStart.ToString();
+                            uowTASK.act_start_date = null;
+                            uowTASK.act_end_date = null;
+                            uowTASK.duration_type = P6DURATION_TYPE.DT_FixedQty.ToString();
+                            uowTASK.complete_pct_type = P6COMPLETE_TYPE.CP_Units.ToString();
+                        }
 
                         //defines how much percentage of units this assignment will take up when it is fully assigned, so that we can estimate the total duration to apply productivity to
                         decimal current_task_to_activity_percentage = (uowTASK.target_work_qty == null || uowTASK.target_work_qty == 0) ? 0 : full_assignment_units / (decimal)uowTASK.target_work_qty;
@@ -1751,30 +1751,30 @@ namespace BluePrints.Common.Base
             IEnumerable<TASK> task_source = scheduling_view_model.TASK_Source;
 
             //reset all tasks target to 0
-            foreach (TASK task in task_source)
-            {
-                //do not set target qty or costs zero because we might use this for re-baseline pro-rate
-                //task.target_work_qty = 0;
-                task.act_work_qty = 0;
-                task.remain_work_qty = 0;
-                task.status_code = P6TASKSTATUS.TK_NotStart.ToString();
-                task.act_start_date = null;
-                task.act_end_date = null;
-                task.duration_type = P6DURATION_TYPE.DT_FixedQty.ToString();
-                task.complete_pct_type = P6COMPLETE_TYPE.CP_Units.ToString();
+            //foreach (TASK task in task_source)
+            //{
+            //    //do not set target qty or costs zero because we might use this for re-baseline pro-rate
+            //    //task.target_work_qty = 0;
+            //    task.act_work_qty = 0;
+            //    task.remain_work_qty = 0;
+            //    task.status_code = P6TASKSTATUS.TK_NotStart.ToString();
+            //    task.act_start_date = null;
+            //    task.act_end_date = null;
+            //    task.duration_type = P6DURATION_TYPE.DT_FixedQty.ToString();
+            //    task.complete_pct_type = P6COMPLETE_TYPE.CP_Units.ToString();
 
-                //do not set target qty or costs zero because we might use this for re-baseline pro-rate
-                IEnumerable<TASKRSRC> P6TASKRSRCS = p6UOW.TASKRSRC.Where(x => x.delete_session_id == null).Where(x => x.task_id == task.task_id);
-                foreach (TASKRSRC P6TASKRSRC in P6TASKRSRCS)
-                {
-                    //P6TASKRSRC.target_qty = 0;
-                    P6TASKRSRC.act_reg_qty = 0;
-                    P6TASKRSRC.remain_qty = 0;
-                    P6TASKRSRC.remain_qty_per_hr = 0;
-                    P6TASKRSRC.remain_cost = 0;
-                    P6TASKRSRC.target_cost = 0;
-                }
-            }
+            //    //do not set target qty or costs zero because we might use this for re-baseline pro-rate
+            //    IEnumerable<TASKRSRC> P6TASKRSRCS = p6UOW.TASKRSRC.Where(x => x.delete_session_id == null).Where(x => x.task_id == task.task_id);
+            //    foreach (TASKRSRC P6TASKRSRC in P6TASKRSRCS)
+            //    {
+            //        //P6TASKRSRC.target_qty = 0;
+            //        P6TASKRSRC.act_reg_qty = 0;
+            //        P6TASKRSRC.remain_qty = 0;
+            //        P6TASKRSRC.remain_qty_per_hr = 0;
+            //        P6TASKRSRC.remain_cost = 0;
+            //        P6TASKRSRC.target_cost = 0;
+            //    }
+            //}
 
             p6UOW.SaveChanges();
             //re-assign remaining qty on progress schedule
