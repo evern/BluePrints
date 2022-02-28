@@ -773,6 +773,7 @@ namespace BluePrints.ViewModels
                 Modules.Add(new BluePrintsEntitiesModuleDescription(DataUtils.GetNameOf(() => NavigationResources.Permission_DesignDeliverables_BookTimeForOthers), string.Empty, parentNavigationId, NavigationResources.Permission_DesignDeliverables_BookTimeForOthers, NavigationResources.Permission_DesignDeliverables_BookTimeForOthers));
                 Modules.Add(new BluePrintsEntitiesModuleDescription(DataUtils.GetNameOf(() => NavigationResources.Permission_DesignDeliverables_FinaliseNumbers), string.Empty, parentNavigationId, NavigationResources.Permission_DesignDeliverables_FinaliseNumbers, NavigationResources.Permission_DesignDeliverables_FinaliseNumbers));
                 Modules.Add(new BluePrintsEntitiesModuleDescription(DataUtils.GetNameOf(() => NavigationResources.Permission_DesignDeliverables_LockUnlockBudget), string.Empty, parentNavigationId, NavigationResources.Permission_DesignDeliverables_LockUnlockBudget, NavigationResources.Permission_DesignDeliverables_LockUnlockBudget));
+                Modules.Add(new BluePrintsEntitiesModuleDescription(DataUtils.GetNameOf(() => NavigationResources.Permission_DesignDeliverables_DeleteVariationDeliverables), string.Empty, parentNavigationId, NavigationResources.Permission_DesignDeliverables_DeleteVariationDeliverables, NavigationResources.Permission_DesignDeliverables_DeleteVariationDeliverables));
             }
             if (securityKey == DataUtils.GetNameOf(() => NavigationResources.Menu_Project_DesignVariation))
             {

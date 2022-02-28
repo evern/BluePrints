@@ -1186,6 +1186,15 @@ namespace BluePrints.Common.Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Allow user to delete zero total hours deliverables attached to variations.
+        /// </summary>
+        internal static string Permission_DesignDeliverables_DeleteVariationDeliverables {
+            get {
+                return ResourceManager.GetString("Permission_DesignDeliverables_DeleteVariationDeliverables", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Finalise deliverable&apos;s internal and client numbers.
         /// </summary>
         internal static string Permission_DesignDeliverables_FinaliseNumbers {

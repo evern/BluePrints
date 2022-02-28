@@ -50,6 +50,7 @@ namespace BluePrints.ViewModels
     {
         public string DefaultPhaseInternalNumber { get; set; }
         private bool canLockUnlockBudget;
+        private bool canDeleteVariationDeliverables;
         public virtual IEnumerable<BASELINE_ITEMProgress> EditableAllEntities => GetEditableAllEntitiesCallBack != null ? GetEditableAllEntitiesCallBack() : MainViewModel.Entities;
         public Func<IEnumerable<BASELINE_ITEMProgress>> GetEditableAllEntitiesCallBack { get; set; }
         protected DeliverablesViewType viewType { get; set; }
@@ -72,6 +73,7 @@ namespace BluePrints.ViewModels
         protected BASELINE_ITEMCollectionViewModelWrapper(IUnitOfWorkFactory<IBluePrintsEntitiesUnitOfWork> unitOfWorkFactory = null)
         {
             canLockUnlockBudget = LoginCredentials.getPermissionStatus(DataUtils.GetNameOf(() => NavigationResources.Permission_DesignDeliverables_LockUnlockBudget)) == LoginCredentials.PermissionStatus.All;
+            canDeleteVariationDeliverables = LoginCredentials.getPermissionStatus(DataUtils.GetNameOf(() => NavigationResources.Permission_DesignDeliverables_DeleteVariationDeliverables)) == LoginCredentials.PermissionStatus.All;
         }
 
         #region Database Operations
@@ -573,20 +575,26 @@ namespace BluePrints.ViewModels
         {
             errorMessages = new List<ErrorMessage>();
             IEnumerable<VARIATION> attachedVARIATIONS = VARIATIONCollection.Where(x => x.VARIATION_ITEM.Any(y => canDeleteDeliverable(y, projection)));
-
+            IEnumerable<VARIATION_ITEM> attachedVARIATION_ITEMS = VARIATIONCollection.Where(x => x.VARIATION_ITEM.Any(y => canDeleteDeliverable(y, projection))).SelectMany(z => z.VARIATION_ITEM.Where(x => canDeleteDeliverable(x, projection)));
             //when there are variations that relates to this deliverable
             if (attachedVARIATIONS.Count() > 0)
             {
                 string variations = string.Empty;
                 foreach (VARIATION attachedVARIATION in attachedVARIATIONS)
                 {
-                    variations += attachedVARIATION.NAME + ", ";
+                    VARIATION_ITEM attachedVARIATION_ITEM = attachedVARIATION.VARIATION_ITEM.FirstOrDefault(x => canDeleteDeliverable(x, projection));
+                    if(attachedVARIATION_ITEM != null && attachedVARIATION_ITEM.VARIATION_UNITS > 0)
+                        variations += "[" + attachedVARIATION.NAME + "] (" + attachedVARIATION_ITEM.VARIATION_UNITS.ToString() + " Units), ";
+                    else
+                        variations += "[" + attachedVARIATION.NAME + "], ";
                 }
 
                 if (variations.Length > 2)
                     variations = variations.Substring(0, variations.Length - 2);
 
-                errorMessages.Add(new ErrorMessage(projection.Deliverable_Name, "Variations exists: " + variations));
+                decimal attachedVARIATIONUnits = attachedVARIATION_ITEMS.Sum(x => x.VARIATION_UNITS);
+                if (!canDeleteVariationDeliverables || attachedVARIATIONUnits > 0)
+                    errorMessages.Add(new ErrorMessage(projection.Deliverable_Name, "Variations Exists: " + variations));
             }
             else if (projection.PROGRESS_ITEMS.Count > 0 && projection.PROGRESS_ITEMS.Sum(x => x.EarnedUnits) > 0)
                 errorMessages.Add(new ErrorMessage(projection.Deliverable_Name, "Has been progressed"));
