@@ -593,8 +593,11 @@ namespace BluePrints.ViewModels
                     variations = variations.Substring(0, variations.Length - 2);
 
                 decimal attachedVARIATIONUnits = attachedVARIATION_ITEMS.Sum(x => x.VARIATION_UNITS);
+                string errorMessage = "Variations Exists: " + variations;
                 if (!canDeleteVariationDeliverables || attachedVARIATIONUnits > 0)
-                    errorMessages.Add(new ErrorMessage(projection.Deliverable_Name, "Variations Exists: " + variations));
+                    errorMessages.Add(new ErrorMessage(projection.Deliverable_Name, errorMessage));
+                else if(MessageBoxService.ShowMessage("Variations Exists: " + variations + " are you sure you wish to delete " + projection.Deliverable_Name + "?", "Warning", MessageButton.YesNo) == MessageResult.No)
+                    errorMessages.Add(new ErrorMessage(projection.Deliverable_Name, errorMessage));
             }
             else if (projection.PROGRESS_ITEMS.Count > 0 && projection.PROGRESS_ITEMS.Sum(x => x.EarnedUnits) > 0)
                 errorMessages.Add(new ErrorMessage(projection.Deliverable_Name, "Has been progressed"));
