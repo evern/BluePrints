@@ -332,6 +332,8 @@ namespace BluePrints.ViewModels
         {
             VARIATION_ITEM updateVARIATION_ITEM = projectionEntity.UpdateVariationItem(loadVARIATION.GUID);
             VARIATION_ITEMSCollectionViewModel.Save(updateVARIATION_ITEM);
+            projectionEntity.VARIATION_ITEM.CREATED = updateVARIATION_ITEM.CREATED;
+            projectionEntity.VARIATION_ITEM.UPDATED = updateVARIATION_ITEM.UPDATED;
         }
         #endregion
 

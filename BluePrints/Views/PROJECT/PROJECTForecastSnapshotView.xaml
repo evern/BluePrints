@@ -59,7 +59,7 @@
                                         <ColumnDefinition Width="*" />
                                     </Grid.ColumnDefinitions>
                                     <Image Grid.Column="0" Visibility="Visible" Source="{dx:DXImage Image=Cancel_16x16.png}" ToolTip="PO forecasted amount doesn't equal to outstanding PO, please fix it in PO forecast"/>
-                                    <dxe:TextEdit Grid.Column="1" Name="PART_Editor" />
+                                    <dxe:SpinEdit Grid.Column="1" Name="PART_Editor" Mask="c0" MaskType="Numeric" MaskUseAsDisplayFormat="True" />
                                 </Grid>
                             </DataTemplate>
                         </dxg:GridColumn.CellTemplate>
@@ -500,6 +500,15 @@
                                                     <dxc:Format Background="#FFFF9B98"/>
                                                 </dxg:FormatCondition>
                                                 <dxg:FormatCondition FieldName="Entity.PercentagePeriodMovement" Value1="0" ValueRule="Less">
+                                                    <dxc:Format Background="#FFFF9B98" />
+                                                </dxg:FormatCondition>
+                                                <dxg:FormatCondition Expression="[Entity.IsCommodityCodeError] = 'Checked'" FieldName="Entity.CommodityCode">
+                                                    <dxc:Format Background="#FFFF9B98" />
+                                                </dxg:FormatCondition>
+                                                <dxg:FormatCondition Expression="[Entity.IsPOError] = 'Checked'" FieldName="Entity.Outstanding">
+                                                    <dxc:Format Background="#FFFF9B98" />
+                                                </dxg:FormatCondition>
+                                                <dxg:FormatCondition Expression="[Entity.IsCommodityCodeError] = 'Checked'" FieldName="Entity.CommodityCode">
                                                     <dxc:Format Background="#FFFF9B98" />
                                                 </dxg:FormatCondition>
                                             </dxg:TableView.FormatConditions>
