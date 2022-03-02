@@ -63,7 +63,7 @@ namespace BluePrints.Common.Misc
         {
             get
             {
-                return RunTimeChangeTrackingProperty == null;
+                return RunTimeChangeTrackingProperty != null;
             }
         }
 

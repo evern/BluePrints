@@ -184,7 +184,7 @@
                             <custom:EditableColumn RealFieldName="{Binding VariationCodeFieldName}" AllowBestFit="false" Width="150" Header="Variation Code" UnboundType="String" UnboundExpression="[VARIATION_CODE]">
                                 <dxg:GridColumn.CellTemplate>
                                     <DataTemplate>
-                                        <dxe:TextEdit Name="PART_Editor" Background="{Binding Data.VariationCodeChangeTracking.ChangeTrackingPropertyStatus, Converter={StaticResource TransactionAttributeCellColorConverter}}" ToolTip="{Binding Data.VariationCodeChangeTracking.ChangeTrackingToolTip}"/>
+                                        <dxe:TextEdit Name="PART_Editor" EditValueChanged="PART_Editor_EditValueChanged" Background="{Binding Data.VariationCodeChangeTracking.ChangeTrackingPropertyStatus, Converter={StaticResource TransactionAttributeCellColorConverter}}" ToolTip="{Binding Data.VariationCodeChangeTracking.ChangeTrackingToolTip}"/>
                                     </DataTemplate>
                                 </dxg:GridColumn.CellTemplate>
                             </custom:EditableColumn>

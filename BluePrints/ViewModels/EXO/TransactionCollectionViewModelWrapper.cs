@@ -48,7 +48,7 @@ namespace BluePrints.ViewModels
     /// <summary>
     /// Represents the single PROGRESS object view model.
     /// </summary>
-    public partial class TransactionCollectionViewModelWrapper : BluePrintsEntitiesCollectionWrapper<X_JOB_TRANSACTIONS_DETAIL_V5, X_JOB_TRANSACTIONS_DETAIL_V5, int, IPrimeroEntitiesUnitOfWork>
+    public partial class TransactionCollectionViewModelWrapper : BluePrintsEntitiesCollectionWrapper<X_JOB_TRANSACTIONS_DETAIL_V6, X_JOB_TRANSACTIONS_DETAIL_V6, int, IPrimeroEntitiesUnitOfWork>
     {
         /// <summary>
         /// Creates a new instance of PROGRESS_ITEMSViewModelWrapper as a POCO view model.
@@ -184,7 +184,7 @@ namespace BluePrints.ViewModels
         public ObservableCollection<JOB_TRANSACTIONS> JOB_TRANSACTIONS = new ObservableCollection<JOB_TRANSACTIONS>();
         protected override void onAuxiliaryEntitiesCollectionLoaded()
         {
-            CreateMainViewModel(mainViewModelPrimeroUnitOfWorkFactory, x => x.X_JOB_TRANSACTIONS_DETAIL_V5);
+            CreateMainViewModel(mainViewModelPrimeroUnitOfWorkFactory, x => x.X_JOB_TRANSACTIONS_DETAIL_V6);
         }
 
         protected override void OnAfterAssignedCallbackAndRaisePropertyChanged()
@@ -192,7 +192,7 @@ namespace BluePrints.ViewModels
             IsPasteCellLevel = true;
         }
 
-        protected override Func<IRepositoryQuery<X_JOB_TRANSACTIONS_DETAIL_V5>, IQueryable<X_JOB_TRANSACTIONS_DETAIL_V5>> specifyMainViewModelProjection()
+        protected override Func<IRepositoryQuery<X_JOB_TRANSACTIONS_DETAIL_V6>, IQueryable<X_JOB_TRANSACTIONS_DETAIL_V6>> specifyMainViewModelProjection()
         {
             if (isYearToDate)
             {
@@ -214,20 +214,20 @@ namespace BluePrints.ViewModels
             base.InstantFeedbackOtherUnitOfWorkSaveChanges();
         }
 
-        protected override OperationInterceptMode OnBeforeProjectionSaveIsContinue(X_JOB_TRANSACTIONS_DETAIL_V5 projection, out bool isNew)
+        protected override OperationInterceptMode OnBeforeProjectionSaveIsContinue(X_JOB_TRANSACTIONS_DETAIL_V6 projection, out bool isNew)
         {
             isNew = false;
             ApplyInstantFeedbackEntityPropertiesToOtherUnitOfWorkEntity(projection);
             return OperationInterceptMode.SkipOneAndAllDbSaves;
         }
 
-        protected override void OnAfterProjectionsSave(IEnumerable<X_JOB_TRANSACTIONS_DETAIL_V5> projections)
+        protected override void OnAfterProjectionsSave(IEnumerable<X_JOB_TRANSACTIONS_DETAIL_V6> projections)
         {
             primeroUnitOfWork.SaveChanges();
             base.OnAfterProjectionsSave(projections);
         }
 
-        protected override void ApplyInstantFeedbackEntityPropertiesToOtherUnitOfWorkEntity(X_JOB_TRANSACTIONS_DETAIL_V5 projection)
+        protected override void ApplyInstantFeedbackEntityPropertiesToOtherUnitOfWorkEntity(X_JOB_TRANSACTIONS_DETAIL_V6 projection)
         {
             if(CanEditWithoutApproval)
             {
@@ -269,7 +269,7 @@ namespace BluePrints.ViewModels
 
                 projection.QtyEdited = false;
             }
-            else if (!projection.JobNoChangeTracking.IsChanged || !projection.CostGroupChangeTracking.IsChanged || !projection.CostTypeChangeTracking.IsChanged || !projection.StockCodeChangeTracking.IsChanged || !projection.VariationCodeChangeTracking.IsChanged)
+            else if (projection.JobNoChangeTracking.IsChanged || projection.CostGroupChangeTracking.IsChanged || projection.CostTypeChangeTracking.IsChanged || projection.StockCodeChangeTracking.IsChanged || projection.VariationCodeChangeTracking.IsChanged)
             {
                 TRANSACTION_APPROVAL findTRANSACTION_APPROVAL = bluePrintsUnitOfWork.TRANSACTION_APPROVALS.FirstOrDefault(x => x.JOB_TRANSACTION_SEQNO == projection.SEQNO && x.STATUS == TransactionApprovalStatus.Pending);
                 if(findTRANSACTION_APPROVAL == null)
@@ -290,7 +290,7 @@ namespace BluePrints.ViewModels
                     findTRANSACTION_APPROVAL.NEW_JOBNO = null;
                     projection.JobNoChangeTracking.ResetChangeTracking();
                 }
-                else if (!projection.JobNoChangeTracking.IsChanged)
+                else if (projection.JobNoChangeTracking.IsChanged)
                 {
                     //for tool tip to show old code without refreshing view
                     projection.OLD_JOBCODE = projection.SUB_JOBCODE;
@@ -307,7 +307,7 @@ namespace BluePrints.ViewModels
                     findTRANSACTION_APPROVAL.NEW_COST_GROUP_NO = null;
                     projection.CostGroupChangeTracking.ResetChangeTracking();
                 }
-                else if (!projection.CostGroupChangeTracking.IsChanged)
+                else if (projection.CostGroupChangeTracking.IsChanged)
                 {
                     //for tool tip to show old code without refreshing view
                     projection.OLD_DISCIPLINECODE = projection.DISCIPLINE_CODE;
@@ -324,7 +324,7 @@ namespace BluePrints.ViewModels
                     findTRANSACTION_APPROVAL.NEW_COST_TYPE_NO = null;
                     projection.CostTypeChangeTracking.ResetChangeTracking();
                 }
-                else if (!projection.CostTypeChangeTracking.IsChanged)
+                else if (projection.CostTypeChangeTracking.IsChanged)
                 {
                     //for tool tip to show old code without refreshing view
                     projection.OLD_COMMODITYCODE = projection.COMMODITY_CODE;
@@ -340,7 +340,7 @@ namespace BluePrints.ViewModels
                     findTRANSACTION_APPROVAL.NEW_STOCK_CODE = null;
                     projection.StockCodeChangeTracking.ResetChangeTracking();
                 }
-                else if (!projection.StockCodeChangeTracking.IsChanged)
+                else if (projection.StockCodeChangeTracking.IsChanged)
                 {
                     //for tool tip to show old code without refreshing view
                     projection.OLD_STOCK_CODE = projection.STOCKCODE;
@@ -355,7 +355,7 @@ namespace BluePrints.ViewModels
                     findTRANSACTION_APPROVAL.NEW_VARIATION_CODE = null;
                     projection.VariationCodeChangeTracking.ResetChangeTracking();
                 }
-                else if (!projection.VariationCodeChangeTracking.IsChanged)
+                else if (projection.VariationCodeChangeTracking.IsChanged)
                 {
                     //for tool tip to show old code without refreshing view
                     projection.OLD_VARIATION_CODE = projection.VARIATION_CODE;
@@ -412,20 +412,20 @@ namespace BluePrints.ViewModels
         }
         #endregion
 
-        public override void UnifiedCellValueChanged(string field_name, object old_value, object new_value, X_JOB_TRANSACTIONS_DETAIL_V5 projection, bool isNew)
+        public override void UnifiedCellValueChanged(string field_name, object old_value, object new_value, X_JOB_TRANSACTIONS_DETAIL_V6 projection, bool isNew)
         {
-            if (field_name == BindableBase.GetPropertyName(() => new X_JOB_TRANSACTIONS_DETAIL_V5().QUANTITY))
+            if (field_name == BindableBase.GetPropertyName(() => new X_JOB_TRANSACTIONS_DETAIL_V6().QUANTITY))
                 projection.QtyEdited = true;
 
             base.UnifiedCellValueChanged(field_name, old_value, new_value, projection, isNew);
         }
 
-        public override string UnifiedValueValidation(X_JOB_TRANSACTIONS_DETAIL_V5 projection, string field_name, object new_value, bool isPaste)
+        public override string UnifiedValueValidation(X_JOB_TRANSACTIONS_DETAIL_V6 projection, string field_name, object new_value, bool isPaste)
         {
             return string.Empty;
         }
 
-        public override string UnifiedRowValidation(X_JOB_TRANSACTIONS_DETAIL_V5 projection)
+        public override string UnifiedRowValidation(X_JOB_TRANSACTIONS_DETAIL_V6 projection)
         {
             return string.Empty;
         }
@@ -521,11 +521,11 @@ namespace BluePrints.ViewModels
             }
         }
 
-        public IEnumerable<X_JOB_TRANSACTIONS_DETAIL_V5> X_JOB_TRANSACTIONS_DETAILCollection
+        public IEnumerable<X_JOB_TRANSACTIONS_DETAIL_V6> X_JOB_TRANSACTIONS_DETAILCollection
         {
             get
             {
-                return GetEntities<X_JOB_TRANSACTIONS_DETAIL_V5>();
+                return GetEntities<X_JOB_TRANSACTIONS_DETAIL_V6>();
             }
         }
 

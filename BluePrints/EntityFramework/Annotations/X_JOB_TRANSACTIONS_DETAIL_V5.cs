@@ -9,9 +9,9 @@
     using System.ComponentModel.DataAnnotations.Schema;
     using System.Data.Entity.Spatial;
 
-    public partial class X_JOB_TRANSACTIONS_DETAIL_V5 : EntityBase
+    public partial class X_JOB_TRANSACTIONS_DETAIL_V6 : EntityBase
     {
-        public X_JOB_TRANSACTIONS_DETAIL_V5()
+        public X_JOB_TRANSACTIONS_DETAIL_V6()
         {
             JobNoChangeTracking = new ChangeTrackableProperty<int?>(() => JOBNO, () => NEW_JOBNO, () => OLD_JOBCODE);
             CostGroupChangeTracking = new ChangeTrackableProperty<int?>(() => COST_GROUP_NO, () => NEW_COST_GROUP_NO, () => OLD_DISCIPLINECODE);
