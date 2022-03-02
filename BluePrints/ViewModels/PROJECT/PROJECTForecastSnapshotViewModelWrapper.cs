@@ -661,13 +661,13 @@ namespace BluePrints.ViewModels
                 string commodityCode = delimited[2];
                 string variationCode = delimited[3];
                 //For Debugging
-                if (subJobCode.Contains("P1") && disciplineCode == "PP01")
-                {
-                    UniqueForecastJob uniqueForecastJob = new UniqueForecastJob(projectLines, subJobCode, disciplineCode, commodityCode, variationCode, FixedDataDate, PreviousDataDate, FORECAST_JOB_HOUR_SNAPSHOTCollection, IsShowUninvoicedOnly);
-                    uniqueForecastJob.UpdateTenderBudget(TenderBudgetCollection.AsQueryable());
-                    uniqueForecastJob.UpdateErrorMessage(JOBCOST_LINES_AUDITCollection.AsQueryable());
-                    uniqueForecastJobs.Add(uniqueForecastJob);
-                }
+                //if (subJobCode == "03608-000-00-I1" && disciplineCode == "PM01" && commodityCode == "G01" && variationCode == "")
+                //{
+                //}
+                UniqueForecastJob uniqueForecastJob = new UniqueForecastJob(projectLines, subJobCode, disciplineCode, commodityCode, variationCode, FixedDataDate, PreviousDataDate, FORECAST_JOB_HOUR_SNAPSHOTCollection, IsShowUninvoicedOnly);
+                uniqueForecastJob.UpdateTenderBudget(TenderBudgetCollection.AsQueryable());
+                uniqueForecastJob.UpdateErrorMessage(JOBCOST_LINES_AUDITCollection.AsQueryable());
+                uniqueForecastJobs.Add(uniqueForecastJob);
 
                 Common.LoadingScreenManager.Progress();
             });
