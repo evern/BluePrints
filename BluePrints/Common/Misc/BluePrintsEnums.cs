@@ -330,6 +330,19 @@ namespace BluePrints.Common
         [Display(Name = "Variation")] Variation = 3
     }
 
+    public enum TransactionApprovalStatus
+    {
+        [Display(Name = "Pending")] Pending = 0,
+        [Display(Name = "Approved")] Approved = 1
+    }
+
+    public enum ChangeTrackablePropertyStatus
+    {
+        [Display(Name = "Original")] Original = 0,
+        [Display(Name = "Pending")] Pending = 1,
+        [Display(Name = "Approved")] Approved = 2
+    }
+
     public enum DeliverableType
     {
         [Display(Name = "Deliverable ICR")] DeliverableICR = 0,

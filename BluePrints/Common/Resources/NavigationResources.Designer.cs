@@ -754,6 +754,15 @@ namespace BluePrints.Common.Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Project EXO transactions approval menu.
+        /// </summary>
+        internal static string Menu_Project_EXO_TransactionsApproval {
+            get {
+                return ResourceManager.GetString("Menu_Project_EXO_TransactionsApproval", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Project forecast menu.
         /// </summary>
         internal static string Menu_Project_Forecast {
@@ -1281,6 +1290,15 @@ namespace BluePrints.Common.Resources {
         internal static string Permission_EXO_Transactions_ChangeQuantity {
             get {
                 return ResourceManager.GetString("Permission_EXO_Transactions_ChangeQuantity", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Requires approvals when editing transaction.
+        /// </summary>
+        internal static string Permission_EXO_Transactions_RequiresApproval {
+            get {
+                return ResourceManager.GetString("Permission_EXO_Transactions_RequiresApproval", resourceCulture);
             }
         }
         

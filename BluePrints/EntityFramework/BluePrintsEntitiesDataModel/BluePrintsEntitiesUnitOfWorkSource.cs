@@ -33,7 +33,8 @@ namespace BluePrints.BluePrintsEntitiesDataModel
             if (bluePrintsEntitiesUnitOfWork != null)
                 return new DbUnitOfWorkFactory<IBluePrintsEntitiesUnitOfWork>(() => bluePrintsEntitiesUnitOfWork);
             else
-                return new DbUnitOfWorkFactory<IBluePrintsEntitiesUnitOfWork>(
+                return
+                new DbUnitOfWorkFactory<IBluePrintsEntitiesUnitOfWork>(
                     () => new BluePrintsEntitiesUnitOfWork(() => new BluePrintsEntities()));
         }
     }

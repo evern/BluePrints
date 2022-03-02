@@ -1,0 +1,130 @@
+﻿<UserControl x:Class="BluePrints.Views.TransactionApprovalView" xmlns="http://schemas.microsoft.com/netfx/2009/xaml/presentation" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" xmlns:custom="clr-namespace:BaseModel.Misc;assembly=BaseModel" xmlns:d="http://schemas.microsoft.com/expression/blend/2008" xmlns:dx="http://schemas.devexpress.com/winfx/2008/xaml/core" xmlns:dxb="http://schemas.devexpress.com/winfx/2008/xaml/bars" xmlns:dxe="http://schemas.devexpress.com/winfx/2008/xaml/editors" xmlns:dxg="http://schemas.devexpress.com/winfx/2008/xaml/grid" xmlns:dxlc="http://schemas.devexpress.com/winfx/2008/xaml/layoutcontrol" xmlns:dxmvvm="http://schemas.devexpress.com/winfx/2008/xaml/mvvm" xmlns:dxr="http://schemas.devexpress.com/winfx/2008/xaml/ribbon" xmlns:dxrudex="http://schemas.devexpress.com/winfx/2008/xaml/reports/userdesignerextensions" xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" xmlns:view="clr-namespace:BluePrints.Views" xmlns:viewmodel="clr-namespace:BluePrints.ViewModels" x:Name="userControl" d:DesignHeight="400" d:DesignWidth="600" DataContext="{dxmvvm:ViewModelSource viewmodel:TransactionApprovalViewModelWrapper}" mc:Ignorable="d">
+    <UserControl.Resources>
+        <ResourceDictionary>
+            <ResourceDictionary.MergedDictionaries>
+                <ResourceDictionary Source="pack://application:,,,/Common/View/ResourceDictionaries/GridColumnResourceDictionary.xaml" />
+                <ResourceDictionary Source="pack://application:,,,/BaseModel;component/View/ResourceDictionaries/DefaultControlResourceDictionary.xaml" />
+                <ResourceDictionary Source="pack://application:,,,/Common/View/ResourceDictionaries/DefaultBluePrintsResourceDictionary.xaml" />
+            </ResourceDictionary.MergedDictionaries>
+        </ResourceDictionary>
+    </UserControl.Resources>
+    <Grid Style="{StaticResource CollectionView.RootContainer}">
+        <dxb:BarManager>
+            <dxb:BarManager.Items>
+                <dxb:BarSubItem ItemLinksSource="{StaticResource RibbonDefaultGridButtons}" />
+                <dxb:BarButtonItem x:Name="biApprove" Content="Approve Selected" Command="{Binding ApproveTransactionCommand}" LargeGlyph="{dx:DXImage Image=CustomizeGrid_32x32.png}" Glyph="{dx:DXImage Image=CustomizeGrid_16x16.png}" />
+            </dxb:BarManager.Items>
+            <DockPanel>
+                <dxr:RibbonControl Style="{StaticResource DefaultRibbonControlStyle}">
+                    <dxr:RibbonDefaultPageCategory MergeType="Replace" Caption="defaultCategory">
+                        <dxr:RibbonPage MergeType="Replace" Caption="Grid">
+                            <dxr:RibbonPageGroup MergeType="Replace" Caption="Grid" >
+                                <dxb:BarButtonItemLink BarItemName="biFullRefresh1" />
+                                <dxb:BarCheckItemLink BarItemName="biCellSelection1" />
+                                <dxb:BarButtonItemLink BarItemName="biSaveLayout1" />
+                                <dxb:BarButtonItemLink BarItemName="biResetLayout1" />
+                                <dxb:BarButtonItemLink BarItemName="biExpandAllGroups1" />
+                                <dxb:BarButtonItemLink BarItemName="biCollapseAllGroups1" />
+                                <dxb:BarButtonItemLink BarItemName="biExportToExcel1" />
+                                <dxb:BarButtonItemLink BarItemName="biExportToPDF1" />
+                                <dxb:BarButtonItemLink BarItemName="biApprove" />
+                            </dxr:RibbonPageGroup>
+                        </dxr:RibbonPage>
+                    </dxr:RibbonDefaultPageCategory>
+                </dxr:RibbonControl>
+                <custom:GridControlEx x:Name="GridControl" dx:DXSerializer.SerializationID="GridControlTransactionApproval" dx:DXSerializer.StoreLayoutMode="All" Style="{StaticResource DefaultGridControlTemplate}">
+                    <dxg:GridControl.Bands>
+                        <dxg:GridControlBand x:Name="gcbOld" Header="Old Attributes">
+                            <dxg:GridColumn Header="Old Job No" FieldName="OLD_JOBNO" HeaderToolTip="Job code before approval" ReadOnly="True">
+                                <dxg:GridColumn.EditSettings>
+                                    <dxe:ComboBoxEditSettings AutoComplete="True" DisplayMember="JOBCODE" IsTextEditable="True" ItemsSource="{Binding JOBCOST_HDRCollection}" ValueMember="JOBNO" />
+                                </dxg:GridColumn.EditSettings>
+                            </dxg:GridColumn>
+                            <dxg:GridColumn Header="Old Discipline" FieldName="OLD_COST_GROUP_NO" HeaderToolTip="Discipline code before approval" ReadOnly="True">
+                                <dxg:GridColumn.EditSettings>
+                                    <dxe:ComboBoxEditSettings AutoComplete="True" DisplayMember="COSTDESC" IsTextEditable="True" ItemsSource="{Binding JOB_COSTGROUPSCollection}" ValueMember="SEQNO" />
+                                </dxg:GridColumn.EditSettings>
+                            </dxg:GridColumn>
+                            <dxg:GridColumn Header="Old Commodity" FieldName="OLD_COST_TYPE_NO" HeaderToolTip="Commodity code before approval" ReadOnly="True">
+                                <dxg:GridColumn.EditSettings>
+                                    <dxe:ComboBoxEditSettings AutoComplete="True" DisplayMember="COSTDESC" IsTextEditable="True" ItemsSource="{Binding JOB_COSTTYPESCollection}" ValueMember="SEQNO" />
+                                </dxg:GridColumn.EditSettings>
+                            </dxg:GridColumn>
+                            <dxg:GridColumn Header="Old Stock Code" FieldName="OLD_STOCK_CODE" HeaderToolTip="Stock code before approval" ReadOnly="True"/>
+                            <dxg:GridColumn Header="Old Variation Code" FieldName="OLD_VARIATION_CODE" HeaderToolTip="Variation code before approval" ReadOnly="True"/>
+                        </dxg:GridControlBand>
+                        <dxg:GridControlBand x:Name="gcbNew" Header="New Attributes">
+                            <dxg:GridColumn Header="New Job No" FieldName="NEW_JOBNO" HeaderToolTip="Job code for approval" ReadOnly="True">
+                                <dxg:GridColumn.EditSettings>
+                                    <dxe:ComboBoxEditSettings AutoComplete="True" DisplayMember="JOBCODE" IsTextEditable="True" ItemsSource="{Binding JOBCOST_HDRCollection}" ValueMember="JOBNO" />
+                                </dxg:GridColumn.EditSettings>
+                            </dxg:GridColumn>
+                            <dxg:GridColumn Header="New Discipline" FieldName="NEW_COST_GROUP_NO" HeaderToolTip="Discipline code for approval" ReadOnly="True">
+                                <dxg:GridColumn.EditSettings>
+                                    <dxe:ComboBoxEditSettings AutoComplete="True" DisplayMember="COSTDESC" IsTextEditable="True" ItemsSource="{Binding JOB_COSTGROUPSCollection}" ValueMember="SEQNO" />
+                                </dxg:GridColumn.EditSettings>
+                            </dxg:GridColumn>
+                            <dxg:GridColumn Header="New Commodity" FieldName="NEW_COST_TYPE_NO" HeaderToolTip="Commodity code for approval" ReadOnly="True">
+                                <dxg:GridColumn.EditSettings>
+                                    <dxe:ComboBoxEditSettings AutoComplete="True" DisplayMember="COSTDESC" IsTextEditable="True" ItemsSource="{Binding JOB_COSTTYPESCollection}" ValueMember="SEQNO" />
+                                </dxg:GridColumn.EditSettings>
+                            </dxg:GridColumn>
+                            <dxg:GridColumn Header="New Stock Code" FieldName="NEW_STOCK_CODE" HeaderToolTip="Stock code for approval" ReadOnly="True"/>
+                            <dxg:GridColumn Header="New Variation Code" FieldName="NEW_VARIATION_CODE" HeaderToolTip="Variation code for approval" ReadOnly="True"/>
+                        </dxg:GridControlBand>
+                        <dxg:GridControlBand x:Name="gcbStatus" Header="Status">
+                            <dxg:GridColumn Header="Created" FieldName="CREATED" AllowSearchPanel="False" HeaderToolTip="When the transaction change is created" ReadOnly="True">
+                                <dxg:GridColumn.EditSettings>
+                                    <dxe:DateEditSettings />
+                                </dxg:GridColumn.EditSettings>
+                            </dxg:GridColumn>
+                            <dxg:GridColumn AllowSearchPanel="False" FieldName="CREATEDBY" Header="Created By" HeaderToolTip="Person creating the transaction change" ReadOnly="True" SortMode="DisplayText">
+                                <dxg:GridColumn.EditSettings>
+                                    <dxe:ComboBoxEditSettings AutoComplete="True" DisplayMember="NAME" IsTextEditable="True" ItemsSource="{Binding USERCollection}" ValueMember="GUID" />
+                                </dxg:GridColumn.EditSettings>
+                            </dxg:GridColumn>
+                            <dxg:GridColumn Header="Approved On" FieldName="APPROVEDON" AllowSearchPanel="False" HeaderToolTip="When the transaction is approved" ReadOnly="True">
+                                <dxg:GridColumn.EditSettings>
+                                    <dxe:DateEditSettings />
+                                </dxg:GridColumn.EditSettings>
+                            </dxg:GridColumn>
+                            <dxg:GridColumn AllowSearchPanel="False" FieldName="APPROVEDBY" Header="Approved By" HeaderToolTip="Person approving the current transaction" ReadOnly="True" SortMode="DisplayText">
+                                <dxg:GridColumn.EditSettings>
+                                    <dxe:ComboBoxEditSettings AutoComplete="True" DisplayMember="NAME" IsTextEditable="True" ItemsSource="{Binding USERCollection}" ValueMember="GUID" />
+                                </dxg:GridColumn.EditSettings>
+                            </dxg:GridColumn>
+                            <dxg:GridColumn AllowSearchPanel="False" UnboundType="Object" Header="Approve" HeaderToolTip="Click button to approve transaction changes" ReadOnly="True" SortMode="DisplayText">
+                                <dxg:GridColumn.CellTemplate>
+                                    <DataTemplate>
+                                        <StackPanel HorizontalAlignment="Center" Margin="1">
+                                            <Button Height="22" Padding="2" BorderBrush="{x:Null}" Visibility="{Binding RowData.Row.IsNotApproved,Converter={dxmvvm:BooleanToVisibilityConverter}}" x:Name="approveButton" Command="{Binding View.DataContext.ApproveTransactionCommand}">
+                                                <StackPanel Orientation="Horizontal">
+                                                    <Image Source="{dx:DXImage Image=Apply_16x16.png}" Width="16" Height="16" Margin="0, 0, 3, 0" />
+                                                    <TextBlock Text="Approve" VerticalAlignment="Center" />
+                                                </StackPanel>
+                                            </Button>
+                                        </StackPanel>
+                                    </DataTemplate>
+                                </dxg:GridColumn.CellTemplate>
+                            </dxg:GridColumn>
+                        </dxg:GridControlBand>
+                    </dxg:GridControl.Bands>
+                    <dxg:GridControl.TotalSummary>
+                        <dxg:GridSummaryItem dx:DXSerializer.Enabled="False" Alignment="Right" SummaryType="Count" />
+                    </dxg:GridControl.TotalSummary>
+                    <dxg:GridControl.GroupSummary>
+                        <dxg:GridSummaryItem dx:DXSerializer.Enabled="False" SummaryType="Count" />
+                    </dxg:GridControl.GroupSummary>
+                    <dxg:GridControl.View>
+                        <dxg:TableView x:Name="tableView" Style="{StaticResource DefaultTableViewTemplate}">
+                            <dxg:TableView.RowCellMenuCustomizations>
+                                <dxb:BarButtonItemLink BarItemName="biApprove" />
+                                <dxb:BarButtonItemLink BarItemName="biFullRefresh1" />
+                            </dxg:TableView.RowCellMenuCustomizations>
+                        </dxg:TableView>
+                    </dxg:GridControl.View>
+                </custom:GridControlEx>
+            </DockPanel>
+        </dxb:BarManager>
+    </Grid>
+</UserControl>

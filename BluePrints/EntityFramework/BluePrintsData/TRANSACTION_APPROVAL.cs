@@ -1,5 +1,6 @@
 namespace BluePrints.Data
 {
+    using BluePrints.Common;
     using System;
     using System.ComponentModel.DataAnnotations;
     using System.ComponentModel.DataAnnotations.Schema;
@@ -15,41 +16,44 @@ namespace BluePrints.Data
 
         public int JOB_TRANSACTION_SEQNO { get; set; }
 
-        [Required]
         [StringLength(15)]
-        public string OLD_SUBJOB_CODE { get; set; }
+        public string OLD_JOBCODE { get; set; }
 
-        [Required]
-        [StringLength(15)]
-        public string NEW_SUBJOB_CODE { get; set; }
+        public int? OLD_JOBNO { get; set; }
 
-        [Required]
-        [StringLength(4)]
-        public string OLD_DISCIPLINE_CODE { get; set; }
+        public int? NEW_JOBNO { get; set; }
 
-        [Required]
-        [StringLength(4)]
-        public string NEW_DISCIPLINE_CODE { get; set; }
+        [StringLength(5)]
+        public string OLD_DISCIPLINECODE { get; set; }
 
-        [Required]
-        [StringLength(3)]
-        public string OLD_COMMODITY_CODE { get; set; }
+        public int? OLD_COST_GROUP_NO { get; set; }
 
-        [Required]
-        [StringLength(3)]
-        public string NEW_COMMODITY_CODE { get; set; }
+        public int? NEW_COST_GROUP_NO { get; set; }
 
-        [Required]
+        [StringLength(5)]
+        public string OLD_COMMODITYCODE { get; set; }
+
+        public int? OLD_COST_TYPE_NO { get; set; }
+
+        public int? NEW_COST_TYPE_NO { get; set; }
+
         [StringLength(20)]
         public string OLD_STOCK_CODE { get; set; }
 
-        [Required]
         [StringLength(20)]
         public string NEW_STOCK_CODE { get; set; }
 
-        public int STATUS { get; set; }
+        [StringLength(100)]
+        public string OLD_VARIATION_CODE { get; set; }
+
+        [StringLength(100)]
+        public string NEW_VARIATION_CODE { get; set; }
+
+        public TransactionApprovalStatus STATUS { get; set; }
 
         public DateTime? APPROVEDON { get; set; }
+
+        public Guid? APPROVEDBY { get; set; }
 
         public DateTime CREATED { get; set; }
 

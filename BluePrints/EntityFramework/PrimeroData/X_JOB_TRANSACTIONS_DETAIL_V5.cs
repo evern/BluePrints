@@ -6,7 +6,7 @@
     using System.ComponentModel.DataAnnotations.Schema;
     using System.Data.Entity.Spatial;
 
-    public partial class X_JOB_TRANSACTIONS_DETAIL_V5
+    public partial class X_JOB_TRANSACTIONS_DETAIL_V6
     {
         [Key]
         [Column(Order = 0)]
@@ -56,9 +56,9 @@
 
         public double? UNITPRICE { get; set; }
 
-        public double? LINECOST { get; set; }
-
         public double? TOTALPRICE { get; set; }
+
+        public double? LINECOST { get; set; }
 
         [StringLength(50)]
         public string COMMODITY_CODE_DESC { get; set; }
@@ -68,7 +68,7 @@
         [StringLength(4096)]
         public string NARRATIVE { get; set; }
 
-        [StringLength(60)]
+        [StringLength(30)]
         public string RESOURCE_NAME { get; set; }
 
         [StringLength(60)]
@@ -107,19 +107,31 @@
 
         public int? STOCKGROUP2 { get; set; }
 
+        public int? NEW_JOBNO { get; set; }
+
         [StringLength(15)]
-        public string NEW_SUBJOB_CODE { get; set; }
+        public string OLD_JOBCODE { get; set; }
 
+        public int? NEW_COST_GROUP_NO { get; set; }
 
-        [StringLength(4)]
-        public string NEW_DISCIPLINE_CODE { get; set; }
+        [StringLength(5)]
+        public string OLD_DISCIPLINECODE { get; set; }
 
+        public int? NEW_COST_TYPE_NO { get; set; }
 
-        [StringLength(3)]
-        public string NEW_COMMODITY_CODE { get; set; }
-
+        [StringLength(5)]
+        public string OLD_COMMODITYCODE { get; set; }
 
         [StringLength(20)]
         public string NEW_STOCK_CODE { get; set; }
+
+        [StringLength(20)]
+        public string OLD_STOCK_CODE { get; set; }
+
+        [StringLength(100)]
+        public string NEW_VARIATION_CODE { get; set; }
+
+        [StringLength(100)]
+        public string OLD_VARIATION_CODE { get; set; }
     }
 }

@@ -48,7 +48,7 @@ namespace BluePrints.ViewModels
     /// <summary>
     /// Represents the single PROGRESS object view model.
     /// </summary>
-    public partial class TransactionCollectionViewModelWrapper : BluePrintsEntitiesCollectionWrapper<X_JOB_TRANSACTIONS_DETAIL_V5, X_JOB_TRANSACTIONS_DETAIL_V5, int, IPrimeroEntitiesUnitOfWork>
+    public partial class TransactionCollectionViewModelWrapper : BluePrintsEntitiesCollectionWrapper<X_JOB_TRANSACTIONS_DETAIL_V6, X_JOB_TRANSACTIONS_DETAIL_V6, int, IPrimeroEntitiesUnitOfWork>
     {
         /// <summary>
         /// Creates a new instance of PROGRESS_ITEMSViewModelWrapper as a POCO view model.
@@ -59,6 +59,7 @@ namespace BluePrints.ViewModels
             return ViewModelSource.Create(() => new TransactionCollectionViewModelWrapper());
         }
 
+        public bool CanEditWithoutApproval { get; set; }
         public bool IsCostsVisible { get; set; }
         public bool CanEditQuantity { get; set; }
         protected override string readOnlyMessage => "Cells are read only because you do not have authority to edit transactions";
@@ -67,11 +68,15 @@ namespace BluePrints.ViewModels
             IsReadOnly = LoginCredentials.getPermissionStatus(DataUtils.GetNameOf(() => NavigationResources.Menu_Project_EXO_Transactions)) == LoginCredentials.PermissionStatus.ReadOnly;
             IsCostsVisible = LoginCredentials.getPermissionStatus(DataUtils.GetNameOf(() => NavigationResources.Permission_EXO_Transactions_ShowCosts)) == LoginCredentials.PermissionStatus.All;
             CanEditQuantity = !IsReadOnly && LoginCredentials.getPermissionStatus(DataUtils.GetNameOf(() => NavigationResources.Permission_EXO_Transactions_ChangeQuantity)) == LoginCredentials.PermissionStatus.All;
-
+            CanEditWithoutApproval = LoginCredentials.getPermissionStatus(DataUtils.GetNameOf(() => NavigationResources.Permission_EXO_Transactions_RequiresApproval)) != LoginCredentials.PermissionStatus.All;
+            
             bool? isUsePreloadModePreference = LoginCredentials.GetUserPreferenceBool(DataUtils.GetNameOf(() => UserPreferences.EXO_PreloadTransactions));
 
             isUsePreloadMode = isUsePreloadModePreference == null ? false : (bool)isUsePreloadModePreference;
             IsInstantFeedbackMode = !IsUsePreloadMode;
+
+            bluePrintsUnitOfWork = BluePrintsEntitiesUnitOfWorkSource.GetUnitOfWorkFactory().CreateUnitOfWork();
+            bluePrintsUnitOfWorkFactory = BluePrintsEntitiesUnitOfWorkSource.GetUnitOfWorkFactory(bluePrintsUnitOfWork);
         }
 
         public bool IsShowDefaultColumns => !IsInstantFeedbackMode || IsReadOnly;
@@ -93,9 +98,12 @@ namespace BluePrints.ViewModels
 
         #region Database Operation
         private Data.PROJECT loadPROJECT;
-        private readonly IUnitOfWorkFactory<IBluePrintsEntitiesUnitOfWork> bluePrintsUnitOfWorkFactory = BluePrintsEntitiesUnitOfWorkSource.GetUnitOfWorkFactory();
+        private IUnitOfWorkFactory<IBluePrintsEntitiesUnitOfWork> bluePrintsUnitOfWorkFactory;
         private IUnitOfWorkFactory<IPrimeroEntitiesUnitOfWork> primeroUnitOfWorkFactory;
+        //main view model uses a different unit of work factory because there are derived field from view that cannot be saved, instead we manually map properties before saving on PrimeroUnitOfWork
+        private IUnitOfWorkFactory<IPrimeroEntitiesUnitOfWork> mainViewModelPrimeroUnitOfWorkFactory;
         private IPrimeroEntitiesUnitOfWork primeroUnitOfWork;
+        private IBluePrintsEntitiesUnitOfWork bluePrintsUnitOfWork;
         JOBCOST_HDR loadJOBCOST_HDR;
         bool isYearToDate = false;
         bool is2020Onwards = false;
@@ -107,8 +115,9 @@ namespace BluePrints.ViewModels
         {
             var PROJECTParameter = (TripleEntitiesParameter<Data.PROJECT, object, object>)parameter;
             loadPROJECT = PROJECTParameter.GetFirstEntity();
+            IUnitOfWorkFactory<IPrimeroEntitiesUnitOfWork> tempPrimeroUnitOfWorkFactory;
 
-            if(loadPROJECT == null)
+            if (loadPROJECT == null)
             {
                 IsReadOnly = true;
                 isYearToDate = true;
@@ -124,12 +133,17 @@ namespace BluePrints.ViewModels
                 else
                     officeName = BluePrintsResources.OfficeUSA;
 
-                primeroUnitOfWorkFactory = PrimeroEntitiesUnitOfWorkSource.GetUnitOfWorkFactory(officeName);
+                mainViewModelPrimeroUnitOfWorkFactory = PrimeroEntitiesUnitOfWorkSource.GetUnitOfWorkFactory(officeName);
+                tempPrimeroUnitOfWorkFactory = PrimeroEntitiesUnitOfWorkSource.GetUnitOfWorkFactory(officeName);
             }
             else
-                primeroUnitOfWorkFactory = PrimeroEntitiesUnitOfWorkSource.GetUnitOfWorkFactory(loadPROJECT.OfficeNameForExo);
+            {
+                mainViewModelPrimeroUnitOfWorkFactory = PrimeroEntitiesUnitOfWorkSource.GetUnitOfWorkFactory(loadPROJECT.OfficeNameForExo);
+                tempPrimeroUnitOfWorkFactory = PrimeroEntitiesUnitOfWorkSource.GetUnitOfWorkFactory(loadPROJECT.OfficeNameForExo);
+            }
 
-            primeroUnitOfWork = primeroUnitOfWorkFactory.CreateUnitOfWork();
+            primeroUnitOfWork = tempPrimeroUnitOfWorkFactory.CreateUnitOfWork();
+            primeroUnitOfWorkFactory = PrimeroEntitiesUnitOfWorkSource.GetUnitOfWorkFactory(primeroUnitOfWork);
         }
 
         public FilterTreeViewModel<BASELINE_ITEMProgress, Guid> FilterTreeViewModel { get; set; }
@@ -143,11 +157,20 @@ namespace BluePrints.ViewModels
             loaderCollection.AddLoaderDescription(primeroUnitOfWorkFactory, x => x.JOBCOST_HDR, JOBCOST_HDRProjectionFunc, x => loadJOBCOST_HDR = x);
             loaderCollection.AddLoaderDescription<STOCK_GROUPS, STOCK_GROUPS, int, IPrimeroEntitiesUnitOfWork>(primeroUnitOfWorkFactory, x => x.STOCK_GROUPS);
             loaderCollection.AddLoaderDescription<STOCK_GROUP2S, STOCK_GROUP2S, int, IPrimeroEntitiesUnitOfWork>(primeroUnitOfWorkFactory, x => x.STOCK_GROUP2S);
+            loaderCollection.AddLoaderDescription(bluePrintsUnitOfWorkFactory, x => x.TRANSACTION_APPROVALS, TRANSACTION_APPROVALProjectionFunc);
         }
 
         private Func<IRepositoryQuery<STOCK_ITEMS>, IQueryable<STOCK_ITEMS>> STOCK_ITEMSProjectionFunc()
         {
             return query => query;
+        }
+
+        private Func<IRepositoryQuery<TRANSACTION_APPROVAL>, IQueryable<TRANSACTION_APPROVAL>> TRANSACTION_APPROVALProjectionFunc()
+        {
+            if (isYearToDate)
+                return query => query;
+            else
+                return query => query.Where(x => x.GUID_PROJECT == loadPROJECT.GUID);
         }
 
         private Func<IRepositoryQuery<JOBCOST_HDR>, IQueryable<JOBCOST_HDR>> JOBCOST_HDRProjectionFunc()
@@ -161,7 +184,7 @@ namespace BluePrints.ViewModels
         public ObservableCollection<JOB_TRANSACTIONS> JOB_TRANSACTIONS = new ObservableCollection<JOB_TRANSACTIONS>();
         protected override void onAuxiliaryEntitiesCollectionLoaded()
         {
-            CreateMainViewModel(primeroUnitOfWorkFactory, x => x.X_JOB_TRANSACTIONS_DETAIL_V5);
+            CreateMainViewModel(mainViewModelPrimeroUnitOfWorkFactory, x => x.X_JOB_TRANSACTIONS_DETAIL_V6);
         }
 
         protected override void OnAfterAssignedCallbackAndRaisePropertyChanged()
@@ -169,11 +192,11 @@ namespace BluePrints.ViewModels
             IsPasteCellLevel = true;
         }
 
-        protected override Func<IRepositoryQuery<X_JOB_TRANSACTIONS_DETAIL_V5>, IQueryable<X_JOB_TRANSACTIONS_DETAIL_V5>> specifyMainViewModelProjection()
+        protected override Func<IRepositoryQuery<X_JOB_TRANSACTIONS_DETAIL_V6>, IQueryable<X_JOB_TRANSACTIONS_DETAIL_V6>> specifyMainViewModelProjection()
         {
             if (isYearToDate)
             {
-                if(Is2020Onwards)
+                if (Is2020Onwards)
                 {
                     DateTime date2020FirstDay = new DateTime(2020, 1, 1);
                     return query => query.Where(x => x.TRANSDATE != null && ((DateTime)x.TRANSDATE) >= date2020FirstDay);
@@ -191,63 +214,170 @@ namespace BluePrints.ViewModels
             base.InstantFeedbackOtherUnitOfWorkSaveChanges();
         }
 
-        protected override OperationInterceptMode OnBeforeProjectionSaveIsContinue(X_JOB_TRANSACTIONS_DETAIL_V5 projection, out bool isNew)
+        protected override OperationInterceptMode OnBeforeProjectionSaveIsContinue(X_JOB_TRANSACTIONS_DETAIL_V6 projection, out bool isNew)
         {
             isNew = false;
             ApplyInstantFeedbackEntityPropertiesToOtherUnitOfWorkEntity(projection);
             return OperationInterceptMode.SkipOneAndAllDbSaves;
         }
 
-        protected override void OnAfterProjectionsSave(IEnumerable<X_JOB_TRANSACTIONS_DETAIL_V5> projections)
+        protected override void OnAfterProjectionsSave(IEnumerable<X_JOB_TRANSACTIONS_DETAIL_V6> projections)
         {
             primeroUnitOfWork.SaveChanges();
             base.OnAfterProjectionsSave(projections);
         }
 
-        protected override void ApplyInstantFeedbackEntityPropertiesToOtherUnitOfWorkEntity(X_JOB_TRANSACTIONS_DETAIL_V5 projection)
+        protected override void ApplyInstantFeedbackEntityPropertiesToOtherUnitOfWorkEntity(X_JOB_TRANSACTIONS_DETAIL_V6 projection)
         {
-            JOB_TRANSACTIONS findJOB_TRANSACTION = primeroUnitOfWork.JOB_TRANSACTIONS.FirstOrDefault(x => x.SEQNO == projection.SEQNO);
-            if(findJOB_TRANSACTION != null)
+            if(CanEditWithoutApproval)
             {
-                findJOB_TRANSACTION.JOBNO = projection.JOBNO;
-                findJOB_TRANSACTION.COST_GROUP = projection.COST_GROUP_NO;
-                findJOB_TRANSACTION.COST_TYPE = projection.COST_TYPE_NO;
-                findJOB_TRANSACTION.STOCKCODE = projection.STOCKCODE;
-                findJOB_TRANSACTION.X_VARIATIONCODE = projection.VARIATION_CODE;
-                findJOB_TRANSACTION.DESCRIPTION = projection.DESCRIPTION;
-                findJOB_TRANSACTION.STAFFNO = projection.ACCNO;
-                findJOB_TRANSACTION.QUANTITY = projection.QUANTITY;
-                findJOB_TRANSACTION.STOCKCODE = projection.STOCKCODE;
-
-                if(projection.QtyEdited && CanEditQuantity)
+                JOB_TRANSACTIONS findJOB_TRANSACTION = primeroUnitOfWork.JOB_TRANSACTIONS.FirstOrDefault(x => x.SEQNO == projection.SEQNO);
+                if (findJOB_TRANSACTION != null)
                 {
-                    if (findJOB_TRANSACTION.QUANTITY != null)
+                    findJOB_TRANSACTION.JOBNO = projection.JOBNO;
+                    findJOB_TRANSACTION.COST_GROUP = projection.COST_GROUP_NO;
+                    findJOB_TRANSACTION.COST_TYPE = projection.COST_TYPE_NO;
+                    findJOB_TRANSACTION.STOCKCODE = projection.STOCKCODE;
+                    findJOB_TRANSACTION.X_VARIATIONCODE = projection.VARIATION_CODE;
+                    findJOB_TRANSACTION.DESCRIPTION = projection.DESCRIPTION;
+                    findJOB_TRANSACTION.STAFFNO = projection.ACCNO;
+                    findJOB_TRANSACTION.QUANTITY = projection.QUANTITY;
+                    findJOB_TRANSACTION.STOCKCODE = projection.STOCKCODE;
+
+                    if (projection.QtyEdited && CanEditQuantity)
                     {
-                        if (findJOB_TRANSACTION.UNITCOST != null)
-                            findJOB_TRANSACTION.LINECOST = findJOB_TRANSACTION.UNITCOST * findJOB_TRANSACTION.QUANTITY;
-
-                        if (findJOB_TRANSACTION.UNITPRICE != null)
+                        if (findJOB_TRANSACTION.QUANTITY != null)
                         {
-                            findJOB_TRANSACTION.LINECHARGE = findJOB_TRANSACTION.UNITPRICE * findJOB_TRANSACTION.QUANTITY;
-                            findJOB_TRANSACTION.LINETOTAL = findJOB_TRANSACTION.LINECHARGE;
+                            if (findJOB_TRANSACTION.UNITCOST != null)
+                                findJOB_TRANSACTION.LINECOST = findJOB_TRANSACTION.UNITCOST * findJOB_TRANSACTION.QUANTITY;
+
+                            if (findJOB_TRANSACTION.UNITPRICE != null)
+                            {
+                                findJOB_TRANSACTION.LINECHARGE = findJOB_TRANSACTION.UNITPRICE * findJOB_TRANSACTION.QUANTITY;
+                                findJOB_TRANSACTION.LINETOTAL = findJOB_TRANSACTION.LINECHARGE;
+                            }
+
+                            findJOB_TRANSACTION.LINETOTAL_TAX = (double)((findJOB_TRANSACTION.LINETOTAL * findJOB_TRANSACTION.TAXRATE) / 100);
+                            findJOB_TRANSACTION.LINE_TAX = findJOB_TRANSACTION.LINETOTAL_TAX;
+
+                            findJOB_TRANSACTION.LINETOTAL_INCTAX = findJOB_TRANSACTION.LINETOTAL + findJOB_TRANSACTION.LINETOTAL_TAX;
+                            projection.LINECOST = findJOB_TRANSACTION.LINECOST;
+                            projection.Update();
                         }
-
-                        findJOB_TRANSACTION.LINETOTAL_TAX = (double)((findJOB_TRANSACTION.LINETOTAL * findJOB_TRANSACTION.TAXRATE) / 100);
-                        findJOB_TRANSACTION.LINE_TAX = findJOB_TRANSACTION.LINETOTAL_TAX;
-
-                        findJOB_TRANSACTION.LINETOTAL_INCTAX = findJOB_TRANSACTION.LINETOTAL + findJOB_TRANSACTION.LINETOTAL_TAX;
-                        projection.LINECOST = findJOB_TRANSACTION.LINECOST;
-                        projection.Update();
                     }
                 }
-            }
 
-            projection.QtyEdited = false;
+                projection.QtyEdited = false;
+            }
+            else if (projection.JobNoChangeTracking.IsChanged || projection.CostGroupChangeTracking.IsChanged || projection.CostTypeChangeTracking.IsChanged || projection.StockCodeChangeTracking.IsChanged || projection.VariationCodeChangeTracking.IsChanged)
+            {
+                TRANSACTION_APPROVAL findTRANSACTION_APPROVAL = bluePrintsUnitOfWork.TRANSACTION_APPROVALS.FirstOrDefault(x => x.JOB_TRANSACTION_SEQNO == projection.SEQNO && x.STATUS == TransactionApprovalStatus.Pending);
+                if(findTRANSACTION_APPROVAL == null)
+                {
+                    findTRANSACTION_APPROVAL = new TRANSACTION_APPROVAL();
+                    findTRANSACTION_APPROVAL.JOB_TRANSACTION_SEQNO = projection.SEQNO;
+                    findTRANSACTION_APPROVAL.GUID_PROJECT = loadPROJECT.GUID;
+                    findTRANSACTION_APPROVAL.CREATED = DateTime.Now;
+                    findTRANSACTION_APPROVAL.CREATEDBY = LoginCredentials.CurrentUserGuid;
+                    findTRANSACTION_APPROVAL.STATUS = TransactionApprovalStatus.Pending;
+                }
+
+                if (projection.JobNoChangeTracking.IsSameAsOriginal)
+                {
+                    projection.OLD_JOBCODE = null;
+                    findTRANSACTION_APPROVAL.OLD_JOBCODE = null;
+                    findTRANSACTION_APPROVAL.OLD_JOBNO = null;
+                    findTRANSACTION_APPROVAL.NEW_JOBNO = null;
+                    projection.JobNoChangeTracking.ResetChangeTracking();
+                }
+                else if (projection.JobNoChangeTracking.IsChanged)
+                {
+                    //for tool tip to show old code without refreshing view
+                    projection.OLD_JOBCODE = projection.SUB_JOBCODE;
+                    findTRANSACTION_APPROVAL.OLD_JOBCODE = projection.SUB_JOBCODE;
+                    findTRANSACTION_APPROVAL.OLD_JOBNO = projection.JOBNO;
+                    findTRANSACTION_APPROVAL.NEW_JOBNO = projection.JobNoChangeTracking.TrackableProperty;
+                }
+
+                if(projection.CostGroupChangeTracking.IsSameAsOriginal)
+                {
+                    projection.OLD_DISCIPLINECODE = null;
+                    findTRANSACTION_APPROVAL.OLD_DISCIPLINECODE = null;
+                    findTRANSACTION_APPROVAL.OLD_COST_GROUP_NO = null;
+                    findTRANSACTION_APPROVAL.NEW_COST_GROUP_NO = null;
+                    projection.CostGroupChangeTracking.ResetChangeTracking();
+                }
+                else if (projection.CostGroupChangeTracking.IsChanged)
+                {
+                    //for tool tip to show old code without refreshing view
+                    projection.OLD_DISCIPLINECODE = projection.DISCIPLINE_CODE;
+                    findTRANSACTION_APPROVAL.OLD_DISCIPLINECODE = projection.DISCIPLINE_CODE;
+                    findTRANSACTION_APPROVAL.OLD_COST_GROUP_NO = projection.COST_GROUP_NO;
+                    findTRANSACTION_APPROVAL.NEW_COST_GROUP_NO = projection.CostGroupChangeTracking.TrackableProperty;
+                }
+
+                if (projection.CostTypeChangeTracking.IsSameAsOriginal)
+                {
+                    projection.OLD_COMMODITYCODE = null;
+                    findTRANSACTION_APPROVAL.OLD_COMMODITYCODE = null;
+                    findTRANSACTION_APPROVAL.OLD_COST_TYPE_NO = null;
+                    findTRANSACTION_APPROVAL.NEW_COST_TYPE_NO = null;
+                    projection.CostTypeChangeTracking.ResetChangeTracking();
+                }
+                else if (projection.CostTypeChangeTracking.IsChanged)
+                {
+                    //for tool tip to show old code without refreshing view
+                    projection.OLD_COMMODITYCODE = projection.COMMODITY_CODE;
+                    findTRANSACTION_APPROVAL.OLD_COMMODITYCODE = projection.COMMODITY_CODE;
+                    findTRANSACTION_APPROVAL.OLD_COST_TYPE_NO = projection.COST_TYPE_NO;
+                    findTRANSACTION_APPROVAL.NEW_COST_TYPE_NO = projection.CostTypeChangeTracking.TrackableProperty;
+                }
+
+                if (projection.StockCodeChangeTracking.IsSameAsOriginal)
+                {
+                    projection.OLD_STOCK_CODE = null;
+                    findTRANSACTION_APPROVAL.OLD_STOCK_CODE = null;
+                    findTRANSACTION_APPROVAL.NEW_STOCK_CODE = null;
+                    projection.StockCodeChangeTracking.ResetChangeTracking();
+                }
+                else if (projection.StockCodeChangeTracking.IsChanged)
+                {
+                    //for tool tip to show old code without refreshing view
+                    projection.OLD_STOCK_CODE = projection.STOCKCODE;
+                    findTRANSACTION_APPROVAL.OLD_STOCK_CODE = projection.STOCKCODE;
+                    findTRANSACTION_APPROVAL.NEW_STOCK_CODE = projection.StockCodeChangeTracking.TrackableProperty;
+                }
+
+                if (projection.VariationCodeChangeTracking.IsSameAsOriginal)
+                {
+                    projection.OLD_VARIATION_CODE = null;
+                    findTRANSACTION_APPROVAL.OLD_VARIATION_CODE = null;
+                    findTRANSACTION_APPROVAL.NEW_VARIATION_CODE = null;
+                    projection.VariationCodeChangeTracking.ResetChangeTracking();
+                }
+                else if (projection.VariationCodeChangeTracking.IsChanged)
+                {
+                    //for tool tip to show old code without refreshing view
+                    projection.OLD_VARIATION_CODE = projection.VARIATION_CODE;
+                    findTRANSACTION_APPROVAL.OLD_VARIATION_CODE = projection.VARIATION_CODE;
+                    findTRANSACTION_APPROVAL.NEW_VARIATION_CODE = projection.VariationCodeChangeTracking.TrackableProperty;
+                }
+
+                projection.Update();
+
+                if (findTRANSACTION_APPROVAL.NEW_JOBNO == null && findTRANSACTION_APPROVAL.NEW_COST_GROUP_NO == null && findTRANSACTION_APPROVAL.NEW_COST_TYPE_NO == null && findTRANSACTION_APPROVAL.NEW_STOCK_CODE == null && findTRANSACTION_APPROVAL.NEW_VARIATION_CODE == null)
+                    TRANSACTION_APPROVALViewModel.Delete(findTRANSACTION_APPROVAL);
+                else
+                    //use view model so that message can be invoked for instant refresh of Transaction Approval view
+                    TRANSACTION_APPROVALViewModel.Save(findTRANSACTION_APPROVAL);
+                //bluePrintsUnitOfWork.SaveChanges();
+            }
         }
 
         public override void FullRefresh()
         {
             base.FullRefresh();
+            GridControlService.RefreshData();
         }
 #endregion
 
@@ -282,20 +412,20 @@ namespace BluePrints.ViewModels
         }
         #endregion
 
-        public override void UnifiedCellValueChanged(string field_name, object old_value, object new_value, X_JOB_TRANSACTIONS_DETAIL_V5 projection, bool isNew)
+        public override void UnifiedCellValueChanged(string field_name, object old_value, object new_value, X_JOB_TRANSACTIONS_DETAIL_V6 projection, bool isNew)
         {
-            if (field_name == BindableBase.GetPropertyName(() => new X_JOB_TRANSACTIONS_DETAIL_V5().QUANTITY))
+            if (field_name == BindableBase.GetPropertyName(() => new X_JOB_TRANSACTIONS_DETAIL_V6().QUANTITY))
                 projection.QtyEdited = true;
 
             base.UnifiedCellValueChanged(field_name, old_value, new_value, projection, isNew);
         }
 
-        public override string UnifiedValueValidation(X_JOB_TRANSACTIONS_DETAIL_V5 projection, string field_name, object new_value, bool isPaste)
+        public override string UnifiedValueValidation(X_JOB_TRANSACTIONS_DETAIL_V6 projection, string field_name, object new_value, bool isPaste)
         {
             return string.Empty;
         }
 
-        public override string UnifiedRowValidation(X_JOB_TRANSACTIONS_DETAIL_V5 projection)
+        public override string UnifiedRowValidation(X_JOB_TRANSACTIONS_DETAIL_V6 projection)
         {
             return string.Empty;
         }
@@ -391,11 +521,11 @@ namespace BluePrints.ViewModels
             }
         }
 
-        public IEnumerable<X_JOB_TRANSACTIONS_DETAIL_V5> X_JOB_TRANSACTIONS_DETAILCollection
+        public IEnumerable<X_JOB_TRANSACTIONS_DETAIL_V6> X_JOB_TRANSACTIONS_DETAILCollection
         {
             get
             {
-                return GetEntities<X_JOB_TRANSACTIONS_DETAIL_V5>();
+                return GetEntities<X_JOB_TRANSACTIONS_DETAIL_V6>();
             }
         }
 
@@ -432,11 +562,28 @@ namespace BluePrints.ViewModels
             }
         }
 
+        public CollectionViewModel<TRANSACTION_APPROVAL, TRANSACTION_APPROVAL, Guid, IBluePrintsEntitiesUnitOfWork> TRANSACTION_APPROVALViewModel
+        {
+            get
+            {
+                if (loaderCollection == null)
+                    return null;
+
+                return
+                    (CollectionViewModel<TRANSACTION_APPROVAL, TRANSACTION_APPROVAL, Guid, IBluePrintsEntitiesUnitOfWork>)loaderCollection.GetViewModel<TRANSACTION_APPROVAL>();
+            }
+        }
         public override void CleanUpEntitiesLoader()
         {
             JOBCOST_HDRInstantFeedbackCollectionViewModel?.Dispose();
             base.CleanUpEntitiesLoader();
         }
+
+        public string SubJobFieldName => CanEditWithoutApproval ? "JOBNO" : IsInstantFeedbackMode ? "ProxyJobNo" : "JobNoChangeTracking.TrackableProperty";
+        public string CostGroupFieldName => CanEditWithoutApproval ? "COST_GROUP_NO" : IsInstantFeedbackMode ? "ProxyCostGroup" : "CostGroupChangeTracking.TrackableProperty";
+        public string CostTypeFieldName => CanEditWithoutApproval ? "COST_TYPE_NO" : IsInstantFeedbackMode ? "ProxyCostType" : "CostTypeChangeTracking.TrackableProperty";
+        public string StockCodeFieldName => CanEditWithoutApproval ? "STOCKCODE" : IsInstantFeedbackMode ? "ProxyStockCode" : "StockCodeChangeTracking.TrackableProperty";
+        public string VariationCodeFieldName => CanEditWithoutApproval ? "VARIATION_CODE" : IsInstantFeedbackMode ? "ProxyVariationCode" : "VariationCodeChangeTracking.TrackableProperty";
     }
 }
 

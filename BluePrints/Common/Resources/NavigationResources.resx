@@ -543,6 +543,12 @@
   <data name="Menu_Project_Snapshot_PO_Invoice" xml:space="preserve">
     <value>Project PO invoice menu</value>
   </data>
+  <data name="Menu_Project_EXO_TransactionsApproval" xml:space="preserve">
+    <value>Project EXO transactions approval menu</value>
+  </data>
+  <data name="Permission_EXO_Transactions_RequiresApproval" xml:space="preserve">
+    <value>Requires approvals when editing transaction</value>
+  </data>
   <data name="Permission_DesignDeliverables_DeleteVariationDeliverables" xml:space="preserve">
     <value>Allow user to delete zero total hours deliverables attached to variations</value>
   </data>
