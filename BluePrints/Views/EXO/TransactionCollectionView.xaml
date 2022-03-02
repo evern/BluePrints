@@ -188,9 +188,10 @@
                                     </DataTemplate>
                                 </dxg:GridColumn.CellTemplate>
                             </dxg:GridColumn>
-                            <dxg:GridColumn FieldName="DESCRIPTION" Width="300" AllowBestFit="false" Header="Description" ReadOnly="{Binding IsReadOnly}" />
+                            <dxg:GridColumn FieldName="DESCRIPTION" Width="300" AllowBestFit="false" Header="Description" Visible="{Binding IsEditableDescriptionColumnVisible}" ReadOnly="{Binding IsReadOnly}" />
                         </dxg:GridControlBand>
                         <dxg:GridControlBand Header="Read Only (Any changes will be updated on refresh)" >
+                            <dxg:GridColumn FieldName="DESCRIPTION" Width="300" AllowBestFit="false" Header="Description" Visible="{Binding IsEditableDescriptionColumnVisible, Converter={StaticResource BooleanNegationConverter}}" ReadOnly="True" />
                             <dxg:GridColumn FieldName="DEPARTMENT_NAME" Width="100" AllowBestFit="false" Header="Department" ReadOnly="True" />
                             <dxg:GridColumn FieldName="{Binding CostTypeFieldName}" AllowBestFit="false" Width="100" Header="Commodity Code Desc" ReadOnly="True" >
                                 <dxg:GridColumn.EditSettings>

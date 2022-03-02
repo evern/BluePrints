@@ -69,7 +69,7 @@ namespace BluePrints.ViewModels
             IsCostsVisible = LoginCredentials.getPermissionStatus(DataUtils.GetNameOf(() => NavigationResources.Permission_EXO_Transactions_ShowCosts)) == LoginCredentials.PermissionStatus.All;
             CanEditQuantity = !IsReadOnly && LoginCredentials.getPermissionStatus(DataUtils.GetNameOf(() => NavigationResources.Permission_EXO_Transactions_ChangeQuantity)) == LoginCredentials.PermissionStatus.All;
             CanEditWithoutApproval = LoginCredentials.getPermissionStatus(DataUtils.GetNameOf(() => NavigationResources.Permission_EXO_Transactions_RequiresApproval)) != LoginCredentials.PermissionStatus.All;
-            
+            //CanEditWithoutApproval = true;
             bool? isUsePreloadModePreference = LoginCredentials.GetUserPreferenceBool(DataUtils.GetNameOf(() => UserPreferences.EXO_PreloadTransactions));
 
             isUsePreloadMode = isUsePreloadModePreference == null ? false : (bool)isUsePreloadModePreference;
@@ -422,6 +422,33 @@ namespace BluePrints.ViewModels
 
         public override string UnifiedValueValidation(X_JOB_TRANSACTIONS_DETAIL_V6 projection, string field_name, object new_value, bool isPaste)
         {
+            string rowIdentifier = projection.SUB_JOBCODE + "-" + projection.DISCIPLINE_CODE + "-" + projection.COMMODITY_CODE + "-" + projection.STOCKCODE + "-" + projection.VARIATION_CODE;
+            if (field_name == BindableBase.GetPropertyName(() => new X_JOB_TRANSACTIONS_DETAIL_V6().VARIATION_CODE))
+            {
+                if (projection.VariationCodeChangeTracking.ChangeTrackingPropertyStatus == ChangeTrackablePropertyStatus.Pending)
+                    return rowIdentifier + " cannot change value because of pending approval";
+            }
+            else if (field_name == BindableBase.GetPropertyName(() => new X_JOB_TRANSACTIONS_DETAIL_V6().STOCKCODE))
+            {
+                if (projection.StockCodeChangeTracking.ChangeTrackingPropertyStatus == ChangeTrackablePropertyStatus.Pending)
+                    return rowIdentifier + " cannot change value because of pending approval";
+            }
+            else if (field_name == BindableBase.GetPropertyName(() => new X_JOB_TRANSACTIONS_DETAIL_V6().COMMODITY_CODE))
+            {
+                if (projection.CostTypeChangeTracking.ChangeTrackingPropertyStatus == ChangeTrackablePropertyStatus.Pending)
+                    return rowIdentifier + " cannot change value because of pending approval";
+            }
+            else if (field_name == BindableBase.GetPropertyName(() => new X_JOB_TRANSACTIONS_DETAIL_V6().DISCIPLINE_CODE))
+            {
+                if (projection.CostGroupChangeTracking.ChangeTrackingPropertyStatus == ChangeTrackablePropertyStatus.Pending)
+                    return rowIdentifier + " cannot change value because of pending approval";
+            }
+            else if (field_name == BindableBase.GetPropertyName(() => new X_JOB_TRANSACTIONS_DETAIL_V6().SUB_JOBCODE))
+            {
+                if (projection.JobNoChangeTracking.ChangeTrackingPropertyStatus == ChangeTrackablePropertyStatus.Pending)
+                    return rowIdentifier + " cannot change value because of pending approval";
+            }
+
             return string.Empty;
         }
 
@@ -584,6 +611,7 @@ namespace BluePrints.ViewModels
         public string CostTypeFieldName => CanEditWithoutApproval ? "COST_TYPE_NO" : IsInstantFeedbackMode ? "ProxyCostType" : "CostTypeChangeTracking.TrackableProperty";
         public string StockCodeFieldName => CanEditWithoutApproval ? "STOCKCODE" : IsInstantFeedbackMode ? "ProxyStockCode" : "StockCodeChangeTracking.TrackableProperty";
         public string VariationCodeFieldName => CanEditWithoutApproval ? "VARIATION_CODE" : IsInstantFeedbackMode ? "ProxyVariationCode" : "VariationCodeChangeTracking.TrackableProperty";
+        public bool IsEditableDescriptionColumnVisible => CanEditWithoutApproval;
     }
 }
 
