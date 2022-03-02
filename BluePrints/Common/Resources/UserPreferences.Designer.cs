@@ -97,6 +97,15 @@ namespace BluePrints.Common.Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Show approvable records only.
+        /// </summary>
+        internal static string EXO_TransactionApprovalShowApprovableOnly {
+            get {
+                return ResourceManager.GetString("EXO_TransactionApprovalShowApprovableOnly", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Auto hide summary on forecast.
         /// </summary>
         internal static string Forecast_AutoHideSummary {

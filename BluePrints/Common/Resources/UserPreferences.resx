@@ -129,6 +129,9 @@
   <data name="EXO_PreloadTransactions" xml:space="preserve">
     <value>Preload all transactions instead of streaming from server</value>
   </data>
+  <data name="EXO_TransactionApprovalShowApprovableOnly" xml:space="preserve">
+    <value>Show approvable records only</value>
+  </data>
   <data name="Forecast_AutoHideSummary" xml:space="preserve">
     <value>Auto hide summary on forecast</value>
   </data>

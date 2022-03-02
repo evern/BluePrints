@@ -1,6 +1,7 @@
 ﻿<UserControl x:Class="BluePrints.Views.TransactionApprovalView" xmlns="http://schemas.microsoft.com/netfx/2009/xaml/presentation" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" xmlns:custom="clr-namespace:BaseModel.Misc;assembly=BaseModel" xmlns:d="http://schemas.microsoft.com/expression/blend/2008" xmlns:dx="http://schemas.devexpress.com/winfx/2008/xaml/core" xmlns:dxb="http://schemas.devexpress.com/winfx/2008/xaml/bars" xmlns:dxe="http://schemas.devexpress.com/winfx/2008/xaml/editors" xmlns:dxg="http://schemas.devexpress.com/winfx/2008/xaml/grid" xmlns:dxlc="http://schemas.devexpress.com/winfx/2008/xaml/layoutcontrol" xmlns:dxmvvm="http://schemas.devexpress.com/winfx/2008/xaml/mvvm" xmlns:dxr="http://schemas.devexpress.com/winfx/2008/xaml/ribbon" xmlns:dxrudex="http://schemas.devexpress.com/winfx/2008/xaml/reports/userdesignerextensions" xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" xmlns:view="clr-namespace:BluePrints.Views" xmlns:viewmodel="clr-namespace:BluePrints.ViewModels" x:Name="userControl" d:DesignHeight="400" d:DesignWidth="600" DataContext="{dxmvvm:ViewModelSource viewmodel:TransactionApprovalViewModelWrapper}" mc:Ignorable="d">
     <UserControl.Resources>
         <ResourceDictionary>
+            <dxmvvm:BooleanNegationConverter x:Key="BooleanNegationConverter" />
             <ResourceDictionary.MergedDictionaries>
                 <ResourceDictionary Source="pack://application:,,,/Common/View/ResourceDictionaries/GridColumnResourceDictionary.xaml" />
                 <ResourceDictionary Source="pack://application:,,,/BaseModel;component/View/ResourceDictionaries/DefaultControlResourceDictionary.xaml" />
@@ -12,6 +13,7 @@
         <dxb:BarManager>
             <dxb:BarManager.Items>
                 <dxb:BarSubItem ItemLinksSource="{StaticResource RibbonDefaultGridButtons}" />
+                <dxb:BarCheckItem x:Name="biShowApprovableOnly" Content="Show Approvable Only" IsChecked="{Binding IsShowApprovableOnly, Mode=TwoWay}" IsEnabled="{Binding IsLoading, Converter={StaticResource BooleanNegationConverter}}" RibbonStyle="SmallWithText" ToolTip="Toggle show approvable transaction only" Glyph="{dx:DXImage Images/Actions/Apply_16x16.png}" LargeGlyph="{dx:DXImage Images/Actions/Apply_32x32.png}" />
                 <dxb:BarButtonItem x:Name="biApprove" Content="Approve Selected" Command="{Binding ApproveTransactionCommand}" LargeGlyph="{dx:DXImage Image=CustomizeGrid_32x32.png}" Glyph="{dx:DXImage Image=CustomizeGrid_16x16.png}" />
             </dxb:BarManager.Items>
             <DockPanel>
@@ -28,11 +30,12 @@
                                 <dxb:BarButtonItemLink BarItemName="biExportToExcel1" />
                                 <dxb:BarButtonItemLink BarItemName="biExportToPDF1" />
                                 <dxb:BarButtonItemLink BarItemName="biApprove" />
+                                <dxb:BarCheckItemLink BarItemName="biShowApprovableOnly" />
                             </dxr:RibbonPageGroup>
                         </dxr:RibbonPage>
                     </dxr:RibbonDefaultPageCategory>
                 </dxr:RibbonControl>
-                <custom:GridControlEx x:Name="GridControl" dx:DXSerializer.SerializationID="GridControlTransactionApproval" dx:DXSerializer.StoreLayoutMode="All" Style="{StaticResource DefaultGridControlTemplate}">
+                <custom:GridControlEx x:Name="GridControl" dx:DXSerializer.SerializationID="GridControlTransactionApproval" dx:DXSerializer.StoreLayoutMode="All" FilterCriteria="{Binding ApproveFilterCriteria, Mode=TwoWay}" Style="{StaticResource DefaultGridControlTemplate}">
                     <dxg:GridControl.Bands>
                         <dxg:GridControlBand x:Name="gcbOld" Header="Old Attributes">
                             <dxg:GridColumn Header="Old Job No" FieldName="OLD_JOBNO" HeaderToolTip="Job code before approval" ReadOnly="True">
@@ -107,6 +110,7 @@
                                     </DataTemplate>
                                 </dxg:GridColumn.CellTemplate>
                             </dxg:GridColumn>
+                            <dxg:GridColumn AllowSearchPanel="False" FieldName="IsNotApproved" Header="Approvable" HeaderToolTip="Indicate whether transaction is approvable" ReadOnly="True" Visible="False" />
                         </dxg:GridControlBand>
                     </dxg:GridControl.Bands>
                     <dxg:GridControl.TotalSummary>

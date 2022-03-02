@@ -6,9 +6,12 @@ using BaseModel.ViewModel.Loader;
 using BluePrints.BluePrintsEntitiesDataModel;
 using BluePrints.Common;
 using BluePrints.Common.Base;
+using BluePrints.Common.Resources;
+using BluePrints.Common.Utils;
 using BluePrints.Data;
 using BluePrints.PrimeroData;
 using BluePrints.PrimeroData.PrimeroEntitiesDataModel;
+using DevExpress.Data.Filtering;
 using DevExpress.Mvvm.POCO;
 using System;
 using System.Collections.Generic;
@@ -39,8 +42,27 @@ namespace BluePrints.ViewModels
         protected TransactionApprovalViewModelWrapper(
             IUnitOfWorkFactory<IBluePrintsEntitiesUnitOfWork> unitOfWorkFactory = null)
         {
+            bool? isShowApprovableOnlyPreference = LoginCredentials.GetUserPreferenceBool(DataUtils.GetNameOf(() => UserPreferences.EXO_TransactionApprovalShowApprovableOnly));
+            isShowApprovableOnly = isShowApprovableOnlyPreference == null ? false : (bool)isShowApprovableOnlyPreference;
         }
 
+        public CriteriaOperator ApproveFilterCriteria { get; set; }
+        bool isShowApprovableOnly;
+        public bool IsShowApprovableOnly
+        {
+            get => isShowApprovableOnly;
+            set
+            {
+                isShowApprovableOnly = value;
+                if(isShowApprovableOnly)
+                    ApproveFilterCriteria = CriteriaOperator.Parse("[IsNotApproved] = 'True'");
+                else
+                    ApproveFilterCriteria = null;
+
+                this.RaisePropertyChanged(x => x.ApproveFilterCriteria);
+                BluePrintsDataUtils.SaveUserPreference(DataUtils.GetNameOf(() => UserPreferences.EXO_TransactionApprovalShowApprovableOnly), value ? UserPreferences.PreferenceTrueValue : UserPreferences.PreferenceFalseValue);
+            }
+        }
         #region Database Operations
 
         private IUnitOfWorkFactory<IBluePrintsEntitiesUnitOfWork> bluePrintsUnitOfWorkFactory;
