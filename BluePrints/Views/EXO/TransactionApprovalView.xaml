@@ -54,23 +54,23 @@
                             <dxg:GridColumn Header="Old Variation Code" FieldName="OLD_VARIATION_CODE" HeaderToolTip="Variation code before approval" ReadOnly="True"/>
                         </dxg:GridControlBand>
                         <dxg:GridControlBand x:Name="gcbNew" Header="New Attributes">
-                            <dxg:GridColumn Header="New Job No" FieldName="NEW_JOBNO" HeaderToolTip="Job code for approval" ReadOnly="True">
+                            <dxg:GridColumn Header="New Job No" FieldName="ViewJOBNO" HeaderToolTip="Job code for approval" ReadOnly="True">
                                 <dxg:GridColumn.EditSettings>
                                     <dxe:ComboBoxEditSettings AutoComplete="True" DisplayMember="JOBCODE" IsTextEditable="True" ItemsSource="{Binding JOBCOST_HDRCollection}" ValueMember="JOBNO" />
                                 </dxg:GridColumn.EditSettings>
                             </dxg:GridColumn>
-                            <dxg:GridColumn Header="New Discipline" FieldName="NEW_COST_GROUP_NO" HeaderToolTip="Discipline code for approval" ReadOnly="True">
+                            <dxg:GridColumn Header="New Discipline" FieldName="ViewCOST_GROUP_NO" HeaderToolTip="Discipline code for approval" ReadOnly="True">
                                 <dxg:GridColumn.EditSettings>
                                     <dxe:ComboBoxEditSettings AutoComplete="True" DisplayMember="COSTDESC" IsTextEditable="True" ItemsSource="{Binding JOB_COSTGROUPSCollection}" ValueMember="SEQNO" />
                                 </dxg:GridColumn.EditSettings>
                             </dxg:GridColumn>
-                            <dxg:GridColumn Header="New Commodity" FieldName="NEW_COST_TYPE_NO" HeaderToolTip="Commodity code for approval" ReadOnly="True">
+                            <dxg:GridColumn Header="New Commodity" FieldName="ViewCOST_TYPE_NO" HeaderToolTip="Commodity code for approval" ReadOnly="True">
                                 <dxg:GridColumn.EditSettings>
                                     <dxe:ComboBoxEditSettings AutoComplete="True" DisplayMember="COSTDESC" IsTextEditable="True" ItemsSource="{Binding JOB_COSTTYPESCollection}" ValueMember="SEQNO" />
                                 </dxg:GridColumn.EditSettings>
                             </dxg:GridColumn>
-                            <dxg:GridColumn Header="New Stock Code" FieldName="NEW_STOCK_CODE" HeaderToolTip="Stock code for approval" ReadOnly="True"/>
-                            <dxg:GridColumn Header="New Variation Code" FieldName="NEW_VARIATION_CODE" HeaderToolTip="Variation code for approval" ReadOnly="True"/>
+                            <dxg:GridColumn Header="New Stock Code" FieldName="ViewSTOCK_CODE" HeaderToolTip="Stock code for approval" ReadOnly="True"/>
+                            <dxg:GridColumn Header="New Variation Code" FieldName="ViewVARIATION_CODE" HeaderToolTip="Variation code for approval" ReadOnly="True"/>
                         </dxg:GridControlBand>
                         <dxg:GridControlBand x:Name="gcbStatus" Header="Status">
                             <dxg:GridColumn Header="Created" FieldName="CREATED" AllowSearchPanel="False" HeaderToolTip="When the transaction change is created" ReadOnly="True">
@@ -121,6 +121,38 @@
                                 <dxb:BarButtonItemLink BarItemName="biApprove" />
                                 <dxb:BarButtonItemLink BarItemName="biFullRefresh1" />
                             </dxg:TableView.RowCellMenuCustomizations>
+                            <dxg:TableView.FormatConditions>
+                                <dxg:FormatCondition Expression="[OLD_JOBNO] != [ViewJOBNO]" FieldName="ViewJOBNO">
+                                    <dx:Format Background="#FFFF9B98" />
+                                </dxg:FormatCondition>
+                                <dxg:FormatCondition Expression="[OLD_JOBNO] != [ViewJOBNO]" FieldName="OLD_JOBNO">
+                                    <dx:Format Background="#FFFF9B98" />
+                                </dxg:FormatCondition>
+                                <dxg:FormatCondition Expression="[OLD_COST_GROUP_NO] != [ViewCOST_GROUP_NO]" FieldName="ViewCOST_GROUP_NO">
+                                    <dx:Format Background="#FFFF9B98" />
+                                </dxg:FormatCondition>
+                                <dxg:FormatCondition Expression="[OLD_COST_GROUP_NO] != [ViewCOST_GROUP_NO]" FieldName="OLD_COST_GROUP_NO">
+                                    <dx:Format Background="#FFFF9B98" />
+                                </dxg:FormatCondition>
+                                <dxg:FormatCondition Expression="[OLD_COST_TYPE_NO] != [ViewCOST_TYPE_NO]" FieldName="ViewCOST_TYPE_NO">
+                                    <dx:Format Background="#FFFF9B98" />
+                                </dxg:FormatCondition>
+                                <dxg:FormatCondition Expression="[OLD_COST_TYPE_NO] != [ViewCOST_TYPE_NO]" FieldName="OLD_COST_TYPE_NO">
+                                    <dx:Format Background="#FFFF9B98" />
+                                </dxg:FormatCondition>
+                                <dxg:FormatCondition Expression="[OLD_STOCK_CODE] != [ViewSTOCK_CODE]" FieldName="ViewSTOCK_CODE">
+                                    <dx:Format Background="#FFFF9B98" />
+                                </dxg:FormatCondition>
+                                <dxg:FormatCondition Expression="[OLD_STOCK_CODE] != [ViewSTOCK_CODE]" FieldName="OLD_STOCK_CODE">
+                                    <dx:Format Background="#FFFF9B98" />
+                                </dxg:FormatCondition>
+                                <dxg:FormatCondition Expression="[OLD_VARIATION_CODE] != [ViewVARIATION_CODE]" FieldName="ViewVARIATION_CODE">
+                                    <dx:Format Background="#FFFF9B98" />
+                                </dxg:FormatCondition>
+                                <dxg:FormatCondition Expression="[OLD_VARIATION_CODE] != [ViewVARIATION_CODE]" FieldName="OLD_VARIATION_CODE">
+                                    <dx:Format Background="#FFFF9B98" />
+                                </dxg:FormatCondition>
+                            </dxg:TableView.FormatConditions>
                         </dxg:TableView>
                     </dxg:GridControl.View>
                 </custom:GridControlEx>

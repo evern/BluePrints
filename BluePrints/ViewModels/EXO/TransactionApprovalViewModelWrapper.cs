@@ -1,4 +1,5 @@
-﻿using BaseModel.DataModel;
+﻿using BaseModel.Data.Helpers;
+using BaseModel.DataModel;
 using BaseModel.Misc;
 using BaseModel.ViewModel.Base;
 using BaseModel.ViewModel.Loader;
@@ -114,7 +115,7 @@ namespace BluePrints.ViewModels
                     JOB_TRANSACTIONS findJOB_TRANSACTION = primeroUnitOfWork.JOB_TRANSACTIONS.FirstOrDefault(x => x.SEQNO == projection.JOB_TRANSACTION_SEQNO);
                     if(findJOB_TRANSACTION != null)
                     {
-                        if(projection.NEW_JOBNO != null)
+                        if (projection.NEW_JOBNO != null)
                             findJOB_TRANSACTION.JOBNO = projection.NEW_JOBNO;
 
                         if (projection.NEW_COST_GROUP_NO != null)

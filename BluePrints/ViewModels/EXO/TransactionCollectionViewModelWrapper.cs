@@ -295,7 +295,7 @@ namespace BluePrints.ViewModels
                     //for tool tip to show old code without refreshing view
                     projection.OLD_JOBCODE = projection.SUB_JOBCODE;
                     findTRANSACTION_APPROVAL.OLD_JOBCODE = projection.SUB_JOBCODE;
-                    findTRANSACTION_APPROVAL.OLD_JOBNO = projection.JOBNO;
+                    populateOldValuesFromProjection(findTRANSACTION_APPROVAL, projection);
                     findTRANSACTION_APPROVAL.NEW_JOBNO = projection.JobNoChangeTracking.TrackableProperty;
                 }
 
@@ -312,7 +312,7 @@ namespace BluePrints.ViewModels
                     //for tool tip to show old code without refreshing view
                     projection.OLD_DISCIPLINECODE = projection.DISCIPLINE_CODE;
                     findTRANSACTION_APPROVAL.OLD_DISCIPLINECODE = projection.DISCIPLINE_CODE;
-                    findTRANSACTION_APPROVAL.OLD_COST_GROUP_NO = projection.COST_GROUP_NO;
+                    populateOldValuesFromProjection(findTRANSACTION_APPROVAL, projection);
                     findTRANSACTION_APPROVAL.NEW_COST_GROUP_NO = projection.CostGroupChangeTracking.TrackableProperty;
                 }
 
@@ -329,7 +329,7 @@ namespace BluePrints.ViewModels
                     //for tool tip to show old code without refreshing view
                     projection.OLD_COMMODITYCODE = projection.COMMODITY_CODE;
                     findTRANSACTION_APPROVAL.OLD_COMMODITYCODE = projection.COMMODITY_CODE;
-                    findTRANSACTION_APPROVAL.OLD_COST_TYPE_NO = projection.COST_TYPE_NO;
+                    populateOldValuesFromProjection(findTRANSACTION_APPROVAL, projection);
                     findTRANSACTION_APPROVAL.NEW_COST_TYPE_NO = projection.CostTypeChangeTracking.TrackableProperty;
                 }
 
@@ -345,6 +345,7 @@ namespace BluePrints.ViewModels
                     //for tool tip to show old code without refreshing view
                     projection.OLD_STOCK_CODE = projection.STOCKCODE;
                     findTRANSACTION_APPROVAL.OLD_STOCK_CODE = projection.STOCKCODE;
+                    populateOldValuesFromProjection(findTRANSACTION_APPROVAL, projection);
                     findTRANSACTION_APPROVAL.NEW_STOCK_CODE = projection.StockCodeChangeTracking.TrackableProperty;
                 }
 
@@ -360,6 +361,7 @@ namespace BluePrints.ViewModels
                     //for tool tip to show old code without refreshing view
                     projection.OLD_VARIATION_CODE = projection.VARIATION_CODE;
                     findTRANSACTION_APPROVAL.OLD_VARIATION_CODE = projection.VARIATION_CODE;
+                    populateOldValuesFromProjection(findTRANSACTION_APPROVAL, projection);
                     findTRANSACTION_APPROVAL.NEW_VARIATION_CODE = projection.VariationCodeChangeTracking.TrackableProperty;
                 }
 
@@ -372,6 +374,15 @@ namespace BluePrints.ViewModels
                     TRANSACTION_APPROVALViewModel.Save(findTRANSACTION_APPROVAL);
                 //bluePrintsUnitOfWork.SaveChanges();
             }
+        }
+
+        private void populateOldValuesFromProjection(TRANSACTION_APPROVAL findTRANSACTION_APPROVAL, X_JOB_TRANSACTIONS_DETAIL_V6 projection)
+        {
+            findTRANSACTION_APPROVAL.OLD_JOBNO = projection.JOBNO;
+            findTRANSACTION_APPROVAL.OLD_COST_GROUP_NO = projection.COST_GROUP_NO;
+            findTRANSACTION_APPROVAL.OLD_COST_TYPE_NO = projection.COST_TYPE_NO;
+            findTRANSACTION_APPROVAL.OLD_STOCK_CODE = projection.STOCKCODE;
+            findTRANSACTION_APPROVAL.OLD_VARIATION_CODE = projection.VARIATION_CODE;
         }
 
         public override void FullRefresh()
