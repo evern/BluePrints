@@ -14,6 +14,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Text.RegularExpressions;
 
 namespace BluePrints.Common.Projections
 {
@@ -89,7 +90,13 @@ namespace BluePrints.Common.Projections
             }
         }
 
-        public string PhaseCode => BluePrintsDataUtils.GetPhaseCode(SubJobCode);
+        public string PhaseCode
+        {
+            get
+            {
+                return Regex.Replace(BluePrintsDataUtils.GetPhaseCode(SubJobCode), @"[\d-]", string.Empty);
+            }
+        }
 
         public string AreaCode => BluePrintsDataUtils.GetAreaCode(SubJobCode);
 
