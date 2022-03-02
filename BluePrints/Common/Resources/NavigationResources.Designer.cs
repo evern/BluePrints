@@ -1285,6 +1285,15 @@ namespace BluePrints.Common.Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Requires approvals when editing transaction.
+        /// </summary>
+        internal static string Permission_EXO_Transactions_RequiresApproval {
+            get {
+                return ResourceManager.GetString("Permission_EXO_Transactions_RequiresApproval", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Show costs on EXO transactions.
         /// </summary>
         internal static string Permission_EXO_Transactions_ShowCosts {

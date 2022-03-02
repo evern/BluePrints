@@ -59,6 +59,7 @@ namespace BluePrints.ViewModels
             return ViewModelSource.Create(() => new TransactionCollectionViewModelWrapper());
         }
 
+        public bool CanEditWithoutApproval { get; set; }
         public bool IsCostsVisible { get; set; }
         public bool CanEditQuantity { get; set; }
         protected override string readOnlyMessage => "Cells are read only because you do not have authority to edit transactions";
@@ -67,7 +68,8 @@ namespace BluePrints.ViewModels
             IsReadOnly = LoginCredentials.getPermissionStatus(DataUtils.GetNameOf(() => NavigationResources.Menu_Project_EXO_Transactions)) == LoginCredentials.PermissionStatus.ReadOnly;
             IsCostsVisible = LoginCredentials.getPermissionStatus(DataUtils.GetNameOf(() => NavigationResources.Permission_EXO_Transactions_ShowCosts)) == LoginCredentials.PermissionStatus.All;
             CanEditQuantity = !IsReadOnly && LoginCredentials.getPermissionStatus(DataUtils.GetNameOf(() => NavigationResources.Permission_EXO_Transactions_ChangeQuantity)) == LoginCredentials.PermissionStatus.All;
-
+            CanEditWithoutApproval = LoginCredentials.getPermissionStatus(DataUtils.GetNameOf(() => NavigationResources.Permission_EXO_Transactions_RequiresApproval)) != LoginCredentials.PermissionStatus.All;
+            
             bool? isUsePreloadModePreference = LoginCredentials.GetUserPreferenceBool(DataUtils.GetNameOf(() => UserPreferences.EXO_PreloadTransactions));
 
             isUsePreloadMode = isUsePreloadModePreference == null ? false : (bool)isUsePreloadModePreference;
@@ -121,6 +123,7 @@ namespace BluePrints.ViewModels
                 isYearToDate = true;
                 is2020Onwards = (bool)PROJECTParameter.GetSecondEntity();
                 isUsePreloadMode = false;
+                IsInstantFeedbackMode = true;
 
                 DatabaseLocale dbLocale = (DatabaseLocale)PROJECTParameter.GetThirdEntity();
                 if (dbLocale == DatabaseLocale.Perth)
@@ -226,7 +229,47 @@ namespace BluePrints.ViewModels
 
         protected override void ApplyInstantFeedbackEntityPropertiesToOtherUnitOfWorkEntity(X_JOB_TRANSACTIONS_DETAIL_V5 projection)
         {
-            if (!projection.JobNoChangeTracking.IsChanged || !projection.CostGroupChangeTracking.IsChanged || !projection.CostTypeChangeTracking.IsChanged || !projection.StockCodeChangeTracking.IsChanged || !projection.VariationCodeChangeTracking.IsChanged)
+            if(CanEditWithoutApproval)
+            {
+                JOB_TRANSACTIONS findJOB_TRANSACTION = primeroUnitOfWork.JOB_TRANSACTIONS.FirstOrDefault(x => x.SEQNO == projection.SEQNO);
+                if (findJOB_TRANSACTION != null)
+                {
+                    findJOB_TRANSACTION.JOBNO = projection.JOBNO;
+                    findJOB_TRANSACTION.COST_GROUP = projection.COST_GROUP_NO;
+                    findJOB_TRANSACTION.COST_TYPE = projection.COST_TYPE_NO;
+                    findJOB_TRANSACTION.STOCKCODE = projection.STOCKCODE;
+                    findJOB_TRANSACTION.X_VARIATIONCODE = projection.VARIATION_CODE;
+                    findJOB_TRANSACTION.DESCRIPTION = projection.DESCRIPTION;
+                    findJOB_TRANSACTION.STAFFNO = projection.ACCNO;
+                    findJOB_TRANSACTION.QUANTITY = projection.QUANTITY;
+                    findJOB_TRANSACTION.STOCKCODE = projection.STOCKCODE;
+
+                    if (projection.QtyEdited && CanEditQuantity)
+                    {
+                        if (findJOB_TRANSACTION.QUANTITY != null)
+                        {
+                            if (findJOB_TRANSACTION.UNITCOST != null)
+                                findJOB_TRANSACTION.LINECOST = findJOB_TRANSACTION.UNITCOST * findJOB_TRANSACTION.QUANTITY;
+
+                            if (findJOB_TRANSACTION.UNITPRICE != null)
+                            {
+                                findJOB_TRANSACTION.LINECHARGE = findJOB_TRANSACTION.UNITPRICE * findJOB_TRANSACTION.QUANTITY;
+                                findJOB_TRANSACTION.LINETOTAL = findJOB_TRANSACTION.LINECHARGE;
+                            }
+
+                            findJOB_TRANSACTION.LINETOTAL_TAX = (double)((findJOB_TRANSACTION.LINETOTAL * findJOB_TRANSACTION.TAXRATE) / 100);
+                            findJOB_TRANSACTION.LINE_TAX = findJOB_TRANSACTION.LINETOTAL_TAX;
+
+                            findJOB_TRANSACTION.LINETOTAL_INCTAX = findJOB_TRANSACTION.LINETOTAL + findJOB_TRANSACTION.LINETOTAL_TAX;
+                            projection.LINECOST = findJOB_TRANSACTION.LINECOST;
+                            projection.Update();
+                        }
+                    }
+                }
+
+                projection.QtyEdited = false;
+            }
+            else if (!projection.JobNoChangeTracking.IsChanged || !projection.CostGroupChangeTracking.IsChanged || !projection.CostTypeChangeTracking.IsChanged || !projection.StockCodeChangeTracking.IsChanged || !projection.VariationCodeChangeTracking.IsChanged)
             {
                 TRANSACTION_APPROVAL findTRANSACTION_APPROVAL = bluePrintsUnitOfWork.TRANSACTION_APPROVALS.FirstOrDefault(x => x.JOB_TRANSACTION_SEQNO == projection.SEQNO && x.STATUS == TransactionApprovalStatus.Pending);
                 if(findTRANSACTION_APPROVAL == null)
@@ -329,44 +372,6 @@ namespace BluePrints.ViewModels
                     TRANSACTION_APPROVALViewModel.Save(findTRANSACTION_APPROVAL);
                 //bluePrintsUnitOfWork.SaveChanges();
             }
-
-            //JOB_TRANSACTIONS findJOB_TRANSACTION = primeroUnitOfWork.JOB_TRANSACTIONS.FirstOrDefault(x => x.SEQNO == projection.SEQNO);
-            //if(findJOB_TRANSACTION != null)
-            //{
-            //    findJOB_TRANSACTION.JOBNO = projection.JOBNO;
-            //    findJOB_TRANSACTION.COST_GROUP = projection.COST_GROUP_NO;
-            //    findJOB_TRANSACTION.COST_TYPE = projection.COST_TYPE_NO;
-            //    findJOB_TRANSACTION.STOCKCODE = projection.STOCKCODE;
-            //    findJOB_TRANSACTION.X_VARIATIONCODE = projection.VARIATION_CODE;
-            //    findJOB_TRANSACTION.DESCRIPTION = projection.DESCRIPTION;
-            //    findJOB_TRANSACTION.STAFFNO = projection.ACCNO;
-            //    findJOB_TRANSACTION.QUANTITY = projection.QUANTITY;
-            //    findJOB_TRANSACTION.STOCKCODE = projection.STOCKCODE;
-
-            //    if(projection.QtyEdited && CanEditQuantity)
-            //    {
-            //        if (findJOB_TRANSACTION.QUANTITY != null)
-            //        {
-            //            if (findJOB_TRANSACTION.UNITCOST != null)
-            //                findJOB_TRANSACTION.LINECOST = findJOB_TRANSACTION.UNITCOST * findJOB_TRANSACTION.QUANTITY;
-
-            //            if (findJOB_TRANSACTION.UNITPRICE != null)
-            //            {
-            //                findJOB_TRANSACTION.LINECHARGE = findJOB_TRANSACTION.UNITPRICE * findJOB_TRANSACTION.QUANTITY;
-            //                findJOB_TRANSACTION.LINETOTAL = findJOB_TRANSACTION.LINECHARGE;
-            //            }
-
-            //            findJOB_TRANSACTION.LINETOTAL_TAX = (double)((findJOB_TRANSACTION.LINETOTAL * findJOB_TRANSACTION.TAXRATE) / 100);
-            //            findJOB_TRANSACTION.LINE_TAX = findJOB_TRANSACTION.LINETOTAL_TAX;
-
-            //            findJOB_TRANSACTION.LINETOTAL_INCTAX = findJOB_TRANSACTION.LINETOTAL + findJOB_TRANSACTION.LINETOTAL_TAX;
-            //            projection.LINECOST = findJOB_TRANSACTION.LINECOST;
-            //            projection.Update();
-            //        }
-            //    }
-            //}
-
-            //projection.QtyEdited = false;
         }
 
         public override void FullRefresh()
@@ -573,6 +578,12 @@ namespace BluePrints.ViewModels
             JOBCOST_HDRInstantFeedbackCollectionViewModel?.Dispose();
             base.CleanUpEntitiesLoader();
         }
+
+        public string SubJobFieldName => CanEditWithoutApproval ? "JOBNO" : IsInstantFeedbackMode ? "ProxyJobNo" : "JobNoChangeTracking.TrackableProperty";
+        public string CostGroupFieldName => CanEditWithoutApproval ? "COST_GROUP_NO" : IsInstantFeedbackMode ? "ProxyCostGroup" : "CostGroupChangeTracking.TrackableProperty";
+        public string CostTypeFieldName => CanEditWithoutApproval ? "COST_TYPE_NO" : IsInstantFeedbackMode ? "ProxyCostType" : "CostTypeChangeTracking.TrackableProperty";
+        public string StockCodeFieldName => CanEditWithoutApproval ? "STOCKCODE" : IsInstantFeedbackMode ? "ProxyStockCode" : "StockCodeChangeTracking.TrackableProperty";
+        public string VariationCodeFieldName => CanEditWithoutApproval ? "VARIATION_CODE" : IsInstantFeedbackMode ? "ProxyVariationCode" : "VariationCodeChangeTracking.TrackableProperty";
     }
 }
 

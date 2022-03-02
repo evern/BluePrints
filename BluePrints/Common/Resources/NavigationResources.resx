@@ -546,4 +546,7 @@
   <data name="Menu_Project_EXO_TransactionsApproval" xml:space="preserve">
     <value>Project EXO transactions approval menu</value>
   </data>
+  <data name="Permission_EXO_Transactions_RequiresApproval" xml:space="preserve">
+    <value>Requires approvals when editing transaction</value>
+  </data>
 </root>
