@@ -437,27 +437,27 @@ namespace BluePrints.ViewModels
             if (field_name == BindableBase.GetPropertyName(() => new X_JOB_TRANSACTIONS_DETAIL_V6().VARIATION_CODE))
             {
                 if (projection.VariationCodeChangeTracking.ChangeTrackingPropertyStatus == ChangeTrackablePropertyStatus.Pending)
-                    return rowIdentifier + " cannot change value because of pending approval";
+                    return "Job: " + rowIdentifier + " Error: Cannot change value because of pending approval";
             }
             else if (field_name == BindableBase.GetPropertyName(() => new X_JOB_TRANSACTIONS_DETAIL_V6().STOCKCODE))
             {
                 if (projection.StockCodeChangeTracking.ChangeTrackingPropertyStatus == ChangeTrackablePropertyStatus.Pending)
-                    return rowIdentifier + " cannot change value because of pending approval";
+                    return "Job: " + rowIdentifier + " Error: Cannot change value because of pending approval";
             }
             else if (field_name == BindableBase.GetPropertyName(() => new X_JOB_TRANSACTIONS_DETAIL_V6().COMMODITY_CODE))
             {
                 if (projection.CostTypeChangeTracking.ChangeTrackingPropertyStatus == ChangeTrackablePropertyStatus.Pending)
-                    return rowIdentifier + " cannot change value because of pending approval";
+                    return "Job: " + rowIdentifier + " Error: Cannot change value because of pending approval";
             }
             else if (field_name == BindableBase.GetPropertyName(() => new X_JOB_TRANSACTIONS_DETAIL_V6().DISCIPLINE_CODE))
             {
                 if (projection.CostGroupChangeTracking.ChangeTrackingPropertyStatus == ChangeTrackablePropertyStatus.Pending)
-                    return rowIdentifier + " cannot change value because of pending approval";
+                    return "Job: " + rowIdentifier + " Error: Cannot change value because of pending approval";
             }
             else if (field_name == BindableBase.GetPropertyName(() => new X_JOB_TRANSACTIONS_DETAIL_V6().SUB_JOBCODE))
             {
                 if (projection.JobNoChangeTracking.ChangeTrackingPropertyStatus == ChangeTrackablePropertyStatus.Pending)
-                    return rowIdentifier + " cannot change value because of pending approval";
+                    return "Job: " + rowIdentifier + " Error: Cannot change value because of pending approval";
             }
 
             return string.Empty;
