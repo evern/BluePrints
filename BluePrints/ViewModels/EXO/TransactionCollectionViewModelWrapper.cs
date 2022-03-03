@@ -69,7 +69,7 @@ namespace BluePrints.ViewModels
             IsCostsVisible = LoginCredentials.getPermissionStatus(DataUtils.GetNameOf(() => NavigationResources.Permission_EXO_Transactions_ShowCosts)) == LoginCredentials.PermissionStatus.All;
             CanEditQuantity = !IsReadOnly && LoginCredentials.getPermissionStatus(DataUtils.GetNameOf(() => NavigationResources.Permission_EXO_Transactions_ChangeQuantity)) == LoginCredentials.PermissionStatus.All;
             CanEditWithoutApproval = LoginCredentials.getPermissionStatus(DataUtils.GetNameOf(() => NavigationResources.Permission_EXO_Transactions_RequiresApproval)) != LoginCredentials.PermissionStatus.All;
-            //CanEditWithoutApproval = true;
+            CanEditWithoutApproval = true;
             bool? isUsePreloadModePreference = LoginCredentials.GetUserPreferenceBool(DataUtils.GetNameOf(() => UserPreferences.EXO_PreloadTransactions));
 
             isUsePreloadMode = isUsePreloadModePreference == null ? false : (bool)isUsePreloadModePreference;
@@ -444,12 +444,12 @@ namespace BluePrints.ViewModels
                 if (projection.StockCodeChangeTracking.ChangeTrackingPropertyStatus == ChangeTrackablePropertyStatus.Pending)
                     return "Job: " + rowIdentifier + " Error: Cannot change value because of pending approval";
             }
-            else if (field_name == BindableBase.GetPropertyName(() => new X_JOB_TRANSACTIONS_DETAIL_V6().COMMODITY_CODE))
+            else if (field_name == BindableBase.GetPropertyName(() => new X_JOB_TRANSACTIONS_DETAIL_V6().COST_TYPE_NO))
             {
                 if (projection.CostTypeChangeTracking.ChangeTrackingPropertyStatus == ChangeTrackablePropertyStatus.Pending)
                     return "Job: " + rowIdentifier + " Error: Cannot change value because of pending approval";
             }
-            else if (field_name == BindableBase.GetPropertyName(() => new X_JOB_TRANSACTIONS_DETAIL_V6().DISCIPLINE_CODE))
+            else if (field_name == BindableBase.GetPropertyName(() => new X_JOB_TRANSACTIONS_DETAIL_V6().COST_GROUP_NO))
             {
                 if (projection.CostGroupChangeTracking.ChangeTrackingPropertyStatus == ChangeTrackablePropertyStatus.Pending)
                     return "Job: " + rowIdentifier + " Error: Cannot change value because of pending approval";
