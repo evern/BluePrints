@@ -94,6 +94,14 @@ namespace BluePrints.Common.Projections
         {
             get
             {
+                return BluePrintsDataUtils.GetPhaseCode(SubJobCode);
+            }
+        }
+
+        string IHaveDisciplineDesc.PhaseCode
+        {
+            get
+            {
                 return Regex.Replace(BluePrintsDataUtils.GetPhaseCode(SubJobCode), @"[\d-]", string.Empty);
             }
         }
