@@ -162,27 +162,15 @@ namespace BluePrints.Data
             {
                 if (this.ManagerPercent > 0 && this.ManagerRate == 0)
                     return false;
-                if (this.ManagerPercent == 0 && this.ManagerRate > 0)
-                    return false;
                 if (this.PrincipalPercent > 0 && this.PrincipalRate == 0)
-                    return false;
-                if (this.PrincipalPercent == 0 && this.PrincipalRate > 0)
                     return false;
                 if (this.LeadPercent > 0 && this.LeadRate == 0)
                     return false;
-                if (this.SeniorPercent == 0 && this.SeniorRate > 0)
-                    return false;
                 if (this.SeniorPercent > 0 && this.SeniorRate == 0)
-                    return false;
-                if (this.EngineerPercent == 0 && this.EngineerRate > 0)
                     return false;
                 if (this.EngineerPercent > 0 && this.EngineerRate == 0)
                     return false;
-                if (this.GraduatePercent == 0 && this.GraduateRate > 0)
-                    return false;
                 if (this.GraduatePercent > 0 && this.GraduateRate == 0)
-                    return false;
-                if (this.UndergraduatePercent == 0 && this.UndergraduateRate > 0)
                     return false;
                 if (this.UndergraduatePercent > 0 && this.UndergraduateRate == 0)
                     return false;
