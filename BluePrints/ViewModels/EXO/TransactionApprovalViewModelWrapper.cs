@@ -55,7 +55,7 @@ namespace BluePrints.ViewModels
             set
             {
                 isShowApprovableOnly = value;
-                if(isShowApprovableOnly)
+                if (isShowApprovableOnly)
                     ApproveFilterCriteria = CriteriaOperator.Parse("[IsNotApproved] = 'True'");
                 else
                     ApproveFilterCriteria = null;
@@ -98,7 +98,16 @@ namespace BluePrints.ViewModels
 
         protected override Func<IRepositoryQuery<TRANSACTION_APPROVAL>, IQueryable<TRANSACTION_APPROVAL>> specifyMainViewModelProjection()
         {
-            return query => query.Where(x => x.GUID_PROJECT == loadPROJECT.GUID);
+            return query => populateTransactionProperties(query.Where(x => x.GUID_PROJECT == loadPROJECT.GUID));
+        }
+
+        private IQueryable<TRANSACTION_APPROVAL> populateTransactionProperties(IQueryable<TRANSACTION_APPROVAL> query)
+        {
+            List<TRANSACTION_APPROVAL> preloadTRANSACTION_APPROVALS = query.ToList();
+            foreach(TRANSACTION_APPROVAL transactionApproval in preloadTRANSACTION_APPROVALS)
+                transactionApproval.JOB_TRANSACTION = primeroUnitOfWork.JOB_TRANSACTIONS.FirstOrDefault(x => x.SEQNO == transactionApproval.JOB_TRANSACTION_SEQNO);
+
+            return preloadTRANSACTION_APPROVALS.AsQueryable();
         }
 
         protected override void onAuxiliaryEntitiesCollectionLoaded()
@@ -135,23 +144,22 @@ namespace BluePrints.ViewModels
             {
                 if(projection.APPROVEDON == null)
                 {
-                    JOB_TRANSACTIONS findJOB_TRANSACTION = primeroUnitOfWork.JOB_TRANSACTIONS.FirstOrDefault(x => x.SEQNO == projection.JOB_TRANSACTION_SEQNO);
-                    if(findJOB_TRANSACTION != null)
+                    if(projection.JOB_TRANSACTION != null)
                     {
                         if (projection.NEW_JOBNO != null)
-                            findJOB_TRANSACTION.JOBNO = projection.NEW_JOBNO;
+                            projection.JOB_TRANSACTION.JOBNO = projection.NEW_JOBNO;
 
                         if (projection.NEW_COST_GROUP_NO != null)
-                            findJOB_TRANSACTION.COST_GROUP = projection.NEW_COST_GROUP_NO;
+                            projection.JOB_TRANSACTION.COST_GROUP = projection.NEW_COST_GROUP_NO;
 
                         if (projection.NEW_COST_TYPE_NO != null)
-                            findJOB_TRANSACTION.COST_TYPE = projection.NEW_COST_TYPE_NO;
+                            projection.JOB_TRANSACTION.COST_TYPE = projection.NEW_COST_TYPE_NO;
 
                         if (projection.NEW_STOCK_CODE != null)
-                            findJOB_TRANSACTION.STOCKCODE = projection.NEW_STOCK_CODE;
+                            projection.JOB_TRANSACTION.STOCKCODE = projection.NEW_STOCK_CODE;
 
                         if (projection.NEW_VARIATION_CODE != null)
-                            findJOB_TRANSACTION.X_VARIATIONCODE = projection.NEW_VARIATION_CODE;
+                            projection.JOB_TRANSACTION.X_VARIATIONCODE = projection.NEW_VARIATION_CODE;
 
                         projection.STATUS = TransactionApprovalStatus.Approved;
                         projection.APPROVEDON = DateTime.Now;
@@ -191,7 +199,8 @@ namespace BluePrints.ViewModels
                 JOB_COSTTYPES findCOSTTYPES = JOB_COSTTYPESCollection.FirstOrDefault(x => x.SEQNO == projection.ViewCOST_TYPE_NO);
                 string commodityCode = findCOSTTYPES == null ? string.Empty : findCOSTTYPES.SHORTCODE;
 
-                errorMessages.Add(new ErrorMessage("Cannot reject", jobCode + "-" + disciplineCode + "-" + commodityCode + "-" + projection.NEW_STOCK_CODE + "-" + projection.NEW_VARIATION_CODE + " because it is approved"));
+                string variationCode = projection.NEW_VARIATION_CODE == null ? string.Empty : "-" + projection.NEW_VARIATION_CODE;
+                errorMessages.Add(new ErrorMessage("Cannot reject", jobCode + "-" + disciplineCode + "-" + commodityCode + "-" + projection.NEW_STOCK_CODE + variationCode + " because it is approved"));
                 return OperationInterceptMode.SkipOne;
             }
             else

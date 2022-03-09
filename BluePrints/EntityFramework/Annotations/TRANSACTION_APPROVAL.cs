@@ -5,6 +5,7 @@ namespace BluePrints.Data
     using BaseModel.Misc;
     using BluePrints.Common.Base;
     using BluePrints.Common.Resources;
+    using BluePrints.PrimeroData;
     using DevExpress.Mvvm;
     using System;
     using System.ComponentModel.DataAnnotations.Schema;
@@ -28,5 +29,8 @@ namespace BluePrints.Data
         public int? ViewCOST_TYPE_NO => NEW_COST_TYPE_NO == null ? OLD_COST_TYPE_NO : NEW_COST_TYPE_NO;
         public string ViewSTOCK_CODE => NEW_STOCK_CODE == null ? OLD_STOCK_CODE : NEW_STOCK_CODE;
         public string ViewVARIATION_CODE => NEW_VARIATION_CODE == null ? OLD_VARIATION_CODE : NEW_VARIATION_CODE;
+
+        [NotMapped]
+        public JOB_TRANSACTIONS JOB_TRANSACTION { get; set; }
     }
 }

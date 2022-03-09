@@ -77,6 +77,10 @@
                             <dxg:GridColumn Header="New Stock Code" FieldName="ViewSTOCK_CODE" HeaderToolTip="Stock code for approval" ReadOnly="True"/>
                             <dxg:GridColumn Header="New Variation Code" FieldName="ViewVARIATION_CODE" HeaderToolTip="Variation code for approval" ReadOnly="True"/>
                         </dxg:GridControlBand>
+                        <dxg:GridControlBand x:Name="gcbDetail" Header="Detail">
+                            <dxg:GridColumn Header="Description" FieldName="JOB_TRANSACTION.DESCRIPTION" HeaderToolTip="Description" ReadOnly="True"/>
+                            <dxg:GridColumn Header="Date" FieldName="JOB_TRANSACTION.TRANSDATE" HeaderToolTip="Transaction Date" ReadOnly="True"/>
+                        </dxg:GridControlBand>
                         <dxg:GridControlBand x:Name="gcbStatus" Header="Status">
                             <dxg:GridColumn Header="Created" FieldName="CREATED" AllowSearchPanel="False" HeaderToolTip="When the transaction change is created" ReadOnly="True">
                                 <dxg:GridColumn.EditSettings>
