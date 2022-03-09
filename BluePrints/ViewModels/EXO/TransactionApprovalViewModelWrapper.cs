@@ -12,6 +12,7 @@ using BluePrints.Data;
 using BluePrints.PrimeroData;
 using BluePrints.PrimeroData.PrimeroEntitiesDataModel;
 using DevExpress.Data.Filtering;
+using DevExpress.Mvvm;
 using DevExpress.Mvvm.POCO;
 using System;
 using System.Collections.Generic;
@@ -166,6 +167,36 @@ namespace BluePrints.ViewModels
         #endregion
 
         #region View Properties
+        public override void BulkDelete()
+        {
+            if (MessageBoxService.ShowMessage("Are you sure you want to reject " + SelectedEntities.Count + " selected entries?", "Confirmation", MessageButton.OKCancel) == MessageResult.Cancel)
+                return;
+
+            MainViewModel.PauseEntitiesUndoRedoManager();
+            MainViewModel.BaseBulkDelete(SelectedEntities);
+            MainViewModel.UnpauseEntitiesUndoRedoManager();
+        }
+
+        protected override OperationInterceptMode OnBeforeProjectionDeleteIsContinue(TRANSACTION_APPROVAL projection, out List<ErrorMessage> errorMessages)
+        {
+            errorMessages = new List<ErrorMessage>();
+            if (!projection.IsNotApproved)
+            {
+                JOBCOST_HDR findJOB = JOBCOST_HDRCollection.FirstOrDefault(x => x.JOBNO == projection.ViewJOBNO);
+                string jobCode = findJOB == null ? string.Empty : findJOB.JOBCODE;
+
+                JOB_COSTGROUPS findCOSTGROUPS = JOB_COSTGROUPSCollection.FirstOrDefault(x => x.SEQNO == projection.ViewCOST_GROUP_NO);
+                string disciplineCode = findCOSTGROUPS == null ? string.Empty : findCOSTGROUPS.SHORTCODE;
+
+                JOB_COSTTYPES findCOSTTYPES = JOB_COSTTYPESCollection.FirstOrDefault(x => x.SEQNO == projection.ViewCOST_TYPE_NO);
+                string commodityCode = findCOSTTYPES == null ? string.Empty : findCOSTTYPES.SHORTCODE;
+
+                errorMessages.Add(new ErrorMessage("Cannot reject", jobCode + "-" + disciplineCode + "-" + commodityCode + "-" + projection.NEW_STOCK_CODE + "-" + projection.NEW_VARIATION_CODE + " because it is approved"));
+                return OperationInterceptMode.SkipOne;
+            }
+            else
+                return OperationInterceptMode.Continue;
+        }
 
         /// <summary>
         /// The view name to be used when saving layout for IDocumentContent

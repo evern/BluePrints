@@ -14,7 +14,8 @@
             <dxb:BarManager.Items>
                 <dxb:BarSubItem ItemLinksSource="{StaticResource RibbonDefaultGridButtons}" />
                 <dxb:BarCheckItem x:Name="biShowApprovableOnly" Content="Show Approvable Only" IsChecked="{Binding IsShowApprovableOnly, Mode=TwoWay}" IsEnabled="{Binding IsLoading, Converter={StaticResource BooleanNegationConverter}}" RibbonStyle="SmallWithText" ToolTip="Toggle show approvable transaction only" Glyph="{dx:DXImage Images/Actions/Apply_16x16.png}" LargeGlyph="{dx:DXImage Images/Actions/Apply_32x32.png}" />
-                <dxb:BarButtonItem x:Name="biApprove" Content="Approve Selected" Command="{Binding ApproveTransactionCommand}" LargeGlyph="{dx:DXImage Image=CustomizeGrid_32x32.png}" Glyph="{dx:DXImage Image=CustomizeGrid_16x16.png}" />
+                <dxb:BarButtonItem x:Name="biApprove" Content="Approve Selected" Command="{Binding ApproveTransactionCommand}" LargeGlyph="{dx:DXImage Image=CustomizeGrid_32x32.png}" Glyph="{dx:DXImage Image=CustomizeGrid_16x16.png}" ToolTip="Approve selected transaction(s)" />
+                <dxb:BarButtonItem x:Name="biReject" Content="Reject Selected" Command="{Binding BulkDeleteCommand}" LargeGlyph="{dx:DXImage Image=Delete_32x32.png}" Glyph="{dx:DXImage Image=Delete_16x16.png}" ToolTip="Reject selected transaction(s)" />
             </dxb:BarManager.Items>
             <DockPanel>
                 <dxr:RibbonControl Style="{StaticResource DefaultRibbonControlStyle}">
@@ -30,6 +31,7 @@
                                 <dxb:BarButtonItemLink BarItemName="biExportToExcel1" />
                                 <dxb:BarButtonItemLink BarItemName="biExportToPDF1" />
                                 <dxb:BarButtonItemLink BarItemName="biApprove" />
+                                <dxb:BarButtonItemLink BarItemName="biReject" />
                                 <dxb:BarCheckItemLink BarItemName="biShowApprovableOnly" />
                             </dxr:RibbonPageGroup>
                         </dxr:RibbonPage>
@@ -110,6 +112,20 @@
                                     </DataTemplate>
                                 </dxg:GridColumn.CellTemplate>
                             </dxg:GridColumn>
+                            <dxg:GridColumn AllowSearchPanel="False" UnboundType="Object" Header="Reject" HeaderToolTip="Click button to approve transaction changes" ReadOnly="True" SortMode="DisplayText">
+                                <dxg:GridColumn.CellTemplate>
+                                    <DataTemplate>
+                                        <StackPanel HorizontalAlignment="Center" Margin="1">
+                                            <Button Height="22" Padding="2" BorderBrush="{x:Null}" Visibility="{Binding RowData.Row.IsNotApproved,Converter={dxmvvm:BooleanToVisibilityConverter}}" x:Name="approveButton" Command="{Binding View.DataContext.BulkDeleteCommand}">
+                                                <StackPanel Orientation="Horizontal">
+                                                    <Image Source="{dx:DXImage Image=Delete_16x16.png}" Width="16" Height="16" Margin="0, 0, 3, 0" />
+                                                    <TextBlock Text="Reject" VerticalAlignment="Center" />
+                                                </StackPanel>
+                                            </Button>
+                                        </StackPanel>
+                                    </DataTemplate>
+                                </dxg:GridColumn.CellTemplate>
+                            </dxg:GridColumn>
                             <dxg:GridColumn AllowSearchPanel="False" FieldName="IsNotApproved" Header="Approvable" HeaderToolTip="Indicate whether transaction is approvable" ReadOnly="True" Visible="False" />
                         </dxg:GridControlBand>
                     </dxg:GridControl.Bands>
@@ -123,6 +139,7 @@
                         <dxg:TableView x:Name="tableView" Style="{StaticResource DefaultTableViewTemplate}">
                             <dxg:TableView.RowCellMenuCustomizations>
                                 <dxb:BarButtonItemLink BarItemName="biApprove" />
+                                <dxb:BarButtonItemLink BarItemName="biReject" />
                                 <dxb:BarButtonItemLink BarItemName="biFullRefresh1" />
                             </dxg:TableView.RowCellMenuCustomizations>
                             <dxg:TableView.FormatConditions>

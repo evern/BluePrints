@@ -70,7 +70,7 @@ namespace BluePrints.ViewModels
             CanEditQuantity = !IsReadOnly && LoginCredentials.getPermissionStatus(DataUtils.GetNameOf(() => NavigationResources.Permission_EXO_Transactions_ChangeQuantity)) == LoginCredentials.PermissionStatus.All;
             CanEditWithoutApproval = LoginCredentials.getPermissionStatus(DataUtils.GetNameOf(() => NavigationResources.Permission_EXO_Transactions_RequiresApproval)) != LoginCredentials.PermissionStatus.All;
             bool? isUsePreloadModePreference = LoginCredentials.GetUserPreferenceBool(DataUtils.GetNameOf(() => UserPreferences.EXO_PreloadTransactions));
-
+            CanEditWithoutApproval = false;
             isUsePreloadMode = isUsePreloadModePreference == null ? false : (bool)isUsePreloadModePreference;
             IsInstantFeedbackMode = !IsUsePreloadMode;
 
