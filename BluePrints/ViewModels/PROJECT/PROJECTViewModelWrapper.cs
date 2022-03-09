@@ -118,6 +118,7 @@ namespace BluePrints.ViewModels
             adjustDataDate();
             viewType = DashboardViewType.Units;
             usePercentage = true;
+            isByWeek = true;
         }
 
         private void adjustDataDate()
@@ -286,6 +287,7 @@ namespace BluePrints.ViewModels
             return null;
         }
 
+        protected bool isByWeek { get; set; }
         private void summaryBackgroundWorker_DoWork(object sender, DoWorkEventArgs e)
         {
             if (summaryBackgroundWorker.CancellationPending)
@@ -299,7 +301,7 @@ namespace BluePrints.ViewModels
             
             if(project != null)
             {
-                project.BuildStats(DashboardEXOQueryType, ShowLoadingScreen, 1, ForceRetrieveAllJobs, ForceRetrieveAllUnits, ForceRetrieveAllPOs, getForecastTypes(), UseProductivityFactorOnRemaining, IsVariationSeparated, true);
+                project.BuildStats(DashboardEXOQueryType, ShowLoadingScreen, 1, ForceRetrieveAllJobs, ForceRetrieveAllUnits, ForceRetrieveAllPOs, getForecastTypes(), UseProductivityFactorOnRemaining, IsVariationSeparated, isByWeek);
                 project.RecalculateStats(false, true);
                 project.Subjob_Dashboards = getDashboardStructure(project, IsVariationSeparated, ForceRetrieveRemainingDataPoints);
                 project.Update();

@@ -359,6 +359,7 @@ namespace BluePrints.ViewModels
             exoLoadingBackgroundWorker.DoWork += exoLoadingBackgroundWorker_DoWork;
             exoLoadingBackgroundWorker.RunWorkerCompleted += exoLoadingBackgroundWorker_RunWorkerCompleted;
             exoLoadingBackgroundWorker.WorkerSupportsCancellation = true;
+            isByWeek = false;
 
             this.RaisePropertiesChanged();
         }
