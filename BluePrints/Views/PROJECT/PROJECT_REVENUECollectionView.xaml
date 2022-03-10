@@ -99,6 +99,7 @@
                     <dxg:GridControl.View>
                         <dxg:TableView x:Name="tableView" AllowGrouping="False" ShowGroupPanel="False" Style="{StaticResource DefaultTableViewTemplate}" NewItemRowPosition="None">
                             <dxg:TableView.RowCellMenuCustomizations>
+                                <dxb:BarButtonItemLink BarItemName="biCopyWithHeader1" />
                                 <dxb:BarItemLinkSeparator />
                                 <dxb:BarButtonItemLink BarItemName="biFullRefresh1" />
                             </dxg:TableView.RowCellMenuCustomizations>
