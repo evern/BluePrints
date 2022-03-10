@@ -661,14 +661,14 @@ namespace BluePrints.ViewModels
                 string commodityCode = delimited[2];
                 string variationCode = delimited[3];
                 //For Debugging
-                //if (subJobCode == "03608-000-00-I1" && disciplineCode == "PM01" && commodityCode == "G01" && variationCode == "")
+                //if (subJobCode == "00151-000-01-C1" && disciplineCode == "CC01" && commodityCode == "C01" && variationCode == "")
                 //{
+
                 //}
                 UniqueForecastJob uniqueForecastJob = new UniqueForecastJob(projectLines, subJobCode, disciplineCode, commodityCode, variationCode, FixedDataDate, PreviousDataDate, FORECAST_JOB_HOUR_SNAPSHOTCollection, IsShowUninvoicedOnly);
                 uniqueForecastJob.UpdateTenderBudget(TenderBudgetCollection.AsQueryable());
                 uniqueForecastJob.UpdateErrorMessage(JOBCOST_LINES_AUDITCollection.AsQueryable());
                 uniqueForecastJobs.Add(uniqueForecastJob);
-
                 Common.LoadingScreenManager.Progress();
             });
 
@@ -927,7 +927,7 @@ namespace BluePrints.ViewModels
             }
 
             job.P6RemainingUnitsOverride = P6TotalCurrentRemainingUnits;
-            //updateViewForecastsOnDatesFromDb(commodityRow, false, relevantFORECASTS);
+            updateViewForecastsOnDatesFromDb(commodityRow, false, relevantFORECASTS);
             updateTotalUncommittedOnJob(commodityRow);
 
             return commodityRow;
