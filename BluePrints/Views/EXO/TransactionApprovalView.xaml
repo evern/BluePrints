@@ -6,6 +6,7 @@
                 <ResourceDictionary Source="pack://application:,,,/Common/View/ResourceDictionaries/GridColumnResourceDictionary.xaml" />
                 <ResourceDictionary Source="pack://application:,,,/BaseModel;component/View/ResourceDictionaries/DefaultControlResourceDictionary.xaml" />
                 <ResourceDictionary Source="pack://application:,,,/Common/View/ResourceDictionaries/DefaultBluePrintsResourceDictionary.xaml" />
+                <ResourceDictionary Source="pack://application:,,,/Common/View/ResourceDictionaries/CustomControlResourceDictionary.xaml" />
             </ResourceDictionary.MergedDictionaries>
         </ResourceDictionary>
     </UserControl.Resources>
@@ -55,7 +56,34 @@
                                     <dxe:ComboBoxEditSettings AutoComplete="True" DisplayMember="COSTDESC" IsTextEditable="True" ItemsSource="{Binding JOB_COSTTYPESCollection}" ValueMember="SEQNO" />
                                 </dxg:GridColumn.EditSettings>
                             </dxg:GridColumn>
-                            <dxg:GridColumn Header="Old Stock Code" FieldName="OLD_STOCK_CODE" HeaderToolTip="Stock code before approval" ReadOnly="True"/>
+                            <dxg:GridColumn Header="Old Stock Code" FieldName="OLD_STOCK_CODE" HeaderToolTip="Stock code before approval" ReadOnly="True">
+                                <dxg:GridColumn.CellTemplate>
+                                    <DataTemplate>
+                                        <dxg:LookUpEdit Name="PART_Editor" AutoComplete="True" AutoPopulateColumns="False" DisplayMember="STOCKCODE" IncrementalFiltering="True" IsTextEditable="true" ItemsSource="{Binding View.DataContext.STOCK_ITEMCollection}" NullValueButtonPlacement="Popup" PopupWidth="500" ValueMember="STOCKCODE">
+                                            <dxg:LookUpEdit.StyleSettings>
+                                                <dxg:SearchLookUpEditStyleSettings />
+                                            </dxg:LookUpEdit.StyleSettings>
+                                            <dxg:LookUpEdit.PopupContentTemplate>
+                                                <ControlTemplate TargetType="ContentControl">
+                                                    <dxg:GridControl x:Name="PART_GridControl" SelectionMode="Row" ShowBorder="False">
+                                                        <dxg:GridControl.Columns>
+                                                            <dxg:GridColumn FieldName="STOCKCODE" Header="Code" ReadOnly="True" />
+                                                            <dxg:GridColumn FieldName="DESCRIPTION" AllowBestFit="false" Width="*" Header="Description" ReadOnly="True" />
+                                                        </dxg:GridControl.Columns>
+                                                        <dxg:GridControl.View>
+                                                            <dxg:TableView RowStyle="{StaticResource SelectionBackgroundStyle}" ShowFilterPanelMode="ShowAlways" ShowFocusedRectangle="True" ShowGroupPanel="False" ShowSelectionRectangle="True" />
+                                                        </dxg:GridControl.View>
+                                                    </dxg:GridControl>
+                                                </ControlTemplate>
+                                            </dxg:LookUpEdit.PopupContentTemplate>
+                                        </dxg:LookUpEdit>
+                                    </DataTemplate>
+                                </dxg:GridColumn.CellTemplate>
+                                <!--For Filtering-->
+                                <dxg:GridColumn.EditSettings>
+                                    <dxe:ComboBoxEditSettings AutoComplete="True" DisplayMember="STOCKCODE" IsTextEditable="True" ItemsSource="{Binding STOCK_ITEMCollection}" NullValueButtonPlacement="EditBox" ValueMember="STOCKCODE" />
+                                </dxg:GridColumn.EditSettings>
+                            </dxg:GridColumn>
                             <dxg:GridColumn Header="Old Variation Code" FieldName="OLD_VARIATION_CODE" HeaderToolTip="Variation code before approval" ReadOnly="True"/>
                         </dxg:GridControlBand>
                         <dxg:GridControlBand x:Name="gcbNew" Header="New Attributes">
@@ -74,7 +102,34 @@
                                     <dxe:ComboBoxEditSettings AutoComplete="True" DisplayMember="COSTDESC" IsTextEditable="True" ItemsSource="{Binding JOB_COSTTYPESCollection}" ValueMember="SEQNO" />
                                 </dxg:GridColumn.EditSettings>
                             </dxg:GridColumn>
-                            <dxg:GridColumn Header="New Stock Code" FieldName="ViewSTOCK_CODE" HeaderToolTip="Stock code for approval" ReadOnly="True"/>
+                            <dxg:GridColumn Header="New Stock Code" FieldName="ViewSTOCK_CODE" HeaderToolTip="Stock code for approval" ReadOnly="True">
+                                <dxg:GridColumn.CellTemplate>
+                                    <DataTemplate>
+                                        <dxg:LookUpEdit Name="PART_Editor" AutoComplete="True" AutoPopulateColumns="False" DisplayMember="STOCKCODE" IncrementalFiltering="True" IsTextEditable="true" ItemsSource="{Binding View.DataContext.STOCK_ITEMCollection}" NullValueButtonPlacement="Popup" PopupWidth="500" ValueMember="STOCKCODE">
+                                            <dxg:LookUpEdit.StyleSettings>
+                                                <dxg:SearchLookUpEditStyleSettings />
+                                            </dxg:LookUpEdit.StyleSettings>
+                                            <dxg:LookUpEdit.PopupContentTemplate>
+                                                <ControlTemplate TargetType="ContentControl">
+                                                    <dxg:GridControl x:Name="PART_GridControl" SelectionMode="Row" ShowBorder="False">
+                                                        <dxg:GridControl.Columns>
+                                                            <dxg:GridColumn FieldName="STOCKCODE" Header="Code" ReadOnly="True" />
+                                                            <dxg:GridColumn FieldName="DESCRIPTION" AllowBestFit="false" Width="*" Header="Description" ReadOnly="True" />
+                                                        </dxg:GridControl.Columns>
+                                                        <dxg:GridControl.View>
+                                                            <dxg:TableView RowStyle="{StaticResource SelectionBackgroundStyle}" ShowFilterPanelMode="ShowAlways" ShowFocusedRectangle="True" ShowGroupPanel="False" ShowSelectionRectangle="True" />
+                                                        </dxg:GridControl.View>
+                                                    </dxg:GridControl>
+                                                </ControlTemplate>
+                                            </dxg:LookUpEdit.PopupContentTemplate>
+                                        </dxg:LookUpEdit>
+                                    </DataTemplate>
+                                </dxg:GridColumn.CellTemplate>
+                                <!--For Filtering-->
+                                <dxg:GridColumn.EditSettings>
+                                    <dxe:ComboBoxEditSettings AutoComplete="True" DisplayMember="STOCKCODE" IsTextEditable="True" ItemsSource="{Binding STOCK_ITEMCollection}" NullValueButtonPlacement="EditBox" ValueMember="STOCKCODE" />
+                                </dxg:GridColumn.EditSettings>
+                            </dxg:GridColumn>
                             <dxg:GridColumn Header="New Variation Code" FieldName="ViewVARIATION_CODE" HeaderToolTip="Variation code for approval" ReadOnly="True"/>
                         </dxg:GridControlBand>
                         <dxg:GridControlBand x:Name="gcbDetail" Header="Detail">
@@ -102,7 +157,7 @@
                                     <dxe:ComboBoxEditSettings AutoComplete="True" DisplayMember="NAME" IsTextEditable="True" ItemsSource="{Binding USERCollection}" ValueMember="GUID" />
                                 </dxg:GridColumn.EditSettings>
                             </dxg:GridColumn>
-                            <dxg:GridColumn AllowSearchPanel="False" UnboundType="Object" Header="Approve" HeaderToolTip="Click button to approve transaction changes" ReadOnly="True" SortMode="DisplayText">
+                            <dxg:GridColumn AllowSearchPanel="False" UnboundType="Object" Header="Approve" Width="75" HeaderToolTip="Click button to approve transaction changes" ReadOnly="True" SortMode="DisplayText">
                                 <dxg:GridColumn.CellTemplate>
                                     <DataTemplate>
                                         <StackPanel HorizontalAlignment="Center" Margin="1">
@@ -116,7 +171,7 @@
                                     </DataTemplate>
                                 </dxg:GridColumn.CellTemplate>
                             </dxg:GridColumn>
-                            <dxg:GridColumn AllowSearchPanel="False" UnboundType="Object" Header="Reject" HeaderToolTip="Click button to approve transaction changes" ReadOnly="True" SortMode="DisplayText">
+                            <dxg:GridColumn AllowSearchPanel="False" UnboundType="Object" Header="Reject" Width="75" HeaderToolTip="Click button to approve transaction changes" ReadOnly="True" SortMode="DisplayText">
                                 <dxg:GridColumn.CellTemplate>
                                     <DataTemplate>
                                         <StackPanel HorizontalAlignment="Center" Margin="1">

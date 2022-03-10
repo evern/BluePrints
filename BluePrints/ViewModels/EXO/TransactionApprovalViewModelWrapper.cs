@@ -89,6 +89,12 @@ namespace BluePrints.ViewModels
             loaderCollection.AddLoaderDescription<JOB_COSTTYPES, JOB_COSTTYPES, int, IPrimeroEntitiesUnitOfWork>(primeroUnitOfWorkFactory, x => x.JOB_COSTTYPES);
             loaderCollection.AddLoaderDescription(primeroUnitOfWorkFactory, x => x.JOBCOST_HDR, JOBCOST_HDRProjectionFunc, x => loadJOBCOST_HDR = x);
             loaderCollection.AddLoaderDescription<USER, USER, Guid, IBluePrintsEntitiesUnitOfWork>(bluePrintsUnitOfWorkFactory, x => x.USERS);
+            loaderCollection.AddLoaderDescription(primeroUnitOfWorkFactory, x => x.STOCK_ITEMS, STOCK_ITEMSProjectionFunc);
+        }
+
+        private Func<IRepositoryQuery<STOCK_ITEMS>, IQueryable<STOCK_ITEMS>> STOCK_ITEMSProjectionFunc()
+        {
+            return query => query;
         }
 
         private Func<IRepositoryQuery<JOBCOST_HDR>, IQueryable<JOBCOST_HDR>> JOBCOST_HDRProjectionFunc()
@@ -175,6 +181,11 @@ namespace BluePrints.ViewModels
         #endregion
 
         #region View Properties
+        public override bool CanBulkDelete()
+        {
+            return !IsLoading && SelectedEntities.Count > 0;
+        }
+
         public override void BulkDelete()
         {
             if (MessageBoxService.ShowMessage("Are you sure you want to reject " + SelectedEntities.Count + " selected entries?", "Confirmation", MessageButton.OKCancel) == MessageResult.Cancel)
@@ -264,6 +275,17 @@ namespace BluePrints.ViewModels
                 if (collection != null)
                     collection = collection.OrderBy(x => x.SHORTCODE);
 
+                return collection;
+            }
+        }
+
+        public IEnumerable<STOCK_ITEMS> STOCK_ITEMCollection
+        {
+            get
+            {
+                var collection = GetEntities<STOCK_ITEMS>();
+                if (collection != null)
+                    collection = collection.OrderBy(x => x.STOCKCODE);
                 return collection;
             }
         }
