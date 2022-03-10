@@ -518,6 +518,7 @@
                     </dxg:GridControl.Bands>
                     <dxg:GridControl.GroupSummary>
                         <dxg:GridSummaryItem dxc:DXSerializer.Enabled="False" DisplayFormat="Total {0} Records" FieldName="Entity.Entity.INTERNAL_NUM" SummaryType="Count" />
+                        <dxg:GridSummaryItem dxc:DXSerializer.Enabled="False" DisplayFormat="n" FieldName="Entity.Entity.FORECAST_EXCL_HOURS" ShowInColumn="Entity.Entity.FORECAST_EXCL_HOURS" SummaryType="Sum" />
                         <dxg:GridSummaryItem dxc:DXSerializer.Enabled="False" DisplayFormat="n" FieldName="Entity.Entity.BUDGET_HOURS" ShowInColumn="Entity.Entity.BUDGET_HOURS" SummaryType="Sum" />
                         <dxg:GridSummaryItem dxc:DXSerializer.Enabled="False" DisplayFormat="n" FieldName="Budget_Units" ShowInColumn="Budget_Units" SummaryType="Sum" />
                         <dxg:GridSummaryItem dxc:DXSerializer.Enabled="False" DisplayFormat="n" FieldName="Budget_Adjustment_Units" ShowInColumn="Budget_Adjustment_Units" SummaryType="Sum" />
@@ -528,6 +529,7 @@
                     </dxg:GridControl.GroupSummary>
                     <dxg:GridControl.TotalSummary>
                         <dxg:GridSummaryItem dxc:DXSerializer.Enabled="False" DisplayFormat="Total {0} Records" FieldName="Entity.Entity.INTERNAL_NUM" SummaryType="Count" />
+                        <dxg:GridSummaryItem dxc:DXSerializer.Enabled="False" DisplayFormat="n" FieldName="Entity.Entity.FORECAST_EXCL_HOURS" ShowInColumn="Entity.Entity.FORECAST_EXCL_HOURS" SummaryType="Sum" />
                         <dxg:GridSummaryItem dxc:DXSerializer.Enabled="False" DisplayFormat="n" FieldName="Entity.Entity.BUDGET_HOURS" ShowInColumn="Entity.Entity.BUDGET_HOURS" SummaryType="Sum" />
                         <dxg:GridSummaryItem dxc:DXSerializer.Enabled="False" DisplayFormat="n" FieldName="Budget_Units" ShowInColumn="Budget_Units" SummaryType="Sum" />
                         <dxg:GridSummaryItem dxc:DXSerializer.Enabled="False" DisplayFormat="n" FieldName="Budget_Adjustment_Units" ShowInColumn="Budget_Adjustment_Units" SummaryType="Sum" />
