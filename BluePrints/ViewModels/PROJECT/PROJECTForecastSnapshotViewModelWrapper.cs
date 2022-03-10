@@ -1192,15 +1192,15 @@ namespace BluePrints.ViewModels
 
                 columns.Add(new ColumnDescriptor() { FieldName = "Entity.ProjectName", ReadOnly = true, Header = "Project", Fixed = FixedStyle.Left, Width = 100, Settings = SettingsType.Default, GroupIndex = 1, SortIndex = 1 });
                 columns.Add(new ColumnDescriptor() { FieldName = "Entity.PhaseCode", ReadOnly = true, Header = "Phase", Fixed = FixedStyle.Left, Width = 50, Settings = SettingsType.Default, GroupIndex = 4, SortIndex = 4 });
-                columns.Add(new ColumnDescriptor() { FieldName = "Entity.SubJobCode", ReadOnly = true, Header = "Subjob", Fixed = FixedStyle.Left, Width = 110, Settings = SettingsType.Default });
-                columns.Add(new ColumnDescriptor() { FieldName = "Entity.AreaCode", ReadOnly = true, Visible = false, Header = "Area", Fixed = FixedStyle.Left, Width = 60, Settings = SettingsType.Default });
+                columns.Add(new ColumnDescriptor() { FieldName = "Entity.SubJobCode", ReadOnly = true, Header = "Subjob", Fixed = FixedStyle.Left, Width = 110, Settings = SettingsType.Default, GroupIndex = -1, SortIndex = -1 });
+                columns.Add(new ColumnDescriptor() { FieldName = "Entity.AreaCode", ReadOnly = true, Visible = false, Header = "Area", Fixed = FixedStyle.Left, Width = 60, Settings = SettingsType.Default, GroupIndex = -1, SortIndex = -1 });
                 columns.Add(new ColumnDescriptor() { FieldName = "Entity.AreaName", ReadOnly = true, Visible = false, Header = "Area Name", Fixed = FixedStyle.Left, Width = 100, Settings = SettingsType.Default, GroupIndex = 2, SortIndex = 2 });
                 columns.Add(new ColumnDescriptor() { FieldName = "Entity.SubAreaName", ReadOnly = true, Visible = false, Header = "Sub Area Name", Fixed = FixedStyle.Left, Width = 100, Settings = SettingsType.Default, GroupIndex = 3, SortIndex = 3 });
-                columns.Add(new ColumnDescriptor() { FieldName = "Entity.DisciplineCode", ReadOnly = true, Header = "Discipline Code", Fixed = FixedStyle.Left, Width = 38, Settings = SettingsType.Default });
+                columns.Add(new ColumnDescriptor() { FieldName = "Entity.DisciplineCode", ReadOnly = true, Header = "Discipline Code", Fixed = FixedStyle.Left, Width = 38, Settings = SettingsType.Default, GroupIndex = -1, SortIndex = -1 });
                 columns.Add(new ColumnDescriptor() { FieldName = "Entity.DisciplineDesc", ReadOnly = true, Header = "Discipline/Package", Fixed = FixedStyle.Left, Width = 100, Settings = SettingsType.Default, GroupIndex = 4, SortIndex = 4 });
                 columns.Add(new ColumnDescriptor() { FieldName = "Entity.CommodityCode", ReadOnly = true, Header = "Commodity", Fixed = FixedStyle.Left, Width = 50, Settings = SettingsType.CommodityCode });
                 columns.Add(new ColumnDescriptor() { FieldName = "Entity.CommodityName", ReadOnly = true, Header = "Commodity Name", Fixed = FixedStyle.Left, Width = 50, Settings = SettingsType.Default, GroupIndex = 5, SortIndex = 5 });
-                columns.Add(new ColumnDescriptor() { FieldName = "Entity.VariationCode", ReadOnly = true, Header = "Variation", Fixed = FixedStyle.Left, Width = 60, Settings = SettingsType.Default });
+                columns.Add(new ColumnDescriptor() { FieldName = "Entity.VariationCode", ReadOnly = true, Header = "Variation", Fixed = FixedStyle.Left, Width = 60, Settings = SettingsType.Default, GroupIndex = -1, SortIndex = -1 });
                 columns.Add(new ColumnDescriptor() { FieldName = "Entity.TenderBudget", ReadOnly = false, Header = "Tender Budget (H)", Increment = 1, Fixed = FixedStyle.Left, Width = 75, Settings = SettingsType.Budget, Mask = "c0", HeaderToolTip = "Budget saved here during Roll Over" });
                 summaries.Add(new SummaryDescriptor() { FieldName = "Entity.TenderBudget", DisplayFormat = "c0", Type = SummaryItemType.Sum });
                 columns.Add(new ColumnDescriptor() { FieldName = "Entity.Budget", ReadOnly = false, Header = "Project Budget (A)", Increment = 1, Fixed = FixedStyle.Left, Width = 75, Settings = SettingsType.Budget, HeaderToolTip = "EAC saved here during Roll Over" });
@@ -1225,7 +1225,7 @@ namespace BluePrints.ViewModels
                     columns.Add(new ColumnDescriptor() { FieldName = "Entity.CurrentProductivity", ReadOnly = true, Visible = false, Header = "Current PF", Increment = 0.1m, Fixed = FixedStyle.Left, Width = 50, Settings = SettingsType.Number, Mask = "n2", HeaderToolTip = "Current productivity factor, 0 means there aren't any earned or actuals units" });
                 }
 
-                columns.Add(new ColumnDescriptor() { FieldName = "Entity.IsProductivityFloating", Visible = false, ReadOnly = true, Header = "Floating PF", Fixed = FixedStyle.Left, Width = 50, Settings = SettingsType.Default, HeaderToolTip = "Productivity on job with floating productivity can be updated to match current productivity" });
+                columns.Add(new ColumnDescriptor() { FieldName = "Entity.IsProductivityFloating", Visible = false, ReadOnly = true, Header = "Floating PF", Fixed = FixedStyle.Left, Width = 50, Settings = SettingsType.Default, GroupIndex = -1, SortIndex = -1, HeaderToolTip = "Productivity on job with floating productivity can be updated to match current productivity" });
                 columns.Add(new ColumnDescriptor() { FieldName = "Entity.ActualCostsPostDataDate", ReadOnly = true, Header = "Actual Costs Post DD", Fixed = FixedStyle.Left, Width = 50, Settings = SettingsType.Number, Mask = "c0", HeaderToolTip = "Actual costs post data date" });
                 summaries.Add(new SummaryDescriptor() { FieldName = "Entity.ActualCostsPostDataDate", DisplayFormat = "c0", Type = SummaryItemType.Sum });
                 columns.Add(new ColumnDescriptor() { FieldName = "Entity.ActualCostsPreviousDataDate", ReadOnly = true, Header = "Actual Costs Post DD", Visible = false, Fixed = FixedStyle.Left, Width = 50, Settings = SettingsType.Number, Mask = "c0", HeaderToolTip = "Actual costs post data date" });
@@ -1259,12 +1259,12 @@ namespace BluePrints.ViewModels
                 summaries.Add(new SummaryDescriptor() { FieldName = "Entity.PeriodMovement", DisplayFormat = "c0", Type = SummaryItemType.Sum });
                 columns.Add(new ColumnDescriptor() { FieldName = "Entity.PercentagePeriodMovement", Header = "Percentage Period Move (G / F)", Fixed = FixedStyle.Left, Width = 75, Settings = SettingsType.Number, Mask = "p0", HeaderToolTip = "Period Movement / Previous EAC" });
                 summaries.Add(new SummaryDescriptor() { FieldName = "Entity.PercentagePeriodMovement", DisplayFormat = "{0} Record(s)", Type = SummaryItemType.Count });columns.Add(new ColumnDescriptor() { FieldName = "Entity.PercentagePeriodMovement", Header = "Percentage Period Move (G / F)", Fixed = FixedStyle.Left, Width = 75, Settings = SettingsType.Number, Mask = "p0", HeaderToolTip = "Period Movement / Previous EAC" });
-                columns.Add(new ColumnDescriptor() { FieldName = "Entity.IsPOError", Header = "PO Error", Visible = false, Fixed = FixedStyle.Left, Width = 50, Settings = SettingsType.Default, HeaderToolTip = "Checked when there is PO forecast error" });
-                columns.Add(new ColumnDescriptor() { FieldName = "Entity.IsCommodityCodeError", Visible = false, Header = "Code Error", Fixed = FixedStyle.Left, Width = 50, Settings = SettingsType.Default, HeaderToolTip = "Checked when there is WBS code error" });
+                columns.Add(new ColumnDescriptor() { FieldName = "Entity.IsPOError", Header = "PO Error", Visible = false, Fixed = FixedStyle.Left, Width = 50, Settings = SettingsType.Default, GroupIndex = -1, SortIndex = -1, HeaderToolTip = "Checked when there is PO forecast error" });
+                columns.Add(new ColumnDescriptor() { FieldName = "Entity.IsCommodityCodeError", Visible = false, Header = "Code Error", Fixed = FixedStyle.Left, Width = 50, Settings = SettingsType.Default, GroupIndex = -1, SortIndex = -1, HeaderToolTip = "Checked when there is WBS code error" });
             }
             else
             {
-                columns.Add(new ColumnDescriptor() { FieldName = "Entity.DropDownPhase", Header = "", Fixed = FixedStyle.Left, Width = 50, Settings = SettingsType.Default, HeaderToolTip = "Source of forecasted costs/hours type" });
+                columns.Add(new ColumnDescriptor() { FieldName = "Entity.DropDownPhase", Header = "", Fixed = FixedStyle.Left, Width = 50, Settings = SettingsType.Default, GroupIndex = -1, SortIndex = -1, HeaderToolTip = "Source of forecasted costs/hours type" });
                 columns.Add(new ColumnDescriptor() { FieldName = "Entity.DropDownIndirectBudget", ReadOnly = true, Header = "Project Budget (A)", Increment = 1, Fixed = FixedStyle.Left, Width = 50, Settings = SettingsType.Budget, HeaderToolTip = "Indirect budget from Exo" });
             }
 

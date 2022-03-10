@@ -455,7 +455,7 @@
                                                                 GroupSummaryGeneratorTemplate="{StaticResource SummaryTemplate}"
                                                                 AutoGenerateColumns="None" ColumnGeneratorTemplateSelector="{StaticResource ColumnTemplateSelector}" ColumnsSource="{Binding ChildViewColumns}" ClipboardCopyMode="ExcludeHeader" SelectionMode="Cell">
                                                 <i:Interaction.Behaviors>
-                                                    <behavior:DetailSyncBehavior />
+                                                    <behavior:DetailSyncBehavior FirstColumnFieldName="Entity.DropDownPhase" />
                                                 </i:Interaction.Behaviors>
                                                 <dxmvvm:Interaction.Behaviors>
                                                     <dxmvvm:EventToCommand Command="{Binding PastingFromClipboardCommand}" EventName="PastingFromClipboard" PassEventArgsToCommand="True" />
