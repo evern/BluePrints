@@ -39,6 +39,7 @@ using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Input;
 using System.Windows.Threading;
+using System.Diagnostics;
 
 namespace BluePrints.ViewModels
 {
@@ -659,16 +660,16 @@ namespace BluePrints.ViewModels
                 string subJobCode = delimited[0];
                 string disciplineCode = delimited[1];
                 string commodityCode = delimited[2];
-                string variationCode = delimited[3];
-                //For Debugging
-                //if (subJobCode == "31510-000-00-I0" && disciplineCode == "CM01" && commodityCode == "C01" && variationCode == "")
-                //{
-
-                //}
-                UniqueForecastJob uniqueForecastJob = new UniqueForecastJob(projectLines, subJobCode, disciplineCode, commodityCode, variationCode, FixedDataDate, PreviousDataDate, FORECAST_JOB_HOUR_SNAPSHOTCollection, IsShowUninvoicedOnly);
+                string variationCode = delimited[3]; UniqueForecastJob uniqueForecastJob = new UniqueForecastJob(projectLines, subJobCode, disciplineCode, commodityCode, variationCode, FixedDataDate, PreviousDataDate, FORECAST_JOB_HOUR_SNAPSHOTCollection, IsShowUninvoicedOnly);
                 uniqueForecastJob.UpdateTenderBudget(TenderBudgetCollection.AsQueryable());
                 uniqueForecastJob.UpdateErrorMessage(JOBCOST_LINES_AUDITCollection.AsQueryable());
                 uniqueForecastJobs.Add(uniqueForecastJob);
+                ////For Debugging
+                //if (subJobCode == "31510-000-00-I0" && disciplineCode == "CM01" && commodityCode == "G01" && variationCode == "")
+                //{
+
+                //}
+
                 Common.LoadingScreenManager.Progress();
             });
 
@@ -1587,7 +1588,7 @@ namespace BluePrints.ViewModels
 
             string fieldName = ((BaseEdit)e.OriginalSource).Tag.ToString();
             DataUtils.TrySetNestedValue(fieldName, LoadPROJECT, newValueDecimal);
-            savePROJECT();
+            //savePROJECT();
 
             if (fieldName == BindableBase.GetPropertyName(() => new Data.PROJECT().ORI_REVENUE))
                 ForecastSummary.Original_Revenue = notNullDecimalValue;
@@ -1614,6 +1615,44 @@ namespace BluePrints.ViewModels
             //else if (fieldName == BindableBase.GetPropertyName(() => new Data.PROJECT().EAC_REVENUE))
             //    ForecastSummary.EAC_Revenue = newValueDecimal;
 
+            this.RaisePropertyChanged(x => x.ForecastSummary);
+        }
+
+        public bool CanSaveRevenueChanges()
+        {
+            if (IsLoading)
+                return false;
+
+            if (!allowValueEditing)
+                return false;
+
+            if (MainViewModel == null || LoadPROJECT == null || ForecastSummary == null)
+                return false;
+
+            return true;
+        }
+
+        public void SaveRevenueChanges()
+        {
+            if(LoadPROJECT.ORI_REVENUE == 0 || LoadPROJECT.ORI_REVENUE == null)
+            {
+                if (MessageBoxService.ShowMessage("Are you sure you want to save original revenue as zero?", "Confirmation", MessageButton.YesNo) == MessageResult.No)
+                    return;
+            }
+
+            if (LoadPROJECT.VAR_REVENUE == 0 || LoadPROJECT.VAR_REVENUE == null)
+            {
+                if (MessageBoxService.ShowMessage("Are you sure you want to approved variation revenue as zero?", "Confirmation", MessageButton.YesNo) == MessageResult.No)
+                    return;
+            }
+
+            if (LoadPROJECT.UNAPPROVED_VAR_REVENUE == 0 || LoadPROJECT.UNAPPROVED_VAR_REVENUE == null)
+            {
+                if (MessageBoxService.ShowMessage("Are you sure you want to unapproved variation revenue as zero?", "Confirmation", MessageButton.YesNo) == MessageResult.No)
+                    return;
+            }
+
+            savePROJECT();
             this.RaisePropertyChanged(x => x.ForecastSummary);
         }
 
@@ -2680,12 +2719,18 @@ namespace BluePrints.ViewModels
                                         decimal originalP6Units = (decimal)compareChildP6UnitsRemainingRow[columnName];
 
                                         if (currentP6Units == originalP6Units)
+                                        {
                                             uncommittedPOValues += currentDateCellValue - dateCost.CommittedCosts - dateCost.P6Costs;
+                                            Debug.Print(uncommittedPOValues + " " + parseDateTime.ToShortDateString());
+                                        }
                                         else
                                             uncommitedP6Values += currentDateCellValue - dateCost.CommittedCosts - dateCost.P6Costs;
                                     }
                                     else
+                                    {
                                         uncommittedPOValues += currentDateCellValue - dateCost.CommittedCosts - dateCost.P6Costs;
+                                        Debug.Print(uncommittedPOValues + " " + parseDateTime.ToShortDateString());
+                                    }
                                 }
                             }
             }

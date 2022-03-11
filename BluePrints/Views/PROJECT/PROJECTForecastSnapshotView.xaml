@@ -684,7 +684,15 @@
                                                 <dxe:SpinEdit Style="{StaticResource SingleObjectView.SpinEditControlContainer}" Tag="ORI_REVENUE" Mask="c0" MaskType="Numeric" MaskUseAsDisplayFormat="True" EditValue="{Binding LoadPROJECT.ORI_REVENUE, Mode=OneWay}" />
                                             </dxlc:LayoutItem>
                                             <dxlc:LayoutItem Label="Approved Variation" LabelPosition="Left">
-                                                <dxe:SpinEdit Style="{StaticResource SingleObjectView.SpinEditControlContainer}" NullValueButtonPlacement="EditBox" Tag="VAR_REVENUE" Mask="c0" MaskType="Numeric" MaskUseAsDisplayFormat="True" EditValue="{Binding ForecastSummary.Approved_Var_Revenue, Mode=OneWay}" />
+                                                <dxe:SpinEdit Style="{StaticResource SingleObjectView.SpinEditControlContainer}" Tag="VAR_REVENUE" NullValueButtonPlacement="EditBox" Mask="c0" MaskType="Numeric" MaskUseAsDisplayFormat="True" EditValue="{Binding ForecastSummary.Approved_Var_Revenue, Mode=OneWay}" />
+                                            </dxlc:LayoutItem>
+                                            <dxlc:LayoutItem Label="" LabelPosition="Left">
+                                                <Button Command="{Binding SaveRevenueChangesCommand}" ToolTip="Export all actuals to excel. Includes grouping, sorting and column visibility preferences">
+                                                    <StackPanel Orientation="Horizontal">
+                                                        <Image Source="{dx:DXImage Image=Save_16x16.png}" Width="16" Height="16" Margin="0, 0, 3, 0" />
+                                                        <TextBlock Text="Save Changes" VerticalAlignment="Center" />
+                                                    </StackPanel>
+                                                </Button>
                                             </dxlc:LayoutItem>
                                             <dxlc:LayoutItem>
                                                 <dxe:CheckEdit Content="Manual" IsChecked="{Binding IsManualApprovedVariationRevenue, Mode=OneWay}" ToolTip="Approved variation revenue is manual" />
@@ -708,6 +716,14 @@
                                             </dxlc:LayoutItem>
                                             <dxlc:LayoutItem Label="Unapproved Variation" LabelPosition="Left">
                                                 <dxe:SpinEdit Style="{StaticResource SingleObjectView.SpinEditControlContainer}" Tag="UNAPPROVED_VAR_REVENUE" Mask="c0" MaskType="Numeric" MaskUseAsDisplayFormat="True" EditValue="{Binding ForecastSummary.Unapproved_Var_Revenue, Mode=OneWay}" />
+                                            </dxlc:LayoutItem>
+                                            <dxlc:LayoutItem Label="" LabelPosition="Left">
+                                                <Button Command="{Binding SaveRevenueChangesCommand}" ToolTip="Export all actuals to excel. Includes grouping, sorting and column visibility preferences">
+                                                    <StackPanel Orientation="Horizontal">
+                                                        <Image Source="{dx:DXImage Image=Save_16x16.png}" Width="16" Height="16" Margin="0, 0, 3, 0" />
+                                                        <TextBlock Text="Save Changes" VerticalAlignment="Center" />
+                                                    </StackPanel>
+                                                </Button>
                                             </dxlc:LayoutItem>
                                             <dxlc:LayoutItem Label="EAC Revenue" LabelPosition="Left" ToolTip="Original revenue + Approved Variation Revenue + Unapproved Variation Revenue">
                                                 <dxe:TextEdit IsReadOnly="True" Mask="c0" MaskType="Numeric" MaskUseAsDisplayFormat="True" Text="{Binding ForecastSummary.EAC_Revenue, Mode=OneWay}" />
