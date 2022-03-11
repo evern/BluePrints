@@ -1660,6 +1660,7 @@ namespace BluePrints.ViewModels
             }
 
             savePROJECT();
+            MessageBoxService.ShowMessage("Revenue Saved", "Success", MessageButton.OK);
             this.RaisePropertyChanged(x => x.ForecastSummary);
         }
 
