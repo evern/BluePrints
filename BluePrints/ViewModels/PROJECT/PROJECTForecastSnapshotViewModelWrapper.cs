@@ -661,7 +661,7 @@ namespace BluePrints.ViewModels
                 string commodityCode = delimited[2];
                 string variationCode = delimited[3];
                 //For Debugging
-                //if (subJobCode == "00151-000-01-C1" && disciplineCode == "CC01" && commodityCode == "C01" && variationCode == "")
+                //if (subJobCode == "31510-000-00-I0" && disciplineCode == "CM01" && commodityCode == "C01" && variationCode == "")
                 //{
 
                 //}
@@ -927,7 +927,7 @@ namespace BluePrints.ViewModels
             }
 
             job.P6RemainingUnitsOverride = P6TotalCurrentRemainingUnits;
-            updateViewForecastsOnDatesFromDb(commodityRow, false, relevantFORECASTS);
+            //updateViewForecastsOnDatesFromDb(commodityRow, false, relevantFORECASTS);
             updateTotalUncommittedOnJob(commodityRow);
 
             return commodityRow;
@@ -1035,7 +1035,6 @@ namespace BluePrints.ViewModels
             }
 
             job.P6RemainingUnitsOverride = P6CurrentRemainingUnits;
-
             if (job.P6RemainingUnitsOverride != null && job.P6RemainingUnitsOverride != 0 && job.P6RemainingUnits != 0)
                 job.Productivity = job.P6RemainingUnits / (decimal)job.P6RemainingUnitsOverride;
             else
