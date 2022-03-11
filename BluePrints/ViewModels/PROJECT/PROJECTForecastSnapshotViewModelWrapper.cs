@@ -660,16 +660,17 @@ namespace BluePrints.ViewModels
                 string subJobCode = delimited[0];
                 string disciplineCode = delimited[1];
                 string commodityCode = delimited[2];
-                string variationCode = delimited[3]; UniqueForecastJob uniqueForecastJob = new UniqueForecastJob(projectLines, subJobCode, disciplineCode, commodityCode, variationCode, FixedDataDate, PreviousDataDate, FORECAST_JOB_HOUR_SNAPSHOTCollection, IsShowUninvoicedOnly);
-                uniqueForecastJob.UpdateTenderBudget(TenderBudgetCollection.AsQueryable());
-                uniqueForecastJob.UpdateErrorMessage(JOBCOST_LINES_AUDITCollection.AsQueryable());
-                uniqueForecastJobs.Add(uniqueForecastJob);
-                ////For Debugging
+                string variationCode = delimited[3]; 
+
+                //For Debugging
                 //if (subJobCode == "31510-000-00-I0" && disciplineCode == "CM01" && commodityCode == "G01" && variationCode == "")
                 //{
 
                 //}
-
+                UniqueForecastJob uniqueForecastJob = new UniqueForecastJob(projectLines, subJobCode, disciplineCode, commodityCode, variationCode, FixedDataDate, PreviousDataDate, FORECAST_JOB_HOUR_SNAPSHOTCollection, IsShowUninvoicedOnly);
+                uniqueForecastJob.UpdateTenderBudget(TenderBudgetCollection.AsQueryable());
+                uniqueForecastJob.UpdateErrorMessage(JOBCOST_LINES_AUDITCollection.AsQueryable());
+                uniqueForecastJobs.Add(uniqueForecastJob);
                 Common.LoadingScreenManager.Progress();
             });
 
@@ -853,7 +854,13 @@ namespace BluePrints.ViewModels
                 {
                     //finds the unique row based on stock code
                     DataRow indirectForecastRow = indirectForecastRows.First(x => x.Key == indirectForecastSnapshot.STOCK_CODE).Value;
-                    indirectForecastRow[dateCost.QueryDate.ToString(BluePrintsResources.ColumnDateFormat)] = indirectForecastSnapshot.FORECAST_COST;
+                    decimal currentRowIndirectForecastValue;
+                    if (indirectForecastRow[dateCost.QueryDate.ToString(BluePrintsResources.ColumnDateFormat)] == DBNull.Value)
+                        currentRowIndirectForecastValue = 0;
+                    else
+                        currentRowIndirectForecastValue = (decimal)indirectForecastRow[dateCost.QueryDate.ToString(BluePrintsResources.ColumnDateFormat)];
+
+                    indirectForecastRow[dateCost.QueryDate.ToString(BluePrintsResources.ColumnDateFormat)] = currentRowIndirectForecastValue + indirectForecastSnapshot.FORECAST_COST;
                 }
 
                 //might want to use this in show actuals history
@@ -928,7 +935,7 @@ namespace BluePrints.ViewModels
             }
 
             job.P6RemainingUnitsOverride = P6TotalCurrentRemainingUnits;
-            //updateViewForecastsOnDatesFromDb(commodityRow, false, relevantFORECASTS);
+            updateViewForecastsOnDatesFromDb(commodityRow, false, relevantFORECASTS);
             updateTotalUncommittedOnJob(commodityRow);
 
             return commodityRow;
