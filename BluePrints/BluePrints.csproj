@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?>
+﻿<?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="12.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
   <PropertyGroup>
@@ -1231,6 +1231,7 @@
     <Compile Include="ViewModels\EXO\EXO_JobPermissionCollectionViewModelWrapper.cs" />
     <Compile Include="ViewModels\EXO\EXO_SubjobCollectionViewModelWrapper.cs" />
     <Compile Include="ViewModels\EXO\EXO_DesignSubjobCollectionViewModelWrapper.cs" />
+    <Compile Include="ViewModels\EXO\TransactionCollectionRegionalInstantFeedbackViewModelWrapper.cs" />
     <Compile Include="ViewModels\HOLIDAY\HOLIDAYCollectionViewModelWrapper.cs" />
     <Compile Include="ViewModels\HSE\HSECollectionViewModelWrapper.cs" />
     <Compile Include="ViewModels\HSE\HSESingleObjectViewModelWrapper.cs" />
@@ -1354,6 +1355,9 @@
     </Compile>
     <Compile Include="Views\EXO\EXO_POCollectionView.xaml.cs">
       <DependentUpon>EXO_POCollectionView.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Views\EXO\TransactionCollectionRegionalInstantFeedbackView.xaml.cs">
+      <DependentUpon>TransactionCollectionRegionalInstantFeedbackView.xaml</DependentUpon>
     </Compile>
     <Compile Include="Views\HOLIDAY\HOLIDAYCollectionView.xaml.cs">
       <DependentUpon>HOLIDAYCollectionView.xaml</DependentUpon>
@@ -2376,6 +2380,10 @@
       <SubType>Designer</SubType>
     </Page>
     <Page Include="Views\EXO\EXO_POCollectionView.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Views\EXO\TransactionCollectionRegionalInstantFeedbackView.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>
