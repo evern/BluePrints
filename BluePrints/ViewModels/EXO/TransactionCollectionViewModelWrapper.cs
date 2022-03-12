@@ -105,9 +105,9 @@ namespace BluePrints.ViewModels
         private IBluePrintsEntitiesUnitOfWork bluePrintsUnitOfWork;
         JOBCOST_HDR loadJOBCOST_HDR;
         bool isYearToDate = false;
-        bool is2020Onwards = false;
+        bool is2021Onwards = false;
         public bool IsYearToDate => isYearToDate;
-        public bool Is2020Onwards => is2020Onwards;
+        public bool Is2021Onwards => is2021Onwards;
         public int DateSortIndex => 1;
         public string officeName;
         protected override void resolveParameters(object parameter)
@@ -120,7 +120,7 @@ namespace BluePrints.ViewModels
             {
                 IsReadOnly = true;
                 isYearToDate = true;
-                is2020Onwards = (bool)PROJECTParameter.GetSecondEntity();
+                is2021Onwards = (bool)PROJECTParameter.GetSecondEntity();
                 isUsePreloadMode = false;
                 IsInstantFeedbackMode = true;
 
@@ -195,10 +195,10 @@ namespace BluePrints.ViewModels
         {
             if (isYearToDate)
             {
-                if (Is2020Onwards)
+                if (Is2021Onwards)
                 {
-                    DateTime date2020FirstDay = new DateTime(2020, 1, 1);
-                    return query => query.Where(x => x.TRANSDATE != null && ((DateTime)x.TRANSDATE) >= date2020FirstDay);
+                    DateTime date2021FirstDay = new DateTime(2021, 1, 1);
+                    return query => query.Where(x => x.TRANSDATE != null && ((DateTime)x.TRANSDATE) >= date2021FirstDay);
                 }
                 else
                     return query => query.Where(x => x.TRANSDATE != null);

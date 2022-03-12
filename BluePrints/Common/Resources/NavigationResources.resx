@@ -471,10 +471,10 @@
   <data name="Category_Project_Construct_Rate" xml:space="preserve">
     <value>Project construct rates category</value>
   </data>
-  <data name="Menu_TransactionsPerth2020ToDate" xml:space="preserve">
+  <data name="Menu_TransactionsPerth2021ToDate" xml:space="preserve">
     <value>Show all Perth EXO transactions from 2020 onwards</value>
   </data>
-  <data name="Menu_TransactionsMontreal2020ToDate" xml:space="preserve">
+  <data name="Menu_TransactionsMontreal2021ToDate" xml:space="preserve">
     <value>Show all Montreal EXO transactions from 2020 onwards</value>
   </data>
   <data name="Menu_TransactionsPerthYearToDate" xml:space="preserve">

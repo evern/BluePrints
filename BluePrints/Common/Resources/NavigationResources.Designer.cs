@@ -1071,9 +1071,9 @@ namespace BluePrints.Common.Resources {
         /// <summary>
         ///   Looks up a localized string similar to Show all Montreal EXO transactions from 2020 onwards.
         /// </summary>
-        internal static string Menu_TransactionsMontreal2020ToDate {
+        internal static string Menu_TransactionsMontreal2021ToDate {
             get {
-                return ResourceManager.GetString("Menu_TransactionsMontreal2020ToDate", resourceCulture);
+                return ResourceManager.GetString("Menu_TransactionsMontreal2021ToDate", resourceCulture);
             }
         }
         
@@ -1089,9 +1089,9 @@ namespace BluePrints.Common.Resources {
         /// <summary>
         ///   Looks up a localized string similar to Show all Perth EXO transactions from 2020 onwards.
         /// </summary>
-        internal static string Menu_TransactionsPerth2020ToDate {
+        internal static string Menu_TransactionsPerth2021ToDate {
             get {
-                return ResourceManager.GetString("Menu_TransactionsPerth2020ToDate", resourceCulture);
+                return ResourceManager.GetString("Menu_TransactionsPerth2021ToDate", resourceCulture);
             }
         }
         
