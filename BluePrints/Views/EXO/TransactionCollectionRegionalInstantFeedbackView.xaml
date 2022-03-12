@@ -100,7 +100,7 @@
                             <custom:EditableColumn RealFieldName="COST_GROUP_NO" AllowBestFit="false" Header="Discipline Code" Width="200" UnboundType="Integer" UnboundExpression="[COST_GROUP_NO]">
                                 <dxg:GridColumn.CellTemplate>
                                     <DataTemplate>
-                                        <dxg:LookUpEdit Name="PART_Editor" AutoComplete="True" AutoPopulateColumns="False" DisplayMember="COSTDESC" IncrementalFiltering="True" IsTextEditable="true" ItemsSource="{Binding View.DataContext.JOB_COSTGROUPSCollection}" NullValueButtonPlacement="None" PopupWidth="500" ValueMember="SEQNO" Background="{Binding Data.CostGroupChangeTracking.ChangeTrackingPropertyStatus, Converter={StaticResource TransactionAttributeCellColorConverter}}" ToolTip="{Binding Data.CostGroupChangeTracking.ChangeTrackingToolTip}">
+                                        <dxg:LookUpEdit Name="PART_Editor" AutoComplete="True" AutoPopulateColumns="False" DisplayMember="COSTDESC" IncrementalFiltering="True" IsTextEditable="true" ItemsSource="{Binding View.DataContext.JOB_COSTGROUPSCollection}" NullValueButtonPlacement="None" PopupWidth="500" ValueMember="SEQNO" >
                                             <dxg:LookUpEdit.StyleSettings>
                                                 <dxg:SearchLookUpEditStyleSettings />
                                             </dxg:LookUpEdit.StyleSettings>
@@ -128,7 +128,7 @@
                             <custom:EditableColumn RealFieldName="COST_TYPE_NO" AllowBestFit="false" Width="200" Header="Commodity Code" UnboundType="Integer" UnboundExpression="[COST_TYPE_NO]">
                                 <dxg:GridColumn.CellTemplate>
                                     <DataTemplate>
-                                        <dxg:LookUpEdit Name="PART_Editor" AutoComplete="True" AutoPopulateColumns="False" DisplayMember="COSTDESC" IncrementalFiltering="True" IsTextEditable="true" ItemsSource="{Binding View.DataContext.JOB_COSTTYPESCollection}" NullValueButtonPlacement="Popup" PopupWidth="500" ValueMember="SEQNO" Background="{Binding Data.CostTypeChangeTracking.ChangeTrackingPropertyStatus, Converter={StaticResource TransactionAttributeCellColorConverter}}" ToolTip="{Binding Data.CostTypeChangeTracking.ChangeTrackingToolTip}">
+                                        <dxg:LookUpEdit Name="PART_Editor" AutoComplete="True" AutoPopulateColumns="False" DisplayMember="COSTDESC" IncrementalFiltering="True" IsTextEditable="true" ItemsSource="{Binding View.DataContext.JOB_COSTTYPESCollection}" NullValueButtonPlacement="Popup" PopupWidth="500" ValueMember="SEQNO" >
                                             <dxg:LookUpEdit.StyleSettings>
                                                 <dxg:SearchLookUpEditStyleSettings />
                                             </dxg:LookUpEdit.StyleSettings>
@@ -156,7 +156,7 @@
                             <custom:EditableColumn RealFieldName="STOCKCODE" Header="Stock Code" Width="200" UnboundType="String" UnboundExpression="[STOCKCODE]">
                                 <dxg:GridColumn.CellTemplate>
                                     <DataTemplate>
-                                        <dxg:LookUpEdit Name="PART_Editor" AutoComplete="True" AutoPopulateColumns="False" DisplayMember="STOCKCODE" IncrementalFiltering="True" IsTextEditable="true" ItemsSource="{Binding View.DataContext.STOCK_ITEMCollection}" NullValueButtonPlacement="Popup" PopupWidth="500" ValueMember="STOCKCODE" Background="{Binding Data.StockCodeChangeTracking.ChangeTrackingPropertyStatus, Converter={StaticResource TransactionAttributeCellColorConverter}}" ToolTip="{Binding Data.StockCodeChangeTracking.ChangeTrackingToolTip}">
+                                        <dxg:LookUpEdit Name="PART_Editor" AutoComplete="True" AutoPopulateColumns="False" DisplayMember="STOCKCODE" IncrementalFiltering="True" IsTextEditable="true" ItemsSource="{Binding View.DataContext.STOCK_ITEMCollection}" NullValueButtonPlacement="Popup" PopupWidth="500" ValueMember="STOCKCODE" >
                                             <dxg:LookUpEdit.StyleSettings>
                                                 <dxg:SearchLookUpEditStyleSettings />
                                             </dxg:LookUpEdit.StyleSettings>
@@ -184,7 +184,7 @@
                             <custom:EditableColumn RealFieldName="VARIATION_CODE" AllowBestFit="false" Width="150" Header="Variation Code" UnboundType="String" UnboundExpression="[VARIATION_CODE]">
                                 <dxg:GridColumn.CellTemplate>
                                     <DataTemplate>
-                                        <dxe:TextEdit Name="PART_Editor" Background="{Binding Data.VariationCodeChangeTracking.ChangeTrackingPropertyStatus, Converter={StaticResource TransactionAttributeCellColorConverter}}" ToolTip="{Binding Data.VariationCodeChangeTracking.ChangeTrackingToolTip}"/>
+                                        <dxe:TextEdit Name="PART_Editor" />
                                     </DataTemplate>
                                 </dxg:GridColumn.CellTemplate>
                             </custom:EditableColumn>
