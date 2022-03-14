@@ -119,7 +119,7 @@
                 <dxc:Marker2DFadeInAnimation />
             </dxc:LineSeries2D.PointAnimation>
         </dxc:LineSeries2D>
-        <dxc:LineSeries2D AnimationAutoStartMode="SetStartState" Brush="Red" DataSource="{Binding SummaryEntity.Stats.RemainingActual.CumulativeDataPoints}" DisplayName="{Binding LineSeriesRemainingActualDisplayName}" ValueDataMember="{Binding LineSeriesRemainingValueDataMember}" Style="{StaticResource DefaultLineSeries2DTemplate}">
+        <dxc:LineSeries2D AnimationAutoStartMode="SetStartState" Brush="Red" DataSource="{Binding SummaryEntity.Stats.RemainingActual.CumulativeDataPoints}" DisplayName="{Binding LineSeriesRemainingActualDisplayName}" ValueDataMember="{Binding LineSeriesRemainingActualValueDataMember}" Style="{StaticResource DefaultLineSeries2DTemplate}">
             <dxc:LineSeries2D.SeriesAnimation>
                 <dxc:Line2DSlideFromLeftAnimation />
             </dxc:LineSeries2D.SeriesAnimation>

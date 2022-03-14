@@ -706,6 +706,20 @@ namespace BluePrints.Common.ViewModel.Reporting
             }
         }
 
+        public decimal UnnormalisedBudgetUnitsPercentage
+        {
+            get
+            {
+                if (BudgetedUnits == 0 || Units == 0)
+                    return 0;
+                else
+                {
+                    decimal budgetUnitsPercentage = Units / BudgetedUnits;
+                    return budgetUnitsPercentage;
+                }
+            }
+        }
+
         public decimal UnitsPercentage
         {
             get
@@ -725,6 +739,19 @@ namespace BluePrints.Common.ViewModel.Reporting
             }
         }
 
+        public decimal UnnormalisedUnitsPercentage
+        {
+            get
+            {
+                if (TotalUnits == 0 || Units == 0)
+                    return 0;
+                else
+                {
+                    decimal totalUnitsPercentage = Units / TotalUnits;
+                    return totalUnitsPercentage;
+                }
+            }
+        }
 
         public decimal DistributionUnitsPercentage
         {
@@ -759,6 +786,21 @@ namespace BluePrints.Common.ViewModel.Reporting
             }
         }
 
+
+        public decimal UnnormalisedBudgetPercentage
+        {
+            get
+            {
+                if (BudgetedCosts == 0 || Costs == 0)
+                    return 0;
+                else
+                {
+                    decimal budgetCostsPercentage = Costs / BudgetedCosts;
+                    return budgetCostsPercentage;
+                }
+            }
+        }
+
         public decimal CostsPercentage
         {
             get
@@ -773,6 +815,20 @@ namespace BluePrints.Common.ViewModel.Reporting
                     if (costsPercentage > 1)
                         costsPercentage = 1;
 
+                    return costsPercentage;
+                }
+            }
+        }
+
+        public decimal UnnormalisedCostPercentage
+        {
+            get
+            {
+                if (TotalCosts == 0 || Costs == 0)
+                    return 0;
+                else
+                {
+                    decimal costsPercentage = Costs / TotalCosts;
                     return costsPercentage;
                 }
             }

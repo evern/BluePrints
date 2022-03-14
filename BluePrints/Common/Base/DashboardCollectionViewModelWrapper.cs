@@ -495,6 +495,7 @@ namespace BluePrints.Common.ViewModel
         public BenchmarkTarget Remaining_Benchmark { get; set; }
         public string LineSeriesCurrentValueDataMember { get; set; }
         public string LineSeriesRemainingValueDataMember { get; set; }
+        public string LineSeriesRemainingActualValueDataMember { get; set; }
         public string LineSeriesEarnedValueDataMember { get; set; }
         public string LineSeriesBurnedValueDataMember { get; set; }
 
@@ -551,6 +552,7 @@ namespace BluePrints.Common.ViewModel
             this.RaisePropertyChanged(x => x.LineSeriesEarnedValueDataMember);
             this.RaisePropertyChanged(x => x.LineSeriesBurnedValueDataMember);
             this.RaisePropertyChanged(x => x.LineSeriesRemainingValueDataMember);
+            this.RaisePropertyChanged(x => x.LineSeriesRemainingActualValueDataMember);
 
             this.RaisePropertyChanged(x => x.BarSeriesCrosshairPattern);
             this.RaisePropertyChanged(x => x.AxisYPrimaryLabel);
@@ -718,6 +720,7 @@ namespace BluePrints.Common.ViewModel
         BenchmarkTarget Remaining_Benchmark { get; set; }
         string LineSeriesCurrentValueDataMember { get; set; }
         string LineSeriesRemainingValueDataMember { get; set; }
+        string LineSeriesRemainingActualValueDataMember { get; set; }
         string LineSeriesEarnedValueDataMember { get; set; }
         string LineSeriesBurnedValueDataMember { get; set; }
 
@@ -733,21 +736,41 @@ namespace BluePrints.Common.ViewModel
 
     public static class ISupportStatsSwitchingExtension
     {
-        private static string GetBenchmarPercentageString(bool isCost, BenchmarkTarget benchmarkTarget)
+        private static string GetBenchmarkPercentageString(bool isCost, BenchmarkTarget benchmarkTarget, bool normalise)
         {
             if(isCost)
             {
                 if (benchmarkTarget == BenchmarkTarget.Budget)
-                    return BindableBase.GetPropertyName(() => new PROJECT_Dashboard().Stats.Earned.CurrentPeriodCumulativeDataPoint.BudgetCostsPercentage);
+                {
+                    if (normalise)
+                        return BindableBase.GetPropertyName(() => new PROJECT_Dashboard().Stats.Earned.CurrentPeriodCumulativeDataPoint.BudgetCostsPercentage);
+                    else
+                        return BindableBase.GetPropertyName(() => new PROJECT_Dashboard().Stats.Earned.CurrentPeriodCumulativeDataPoint.UnnormalisedBudgetPercentage);
+                }
                 else
-                    return BindableBase.GetPropertyName(() => new PROJECT_Dashboard().Stats.Earned.CurrentPeriodCumulativeDataPoint.CostsPercentage);
+                {
+                    if(normalise)
+                        return BindableBase.GetPropertyName(() => new PROJECT_Dashboard().Stats.Earned.CurrentPeriodCumulativeDataPoint.CostsPercentage);
+                    else
+                        return BindableBase.GetPropertyName(() => new PROJECT_Dashboard().Stats.Earned.CurrentPeriodCumulativeDataPoint.UnnormalisedCostPercentage);
+                }
             }
             else
             {
                 if (benchmarkTarget == BenchmarkTarget.Budget)
-                    return BindableBase.GetPropertyName(() => new PROJECT_Dashboard().Stats.Earned.CurrentPeriodCumulativeDataPoint.BudgetUnitsPercentage);
+                {
+                    if (normalise)
+                        return BindableBase.GetPropertyName(() => new PROJECT_Dashboard().Stats.Earned.CurrentPeriodCumulativeDataPoint.BudgetUnitsPercentage);
+                    else
+                        return BindableBase.GetPropertyName(() => new PROJECT_Dashboard().Stats.Earned.CurrentPeriodCumulativeDataPoint.UnnormalisedBudgetUnitsPercentage);
+                }    
                 else
-                    return BindableBase.GetPropertyName(() => new PROJECT_Dashboard().Stats.Earned.CurrentPeriodCumulativeDataPoint.UnitsPercentage);
+                {
+                    if (normalise)
+                        return BindableBase.GetPropertyName(() => new PROJECT_Dashboard().Stats.Earned.CurrentPeriodCumulativeDataPoint.UnitsPercentage);
+                    else
+                        return BindableBase.GetPropertyName(() => new PROJECT_Dashboard().Stats.Earned.CurrentPeriodCumulativeDataPoint.UnnormalisedUnitsPercentage);
+                }
             }
         }
 
@@ -764,13 +787,14 @@ namespace BluePrints.Common.ViewModel
                 usePercentage = (bool)isPercentage;
             }
 
-            string default_budget_percentage_string = GetBenchmarPercentageString(viewType == DashboardViewType.Costs, BenchmarkTarget.Budget);
-            string default_current_percentage_string = GetBenchmarPercentageString(viewType == DashboardViewType.Costs, BenchmarkTarget.Current);
+            string default_budget_percentage_string = GetBenchmarkPercentageString(viewType == DashboardViewType.Costs, BenchmarkTarget.Budget, true);
+            string default_current_percentage_string = GetBenchmarkPercentageString(viewType == DashboardViewType.Costs, BenchmarkTarget.Current, true);
 
-            string current_percentage_string = GetBenchmarPercentageString(viewType == DashboardViewType.Costs, stats_switch.Current_Benchmark);
-            string earned_percentage_string = GetBenchmarPercentageString(viewType == DashboardViewType.Costs, stats_switch.Earned_Benchmark);
-            string burned_percentage_string = GetBenchmarPercentageString(viewType == DashboardViewType.Costs, stats_switch.Burned_Benchmark);
-            string remaining_percentage_string = GetBenchmarPercentageString(viewType == DashboardViewType.Costs, stats_switch.Remaining_Benchmark);
+            string current_percentage_string = GetBenchmarkPercentageString(viewType == DashboardViewType.Costs, stats_switch.Current_Benchmark, true);
+            string earned_percentage_string = GetBenchmarkPercentageString(viewType == DashboardViewType.Costs, stats_switch.Earned_Benchmark, true);
+            string burned_percentage_string = GetBenchmarkPercentageString(viewType == DashboardViewType.Costs, stats_switch.Burned_Benchmark, false);
+            string remaining_percentage_string = GetBenchmarkPercentageString(viewType == DashboardViewType.Costs, stats_switch.Remaining_Benchmark, true);
+            string remaining_actual_percentage_string = GetBenchmarkPercentageString(viewType == DashboardViewType.Costs, stats_switch.Remaining_Benchmark, false);
 
             if (!switchChartOnly)
             {
@@ -945,6 +969,7 @@ namespace BluePrints.Common.ViewModel
                 stats_switch.LineSeriesCurrentValueDataMember = current_percentage_string;
                 stats_switch.LineSeriesEarnedValueDataMember = earned_percentage_string;
                 stats_switch.LineSeriesRemainingValueDataMember = remaining_percentage_string;
+                stats_switch.LineSeriesRemainingActualValueDataMember = remaining_actual_percentage_string;
                 stats_switch.LineSeriesBurnedValueDataMember = burned_percentage_string;
                 stats_switch.AxisYSecondaryLabel = viewType == DashboardViewType.Costs ? "Costs % Complete" : viewType == DashboardViewType.Quantity ? "Quantity % Complete" : "Units % Complete";
                 stats_switch.AxisYSecondaryTextPattern = "{V:0%}";
