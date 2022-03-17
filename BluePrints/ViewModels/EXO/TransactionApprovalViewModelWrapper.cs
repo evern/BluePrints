@@ -45,10 +45,12 @@ namespace BluePrints.ViewModels
         {
             bool? isShowApprovableOnlyPreference = LoginCredentials.GetUserPreferenceBool(DataUtils.GetNameOf(() => UserPreferences.EXO_TransactionApprovalShowApprovableOnly));
             isShowApprovableOnly = isShowApprovableOnlyPreference == null ? false : (bool)isShowApprovableOnlyPreference;
+            CanApproveReject = LoginCredentials.getPermissionStatus(DataUtils.GetNameOf(() => NavigationResources.Permission_TransactionApproval_ApproveReject)) == LoginCredentials.PermissionStatus.All;
         }
 
         public CriteriaOperator ApproveFilterCriteria { get; set; }
         bool isShowApprovableOnly;
+        public bool CanApproveReject { get; set; }
         public bool IsShowApprovableOnly
         {
             get => isShowApprovableOnly;
@@ -146,6 +148,12 @@ namespace BluePrints.ViewModels
 
         public void ApproveTransaction()
         {
+            if(!CanApproveReject)
+            {
+                MessageBoxService.ShowMessage("You do not have authority to approve or reject transactions", "Unauthorised", MessageButton.OK);
+                return;
+            }
+
             foreach(TRANSACTION_APPROVAL projection in SelectedEntities)
             {
                 if(projection.APPROVEDON == null)
@@ -188,6 +196,12 @@ namespace BluePrints.ViewModels
 
         public override void BulkDelete()
         {
+            if (!CanApproveReject)
+            {
+                MessageBoxService.ShowMessage("You do not have authority to approve or reject transactions", "Unauthorised", MessageButton.OK);
+                return;
+            }
+
             if (MessageBoxService.ShowMessage("Are you sure you want to reject " + SelectedEntities.Count + " selected entries?", "Confirmation", MessageButton.OKCancel) == MessageResult.Cancel)
                 return;
 

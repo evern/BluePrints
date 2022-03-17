@@ -67,6 +67,9 @@ namespace BluePrints.Data
 
         public Guid? DELETEDBY { get; set; }
 
+        [StringLength(2000)]
+        public string COMMENTS { get; set; }
+
         public virtual PROJECT PROJECT { get; set; }
     }
 }

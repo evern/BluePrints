@@ -552,4 +552,7 @@
   <data name="Permission_DesignDeliverables_DeleteVariationDeliverables" xml:space="preserve">
     <value>Allow user to delete zero total hours deliverables attached to variations</value>
   </data>
+  <data name="Permission_TransactionApproval_ApproveReject" xml:space="preserve">
+    <value>Allow user to approve/reject transactions</value>
+  </data>
 </root>

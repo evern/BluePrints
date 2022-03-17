@@ -1364,5 +1364,14 @@ namespace BluePrints.Common.Resources {
                 return ResourceManager.GetString("Permission_Forecast_SaveProjectBudget", resourceCulture);
             }
         }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Allow user to approve/reject transactions.
+        /// </summary>
+        internal static string Permission_TransactionApproval_ApproveReject {
+            get {
+                return ResourceManager.GetString("Permission_TransactionApproval_ApproveReject", resourceCulture);
+            }
+        }
     }
 }

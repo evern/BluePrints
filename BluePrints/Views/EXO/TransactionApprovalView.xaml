@@ -132,6 +132,13 @@
                             </dxg:GridColumn>
                             <dxg:GridColumn Header="New Variation Code" FieldName="ViewVARIATION_CODE" HeaderToolTip="Variation code for approval" ReadOnly="True"/>
                         </dxg:GridControlBand>
+                        <dxg:GridControlBand x:Name="gcbComment" Header="Comments">
+                            <dxg:GridColumn Header="Comments" FieldName="COMMENTS" HeaderToolTip="Comment on transaction">
+                                <dxg:GridColumn.EditSettings>
+                                    <dxe:TextEditSettings TextWrapping="Wrap" AcceptsReturn="True"/>
+                                </dxg:GridColumn.EditSettings>
+                            </dxg:GridColumn>
+                        </dxg:GridControlBand>
                         <dxg:GridControlBand x:Name="gcbDetail" Header="Detail">
                             <dxg:GridColumn Header="Description" FieldName="JOB_TRANSACTION.DESCRIPTION" HeaderToolTip="Description" ReadOnly="True"/>
                             <dxg:GridColumn Header="Date" FieldName="JOB_TRANSACTION.TRANSDATE" HeaderToolTip="Transaction Date" ReadOnly="True"/>
