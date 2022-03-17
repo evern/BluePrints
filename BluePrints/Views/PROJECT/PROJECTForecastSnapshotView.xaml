@@ -379,6 +379,7 @@
                         <dxe:TextEditSettings DisplayFormat="d" IsEnabled="False" />
                     </dxb:BarEditItem.EditSettings>
                 </dxb:BarEditItem>
+                <dxb:BarCheckItem x:Name="biAutoHideSummary" Content="Hide Summary" IsChecked="{Binding IsAutoHideSummary, Mode=TwoWay}" IsEnabled="{Binding IsLoading, Converter={StaticResource BooleanNegationConverter}}" LargeGlyph="{dxc:DXImage Images/Actions/Hide_32x32.png}" RibbonStyle="SmallWithText" ToolTip="Toggle summary auto hidden preference" Glyph="{dxc:DXImage Images/Actions/Hide_16x16.png}" />
                 <dxb:BarButtonItem x:Name="biCleanUpOutdatedUncommitted" Command="{Binding CleanUpOutdatedUncommittedCommand}" Content="Clean Outdated Forecasts" LargeGlyph="{dx:DXImage Images/Actions/ClearTableStyle_32x32.png}" RibbonStyle="SmallWithText" ToolTip="Clean outdated uncommitted forecasts costs when it's lower than PO forecast costs" Glyph="{dxc:DXImage Images/Actions/ClearTableStyle_16x16.png}" />
             </dxb:BarManager.Items>
             <DockPanel>
@@ -398,6 +399,7 @@
                                     <dxb:BarButtonItemLink BarItemName="biCollapseAllGroups1" />
                                     <dxb:BarButtonItemLink BarItemName="biExportToExcel1" />
                                 </dxb:BarSubItem>
+                                <dxb:BarCheckItemLink BarItemName="biAutoHideSummary" />
                                 <!--Disabled because of memory issue-->
                                 <!--<dxb:BarCheckItemLink BarItemName="biWeeks" />-->
                             </dxr:RibbonPageGroup>
