@@ -373,7 +373,7 @@
                             </dxg:GridColumn>-->
                             <dxg:GridColumn FieldName="Entity.Entity.GUID_PROJECT_CONTRACTOR" Header="Contractor" SortMode="DisplayText">
                                 <dxg:GridColumn.EditSettings>
-                                    <dxe:ComboBoxEditSettings AutoComplete="True" DisplayMember="NAME" IsTextEditable="True" ItemsSource="{Binding PROJECT_CONTRACTORCollection}" ValueMember="GUID" />
+                                    <dxe:ComboBoxEditSettings AutoComplete="True" DisplayMember="NAME" IsTextEditable="True" NullValueButtonPlacement="EditBox" ItemsSource="{Binding PROJECT_CONTRACTORCollection}" ValueMember="GUID" />
                                 </dxg:GridColumn.EditSettings>
                             </dxg:GridColumn>
                         </dxg:GridControlBand>
