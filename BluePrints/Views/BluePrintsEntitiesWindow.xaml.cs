@@ -1,4 +1,5 @@
-﻿using DevExpress.Xpf.Core;
+﻿using BluePrints.ViewModels;
+using DevExpress.Xpf.Core;
 using System;
 using System.Runtime.InteropServices;
 using System.Windows;
@@ -207,6 +208,11 @@ namespace BluePrints.Views
                 this.Right = right;
                 this.Bottom = bottom;
             }
+        }
+
+        private void CheckBox_Checked(object sender, RoutedEventArgs e)
+        {
+            ((BluePrintsEntitiesViewModel)this.DataContext).FavouritesChecked(e);
         }
     }
 }

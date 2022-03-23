@@ -45,11 +45,13 @@ namespace BluePrints.ViewModels
         protected Dispatcher MainThreadDispatcher = Application.Current.Dispatcher;
         private CollectionViewModel<PROJECT, Guid, IBluePrintsEntitiesUnitOfWork> _projectCollectionViewModel;
         private DispatcherTimer onAfterNavigationLoadedDispatcher;
+        IBluePrintsEntitiesUnitOfWork bluePrintsEntitiesUnitOfWork;
         public bool isLoggingOut = true;
         protected BluePrintsEntitiesViewModel()
             : base(BluePrintsEntitiesUnitOfWorkSource.GetUnitOfWorkFactory())
         {
             initialize();
+            bluePrintsEntitiesUnitOfWork = CreateUnitOfWork();
         }
 
         public string OfficeName
@@ -228,6 +230,63 @@ namespace BluePrints.ViewModels
             XMLHelpers.UpdateSettingsXMLChangeLogDisplayVersion(BluePrintsDataUtils.GetClickOncePublishVersion());
         }
 
+        private IQueryable<USER_PINNED_PROJECT> getFavouriteProjects()
+        {
+            if (bluePrintsEntitiesUnitOfWork == null)
+                return null;
+
+            return bluePrintsEntitiesUnitOfWork.USER_PINNED_PROJECTS.Where(x => x.PROJECT != null && x.PROJECT.DELETED == null && x.GUID_USER == LoginCredentials.CurrentUserGuid);
+        }
+
+        private bool isFavouriteProject(Guid projectGuid)
+        {
+            if (bluePrintsEntitiesUnitOfWork == null)
+                return false;
+
+            return bluePrintsEntitiesUnitOfWork.USER_PINNED_PROJECTS.FirstOrDefault(x => x.GUID_PROJECT == projectGuid && x.GUID_USER == LoginCredentials.CurrentUserGuid) != null;
+        }
+
+        public void FavouritesChecked(RoutedEventArgs e)
+        {
+            CheckBox sourceCheckBox = (CheckBox)e.Source;
+            if (sourceCheckBox.IsChecked == null)
+                return;
+
+            BluePrintsEntitiesModuleDescription bluePrintsEntitiesModuleDescription = sourceCheckBox.DataContext as BluePrintsEntitiesModuleDescription;
+            if(bluePrintsEntitiesModuleDescription != null && bluePrintsEntitiesModuleDescription.PROJECT != null)
+            {
+                saveUserProject(bluePrintsEntitiesModuleDescription.PROJECT.GUID, !(bool)sourceCheckBox.IsChecked);
+            }
+        }
+
+        private void saveUserProject(Guid projectGuid, bool isDelete)
+        {
+            if (bluePrintsEntitiesUnitOfWork == null)
+                return;
+
+            Guid currentUserGuid = LoginCredentials.CurrentUserGuid;
+            if(projectGuid != null && currentUserGuid != null && currentUserGuid != Guid.Empty)
+            {
+                USER_PINNED_PROJECT findUSER_PINNED_PROJECT = bluePrintsEntitiesUnitOfWork.USER_PINNED_PROJECTS.FirstOrDefault(x => x.GUID_USER == currentUserGuid && x.GUID_PROJECT == projectGuid);
+                if(isDelete && findUSER_PINNED_PROJECT != null)
+                {
+                    bluePrintsEntitiesUnitOfWork.USER_PINNED_PROJECTS.Remove(findUSER_PINNED_PROJECT);
+                    bluePrintsEntitiesUnitOfWork.SaveChanges();
+                }
+                else if(findUSER_PINNED_PROJECT == null)
+                {
+                    findUSER_PINNED_PROJECT = new USER_PINNED_PROJECT();
+                    findUSER_PINNED_PROJECT.GUID = Guid.Empty;
+                    findUSER_PINNED_PROJECT.GUID_USER = currentUserGuid;
+                    findUSER_PINNED_PROJECT.GUID_PROJECT = projectGuid;
+                    findUSER_PINNED_PROJECT.CREATED = DateTime.Now;
+                    findUSER_PINNED_PROJECT.CREATEDBY = currentUserGuid;
+                    bluePrintsEntitiesUnitOfWork.USER_PINNED_PROJECTS.Add(findUSER_PINNED_PROJECT);
+                    bluePrintsEntitiesUnitOfWork.SaveChanges();
+                }
+            }
+        }
+
         private void CreateModules(IEnumerable<PROJECT> entities, bool isSecurityModule)
         {
             Modules.Add(dashboardCategoryDescription);
@@ -247,13 +306,14 @@ namespace BluePrints.ViewModels
             Modules.Add(projectCategoryHeader);
             if(!isSecurityModule)
             {
-                if (entities.Any(x => x.GUID_MANAGEUSER == LoginCredentials.CurrentUserGuid))
+                IQueryable<USER_PINNED_PROJECT> favouriteProjects = getFavouriteProjects();
+                if (entities.Any(x => x.GUID_MANAGEUSER == LoginCredentials.CurrentUserGuid) || favouriteProjects.Count() > 0)
                 {
                     IEnumerable<PROJECT> userProjects = entities.Where(x => x.GUID_MANAGEUSER == LoginCredentials.CurrentUserGuid);
-                    if (userProjects.Any(x => x.STATUS == ProjectStatus.Active))
+                    if (userProjects.Any(x => x.STATUS == ProjectStatus.Active) || favouriteProjects.Any(x => x.PROJECT.STATUS == ProjectStatus.Active))
                         projectCategoryHeader.ChildModules.Add(myProjectsCategoryDescription);
 
-                    if (userProjects.Any(x => x.STATUS == ProjectStatus.Tender))
+                    if (userProjects.Any(x => x.STATUS == ProjectStatus.Tender) || favouriteProjects.Any(x => x.PROJECT.STATUS == ProjectStatus.Tender))
                         projectCategoryHeader.ChildModules.Add(myTendersCategoryDescription);
                 }
             }
@@ -549,7 +609,7 @@ namespace BluePrints.ViewModels
             string parentId;
             BluePrintsEntitiesModuleDescription projectStatusDescription;
 
-            if ((entity.STATUS == ProjectStatus.Active || entity.STATUS == ProjectStatus.Tender) && entity.GUID_MANAGEUSER == LoginCredentials.CurrentUserGuid)
+            if ((entity.STATUS == ProjectStatus.Active || entity.STATUS == ProjectStatus.Tender) && (entity.GUID_MANAGEUSER == LoginCredentials.CurrentUserGuid || isFavouriteProject(entity.GUID)))
             {
                 if (entity.STATUS == ProjectStatus.Active)
                 {
@@ -603,7 +663,7 @@ namespace BluePrints.ViewModels
                 return;
             }
 
-            BluePrintsEntitiesModuleDescription projectModuleDescription = new BluePrintsEntitiesModuleDescription(DataUtils.GetNameOf(() => NavigationResources.Menu_Project_Dashboard), projectSpecificKey, parentId, projectTitle, "PROJECTView", new DualEntitiesParameter<PROJECT, Action<object>>(entity, NavigateCoreCommand), null, null, false, false, @"Programming\ProjectDirectory_16x16.png", projectModuleContextMenuItems, NavigateCoreCommand, false, null, "Double click to view S-Curve. Right click to access more items", entity);
+            BluePrintsEntitiesModuleDescription projectModuleDescription = new BluePrintsEntitiesModuleDescription(DataUtils.GetNameOf(() => NavigationResources.Menu_Project_Dashboard), projectSpecificKey, parentId, projectTitle, "PROJECTView", new DualEntitiesParameter<PROJECT, Action<object>>(entity, NavigateCoreCommand), null, null, false, false, @"Programming\ProjectDirectory_16x16.png", projectModuleContextMenuItems, NavigateCoreCommand, false, null, "Double click to view S-Curve. Right click to access more items", entity, true, isFavouriteProject(entity.GUID));
             moduleAdder(projectStatusDescription, projectModuleDescription, isSecurityModule, true);
             autoInvokeProjects.Add(projectModuleDescription);
 
@@ -828,8 +888,13 @@ namespace BluePrints.Common.ViewModel
         List<BluePrintsEntitiesModuleDescription> menuItems;
         Action<object> navigateAction;
         public bool Animate { get; set; }
+        public bool IsFavouriteIconVisible { get; set; }
+        public bool IsFavouriteChecked { get; set; }
+        public bool IsDefaultIconVisible { get; set; }
         public readonly PROJECT PROJECT;
-        public BluePrintsEntitiesModuleDescription(string id, string projectSpecificKey, string parentId, string title, string documentType = null, object documentParameter = null, ImageSource image = null, string navigationTitle = null, bool treeViewIsExpanded = true, bool showInCollapseMode = false, string imagePath = "", List<BluePrintsEntitiesModuleDescription> menuItems = null, Action<object> navigateAction = null, bool showAnimation = false, Func<string> preferredDocumentType = null, string toolTip = "", PROJECT project = null)
+        public ImageSource CheckedImage { get; set; }
+        public ImageSource UncheckedImage { get; set; }
+        public BluePrintsEntitiesModuleDescription(string id, string projectSpecificKey, string parentId, string title, string documentType = null, object documentParameter = null, ImageSource image = null, string navigationTitle = null, bool treeViewIsExpanded = true, bool showInCollapseMode = false, string imagePath = "", List<BluePrintsEntitiesModuleDescription> menuItems = null, Action<object> navigateAction = null, bool showAnimation = false, Func<string> preferredDocumentType = null, string toolTip = "", PROJECT project = null, bool isFavouriteIconVisible = false, bool isFavouriteChecked = false)
             : base(id, projectSpecificKey, parentId, title, documentType, documentParameter, image, navigationTitle, treeViewIsExpanded, showInCollapseMode, preferredDocumentType)
         {
             if (toolTip != string.Empty)
@@ -838,6 +903,16 @@ namespace BluePrints.Common.ViewModel
                 this.ToolTip = "Double Click to Open " + title;
             else
                 this.ToolTip = "Click Arrow on the Left to Expand Category";
+
+            this.IsFavouriteChecked = isFavouriteChecked;
+            this.IsFavouriteIconVisible = isFavouriteIconVisible;
+            if(IsFavouriteIconVisible)
+            {
+                CheckedImage = new BitmapImage(new Uri(@"/Common/Images/StarChecked.png", UriKind.Relative));
+                UncheckedImage = new BitmapImage(new Uri(@"/Common/Images/StarUnchecked.png", UriKind.Relative));
+            }
+
+            IsDefaultIconVisible = !this.IsFavouriteIconVisible;
 
             this.menuItems = menuItems;
             this.navigateAction = navigateAction;

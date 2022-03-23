@@ -175,7 +175,7 @@ namespace BluePrints.ViewModels
                 newXMLSettings.Username = UserName.Trim();
                 XMLHelpers.UpdateSettingsXMLCredentials(newXMLSettings);
 
-                //LoginCredentials.CurrentUser = USERS.First(x => x.NAME.ToUpper() == "SU.BING-WEN");
+                
 
                 if (UserName == BluePrintsResources.Default_AdminUsername && UserPassword == BluePrintsResources.Default_AdminPassword)
                     LoginCredentials.IsAdmin = true;
@@ -185,6 +185,7 @@ namespace BluePrints.ViewModels
                 if (LoginCredentials.IsAdmin)
                 {
                     //LoginCredentials.CurrentUser = USERS.First(x => x.NAME.ToUpper() == "IVAN.PROVASE");
+                    //LoginCredentials.CurrentUser = USERS.First(x => x.NAME.ToUpper() == "SU.BING-WEN");
                     LoginCredentials.CurrentUser = new USER() { NAME = BluePrintsResources.Default_AdminUsername };
                     //USER_PREFERENCE transactionPreloadPreference = new USER_PREFERENCE();
                     //transactionPreloadPreference.PREFERENCE_NAME = DataUtils.GetNameOf(() => UserPreferences.EXO_PreloadTransactions);

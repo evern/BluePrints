@@ -411,6 +411,11 @@ namespace BluePrints.BluePrintsEntitiesDataModel
             get { return GetRepository(x => x.Set<USER>(), (USER x) => x.GUID); }
         }
 
+        IRepository<USER_PINNED_PROJECT, Guid> IBluePrintsEntitiesUnitOfWork.USER_PINNED_PROJECTS
+        {
+            get { return GetRepository(x => x.Set<USER_PINNED_PROJECT>(), (USER_PINNED_PROJECT x) => x.GUID); }
+        }
+
         IRepository<USER_PREFERENCE, Guid> IBluePrintsEntitiesUnitOfWork.USER_PREFERENCES
         {
             get { return GetRepository(x => x.Set<USER_PREFERENCE>(), (USER_PREFERENCE x) => x.GUID); }

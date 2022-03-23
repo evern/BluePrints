@@ -412,6 +412,11 @@ namespace BluePrints.BluePrintsEntitiesDataModel
         IRepository<USER, Guid> USERS { get; }
 
         /// <summary>
+        /// The USER_PROJECT entities repository.
+        /// </summary>
+        IRepository<USER_PINNED_PROJECT, Guid> USER_PINNED_PROJECTS { get; }
+
+        /// <summary>
         /// The USER_PREFERENCE entities repository.
         /// </summary>
         IRepository<USER_PREFERENCE, Guid> USER_PREFERENCES { get; }

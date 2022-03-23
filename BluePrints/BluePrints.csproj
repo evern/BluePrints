@@ -983,6 +983,7 @@
     <Compile Include="EntityFramework\Annotations\JOBCOST_RESOURCE.cs" />
     <Compile Include="EntityFramework\Annotations\TRANSACTION_APPROVAL.cs" />
     <Compile Include="EntityFramework\Annotations\TRANSACTION_AUDIT.cs" />
+    <Compile Include="EntityFramework\Annotations\USER_PINNED_PROJECT.cs" />
     <Compile Include="EntityFramework\Annotations\X_DEPARTMENT.cs" />
     <Compile Include="EntityFramework\Annotations\X_JOBCOST_LINES_AUDIT.cs" />
     <Compile Include="EntityFramework\Annotations\X_EARNED_QUERY.cs" />
@@ -1079,6 +1080,7 @@
     <Compile Include="EntityFramework\BluePrintsData\REGISTER_TQ_ATTACHMENT.cs" />
     <Compile Include="EntityFramework\BluePrintsData\TRANSACTION_AUDIT.cs" />
     <Compile Include="EntityFramework\BluePrintsData\TRANSACTION_APPROVAL.cs" />
+    <Compile Include="EntityFramework\BluePrintsData\USER_PINNED_PROJECT.cs" />
     <Compile Include="EntityFramework\BluePrintsData\X_JOBCOST_LINES_AUDIT.cs" />
     <Compile Include="EntityFramework\BluePrintsData\X_REPORTABLES.cs" />
     <Compile Include="EntityFramework\BluePrintsData\X_EARNED_QUERY.cs" />
@@ -5597,6 +5599,8 @@
     <Resource Include="Common\Images\Australia-Flag.ico" />
     <Resource Include="Common\Images\Canada-Flag.png" />
     <Resource Include="Common\Images\USA-Flag.ico" />
+    <Resource Include="Common\Images\StarChecked.png" />
+    <Resource Include="Common\Images\StarUnchecked.png" />
     <Content Include="DatabaseScript.sql" />
   </ItemGroup>
   <ItemGroup>

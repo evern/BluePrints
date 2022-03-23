@@ -1,5 +1,5 @@
 ﻿<dx:DXWindow SnapsToDevicePixels="True" WindowStyle="None" 
-        xmlns:dxrt="http://schemas.devexpress.com/winfx/2008/xaml/ribbon/themekeys" WindowState="{Binding WindowState, Mode=TwoWay}" xmlns:local="clr-namespace:BaseModel.Misc;assembly=BaseModel" x:Class="BluePrints.Views.BluePrintsEntitiesWindow" Padding="-2,-2,-2,-2" xmlns="http://schemas.microsoft.com/netfx/2009/xaml/presentation" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" xmlns:d="http://schemas.microsoft.com/expression/blend/2008" xmlns:dx="http://schemas.devexpress.com/winfx/2008/xaml/core" xmlns:dxa="http://schemas.devexpress.com/winfx/2008/xaml/accordion" xmlns:dxb="http://schemas.devexpress.com/winfx/2008/xaml/bars" xmlns:dxd="http://schemas.devexpress.com/winfx/2008/xaml/docking" xmlns:dxdo="http://schemas.devexpress.com/winfx/2008/xaml/docking" xmlns:dxe="http://schemas.devexpress.com/winfx/2008/xaml/editors" xmlns:dxg="http://schemas.devexpress.com/winfx/2008/xaml/grid" xmlns:dxlc="http://schemas.devexpress.com/winfx/2008/xaml/layoutcontrol" xmlns:dxmvvm="http://schemas.devexpress.com/winfx/2008/xaml/mvvm" xmlns:dxn="http://schemas.devexpress.com/winfx/2008/xaml/navbar" xmlns:dxr="http://schemas.devexpress.com/winfx/2008/xaml/ribbon" xmlns:dxwui="http://schemas.devexpress.com/winfx/2008/xaml/windowsui" xmlns:dxwuin="http://schemas.devexpress.com/winfx/2008/xaml/windowsui/navigation" xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" xmlns:pfdata="clr-namespace:System.Windows.Data;assembly=PresentationFramework" xmlns:view="clr-namespace:BluePrints.Views" xmlns:viewmodel="clr-namespace:BluePrints.ViewModels" x:Name="userControl" d:DesignHeight="600" d:DesignWidth="800" DataContext="{dxmvvm:ViewModelSource viewmodel:BluePrintsEntitiesViewModel}" UseLayoutRounding="True" mc:Ignorable="d" SourceInitialized="Window_SourceInitialized">
+        xmlns:dxrt="http://schemas.devexpress.com/winfx/2008/xaml/ribbon/themekeys" xmlns:module="clr-namespace:BluePrints.Common.ViewModel"  WindowState="{Binding WindowState, Mode=TwoWay}" xmlns:local="clr-namespace:BaseModel.Misc;assembly=BaseModel" x:Class="BluePrints.Views.BluePrintsEntitiesWindow" Padding="-2,-2,-2,-2" xmlns="http://schemas.microsoft.com/netfx/2009/xaml/presentation" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" xmlns:d="http://schemas.microsoft.com/expression/blend/2008" xmlns:dx="http://schemas.devexpress.com/winfx/2008/xaml/core" xmlns:dxa="http://schemas.devexpress.com/winfx/2008/xaml/accordion" xmlns:dxb="http://schemas.devexpress.com/winfx/2008/xaml/bars" xmlns:dxd="http://schemas.devexpress.com/winfx/2008/xaml/docking" xmlns:dxdo="http://schemas.devexpress.com/winfx/2008/xaml/docking" xmlns:dxe="http://schemas.devexpress.com/winfx/2008/xaml/editors" xmlns:dxg="http://schemas.devexpress.com/winfx/2008/xaml/grid" xmlns:dxlc="http://schemas.devexpress.com/winfx/2008/xaml/layoutcontrol" xmlns:dxmvvm="http://schemas.devexpress.com/winfx/2008/xaml/mvvm" xmlns:dxn="http://schemas.devexpress.com/winfx/2008/xaml/navbar" xmlns:dxr="http://schemas.devexpress.com/winfx/2008/xaml/ribbon" xmlns:dxwui="http://schemas.devexpress.com/winfx/2008/xaml/windowsui" xmlns:dxwuin="http://schemas.devexpress.com/winfx/2008/xaml/windowsui/navigation" xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" xmlns:pfdata="clr-namespace:System.Windows.Data;assembly=PresentationFramework" xmlns:view="clr-namespace:BluePrints.Views" xmlns:viewmodel="clr-namespace:BluePrints.ViewModels" x:Name="userControl" d:DesignHeight="600" d:DesignWidth="800" DataContext="{dxmvvm:ViewModelSource viewmodel:BluePrintsEntitiesViewModel}" UseLayoutRounding="True" mc:Ignorable="d" SourceInitialized="Window_SourceInitialized">
     <dxmvvm:Interaction.Behaviors>
         <dx:DXMessageBoxService />
         <dxmvvm:NotificationService x:Name="AppNotificationService" CustomNotificationPosition="BottomRight" UseWin8NotificationsIfAvailable="False" />
@@ -15,6 +15,29 @@
             <ItemsPanelTemplate x:Key="{dxrt:RibbonThemeKey ResourceKey=PagesControlItemsPanelTemplate, IsThemeIndependent=True}">
                 <local:CustomRibbonPagesItemsPanel />
             </ItemsPanelTemplate>
+            <Style x:Key="styleCustomCheckBox" TargetType="{x:Type CheckBox}">
+                <Setter Property="Template">
+                    <Setter.Value>
+                        <ControlTemplate TargetType="{x:Type CheckBox}">
+                            <Image x:Name="checkBoxImage" />
+                            <ControlTemplate.Triggers>
+                                <Trigger Property="IsChecked" Value="True">
+                                    <Setter TargetName="checkBoxImage" Property="Source" Value="{Binding CheckedImage}"/>
+                                </Trigger>
+                                <Trigger Property="IsChecked" Value="False">
+                                    <Setter TargetName="checkBoxImage" Property="Source" Value="{Binding UncheckedImage}"/>
+                                </Trigger>
+                            </ControlTemplate.Triggers>
+                        </ControlTemplate>
+                    </Setter.Value>
+                </Setter>
+            </Style>
+            <HierarchicalDataTemplate x:Key="HierarchicalDataTemplate" DataType="{x:Type module:BluePrintsEntitiesModuleDescription}" ItemsSource="{Binding Modules}">
+                <DockPanel>
+                    <CheckBox Margin="0, 0, 3, 0" Width="16" Height="16" IsChecked="{Binding IsFavouriteChecked}" Visibility="{Binding IsFavouriteIconVisible, Converter={dxmvvm:BooleanToVisibilityConverter}}" Style="{StaticResource styleCustomCheckBox}" ToolTip="Check to add to favourite" Checked="CheckBox_Checked" Unchecked="CheckBox_Checked" />
+                    <TextBlock VerticalAlignment="Center" Text="{Binding NavigationTitle}" />
+                </DockPanel>
+            </HierarchicalDataTemplate>
             <DataTemplate x:Key="NotificationTemplate">
                 <TextBlock Text="{Binding Caption}">
                     <TextBlock.RenderTransform>
@@ -108,7 +131,7 @@
         </dxmvvm:Interaction.Behaviors>
         <dxb:BarManager>
             <dxb:BarManager.Items>
-                <dxb:BarButtonItem x:Name="biRefreshProjectNavigations" Command="{Binding DataContext.RefreshProjectNavigationsCommand, ElementName=userControl}" Content="Refresh Left Panel" Glyph="{dx:DXImage Image=Refresh_16x16.png}" LargeGlyph="{dx:DXImage Image=Refresh_32x32.png}" ToolTip="Refresh Right Navigation Panel" />
+                <dxb:BarButtonItem x:Name="biRefreshProjectNavigations" Command="{Binding DataContext.RefreshProjectNavigationsCommand, ElementName=userControl}" Content="Refresh Menu Items" Glyph="{dx:DXImage Image=Refresh_16x16.png}" LargeGlyph="{dx:DXImage Image=Refresh_32x32.png}" ToolTip="Refresh Right Navigation Panel" />
                 <dxb:BarButtonItem x:Name="biSyncDatabase" IsVisible="{Binding DataContext.IsSyncDatabaseVisible, ElementName=userControl}" Command="{Binding DataContext.SyncDatabaseCommand, ElementName=userControl}" Content="Sync databases" Glyph="{dx:DXImage Image=RefreshPivotTable_16x16.png}" LargeGlyph="{dx:DXImage Image=RefreshPivotTable_32x32.png}" ToolTip="Sync Database" />
                 <dxb:BarButtonItem x:Name="biLogOut" Command="{Binding DataContext.LogOutCommand, ElementName=userControl}" Content="Log Out" Glyph="{dx:DXImage Image=Action_Exit.png}" LargeGlyph="{dx:DXImage Image=Action_Exit_32x32.png}" ToolTip="Clear username and password and exit to login screen" />
                 <dxr:RibbonGalleryBarItem x:Name="biGalleryItems" Glyph="{dx:DXImage Image=Colors_16x16.png}" LargeGlyph="{dx:DXImage Image=Colors_32x32.png}" ToolTip="Change theme">
@@ -177,7 +200,7 @@
                             <Setter Property="GlyphTemplate">
                                 <Setter.Value>
                                     <DataTemplate>
-                                        <Image Width="16" Height="16" SnapsToDevicePixels="True" Source="{Binding}" />
+                                        <Image Width="16" Height="16" SnapsToDevicePixels="True" Source="{Binding}" Visibility="{Binding DataContext.IsDefaultIconVisible, Converter={dxmvvm:BooleanToVisibilityConverter}, RelativeSource={RelativeSource AncestorType={x:Type dxa:AccordionItem}}}"/>
                                     </DataTemplate>
                                 </Setter.Value>
                             </Setter>
@@ -186,6 +209,7 @@
                             <Setter Property="ShowInCollapsedMode" Value="{Binding ShowInCollapseMode}" />
                             <Setter Property="ContextMenu" Value="{Binding Menu}" />
                             <Setter Property="ToolTip" Value="{Binding ToolTip}" />
+                            <Setter Property="ItemTemplate" Value="{StaticResource HierarchicalDataTemplate}"/>
                         </Style>
                     </dxa:AccordionControl.ItemContainerStyle>
                 </dxa:AccordionControl>
@@ -193,7 +217,6 @@
                     <dxdo:LayoutGroup Margin="0" Padding="0" BorderThickness="0" ItemHeight="*" Orientation="Horizontal">
                         <dxdo:LayoutGroup Margin="0" Padding="0" BorderThickness="0">
                             <!--<dxdo:LayoutPanel MaxWidth="300" ItemWidth="Auto">
-
                         </dxdo:LayoutPanel>-->
                             <dxdo:DocumentGroup x:Name="documentGroup" Margin="0" Padding="0" BorderThickness="0" DestroyContentOnTabSwitching="False" TabContentCacheMode="CacheAllTabs">
                                 <dxmvvm:Interaction.Behaviors>

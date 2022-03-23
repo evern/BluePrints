@@ -92,6 +92,7 @@ namespace BluePrints.Data
         public virtual DbSet<UOM> UOM { get; set; }
         public virtual DbSet<USER> USER { get; set; }
         public virtual DbSet<USER_PREFERENCE> USER_PREFERENCE { get; set; }
+        public virtual DbSet<USER_PINNED_PROJECT> USER_PINNED_PROJECT { get; set; }
         public virtual DbSet<VARIATION> VARIATION { get; set; }
         public virtual DbSet<VARIATION_ITEM> VARIATION_ITEM { get; set; }
         public virtual DbSet<SUBJOB> SUBJOB { get; set; }
@@ -809,6 +810,12 @@ namespace BluePrints.Data
                 .HasForeignKey(e => e.GUID_PROJECT)
                 .WillCascadeOnDelete(false);
 
+            modelBuilder.Entity<PROJECT>()
+                .HasMany(e => e.USER_PINNED_PROJECT)
+                .WithRequired(e => e.PROJECT)
+                .HasForeignKey(e => e.GUID_PROJECT)
+                .WillCascadeOnDelete(false);
+
             modelBuilder.Entity<PROJECT_CONTRACTOR>()
                 .HasMany(e => e.BASELINE_ITEM)
                 .WithRequired(e => e.PROJECT_CONTRACTOR)
@@ -1056,6 +1063,12 @@ namespace BluePrints.Data
 
             modelBuilder.Entity<USER>()
                 .HasMany(e => e.USER_PREFERENCE)
+                .WithRequired(e => e.USER)
+                .HasForeignKey(e => e.GUID_USER)
+                .WillCascadeOnDelete(false);
+
+            modelBuilder.Entity<USER>()
+                .HasMany(e => e.USER_PINNED_PROJECT)
                 .WithRequired(e => e.USER)
                 .HasForeignKey(e => e.GUID_USER)
                 .WillCascadeOnDelete(false);
