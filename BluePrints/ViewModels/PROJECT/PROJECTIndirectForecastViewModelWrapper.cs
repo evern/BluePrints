@@ -36,9 +36,7 @@ using System.Windows.Threading;
 
 namespace BluePrints.ViewModels
 {
-    public class PROJECTIndirectForecastViewModelWrapper :
-        BluePrintsEntitiesCollectionWrapper
-        <FORECAST_JOB, FORECAST_JOB, Guid, IBluePrintsEntitiesUnitOfWork>
+    public class PROJECTIndirectForecastViewModelWrapper : BluePrintsEntitiesCollectionWrapper<FORECAST_JOB, FORECAST_JOB, Guid, IBluePrintsEntitiesUnitOfWork>
     {
         /// <summary>
         /// Creates a new instance of FORECAST_JOBCollectionViewModelWrapper as a POCO view model.
@@ -49,7 +47,6 @@ namespace BluePrints.ViewModels
         {
             return ViewModelSource.Create(() => new PROJECTIndirectForecastViewModelWrapper(unitOfWorkFactory));
         }
-
 
         /// <summary>
         /// Initializes a new instance of the FORECAST_JOBCollectionViewModelWrapper class.
@@ -315,7 +312,7 @@ namespace BluePrints.ViewModels
             }
         }
 
-        DataTable dataPointsTable = null;
+        protected DataTable dataPointsTable = null;
         public DataTable DataPointsTable
         {
             get
@@ -327,7 +324,7 @@ namespace BluePrints.ViewModels
             }
         }
         
-        private void updateDataPointsTable()
+        protected virtual void updateDataPointsTable()
         {
             GridControlService.GridControl.BeginDataUpdate();
             dataPointsTable = new DataTable();
@@ -393,7 +390,6 @@ namespace BluePrints.ViewModels
                 }
 
                 updateRowReadOnlyAttributes(newRow);
-
                 LoadingScreenManager.Progress();
             }
 
@@ -413,7 +409,7 @@ namespace BluePrints.ViewModels
             LoadingScreenManager.CloseLoadingScreen();
         }
 
-        private void mapJobDataToDatatable(DataRow row)
+        protected void mapJobDataToDatatable(DataRow row)
         {
             FORECAST_JOB forecastJob = (FORECAST_JOB)row[columnForecastJob];
             row[columnDescription] = forecastJob.DESCRIPTION;
@@ -433,7 +429,7 @@ namespace BluePrints.ViewModels
             forecastJob.UOM = row[columnUOM].ToString();
         }
 
-        private void updateRowReadOnlyAttributes(DataRow row, bool isNewRow = false)
+        protected void updateRowReadOnlyAttributes(DataRow row, bool isNewRow = false)
         {
             if (row[columnProjection] == DBNull.Value)
                 return;
@@ -1143,23 +1139,23 @@ namespace BluePrints.ViewModels
             return null;
         }
 
-        static string columnFullCode = "FullCode";
-        static string columnForecastJob = BluePrintsResources.Forecast_ForecastJobColumn;
-        static string columnCommodityName = "CommodityName";
-        static string columnProjection = "Projection";
-        static string columnStockItemName = "StockItemName";
-        static string columnStockItemGroup2 = "StockItemGroup2";
-        static string columnRecommendedForecastRate = "RecommendedRate";
-        static string columnTotalHours = "TOTAL_HOURS";
-        static string columnTotalCosts = "TOTAL_COSTS";
-        static string columnDescription = "Description";
-        static string columnStockItem = "StockItem";
-        static string columnStockItemErrorImageWidth = "StockItemErrorImageWidth";
-        static string columnReference = "Reference";
-        static string columnNote = "Note";
-        static string columnUOM = BluePrintsResources.ForecastIndirectUOMColumn;
-        static string columnForecastRate = columnForecastJob + "." + BindableBase.GetPropertyName(() => new FORECAST_JOB().FORECAST_RATE);
-        private void InitializeColumnSource(ObservableCollection<ColumnDescriptor> columns, ObservableCollection<SummaryDescriptor> summaries, List<DateTime> alignedDates, bool isChild)
+        protected static string columnFullCode = "FullCode";
+        protected static string columnForecastJob = BluePrintsResources.Forecast_ForecastJobColumn;
+        protected static string columnCommodityName = "CommodityName";
+        protected static string columnProjection = "Projection";
+        protected static string columnStockItemName = "StockItemName";
+        protected static string columnStockItemGroup2 = "StockItemGroup2";
+        protected static string columnRecommendedForecastRate = "RecommendedRate";
+        protected static string columnTotalHours = "TOTAL_HOURS";
+        protected static string columnTotalCosts = "TOTAL_COSTS";
+        protected static string columnDescription = "Description";
+        protected static string columnStockItem = "StockItem";
+        protected static string columnStockItemErrorImageWidth = "StockItemErrorImageWidth";
+        protected static string columnReference = "Reference";
+        protected static string columnNote = "Note";
+        protected static string columnUOM = BluePrintsResources.ForecastIndirectUOMColumn;
+        protected static string columnForecastRate = columnForecastJob + "." + BindableBase.GetPropertyName(() => new FORECAST_JOB().FORECAST_RATE);
+        protected virtual void InitializeColumnSource(ObservableCollection<ColumnDescriptor> columns, ObservableCollection<SummaryDescriptor> summaries, List<DateTime> alignedDates, bool isChild)
         {
             columns.Clear();
             summaries.Clear();
@@ -1193,7 +1189,8 @@ namespace BluePrints.ViewModels
                 }
             }
         }
-        private List<DateTime> generateDates()
+
+        protected virtual List<DateTime> generateDates()
         {
             return ChronologicalHelpers.GenerateEndDatesCollection((DateTime)FixedDataDate, FixedEndDate, true);
         }

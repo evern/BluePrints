@@ -808,6 +808,15 @@ namespace BluePrints.Common.Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Show indirect forecast and actuals history.
+        /// </summary>
+        internal static string Menu_Project_Forecast_Indirect_History {
+            get {
+                return ResourceManager.GetString("Menu_Project_Forecast_Indirect_History", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Project PO forecast maintenance menu.
         /// </summary>
         internal static string Menu_Project_Forecast_PO {

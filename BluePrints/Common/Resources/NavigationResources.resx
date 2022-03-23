@@ -555,4 +555,7 @@
   <data name="Permission_TransactionApproval_ApproveReject" xml:space="preserve">
     <value>Allow user to approve/reject transactions</value>
   </data>
+  <data name="Menu_Project_Forecast_Indirect_History" xml:space="preserve">
+    <value>Show indirect forecast and actuals history</value>
+  </data>
 </root>
