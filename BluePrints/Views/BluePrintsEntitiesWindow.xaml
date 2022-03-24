@@ -31,7 +31,7 @@
                         </ControlTemplate>
                     </Setter.Value>
                 </Setter>
-                <Setter Property="ToolTip" Value="Click to add to My Projects" />
+                <Setter Property="ToolTip" Value="Click to add to My Projects or My Tenders" />
                 <Style.Triggers>
                     <DataTrigger Binding="{Binding IsChecked, RelativeSource={RelativeSource Self}}" Value="True">
                         <Setter Property="ToolTip" Value="Click to remove from My Projects" />
