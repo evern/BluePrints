@@ -317,7 +317,7 @@ namespace BluePrints.ViewModels
                     if (userProjects.Any(x => x.STATUS == ProjectStatus.Active) || favouriteProjects.Any(x => x.PROJECT.STATUS == ProjectStatus.Active))
                         projectCategoryHeader.ChildModules.Add(myProjectsCategoryDescription);
 
-                    if (userProjects.Any(x => x.STATUS == ProjectStatus.Tender) || favouriteProjects.Any(x => x.PROJECT.STATUS == ProjectStatus.Tender))
+                    if (userProjects.Any(x => x.STATUS == ProjectStatus.Tender) || favouriteProjects.Any(x => x.PROJECT.STATUS == ProjectStatus.Tender) || favouriteProjects.Any(x => x.PROJECT.STATUS == ProjectStatus.TenderSubmitted))
                         projectCategoryHeader.ChildModules.Add(myTendersCategoryDescription);
                 }
             }
@@ -615,7 +615,20 @@ namespace BluePrints.ViewModels
             string parentId;
             BluePrintsEntitiesModuleDescription projectStatusDescription;
 
-            if ((entity.STATUS == ProjectStatus.Active || entity.STATUS == ProjectStatus.Tender) && (entity.GUID_MANAGEUSER == LoginCredentials.CurrentUserGuid || isFavouriteProject(entity.GUID)))
+            if(isFavouriteProject(entity.GUID))
+            {
+                if (entity.STATUS == ProjectStatus.Active || entity.STATUS == ProjectStatus.Lead)
+                {
+                    projectStatusDescription = myProjectsCategoryDescription;
+                    parentId = DataUtils.GetNameOf(() => NavigationResources.Category_UserProjects);
+                }
+                else
+                {
+                    projectStatusDescription = myTendersCategoryDescription;
+                    parentId = DataUtils.GetNameOf(() => NavigationResources.Category_UserTenders);
+                }
+            }
+            else if ((entity.STATUS == ProjectStatus.Active || entity.STATUS == ProjectStatus.Tender) && entity.GUID_MANAGEUSER == LoginCredentials.CurrentUserGuid)
             {
                 if (entity.STATUS == ProjectStatus.Active)
                 {
