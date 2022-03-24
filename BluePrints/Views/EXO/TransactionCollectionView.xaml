@@ -265,6 +265,7 @@
                                     <dxe:ComboBoxEditSettings AutoComplete="True" DisplayMember="GROUPNAME" IsTextEditable="True" ItemsSource="{Binding STOCK_GROUP2SCollection}" ValueMember="GROUPNO" />
                                 </dxg:GridColumn.EditSettings>
                             </dxg:GridColumn>
+                            <dxg:GridColumn FieldName="PAYSTATUS" Header="Paid" ReadOnly="true" />
                         </dxg:GridControlBand>
                     </dxg:GridControl.Bands>
                     <dxg:GridControl.GroupSummary>

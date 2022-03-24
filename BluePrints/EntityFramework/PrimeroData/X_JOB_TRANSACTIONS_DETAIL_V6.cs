@@ -133,5 +133,8 @@
 
         [StringLength(100)]
         public string OLD_VARIATION_CODE { get; set; }
+
+        [StringLength(5)]
+        public string PAYSTATUS { get; set; }
     }
 }
