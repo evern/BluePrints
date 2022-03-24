@@ -47,6 +47,7 @@ namespace BluePrints.ViewModels
         private DispatcherTimer onAfterNavigationLoadedDispatcher;
         IBluePrintsEntitiesUnitOfWork bluePrintsEntitiesUnitOfWork;
         public bool isLoggingOut = true;
+        public bool AnimateMenuRefreshButton { get; set; }
         protected BluePrintsEntitiesViewModel()
             : base(BluePrintsEntitiesUnitOfWorkSource.GetUnitOfWorkFactory())
         {
@@ -257,6 +258,9 @@ namespace BluePrints.ViewModels
             {
                 saveUserProject(bluePrintsEntitiesModuleDescription.PROJECT.GUID, !(bool)sourceCheckBox.IsChecked);
             }
+
+            AnimateMenuRefreshButton = true;
+            this.RaisePropertyChanged(x => x.AnimateMenuRefreshButton);
         }
 
         private void saveUserProject(Guid projectGuid, bool isDelete)
@@ -417,6 +421,8 @@ namespace BluePrints.ViewModels
             if (_projectCollectionViewModel == null)
                 return;
 
+            AnimateMenuRefreshButton = false;
+            this.RaisePropertyChanged(x => x.AnimateMenuRefreshButton);
             clearAllProjectModules();
             CreateModules(_projectCollectionViewModel.Entities, false);
         }
@@ -912,6 +918,7 @@ namespace BluePrints.Common.ViewModel
                 UncheckedImage = new BitmapImage(new Uri(@"/Common/Images/StarUnchecked.png", UriKind.Relative));
             }
 
+            //default icon will be hidden when favourite is visible
             IsDefaultIconVisible = !this.IsFavouriteIconVisible;
 
             this.menuItems = menuItems;

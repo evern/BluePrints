@@ -38,6 +38,31 @@
                     <TextBlock VerticalAlignment="Center" Text="{Binding NavigationTitle}" />
                 </DockPanel>
             </HierarchicalDataTemplate>
+            <DataTemplate x:Key="BarButtonContentTemplate">
+                <TextBlock x:Name="txtTextBlock" Text="{Binding }" Background="Transparent"/>
+                <DataTemplate.Triggers>
+                    <DataTrigger Binding="{Binding DataContext.AnimateMenuRefreshButton, RelativeSource={RelativeSource AncestorType=dx:DXWindow}}" Value="True">
+                        <DataTrigger.EnterActions>
+                            <BeginStoryboard Name="glow">
+                                <Storyboard>
+                                    <ColorAnimation 
+                                        BeginTime="00:00:00"
+                                        Duration="0:0:1" 
+                                        RepeatBehavior="Forever" 
+                                        To="PaleGreen" 
+                                        AutoReverse="True"
+                                        Storyboard.TargetName="txtTextBlock" 
+                                        Storyboard.TargetProperty="(TextBlock.Background).(SolidColorBrush.Color)">
+                                    </ColorAnimation>
+                                </Storyboard>
+                            </BeginStoryboard>
+                        </DataTrigger.EnterActions>
+                        <DataTrigger.ExitActions>
+                            <StopStoryboard BeginStoryboardName="glow" />
+                        </DataTrigger.ExitActions>
+                    </DataTrigger>
+                </DataTemplate.Triggers>
+            </DataTemplate>
             <DataTemplate x:Key="NotificationTemplate">
                 <TextBlock Text="{Binding Caption}">
                     <TextBlock.RenderTransform>
@@ -131,7 +156,7 @@
         </dxmvvm:Interaction.Behaviors>
         <dxb:BarManager>
             <dxb:BarManager.Items>
-                <dxb:BarButtonItem x:Name="biRefreshProjectNavigations" Command="{Binding DataContext.RefreshProjectNavigationsCommand, ElementName=userControl}" Content="Refresh Menu Items" Glyph="{dx:DXImage Image=Refresh_16x16.png}" LargeGlyph="{dx:DXImage Image=Refresh_32x32.png}" ToolTip="Refresh Right Navigation Panel" />
+                <dxb:BarButtonItem Name="biRefreshProjectNavigations" ContentTemplate="{StaticResource BarButtonContentTemplate}" Command="{Binding DataContext.RefreshProjectNavigationsCommand, ElementName=userControl}" Content="Refresh Menu Items" Glyph="{dx:DXImage Image=Refresh_16x16.png}" LargeGlyph="{dx:DXImage Image=Refresh_32x32.png}" ToolTip="Refresh Right Navigation Panel" />
                 <dxb:BarButtonItem x:Name="biSyncDatabase" IsVisible="{Binding DataContext.IsSyncDatabaseVisible, ElementName=userControl}" Command="{Binding DataContext.SyncDatabaseCommand, ElementName=userControl}" Content="Sync databases" Glyph="{dx:DXImage Image=RefreshPivotTable_16x16.png}" LargeGlyph="{dx:DXImage Image=RefreshPivotTable_32x32.png}" ToolTip="Sync Database" />
                 <dxb:BarButtonItem x:Name="biLogOut" Command="{Binding DataContext.LogOutCommand, ElementName=userControl}" Content="Log Out" Glyph="{dx:DXImage Image=Action_Exit.png}" LargeGlyph="{dx:DXImage Image=Action_Exit_32x32.png}" ToolTip="Clear username and password and exit to login screen" />
                 <dxr:RibbonGalleryBarItem x:Name="biGalleryItems" Glyph="{dx:DXImage Image=Colors_16x16.png}" LargeGlyph="{dx:DXImage Image=Colors_32x32.png}" ToolTip="Change theme">
