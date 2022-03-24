@@ -31,10 +31,16 @@
                         </ControlTemplate>
                     </Setter.Value>
                 </Setter>
+                <Setter Property="ToolTip" Value="Click to add to My Projects" />
+                <Style.Triggers>
+                    <DataTrigger Binding="{Binding IsChecked, RelativeSource={RelativeSource Self}}" Value="True">
+                        <Setter Property="ToolTip" Value="Click to remove from My Projects" />
+                    </DataTrigger>
+                </Style.Triggers>
             </Style>
             <HierarchicalDataTemplate x:Key="HierarchicalDataTemplate" DataType="{x:Type module:BluePrintsEntitiesModuleDescription}" ItemsSource="{Binding Modules}">
                 <DockPanel>
-                    <CheckBox Margin="0, 0, 3, 0" Width="16" Height="16" IsChecked="{Binding IsFavouriteChecked}" Visibility="{Binding IsFavouriteIconVisible, Converter={dxmvvm:BooleanToVisibilityConverter}}" Style="{StaticResource styleCustomCheckBox}" ToolTip="Check to add to favourite" Checked="CheckBox_Checked" Unchecked="CheckBox_Checked" />
+                    <CheckBox Margin="0, 0, 3, 0" Width="16" Height="16" IsChecked="{Binding IsFavouriteChecked}" Visibility="{Binding IsFavouriteIconVisible, Converter={dxmvvm:BooleanToVisibilityConverter}}" Style="{StaticResource styleCustomCheckBox}" Checked="CheckBox_Checked" Unchecked="CheckBox_Checked" />
                     <TextBlock VerticalAlignment="Center" Text="{Binding NavigationTitle}" />
                 </DockPanel>
             </HierarchicalDataTemplate>
