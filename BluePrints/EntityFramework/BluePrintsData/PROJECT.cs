@@ -118,6 +118,8 @@
 
         public Guid? SNAPSHOT_LAST_UPDATED_BY { get; set; }
 
+        public decimal? TENDER_BUDGET { get; set; }
+
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
         public virtual ICollection<DAYWORK> DAYWORK { get; set; }
 

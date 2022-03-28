@@ -700,7 +700,6 @@ namespace BluePrints.ViewModels
             string projectTitle = entity.NUMBER + " " + entity.NAME;
             string childTitlePrefix = "[" + entity.NUMBER + "] ";
             string projectSpecificKey = entity.GUID.ToString();
-
             BluePrintsEntitiesModuleDescription design_category_description = new BluePrintsEntitiesModuleDescription(DataUtils.GetNameOf(() => NavigationResources.Category_Project_Design), projectSpecificKey, projectModuleDescription.NavigationId, "Design", null, null, null, null, false, false, @"Miscellaneous\Design_16x16.png");
             BluePrintsEntitiesModuleDescription construct_category_description = new BluePrintsEntitiesModuleDescription(DataUtils.GetNameOf(() => NavigationResources.Category_Project_Construct), projectSpecificKey, projectModuleDescription.NavigationId, "Construct", null, null, null, null, false, false, @"Programming\IDE_16x16.png");
             BluePrintsEntitiesModuleDescription construct_progress_category_description = new BluePrintsEntitiesModuleDescription(DataUtils.GetNameOf(() => NavigationResources.Category_Project_Construct_Progress), projectSpecificKey, projectModuleDescription.NavigationId, "Progress", null, null, null, null, false, false, @"Chart\Column2_16x16.png");

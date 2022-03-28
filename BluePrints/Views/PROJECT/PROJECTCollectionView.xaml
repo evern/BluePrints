@@ -141,6 +141,13 @@
                             </dxg:GridColumn>
                         </dxg:GridControlBand>
                         <dxg:GridControlBand Header="Tender">
+                            <dxg:GridColumn FieldName="TENDER_BUDGET" Header="Tender Budget">
+                                <dxg:GridColumn.CellTemplate>
+                                    <DataTemplate>
+                                        <dxe:SpinEdit Name="PART_Editor" Increment="1" IsEnabled="{Binding RowData.Row.IsTender}" Mask="c2" MaskType="Numeric" MaskUseAsDisplayFormat="True" MinValue="0" />
+                                    </DataTemplate>
+                                </dxg:GridColumn.CellTemplate>
+                            </dxg:GridColumn>
                             <dxg:GridColumn FieldName="TENDER_CHANCE_OF_WIN" Header="Chance of Win" HeaderToolTip="For tendering use only. Chance of winning in %">
                                 <dxg:GridColumn.CellTemplate>
                                     <DataTemplate>
