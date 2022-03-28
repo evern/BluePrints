@@ -317,8 +317,14 @@ namespace BluePrints.ViewModels
                     if (userProjects.Any(x => x.STATUS == ProjectStatus.Active) || favouriteProjects.Any(x => x.PROJECT.STATUS == ProjectStatus.Active))
                         projectCategoryHeader.ChildModules.Add(myProjectsCategoryDescription);
 
-                    if (userProjects.Any(x => x.STATUS == ProjectStatus.Tender) || favouriteProjects.Any(x => x.PROJECT.STATUS == ProjectStatus.Tender) || favouriteProjects.Any(x => x.PROJECT.STATUS == ProjectStatus.TenderSubmitted))
+                    if (userProjects.Any(x => x.STATUS == ProjectStatus.TenderSubmitted) || favouriteProjects.Any(x => x.PROJECT.STATUS == ProjectStatus.TenderSubmitted))
                         projectCategoryHeader.ChildModules.Add(myTendersCategoryDescription);
+
+                    if (userProjects.Any(x => x.STATUS == ProjectStatus.Tender) || favouriteProjects.Any(x => x.PROJECT.STATUS == ProjectStatus.Tender))
+                        projectCategoryHeader.ChildModules.Add(myWIPTendersCategoryDescription);
+
+                    if (userProjects.Any(x => x.STATUS == ProjectStatus.Lead) || favouriteProjects.Any(x => x.PROJECT.STATUS == ProjectStatus.Lead))
+                        projectCategoryHeader.ChildModules.Add(myLeadsCategoryDescription);
                 }
             }
 
@@ -479,6 +485,8 @@ namespace BluePrints.ViewModels
         BluePrintsEntitiesModuleDescription projectCategoryDescription;
         BluePrintsEntitiesModuleDescription myProjectsCategoryDescription;
         BluePrintsEntitiesModuleDescription myTendersCategoryDescription;
+        BluePrintsEntitiesModuleDescription myWIPTendersCategoryDescription;
+        BluePrintsEntitiesModuleDescription myLeadsCategoryDescription;
         BluePrintsEntitiesModuleDescription projectActiveCategoryDescription;
         BluePrintsEntitiesModuleDescription projectSubmittedTenderCategoryDescription;
         BluePrintsEntitiesModuleDescription projectWIPTenderCategoryDescription;
@@ -504,6 +512,8 @@ namespace BluePrints.ViewModels
             projectCategoryDescription = new BluePrintsEntitiesModuleDescription(DataUtils.GetNameOf(() => NavigationResources.Menu_AllProjects), string.Empty, null, "Projects", null, null, null, null, true, true, @"Programming\Project_16x16.png");
             myProjectsCategoryDescription = new BluePrintsEntitiesModuleDescription(DataUtils.GetNameOf(() => NavigationResources.Menu_AllProjects), string.Empty, DataUtils.GetNameOf(() => NavigationResources.Menu_AllProjects), "My Projects", null, null, null, null, true, false, @"Business Objects\BOTask_16x16.png");
             myTendersCategoryDescription = new BluePrintsEntitiesModuleDescription(DataUtils.GetNameOf(() => NavigationResources.Category_UserTenders), string.Empty, DataUtils.GetNameOf(() => NavigationResources.Menu_AllProjects), "My Tenders", null, null, null, null, true, false, @"Business Objects\BOReport2_16x16.png");
+            myWIPTendersCategoryDescription = new BluePrintsEntitiesModuleDescription(DataUtils.GetNameOf(() => NavigationResources.Category_UserWIPTenders), string.Empty, DataUtils.GetNameOf(() => NavigationResources.Menu_AllProjects), "My WIP Tenders", null, null, null, null, true, false, @"Function Library\Compatibility_16x16.png");
+            myLeadsCategoryDescription = new BluePrintsEntitiesModuleDescription(DataUtils.GetNameOf(() => NavigationResources.Category_UserLeads), string.Empty, DataUtils.GetNameOf(() => NavigationResources.Menu_AllProjects), "My Leads", null, null, null, null, true, false, @"Business Objects\BOOrderItem_16x16.png");
             projectActiveCategoryDescription = new BluePrintsEntitiesModuleDescription(DataUtils.GetNameOf(() => NavigationResources.Category_ActiveProjects), string.Empty, DataUtils.GetNameOf(() => NavigationResources.Menu_AllProjects), "Active", null, null, null, null, true, false, @"Function Library\Financial_16x16.png");
             projectSubmittedTenderCategoryDescription = new BluePrintsEntitiesModuleDescription(DataUtils.GetNameOf(() => NavigationResources.Category_UserTenders), string.Empty, DataUtils.GetNameOf(() => NavigationResources.Menu_AllProjects), "Submitted Tender", null, null, null, null, false, false, @"Function Library\Statistical_16x16.png");
             projectWIPTenderCategoryDescription = new BluePrintsEntitiesModuleDescription(DataUtils.GetNameOf(() => NavigationResources.Category_WIPProjects), string.Empty, DataUtils.GetNameOf(() => NavigationResources.Menu_AllProjects), "WIP Tender", null, null, null, null, false, false, @"Function Library\Compatibility_16x16.png");
@@ -615,25 +625,22 @@ namespace BluePrints.ViewModels
             string parentId;
             BluePrintsEntitiesModuleDescription projectStatusDescription;
 
-            if(isFavouriteProject(entity.GUID))
-            {
-                if (entity.STATUS == ProjectStatus.Active || entity.STATUS == ProjectStatus.Lead)
-                {
-                    projectStatusDescription = myProjectsCategoryDescription;
-                    parentId = DataUtils.GetNameOf(() => NavigationResources.Category_UserProjects);
-                }
-                else
-                {
-                    projectStatusDescription = myTendersCategoryDescription;
-                    parentId = DataUtils.GetNameOf(() => NavigationResources.Category_UserTenders);
-                }
-            }
-            else if ((entity.STATUS == ProjectStatus.Active || entity.STATUS == ProjectStatus.Tender) && entity.GUID_MANAGEUSER == LoginCredentials.CurrentUserGuid)
+            if (isFavouriteProject(entity.GUID) || ((entity.STATUS == ProjectStatus.Active || entity.STATUS == ProjectStatus.Tender) && entity.GUID_MANAGEUSER == LoginCredentials.CurrentUserGuid))
             {
                 if (entity.STATUS == ProjectStatus.Active)
                 {
                     projectStatusDescription = myProjectsCategoryDescription;
                     parentId = DataUtils.GetNameOf(() => NavigationResources.Category_UserProjects);
+                }
+                else if (entity.STATUS == ProjectStatus.Lead)
+                {
+                    projectStatusDescription = myLeadsCategoryDescription;
+                    parentId = DataUtils.GetNameOf(() => NavigationResources.Category_UserLeads);
+                }
+                else if (entity.STATUS == ProjectStatus.Tender)
+                {
+                    projectStatusDescription = myWIPTendersCategoryDescription;
+                    parentId = DataUtils.GetNameOf(() => NavigationResources.Category_UserWIPTenders);
                 }
                 else
                 {

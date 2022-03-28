@@ -187,6 +187,15 @@ namespace BluePrints.Common.Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to User leads project category.
+        /// </summary>
+        internal static string Category_UserLeads {
+            get {
+                return ResourceManager.GetString("Category_UserLeads", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to User project category.
         /// </summary>
         internal static string Category_UserProjects {
@@ -201,6 +210,15 @@ namespace BluePrints.Common.Resources {
         internal static string Category_UserTenders {
             get {
                 return ResourceManager.GetString("Category_UserTenders", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to User WIP tenders project category.
+        /// </summary>
+        internal static string Category_UserWIPTenders {
+            get {
+                return ResourceManager.GetString("Category_UserWIPTenders", resourceCulture);
             }
         }
         

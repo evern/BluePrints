@@ -555,4 +555,10 @@
   <data name="Permission_TransactionApproval_ApproveReject" xml:space="preserve">
     <value>Allow user to approve/reject transactions</value>
   </data>
+  <data name="Category_UserLeads" xml:space="preserve">
+    <value>User leads project category</value>
+  </data>
+  <data name="Category_UserWIPTenders" xml:space="preserve">
+    <value>User WIP tenders project category</value>
+  </data>
 </root>
