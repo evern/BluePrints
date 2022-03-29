@@ -201,7 +201,7 @@ namespace BluePrints.ViewModels
 
         public void OnEntitiesSavedCallBack(BASELINE_ITEMProgress projectionEntity, BASELINE_ITEM entity, bool isNewEntity)
         {
-            if(entity != null)
+            if (entity != null)
                 projectionEntity.Entity.Entity.GUID_ORIGINAL = entity.GUID_ORIGINAL;
         }
         #endregion
@@ -602,6 +602,97 @@ namespace BluePrints.ViewModels
             return internalNum;
         }
 
+        public override void raiseQuantityAssignmentPropertiesChanged()
+        {
+            base.raiseQuantityAssignmentPropertiesChanged();
+            SelectedVariationAdjustment = null;
+            this.RaisePropertyChanged(x => x.SelectedVariationAdjustment);
+            this.RaisePropertyChanged(x => x.VariationAdjustments);
+            this.RaisePropertyChanged(x => x.IsVariationVisible);
+        }
+
+        #region Variation Assignments
+        protected override void onBeforeSavingAssignments(IEnumerable<P6_ASSIGNMENT> p6Assignments)
+        {
+            //to prevent multiple assignment from being tagged with the variation
+            if (Selected_Deliverables.Count > 1 || !allowSavingVariation)
+                return;
+
+            if(SelectedVariationAdjustment != null)
+            {
+                P6_ASSIGNMENT variationTagP6Assignment = p6Assignments.Where(x => x.GUID == Guid.Empty).FirstOrDefault(x => x.GUID_ORIGINAL == Selected_Deliverable.OriginalEntityKey);
+                if(variationTagP6Assignment != null)
+                {
+                    variationTagP6Assignment.VARIATION_NAME = SelectedVariationAdjustment.VariationName;
+                    variationTagP6Assignment.VARIATION_PERCENTAGE = SelectedVariationAdjustment.AdjustmentUnits / Selected_Deliverable.Total_Units;
+                    allowSavingVariation = false;
+                }
+            }
+
+            base.onBeforeSavingAssignments(p6Assignments);
+        }
+
+        bool allowSavingVariation = false;
+        public void AssignVariationPercentage()
+        {
+            if (SelectedVariationAdjustment == null)
+            {
+                MessageBoxService.ShowMessage("Please select a variation", "Error", MessageButton.OK, MessageIcon.Warning);
+                return;
+            }
+
+            if (Selected_Deliverable.Total_Units == 0)
+            {
+                MessageBoxService.ShowMessage("Cannot assign a % because deliverable has 0 total units", "Error", MessageButton.OK, MessageIcon.Warning);
+                return;
+            }
+
+            P6_ASSIGNMENT findVariationP6Assignment = Selected_Deliverable.P6_Assignments.FirstOrDefault(x => x.VARIATION_NAME == SelectedVariationAdjustment.VariationName);
+            if (findVariationP6Assignment != null)
+            {
+                decimal variationPercentage = Selected_Deliverable.Total_Units == 0 ? 0 : SelectedVariationAdjustment.AdjustmentUnits / Selected_Deliverable.Total_Units;
+                string errorMessage = "This variation has already been assigned to " + findVariationP6Assignment.P6_ACTIVITYID;
+
+                if (findVariationP6Assignment.VARIATION_PERCENTAGE != null && Math.Round(variationPercentage, 2) == Math.Round((decimal)findVariationP6Assignment.VARIATION_PERCENTAGE, 2))
+                    MessageBoxService.ShowMessage(errorMessage, "Error", MessageButton.OK, MessageIcon.Warning);
+                else if (findVariationP6Assignment.VARIATION_PERCENTAGE != null)
+                    MessageBoxService.ShowMessage(errorMessage + " with " + ((decimal)findVariationP6Assignment.VARIATION_PERCENTAGE).ToString("P"), "Error", MessageButton.OK, MessageIcon.Warning);
+
+                return; 
+            }
+
+            Assignment_Value = Selected_Deliverable.Assigned_Percentage + (SelectedVariationAdjustment.AdjustmentUnits / Selected_Deliverable.Total_Units);
+            this.RaisePropertyChanged(x => x.Assignment_Value);
+            allowSavingVariation = true;
+        }
+
+        public VariationAdjustment SelectedVariationAdjustment { get; set; }
+
+        public bool IsVariationVisible => VariationAdjustments != null && VariationAdjustments.Count() > 0 && Selected_Deliverables.Count == 1;
+
+        public IEnumerable<VariationAdjustment> VariationAdjustments
+        {
+            get
+            {
+                if (Selected_Deliverable == null || Selected_Deliverable.ApprovedVariations == null)
+                    return null;
+
+                return Selected_Deliverable.ApprovedVariations;
+            }
+        }
+
+        public void P6AssignmentCellValueChanged(CellValueChangedEventArgs e)
+        {
+            if (Selected_P6_Assignment == null)
+                return;
+
+            if (e.Column.FieldName.Contains(BindableBase.GetPropertyName(() => new P6_ASSIGNMENTProjection().Entity.COMMENTS)))
+            {
+                P6_ASSIGNMENTProjection projection = (P6_ASSIGNMENTProjection)e.Row;
+                P6_ASSIGNMENTSCollectionViewModel.Save(projection.Entity);
+            }
+        }
+        #endregion
         #endregion
 
         #region View Properties

@@ -137,14 +137,14 @@
                             <dxlc:LayoutGroup HorizontalAlignment="Stretch" dxlc:LayoutControl.AllowHorizontalSizing="True">
                                 <dxg:GridControl dxc:DXSerializer.SerializationID="GridControlActivities" SelectionMode="Row" DesignTimeDataObjectType="{x:Type commonviewmodel:P6_Activity}" ItemsSource="{Binding Activities_Source}" CurrentItem="{Binding Selected_Activity, Mode=TwoWay}">
                                     <dxg:GridControl.Columns>
-                                        <dxg:GridColumn Header="Activity Id" FieldName="P6_ActivityId" Width="50" IsSmart="True" />
-                                        <dxg:GridColumn Header="Task" FieldName="Description" Width="200" IsSmart="True" />
+                                        <dxg:GridColumn Header="Activity Id" FieldName="P6_ActivityId" Width="150" IsSmart="True" />
+                                        <dxg:GridColumn Header="Task" FieldName="Description" Width="250" IsSmart="True" />
                                         <dxg:GridColumn Header="Type" FieldName="DisplayActivityType" FixedWidth="True" Width="80" IsSmart="True" />
-                                        <dxg:GridColumn Header="Target Start" FieldName="Start" Width="50" CellTemplate="{StaticResource TimeTemplate}" IsSmart="True" />
-                                        <dxg:GridColumn Header="Target End" FieldName="End" Width="50" CellTemplate="{StaticResource TimeTemplate}" IsSmart="True" />
-                                        <dxg:GridColumn Header="Early Start" FieldName="EarlyStart" Width="50" CellTemplate="{StaticResource TimeTemplate}" IsSmart="True" />
-                                        <dxg:GridColumn Header="Early End" FieldName="EarlyEnd" Width="50" CellTemplate="{StaticResource TimeTemplate}" IsSmart="True" />
-                                        <dxg:GridColumn Header="Assigned Units" FieldName="Assigned_Units" Width="50" IsSmart="True">
+                                        <dxg:GridColumn Header="Target Start" FieldName="Start" Width="80" CellTemplate="{StaticResource TimeTemplate}" IsSmart="True" />
+                                        <dxg:GridColumn Header="Target End" FieldName="End" Width="80" CellTemplate="{StaticResource TimeTemplate}" IsSmart="True" />
+                                        <dxg:GridColumn Header="Early Start" FieldName="EarlyStart" Width="80" CellTemplate="{StaticResource TimeTemplate}" IsSmart="True" />
+                                        <dxg:GridColumn Header="Early End" FieldName="EarlyEnd" Width="80" CellTemplate="{StaticResource TimeTemplate}" IsSmart="True" />
+                                        <dxg:GridColumn Header="Assigned Units" FieldName="Assigned_Units" Width="100" IsSmart="True">
                                             <dxg:GridColumn.EditSettings>
                                                 <dxe:TextEditSettings HorizontalContentAlignment="Left" DisplayFormat="n0" />
                                             </dxg:GridColumn.EditSettings>
@@ -152,7 +152,7 @@
                                         <!--<dxg:GridColumn Binding="{Binding}" CellTemplate="{StaticResource GanttTemplate}" Header="Chart" />-->
                                     </dxg:GridControl.Columns>
                                     <dxg:GridControl.View>
-                                        <dxg:TreeListView x:Name="treeView" AllowEditing="False" AllowPerPixelScrolling="True" AutoWidth="True" AutoExpandAllNodes="True" KeyFieldName="Id" NavigationStyle="Row" ParentFieldName="ParentId" RowStyle="{StaticResource WBSBackgroundStyle}" ShowTotalSummary="False" TreeDerivationMode="Selfreference">
+                                        <dxg:TreeListView x:Name="treeView" AllowEditing="False" AllowPerPixelScrolling="True" AutoExpandAllNodes="True" KeyFieldName="Id" NavigationStyle="Row" ParentFieldName="ParentId" RowStyle="{StaticResource WBSBackgroundStyle}" ShowTotalSummary="False" TreeDerivationMode="Selfreference">
                                             <dxmvvm:Interaction.Behaviors>
                                                 <dxmvvm:EventToCommand Command="{Binding NodeExpandedCommand}" EventName="NodeExpanded" />
                                                 <dxmvvm:EventToCommand Command="{Binding Activities_MouseDownCommand}" EventName="MouseDown" PassEventArgsToCommand="True" />
@@ -216,8 +216,34 @@
                                     </dxlc:LayoutItem>
                                 </dxlc:LayoutGroup>
                                 <dxlc:LayoutGroup Orientation="Horizontal">
-                                    <dxlc:LayoutItem Label="{Binding Assignment_UOM}" Visibility="{Binding QuantityAssignmentVisibility}">
-                                        <dxe:SpinEdit EditValue="{Binding Assignment_Quantity, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" Increment="1" Mask="n2" MaskType="Numeric" MaskUseAsDisplayFormat="True" MaxValue="{Binding Remaining_Quantity}" MinValue="0" />
+                                    <dxlc:LayoutItem Label="Variations" Visibility="{Binding IsVariationVisible, Converter={dxmvvm:BooleanToVisibilityConverter}}">
+                                        <dxg:LookUpEdit AutoComplete="True" AutoPopulateColumns="False" EditValue="{Binding SelectedVariationAdjustment, Mode=TwoWay}" IncrementalFiltering="True" DisplayMember="VariationName" IsTextEditable="False" ItemsSource="{Binding VariationAdjustments}" NullText="Select Variation then click Assign Variation %" NullValueButtonPlacement="None" PopupMinWidth="500" ShowNullTextForEmptyValue="True">
+                                            <dxg:LookUpEdit.StyleSettings>
+                                                <dxg:SearchLookUpEditStyleSettings />
+                                            </dxg:LookUpEdit.StyleSettings>
+                                            <dxg:LookUpEdit.PopupContentTemplate>
+                                                <ControlTemplate TargetType="ContentControl">
+                                                    <dxg:GridControl x:Name="PART_GridControl" SelectionMode="Row" ShowBorder="False">
+                                                        <dxg:GridControl.Columns>
+                                                            <dxg:GridColumn FieldName="VariationName" Header="Variation Name" ReadOnly="True" SortIndex="1" SortOrder="Descending"/>
+                                                            <dxg:GridColumn FieldName="AdjustmentUnits" Header="Approved Units" ReadOnly="True" >
+                                                                <dxg:GridColumn.EditSettings>
+                                                                    <dxe:TextEditSettings DisplayFormat="n2" MaskUseAsDisplayFormat="True" />
+                                                                </dxg:GridColumn.EditSettings>
+                                                            </dxg:GridColumn>
+                                                        </dxg:GridControl.Columns>
+                                                    </dxg:GridControl>
+                                                </ControlTemplate>
+                                            </dxg:LookUpEdit.PopupContentTemplate>
+                                        </dxg:LookUpEdit>
+                                    </dxlc:LayoutItem>
+                                    <dxlc:LayoutItem>
+                                        <Button Command="{Binding AssignVariationPercentageCommand}" Visibility="{Binding IsVariationVisible, Converter={dxmvvm:BooleanToVisibilityConverter}}">
+                                            <StackPanel Orientation="Horizontal">
+                                                <TextBlock VerticalAlignment="Center" HorizontalAlignment="Left" Text="Assign Variation %" Margin="0, 0, 10, 0"/>
+                                                <Image Source="{dxc:DXImage Images/Navigation/Forward_16x16.png}" />
+                                            </StackPanel>
+                                        </Button>
                                     </dxlc:LayoutItem>
                                     <dxlc:LayoutItem IsRequired="True" Label="Percentage:">
                                         <dxe:SpinEdit EditValue="{Binding Assignment_Value, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" Increment="0.1" Mask="p2" MaskType="Numeric" MaskUseAsDisplayFormat="True" MaxValue="{Binding Assignment_MaxValue}" MinValue="{Binding Assignment_MinValue}" />
@@ -244,6 +270,13 @@
                                                         <dxe:ComboBoxEditSettings DisplayMember="Description" ItemsSource="{Binding Activities_Source}" ValueMember="P6_ActivityId" />
                                                     </dxg:GridColumn.EditSettings>
                                                 </dxg:GridColumn>
+                                                <dxg:GridColumn Header="Comments" FieldName="Entity.COMMENTS" HeaderToolTip="Comments" />
+                                                <dxg:GridColumn Header="Variation" FieldName="Entity.VARIATION_NAME" ReadOnly="True" AllowEditing="False"/>
+                                                <dxg:GridColumn Header="Var %" FieldName="Entity.VARIATION_PERCENTAGE" ReadOnly="True" AllowEditing="False">
+                                                    <dxg:GridColumn.EditSettings>
+                                                        <dxe:SpinEditSettings Mask="p2" MaskType="Numeric" MaskUseAsDisplayFormat="True" />
+                                                    </dxg:GridColumn.EditSettings>
+                                                </dxg:GridColumn>
                                                 <dxg:GridColumn Header="From %" FieldName="Entity.LOW_VALUE" HeaderToolTip="Assigned from percentage" ReadOnly="True" AllowEditing="False">
                                                     <dxg:GridColumn.EditSettings>
                                                         <dxe:TextEditSettings DisplayFormat="p2" />
@@ -256,9 +289,10 @@
                                                 </dxg:GridColumn>
                                             </dxg:GridControl.Columns>
                                             <dxg:GridControl.View>
-                                                <dxg:TableView AllowEditing="False" FocusedRow="{Binding Selected_P6_Assignment, Mode=TwoWay}" NavigationStyle="Row" RowStyle="{StaticResource SelectedRowStyle}" ShowGroupPanel="False">
+                                                <dxg:TableView FocusedRow="{Binding Selected_P6_Assignment, Mode=TwoWay}" RowStyle="{StaticResource SelectedRowStyle}" ShowGroupPanel="False">
                                                     <dxmvvm:Interaction.Behaviors>
                                                         <dxmvvm:EventToCommand Command="{Binding P6_Assignment_MouseDownCommand}" EventName="MouseDown" PassEventArgsToCommand="True" />
+                                                        <dxmvvm:EventToCommand Command="{Binding P6AssignmentCellValueChangedCommand}" EventName="CellValueChanged" PassEventArgsToCommand="True" />
                                                     </dxmvvm:Interaction.Behaviors>
                                                 </dxg:TableView>
                                             </dxg:GridControl.View>
