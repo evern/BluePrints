@@ -26,6 +26,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Windows;
+using BluePrints.Views;
 
 namespace BluePrints.ViewModels
 {
@@ -612,6 +613,33 @@ namespace BluePrints.ViewModels
         }
 
         #region Variation Assignments
+        public void ShowVariationAssignmentTutorialWindow()
+        {
+            VariationAssignmentTutorialWindow tutorialWindow = new VariationAssignmentTutorialWindow();
+            tutorialWindow.Show();
+        }
+
+        public bool IsVariationAssignmentVisible { get; set; }
+        public bool IsNormalAssignmentVisible => !IsVariationAssignmentVisible;
+        bool allowSavingVariation = false;
+        public void AddVariationAssignment()
+        {
+            allowSavingVariation = true;
+            Add_Assignments();
+        }
+
+        public void CancelVariationAssignment()
+        {
+            allowSavingVariation = false;
+            SelectedVariationAdjustment = null;
+            IsVariationAssignmentVisible = false;
+            Assignment_Value = 1;
+            this.RaisePropertyChanged(x => x.SelectedVariationAdjustment);
+            this.RaisePropertyChanged(x => x.IsVariationAssignmentVisible);
+            this.RaisePropertyChanged(x => x.IsNormalAssignmentVisible);
+            this.RaisePropertyChanged(x => x.Assignment_Value);
+        }
+
         protected override void onBeforeSavingAssignments(IEnumerable<P6_ASSIGNMENT> p6Assignments)
         {
             //to prevent multiple assignment from being tagged with the variation
@@ -625,14 +653,13 @@ namespace BluePrints.ViewModels
                 {
                     variationTagP6Assignment.VARIATION_NAME = SelectedVariationAdjustment.VariationName;
                     variationTagP6Assignment.VARIATION_PERCENTAGE = SelectedVariationAdjustment.AdjustmentUnits / Selected_Deliverable.Total_Units;
-                    allowSavingVariation = false;
+                    CancelVariationAssignment();
                 }
             }
 
             base.onBeforeSavingAssignments(p6Assignments);
         }
 
-        bool allowSavingVariation = false;
         public void AssignVariationPercentage()
         {
             if (SelectedVariationAdjustment == null)
@@ -653,17 +680,21 @@ namespace BluePrints.ViewModels
                 decimal variationPercentage = Selected_Deliverable.Total_Units == 0 ? 0 : SelectedVariationAdjustment.AdjustmentUnits / Selected_Deliverable.Total_Units;
                 string errorMessage = "This variation has already been assigned to " + findVariationP6Assignment.P6_ACTIVITYID;
 
-                if (findVariationP6Assignment.VARIATION_PERCENTAGE != null && Math.Round(variationPercentage, 2) == Math.Round((decimal)findVariationP6Assignment.VARIATION_PERCENTAGE, 2))
+                decimal assignedVariationPercentage = Math.Round((decimal)findVariationP6Assignment.VARIATION_PERCENTAGE, 2);
+                decimal currentVariationPercentage = Math.Round(variationPercentage, 2);
+                if (findVariationP6Assignment.VARIATION_PERCENTAGE != null && currentVariationPercentage == assignedVariationPercentage)
                     MessageBoxService.ShowMessage(errorMessage, "Error", MessageButton.OK, MessageIcon.Warning);
                 else if (findVariationP6Assignment.VARIATION_PERCENTAGE != null)
-                    MessageBoxService.ShowMessage(errorMessage + " with " + ((decimal)findVariationP6Assignment.VARIATION_PERCENTAGE).ToString("P"), "Error", MessageButton.OK, MessageIcon.Warning);
+                    MessageBoxService.ShowMessage(errorMessage + " with " + assignedVariationPercentage.ToString("P") + " and current variation % is " + currentVariationPercentage.ToString("P") + ", please remove old % if you wish to update it", "Error", MessageButton.OK, MessageIcon.Warning);
 
                 return; 
             }
 
+            IsVariationAssignmentVisible = true;
             Assignment_Value = Selected_Deliverable.Assigned_Percentage + (SelectedVariationAdjustment.AdjustmentUnits / Selected_Deliverable.Total_Units);
             this.RaisePropertyChanged(x => x.Assignment_Value);
-            allowSavingVariation = true;
+            this.RaisePropertyChanged(x => x.IsVariationAssignmentVisible);
+            this.RaisePropertyChanged(x => x.IsNormalAssignmentVisible);
         }
 
         public VariationAdjustment SelectedVariationAdjustment { get; set; }

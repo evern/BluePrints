@@ -216,6 +216,14 @@
                                     </dxlc:LayoutItem>
                                 </dxlc:LayoutGroup>
                                 <dxlc:LayoutGroup Orientation="Horizontal">
+                                    <dxlc:LayoutItem HorizontalAlignment="Left">
+                                        <Button Command="{Binding ShowVariationAssignmentTutorialWindowCommand}" Visibility="{Binding IsVariationVisible, Converter={dxmvvm:BooleanToVisibilityConverter}}">
+                                            <StackPanel Orientation="Horizontal">
+                                                <Image Source="{dxc:DXImage Images/Support/Question_32x32.png}" />
+                                                <TextBlock VerticalAlignment="Center" Text="Tutorial" ToolTip="Show tutorial for variation assignment" />
+                                            </StackPanel>
+                                        </Button>
+                                    </dxlc:LayoutItem>
                                     <dxlc:LayoutItem Label="Variations" Visibility="{Binding IsVariationVisible, Converter={dxmvvm:BooleanToVisibilityConverter}}">
                                         <dxg:LookUpEdit AutoComplete="True" AutoPopulateColumns="False" EditValue="{Binding SelectedVariationAdjustment, Mode=TwoWay}" IncrementalFiltering="True" DisplayMember="VariationName" IsTextEditable="False" ItemsSource="{Binding VariationAdjustments}" NullText="Select Variation then click Assign Variation %" NullValueButtonPlacement="None" PopupMinWidth="500" ShowNullTextForEmptyValue="True">
                                             <dxg:LookUpEdit.StyleSettings>
@@ -240,7 +248,7 @@
                                     <dxlc:LayoutItem>
                                         <Button Command="{Binding AssignVariationPercentageCommand}" Visibility="{Binding IsVariationVisible, Converter={dxmvvm:BooleanToVisibilityConverter}}">
                                             <StackPanel Orientation="Horizontal">
-                                                <TextBlock VerticalAlignment="Center" HorizontalAlignment="Left" Text="Assign Variation %" Margin="0, 0, 10, 0"/>
+                                                <TextBlock VerticalAlignment="Center" HorizontalAlignment="Left" Text="Append Variation %" Margin="0, 0, 10, 0" ToolTip="Append current variation %"/>
                                                 <Image Source="{dxc:DXImage Images/Navigation/Forward_16x16.png}" />
                                             </StackPanel>
                                         </Button>
@@ -250,8 +258,24 @@
                                     </dxlc:LayoutItem>
                                 </dxlc:LayoutGroup>
                                 <dxlc:LayoutGroup Orientation="Horizontal">
+                                    <dxlc:LayoutItem HorizontalAlignment="Center" Visibility="{Binding IsVariationAssignmentVisible, Converter={dxmvvm:BooleanToVisibilityConverter}}">
+                                        <Button Command="{Binding AddVariationAssignmentCommand}">
+                                            <StackPanel Orientation="Horizontal">
+                                                <Image Source="{dx:DXImageOffice2013 Image=Add_32x32.png}" />
+                                                <TextBlock VerticalAlignment="Center" Text="Add Variation" />
+                                            </StackPanel>
+                                        </Button>
+                                    </dxlc:LayoutItem>
                                     <dxlc:LayoutItem HorizontalAlignment="Center">
-                                        <Button Command="{Binding Add_AssignmentsCommand}">
+                                        <Button Command="{Binding CancelVariationAssignmentCommand}" Visibility="{Binding IsVariationAssignmentVisible, Converter={dxmvvm:BooleanToVisibilityConverter}}">
+                                            <StackPanel Orientation="Horizontal">
+                                                <Image Source="{dx:DXImageOffice2013 Image=Cancel_32x32.png}" />
+                                                <TextBlock VerticalAlignment="Center" Text="Cancel" />
+                                            </StackPanel>
+                                        </Button>
+                                    </dxlc:LayoutItem>
+                                    <dxlc:LayoutItem HorizontalAlignment="Center">
+                                        <Button Command="{Binding Add_AssignmentsCommand}" Visibility="{Binding IsNormalAssignmentVisible, Converter={dxmvvm:BooleanToVisibilityConverter}}">
                                             <StackPanel Orientation="Horizontal">
                                                 <Image Source="{dx:DXImageOffice2013 Image=Add_32x32.png}" />
                                                 <TextBlock VerticalAlignment="Center" Text="Add" />
@@ -270,13 +294,6 @@
                                                         <dxe:ComboBoxEditSettings DisplayMember="Description" ItemsSource="{Binding Activities_Source}" ValueMember="P6_ActivityId" />
                                                     </dxg:GridColumn.EditSettings>
                                                 </dxg:GridColumn>
-                                                <dxg:GridColumn Header="Comments" FieldName="Entity.COMMENTS" HeaderToolTip="Comments" />
-                                                <dxg:GridColumn Header="Variation" FieldName="Entity.VARIATION_NAME" ReadOnly="True" AllowEditing="False"/>
-                                                <dxg:GridColumn Header="Var %" FieldName="Entity.VARIATION_PERCENTAGE" ReadOnly="True" AllowEditing="False">
-                                                    <dxg:GridColumn.EditSettings>
-                                                        <dxe:SpinEditSettings Mask="p2" MaskType="Numeric" MaskUseAsDisplayFormat="True" />
-                                                    </dxg:GridColumn.EditSettings>
-                                                </dxg:GridColumn>
                                                 <dxg:GridColumn Header="From %" FieldName="Entity.LOW_VALUE" HeaderToolTip="Assigned from percentage" ReadOnly="True" AllowEditing="False">
                                                     <dxg:GridColumn.EditSettings>
                                                         <dxe:TextEditSettings DisplayFormat="p2" />
@@ -285,6 +302,13 @@
                                                 <dxg:GridColumn Header="To %" FieldName="Entity.HIGH_VALUE" HeaderToolTip="Assigned to percentage" ReadOnly="True" AllowEditing="False">
                                                     <dxg:GridColumn.EditSettings>
                                                         <dxe:TextEditSettings DisplayFormat="p2" />
+                                                    </dxg:GridColumn.EditSettings>
+                                                </dxg:GridColumn>
+                                                <dxg:GridColumn Header="Comments" FieldName="Entity.COMMENTS" HeaderToolTip="Comments" />
+                                                <dxg:GridColumn Header="Variation" FieldName="Entity.VARIATION_NAME" ReadOnly="True" AllowEditing="False"/>
+                                                <dxg:GridColumn Header="Var %" FieldName="Entity.VARIATION_PERCENTAGE" ReadOnly="True" AllowEditing="False">
+                                                    <dxg:GridColumn.EditSettings>
+                                                        <dxe:SpinEditSettings Mask="p2" MaskType="Numeric" MaskUseAsDisplayFormat="True" />
                                                     </dxg:GridColumn.EditSettings>
                                                 </dxg:GridColumn>
                                             </dxg:GridControl.Columns>
