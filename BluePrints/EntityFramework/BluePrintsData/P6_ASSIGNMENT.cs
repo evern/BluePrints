@@ -28,6 +28,14 @@ namespace BluePrints.Data
 
         public decimal HIGH_VALUE { get; set; }
 
+        [StringLength(200)]
+        public string COMMENTS { get; set; }
+
+        [StringLength(200)]
+        public string VARIATION_NAME { get; set; }
+
+        public decimal? VARIATION_PERCENTAGE { get; set; }
+
         public DateTime CREATED { get; set; }
 
         public Guid CREATEDBY { get; set; }

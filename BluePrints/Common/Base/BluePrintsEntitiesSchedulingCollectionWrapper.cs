@@ -15,6 +15,7 @@ using BluePrints.P6EntitiesDataModel;
 using DevExpress.Mvvm;
 using DevExpress.Mvvm.POCO;
 using DevExpress.Xpf.Editors;
+using DevExpress.Xpf.Grid;
 using DevExpress.Xpf.Grid.DragDrop;
 using System;
 using System.Collections.Generic;
@@ -407,7 +408,7 @@ namespace BluePrints.Common.Base
             }
         }
 
-        public void raiseQuantityAssignmentPropertiesChanged()
+        public virtual void raiseQuantityAssignmentPropertiesChanged()
         {
             this.RaisePropertyChanged(x => x.Selected_Deliverable);
             this.RaisePropertyChanged(x => x.Assignment_MinValue);
@@ -544,6 +545,18 @@ namespace BluePrints.Common.Base
             get
             {
                 return 1;
+            }
+        }
+
+        public void P6AssignmentCellValueChanged(CellValueChangedEventArgs e)
+        {
+            if (Selected_P6_Assignment == null)
+                return;
+
+            if (e.Column.FieldName.Contains(BindableBase.GetPropertyName(() => new P6_ASSIGNMENTProjection().Entity.COMMENTS)))
+            {
+                P6_ASSIGNMENTProjection projection = (P6_ASSIGNMENTProjection)e.Row;
+                P6_ASSIGNMENTSCollectionViewModel.Save(projection.Entity);
             }
         }
         #endregion
@@ -696,6 +709,7 @@ namespace BluePrints.Common.Base
                 P6_ASSIGNMENTSCollectionViewModel.EntitiesUndoRedoManager.AddUndo(save_assignment, null, null, null, EntityMessageType.Added);
             }
 
+            onBeforeSavingAssignments(save_assignments);
             P6_ASSIGNMENTSCollectionViewModel.BaseBulkSave(save_assignments);
             SetMaxUnits();
             raise_deliverable_assignment_changes();
@@ -706,6 +720,11 @@ namespace BluePrints.Common.Base
                 DialogCollectionViewModel<ErrorMessage> viewModel = DialogCollectionViewModel<ErrorMessage>.Create(errorMessages, "Cannot create assignments due to the following error");
                 ErrorMessagesDialogService.ShowDialog(MessageButton.OK, string.Empty, "ListErrorMessages", viewModel);
             }
+        }
+
+        protected virtual void onBeforeSavingAssignments(IEnumerable<P6_ASSIGNMENT> p6Assignments)
+        {
+
         }
 
         List<P6_AssignmentProjection> excelExportData;

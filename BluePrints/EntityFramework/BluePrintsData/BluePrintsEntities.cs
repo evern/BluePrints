@@ -425,6 +425,10 @@ namespace BluePrints.Data
                 .Property(e => e.HIGH_VALUE)
                 .HasPrecision(10, 4);
 
+            modelBuilder.Entity<P6_ASSIGNMENT>()
+                .Property(e => e.VARIATION_PERCENTAGE)
+                .HasPrecision(10, 4);
+
             modelBuilder.Entity<PHASE>()
                 .HasMany(e => e.BASELINE_ITEM)
                 .WithOptional(e => e.PHASE)

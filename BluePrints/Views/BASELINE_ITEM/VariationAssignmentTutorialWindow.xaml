@@ -1,0 +1,29 @@
+﻿<dx:DXWindow x:Class="BluePrints.Views.VariationAssignmentTutorialWindow" xmlns:dxp="http://schemas.devexpress.com/winfx/2008/xaml/printing" xmlns:dxpdf="http://schemas.devexpress.com/winfx/2008/xaml/pdf" xmlns="http://schemas.microsoft.com/netfx/2009/xaml/presentation" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" xmlns:custom="clr-namespace:BaseModel.Misc;assembly=BaseModel" xmlns:d="http://schemas.microsoft.com/expression/blend/2008" xmlns:dx="http://schemas.devexpress.com/winfx/2008/xaml/core" xmlns:dxb="http://schemas.devexpress.com/winfx/2008/xaml/bars" xmlns:dxe="http://schemas.devexpress.com/winfx/2008/xaml/editors" xmlns:dxg="http://schemas.devexpress.com/winfx/2008/xaml/grid" xmlns:dxlc="http://schemas.devexpress.com/winfx/2008/xaml/layoutcontrol" xmlns:dxmvvm="http://schemas.devexpress.com/winfx/2008/xaml/mvvm" xmlns:dxr="http://schemas.devexpress.com/winfx/2008/xaml/ribbon" xmlns:dxrudex="http://schemas.devexpress.com/winfx/2008/xaml/reports/userdesignerextensions" xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" xmlns:view="clr-namespace:BluePrints.Views" xmlns:viewmodel="clr-namespace:BluePrints.ViewModels"
+            d:DesignHeight="800" d:DesignWidth="1200" DataContext="{dxmvvm:ViewModelSource viewmodel:VariationAssignmentTutorialViewModel}" WindowStyle="ToolWindow" mc:Ignorable="d" Height="1000" Width="1000" WindowStartupLocation="CenterScreen" Topmost="True" ResizeMode="CanResize">
+    <dx:DXWindow.Resources>
+        <Style TargetType="dxb:ToolBarControl">
+            <Setter Property="Visibility" Value="Hidden"/>
+        </Style>
+    </dx:DXWindow.Resources>
+    <Grid>
+        <dxr:RibbonControl RibbonStyle="OfficeSlim">
+            <dxr:RibbonDefaultPageCategory MergeType="Replace" Caption="defaultCategory">
+                <dxr:RibbonPage MergeType="Replace" Caption="Grid">
+                    <dxr:RibbonPageGroup MergeType="Replace" Caption="Grid" >
+                    </dxr:RibbonPageGroup>
+                </dxr:RibbonPage>
+            </dxr:RibbonDefaultPageCategory>
+        </dxr:RibbonControl>
+        <dxpdf:PdfViewerControl x:Name="pdfViewerControl" Margin="-6, -10, -10, -10" CommandBarStyle="None" DocumentSource="{Binding Tutorial}" ResetSettingsOnDocumentClose="False" ZoomMode="FitToWidth" UriOpening="PdfViewerControl_UriOpening">
+            <dxpdf:PdfViewerControl.AttachmentsViewerSettings>
+                <dxpdf:PdfAttachmentsViewerSettings HideAttachmentsViewer="True"/>
+            </dxpdf:PdfViewerControl.AttachmentsViewerSettings>
+            <dxpdf:PdfViewerControl.ThumbnailsViewerSettings>
+                <dxpdf:PdfThumbnailsViewerSettings HideThumbnailsViewer="True" />
+            </dxpdf:PdfViewerControl.ThumbnailsViewerSettings>
+            <dxpdf:PdfViewerControl.OutlinesViewerSettings>
+                <dxpdf:PdfOutlinesViewerSettings HideOutlinesViewer="True" />
+            </dxpdf:PdfViewerControl.OutlinesViewerSettings>
+        </dxpdf:PdfViewerControl>
+    </Grid>
+</dx:DXWindow>
