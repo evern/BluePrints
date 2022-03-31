@@ -42,6 +42,8 @@
         [StringLength(23)]
         public string STOCKCODE { get; set; }
 
+        public string STOCK_DESCRIPTION { get; set; }
+
         public DateTime? TRANSDATE { get; set; }
 
         [StringLength(1)]

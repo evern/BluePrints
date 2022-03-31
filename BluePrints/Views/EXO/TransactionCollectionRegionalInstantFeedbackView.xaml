@@ -198,11 +198,7 @@
                                     <dxe:ComboBoxEditSettings AutoComplete="True" DisplayMember="COSTDESC" IsTextEditable="True" ItemsSource="{Binding JOB_COSTTYPESCollection}" NullValueButtonPlacement="EditBox" ValueMember="SEQNO" />
                                 </dxg:GridColumn.EditSettings>
                             </dxg:GridColumn>
-                            <dxg:GridColumn FieldName="STOCKCODE" Header="Stock Code Desc" Width="200" ReadOnly="True" >
-                                <dxg:GridColumn.EditSettings>
-                                    <dxe:ComboBoxEditSettings AutoComplete="True" DisplayMember="DESCRIPTION" IsTextEditable="True" ItemsSource="{Binding STOCK_ITEMCollection}" NullValueButtonPlacement="EditBox" ValueMember="STOCKCODE" />
-                                </dxg:GridColumn.EditSettings>
-                            </dxg:GridColumn>
+                            <dxg:GridColumn FieldName="STOCK_DESCRIPTION" Header="Stock Code Desc" Width="200" ReadOnly="True" />
                             <dxg:GridColumn FieldName="ACCNO" Header="Resource" AllowBestFit="false" Width="150" ReadOnly="true" >
                                 <dxg:GridColumn.EditSettings>
                                     <dxe:ComboBoxEditSettings AutoComplete="True" DisplayMember="RESOURCENAME" IsTextEditable="True" ItemsSource="{Binding JOBCOST_RESOURCECollection}" ValueMember="SEQNO" />
