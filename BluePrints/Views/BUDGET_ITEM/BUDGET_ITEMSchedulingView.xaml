@@ -240,11 +240,13 @@
                                                         <dxe:TextEditSettings DisplayFormat="p2" />
                                                     </dxg:GridColumn.EditSettings>
                                                 </dxg:GridColumn>
+                                                <dxg:GridColumn Header="Comments (Can Be Edited)" FieldName="Entity.COMMENTS" MinWidth="150" HeaderToolTip="Comments" />
                                             </dxg:GridControl.Columns>
                                             <dxg:GridControl.View>
-                                                <dxg:TableView AllowEditing="False" FocusedRow="{Binding Selected_P6_Assignment, Mode=TwoWay}" NavigationStyle="Row" RowStyle="{StaticResource SelectedRowStyle}" ShowGroupPanel="False">
+                                                <dxg:TableView FocusedRow="{Binding Selected_P6_Assignment, Mode=TwoWay}" RowStyle="{StaticResource SelectedRowStyle}" ShowGroupPanel="False">
                                                     <dxmvvm:Interaction.Behaviors>
                                                         <dxmvvm:EventToCommand Command="{Binding P6_Assignment_MouseDownCommand}" EventName="MouseDown" PassEventArgsToCommand="True" />
+                                                        <dxmvvm:EventToCommand Command="{Binding P6AssignmentCellValueChangedCommand}" EventName="CellValueChanged" PassEventArgsToCommand="True" />
                                                     </dxmvvm:Interaction.Behaviors>
                                                 </dxg:TableView>
                                             </dxg:GridControl.View>

@@ -711,18 +711,6 @@ namespace BluePrints.ViewModels
                 return Selected_Deliverable.ApprovedVariations;
             }
         }
-
-        public void P6AssignmentCellValueChanged(CellValueChangedEventArgs e)
-        {
-            if (Selected_P6_Assignment == null)
-                return;
-
-            if (e.Column.FieldName.Contains(BindableBase.GetPropertyName(() => new P6_ASSIGNMENTProjection().Entity.COMMENTS)))
-            {
-                P6_ASSIGNMENTProjection projection = (P6_ASSIGNMENTProjection)e.Row;
-                P6_ASSIGNMENTSCollectionViewModel.Save(projection.Entity);
-            }
-        }
         #endregion
         #endregion
 

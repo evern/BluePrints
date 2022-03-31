@@ -304,7 +304,7 @@
                                                         <dxe:TextEditSettings DisplayFormat="p2" />
                                                     </dxg:GridColumn.EditSettings>
                                                 </dxg:GridColumn>
-                                                <dxg:GridColumn Header="Comments" FieldName="Entity.COMMENTS" HeaderToolTip="Comments" />
+                                                <dxg:GridColumn Header="Comments (Can Be Edited)" FieldName="Entity.COMMENTS" MinWidth="150" HeaderToolTip="Comments" />
                                                 <dxg:GridColumn Header="Variation" FieldName="Entity.VARIATION_NAME" ReadOnly="True" AllowEditing="False"/>
                                                 <dxg:GridColumn Header="Var %" FieldName="Entity.VARIATION_PERCENTAGE" ReadOnly="True" AllowEditing="False">
                                                     <dxg:GridColumn.EditSettings>

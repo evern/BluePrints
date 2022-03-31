@@ -15,6 +15,7 @@ using BluePrints.P6EntitiesDataModel;
 using DevExpress.Mvvm;
 using DevExpress.Mvvm.POCO;
 using DevExpress.Xpf.Editors;
+using DevExpress.Xpf.Grid;
 using DevExpress.Xpf.Grid.DragDrop;
 using System;
 using System.Collections.Generic;
@@ -544,6 +545,18 @@ namespace BluePrints.Common.Base
             get
             {
                 return 1;
+            }
+        }
+
+        public void P6AssignmentCellValueChanged(CellValueChangedEventArgs e)
+        {
+            if (Selected_P6_Assignment == null)
+                return;
+
+            if (e.Column.FieldName.Contains(BindableBase.GetPropertyName(() => new P6_ASSIGNMENTProjection().Entity.COMMENTS)))
+            {
+                P6_ASSIGNMENTProjection projection = (P6_ASSIGNMENTProjection)e.Row;
+                P6_ASSIGNMENTSCollectionViewModel.Save(projection.Entity);
             }
         }
         #endregion
