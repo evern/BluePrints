@@ -613,10 +613,16 @@ namespace BluePrints.Common.Base
             if (Selected_Deliverable == null)
                 return;
 
-
+            
             if (disableMultipleDeliverablesToOneActivityAssignment && Selected_Deliverables.Count() > 1)
             {
                 MessageBoxService.ShowMessage("Cannot assign multiple deliverables to a single activity\n\nPlease select a single deliverable", "Error", MessageButton.OK);
+                return;
+            }
+
+            if (Assignment_Value > 1)
+            {
+                MessageBoxService.ShowMessage("Cannot add assignment % higher than 100%", "Error", MessageButton.OK);
                 return;
             }
 
