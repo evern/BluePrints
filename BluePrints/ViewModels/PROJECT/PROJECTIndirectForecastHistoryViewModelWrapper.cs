@@ -60,21 +60,21 @@ namespace BluePrints.ViewModels
         protected override void addEntitiesLoader()
         {
             base.addEntitiesLoader();
-            loaderCollection.AddLoaderDescription(bluePrintsUnitOfWorkFactory, x => x.FORECAST_JOB_HOUR_SNAPSHOTS, FORECAST_JOB_HOUR_SNAPSHOTProjectionFunc);
+            //loaderCollection.AddLoaderDescription(bluePrintsUnitOfWorkFactory, x => x.FORECAST_JOB_HOUR_SNAPSHOTS, FORECAST_JOB_HOUR_SNAPSHOTProjectionFunc);
         }
 
-        private Func<IRepositoryQuery<FORECAST_JOB_HOUR_SNAPSHOT>, IQueryable<FORECAST_JOB_HOUR_SNAPSHOT>> FORECAST_JOB_HOUR_SNAPSHOTProjectionFunc()
-        {
-            return query => query.Where(x => x.GUID_PROJECT == LoadPROJECT.GUID && x.DATA_DATE == FixedDataDate && x.SNAPSHOT_TYPE == Common.ForecastSnapshotValueType.Actual);
-        }
+        //private Func<IRepositoryQuery<FORECAST_JOB_HOUR_SNAPSHOT>, IQueryable<FORECAST_JOB_HOUR_SNAPSHOT>> FORECAST_JOB_HOUR_SNAPSHOTProjectionFunc()
+        //{
+        //    return query => query.Where(x => x.GUID_PROJECT == LoadPROJECT.GUID && x.DATA_DATE == FixedDataDate && x.SNAPSHOT_TYPE == Common.ForecastSnapshotValueType.Actual);
+        //}
 
         protected override List<DateTime> generateDates()
         {
             IQueryable<FORECAST_JOB_HOUR> projectForecastJobHours = MainEntityUnitOfWork.FORECAST_JOB_HOURS.Where(x => x.FORECAST_JOB.GUID_PROJECT == LoadPROJECT.GUID);
             DateTime forecastMinDate = projectForecastJobHours.Min(x => x.FORECAST_DATE);
             int collectionCount = FORECAST_JOB_HOUR_SNAPSHOTCollection.Where(x => x.FORECAST_DATE != null).Count();
-            DateTime actualsMinDate = collectionCount == 0 ? DateTime.Now : FORECAST_JOB_HOUR_SNAPSHOTCollection.Where(x => x.FORECAST_DATE != null).Min(x => (DateTime)x.FORECAST_DATE);
-            DateTime minDate = forecastMinDate < actualsMinDate ? forecastMinDate : actualsMinDate;
+            //DateTime actualsMinDate = collectionCount == 0 ? DateTime.Now : FORECAST_JOB_HOUR_SNAPSHOTCollection.Where(x => x.FORECAST_DATE != null).Min(x => (DateTime)x.FORECAST_DATE);
+            //DateTime minDate = forecastMinDate < actualsMinDate ? forecastMinDate : actualsMinDate;
 
             return ChronologicalHelpers.GenerateEndDatesCollection(forecastMinDate, (DateTime)FixedDataDate, true);
         }
