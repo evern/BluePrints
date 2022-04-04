@@ -617,9 +617,6 @@ namespace BluePrints.ViewModels
         List<BluePrintsEntitiesModuleDescription> autoInvokeProjects = new List<BluePrintsEntitiesModuleDescription>();
         private void createProjectTree(PROJECT entity, bool isSecurityModule)
         {
-            if (entity.NUMBER != "31510")
-                return;
-
             //List<BluePrintsEntitiesModuleDescription> newModules = new List<BluePrintsEntitiesModuleDescription>();
             string projectTitle = entity.NUMBER + " " + entity.NAME;
             string childTitlePrefix = "[" + entity.NUMBER + "] ";

@@ -70,11 +70,18 @@ namespace BluePrints.ViewModels
 
         protected override List<DateTime> generateDates()
         {
-            IQueryable<FORECAST_JOB_HOUR> projectForecastJobHours = MainEntityUnitOfWork.FORECAST_JOB_HOURS.Where(x => x.FORECAST_JOB.GUID_PROJECT == LoadPROJECT.GUID);
+            IQueryable<FORECAST_JOB_HOUR> projectForecastJobHours = MainEntityUnitOfWork.FORECAST_JOB_HOURS.Where(x => x.FORECAST_JOB.GUID_PROJECT == LoadPROJECT.GUID).Where(x => x.FORECAST_DATE != null);
+            if (projectForecastJobHours.Count() == 0)
+            {
+                return ChronologicalHelpers.GenerateEndDatesCollection((DateTime)FixedDataDate, (DateTime)FixedDataDate, true);
+            }
+
             DateTime forecastMinDate = projectForecastJobHours.Min(x => x.FORECAST_DATE);
-            int collectionCount = FORECAST_JOB_HOUR_SNAPSHOTCollection.Where(x => x.FORECAST_DATE != null).Count();
+            //int collectionCount = FORECAST_JOB_HOUR_SNAPSHOTCollection.Where(x => x.FORECAST_DATE != null).Count();
             //DateTime actualsMinDate = collectionCount == 0 ? DateTime.Now : FORECAST_JOB_HOUR_SNAPSHOTCollection.Where(x => x.FORECAST_DATE != null).Min(x => (DateTime)x.FORECAST_DATE);
             //DateTime minDate = forecastMinDate < actualsMinDate ? forecastMinDate : actualsMinDate;
+            if (forecastMinDate.Year == new DateTime().Year)
+                forecastMinDate = DateTime.Now;
 
             return ChronologicalHelpers.GenerateEndDatesCollection(forecastMinDate, (DateTime)FixedDataDate, true);
         }
@@ -168,22 +175,22 @@ namespace BluePrints.ViewModels
             columns.Clear();
             summaries.Clear();
 
-            columns.Add(new ColumnDescriptor() { FieldName = columnFullCode, ReadOnly = false, Header = "Full Code", ItemsSource = QueryJobs, Fixed = FixedStyle.Left, Width = 150, Settings = SettingsType.FullCode });
+            columns.Add(new ColumnDescriptor() { FieldName = columnFullCode, ReadOnly = true, Header = "Full Code", ItemsSource = QueryJobs, Fixed = FixedStyle.Left, Width = 150, Settings = SettingsType.FullCode });
             summaries.Add(new SummaryDescriptor() { FieldName = columnFullCode, DisplayFormat = "Total {0} Records", Type = SummaryItemType.Count });
             columns.Add(new ColumnDescriptor() { FieldName = columnCommodityName, ReadOnly = true, Header = "Commodity Name (AutoFilled)", Fixed = FixedStyle.Left, Width = 150, Settings = SettingsType.Default });
-            columns.Add(new ColumnDescriptor() { FieldName = columnDescription, ReadOnly = false, Header = "Description", Fixed = FixedStyle.Left, Width = 100, Settings = SettingsType.Default });
-            columns.Add(new ColumnDescriptor() { FieldName = columnStockItem, ReadOnly = false, Header = "Stock Code", ItemsSource = STOCK_ITEMCollection, HeaderToolTip = "Changing this value will automatically populate rate", Fixed = FixedStyle.Left, Width = 50, Settings = SettingsType.StockItem });
+            columns.Add(new ColumnDescriptor() { FieldName = columnDescription, ReadOnly = true, Header = "Description", Fixed = FixedStyle.Left, Width = 100, Settings = SettingsType.Default });
+            columns.Add(new ColumnDescriptor() { FieldName = columnStockItem, ReadOnly = true, Header = "Stock Code", ItemsSource = STOCK_ITEMCollection, HeaderToolTip = "Changing this value will automatically populate rate", Fixed = FixedStyle.Left, Width = 50, Settings = SettingsType.StockItem });
             columns.Add(new ColumnDescriptor() { FieldName = columnStockItemName, ReadOnly = true, Header = "Stock Name (AutoFilled)", Fixed = FixedStyle.Left, Width = 100, Settings = SettingsType.Default });
             columns.Add(new ColumnDescriptor() { FieldName = columnStockItemGroup2, ReadOnly = true, Header = "Stock Group 2 (AutoFilled)", Fixed = FixedStyle.Left, Width = 100, Settings = SettingsType.Default });
-            columns.Add(new ColumnDescriptor() { FieldName = columnReference, ReadOnly = false, Header = "Reference", Fixed = FixedStyle.Left, Width = 75, Settings = SettingsType.Default });
-            columns.Add(new ColumnDescriptor() { FieldName = columnNote, ReadOnly = false, Header = "Note", Fixed = FixedStyle.Left, Width = 75, Settings = SettingsType.Default });
-            columns.Add(new ColumnDescriptor() { FieldName = columnUOM, ReadOnly = false, Header = "UOM", Fixed = FixedStyle.Left, Width = 50, Settings = SettingsType.Default });
+            columns.Add(new ColumnDescriptor() { FieldName = columnReference, ReadOnly = true, Header = "Reference", Fixed = FixedStyle.Left, Width = 75, Settings = SettingsType.Default });
+            columns.Add(new ColumnDescriptor() { FieldName = columnNote, ReadOnly = true, Header = "Note", Fixed = FixedStyle.Left, Width = 75, Settings = SettingsType.Default });
+            columns.Add(new ColumnDescriptor() { FieldName = columnUOM, ReadOnly = true, Header = "UOM", Fixed = FixedStyle.Left, Width = 50, Settings = SettingsType.Default });
             columns.Add(new ColumnDescriptor() { FieldName = columnRecommendedForecastRate, ReadOnly = true, Header = "Recommended Rate", Fixed = FixedStyle.Left, Width = 75, Settings = SettingsType.Number, Mask = "c0" });
-            columns.Add(new ColumnDescriptor() { FieldName = columnForecastRate, ReadOnly = false, Header = "Rate", Fixed = FixedStyle.Left, Width = 75, Settings = SettingsType.Number, Mask = "c0" });
-            columns.Add(new ColumnDescriptor() { FieldName = columnForecastJob + "." + BindableBase.GetPropertyName(() => new FORECAST_JOB().IS_FLOATING_RATE), ReadOnly = false, Header = "Floating Rate", Fixed = FixedStyle.Left, Width = 75, Settings = SettingsType.Default });
+            columns.Add(new ColumnDescriptor() { FieldName = columnForecastRate, ReadOnly = true, Header = "Rate", Fixed = FixedStyle.Left, Width = 75, Settings = SettingsType.Number, Mask = "c0" });
+            columns.Add(new ColumnDescriptor() { FieldName = columnForecastJob + "." + BindableBase.GetPropertyName(() => new FORECAST_JOB().IS_FLOATING_RATE), ReadOnly = true, Header = "Floating Rate", Fixed = FixedStyle.Left, Width = 75, Settings = SettingsType.Default });
             columns.Add(new ColumnDescriptor() { FieldName = columnTotalHours, ReadOnly = true, Header = "Total Hrs", Fixed = FixedStyle.Left, Width = 75, Settings = SettingsType.Number, Mask = "n0" });
             summaries.Add(new SummaryDescriptor() { FieldName = columnTotalHours, DisplayFormat = "n0", Type = SummaryItemType.Sum });
-            columns.Add(new ColumnDescriptor() { FieldName = columnTotalCosts, ReadOnly = false, Header = "Total $", Fixed = FixedStyle.Left, Width = 75, Settings = SettingsType.Number, Mask = "c0" });
+            columns.Add(new ColumnDescriptor() { FieldName = columnTotalCosts, ReadOnly = true, Header = "Total $", Fixed = FixedStyle.Left, Width = 75, Settings = SettingsType.Number, Mask = "c0" });
             summaries.Add(new SummaryDescriptor() { FieldName = columnTotalCosts, DisplayFormat = "c0", Type = SummaryItemType.Sum });
 
             foreach (DateTime alignedDate in alignedDates.OrderBy(x => x))
