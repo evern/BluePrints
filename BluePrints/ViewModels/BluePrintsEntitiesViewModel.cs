@@ -617,6 +617,9 @@ namespace BluePrints.ViewModels
         List<BluePrintsEntitiesModuleDescription> autoInvokeProjects = new List<BluePrintsEntitiesModuleDescription>();
         private void createProjectTree(PROJECT entity, bool isSecurityModule)
         {
+            if (entity.NUMBER != "31510")
+                return;
+
             //List<BluePrintsEntitiesModuleDescription> newModules = new List<BluePrintsEntitiesModuleDescription>();
             string projectTitle = entity.NUMBER + " " + entity.NAME;
             string childTitlePrefix = "[" + entity.NUMBER + "] ";
@@ -765,6 +768,7 @@ namespace BluePrints.ViewModels
             moduleAdder(forecast_category_description, new BluePrintsEntitiesModuleDescription(DataUtils.GetNameOf(() => NavigationResources.Menu_Project_Snapshot_Forecast_Flat_PO), projectSpecificKey, forecast_category_description.NavigationId, childTitlePrefix + "EH PO Snapshot Forecast", "PROJECTFlatPOSnapshotForecastView", new EntitiesParameter<PROJECT>(entity), null, "EH PO Snapshot Forecast", false, false, @"Business Objects\BOOrderItem_16x16.png", null, null, false, null, "Forecasting of a Snapshot of PO's Outstanding Amounts Related to Equipment Hires"), isSecurityModule);
             moduleAdder(forecast_category_description, new BluePrintsEntitiesModuleDescription(DataUtils.GetNameOf(() => NavigationResources.Menu_Project_Snapshot_PO_Invoice), projectSpecificKey, forecast_category_description.NavigationId, childTitlePrefix + "PO Invoice", "PROJECTPOInvoicedView", new EntitiesParameter<PROJECT>(entity), null, "PO Invoice", false, false, @"Toolbox Items\Sparkline_16x16.png", null, null, false, null, "Show PO invoiced by month"), isSecurityModule);
             moduleAdder(forecast_category_description, new BluePrintsEntitiesModuleDescription(DataUtils.GetNameOf(() => NavigationResources.Menu_Project_Forecast_Indirect), projectSpecificKey, forecast_category_description.NavigationId, childTitlePrefix + "Indirects Forecast", "PROJECTIndirectForecastView", new EntitiesParameter<PROJECT>(entity), null, "Indirects Forecast", false, false, @"Function Library\Information_16x16.png"), isSecurityModule);
+            moduleAdder(forecast_category_description, new BluePrintsEntitiesModuleDescription(DataUtils.GetNameOf(() => NavigationResources.Menu_Project_Forecast_Indirect_History), projectSpecificKey, forecast_category_description.NavigationId, childTitlePrefix + "Indirects Forecast History", "PROJECTIndirectForecastHistoryView", new EntitiesParameter<PROJECT>(entity), null, "Indirects Forecast History", false, false, @"Function Library\Information_16x16.png"), isSecurityModule);
             moduleAdder(forecast_category_description, new BluePrintsEntitiesModuleDescription(DataUtils.GetNameOf(() => NavigationResources.Menu_Project_Forecast_Claims), projectSpecificKey, forecast_category_description.NavigationId, childTitlePrefix + "Claims", "PROJECT_REVENUECollectionView", new EntitiesParameter<PROJECT>(entity), null, "Claims", false, false, @"Number Formats\Accounting_16x16.png"), isSecurityModule);
             moduleAdder(forecast_category_description, new BluePrintsEntitiesModuleDescription(DataUtils.GetNameOf(() => NavigationResources.Menu_Project_Forecast_AllEAC), projectSpecificKey, forecast_category_description.NavigationId, childTitlePrefix + "View EAC's", "PROJECTForecastEACReportView", new EntitiesParameter<PROJECT>(entity), null, "View EAC's", false, false, @"Scheduling\FullWeekView_16x16.png"), isSecurityModule);
 
