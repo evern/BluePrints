@@ -14,28 +14,35 @@ namespace BluePrints.Data
     using System.ComponentModel.DataAnnotations.Schema;
     using System.Data.Entity.Spatial;
 
-    [Table("FORECAST")]
-    public partial class FORECAST
+    [Table("FORECAST_COMMENT")]
+    public partial class FORECAST_COMMENT
     {
         [Key]
         public Guid GUID { get; set; }
 
         public Guid GUID_PROJECT { get; set; }
 
+        [Required]
+        [StringLength(50)]
         public string SUBJOB_CODE { get; set; }
 
+        [Required]
+        [StringLength(50)]
         public string DISCIPLINE_CODE { get; set; }
 
+        [Required]
+        [StringLength(50)]
         public string COMMODITY_CODE { get; set; }
 
+        [Required]
+        [StringLength(50)]
         public string VARIATION_CODE { get; set; }
 
-        public decimal? FORECAST_UNITS { get; set; }
-        public string FORECAST_COMMENT { get; set; }
-
-        public ForecastDataType FORECAST_TYPE { get; set; }
-
         public DateTime FORECAST_DATE { get; set; }
+
+        [Column("FORECAST_COMMENT")]
+        [StringLength(500)]
+        public string FORECAST_COMMENT1 { get; set; }
 
         public DateTime CREATED { get; set; }
 

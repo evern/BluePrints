@@ -966,6 +966,7 @@
     <Compile Include="Common\View\PrimaveraAffinityReport.xaml.cs">
       <DependentUpon>PrimaveraAffinityReport.xaml</DependentUpon>
     </Compile>
+    <Compile Include="EntityFramework\Annotations\FORECAST_COMMENT.cs" />
     <Compile Include="EntityFramework\Annotations\PrimeroEntities.cs" />
     <Compile Include="EntityFramework\Annotations\CONSTRUCTION_STAGE.cs" />
     <Compile Include="EntityFramework\Annotations\DataPoint.cs" />
@@ -1069,6 +1070,7 @@
     <Compile Include="EntityFramework\Annotations\X_JOB_TRANSACTIONS_DETAIL_SeqNo.cs" />
     <Compile Include="EntityFramework\BluePrintsData\CONSTRUCTION_STAGE.cs" />
     <Compile Include="EntityFramework\BluePrintsData\DISCIPLINE_DESC.cs" />
+    <Compile Include="EntityFramework\BluePrintsData\FORECAST_COMMENT.cs" />
     <Compile Include="EntityFramework\BluePrintsData\FORECAST.cs" />
     <Compile Include="EntityFramework\BluePrintsData\FORECAST_HISTORY.cs" />
     <Compile Include="EntityFramework\BluePrintsData\FORECAST_JOB_HOUR.cs" />

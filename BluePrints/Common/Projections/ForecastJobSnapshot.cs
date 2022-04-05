@@ -358,7 +358,7 @@ namespace BluePrints.Common.Projections
         #endregion
     }
 
-    public class ForecastDateSnapshot : IForecastDateCostViewModel
+    public class ForecastDateSnapshot : IForecastDateCostViewModel, IForecastDateComments
     {
         public readonly DateTime MonthStartDate;
         public readonly DateTime MonthEndDate;
@@ -428,6 +428,8 @@ namespace BluePrints.Common.Projections
 
         //p6 costs needs to be categorised as uncommitted
         public decimal CommittedCosts => ActualCosts + POOutstandingCosts;
+
+        public string Comment { get; set; }
     }
 
 }

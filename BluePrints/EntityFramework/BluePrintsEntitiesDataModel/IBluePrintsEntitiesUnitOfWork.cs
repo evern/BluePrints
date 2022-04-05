@@ -113,6 +113,11 @@ namespace BluePrints.BluePrintsEntitiesDataModel
         IRepository<FORECAST, Guid> FORECASTS { get; }
 
         /// <summary>
+        /// The FORECAST_COMMENT entities repository.
+        /// </summary>
+        IRepository<FORECAST_COMMENT, Guid> FORECAST_COMMENTS { get; }
+
+        /// <summary>
         /// The FORECAST_EAC entities repository.
         /// </summary>
         IRepository<FORECAST_EAC, Guid> FORECAST_EACS { get; }

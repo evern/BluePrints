@@ -922,6 +922,9 @@ namespace BluePrints.ViewModels
                 else
                 {
                     commodityRow[dateCost.QueryDate.ToString(BluePrintsResources.ColumnDateFormat)] = viewCost;
+                    IForecastDateCostViewModel forecastDateCost = job.ForecastDateCosts.FirstOrDefault(x => x.QueryDate.Date == dateCost.QueryDate.Date);
+                    IForecastDateComments forecastDateComments = forecastDateCost as IForecastDateComments;
+                    if(forecastDateComments !)
 
                     //when there aren't any P6 overrides then parent value will be purely uncommitted value, it's either this or P6 override which isn't categorised as uncommitted
                     if (forecastCostsOverrides.Count > 0 && forecastUnitsOverrides.Count == 0)
@@ -1315,6 +1318,38 @@ namespace BluePrints.ViewModels
             BluePrintsContextHelper.RefreshForecastP6ByProject(LoadPROJECT.NUMBER, FixedDataDate, true);
             BluePrintsContextHelper.RefreshForecastP6ByProject(LoadPROJECT.NUMBER, FixedDataDate, false);
             FullRefresh();
+        }
+
+        public void AddCellToolTip()
+        {
+            EntitiesUndoRedoManager.PauseActionId();
+            var selected_cells = getSelectedCells();
+
+            foreach (var selected_cell in selected_cells)
+            {
+                int row_handle = selected_cell.RowHandle;
+                DataRowView editing_row_view = (DataRowView)GridControlService.GridControl.GetRow(row_handle);
+                if (editing_row_view == null)
+                    continue;
+
+                DataRow editing_row = editing_row_view.Row;
+                DataColumn editing_column = editing_row.Table.Columns[selected_cell.Column.FieldName];
+
+                string columnFieldName = selected_cell.Column.FieldName;
+                DateTime deleteCellDate;
+                if (DateTime.TryParse(columnFieldName, out deleteCellDate))
+                {
+                    if (deleteCellDate <= FixedDataDate)
+                        continue;
+
+                    resetViewRemainingOnJob(editing_row, columnFieldName, true);
+                    findExistingOrAddNewForecast(editing_row, deleteCellDate, null);
+                    //editing_row[columnFieldName] = 0.00m;
+                }
+            }
+
+            EntitiesUndoRedoManager.UnpauseActionId();
+            refreshGridData();
         }
 
         public void ResetCellContent()
