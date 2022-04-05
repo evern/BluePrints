@@ -151,6 +151,15 @@ namespace BluePrints.Common.Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Project forecast history category.
+        /// </summary>
+        internal static string Category_Project_Forecast_History {
+            get {
+                return ResourceManager.GetString("Category_Project_Forecast_History", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Project registers category.
         /// </summary>
         internal static string Category_Register {

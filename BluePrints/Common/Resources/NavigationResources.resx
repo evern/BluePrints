@@ -564,4 +564,7 @@
   <data name="Category_UserWIPTenders" xml:space="preserve">
     <value>User WIP tenders project category</value>
   </data>
+  <data name="Category_Project_Forecast_History" xml:space="preserve">
+    <value>Project forecast history category</value>
+  </data>
 </root>

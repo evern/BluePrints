@@ -140,6 +140,11 @@
                             </dxg:GridColumn>
                         </dxg:GridControlBand>
                         <dxg:GridControlBand x:Name="gcbDetail" Header="Detail">
+                            <dxg:GridColumn Header="Budget Cost" FieldName="JOB_TRANSACTION.AdjustedLineCost" HeaderToolTip="Total Cost" ReadOnly="True">
+                                <dxg:GridColumn.EditSettings>
+                                    <dxe:SpinEditSettings Increment="100" IsFloatValue="False" IsTextEditable="True" Mask="c0" MaskType="Numeric" MaskUseAsDisplayFormat="True" />
+                                </dxg:GridColumn.EditSettings>
+                            </dxg:GridColumn>
                             <dxg:GridColumn Header="Description" FieldName="JOB_TRANSACTION.DESCRIPTION" HeaderToolTip="Description" ReadOnly="True"/>
                             <dxg:GridColumn Header="Date" FieldName="JOB_TRANSACTION.TRANSDATE" HeaderToolTip="Transaction Date" ReadOnly="True"/>
                         </dxg:GridControlBand>

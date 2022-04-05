@@ -17,5 +17,8 @@ namespace BluePrints.PrimeroData
 
         [NotMapped]
         public int? PONumber { get; set; }
+
+        [NotMapped]
+        public double AdjustedLineCost => EXCHRATE == null || EXCHRATE == 0 ? (double)LINECOST : (double)(LINECOST / EXCHRATE);
     }
 }
