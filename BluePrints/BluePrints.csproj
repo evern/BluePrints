@@ -844,6 +844,8 @@
     <Compile Include="Common\ViewModel\Converters\ForecastChildCellMaskConverter.cs" />
     <Compile Include="Common\ViewModel\Converters\ForecastChildCellReadOnlyConverter.cs" />
     <Compile Include="Common\ViewModel\Converters\CellNumericUOMMaskConverter.cs" />
+    <Compile Include="Common\ViewModel\Converters\ForecastFutureCellInfoVisibilityConverter.cs" />
+    <Compile Include="Common\ViewModel\Converters\ForecastFutureCellInfoToolTipConverter.cs" />
     <Compile Include="Common\ViewModel\Converters\ForecastFutureCellToolTipConverter.cs" />
     <Compile Include="Common\ViewModel\Converters\ForecastFutureChildCellToolTipConverter.cs" />
     <Compile Include="Common\ViewModel\Converters\ForecastFutureChildCellColorConverter.cs" />

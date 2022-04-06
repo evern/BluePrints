@@ -39,10 +39,7 @@ namespace BluePrints.Common.ViewModel.Converters
                         if (DateTime.TryParse(fieldname, out parseDateTime))
                         {
                             IForecastDateCostViewModel dateCost = commodityJob.ForecastDateCosts.FirstOrDefault(x => x.QueryDate.Date == parseDateTime.Date);
-                            IForecastDateComments dateComment = dateCost as IForecastDateComments;
-                            if (dateComment != null && dateComment.Comment != null && dateComment.Comment != string.Empty)
-                                return dateComment.Comment;
-                            else if(dateCost != null)
+                            if(dateCost != null)
                             {
                                 decimal p6RemainingCosts = dateCost.P6Costs;
                                 decimal poForecastCosts = dateCost.POOutstandingCosts;

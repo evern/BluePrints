@@ -41,6 +41,7 @@ using System.Windows.Input;
 using System.Windows.Threading;
 using System.Diagnostics;
 using BluePrints.Common.Misc;
+using BaseModel.ViewModel.Dialogs;
 
 namespace BluePrints.ViewModels
 {
@@ -1328,6 +1329,31 @@ namespace BluePrints.ViewModels
         public void AddCellToolTip()
         {
             var selected_cells = getSelectedCells();
+            if (selected_cells.Count() == 0)
+                return;
+
+            //try to get default value to edit if comment already exist
+            string editComment = string.Empty;
+            GridCell focusedCell = selected_cells.First();
+            DataRowView focusedCellRow = (DataRowView)GridControlService.GridControl.GetRow(focusedCell.RowHandle);
+            DateTime focusedCellDate;
+            if (DateTime.TryParse(focusedCell.Column.FieldName, out focusedCellDate))
+            {
+                ForecastDateSnapshot dateCost = findForecastDateSnapshot(focusedCellRow.Row, focusedCellDate);
+                editComment = dateCost.Comment;
+            }
+
+            var bulkEditStringsViewModel = BulkEditStringsViewModel.Create(editComment, "Please enter comments");
+            if (BulkColumnEditDialogService.ShowDialog(MessageButton.OKCancel, "Comments", "BulkEditStrings", bulkEditStringsViewModel) == MessageResult.OK)
+            {
+                editComment = bulkEditStringsViewModel.EditValue;
+            }
+
+            if(editComment == null || editComment == string.Empty)
+            {
+                MessageBoxService.ShowMessage("Cannot enter empty comments", "Error", MessageButton.OK, MessageIcon.Information);
+                return;
+            }
 
             foreach (var selected_cell in selected_cells)
             {
@@ -1346,7 +1372,15 @@ namespace BluePrints.ViewModels
                     if (cellDate <= FixedDataDate)
                         continue;
 
-                    findExistingOrAddNewForecastComment(editing_row, cellDate, "TEST", false);
+                    findExistingOrAddNewForecastComment(editing_row, cellDate, editComment, false);
+                    GridColumn findColumn = GridControlService.GridControl.Columns.FirstOrDefault(x => x.FieldName == columnFieldName);
+                    if(findColumn != null)
+                    {
+                        //workaround to invoke ForecastFutureCellToolTipConverter
+                        GridControlService.GridControl.CurrentColumn = findColumn;
+                        TableViewService.TableView.ShowEditor();
+                        TableViewService.TableView.CloseEditor();
+                    }
                 }
             }
         }
@@ -2591,11 +2625,8 @@ namespace BluePrints.ViewModels
             ForecastJobSnapshot job = (ForecastJobSnapshot)dataRow[columnEntity];
             string dateFieldName = forecastDate.ToString(BluePrintsResources.ColumnDateFormat);
             string saveNewValue = viewNewValue;
-
-            //this is definitely present because the view is generated from datecost model
-            ForecastDateSnapshot dateCost = job.DateCosts.First(x => x.QueryDate == forecastDate.Date);
-            
-            FORECAST_COMMENT editFORECAST_COMMENT = dateCost.ByDateForecastComment;
+            ForecastDateSnapshot dateCost = findForecastDateSnapshot(dataRow, forecastDate);
+            FORECAST_COMMENT editFORECAST_COMMENT = dateCost.ByDateForecastComment;;
             //search repository
             if (editFORECAST_COMMENT == null)
             {
@@ -2626,6 +2657,14 @@ namespace BluePrints.ViewModels
             {
                 bluePrintsUnitOfWork.SaveChanges();
             }
+        }
+
+        private ForecastDateSnapshot findForecastDateSnapshot(DataRow dataRow, DateTime forecastDate)
+        {
+            ForecastJobSnapshot job = (ForecastJobSnapshot)dataRow[columnEntity];
+            string dateFieldName = forecastDate.ToString(BluePrintsResources.ColumnDateFormat);
+            //this is definitely present because the view is generated from datecost model
+            return job.DateCosts.First(x => x.QueryDate == forecastDate.Date);
         }
 
         /// <summary>
