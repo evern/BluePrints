@@ -18,10 +18,10 @@ namespace BluePrints.Common.ViewModel.Converters
             try
             {
                 if (values[0] == null || values[1] == null || values[2] == null)
-                    return null;
+                    return Visibility.Collapsed;
 
                 if (values[0] == DependencyProperty.UnsetValue || values[1] == DependencyProperty.UnsetValue || values[2] == DependencyProperty.UnsetValue)
-                    return null;
+                    return Visibility.Collapsed;
 
                 DataRow dataRow = (DataRow)values[0];
                 IForecastViewModel commodityJob = (IForecastViewModel)dataRow["Entity"];
