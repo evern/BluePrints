@@ -22,27 +22,22 @@ namespace BluePrints.Data
 
         public Guid GUID_PROJECT { get; set; }
 
-        [Required]
         [StringLength(50)]
         public string SUBJOB_CODE { get; set; }
 
-        [Required]
         [StringLength(50)]
         public string DISCIPLINE_CODE { get; set; }
 
-        [Required]
         [StringLength(50)]
         public string COMMODITY_CODE { get; set; }
 
-        [Required]
         [StringLength(50)]
         public string VARIATION_CODE { get; set; }
 
         public DateTime FORECAST_DATE { get; set; }
 
-        [Column("FORECAST_COMMENT")]
         [StringLength(500)]
-        public string FORECAST_COMMENT1 { get; set; }
+        public string COMMENT { get; set; }
 
         public DateTime CREATED { get; set; }
 

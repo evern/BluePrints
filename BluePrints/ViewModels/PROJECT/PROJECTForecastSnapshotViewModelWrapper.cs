@@ -40,6 +40,7 @@ using System.Windows;
 using System.Windows.Input;
 using System.Windows.Threading;
 using System.Diagnostics;
+using BluePrints.Common.Misc;
 
 namespace BluePrints.ViewModels
 {
@@ -91,7 +92,7 @@ namespace BluePrints.ViewModels
 
         #region Database Operations
 
-        private IUnitOfWorkFactory<IBluePrintsEntitiesUnitOfWork> bluePrintsUnitOfWorkFactory = BluePrintsEntitiesUnitOfWorkSource.GetUnitOfWorkFactory();
+        private IUnitOfWorkFactory<IBluePrintsEntitiesUnitOfWork> bluePrintsUnitOfWorkFactory;
         protected IUnitOfWorkFactory<IPrimeroEntitiesUnitOfWork> primeroUnitOfWorkFactory = PrimeroEntitiesUnitOfWorkSource.GetUnitOfWorkFactory();
         protected IUnitOfWorkFactory<IP6EntitiesUnitOfWork> p6UnitOfWorkFactory = P6EntitiesUnitOfWorkSource.GetUnitOfWorkFactory();
         InstantFeedbackActualDetailsCollectionViewModelWrapper instantFeedbackActualDetailViewModel = InstantFeedbackActualDetailsCollectionViewModelWrapper.Create();
@@ -187,8 +188,9 @@ namespace BluePrints.ViewModels
         protected override void resolveParameters(object parameter)
         {
             var PROJECTParameter = (EntitiesParameter<Data.PROJECT>)parameter;
-            bluePrintsUnitOfWork = bluePrintsUnitOfWorkFactory.CreateUnitOfWork();
+            bluePrintsUnitOfWork = BluePrintsEntitiesUnitOfWorkSource.GetUnitOfWorkFactory().CreateUnitOfWork();
             primeroUnitOfWork = primeroUnitOfWorkFactory.CreateUnitOfWork();
+            bluePrintsUnitOfWorkFactory = BluePrintsEntitiesUnitOfWorkSource.GetUnitOfWorkFactory(bluePrintsUnitOfWork);
             LoadPROJECT = PROJECTParameter.GetEntity();
         }
 
@@ -196,6 +198,7 @@ namespace BluePrints.ViewModels
         {
             loaderCollection.AddLoaderDescription(bluePrintsUnitOfWorkFactory, x => x.PROJECTS, PROJECTProjectionFunc, x => setProject(x));
             loaderCollection.AddLoaderDescription(bluePrintsUnitOfWorkFactory, x => x.FORECAST_JOB_HOUR_SNAPSHOTS, FORECAST_JOB_HOUR_SNAPSHOTProjectionFunc);
+            loaderCollection.AddLoaderDescription(bluePrintsUnitOfWorkFactory, x => x.FORECAST_COMMENTS, FORECAST_COMMENTProjectionFunc);
             loaderCollection.AddLoaderDescription(bluePrintsUnitOfWorkFactory, x => x.DISCIPLINE_DESCS, DISCIPLINE_DESCProjectionFunc);
             loaderCollection.AddLoaderDescription(bluePrintsUnitOfWorkFactory, x => x.AREAS, AREAProjectionFunc);
             loaderCollection.AddLoaderDescription(bluePrintsUnitOfWorkFactory, x => x.COMMODITY_CODES, COMMODITY_CODEProjectionFunc);
@@ -237,6 +240,11 @@ namespace BluePrints.ViewModels
         protected virtual Func<IRepositoryQuery<FORECAST_JOB_HOUR_SNAPSHOT>, IQueryable<FORECAST_JOB_HOUR_SNAPSHOT>> FORECAST_JOB_HOUR_SNAPSHOTProjectionFunc()
         {
             return query => query.Where(x => x.GUID_PROJECT == LoadPROJECT.GUID && x.DATA_DATE == FixedDataDate);
+        }
+
+        protected virtual Func<IRepositoryQuery<FORECAST_COMMENT>, IQueryable<FORECAST_COMMENT>> FORECAST_COMMENTProjectionFunc()
+        {
+            return query => query.Where(x => x.GUID_PROJECT == LoadPROJECT.GUID);
         }
 
         protected virtual Func<IRepositoryQuery<DISCIPLINE_DESC>, IQueryable<DISCIPLINE_DESC>> DISCIPLINE_DESCProjectionFunc()
@@ -667,7 +675,7 @@ namespace BluePrints.ViewModels
                 //{
 
                 //}
-                UniqueForecastJob uniqueForecastJob = new UniqueForecastJob(projectLines, subJobCode, disciplineCode, commodityCode, variationCode, FixedDataDate, PreviousDataDate, FORECAST_JOB_HOUR_SNAPSHOTCollection, IsShowUninvoicedOnly);
+                UniqueForecastJob uniqueForecastJob = new UniqueForecastJob(projectLines, subJobCode, disciplineCode, commodityCode, variationCode, FixedDataDate, PreviousDataDate, FORECAST_JOB_HOUR_SNAPSHOTCollection, FORECAST_COMMENTCollection, IsShowUninvoicedOnly);
                 uniqueForecastJob.UpdateTenderBudget(TenderBudgetCollection.AsQueryable());
                 uniqueForecastJob.UpdateErrorMessage(JOBCOST_LINES_AUDITCollection.AsQueryable());
                 uniqueForecastJobs.Add(uniqueForecastJob);
@@ -702,7 +710,7 @@ namespace BluePrints.ViewModels
                     ForecastJobSnapshot forecastJobSnapshot = new ForecastJobSnapshot(uniqueForecastJob, isBudgetReadOnly, FORECAST_EACCollection, FORECAST_EACPreviousCommitmentCollection, FORECAST_JOB_SETTINGCollection, COMMODITY_CODECollection, AREACollection, LoadPROJECT, projectLines, PreviousDataDate);
                     foreach (DateTime alignedDataDate in alignedDataDateCollection)
                     {
-                        ForecastDateSnapshot forecastDateSnapshot = new ForecastDateSnapshot(uniqueForecastJob.AllCollection, firstViewDate, alignedDataDate.Date, FixedDataDate);
+                        ForecastDateSnapshot forecastDateSnapshot = new ForecastDateSnapshot(uniqueForecastJob.AllCollection, uniqueForecastJob.ForecastCommentCollection, firstViewDate, alignedDataDate.Date, FixedDataDate);
                         forecastJobSnapshot.DateCosts.Add(forecastDateSnapshot);
                     }
 
@@ -911,7 +919,7 @@ namespace BluePrints.ViewModels
                 //only describe actuals when it's less than data date
                 if (dateCost.QueryDate <= FixedDataDateMonthEnd)
                 {
-                    if(IsShowActualsHistory)
+                    if (IsShowActualsHistory)
                         actualRow[dateCost.QueryDate.ToString(BluePrintsResources.ColumnDateFormat)] = dateCost.ActualCosts;
 
                     commodityRow[dateCost.QueryDate.ToString(BluePrintsResources.ColumnDateFormat)] = dateCost.ActualCosts;
@@ -922,9 +930,6 @@ namespace BluePrints.ViewModels
                 else
                 {
                     commodityRow[dateCost.QueryDate.ToString(BluePrintsResources.ColumnDateFormat)] = viewCost;
-                    IForecastDateCostViewModel forecastDateCost = job.ForecastDateCosts.FirstOrDefault(x => x.QueryDate.Date == dateCost.QueryDate.Date);
-                    IForecastDateComments forecastDateComments = forecastDateCost as IForecastDateComments;
-                    if(forecastDateComments !)
 
                     //when there aren't any P6 overrides then parent value will be purely uncommitted value, it's either this or P6 override which isn't categorised as uncommitted
                     if (forecastCostsOverrides.Count > 0 && forecastUnitsOverrides.Count == 0)
@@ -1103,7 +1108,7 @@ namespace BluePrints.ViewModels
                         foreach (DataRow costRow in costRows)
                         {
                             string parseDecimalStr = costRow[dateFieldName].ToString();
-                            if(parseDecimalStr != string.Empty)
+                            if (parseDecimalStr != string.Empty)
                             {
                                 decimal parseDecimal = 0;
                                 if (decimal.TryParse(parseDecimalStr, out parseDecimal))
@@ -1322,7 +1327,6 @@ namespace BluePrints.ViewModels
 
         public void AddCellToolTip()
         {
-            EntitiesUndoRedoManager.PauseActionId();
             var selected_cells = getSelectedCells();
 
             foreach (var selected_cell in selected_cells)
@@ -1336,20 +1340,15 @@ namespace BluePrints.ViewModels
                 DataColumn editing_column = editing_row.Table.Columns[selected_cell.Column.FieldName];
 
                 string columnFieldName = selected_cell.Column.FieldName;
-                DateTime deleteCellDate;
-                if (DateTime.TryParse(columnFieldName, out deleteCellDate))
+                DateTime cellDate;
+                if (DateTime.TryParse(columnFieldName, out cellDate))
                 {
-                    if (deleteCellDate <= FixedDataDate)
+                    if (cellDate <= FixedDataDate)
                         continue;
 
-                    resetViewRemainingOnJob(editing_row, columnFieldName, true);
-                    findExistingOrAddNewForecast(editing_row, deleteCellDate, null);
-                    //editing_row[columnFieldName] = 0.00m;
+                    findExistingOrAddNewForecastComment(editing_row, cellDate, "TEST", false);
                 }
             }
-
-            EntitiesUndoRedoManager.UnpauseActionId();
-            refreshGridData();
         }
 
         public void ResetCellContent()
@@ -1374,7 +1373,6 @@ namespace BluePrints.ViewModels
                     if (deleteCellDate <= FixedDataDate)
                         continue;
 
-                    resetViewRemainingOnJob(editing_row, columnFieldName, true);
                     findExistingOrAddNewForecast(editing_row, deleteCellDate, null);
                     //editing_row[columnFieldName] = 0.00m;
                 }
@@ -2588,6 +2586,48 @@ namespace BluePrints.ViewModels
             }
         }
 
+        private void findExistingOrAddNewForecastComment(DataRow dataRow, DateTime forecastDate, string viewNewValue, bool skipRowSavingAndRefresh = false)
+        {
+            ForecastJobSnapshot job = (ForecastJobSnapshot)dataRow[columnEntity];
+            string dateFieldName = forecastDate.ToString(BluePrintsResources.ColumnDateFormat);
+            string saveNewValue = viewNewValue;
+
+            //this is definitely present because the view is generated from datecost model
+            ForecastDateSnapshot dateCost = job.DateCosts.First(x => x.QueryDate == forecastDate.Date);
+            
+            FORECAST_COMMENT editFORECAST_COMMENT = dateCost.ByDateForecastComment;
+            //search repository
+            if (editFORECAST_COMMENT == null)
+            {
+                IQueryable<FORECAST_COMMENT> projectFORECAST_COMMENTS = FORECAST_COMMENTProjectionFunc()(bluePrintsUnitOfWork.FORECAST_COMMENTS);
+                editFORECAST_COMMENT = projectFORECAST_COMMENTS.FirstOrDefault(x => x.FORECAST_DATE == forecastDate.Date && x.SUBJOB_CODE == job.SubJobCode && x.DISCIPLINE_CODE == job.DisciplineCode && x.COMMODITY_CODE == job.CommodityCode && x.VARIATION_CODE == job.VariationCode);
+            }
+
+            if (editFORECAST_COMMENT == null)
+            {
+                editFORECAST_COMMENT = new FORECAST_COMMENT();
+                editFORECAST_COMMENT.GUID = Guid.Empty;
+                editFORECAST_COMMENT.GUID_PROJECT = LoadPROJECT.GUID;
+                editFORECAST_COMMENT.SUBJOB_CODE = job.SubJobCode;
+                editFORECAST_COMMENT.DISCIPLINE_CODE = DataUtils.NormalizeString(job.DisciplineCode);
+                editFORECAST_COMMENT.COMMODITY_CODE = DataUtils.NormalizeString(job.CommodityCode);
+                editFORECAST_COMMENT.VARIATION_CODE = DataUtils.NormalizeString(job.VariationCode);
+                editFORECAST_COMMENT.FORECAST_DATE = forecastDate.Date;
+                editFORECAST_COMMENT.COMMENT = saveNewValue;
+                bluePrintsUnitOfWork.FORECAST_COMMENTS.Add(editFORECAST_COMMENT);
+            }
+            else
+            {
+                editFORECAST_COMMENT.COMMENT = saveNewValue;
+            }
+
+            dateCost.ByDateForecastComment = editFORECAST_COMMENT;
+            if (!skipRowSavingAndRefresh)
+            {
+                bluePrintsUnitOfWork.SaveChanges();
+            }
+        }
+
         /// <summary>
         /// update view and database at the same time
         /// </summary>
@@ -3163,6 +3203,14 @@ namespace BluePrints.ViewModels
             }
         }
 
+        public IEnumerable<FORECAST_COMMENT> FORECAST_COMMENTCollection
+        {
+            get
+            {
+                return GetEntities<FORECAST_COMMENT>();
+            }
+        }
+
         public IEnumerable<JOB_COSTGROUPS> JOB_COSTGROUPCollection
         {
             get
@@ -3386,7 +3434,7 @@ namespace BluePrints.ViewModels
 
     public class UniqueForecastJob
     {
-        public UniqueForecastJob(IEnumerable<ExoSubJobProjection> projectLines, string subJobCode, string disciplineCode, string commodityCode, string variationCode, DateTime dataDate, DateTime previousDataDate, IEnumerable<FORECAST_JOB_HOUR_SNAPSHOT> FORECAST_JOB_HOURByDataDateCollection, bool isShowUninvoicedOnly)
+        public UniqueForecastJob(IEnumerable<ExoSubJobProjection> projectLines, string subJobCode, string disciplineCode, string commodityCode, string variationCode, DateTime dataDate, DateTime previousDataDate, IEnumerable<FORECAST_JOB_HOUR_SNAPSHOT> FORECAST_JOB_HOURByDataDateCollection, IEnumerable<FORECAST_COMMENT> FORECAST_COMMENTCollection, bool isShowUninvoicedOnly)
         {
             SUBJOB_CODE = subJobCode;
             DISCIPLINE_CODE = disciplineCode;
@@ -3396,6 +3444,9 @@ namespace BluePrints.ViewModels
 
             IEnumerable<FORECAST_JOB_HOUR_SNAPSHOT> filteredForecastJobHourSnapshot = FORECAST_JOB_HOURByDataDateCollection.Where(x => x.SUBJOB_CODE == subJobCode && x.DISCIPLINE_CODE == disciplineCode && x.COMMODITY_CODE == commodityCode && x.VARIATION_CODE == variationCode);
             AllCollection = filteredForecastJobHourSnapshot.ToList();
+            IEnumerable<FORECAST_COMMENT> filteredForecastComment = FORECAST_COMMENTCollection.Where(x => x.SUBJOB_CODE == subJobCode && x.DISCIPLINE_CODE == disciplineCode && x.COMMODITY_CODE == commodityCode && x.VARIATION_CODE == variationCode);
+            ForecastCommentCollection = filteredForecastComment.ToList();
+
             BudgetCollection = filteredForecastJobHourSnapshot.Where(x => x.SNAPSHOT_TYPE == ForecastSnapshotValueType.Budget).ToList();
             PreviousActualCollection = filteredForecastJobHourSnapshot.Where(x => x.SNAPSHOT_TYPE == ForecastSnapshotValueType.Actual && x.FORECAST_DATE <= previousDataDate).ToList();
 
@@ -3512,6 +3563,7 @@ namespace BluePrints.ViewModels
         private decimal tenderBudget;
         public decimal TenderBudget => tenderBudget;
         public List<FORECAST_JOB_HOUR_SNAPSHOT> AllCollection { get; set; }
+        public List<FORECAST_COMMENT> ForecastCommentCollection { get; set; }
         public List<FORECAST_JOB_HOUR_SNAPSHOT> BudgetCollection { get; set; }
         public List<FORECAST_JOB_HOUR_SNAPSHOT> PreviousActualCollection { get; set; }
         public List<FORECAST_JOB_HOUR_SNAPSHOT> ActualCollection { get; set; }

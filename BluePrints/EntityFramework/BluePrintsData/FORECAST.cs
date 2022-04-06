@@ -31,7 +31,6 @@ namespace BluePrints.Data
         public string VARIATION_CODE { get; set; }
 
         public decimal? FORECAST_UNITS { get; set; }
-        public string FORECAST_COMMENT { get; set; }
 
         public ForecastDataType FORECAST_TYPE { get; set; }
 
