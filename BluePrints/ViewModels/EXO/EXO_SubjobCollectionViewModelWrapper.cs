@@ -115,7 +115,13 @@ namespace BluePrints.ViewModels
             loaderCollection.AddLoaderDescription(bluePrintsUnitOfWorkFactory, x => x.USERS, USERProjectionFunc);
             loaderCollection.AddLoaderDescription<PrimeroData.PROFILE, PrimeroData.PROFILE, int, IPrimeroEntitiesUnitOfWork>(localPrimeroUnitOfWorkFactory, x => x.PROFILE);
             loaderCollection.AddLoaderDescription<PrimeroData.STOCK_ITEMS, PrimeroData.STOCK_ITEMS, string, IPrimeroEntitiesUnitOfWork>(localPrimeroUnitOfWorkFactory, x => x.STOCK_ITEMS);
+            loaderCollection.AddLoaderDescription(bluePrintsUnitOfWorkFactory, x => x.FORECAST_EACS, FORECAST_EACProjectionFunc);
             loaderCollection.AddLoaderDescription(bluePrintsUnitOfWorkFactory, x => x.FORECAST_JOBS, FORECAST_JOBProjectionFunc);
+        }
+
+        protected virtual Func<IRepositoryQuery<FORECAST_EAC>, IQueryable<FORECAST_EAC>> FORECAST_EACProjectionFunc()
+        {
+            return query => query.Where(x => x.GUID_PROJECT == loadPROJECT.GUID && x.TYPE != ForecastEACType.TenderBudget);
         }
 
         protected virtual Func<IRepositoryQuery<COMMODITY_CODE>, IQueryable<COMMODITY_CODE>> COMMODITY_CODEProjectionFunc()
@@ -254,8 +260,14 @@ namespace BluePrints.ViewModels
                     return OperationInterceptMode.SkipAll;
             }
 
+            if(FORECAST_EACCollection.Any(x => x.SUBJOB_CODE == projection.SubJobCode && x.DISCIPLINE_CODE == projection.DisciplineCode && x.COMMODITY_CODE == projection.CommodityCode && x.VARIATION_CODE == projection.VariationCode))
+            {
+                if (MessageBoxService.ShowMessage(projection.FullCode + " Exists in EAC history\nIf you delete this line it'll be removed from forecast snapshot\n\nAre you sure you wish to continue?", "Confirmation", MessageButton.YesNo) == MessageResult.No)
+                    return OperationInterceptMode.SkipAll;
+            }
+
             if (!projection.IsLineExistsInExo)
-                return OperationInterceptMode.SkipOneAndAllDbSaves;
+            return OperationInterceptMode.SkipOneAndAllDbSaves;
 
             removeFromExo(projection);
             return OperationInterceptMode.SkipOneAndAllDbSaves;
@@ -925,6 +937,14 @@ namespace BluePrints.ViewModels
             get
             {
                 return GetEntities<JOB_CATEGORIES>();
+            }
+        }
+
+        public IEnumerable<FORECAST_EAC> FORECAST_EACCollection
+        {
+            get
+            {
+                return GetEntities<FORECAST_EAC>();
             }
         }
 
