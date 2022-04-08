@@ -93,10 +93,7 @@
                         </dxg:GridControl>
                     </dxlc:LayoutGroup>
                     <dxc:LoadingDecorator IsSplashScreenShown="{Binding IsPermissionLoading}">
-                        <dxlc:LayoutGroup Name="LayoutGroupPermission" Orientation="Vertical" View="Group">
-                            <dxlc:LayoutItem Height="50">
-                                <TextBlock TextWrapping="Wrap" Padding="15" Text="Permissions are assigned by SubJob. User will be assigned/unassigned for all lines on the left with the same Subjob" />
-                            </dxlc:LayoutItem>
+                        <dxlc:LayoutGroup Name="LayoutGroupPermission" Orientation="Horizontal" View="Group">
                             <dxg:GridControl x:Name="GridControlPermission" MaxHeight="2000" dxc:DXSerializer.SerializationID="GridControlExoSubjobUsers" dxc:DXSerializer.StoreLayoutMode="All" IsEnabled="{Binding IsPermissionGridEnabled}" ItemsSource="{Binding Users}" SelectedItem="{Binding SelectedUser, Mode=TwoWay}" SelectedItems="{Binding SelectedUsers}" SelectionMode="Row">
                                 <dxg:GridControl.Columns>
                                     <dxg:GridColumn FieldName="IsAssigned" Width="50" Header="Can Book" HeaderToolTip="Indicate whether user have permission to book the selected time in exo">
