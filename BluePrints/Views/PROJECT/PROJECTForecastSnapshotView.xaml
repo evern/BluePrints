@@ -269,6 +269,7 @@
                                 <dxmvvm:EventToCommand Command="{Binding EditValueChangedCommand}" EventName="EditValueChanged" MarkRoutedEventsAsHandled="True" PassEventArgsToCommand="True" />
                                 <dxmvvm:EventToCommand Command="{Binding EditValueValidateCommand}" EventName="Validate" MarkRoutedEventsAsHandled="True" PassEventArgsToCommand="True" />
                                 <dxmvvm:EventToCommand Command="{Binding GotFocusCommand}" EventName="GotFocus" MarkRoutedEventsAsHandled="True" PassEventArgsToCommand="True" />
+                                <dxmvvm:EventToCommand Command="{Binding LostFocusCommand}" EventName="LostFocus" MarkRoutedEventsAsHandled="True" PassEventArgsToCommand="True" />
                             </ItemsControl>
                         </DataTemplate>
                     </Setter.Value>
@@ -372,6 +373,7 @@
                 <dxb:BarCheckItem x:Name="biShowActuals" Content="Show Actuals History" Glyph="{dxc:DXImage Images/Scheduling/SwitchTimeScalesTo_16x16.png}" IsChecked="{Binding IsShowActualsHistory, Mode=TwoWay}" IsEnabled="{Binding IsLoading, Converter={StaticResource BooleanNegationConverter}}" LargeGlyph="{dxc:DXImage Images/Scheduling/SwitchTimeScalesTo_32x32.png}" RibbonStyle="SmallWithText" ToolTip="Toggle historical actuals visibility" />
                 <dxb:BarCheckItem x:Name="biUninvoicedOnly" Content="Filter Actual by Uninvoiced" IsChecked="{Binding IsShowUninvoicedOnly, Mode=TwoWay}" IsEnabled="{Binding IsLoading, Converter={StaticResource BooleanNegationConverter}}" LargeGlyph="{dxc:DXImage Images/Spreadsheet/ReapplyFilter_32x32.png}" RibbonStyle="SmallWithText" ToolTip="Actuals are filtered by uninvoiced only" Glyph="{dxc:DXImage Images/Spreadsheet/ReapplyFilter_16x16.png}" />
                 <dxb:BarButtonItem x:Name="biSaveSummary" Command="{Binding SaveSummaryCommand}" Content="Save Excel Summary" Glyph="{dx:DXImage Image=SpreadsheetInsertTable_16x16.png}" LargeGlyph="{dx:DXImage Image=SpreadsheetInsertTable_32x32.png}" RibbonStyle="SmallWithText" ToolTip="Saves the summary for excel macro to retrieve values" />
+                <dxb:BarButtonItem x:Name="biRefreshBudgetData" Command="{Binding RefreshBudgetDataCommand}" Content="Update Budget" IsEnabled="{Binding IsLoading, Converter={StaticResource BooleanNegationConverter}}" RibbonStyle="SmallWithText" ToolTip="Refresh Budget Only" Glyph="{dxc:DXImage Images/Actions/Fill_32x32.png}" LargeGlyph="{dxc:DXImage Images/Actions/Fill_16x16.png}" />
                 <dxb:BarButtonItem x:Name="biRefreshActualData" Command="{Binding RefreshAllActualDataCommand}" Content="Update Actuals" IsEnabled="{Binding IsLoading, Converter={StaticResource BooleanNegationConverter}}" LargeGlyph="{dxc:DXImage Images/Spreadsheet/EditingFillLeft_32x32.png}" RibbonStyle="SmallWithText" ToolTip="Refresh Budget, Material, Timesheet and POs" Glyph="{dxc:DXImage Images/Spreadsheet/EditingFillLeft_16x16.png}" />
                 <dxb:BarButtonItem x:Name="biRefreshForecastData" Command="{Binding RefreshForecastDataCommand}" Content="Update Forecast" IsEnabled="{Binding IsLoading, Converter={StaticResource BooleanNegationConverter}}" LargeGlyph="{dxc:DXImage Images/Spreadsheet/EditingFillRight_32x32.png}" RibbonStyle="SmallWithText" ToolTip="Refresh PO Forecast, EH PO Forecast and Indirect forecast" Glyph="{dxc:DXImage Images/Spreadsheet/EditingFillRight_16x16.png}" />
                 <dxb:BarEditItem x:Name="beLastUpdated" Content="Data Refreshed" IsEnabled="{Binding IsLoading, Converter={StaticResource BooleanNegationConverter}}" Glyph="{dxc:DXImage Image=Time2_16x16.png}" LargeGlyph="{dxc:DXImage Image=Time2_32x32.png}" IsReadOnly="True" EditValue="{Binding SnapshotLastUpdated, Mode=OneWay}" ToolTip="Budget, Material, Timesheet and POs last updated date">
@@ -412,6 +414,7 @@
                                 <dxb:BarEditItemLink BarItemName="beForecastProject" />
                                 <dxb:BarButtonItemLink BarItemName="biLastRefreshedError" />
                                 <dxb:BarEditItemLink BarItemName="beLastRefreshed" />
+                                <dxb:BarButtonItemLink BarItemName="biRefreshBudgetData" />
                                 <dxb:BarButtonItemLink BarItemName="biRefreshActualData" />
                                 <dxb:BarButtonItemLink BarItemName="biRefreshForecastData" />
                                 <dxb:BarEditItemLink BarItemName="beLastUpdated" />

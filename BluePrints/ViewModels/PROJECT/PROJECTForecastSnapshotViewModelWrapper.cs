@@ -1571,6 +1571,11 @@ namespace BluePrints.ViewModels
             //only allow editing when user focused on control instead of being changed from EditValueChanged
             allowValueEditing = true;
         }
+        private void LostFocus(RoutedEventArgs e)
+        {
+            //only allow editing when user focused on control instead of being changed from EditValueChanged
+            allowValueEditing = false;
+        }
 
         //prevent value from being saved if layout is loading
         bool allowValueEditing = false;
@@ -1662,6 +1667,7 @@ namespace BluePrints.ViewModels
             savePROJECT();
             MessageBoxService.ShowMessage("Revenue Saved", "Success", MessageButton.OK);
             this.RaisePropertyChanged(x => x.ForecastSummary);
+            allowValueEditing = false;
         }
 
         /// <summary>
@@ -3051,6 +3057,8 @@ namespace BluePrints.ViewModels
 
         public void RefreshAllActualData(bool disableMessage = false)
         {
+            //prevent EditValueChanged from being invoked with null NewValue causing spinedit to set a null value
+            allowValueEditing = false;
             if(!disableMessage)
                 if (MessageBoxService.ShowMessage("Are you sure you want to update actuals? This may cause forecast result of PO/EH PO's and Indirect's inaccurate", "Warning", MessageButton.YesNo, MessageIcon.Warning) == MessageResult.No)
                     return;
@@ -3073,6 +3081,28 @@ namespace BluePrints.ViewModels
             FullRefresh();
         }
 
+        public bool CanRefreshBudgetData(bool disableMessage = false)
+        {
+            return !IsLoading;
+        }
+
+        public void RefreshBudgetData(bool disableMessage = false)
+        {
+            IsLoading = true;
+            Common.LoadingScreenManager.ShowLoadingScreen(1);
+            //Common.LoadingScreenManager.SetMessage("Fetching P6 remaining data...");
+            //await BluePrintsContextHelper.RefreshDeliverablesRemainingDataPointsByProject(LoadPROJECT.NUMBER, true);
+
+            //Common.LoadingScreenManager.SetMessage("Fetching P6 planned data...");
+            //await BluePrintsContextHelper.RefreshDeliverablesPlannedDataPointsByProject(LoadPROJECT.NUMBER, true);
+
+            Common.LoadingScreenManager.SetMessage("Updating Budget...");
+            BluePrintsContextHelper.RefreshBudgetData(LoadPROJECT.NUMBER, FixedDataDate);
+            Common.LoadingScreenManager.CloseLoadingScreen();
+
+            FullRefresh();
+        }
+
         public bool CanRefreshForecastData()
         {
             return !IsLoading;
@@ -3080,6 +3110,8 @@ namespace BluePrints.ViewModels
 
         public void RefreshForecastData()
         {
+            //prevent EditValueChanged from being invoked with null NewValue causing spinedit to set a null value
+            allowValueEditing = false;
             IsLoading = true;
             Common.LoadingScreenManager.ShowLoadingScreen(1);
             //Common.LoadingScreenManager.SetMessage("Fetching P6 remaining data...");
