@@ -121,7 +121,7 @@ namespace BluePrints.ViewModels
 
         protected virtual Func<IRepositoryQuery<FORECAST_EAC>, IQueryable<FORECAST_EAC>> FORECAST_EACProjectionFunc()
         {
-            return query => query.Where(x => x.GUID_PROJECT == loadPROJECT.GUID && x.TYPE != ForecastEACType.TenderBudget);
+            return query => query.Where(x => x.GUID_PROJECT == loadPROJECT.GUID && x.TYPE == ForecastEACType.EAC && x.TYPE == ForecastEACType.PreviousCommitment);
         }
 
         protected virtual Func<IRepositoryQuery<COMMODITY_CODE>, IQueryable<COMMODITY_CODE>> COMMODITY_CODEProjectionFunc()

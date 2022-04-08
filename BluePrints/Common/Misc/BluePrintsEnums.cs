@@ -1114,7 +1114,9 @@ namespace BluePrints.Common
         [Display(Name = "Previous Commitment")]
         PreviousCommitment = 1,
         [Display(Name = "Tender Budget")]
-        TenderBudget = 2
+        TenderBudget = 2,
+        [Display(Name = "EAC Revenue")]
+        EACRevenue = 3
     }
 
     public class ReportingEnum

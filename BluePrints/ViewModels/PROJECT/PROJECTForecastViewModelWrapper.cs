@@ -3484,8 +3484,16 @@ namespace BluePrints.ViewModels
         public DateTime ActualDate { get; set; }
     }
 
+    public delegate void RefreshForecastEACEventHandler();
     public class ForecastSummary
     {
+        public event RefreshForecastEACEventHandler UpdateRevenueDateCost;
+        public EACRevenueDateCost EACRevenueDateCost { get; set; }
+        public ForecastSummary()
+        {
+            EACRevenueDateCost = new EACRevenueDateCost();
+        }
+
         /// <summary>
         /// Reset all settable figures to 0
         /// </summary>
@@ -3502,9 +3510,39 @@ namespace BluePrints.ViewModels
             CurrentEstimateAtCompletion = 0;
         }
 
-        public decimal Original_Revenue { get; set; }
-        public decimal Approved_Var_Revenue { get; set; }
-        public decimal Unapproved_Var_Revenue { get; set; }
+        decimal original_revenue;
+        public decimal Original_Revenue
+        {
+            get => original_revenue;
+            set
+            {
+                original_revenue = value;
+                UpdateRevenueDateCost();
+            }
+        }
+
+        decimal approved_var_revenue;
+        public decimal Approved_Var_Revenue
+        {
+            get => approved_var_revenue;
+            set
+            {
+                approved_var_revenue = value;
+                UpdateRevenueDateCost();
+            }
+        }
+
+        decimal unapproved_var_revenue;
+        public decimal Unapproved_Var_Revenue
+        {
+            get => unapproved_var_revenue;
+            set
+            {
+                unapproved_var_revenue = value;
+                UpdateRevenueDateCost();
+            }
+        }
+
         public decimal Total_Unapproved_Var_Revenue { get; set; }
         public decimal Revised_Revenue => Original_Revenue + Approved_Var_Revenue;
         public decimal Budget_Cost { get; set; }

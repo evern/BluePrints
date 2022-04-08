@@ -1249,6 +1249,7 @@
     <Compile Include="ViewModels\PROGRESS_ITEM\OffsiteDirectProgressCollectionViewModelWrapper.cs" />
     <Compile Include="ViewModels\EXO\EXO_POCollectionViewModelWrapper.cs" />
     <Compile Include="ViewModels\PROGRESS_ITEM\SiteDirectProgressCollectionViewModelWrapper.cs" />
+    <Compile Include="ViewModels\PROJECT\PROJECTForecastRevenueReportViewModelWrapper.cs" />
     <Compile Include="ViewModels\PROJECT\PROJECTIndirectForecastHistoryViewModelWrapper.cs" />
     <Compile Include="ViewModels\PROJECT\PROJECTPOInvoicedViewModelWrapper.cs" />
     <Compile Include="ViewModels\PROJECT\PROJECTFlatPOSnapshotForecastViewModelWrapper.cs" />

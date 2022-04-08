@@ -64,6 +64,7 @@ namespace BluePrints.ViewModels
         protected PROJECTForecastSnapshotViewModelWrapper(IUnitOfWorkFactory<IBluePrintsEntitiesUnitOfWork> unitOfWorkFactory = null)
         {
             ForecastSummary = new ForecastSummary();
+            ForecastSummary.UpdateRevenueDateCost += RefreshProjectEACRevenueHistory;
             delayedProjectSaveTimer = new DispatcherTimer();
             delayedProjectSaveTimer.Interval = new TimeSpan(0, 0, 0, 1);
             projectSavingBackgroundWorker.DoWork += ProjectSavingBackgroundWorker_DoWork;
@@ -101,6 +102,7 @@ namespace BluePrints.ViewModels
         DispatcherTimer delayedProjectSaveTimer;
         DispatcherTimer delayedGridUpdateTimer;
         DispatcherTimer delayedUpdateFloatingProjectSummaryTimer;
+        public ObservableCollection<EACRevenueDateCost> EACRevenueDateCosts { get; set; }
         public Data.PROJECT LoadPROJECT { get; set; }
         bool isWeeks;
         public bool IsWeeks
@@ -190,6 +192,7 @@ namespace BluePrints.ViewModels
             bluePrintsUnitOfWork = bluePrintsUnitOfWorkFactory.CreateUnitOfWork();
             primeroUnitOfWork = primeroUnitOfWorkFactory.CreateUnitOfWork();
             LoadPROJECT = PROJECTParameter.GetEntity();
+            EACRevenueDateCosts = new ObservableCollection<EACRevenueDateCost>();
         }
 
         protected override void addEntitiesLoader()
@@ -610,6 +613,7 @@ namespace BluePrints.ViewModels
             dataPointsTable = null;
 
             updateDataPointsTable();
+            RefreshProjectEACRevenueHistory();
             this.RaisePropertyChanged(x => x.DataPointsTable);
 
             IsLoading = false;
@@ -1571,7 +1575,7 @@ namespace BluePrints.ViewModels
             //only allow editing when user focused on control instead of being changed from EditValueChanged
             allowValueEditing = true;
         }
-        private void LostFocus(RoutedEventArgs e)
+        public void LostFocus(RoutedEventArgs e)
         {
             //only allow editing when user focused on control instead of being changed from EditValueChanged
             allowValueEditing = false;
@@ -1740,6 +1744,10 @@ namespace BluePrints.ViewModels
                 return;
 
             Common.LoadingScreenManager.ShowLoadingScreen(DataPointsTable.Rows.Count);
+
+            //save EAC revenue
+            findExistingOrAddNewProjectEAC(FixedDataDateMonthEnd, ForecastSummary.EAC_Revenue, bluePrintsUnitOfWork, true, ForecastEACType.EACRevenue);
+            RefreshProjectEACRevenueHistory();
 
             DateTime firstForecastDate = new DateTime(FixedDataDateMonthEnd.Year, FixedDataDateMonthEnd.Month, 1).AddMonths(2).AddDays(-1);
             foreach (DataRow masterRow in DataPointsTable.Rows)
@@ -1968,6 +1976,41 @@ namespace BluePrints.ViewModels
             }
         }
 
+        public EACRevenueDateCost SelectedEACRevenue => ForecastSummary == null ? null : ForecastSummary.EACRevenueDateCost;
+        private void RefreshProjectEACRevenueHistory()
+        {
+            EACRevenueDateCosts.Clear();
+            SelectedEACRevenue.EACRevenue = ForecastSummary.EAC_Revenue;
+            SelectedEACRevenue.EACRevenueDate = FixedDataDate;
+
+            EACRevenueDateCosts.Add(SelectedEACRevenue);
+            foreach (FORECAST_EAC FORECAST_EACRevenue in FORECAST_EACRevenueCollection.Where(x => x.FORECAST_COSTS != null).OrderByDescending(x => x.FORECAST_DATE))
+            {
+                EACRevenueDateCosts.Add(new EACRevenueDateCost() { EACRevenue = (decimal)FORECAST_EACRevenue.FORECAST_COSTS, EACRevenueDate = FORECAST_EACRevenue.FORECAST_DATE });
+            }
+
+            this.RaisePropertyChanged(x => x.SelectedEACRevenue);
+            this.RaisePropertyChanged(x => x.EACRevenueDateCosts);
+        }
+
+        private FORECAST_EAC createNewProjectEAC(DateTime forecastDate, decimal newEACRevenue, ForecastEACType forecastEACType)
+        {
+            FORECAST_EAC newFORECAST_EAC = new FORECAST_EAC();
+            newFORECAST_EAC.GUID = Guid.Empty;
+            newFORECAST_EAC.GUID_PROJECT = LoadPROJECT.GUID;
+            newFORECAST_EAC.SUBJOB_CODE = string.Empty;
+            newFORECAST_EAC.DISCIPLINE_CODE = string.Empty;
+            newFORECAST_EAC.COMMODITY_CODE = string.Empty;
+            newFORECAST_EAC.VARIATION_CODE = string.Empty;
+            newFORECAST_EAC.FORECAST_DATE = forecastDate.Date;
+            newFORECAST_EAC.FORECAST_COSTS = newEACRevenue;
+            newFORECAST_EAC.TYPE = forecastEACType;
+            newFORECAST_EAC.CREATED = DateTime.Now;
+            newFORECAST_EAC.CREATEDBY = LoginCredentials.CurrentUserGuid;
+
+            return newFORECAST_EAC;
+        }
+
         private FORECAST_EAC createNewEAC(DateTime forecastDate, ForecastJobSnapshot projection, decimal newPreviousEAC, ForecastEACType forecastEACType)
         {
             FORECAST_EAC newFORECAST_EAC = new FORECAST_EAC();
@@ -2135,6 +2178,28 @@ namespace BluePrints.ViewModels
             }
         }
 
+        private void findExistingOrAddNewProjectEAC(DateTime forecastDate, decimal newEACRevenue, IBluePrintsEntitiesUnitOfWork bluePrintsEntitiesUnitOfWork, bool save, ForecastEACType forecastEACType)
+        {
+            IQueryable<FORECAST_EAC> jobEACRevenue = bluePrintsEntitiesUnitOfWork.FORECAST_EACS.Where(x => x.GUID_PROJECT == LoadPROJECT.GUID && x.DELETED == null && x.FORECAST_DATE == forecastDate && x.TYPE == forecastEACType);
+            FORECAST_EAC forecast_EAC = jobEACRevenue.FirstOrDefault();
+            if (forecast_EAC != null)
+            {
+                forecast_EAC.FORECAST_COSTS = newEACRevenue;
+                forecast_EAC.TYPE = forecastEACType;
+                forecast_EAC.UPDATED = DateTime.Now;
+                forecast_EAC.UPDATEDBY = LoginCredentials.CurrentUserGuid;
+                if (save)
+                    bluePrintsEntitiesUnitOfWork.SaveChanges();
+            }
+            else
+            {
+                FORECAST_EAC newForecast_EAC = createNewProjectEAC(forecastDate, newEACRevenue, forecastEACType);
+                bluePrintsEntitiesUnitOfWork.FORECAST_EACS.Add(newForecast_EAC);
+                if (save)
+                    bluePrintsEntitiesUnitOfWork.SaveChanges();
+            }
+        }
+
         private void findExistingOrAddNewEACHistory(DateTime forecastDate, ForecastSummary entity, IBluePrintsEntitiesUnitOfWork bluePrintsEntitiesUnitOfWork)
         {
             FORECAST_HISTORY forecast_history = bluePrintsEntitiesUnitOfWork.FORECAST_HISTORIES.FirstOrDefault(x => x.EAC_DATE == forecastDate && x.GUID_PROJECT == LoadPROJECT.GUID);
@@ -2277,6 +2342,27 @@ namespace BluePrints.ViewModels
                 clearFilter();
                 ResultPath = FolderBrowserDialogService.ResultPath;
                 bool result = ActualTableViewService.ExportToXls(ResultPath + "\\" + LoadPROJECT.NUMBER + "_Actuals.xlsx", true);
+
+                if (!result)
+                    MessageBoxService.ShowMessage("Export failed because the file is in use", "Warning", MessageButton.OK, MessageIcon.Warning);
+            }
+        }
+
+        public bool CanExportRevenueHistoryToExcel()
+        {
+            return !IsLoading;
+        }
+
+        [ServiceProperty(Key = "RevenueHistoryTableViewService")]
+        protected virtual ITableViewService RevenueHistoryTableViewService { get { return null; } }
+        public void ExportRevenueHistoryToExcel()
+        {
+            string ResultPath = string.Empty;
+            if (FolderBrowserDialogService.ShowDialog())
+            {
+                clearFilter();
+                ResultPath = FolderBrowserDialogService.ResultPath;
+                bool result = RevenueHistoryTableViewService.ExportToXls(ResultPath + "\\" + LoadPROJECT.NUMBER + "_RevenueHistory.xlsx", true);
 
                 if (!result)
                     MessageBoxService.ShowMessage("Export failed because the file is in use", "Warning", MessageButton.OK, MessageIcon.Warning);
@@ -3127,6 +3213,12 @@ namespace BluePrints.ViewModels
             FullRefresh();
         }
 
+        protected override void OnClose(CancelEventArgs e)
+        {
+            ForecastSummary.UpdateRevenueDateCost -= RefreshProjectEACRevenueHistory;
+            base.OnClose(e);
+        }
+
         public override void FullRefresh()
         {
             if(alignedDataDateCollection != null)
@@ -3219,6 +3311,14 @@ namespace BluePrints.ViewModels
             get
             {
                 return GetEntities<FORECAST_EAC>().Where(x => x.TYPE == ForecastEACType.EAC);
+            }
+        }
+
+        public IEnumerable<FORECAST_EAC> FORECAST_EACRevenueCollection
+        {
+            get
+            {
+                return GetEntities<FORECAST_EAC>().Where(x => x.TYPE == ForecastEACType.EACRevenue);
             }
         }
 
@@ -3585,5 +3685,12 @@ namespace BluePrints.ViewModels
 
         string errorMessage;
         public string ErrorMessage => errorMessage;
+    }
+
+    public class EACRevenueDateCost
+    {
+        public DateTime EACRevenueDate { get; set; }
+        public decimal EACRevenue { get; set; }
+        public string EACRevenueStr => EACRevenue.ToString("C0");
     }
 }
