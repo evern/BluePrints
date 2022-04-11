@@ -134,7 +134,7 @@ namespace BluePrints.Common.ViewModel
 
         public virtual TProjection SummaryEntity { get; set; }
         public ObservableCollection<IHaveStats> Selected_Dashboards { get; set; }
-        public void OnSelectedEntitiesChanged(IEnumerable<IHaveStats> entities)
+        public virtual void OnSelectedEntitiesChanged(IEnumerable<IHaveStats> entities)
         {
             if (MainViewModel == null)
                 return;

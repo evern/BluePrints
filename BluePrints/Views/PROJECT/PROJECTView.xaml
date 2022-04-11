@@ -1,4 +1,4 @@
-﻿<UserControl x:Class="BluePrints.Views.PROJECTView" xmlns="http://schemas.microsoft.com/netfx/2009/xaml/presentation" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" xmlns:common="clr-namespace:BluePrints.Common" xmlns:converter="clr-namespace:BluePrints.Common.ViewModel.Converters" xmlns:custom="clr-namespace:BaseModel.Misc;assembly=BaseModel" xmlns:d="http://schemas.microsoft.com/expression/blend/2008" xmlns:dx="http://schemas.devexpress.com/winfx/2008/xaml/core" xmlns:dxb="http://schemas.devexpress.com/winfx/2008/xaml/bars" xmlns:dxc="http://schemas.devexpress.com/winfx/2008/xaml/charts" xmlns:dxe="http://schemas.devexpress.com/winfx/2008/xaml/editors" xmlns:dxg="http://schemas.devexpress.com/winfx/2008/xaml/grid" xmlns:dxi="http://schemas.devexpress.com/winfx/2008/xaml/core/internal" xmlns:dxlc="http://schemas.devexpress.com/winfx/2008/xaml/layoutcontrol" xmlns:dxmvvm="http://schemas.devexpress.com/winfx/2008/xaml/mvvm" xmlns:dxr="http://schemas.devexpress.com/winfx/2008/xaml/ribbon" xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" xmlns:services="clr-namespace:BaseModel.ViewModel.Services;assembly=BaseModel" xmlns:viewmodel="clr-namespace:BluePrints.ViewModels" x:Name="userControl" d:DesignHeight="1920" d:DesignWidth="1080" DataContext="{dxmvvm:ViewModelSource viewmodel:PROJECTViewModelWrapper}" mc:Ignorable="d">
+﻿<UserControl x:Class="BluePrints.Views.PROJECTView" xmlns="http://schemas.microsoft.com/netfx/2009/xaml/presentation" xmlns:dxfuit="http://schemas.devexpress.com/winfx/2008/xaml/core/filteringui/themekeys" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" xmlns:common="clr-namespace:BluePrints.Common" xmlns:converter="clr-namespace:BluePrints.Common.ViewModel.Converters" xmlns:custom="clr-namespace:BaseModel.Misc;assembly=BaseModel" xmlns:d="http://schemas.microsoft.com/expression/blend/2008" xmlns:dx="http://schemas.devexpress.com/winfx/2008/xaml/core" xmlns:dxb="http://schemas.devexpress.com/winfx/2008/xaml/bars" xmlns:dxc="http://schemas.devexpress.com/winfx/2008/xaml/charts" xmlns:dxe="http://schemas.devexpress.com/winfx/2008/xaml/editors" xmlns:dxg="http://schemas.devexpress.com/winfx/2008/xaml/grid" xmlns:dxi="http://schemas.devexpress.com/winfx/2008/xaml/core/internal" xmlns:dxlc="http://schemas.devexpress.com/winfx/2008/xaml/layoutcontrol" xmlns:dxmvvm="http://schemas.devexpress.com/winfx/2008/xaml/mvvm" xmlns:dxr="http://schemas.devexpress.com/winfx/2008/xaml/ribbon" xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" xmlns:services="clr-namespace:BaseModel.ViewModel.Services;assembly=BaseModel" xmlns:viewmodel="clr-namespace:BluePrints.ViewModels" x:Name="userControl" d:DesignHeight="1920" d:DesignWidth="1080" DataContext="{dxmvvm:ViewModelSource viewmodel:PROJECTViewModelWrapper}" mc:Ignorable="d">
     <UserControl.Resources>
         <ResourceDictionary>
             <converter:StringToImageConverter x:Key="StringToImageConverter" />
@@ -340,7 +340,40 @@
                                     </dxg:GridControlBand>
                                 </dxg:GridControl.Bands>
                                 <dxg:GridControl.View>
-                                    <dxg:TableView custom:GroupChildSelector.Mode="Hierarchical" AllowEditing="False" ScrollBarAnnotationMode="None" NewItemRowPosition="None" ShowTotalSummary="True" Style="{StaticResource DefaultTableViewTemplate}">
+                                    <dxg:TableView custom:GroupChildSelector.Mode="Hierarchical" ShowFilterPopup="TableView_ShowFilterPopup" AllowEditing="False" ScrollBarAnnotationMode="None" NewItemRowPosition="None" ShowTotalSummary="True" Style="{StaticResource DefaultTableViewTemplate}">
+                                        <!--Allow relay of the state of the filter box so that SelectedEntitiesChanged doesn't get invoked, causing filter box to automatically closed-->
+                                        <dxg:TableView.FilterEditorDialogServiceTemplate>
+                                            <DataTemplate>
+                                                <ContentControl>
+                                                    <dx:DialogService DialogWindowStartupLocation="CenterOwner" ViewTemplate="{DynamicResource {dxfuit:FilterEditorThemeKey ResourceKey=FilterEditorDialogServiceViewTemplate}}">
+                                                        <dx:DialogService.DialogStyle>
+                                                            <Style TargetType="dx:ThemedWindow">
+                                                                <!--Not Working, manually set in code behind-->
+                                                                <!--<Setter Property="dxmvvm:Interaction.BehaviorsTemplate">
+                                                                    <Setter.Value>
+                                                                        <DataTemplate>
+                                                                            <ItemsControl>
+                                                                                <dxmvvm:EventToCommand Command="{Binding Owner.DataContext.OnShownCommand, RelativeSource={RelativeSource AncestorType=UserControl}}" EventName="Loaded" />
+                                                                                <dxmvvm:EventToCommand Command="{Binding Owner.DataContext.OnClosedCommand, RelativeSource={RelativeSource AncestorType=UserControl}}" EventName="Closed" />
+                                                                            </ItemsControl>
+                                                                        </DataTemplate>
+                                                                    </Setter.Value>
+                                                                </Setter>-->
+                                                                <Setter Property="dxi:ThemedWindowOptions.ShowOverPopups" Value="True" />
+                                                                <Setter Property="ShowInTaskbar" Value="False" />
+                                                                <Setter Property="WindowStyle" Value="ToolWindow" />
+                                                                <Setter Property="ShowIcon" Value="False" />
+                                                                <Setter Property="UseLayoutRounding" Value="True" />
+                                                                <Setter Property="Width" Value="500" />
+                                                                <Setter Property="Height" Value="350" />
+                                                                <Setter Property="MinWidth" Value="500" />
+                                                                <Setter Property="MinHeight" Value="350" />
+                                                            </Style>
+                                                        </dx:DialogService.DialogStyle>
+                                                    </dx:DialogService>
+                                                </ContentControl>
+                                            </DataTemplate>
+                                        </dxg:TableView.FilterEditorDialogServiceTemplate>
                                         <dxg:TableView.RowCellMenuCustomizations>
                                             <dxb:BarButtonItemLink BarItemName="biCopyWithHeader1" />
                                         </dxg:TableView.RowCellMenuCustomizations>

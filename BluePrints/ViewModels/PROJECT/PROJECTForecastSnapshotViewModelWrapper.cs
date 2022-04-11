@@ -2821,7 +2821,7 @@ namespace BluePrints.ViewModels
                                         if (currentP6Units == originalP6Units)
                                         {
                                             uncommittedPOValues += currentDateCellValue - dateCost.CommittedCosts - dateCost.P6Costs;
-                                            Debug.Print(uncommittedPOValues + " " + parseDateTime.ToShortDateString());
+                                            //Debug.Print(uncommittedPOValues + " " + parseDateTime.ToShortDateString());
                                         }
                                         else
                                             uncommitedP6Values += currentDateCellValue - dateCost.CommittedCosts - dateCost.P6Costs;
@@ -2829,7 +2829,7 @@ namespace BluePrints.ViewModels
                                     else
                                     {
                                         uncommittedPOValues += currentDateCellValue - dateCost.CommittedCosts - dateCost.P6Costs;
-                                        Debug.Print(uncommittedPOValues + " " + parseDateTime.ToShortDateString());
+                                        //Debug.Print(uncommittedPOValues + " " + parseDateTime.ToShortDateString());
                                     }
                                 }
                             }
