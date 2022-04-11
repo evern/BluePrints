@@ -341,13 +341,15 @@
                                 </dxg:GridControl.Bands>
                                 <dxg:GridControl.View>
                                     <dxg:TableView custom:GroupChildSelector.Mode="Hierarchical" ShowFilterPopup="TableView_ShowFilterPopup" AllowEditing="False" ScrollBarAnnotationMode="None" NewItemRowPosition="None" ShowTotalSummary="True" Style="{StaticResource DefaultTableViewTemplate}">
+                                        <!--Allow relay of the state of the filter box so that SelectedEntitiesChanged doesn't get invoked, causing filter box to automatically closed-->
                                         <dxg:TableView.FilterEditorDialogServiceTemplate>
                                             <DataTemplate>
                                                 <ContentControl>
                                                     <dx:DialogService DialogWindowStartupLocation="CenterOwner" ViewTemplate="{DynamicResource {dxfuit:FilterEditorThemeKey ResourceKey=FilterEditorDialogServiceViewTemplate}}">
                                                         <dx:DialogService.DialogStyle>
                                                             <Style TargetType="dx:ThemedWindow">
-                                                                <Setter Property="dxmvvm:Interaction.BehaviorsTemplate">
+                                                                <!--Not Working, manually set in code behind-->
+                                                                <!--<Setter Property="dxmvvm:Interaction.BehaviorsTemplate">
                                                                     <Setter.Value>
                                                                         <DataTemplate>
                                                                             <ItemsControl>
@@ -356,7 +358,7 @@
                                                                             </ItemsControl>
                                                                         </DataTemplate>
                                                                     </Setter.Value>
-                                                                </Setter>
+                                                                </Setter>-->
                                                                 <Setter Property="dxi:ThemedWindowOptions.ShowOverPopups" Value="True" />
                                                                 <Setter Property="ShowInTaskbar" Value="False" />
                                                                 <Setter Property="WindowStyle" Value="ToolWindow" />

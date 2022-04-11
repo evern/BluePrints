@@ -3,6 +3,7 @@ using BluePrints.Common.ViewModel.Converters;
 using BluePrints.Common.ViewModel.Misc;
 using BluePrints.ViewModels;
 using DevExpress.Xpf.Charts;
+using DevExpress.Xpf.Editors;
 using DevExpress.Xpf.Grid;
 using System.Windows;
 using System.Windows.Controls;
@@ -24,7 +25,17 @@ namespace BluePrints.Views
 
         private void TableView_ShowFilterPopup(object sender, DevExpress.Xpf.Grid.FilterPopupEventArgs e)
         {
-            FilterPopupBehavior.TryAttach(e.PopupBaseEdit);
+            FilterPopupBehavior.TryAttach(e.PopupBaseEdit, popupOpened, popUpClosed);
+        }
+
+        private void popupOpened(RoutedEventArgs e)
+        {
+            ((PROJECTViewModelWrapper)this.DataContext).OnPopUpShown(e);
+        }
+
+        private void popUpClosed(ClosePopupEventArgs e)
+        {
+            ((PROJECTViewModelWrapper)this.DataContext).OnPopUpClosed(e);
         }
     }
 }

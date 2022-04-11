@@ -34,6 +34,7 @@ using DevExpress.Mvvm.DataAnnotations;
 using BluePrints.P6EntitiesDataModel;
 using BluePrints.Common.Utils;
 using BluePrints.PrimeroData.PrimeroEntitiesDataModel;
+using DevExpress.Xpf.Editors;
 
 namespace BluePrints.ViewModels
 {
@@ -274,12 +275,6 @@ namespace BluePrints.ViewModels
 
             base.OnMainViewModelLoaded(entities);
             return true;
-        }
-
-        protected override void OnAfterAssignedCallbackAndRaisePropertyChanged()
-        {
-            GridControlService.GridControl.FilterChanged += gridControl_FilterChanged;
-            base.OnAfterAssignedCallbackAndRaisePropertyChanged();
         }
 
         protected virtual List<StatsCalculationType> getForecastTypes()
@@ -1230,9 +1225,25 @@ namespace BluePrints.ViewModels
             }
         }
 
-        private void gridControl_FilterChanged(object sender, RoutedEventArgs e)
+        //prevent invocation of entities changed so that filter box remains open
+        bool preventSelectedEntitiesChanged;
+        public override void OnSelectedEntitiesChanged(IEnumerable<IHaveStats> entities)
+        {
+            if (preventSelectedEntitiesChanged)
+                return;
+
+            base.OnSelectedEntitiesChanged(entities);
+        }
+
+        public void OnPopUpShown(RoutedEventArgs e)
+        {
+            preventSelectedEntitiesChanged = true;
+        }
+
+        public void OnPopUpClosed(ClosePopupEventArgs e)
         {
             SelectVisibleRows();
+            preventSelectedEntitiesChanged = false;
         }
 
         public ObservableCollection<object> VisibleData

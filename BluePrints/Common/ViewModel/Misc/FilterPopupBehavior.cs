@@ -14,13 +14,18 @@ namespace BluePrints.Common.ViewModel.Misc
 {
     public class FilterPopupBehavior : Behavior<PopupBaseEdit>
     {
-        public static void TryAttach(PopupBaseEdit editor)
+        private static Action<RoutedEventArgs> _popUpOpenedAction;
+        private static Action<ClosePopupEventArgs> _popUpClosedAction;
+        public static void TryAttach(PopupBaseEdit editor, Action<RoutedEventArgs> popUpOpenedAction, Action<ClosePopupEventArgs> popUpClosedAction)
         {
             if (editor == null)
                 return;
             var behaviors = Interaction.GetBehaviors(editor);
             if (!behaviors.OfType<FilterPopupBehavior>().Any())
                 behaviors.Add(new FilterPopupBehavior());
+
+            _popUpOpenedAction = popUpOpenedAction;
+            _popUpClosedAction = popUpClosedAction;
         }
         protected override void OnAttached()
         {
@@ -36,11 +41,13 @@ namespace BluePrints.Common.ViewModel.Misc
         }
         protected virtual void PopupOpened(object sender, RoutedEventArgs e)
         {
-            Debug.WriteLine("Opened");
+            _popUpOpenedAction?.Invoke(e);
+            //Debug.WriteLine("Opened");
         }
         protected virtual void PopupClosed(object sender, ClosePopupEventArgs e)
         {
-            Debug.WriteLine("Closed");
+            _popUpClosedAction?.Invoke(e);
+            //Debug.WriteLine("Closed");
         }
     }
 }
