@@ -876,6 +876,7 @@
     <Compile Include="Common\ViewModel\GanttChart\GanttCanvas.cs" />
     <Compile Include="Common\ViewModel\GanttChart\P6_Activity.cs" />
     <Compile Include="Common\ViewModel\Misc\CodesValidationModel.cs" />
+    <Compile Include="Common\ViewModel\Misc\FilterPopupBehavior.cs" />
     <Compile Include="Common\ViewModel\Misc\ListImportDeliverableViewModel.cs" />
     <Compile Include="Common\ViewModel\Misc\ListImportDocumentsViewModel.cs" />
     <Compile Include="Common\ViewModel\Misc\NullValueTemplateSelector.cs" />
