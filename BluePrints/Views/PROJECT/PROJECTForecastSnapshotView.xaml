@@ -5,6 +5,25 @@
         <ResourceDictionary>
             <converter:StringToImageConverter x:Key="StringToImageConverter" />
             <view1:ColumnTemplateSelector x:Key="ColumnTemplateSelector"/>
+            <ControlTemplate x:Key="EACRevenueControlTemplate" TargetType="ContentControl">
+                <dxg:GridControl x:Name="PART_GridControl" ShowBorder="False">
+                    <dxg:GridControl.Columns>
+                        <dxg:GridColumn Header="Data Date" FieldName="EACRevenueDate" Width="80" AllowEditing="False" >
+                            <dxg:GridColumn.EditSettings>
+                                <dxe:DateEditSettings />
+                            </dxg:GridColumn.EditSettings>
+                        </dxg:GridColumn>
+                        <dxg:GridColumn Header="EAC Revenue" FieldName="EACRevenue" Width="80" AllowEditing="False" >
+                            <dxg:GridColumn.EditSettings>
+                                <dxe:SpinEditSettings Name="PART_Editor" Increment="1" Mask="n0" MaskType="Numeric" MaskUseAsDisplayFormat="True" MinValue="0" />
+                            </dxg:GridColumn.EditSettings>
+                        </dxg:GridColumn>
+                    </dxg:GridControl.Columns>
+                    <dxg:GridControl.View>
+                        <dxg:TableView x:Name="tableViewEACRevenue" />
+                    </dxg:GridControl.View>
+                </dxg:GridControl>
+            </ControlTemplate>
             <DataTemplate x:Key="DefaultColumnTemplate">
                 <ContentControl>
                     <dxg:GridColumn AllowBestFit="False" ColumnFilterMode="DisplayText" FieldName="{Binding Path=(dxci:DependencyObjectExtensions.DataContext).FieldName, RelativeSource={RelativeSource Self}}" 
@@ -289,6 +308,7 @@
     <Grid Style="{StaticResource CollectionView.RootContainer}">
         <dxmvvm:Interaction.Behaviors>
             <services:TableViewService x:Name="ActualTableViewService" TableView="{Binding ElementName=tableViewActualDetail}" />
+            <services:TableViewService x:Name="RevenueHistoryTableViewService" TableView="{Binding ElementName=tableViewEACRevenue}" />
             <dxc:DialogService x:Name="DefaultTenderProfileSelectionDialog">
                 <dxc:DialogService.DialogStyle>
                     <Style TargetType="dx:DXDialogWindow">
@@ -730,9 +750,59 @@
                                                     </StackPanel>
                                                 </Button>
                                             </dxlc:LayoutItem>
-                                            <dxlc:LayoutItem Label="EAC Revenue" LabelPosition="Left" ToolTip="Original revenue + Approved Variation Revenue + Unapproved Variation Revenue">
-                                                <dxe:TextEdit IsReadOnly="True" Mask="c0" MaskType="Numeric" MaskUseAsDisplayFormat="True" Text="{Binding ForecastSummary.EAC_Revenue, Mode=OneWay}" />
+                                            <dxlc:LayoutItem Label="Export Grid" Visibility="Hidden">
+                                                <dxg:GridControl x:Name="EACRevenueGridControl" Width="10" Height="10" ItemsSource="{Binding EACRevenueDateCosts}" ShowBorder="False">
+                                                    <dxg:GridControl.Columns>
+                                                        <dxg:GridColumn Header="Data Date" FieldName="EACRevenueDate" Width="80" AllowEditing="False" >
+                                                            <dxg:GridColumn.EditSettings>
+                                                                <dxe:DateEditSettings />
+                                                            </dxg:GridColumn.EditSettings>
+                                                        </dxg:GridColumn>
+                                                        <dxg:GridColumn Header="EAC Revenue" FieldName="EACRevenue" Width="80" AllowEditing="False" >
+                                                            <dxg:GridColumn.EditSettings>
+                                                                <dxe:SpinEditSettings Name="PART_Editor" Increment="1" Mask="n0" MaskType="Numeric" MaskUseAsDisplayFormat="True" MinValue="0" />
+                                                            </dxg:GridColumn.EditSettings>
+                                                        </dxg:GridColumn>
+                                                    </dxg:GridControl.Columns>
+                                                    <dxg:GridControl.View>
+                                                        <dxg:TableView x:Name="tableViewEACRevenue" />
+                                                    </dxg:GridControl.View>
+                                                </dxg:GridControl>
                                             </dxlc:LayoutItem>
+                                            <dxlc:LayoutGroup View="Group" Orientation="Horizontal">
+                                                <dxlc:LayoutItem x:Name="EACRevenueDetails" Label="EAC Revenue" dx:DXSerializer.Enabled="False" >
+                                                    <dxg:LookUpEdit x:Name="lookupEACRevenue" AutoPopulateColumns="False" NullText="Expand to View" IsReadOnly="True" DisplayMember="EACRevenueStr" ItemsSource="{Binding EACRevenueDateCosts}" EditValue="{Binding SelectedEACRevenue, Mode=OneWay}" NullValueButtonPlacement="None" >
+                                                        <dxg:LookUpEdit.PopupContentTemplate>
+                                                            <ControlTemplate>
+                                                                <dxg:GridControl x:Name="PART_GridControl" ShowBorder="False">
+                                                                    <dxg:GridControl.Columns>
+                                                                        <dxg:GridColumn Header="Data Date" FieldName="EACRevenueDate" Width="80" AllowEditing="False" >
+                                                                            <dxg:GridColumn.EditSettings>
+                                                                                <dxe:DateEditSettings />
+                                                                            </dxg:GridColumn.EditSettings>
+                                                                        </dxg:GridColumn>
+                                                                        <dxg:GridColumn Header="EAC Revenue" FieldName="EACRevenue" Width="80" AllowEditing="False" >
+                                                                            <dxg:GridColumn.EditSettings>
+                                                                                <dxe:SpinEditSettings Name="PART_Editor" Increment="1" Mask="c0" MaskType="Numeric" MaskUseAsDisplayFormat="True" MinValue="0" />
+                                                                            </dxg:GridColumn.EditSettings>
+                                                                        </dxg:GridColumn>
+                                                                    </dxg:GridControl.Columns>
+                                                                    <dxg:GridControl.View>
+                                                                        <dxg:TableView x:Name="tableViewPopUpEACRevenue" />
+                                                                    </dxg:GridControl.View>
+                                                                </dxg:GridControl>
+                                                            </ControlTemplate>
+                                                        </dxg:LookUpEdit.PopupContentTemplate>
+                                                    </dxg:LookUpEdit>
+                                                </dxlc:LayoutItem>
+                                                <dxlc:LayoutItem HorizontalAlignment="Right">
+                                                    <Button Command="{Binding ExportRevenueHistoryToExcelCommand}" ToolTip="Export revenue history to excel">
+                                                        <StackPanel Orientation="Horizontal">
+                                                            <Image Source="{dx:DXImage Image=ExportToXLSX_16x16.png}" Width="16" Height="16" Margin="0, 0, 3, 0" />
+                                                        </StackPanel>
+                                                    </Button>
+                                                </dxlc:LayoutItem>
+                                            </dxlc:LayoutGroup>
                                             <dxlc:LayoutItem Label="Actuals" LabelPosition="Left">
                                                 <dxe:TextEdit IsReadOnly="True" Mask="c0" MaskType="Numeric" MaskUseAsDisplayFormat="True" Text="{Binding ForecastSummary.Current_Cost, Mode=OneWay}" />
                                             </dxlc:LayoutItem>

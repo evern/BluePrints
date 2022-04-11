@@ -20,7 +20,6 @@ namespace BluePrints.Data
 
         public Guid GUID_PROJECT { get; set; }
 
-        [Required]
         [StringLength(50)]
         public string SUBJOB_CODE { get; set; }
 

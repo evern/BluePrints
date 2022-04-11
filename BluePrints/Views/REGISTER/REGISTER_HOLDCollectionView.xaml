@@ -86,7 +86,7 @@
                         </dxg:GridColumn>
                         <dxg:GridColumn FieldName="AssignDeliverableObjects" AllowBestFit="false" Width="250" Header="Reference 2">
                             <dxg:GridColumn.EditSettings>
-                                <dxe:ComboBoxEditSettings DisplayMember="INTERNAL_NUM" IncrementalFiltering="True" ItemsSource="{Binding DataContext.BASELINE_ITEMCollection, ElementName=userControl}" Tag="CopyPasteSkip" ValidateOnEnterKeyPressed="True" ValidateOnTextInput="True">
+                                <dxe:ComboBoxEditSettings DisplayMember="INTERNAL_NUM" IncrementalFiltering="True" NullValueButtonPlacement="Popup" ItemsSource="{Binding DataContext.BASELINE_ITEMCollection, ElementName=userControl}" Tag="CopyPasteSkip" ValidateOnEnterKeyPressed="True" ValidateOnTextInput="True">
                                     <dxe:ComboBoxEditSettings.StyleSettings>
                                         <dxe:CheckedComboBoxStyleSettings />
                                     </dxe:ComboBoxEditSettings.StyleSettings>
