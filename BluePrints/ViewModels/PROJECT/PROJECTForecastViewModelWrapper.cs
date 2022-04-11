@@ -1061,10 +1061,6 @@ namespace BluePrints.ViewModels
                 {
                     DataRow actualStockCodeDataRow = actualForecastRows.First(x => x.Key == uniqueActualStockCode).Value;
                     IEnumerable<ExoDataPoint> currentPeriodStockCodeDataPoints = dateCost.CurrentPeriodActualDataPoints.Where(x => x.StockCode == uniqueActualStockCode);
-                    foreach(ExoDataPoint currentPeriodStockCodeDataPoint in currentPeriodStockCodeDataPoints)
-                    {
-                        Debug.Print(currentPeriodStockCodeDataPoint.StockCode + ";" + currentPeriodStockCodeDataPoint.ActualDate + ";" + currentPeriodStockCodeDataPoint.Costs);
-                    }
                     actualStockCodeDataRow[dateCost.QueryDate.ToString(BluePrintsResources.ColumnDateFormat)] = dateCost.CurrentPeriodActualDataPoints.Where(x => x.StockCode == uniqueActualStockCode).Sum(x => x.Costs);
                 }
 
