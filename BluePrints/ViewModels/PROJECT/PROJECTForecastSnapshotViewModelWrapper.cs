@@ -1650,7 +1650,8 @@ namespace BluePrints.ViewModels
 
         public void SaveRevenueChanges()
         {
-            if(LoadPROJECT.ORI_REVENUE == 0 || LoadPROJECT.ORI_REVENUE == null)
+            allowValueEditing = false;
+            if (LoadPROJECT.ORI_REVENUE == 0 || LoadPROJECT.ORI_REVENUE == null)
             {
                 if (MessageBoxService.ShowMessage("Are you sure you want to save original revenue as zero?", "Confirmation", MessageButton.YesNo) == MessageResult.No)
                     return;
@@ -1671,7 +1672,6 @@ namespace BluePrints.ViewModels
             savePROJECT();
             MessageBoxService.ShowMessage("Revenue Saved", "Success", MessageButton.OK);
             this.RaisePropertyChanged(x => x.ForecastSummary);
-            allowValueEditing = false;
         }
 
         /// <summary>
@@ -3174,6 +3174,7 @@ namespace BluePrints.ViewModels
 
         public void RefreshBudgetData(bool disableMessage = false)
         {
+            allowValueEditing = false;
             IsLoading = true;
             Common.LoadingScreenManager.ShowLoadingScreen(1);
             //Common.LoadingScreenManager.SetMessage("Fetching P6 remaining data...");
