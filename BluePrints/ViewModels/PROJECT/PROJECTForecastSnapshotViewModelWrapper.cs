@@ -3120,7 +3120,7 @@ namespace BluePrints.ViewModels
         /// </summary>
         public override string ViewName
         {
-            get { return "PROJECTForecastSnapshotViewModelWrapper_v3"; }
+            get { return "PROJECTForecastSnapshotViewModelWrapper_v4"; }
         }
 
         ObservableCollection<DataRowView> selectedDataRows { get; set; }
