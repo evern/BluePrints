@@ -901,6 +901,9 @@
     <Compile Include="Common\View\BookTimeDialog.xaml.cs">
       <DependentUpon>BookTimeDialog.xaml</DependentUpon>
     </Compile>
+    <Compile Include="Common\View\BulkEditDateTime.xaml.cs">
+      <DependentUpon>BulkEditDateTime.xaml</DependentUpon>
+    </Compile>
     <Compile Include="Common\View\ListImportDeliverableView.xaml.cs">
       <DependentUpon>ListImportDeliverableView.xaml</DependentUpon>
     </Compile>
@@ -2207,6 +2210,10 @@
       <SubType>Designer</SubType>
     </Page>
     <Page Include="Common\View\BookTimeDialog.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Common\View\BulkEditDateTime.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>
