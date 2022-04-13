@@ -1639,9 +1639,6 @@ namespace BluePrints.ViewModels
             if (IsLoading)
                 return false;
 
-            if (!allowValueEditing)
-                return false;
-
             if (MainViewModel == null || LoadPROJECT == null || ForecastSummary == null)
                 return false;
 
