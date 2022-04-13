@@ -39,7 +39,7 @@
                                 <dxb:BarButtonItemLink BarItemName="biCollapseAllGroups1" />
                                 <dxb:BarButtonItemLink BarItemName="biExportToExcel1" />
                                 <dxb:BarButtonItemLink BarItemName="biExportToPDF1" />
-                                <dxb:BarButtonItemLink BarItemName="biPopulateActuals" />
+                                <!--<dxb:BarButtonItemLink BarItemName="biPopulateActuals" />-->
                                 <dxb:BarButtonItemLink BarItemName="biSetIndirectFilter" />
                                 <dxb:BarButtonItemLink BarItemName="biSetDesignFilter" />
                                 <dxb:BarButtonItemLink BarItemName="biSetProcurementFilter" />
@@ -152,9 +152,9 @@
                                 <dxe:SpinEditSettings Increment="100" IsFloatValue="False" IsTextEditable="True" Mask="c0" MaskType="Numeric" MaskUseAsDisplayFormat="True" />
                             </dxg:GridColumn.EditSettings>
                         </dxg:GridColumn>
-                        <dxg:GridColumn FieldName="IsLineExistsInExo" Visible="False" Header="Exo" HeaderToolTip="Is this line setup in exo and available to be booked by authorised personnel" ReadOnly="True" />
+                        <!--<dxg:GridColumn FieldName="IsLineExistsInExo" Visible="False" Header="Exo" HeaderToolTip="Is this line setup in exo and available to be booked by authorised personnel" ReadOnly="True" />-->
                         <dxg:GridColumn FieldName="HasBudget" Header="Planned" HeaderToolTip="Is planned in deliverable's list" ReadOnly="True" />
-                        <dxg:GridColumn FieldName="SubJobActualCostSummary" Header="Actual Costs" HeaderToolTip="Actual costs from EXO" ReadOnly="True" Visible="{Binding IsActualCostSummaryVisible}">
+                        <!--<dxg:GridColumn FieldName="SubJobActualCostSummary" Header="Actual Costs" HeaderToolTip="Actual costs from EXO" ReadOnly="True" Visible="{Binding IsActualCostSummaryVisible}">
                             <dxg:GridColumn.EditSettings>
                                 <dxe:SpinEditSettings Mask="c2" MaskType="Numeric" MaskUseAsDisplayFormat="True" />
                             </dxg:GridColumn.EditSettings>
@@ -168,7 +168,7 @@
                             <dxg:GridColumn.EditSettings>
                                 <dxe:SpinEditSettings Mask="c2" MaskType="Numeric" MaskUseAsDisplayFormat="True" />
                             </dxg:GridColumn.EditSettings>
-                        </dxg:GridColumn>
+                        </dxg:GridColumn>-->
                         <dxg:GridColumn FieldName="FullCodeIncludeStockCode" Header="Full Code" ReadOnly="True" Visible="False" />
                         <dxg:GridColumn FieldName="Category" AllowBestFit="True" Visible="True" Width="150" Header="Category" HeaderToolTip="Sub job category">
                             <dxg:GridColumn.EditSettings>
