@@ -123,6 +123,11 @@ namespace BluePrints.BluePrintsEntitiesDataModel
         IRepository<FORECAST_HISTORY, Guid> FORECAST_HISTORIES { get; }
 
         /// <summary>
+        /// The FORECAST_AUDIT entities repository.
+        /// </summary>
+        IRepository<FORECAST_AUDIT, Guid> FORECAST_AUDITS { get; }
+
+        /// <summary>
         /// The FORECAST_JOB entities repository.
         /// </summary>
         IRepository<FORECAST_JOB, Guid> FORECAST_JOBS { get; }

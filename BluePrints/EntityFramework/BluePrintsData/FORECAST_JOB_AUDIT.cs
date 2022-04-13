@@ -26,7 +26,7 @@ namespace BluePrints.Data
         [Key]
         public Guid GUID { get; set; }
 
-        public Guid GUID_PROJECT { get; set; }
+        public Guid GUID_FORECAST_AUDIT { get; set; }
 
         [Required]
         [StringLength(50)]
@@ -40,14 +40,12 @@ namespace BluePrints.Data
         [StringLength(50)]
         public string COMMODITY_CODE { get; set; }
 
+        [Required]
         [StringLength(50)]
         public string VARIATION_CODE { get; set; }
 
         [StringLength(500)]
         public string DESCRIPTION { get; set; }
-
-        [StringLength(50)]
-        public string STOCK_ITEM { get; set; }
 
         [StringLength(500)]
         public string REFERENCE { get; set; }
@@ -55,10 +53,10 @@ namespace BluePrints.Data
         [StringLength(500)]
         public string NOTE { get; set; }
 
-        [StringLength(500)]
+        [StringLength(50)]
         public string UOM { get; set; }
 
-        public bool IS_FLOATING_RATE { get; set; }
+        public DateTime DATA_DATE { get; set; }
 
         public decimal? FORECAST_RATE { get; set; }
 
@@ -74,10 +72,16 @@ namespace BluePrints.Data
 
         public Guid? DELETEDBY { get; set; }
 
+        [StringLength(50)]
+        public string STOCK_ITEM { get; set; }
+
+        public bool IS_FLOATING_RATE { get; set; }
+
+        [Required]
         [StringLength(100)]
         public string DELETE_REASON { get; set; }
 
-        public virtual PROJECT PROJECT { get; set; }
+        public virtual FORECAST_AUDIT FORECAST_AUDIT { get; set; }
 
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
         public virtual ICollection<FORECAST_JOB_HOUR_AUDIT> FORECAST_JOB_HOUR_AUDIT { get; set; }

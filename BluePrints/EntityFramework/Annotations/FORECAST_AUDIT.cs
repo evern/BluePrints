@@ -12,7 +12,7 @@ namespace BluePrints.Data
     using System.Collections.Generic;
     using System.ComponentModel.DataAnnotations.Schema;
     
-    public partial class FORECAST_JOB_AUDIT : EntityBase, IGuidEntityKey, ICanSync, IHaveCreatedDate, IHaveWBSCodeString
+    public partial class FORECAST_AUDIT : EntityBase, IGuidEntityKey, ICanSync, IHaveCreatedDate
     {
         [NotMapped]
         public DateTime EntityCreatedDate
@@ -33,18 +33,6 @@ namespace BluePrints.Data
                 return GUID;
             }
         }
-
-        [NotMapped]
-        public ExoSubJobProjection ExoJob { get; set; }
-
-        [NotMapped]
-        public List<KeyValuePair<string, decimal>> DatesForecasts = new List<KeyValuePair<string, decimal>>();
-        public string Office => this.FORECAST_AUDIT.PROJECT.NUMBER + " " + this.FORECAST_AUDIT.PROJECT.OfficeName;
-
-        [NotMapped]
-        public IBluePrintsEntitiesUnitOfWork BluePrintsEntitiesUnitOfWork { get; set; }
-
-        [NotMapped]
-        public List<FORECAST_JOB_HOUR_AUDIT> ForecastJobHours { get; set; }
+        public string Office => this.PROJECT.NUMBER + " " + this.PROJECT.OfficeName;
     }
 }

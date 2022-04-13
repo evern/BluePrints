@@ -3211,6 +3211,8 @@ namespace BluePrints.ViewModels
             FullRefresh();
         }
 
+
+
         protected override void OnClose(CancelEventArgs e)
         {
             ForecastSummary.UpdateRevenueDateCost -= RefreshProjectEACRevenueHistory;
