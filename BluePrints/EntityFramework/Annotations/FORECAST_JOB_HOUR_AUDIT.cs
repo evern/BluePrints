@@ -30,6 +30,6 @@ namespace BluePrints.Data
             }
         }
 
-        public string Office => this.FORECAST_JOB_AUDIT.PROJECT.NUMBER + " " + this.FORECAST_JOB_AUDIT.PROJECT.OfficeName;
+        public string Office => this.FORECAST_AUDIT.PROJECT.NUMBER + " " + this.FORECAST_AUDIT.PROJECT.OfficeName;
     }
 }

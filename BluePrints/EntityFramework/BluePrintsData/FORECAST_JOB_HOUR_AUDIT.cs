@@ -20,7 +20,9 @@ namespace BluePrints.Data
         [Key]
         public Guid GUID { get; set; }
 
-        public Guid GUID_FORECAST_JOB_AUDIT { get; set; }
+        public Guid GUID_FORECAST_AUDIT { get; set; }
+
+        public Guid GUID_FORECAST_JOB { get; set; }
 
         public DateTime FORECAST_DATE { get; set; }
 
@@ -38,6 +40,6 @@ namespace BluePrints.Data
 
         public Guid? DELETEDBY { get; set; }
 
-        public virtual FORECAST_JOB_AUDIT FORECAST_JOB_AUDIT { get; set; }
+        public virtual FORECAST_AUDIT FORECAST_AUDIT { get; set; }
     }
 }

@@ -5620,6 +5620,7 @@
     <Resource Include="Common\Images\LogoBeta.ico" />
   </ItemGroup>
   <ItemGroup>
+    <Content Include="Common\MigrateSQL.sql" />
     <Content Include="Common\BluePrintsSQL.sql" />
     <Resource Include="Common\Images\Australia-Flag.ico" />
     <Resource Include="Common\Images\Canada-Flag.png" />

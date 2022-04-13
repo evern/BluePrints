@@ -14,7 +14,7 @@ namespace BluePrints.Data
     using System.ComponentModel.DataAnnotations.Schema;
     using System.Data.Entity.Spatial;
 
-    [Table("FORECAST_JOB_AUDIT_AUDIT")]
+    [Table("FORECAST_JOB_AUDIT")]
     public partial class FORECAST_JOB_AUDIT
     {
         public FORECAST_JOB_AUDIT()
@@ -27,6 +27,8 @@ namespace BluePrints.Data
         public Guid GUID { get; set; }
 
         public Guid GUID_FORECAST_AUDIT { get; set; }
+
+        public Guid GUID_FORECAST_JOB { get; set; }
 
         [Required]
         [StringLength(50)]
