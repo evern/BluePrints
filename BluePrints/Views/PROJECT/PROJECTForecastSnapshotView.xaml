@@ -359,6 +359,7 @@
                         <dxe:ComboBoxEditSettings AutoComplete="True" DisplayMember="wbs_short_name" IsTextEditable="True" ItemsSource="{Binding P6PROJECTSCollection}" NullValueButtonPlacement="Popup" ValueMember="wbs_short_name" />
                     </dxb:BarEditItem.EditSettings>
                 </dxb:BarEditItem>
+                <dxb:BarButtonItem x:Name="biSaveForecastProject" Command="{Binding SaveP6ScheduleCommand}" IsEnabled="{Binding IsLoading, Converter={StaticResource BooleanNegationConverter}}" Content="Save P6" Glyph="{dx:DXImage Image=Save_16x16.png}" LargeGlyph="{dx:DXImage Image=Save_32x32.png}" RibbonStyle="SmallWithText" ToolTip="Saves the P6 schedule" />
                 <dxb:BarEditItem x:Name="beLastRefreshed" Content="P6 Data Date" IsEnabled="{Binding IsLoading, Converter={StaticResource BooleanNegationConverter}}" Glyph="{dxc:DXImage Image=Time2_16x16.png}" LargeGlyph="{dxc:DXImage Image=Time2_32x32.png}" IsReadOnly="True" EditValue="{Binding P6DataDate, Mode=OneWay}" ToolTip="P6 Last Recalc Date">
                     <dxb:BarEditItem.EditSettings>
                         <dxe:TextEditSettings DisplayFormat="d" IsEnabled="False" />
@@ -432,6 +433,7 @@
                             </dxr:RibbonPageGroup>
                             <dxr:RibbonPageGroup MergeType="Replace" Caption="P6 Tools">
                                 <dxb:BarEditItemLink BarItemName="beForecastProject" />
+                                <dxb:BarButtonItemLink BarItemName="biSaveForecastProject" />
                                 <dxb:BarButtonItemLink BarItemName="biLastRefreshedError" />
                                 <dxb:BarEditItemLink BarItemName="beLastRefreshed" />
                                 <dxb:BarButtonItemLink BarItemName="biRefreshBudgetData" />

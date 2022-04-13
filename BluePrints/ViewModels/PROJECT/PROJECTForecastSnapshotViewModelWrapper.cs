@@ -276,7 +276,6 @@ namespace BluePrints.ViewModels
         {
             MainViewModel.OnAfterProjectionSavedCallBack = onAfterEntitySaved;
             MainViewModel.SetParentViewModel(this);
-
             IsPasteCellLevel = true;
             this.RaisePropertyChanged(x => x.IsPasteCellLevel);
             this.RaisePropertyChanged(x => x.SelectMode);
@@ -530,6 +529,7 @@ namespace BluePrints.ViewModels
                 mainThreadDispatcher.BeginInvoke(new Action(() => PROJECTCollectionViewModel.Save(LoadPROJECT)));
         }
 
+        string p6ForecastProject;
         public string P6ForecastProject
         {
             get
@@ -537,12 +537,14 @@ namespace BluePrints.ViewModels
                 if (LoadPROJECT == null)
                     return string.Empty;
 
-                return LoadPROJECT.P6FORECAST_NAME;
+                if (p6ForecastProject == null)
+                    p6ForecastProject = LoadPROJECT.P6FORECAST_NAME;
+
+                return p6ForecastProject;
             }
             set
             {
-                LoadPROJECT.P6FORECAST_NAME = value;
-                savePROJECT();
+                p6ForecastProject = value;
             }
         }
 
@@ -1310,6 +1312,7 @@ namespace BluePrints.ViewModels
 
         public async void ReloadP6Forecast()
         {
+            SaveP6Schedule();
             IsLoading = true;
             this.RaisePropertyChanged(x => x.IsLoading);
             await BluePrintsContextHelper.RefreshDeliverablesPlannedDataPointsByProject(LoadPROJECT.NUMBER, true);
@@ -2083,6 +2086,18 @@ namespace BluePrints.ViewModels
                 LoadDataDate = FixedDataDate;
                 FullRefresh();
             }
+        }
+
+        public bool CanSaveP6Schedule()
+        {
+            return !IsLoading;
+        }
+
+        public void SaveP6Schedule()
+        {
+            LoadPROJECT.P6FORECAST_NAME = p6ForecastProject;
+            savePROJECT();
+            MessageBoxService.ShowMessage("P6 Schedule Saved", "Information", MessageButton.OK);
         }
 
         /// <summary>
