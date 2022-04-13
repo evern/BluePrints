@@ -139,9 +139,19 @@ namespace BluePrints.BluePrintsEntitiesDataModel
             get { return GetRepository((FORECAST_JOB x) => x.GUID); }
         }
 
+        IRepository<FORECAST_JOB_AUDIT, Guid> IBluePrintsEntitiesUnitOfWork.FORECAST_JOB_AUDITS
+        {
+            get { return GetRepository((FORECAST_JOB_AUDIT x) => x.GUID); }
+        }
+
         IRepository<FORECAST_JOB_SETTING, Guid> IBluePrintsEntitiesUnitOfWork.FORECAST_JOB_SETTINGS
         {
             get { return GetRepository((FORECAST_JOB_SETTING x) => x.GUID); }
+        }
+
+        IRepository<FORECAST_JOB_HOUR_AUDIT, Guid> IBluePrintsEntitiesUnitOfWork.FORECAST_JOB_HOUR_AUDITS
+        {
+            get { return GetRepository((FORECAST_JOB_HOUR_AUDIT x) => x.GUID); }
         }
 
         IRepository<FORECAST_JOB_HOUR, Guid> IBluePrintsEntitiesUnitOfWork.FORECAST_JOB_HOURS

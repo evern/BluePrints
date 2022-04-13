@@ -39,6 +39,9 @@ namespace BluePrints.Data
         public virtual DbSet<ESTIMATE_ITEM> ESTIMATE_ITEM { get; set; }
         public virtual DbSet<FORECAST_PO> FORECAST_PO { get; set; }
         public virtual DbSet<FORECAST_JOB> FORECAST_JOB { get; set; }
+        public virtual DbSet<FORECAST_JOB_AUDIT> FORECAST_JOB_AUDIT { get; set; }
+        public virtual DbSet<FORECAST_JOB_HOUR> FORECAST_JOB_HOUR { get; set; }
+        public virtual DbSet<FORECAST_JOB_HOUR_AUDIT> FORECAST_JOB_HOUR_AUDIT { get; set; }
         public virtual DbSet<FORECAST_JOB_SETTING> FORECAST_JOB_SETTING { get; set; }
         public virtual DbSet<FORECAST> FORECAST { get; set; }
         public virtual DbSet<FORECAST_EAC> FORECAST_EAC { get; set; }
@@ -351,6 +354,11 @@ namespace BluePrints.Data
                 .HasMany(e => e.FORECAST_JOB_HOUR)
                 .WithRequired(e => e.FORECAST_JOB)
                 .HasForeignKey(e => e.GUID_FORECAST_JOB);
+
+            modelBuilder.Entity<FORECAST_JOB_AUDIT>()
+                .HasMany(e => e.FORECAST_JOB_HOUR_AUDIT)
+                .WithRequired(e => e.FORECAST_JOB_AUDIT)
+                .HasForeignKey(e => e.GUID_FORECAST_JOB_AUDIT);
 
             modelBuilder.Entity<HSE>()
                 .HasMany(e => e.HSE_INCIDENT)
@@ -762,6 +770,12 @@ namespace BluePrints.Data
 
             modelBuilder.Entity<PROJECT>()
                 .HasMany(e => e.FORECAST_JOB)
+                .WithRequired(e => e.PROJECT)
+                .HasForeignKey(e => e.GUID_PROJECT)
+                .WillCascadeOnDelete(false);
+
+            modelBuilder.Entity<PROJECT>()
+                .HasMany(e => e.FORECAST_JOB_AUDIT)
                 .WithRequired(e => e.PROJECT)
                 .HasForeignKey(e => e.GUID_PROJECT)
                 .WillCascadeOnDelete(false);

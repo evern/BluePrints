@@ -136,6 +136,11 @@ namespace BluePrints.BluePrintsEntitiesDataModel
             get { return GetRepository(x => x.Set<FORECAST_JOB>(), (FORECAST_JOB x) => x.GUID); }
         }
 
+        IRepository<FORECAST_JOB_AUDIT, Guid> IBluePrintsEntitiesUnitOfWork.FORECAST_JOB_AUDITS
+        {
+            get { return GetRepository(x => x.Set<FORECAST_JOB_AUDIT>(), (FORECAST_JOB_AUDIT x) => x.GUID); }
+        }
+
         IRepository<FORECAST_JOB_SETTING, Guid> IBluePrintsEntitiesUnitOfWork.FORECAST_JOB_SETTINGS
         {
             get { return GetRepository(x => x.Set<FORECAST_JOB_SETTING>(), (FORECAST_JOB_SETTING x) => x.GUID); }
@@ -144,6 +149,11 @@ namespace BluePrints.BluePrintsEntitiesDataModel
         IRepository<FORECAST_JOB_HOUR, Guid> IBluePrintsEntitiesUnitOfWork.FORECAST_JOB_HOURS
         {
             get { return GetRepository(x => x.Set<FORECAST_JOB_HOUR>(), (FORECAST_JOB_HOUR x) => x.GUID); }
+        }
+
+        IRepository<FORECAST_JOB_HOUR_AUDIT, Guid> IBluePrintsEntitiesUnitOfWork.FORECAST_JOB_HOUR_AUDITS
+        {
+            get { return GetRepository(x => x.Set<FORECAST_JOB_HOUR_AUDIT>(), (FORECAST_JOB_HOUR_AUDIT x) => x.GUID); }
         }
 
         IRepository<FORECAST_PO, Guid> IBluePrintsEntitiesUnitOfWork.FORECAST_POS

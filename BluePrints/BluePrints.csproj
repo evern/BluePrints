@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?>
+﻿<?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="12.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
   <PropertyGroup>
@@ -967,6 +967,8 @@
     <Compile Include="Common\View\PrimaveraAffinityReport.xaml.cs">
       <DependentUpon>PrimaveraAffinityReport.xaml</DependentUpon>
     </Compile>
+    <Compile Include="EntityFramework\Annotations\FORECAST_JOB_AUDIT.cs" />
+    <Compile Include="EntityFramework\Annotations\FORECAST_JOB_AUDIT_HOUR.cs" />
     <Compile Include="EntityFramework\Annotations\PrimeroEntities.cs" />
     <Compile Include="EntityFramework\Annotations\CONSTRUCTION_STAGE.cs" />
     <Compile Include="EntityFramework\Annotations\DataPoint.cs" />
@@ -1072,6 +1074,8 @@
     <Compile Include="EntityFramework\BluePrintsData\DISCIPLINE_DESC.cs" />
     <Compile Include="EntityFramework\BluePrintsData\FORECAST.cs" />
     <Compile Include="EntityFramework\BluePrintsData\FORECAST_HISTORY.cs" />
+    <Compile Include="EntityFramework\BluePrintsData\FORECAST_JOB_AUDIT.cs" />
+    <Compile Include="EntityFramework\BluePrintsData\FORECAST_JOB_AUDIT_HOUR.cs" />
     <Compile Include="EntityFramework\BluePrintsData\FORECAST_JOB_HOUR.cs" />
     <Compile Include="EntityFramework\BluePrintsData\PROGRESS_ETC.cs" />
     <Compile Include="EntityFramework\BluePrintsData\PROJECT_CONTRACTOR.cs" />
