@@ -2110,6 +2110,7 @@ namespace BluePrints.ViewModels
                 PROJECTCollectionViewModel.Save(LoadPROJECT);
                 LoadDataDate = FixedDataDate;
 
+                this.RaisePropertyChanged(x => x.FixedDataDate);
                 MessageBoxService.ShowMessage("Dates changed, forecast will now refresh...", "Information", MessageButton.OK, MessageIcon.Information);
                 FullRefresh();
             }
