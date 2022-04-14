@@ -956,7 +956,7 @@ namespace BluePrints.ViewModels
             };
 
             var dateFromToViewModel = DateFromToDialogViewModel.Create();
-            UICommand result = DateFromToDialogService.ShowDialog(new List<UICommand>() { okCommand, currentCommand }, "Select Week. Date Will be Automatically Adjusted to Week Starting Monday", "DateFromTo", dateFromToViewModel);
+            UICommand result = DateFromToDialogService.ShowDialog(new List<UICommand>() { okCommand, currentCommand }, "Select Week. Date Will be Automatically Adjusted to Week Starting Monday", "BulkEditDate", dateFromToViewModel);
 
             if(result == okCommand)
                 DateFrom = dateFromToViewModel.DateFrom;

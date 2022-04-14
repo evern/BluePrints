@@ -40,6 +40,7 @@ using System.Windows;
 using System.Windows.Input;
 using System.Windows.Threading;
 using System.Diagnostics;
+using BaseModel.ViewModel.Dialogs;
 
 namespace BluePrints.ViewModels
 {
@@ -438,23 +439,10 @@ namespace BluePrints.ViewModels
         }
 
         public DateTime LoadDataDate { get; set; }
-        DateTime fixedDateTime;
+        DateTime fixedDataDate;
         public DateTime FixedDataDate
         {
-            get => fixedDateTime;
-            set
-            {
-                //prevent tab switching from setting this to null because it's binded to view
-                if (value != null && value.Year != new DateTime().Year)
-                {
-                    //always set date to end of month
-                    DateTime rawDataDate = value;
-                    rawDataDate = new DateTime(value.Year, value.Month, 1);
-                    rawDataDate = rawDataDate.AddMonths(1).AddSeconds(-1);
-                    fixedDateTime = rawDataDate;
-                    FixedMonthEndingSundayDate = CommonMethods.GetLastWeekdayOfMonth(fixedDateTime, DayOfWeek.Sunday);
-                }
-            }
+            get => fixedDataDate;
         }
 
         public DateTime FixedMonthEndingSundayDate { get; set; }
@@ -463,14 +451,6 @@ namespace BluePrints.ViewModels
         public DateTime FixedEndDate
         {
             get => fixedEndDate;
-            set
-            {
-                //always set date to end of month
-                DateTime rawDataDate = value;
-                rawDataDate = new DateTime(value.Year, value.Month, 1);
-                rawDataDate = rawDataDate.AddMonths(1).AddSeconds(-1);
-                fixedEndDate = rawDataDate;
-            }
         }
 
         private void setProject(Data.PROJECT project)
@@ -493,7 +473,7 @@ namespace BluePrints.ViewModels
                 LoadDataDate = dataDate;
             }
 
-            FixedDataDate = dataDate;
+            fixedDataDate = dataDate;
             this.RaisePropertyChanged(x => x.FixedDataDate);
             this.RaisePropertyChanged(x => x.FixedMonthEndingSundayDate);
 
@@ -503,8 +483,7 @@ namespace BluePrints.ViewModels
             else
                 endDate = (DateTime)LoadPROJECT.FORECAST_END_DATE;
 
-            FixedEndDate = endDate;
-
+            fixedEndDate = endDate;
             this.RaisePropertiesChanged();
         }
 
@@ -541,10 +520,6 @@ namespace BluePrints.ViewModels
                     p6ForecastProject = LoadPROJECT.P6FORECAST_NAME;
 
                 return p6ForecastProject;
-            }
-            set
-            {
-                p6ForecastProject = value;
             }
         }
 
@@ -1312,7 +1287,6 @@ namespace BluePrints.ViewModels
 
         public async void ReloadP6Forecast()
         {
-            SaveP6Schedule();
             IsLoading = true;
             this.RaisePropertyChanged(x => x.IsLoading);
             await BluePrintsContextHelper.RefreshDeliverablesPlannedDataPointsByProject(LoadPROJECT.NUMBER, true);
@@ -1787,7 +1761,7 @@ namespace BluePrints.ViewModels
             Common.LoadingScreenManager.CloseLoadingScreen();
 
             DateTime nextDataDate = (DateTime)FixedDataDate;
-            FixedDataDate = new DateTime(nextDataDate.Year, nextDataDate.Month, 1).AddMonths(2).AddSeconds(-1);
+            fixedDataDate = new DateTime(nextDataDate.Year, nextDataDate.Month, 1).AddMonths(2).AddSeconds(-1);
             LoadDataDate = FixedDataDate;
             SaveDateAndRefresh();
         }
@@ -2031,12 +2005,63 @@ namespace BluePrints.ViewModels
         #endregion
 
         #region Database Helpers
-        public bool CanSaveDateAndRefresh()
+        private DevExpress.Mvvm.IDialogService DateFromToDialogService
+        {
+            get { return this.GetRequiredService<DevExpress.Mvvm.IDialogService>("DateFromToDialogService"); }
+        }
+
+        private DateTime? getLastDayOfMonth(DateTime date, bool isGetSunday)
+        {   
+            //prevent tab switching from setting this to null because it's binded to view
+            if (date != null && ((DateTime)date).Year != new DateTime().Year)
+            {
+                //always set date to end of month
+                DateTime rawDataDate = date;
+                rawDataDate = new DateTime(date.Year, date.Month, 1);
+                rawDataDate = rawDataDate.AddMonths(1).AddSeconds(-1);
+                if (isGetSunday)
+                    return CommonMethods.GetLastWeekdayOfMonth(rawDataDate, DayOfWeek.Sunday);
+                else
+                    return rawDataDate;
+            }
+
+            return null;
+        }
+
+        public bool CanEditDataDates()
         {
             return !IsLoading;
         }
 
-        public void SaveDateAndRefresh()
+        public void EditDataDates()
+        {
+            var dateFromToViewModel = DateFromToDialogViewModel.Create("Data Date:", "End Date:");
+            if (DateFromToDialogService.ShowDialog(MessageButton.OKCancel, "Select Data Date and End Date", "DateFromTo", dateFromToViewModel) == MessageResult.OK)
+            {
+                DateTime dataDate = dateFromToViewModel.DateFrom;
+                DateTime endDate = dateFromToViewModel.DateTo;
+
+                DateTime? dataDateLastDayOfMonth = getLastDayOfMonth(dataDate, true);
+                DateTime? endDateLastDayOfMonth = getLastDayOfMonth(endDate, false);
+                if (dataDateLastDayOfMonth == null)
+                {
+                    MessageBoxService.ShowMessage("Invalid data date", "Error", MessageButton.OK, MessageIcon.Warning);
+                    return;
+                }
+
+                if (endDateLastDayOfMonth == null)
+                {
+                    MessageBoxService.ShowMessage("Invalid end date", "Error", MessageButton.OK, MessageIcon.Warning);
+                    return;
+                }
+
+                fixedDataDate = (DateTime)dataDateLastDayOfMonth;
+                fixedEndDate = (DateTime)endDateLastDayOfMonth;
+                SaveDateAndRefresh();
+            }
+        }
+
+        private void SaveDateAndRefresh()
         {
             if (FixedDataDate != null)
             {
@@ -2053,7 +2078,7 @@ namespace BluePrints.ViewModels
                                 if (LoginCredentials.getPermissionStatus(DataUtils.GetNameOf(() => NavigationResources.Permission_Forecast_MoveDataDate)) == LoginCredentials.PermissionStatus.None)
                                 {
                                     MessageBoxService.ShowMessage("Cannot move data date backwards because EAC is finalised for " + ((DateTime)lastEACDataDate).ToShortDateString(), "Error", MessageButton.OK, MessageIcon.Exclamation);
-                                    FixedDataDate = LoadDataDate;
+                                    fixedDataDate = LoadDataDate;
                                     this.RaisePropertyChanged(x => x.FixedDataDate);
                                     this.RaisePropertyChanged(x => x.FixedMonthEndingSundayDate);
                                     return;
@@ -2071,7 +2096,7 @@ namespace BluePrints.ViewModels
                             if (LoginCredentials.getPermissionStatus(DataUtils.GetNameOf(() => NavigationResources.Permission_Forecast_MoveDataDate)) == LoginCredentials.PermissionStatus.None)
                             {
                                 MessageBoxService.ShowMessage("Cannot move data date forward because EAC isn't saved for " + ((DateTime)LoadDataDate).ToShortDateString(), "Error", MessageButton.OK, MessageIcon.Exclamation);
-                                FixedDataDate = LoadDataDate;
+                                fixedDataDate = LoadDataDate;
                                 this.RaisePropertyChanged(x => x.FixedDataDate);
                                 this.RaisePropertyChanged(x => x.FixedMonthEndingSundayDate);
                                 return;
@@ -2084,20 +2109,36 @@ namespace BluePrints.ViewModels
                 LoadPROJECT.FORECAST_END_DATE = FixedEndDate;
                 PROJECTCollectionViewModel.Save(LoadPROJECT);
                 LoadDataDate = FixedDataDate;
+
+                MessageBoxService.ShowMessage("Dates changed, forecast will now refresh...", "Information", MessageButton.OK, MessageIcon.Information);
                 FullRefresh();
             }
         }
 
-        public bool CanSaveP6Schedule()
+        public bool CanEditP6Schedule()
         {
             return !IsLoading;
         }
 
-        public void SaveP6Schedule()
+        public void EditP6Schedule()
         {
-            LoadPROJECT.P6FORECAST_NAME = p6ForecastProject;
-            savePROJECT();
-            MessageBoxService.ShowMessage("P6 Schedule Saved", "Information", MessageButton.OK);
+            PROJWBS selectedP6Project = P6PROJECTSCollection.FirstOrDefault(x => x.wbs_short_name == p6ForecastProject);
+            BulkEditEnumsViewModel bulkEditEnumsViewModel = BulkEditEnumsViewModel.Create((IEnumerable<object>)P6PROJECTSCollection, "wbs_short_name");
+            bulkEditEnumsViewModel.SelectedItem = selectedP6Project;
+
+            if (BulkColumnEditDialogService.ShowDialog(MessageButton.OKCancel, "Select P6 Schedule", "BulkEditEnums", bulkEditEnumsViewModel) == MessageResult.OK)
+            {
+                if (bulkEditEnumsViewModel.SelectedItem != null)
+                {
+                    p6ForecastProject = ((PROJWBS)bulkEditEnumsViewModel.SelectedItem).wbs_short_name;
+                    LoadPROJECT.P6FORECAST_NAME = p6ForecastProject;
+                    savePROJECT();
+                    this.RaisePropertyChanged(x => x.P6ForecastProject);
+                    MessageBoxService.ShowMessage("P6 Schedule Saved", "Information", MessageButton.OK);
+                }
+                else
+                    MessageBoxService.ShowMessage("No P6 schedule selected", "Error", MessageButton.OK, MessageIcon.Warning);
+            }
         }
 
         /// <summary>
