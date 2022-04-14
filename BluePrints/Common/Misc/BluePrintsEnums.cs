@@ -660,30 +660,22 @@ namespace BluePrints.Common
 
     public enum Register_RiskLikelihood
     {
-        [Display(Name = "A Almost Certain")]
-        AlmostCertain = 0,
-        [Display(Name = "B Likely")]
-        Likely = 1,
-        [Display(Name = "C Possible")]
-        Possible = 2,
-        [Display(Name = "D Unlikely")]
-        Unlikely = 3,
-        [Display(Name = "E Rare")]
-        Rare = 4
+        [Display(Name = "Low")]
+        Low = 0,
+        [Display(Name = "Medium")]
+        Medium = 1,
+        [Display(Name = "High")]
+        High = 2
     }
 
     public enum Register_RiskConsequence
     {
-        [Display(Name = "1 Insignificant")]
-        Insignificant = 0,
-        [Display(Name = "2 Minor")]
-        Minor = 1,
-        [Display(Name = "3 Moderate")]
-        Moderate = 2,
-        [Display(Name = "4 Major")]
-        Major = 3,
-        [Display(Name = "5 Catastrophic")]
-        Catastrophic = 4
+        [Display(Name = "Low")]
+        Low = 0,
+        [Display(Name = "Medium")]
+        Medium = 1,
+        [Display(Name = "High")]
+        High = 2
     }
 
     public enum Minute_Status
@@ -698,58 +690,12 @@ namespace BluePrints.Common
 
     public enum Register_RiskRanking
     {
-        [Display(Name = "1 Low")]
-        Low1 = 0,
-        [Display(Name = "2 Low")]
-        Low2 = 1,
-        [Display(Name = "3 Low")]
-        Low3 = 2,
-        [Display(Name = "4 Low")]
-        Low4 = 3,
-        [Display(Name = "5 Low")]
-        Low5 = 4,
-        [Display(Name = "6 Moderate")]
-        Moderate6 = 5,
-        [Display(Name = "7 Moderate")]
-        Moderate7 = 6,
-        [Display(Name = "8 Moderate")]
-        Moderate8 = 7,
-        [Display(Name = "9 Moderate")]
-        Moderate9 = 8,
-        [Display(Name = "10 Moderate")]
-        Moderate10 = 9,
-        [Display(Name = "11 Moderate")]
-        Moderate11 = 10,
-        [Display(Name = "12 High")]
-        High12 = 11,
-        [Display(Name = "13 High")]
-        High13 = 12,
-        [Display(Name = "14 High")]
-        High14 = 13,
-        [Display(Name = "15 High")]
-        High15 = 14,
-        [Display(Name = "16 High")]
-        High16 = 15,
-        [Display(Name = "17 High")]
-        High17 = 16,
-        [Display(Name = "18 Extreme")]
-        Extreme18 = 17,
-        [Display(Name = "19 Extreme")]
-        Extreme19 = 18,
-        [Display(Name = "20 Extreme")]
-        Extreme20 = 19,
-        [Display(Name = "21 Extreme")]
-        Extreme21 = 20,
-        [Display(Name = "22 Extreme")]
-        Extreme22 = 21,
-        [Display(Name = "23 Extreme")]
-        Extreme23 = 22,
-        [Display(Name = "24 Extreme")]
-        Extreme24 = 23,
-        [Display(Name = "25 Extreme")]
-        Extreme25 = 24,
-        [Display(Name = "Unassigned")]
-        Unassigned = 25
+        [Display(Name = "Low")]
+        Low = 0,
+        [Display(Name = "Medium")]
+        Medium = 1,
+        [Display(Name = "High")]
+        High = 2
     }
 
     public enum Register_HazardGroup

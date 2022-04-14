@@ -14,70 +14,32 @@ namespace BluePrints.Common.Misc
             Register_RiskLikelihood? Likelihood = likelihood;
             Register_RiskRanking? Ranking = null;
 
-            if (likelihood == Register_RiskLikelihood.AlmostCertain)
+            if (likelihood == Register_RiskLikelihood.High)
             {
-                if (consequences == Register_RiskConsequence.Insignificant)
-                    Ranking = Register_RiskRanking.Moderate11;
-                else if (consequences == Register_RiskConsequence.Minor)
-                    Ranking = Register_RiskRanking.High16;
-                else if (consequences == Register_RiskConsequence.Moderate)
-                    Ranking = Register_RiskRanking.Extreme20;
-                else if (consequences == Register_RiskConsequence.Major)
-                    Ranking = Register_RiskRanking.Extreme23;
+                if (consequences == Register_RiskConsequence.Low)
+                    Ranking = Register_RiskRanking.Medium;
+                else if (consequences == Register_RiskConsequence.Medium)
+                    Ranking = Register_RiskRanking.High;
                 else
-                    Ranking = Register_RiskRanking.Extreme25;
+                    Ranking = Register_RiskRanking.High;
             }
-            else if(likelihood == Register_RiskLikelihood.Likely)
+            else if(likelihood == Register_RiskLikelihood.Medium)
             {
-                if (consequences == Register_RiskConsequence.Insignificant)
-                    Ranking = Register_RiskRanking.Moderate7;
-                else if (consequences == Register_RiskConsequence.Minor)
-                    Ranking = Register_RiskRanking.High12;
-                else if (consequences == Register_RiskConsequence.Moderate)
-                    Ranking = Register_RiskRanking.High17;
-                else if (consequences == Register_RiskConsequence.Major)
-                    Ranking = Register_RiskRanking.Extreme21;
+                if (consequences == Register_RiskConsequence.Low)
+                    Ranking = Register_RiskRanking.Low;
+                else if (consequences == Register_RiskConsequence.Medium)
+                    Ranking = Register_RiskRanking.Medium;
                 else
-                    Ranking = Register_RiskRanking.Extreme24;
+                    Ranking = Register_RiskRanking.High;
             }
-            else if (likelihood == Register_RiskLikelihood.Possible)
+            else if (likelihood == Register_RiskLikelihood.Low)
             {
-                if (consequences == Register_RiskConsequence.Insignificant)
-                    Ranking = Register_RiskRanking.Low4;
-                else if (consequences == Register_RiskConsequence.Minor)
-                    Ranking = Register_RiskRanking.Moderate8;
-                else if (consequences == Register_RiskConsequence.Moderate)
-                    Ranking = Register_RiskRanking.High13;
-                else if (consequences == Register_RiskConsequence.Major)
-                    Ranking = Register_RiskRanking.Extreme18;
+                if (consequences == Register_RiskConsequence.Low)
+                    Ranking = Register_RiskRanking.Low;
+                else if (consequences == Register_RiskConsequence.Medium)
+                    Ranking = Register_RiskRanking.Low;
                 else
-                    Ranking = Register_RiskRanking.Extreme22;
-            }
-            else if (likelihood == Register_RiskLikelihood.Unlikely)
-            {
-                if (consequences == Register_RiskConsequence.Insignificant)
-                    Ranking = Register_RiskRanking.Low2;
-                else if (consequences == Register_RiskConsequence.Minor)
-                    Ranking = Register_RiskRanking.Low5;
-                else if (consequences == Register_RiskConsequence.Moderate)
-                    Ranking = Register_RiskRanking.Moderate9;
-                else if (consequences == Register_RiskConsequence.Major)
-                    Ranking = Register_RiskRanking.High14;
-                else
-                    Ranking = Register_RiskRanking.Extreme19;
-            }
-            else if (likelihood == Register_RiskLikelihood.Rare)
-            {
-                if (consequences == Register_RiskConsequence.Insignificant)
-                    Ranking = Register_RiskRanking.Low1;
-                else if (consequences == Register_RiskConsequence.Minor)
-                    Ranking = Register_RiskRanking.Low3;
-                else if (consequences == Register_RiskConsequence.Moderate)
-                    Ranking = Register_RiskRanking.Moderate6;
-                else if (consequences == Register_RiskConsequence.Major)
-                    Ranking = Register_RiskRanking.Moderate10;
-                else
-                    Ranking = Register_RiskRanking.High15;
+                    Ranking = Register_RiskRanking.Medium;
             }
 
             return Ranking;

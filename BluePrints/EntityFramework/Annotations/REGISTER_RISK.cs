@@ -47,13 +47,13 @@ namespace BluePrints.Data
                 if (RISK_RANKING == null)
                     return 0;
 
-                if (((int)RISK_RANKING) <= 4)
+                if (((int)RISK_RANKING) == 0)
                     return 1;
 
-                if (((int)RISK_RANKING) <= 10)
+                if (((int)RISK_RANKING) == 1)
                     return 2;
 
-                if (((int)RISK_RANKING) <= 16)
+                if (((int)RISK_RANKING) == 2)
                     return 3;
 
                 return 4;
@@ -68,13 +68,13 @@ namespace BluePrints.Data
                 if (RESIDUE_RISK_RANKING == null)
                     return 0;
 
-                if (((int)RESIDUE_RISK_RANKING) <= 6)
+                if (((int)RESIDUE_RISK_RANKING) == 0)
                     return 1;
 
-                if (((int)RESIDUE_RISK_RANKING) <= 11)
+                if (((int)RESIDUE_RISK_RANKING) == 1)
                     return 2;
 
-                if (((int)RESIDUE_RISK_RANKING) <= 19)
+                if (((int)RESIDUE_RISK_RANKING) == 2)
                     return 3;
 
                 return 4;

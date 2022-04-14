@@ -382,7 +382,7 @@ namespace BluePrints.ViewModels
 
         protected override string GetEntityNumberFieldName()
         {
-            throw new NotImplementedException();
+            return GetPropertyName(() => new MEETING().NUMBER);
         }
         #endregion
     }

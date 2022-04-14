@@ -179,24 +179,18 @@
                                     <dx:Format Background="LightGreen" Foreground="Black" />
                                 </dxg:FormatCondition>
                                 <dxg:FormatCondition FieldName="RISK_RANKING" Expression="[RiskRankingCategory] = '2'">
-                                    <dx:Format Background="Yellow" Foreground="Black" />
-                                </dxg:FormatCondition>
-                                <dxg:FormatCondition FieldName="RISK_RANKING" Expression="[RiskRankingCategory] = '3'">
                                     <dx:Format Background="Orange" Foreground="Black" />
                                 </dxg:FormatCondition>
-                                <dxg:FormatCondition FieldName="RISK_RANKING" Expression="[RiskRankingCategory] = '4'">
+                                <dxg:FormatCondition FieldName="RISK_RANKING" Expression="[RiskRankingCategory] = '3'">
                                     <dx:Format Background="Red" Foreground="Black" />
                                 </dxg:FormatCondition>
                                 <dxg:FormatCondition FieldName="RESIDUE_RISK_RANKING" Expression="[ResidueRankingCategory] = '1'">
                                     <dx:Format Background="LightGreen" Foreground="Black" />
                                 </dxg:FormatCondition>
                                 <dxg:FormatCondition FieldName="RESIDUE_RISK_RANKING" Expression="[ResidueRankingCategory] = '2'">
-                                    <dx:Format Background="Yellow" Foreground="Black" />
-                                </dxg:FormatCondition>
-                                <dxg:FormatCondition FieldName="RESIDUE_RISK_RANKING" Expression="[ResidueRankingCategory] = '3'">
                                     <dx:Format Background="Orange" Foreground="Black" />
                                 </dxg:FormatCondition>
-                                <dxg:FormatCondition FieldName="RESIDUE_RISK_RANKING" Expression="[ResidueRankingCategory] = '4'">
+                                <dxg:FormatCondition FieldName="RESIDUE_RISK_RANKING" Expression="[ResidueRankingCategory] = '3'">
                                     <dx:Format Background="Red" Foreground="Black" />
                                 </dxg:FormatCondition>
                             </dxg:TableView.FormatConditions>

@@ -197,7 +197,11 @@ namespace BluePrints.ViewModels
         {
             return loadPROJECT.NUMBER + "_Register_Risk";
         }
-        
+
+        protected override void OnAfterProjectionDeletedCallBack(IEnumerable<REGISTER_RISK> entities)
+        {
+        }
+
         public override string UnifiedRowValidation(REGISTER_RISK projection)
         {
             return string.Empty;
@@ -211,12 +215,12 @@ namespace BluePrints.ViewModels
 
         protected override string GetEntityNumberFieldName()
         {
-            throw new NotImplementedException();
+            return GetPropertyName(() => new REGISTER_RISK().NUMBER);
         }
 
         protected override int DefaultNumericFieldLength()
         {
-            throw new NotImplementedException();
+            return Int32.Parse(BluePrintsResources.Default_Register_Numeric_Length);
         }
 
         public IEnumerable<AREA> AREACollection

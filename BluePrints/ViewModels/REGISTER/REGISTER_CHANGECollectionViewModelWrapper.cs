@@ -491,9 +491,13 @@ namespace BluePrints.ViewModels
             selectedDesignChangeNoticeGuids.Clear();
         }
 
+        protected override void OnAfterProjectionDeletedCallBack(IEnumerable<REGISTER_CHANGE> entities)
+        {
+        }
+
         protected override string GetEntityNumberFieldName()
         {
-            throw new NotImplementedException();
+            return GetPropertyName(() => new REGISTER_CHANGE().NUMBER);
         }
 
         public IEnumerable<AREA> AREACollection
