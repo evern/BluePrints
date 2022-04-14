@@ -229,7 +229,7 @@ namespace BluePrints.ViewModels
             {
                 var collection = GetEntities<AREA>();
                 if (collection != null)
-                    collection = collection.OrderBy(x => x.INTERNAL_NUM);
+                    collection = collection.Where(x => x.GUID_PARENT == null).OrderBy(x => x.INTERNAL_NUM);
                 return collection;
             }
         }
