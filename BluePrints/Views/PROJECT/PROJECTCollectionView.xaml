@@ -124,7 +124,7 @@
                             </dxg:GridColumn>
                             <dxg:GridColumn FieldName="ANTICIPATED_CONTRACT_VALUE" AllowBestFit="false" Width="70" Header="Anticipated Contract Value">
                                 <dxg:GridColumn.EditSettings>
-                                    <dxe:SpinEditSettings Increment="1" Mask="n2" MaskType="Numeric" MaskUseAsDisplayFormat="True" MinValue="0.1" />
+                                    <dxe:SpinEditSettings Increment="1" Mask="n2" MaskType="Numeric" MaskUseAsDisplayFormat="True" MinValue="0" />
                                 </dxg:GridColumn.EditSettings>
                             </dxg:GridColumn>
                             <dxg:GridColumn FieldName="TYPE" Header="Type">
