@@ -86,6 +86,8 @@
 
         public decimal? TOTAL_UNAPPROVED_VAR_REVENUE { get; set; }
 
+        public decimal? ANTICIPATED_CONTRACT_VALUE { get; set; }
+
         public DateTime? FORECAST_PO_LAST_ALIGNED { get; set; }
 
         public PipelineType PIPELINE_TYPE { get; set; }
