@@ -23,8 +23,8 @@
     <UpdatePeriodically>false</UpdatePeriodically>
     <UpdateRequired>true</UpdateRequired>
     <MapFileExtensions>true</MapFileExtensions>
-    <MinimumRequiredVersion>1.0.8.203</MinimumRequiredVersion>
-    <ApplicationRevision>203</ApplicationRevision>
+    <MinimumRequiredVersion>1.0.8.209</MinimumRequiredVersion>
+    <ApplicationRevision>210</ApplicationRevision>
     <ApplicationVersion>1.0.8.%2a</ApplicationVersion>
     <UseApplicationTrust>false</UseApplicationTrust>
     <PublishWizardCompleted>true</PublishWizardCompleted>
@@ -124,7 +124,7 @@
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Perth_Debug|AnyCPU' ">
     <AssemblyName>BluePrints</AssemblyName>
     <ApplicationIcon>Common\Images\LogoBeta.ico</ApplicationIcon>
-    <PublishUrl>publish\</PublishUrl>
+    <PublishUrl>\\Fileserver\Data3\General\BLUEPRINTS\</PublishUrl>
     <DebugSymbols>true</DebugSymbols>
     <OutputPath>bin\Perth_Debug\</OutputPath>
     <DefineConstants>DEBUG;TRACE;BETA;PERTH</DefineConstants>
