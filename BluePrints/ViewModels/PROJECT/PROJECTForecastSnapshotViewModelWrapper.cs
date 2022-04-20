@@ -537,7 +537,8 @@ namespace BluePrints.ViewModels
             }
             set
             {
-                p6ForecastProject = value;
+                if(value != string.Empty)
+                    p6ForecastProject = value;
             }
         }
 
