@@ -443,6 +443,13 @@ namespace BluePrints.ViewModels
         public DateTime FixedDataDate
         {
             get => fixedDataDate;
+            //setter method is exclusively used by ribbon merging
+            set
+            {
+                //prevent ribbon merging from assigning new DateTime()
+                if(value.Year != new DateTime().Year)
+                    fixedDataDate = value;
+            }
         }
 
         public DateTime FixedMonthEndingSundayDate { get; set; }
@@ -451,6 +458,13 @@ namespace BluePrints.ViewModels
         public DateTime FixedEndDate
         {
             get => fixedEndDate;
+            //setter method is exclusively used by ribbon merging
+            set
+            {
+                //prevent ribbon merging from assigning new DateTime()
+                if (value.Year != new DateTime().Year)
+                    fixedEndDate = value;
+            }
         }
 
         private void setProject(Data.PROJECT project)
