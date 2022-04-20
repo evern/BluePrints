@@ -535,6 +535,10 @@ namespace BluePrints.ViewModels
 
                 return p6ForecastProject;
             }
+            set
+            {
+                p6ForecastProject = value;
+            }
         }
 
         public DateTime? P6DataDate
