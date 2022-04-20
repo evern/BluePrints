@@ -443,6 +443,13 @@ namespace BluePrints.ViewModels
         public DateTime FixedDataDate
         {
             get => fixedDataDate;
+            //setter method is exclusively used by ribbon merging
+            set
+            {
+                //prevent ribbon merging from assigning new DateTime()
+                if(value.Year != new DateTime().Year)
+                    fixedDataDate = value;
+            }
         }
 
         public DateTime FixedMonthEndingSundayDate { get; set; }
@@ -451,6 +458,13 @@ namespace BluePrints.ViewModels
         public DateTime FixedEndDate
         {
             get => fixedEndDate;
+            //setter method is exclusively used by ribbon merging
+            set
+            {
+                //prevent ribbon merging from assigning new DateTime()
+                if (value.Year != new DateTime().Year)
+                    fixedEndDate = value;
+            }
         }
 
         private void setProject(Data.PROJECT project)
@@ -520,6 +534,11 @@ namespace BluePrints.ViewModels
                     p6ForecastProject = LoadPROJECT.P6FORECAST_NAME;
 
                 return p6ForecastProject;
+            }
+            set
+            {
+                if(value != string.Empty)
+                    p6ForecastProject = value;
             }
         }
 
@@ -3174,7 +3193,7 @@ namespace BluePrints.ViewModels
         /// </summary>
         public override string ViewName
         {
-            get { return "PROJECTForecastSnapshotViewModelWrapper_v4"; }
+            get { return "PROJECTForecastSnapshotViewModelWrapper_v5"; }
         }
 
         ObservableCollection<DataRowView> selectedDataRows { get; set; }

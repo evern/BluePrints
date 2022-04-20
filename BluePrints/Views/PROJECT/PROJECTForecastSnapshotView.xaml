@@ -345,7 +345,7 @@
                 <dxb:BarButtonItem x:Name="biBaselineBudget" Command="{Binding SaveProjectBudgetCommand}" Content="Save Project Budget" LargeGlyph="{dxc:DXImage Images/Chart/DrillDownOnArguments_Chart_32x32.png}" ToolTip="Save Project Budget to Tender Budget and Current EAC to Project Budget" Glyph="{dxc:DXImage Images/Chart/DrillDownOnArguments_Chart_16x16.png}" />
                 <dxb:BarButtonItem x:Name="biSaveEAC" Command="{Binding SaveCurrentMonthEACCommand}" Content="Save EAC" Glyph="{dxc:DXImage Image=Save_16x16.png}" LargeGlyph="{dxc:DXImage Image=Save_32x32.png}" ToolTip="Save current EAC to compare next time" />
                 <dxb:BarCheckItem x:Name="biWeeks" Content="Weeks" Glyph="{dxc:DXImage Images/Scheduling/Calendar_16x16.png}" IsChecked="{Binding IsWeeks, Mode=TwoWay}" IsEnabled="{Binding IsLoading, Converter={StaticResource BooleanNegationConverter}}" LargeGlyph="{dxc:DXImage Images/Scheduling/Calendar_32x32.png}" RibbonStyle="SmallWithText" ToolTip="Change forecast to weeks" />
-                <dxb:BarEditItem x:Name="beFixedDataDate" Content="Data Date" IsEnabled="{Binding IsLoading, Converter={StaticResource BooleanNegationConverter}}" Glyph="{dxc:DXImage Image=Calendar_16x16.png}" LargeGlyph="{dxc:DXImage Image=Calendar_32x32.png}" IsReadOnly="True" EditValue="{Binding FixedDataDate, Mode=OneWay}" ToolTip="Data date">
+                <dxb:BarEditItem x:Name="beFixedDataDate" Content="Data Date" IsEnabled="{Binding IsLoading, Converter={StaticResource BooleanNegationConverter}}" Glyph="{dxc:DXImage Image=Calendar_16x16.png}" LargeGlyph="{dxc:DXImage Image=Calendar_32x32.png}" IsReadOnly="True" EditValue="{Binding FixedDataDate}" ToolTip="Data date">
                     <dxb:BarEditItem.EditSettings>
                         <dxe:DateEditSettings />
                     </dxb:BarEditItem.EditSettings>
@@ -355,13 +355,13 @@
                         <dxe:DateEditSettings />
                     </dxb:BarEditItem.EditSettings>
                 </dxb:BarEditItem>
-                <dxb:BarEditItem x:Name="beFixedEndDate" Content="End Date" IsEnabled="{Binding IsLoading, Converter={StaticResource BooleanNegationConverter}}" Glyph="{dxc:DXImage Image=AlignVerticalRight2_16x16.png}" LargeGlyph="{dxc:DXImage Image=AlignVerticalRight2_32x32.png}" IsReadOnly="True" EditValue="{Binding FixedEndDate, Mode=OneWay}" ToolTip="End date">
+                <dxb:BarEditItem x:Name="beFixedEndDate" Content="End Date" IsEnabled="{Binding IsLoading, Converter={StaticResource BooleanNegationConverter}}" Glyph="{dxc:DXImage Image=AlignVerticalRight2_16x16.png}" LargeGlyph="{dxc:DXImage Image=AlignVerticalRight2_32x32.png}" IsReadOnly="True" EditValue="{Binding FixedEndDate}" ToolTip="End date">
                     <dxb:BarEditItem.EditSettings>
                         <dxe:DateEditSettings />
                     </dxb:BarEditItem.EditSettings>
                 </dxb:BarEditItem>
                 <dxb:BarButtonItem x:Name="biEditDataDates" Command="{Binding EditDataDatesCommand}" IsEnabled="{Binding IsLoading, Converter={StaticResource BooleanNegationConverter}}" Content="Edit Dates" Glyph="{dx:DXImage Image=Save_16x16.png}" LargeGlyph="{dx:DXImage Image=Save_32x32.png}" RibbonStyle="SmallWithText" ToolTip="Edit the data date, end date and refreshes this view" />
-                <dxb:BarEditItem x:Name="beForecastProject" Content="P6 Schedule" IsEnabled="{Binding IsLoading, Converter={StaticResource BooleanNegationConverter}}" Glyph="{dxc:DXImage Image=3DColumn_16x16.png}" LargeGlyph="{dxc:DXImage Image=3DColumn_32x32.png}" IsReadOnly="True" EditValue="{Binding P6ForecastProject, Mode=OneWay}" ToolTip="P6 Forecast Schedule">
+                <dxb:BarEditItem x:Name="beForecastProject" Content="P6 Schedule" IsEnabled="{Binding IsLoading, Converter={StaticResource BooleanNegationConverter}}" Glyph="{dxc:DXImage Image=3DColumn_16x16.png}" LargeGlyph="{dxc:DXImage Image=3DColumn_32x32.png}" IsReadOnly="True" EditValue="{Binding P6ForecastProject}" ToolTip="P6 Forecast Schedule">
                     <dxb:BarEditItem.EditSettings>
                         <dxe:ComboBoxEditSettings AutoComplete="True" DisplayMember="wbs_short_name" IsTextEditable="True" ItemsSource="{Binding P6PROJECTSCollection}" NullValueButtonPlacement="Popup" ValueMember="wbs_short_name" />
                     </dxb:BarEditItem.EditSettings>
@@ -430,6 +430,7 @@
                                     <dxb:BarButtonItemLink BarItemName="biExportToExcel1" />
                                 </dxb:BarSubItem>
                                 <dxb:BarCheckItemLink BarItemName="biAutoHideSummary" />
+                                <dxb:BarButtonItemLink BarItemName="biTest" />
                                 <!--Disabled because of memory issue-->
                                 <!--<dxb:BarCheckItemLink BarItemName="biWeeks" />-->
                             </dxr:RibbonPageGroup>
