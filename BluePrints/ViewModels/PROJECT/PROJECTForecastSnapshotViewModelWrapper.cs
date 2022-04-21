@@ -452,6 +452,16 @@ namespace BluePrints.ViewModels
             }
         }
 
+        DateTime snapshotDateTime;
+        public DateTime SnapshotDataDate
+        {
+            get => snapshotDateTime;
+            set
+            {
+                snapshotDateTime = value;
+            }
+        }
+
         public DateTime FixedMonthEndingSundayDate { get; set; }
 
         DateTime fixedEndDate;
@@ -488,6 +498,7 @@ namespace BluePrints.ViewModels
             }
 
             fixedDataDate = dataDate;
+            SnapshotDataDate = LoadPROJECT.SNAPSHOT_LAST_UPDATED == null ? FixedDataDate : (DateTime)LoadPROJECT.SNAPSHOT_LAST_UPDATED;
             this.RaisePropertyChanged(x => x.FixedDataDate);
             this.RaisePropertyChanged(x => x.FixedMonthEndingSundayDate);
 
@@ -3245,7 +3256,20 @@ namespace BluePrints.ViewModels
         {
             //prevent EditValueChanged from being invoked with null NewValue causing spinedit to set a null value
             allowValueEditing = false;
-            if(!disableMessage)
+            var bulkEditDateTimeViewModel = BulkEditDateTimeViewModel.Create(SnapshotDataDate, "Actual Snapshot Date Time");
+            if (BulkColumnEditDialogService.ShowDialog(MessageButton.OKCancel, "Please select actual snapshot date time", "BulkEditDateTime", bulkEditDateTimeViewModel) == MessageResult.OK)
+            {
+                SnapshotDataDate = bulkEditDateTimeViewModel.EditValue;
+                if (SnapshotDataDate < FixedDataDate)
+                {
+                    MessageBoxService.ShowMessage("Actual snapshot date cannot be less than data date", "Warning", MessageButton.OK, MessageIcon.Warning);
+                    return;
+                }
+            }
+            else
+                return;
+
+            if (!disableMessage)
                 if (MessageBoxService.ShowMessage("Are you sure you want to update actuals? This may cause forecast result of PO/EH PO's and Indirect's inaccurate", "Warning", MessageButton.YesNo, MessageIcon.Warning) == MessageResult.No)
                     return;
 
@@ -3258,12 +3282,16 @@ namespace BluePrints.ViewModels
             //await BluePrintsContextHelper.RefreshDeliverablesPlannedDataPointsByProject(LoadPROJECT.NUMBER, true);
 
             Common.LoadingScreenManager.SetMessage("Updating actuals, indirect, P6 and PO data...");
-            BluePrintsContextHelper.RefreshAllDataExceptForecast(LoadPROJECT.NUMBER, FixedDataDate);
+            BluePrintsContextHelper.RefreshAllDataExceptForecast(LoadPROJECT.NUMBER, SnapshotDataDate);
             Common.LoadingScreenManager.CloseLoadingScreen();
             snapshotLastUpdated = DateTime.Now;
             this.RaisePropertyChanged(x => x.SnapshotLastUpdated);
 
             resetIsLoading();
+
+            LoadPROJECT.SNAPSHOT_LAST_UPDATED = SnapshotDataDate;
+            LoadPROJECT.SNAPSHOT_LAST_UPDATED_BY = LoginCredentials.CurrentUserGuid;
+            PROJECTCollectionViewModel.Save(LoadPROJECT);
             FullRefresh();
         }
 
