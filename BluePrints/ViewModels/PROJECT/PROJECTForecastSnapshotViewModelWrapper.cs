@@ -686,7 +686,7 @@ namespace BluePrints.ViewModels
                 //{
 
                 //}
-                UniqueForecastJob uniqueForecastJob = new UniqueForecastJob(projectLines, subJobCode, disciplineCode, commodityCode, variationCode, FixedDataDate, PreviousDataDate, AllFORECAST_JOB_HOUR_SNAPSHOTCollection, IsShowUninvoicedOnly);
+                UniqueForecastJob uniqueForecastJob = new UniqueForecastJob(projectLines, subJobCode, disciplineCode, commodityCode, variationCode, FixedDataDate, PreviousDataDate, AllFORECAST_JOB_HOUR_SNAPSHOTCollection, FORECAST_COMMENTCollection, IsShowUninvoicedOnly);
                 uniqueForecastJob.UpdateTenderBudget(TenderBudgetCollection.AsQueryable());
                 uniqueForecastJob.UpdateErrorMessage(JOBCOST_LINES_AUDITCollection.AsQueryable());
                 uniqueForecastJobs.Add(uniqueForecastJob);
@@ -3727,6 +3727,14 @@ namespace BluePrints.ViewModels
             }
         }
 
+        public IEnumerable<FORECAST_COMMENT> FORECAST_COMMENTCollection
+        {
+            get
+            {
+                return GetEntities<FORECAST_COMMENT>();
+            }
+        }
+
         public CollectionViewModel<FORECAST_JOB_SETTING, FORECAST_JOB_SETTING, Guid, IBluePrintsEntitiesUnitOfWork> FORECAST_JOB_SETTINGCollectionViewModel
         {
             get
@@ -3753,7 +3761,7 @@ namespace BluePrints.ViewModels
 
     public class UniqueForecastJob
     {
-        public UniqueForecastJob(IEnumerable<ExoSubJobProjection> projectLines, string subJobCode, string disciplineCode, string commodityCode, string variationCode, DateTime dataDate, DateTime previousDataDate, IEnumerable<FORECAST_JOB_HOUR_SNAPSHOT> AllFORECAST_JOB_HOURCollection, bool isShowUninvoicedOnly)
+        public UniqueForecastJob(IEnumerable<ExoSubJobProjection> projectLines, string subJobCode, string disciplineCode, string commodityCode, string variationCode, DateTime dataDate, DateTime previousDataDate, IEnumerable<FORECAST_JOB_HOUR_SNAPSHOT> AllFORECAST_JOB_HOURCollection, IEnumerable<FORECAST_COMMENT> FORECAST_COMMENTCollection, bool isShowUninvoicedOnly)
         {
             SUBJOB_CODE = subJobCode;
             DISCIPLINE_CODE = disciplineCode;
@@ -3767,6 +3775,9 @@ namespace BluePrints.ViewModels
             BudgetCollection = ToDateCollection.Where(x => x.SNAPSHOT_TYPE == ForecastSnapshotValueType.Budget).ToList();
             PreviousCumulativeActualCollection = ToDateCollection.Where(x => x.SNAPSHOT_TYPE == ForecastSnapshotValueType.Actual && x.FORECAST_DATE <= previousDataDate).ToList();
             DataDateActualCollection = PreviousDataDateCollection.Where(x => x.FORECAST_DATE != null).Where(x => x.SNAPSHOT_TYPE == ForecastSnapshotValueType.Actual).ToList();
+
+            IEnumerable<FORECAST_COMMENT> filteredForecastComment = FORECAST_COMMENTCollection.Where(x => x.SUBJOB_CODE == subJobCode && x.DISCIPLINE_CODE == disciplineCode && x.COMMODITY_CODE == commodityCode && x.VARIATION_CODE == variationCode);
+            ForecastCommentCollection = filteredForecastComment.ToList();
 
             if (isShowUninvoicedOnly)
                 ActualCollection = filteredForecastJobHourSnapshot.Where(x => x.SNAPSHOT_TYPE == ForecastSnapshotValueType.Actual && x.STATUS_CODE != "I" && x.FORECAST_DATE <= dataDate).ToList();
