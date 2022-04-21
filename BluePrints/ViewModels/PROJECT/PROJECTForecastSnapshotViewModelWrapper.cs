@@ -3257,19 +3257,19 @@ namespace BluePrints.ViewModels
             //prevent EditValueChanged from being invoked with null NewValue causing spinedit to set a null value
             allowValueEditing = false;
             //there is no need to select date time since material, actuals and POs dates are limited in stored procedure
-            //var bulkEditDateTimeViewModel = BulkEditDateTimeViewModel.Create(SnapshotDataDate, "Actual Snapshot Date Time");
-            //if (BulkColumnEditDialogService.ShowDialog(MessageButton.OKCancel, "Please select actual snapshot date time", "BulkEditDateTime", bulkEditDateTimeViewModel) == MessageResult.OK)
-            //{
-            //    SnapshotDataDate = bulkEditDateTimeViewModel.EditValue;
-            //    if (SnapshotDataDate < FixedDataDate)
-            //    {
-            //        MessageBoxService.ShowMessage("Actual snapshot date cannot be less than data date", "Warning", MessageButton.OK, MessageIcon.Warning);
-            //        return;
-            //    }
-            //}
-            //else
-            //    return;
-            SnapshotDataDate = FixedDataDate;
+            var bulkEditDateTimeViewModel = BulkEditDateTimeViewModel.Create(SnapshotDataDate, "Material and PO's snapshot time");
+            bulkEditDateTimeViewModel.EditValue = fixedDataDate;
+            if (BulkColumnEditDialogService.ShowDialog(MessageButton.OKCancel, "Please select Material and PO's snapshot time", "BulkEditTime", bulkEditDateTimeViewModel) == MessageResult.OK)
+            {
+                SnapshotDataDate = bulkEditDateTimeViewModel.EditValue;
+                if (SnapshotDataDate.Date != FixedDataDate.Date)
+                {
+                    MessageBoxService.ShowMessage("Only the time portion of the data date can be changed", "Warning", MessageButton.OK, MessageIcon.Warning);
+                    return;
+                }
+            }
+            else
+                return;
 
             if (!disableMessage)
                 if (MessageBoxService.ShowMessage("Are you sure you want to update actuals? This may cause forecast result of PO/EH PO's and Indirect's inaccurate", "Warning", MessageButton.YesNo, MessageIcon.Warning) == MessageResult.No)

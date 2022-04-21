@@ -905,6 +905,9 @@
     <Compile Include="Common\View\BulkEditDate.xaml.cs">
       <DependentUpon>BulkEditDate.xaml</DependentUpon>
     </Compile>
+    <Compile Include="Common\View\BulkEditTime.xaml.cs">
+      <DependentUpon>BulkEditTime.xaml</DependentUpon>
+    </Compile>
     <Compile Include="Common\View\BulkEditDateTime.xaml.cs">
       <DependentUpon>BulkEditDateTime.xaml</DependentUpon>
     </Compile>
@@ -2218,6 +2221,10 @@
       <SubType>Designer</SubType>
     </Page>
     <Page Include="Common\View\BulkEditDate.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Common\View\BulkEditTime.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>
