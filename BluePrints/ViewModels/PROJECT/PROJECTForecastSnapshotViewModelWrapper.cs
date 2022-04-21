@@ -484,7 +484,7 @@ namespace BluePrints.ViewModels
             DateTime dataDate;
             if (LoadPROJECT.FORECAST_DATA_DATE == null)
             {
-                DateTime endOfCurrentMonth = new DateTime(DateTime.Now.Year, DateTime.Now.Month, 1).AddMonths(1).AddDays(-1);
+                DateTime endOfCurrentMonth = new DateTime(DateTime.Now.Year, DateTime.Now.Month, 1).AddMonths(1).AddSeconds(-1);
 
                 LoadPROJECT.FORECAST_DATA_DATE = endOfCurrentMonth;
                 dataDate = endOfCurrentMonth;
@@ -3256,18 +3256,20 @@ namespace BluePrints.ViewModels
         {
             //prevent EditValueChanged from being invoked with null NewValue causing spinedit to set a null value
             allowValueEditing = false;
-            var bulkEditDateTimeViewModel = BulkEditDateTimeViewModel.Create(SnapshotDataDate, "Actual Snapshot Date Time");
-            if (BulkColumnEditDialogService.ShowDialog(MessageButton.OKCancel, "Please select actual snapshot date time", "BulkEditDateTime", bulkEditDateTimeViewModel) == MessageResult.OK)
-            {
-                SnapshotDataDate = bulkEditDateTimeViewModel.EditValue;
-                if (SnapshotDataDate < FixedDataDate)
-                {
-                    MessageBoxService.ShowMessage("Actual snapshot date cannot be less than data date", "Warning", MessageButton.OK, MessageIcon.Warning);
-                    return;
-                }
-            }
-            else
-                return;
+            //there is no need to select date time since material, actuals and POs dates are limited in stored procedure
+            //var bulkEditDateTimeViewModel = BulkEditDateTimeViewModel.Create(SnapshotDataDate, "Actual Snapshot Date Time");
+            //if (BulkColumnEditDialogService.ShowDialog(MessageButton.OKCancel, "Please select actual snapshot date time", "BulkEditDateTime", bulkEditDateTimeViewModel) == MessageResult.OK)
+            //{
+            //    SnapshotDataDate = bulkEditDateTimeViewModel.EditValue;
+            //    if (SnapshotDataDate < FixedDataDate)
+            //    {
+            //        MessageBoxService.ShowMessage("Actual snapshot date cannot be less than data date", "Warning", MessageButton.OK, MessageIcon.Warning);
+            //        return;
+            //    }
+            //}
+            //else
+            //    return;
+            SnapshotDataDate = FixedDataDate;
 
             if (!disableMessage)
                 if (MessageBoxService.ShowMessage("Are you sure you want to update actuals? This may cause forecast result of PO/EH PO's and Indirect's inaccurate", "Warning", MessageButton.YesNo, MessageIcon.Warning) == MessageResult.No)
