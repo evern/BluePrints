@@ -568,6 +568,9 @@
                                                 <dxg:FormatCondition Expression="[Entity.IsCommodityCodeError] = 'Checked'" FieldName="Entity.CommodityCode">
                                                     <dxc:Format Background="#FFFF9B98" />
                                                 </dxg:FormatCondition>
+                                                <dxg:FormatCondition FieldName="Entity.VarianceCostsOnDataDate" Value1="0" ValueRule="Less">
+                                                    <dxc:Format Background="#FFFF9B98" />
+                                                </dxg:FormatCondition>
                                             </dxg:TableView.FormatConditions>
                                             <dxmvvm:Interaction.Behaviors>
                                                 <dxmvvm:EventToCommand Command="{Binding ValidateCellCommand}" EventName="ValidateCell" PassEventArgsToCommand="True" />
@@ -576,6 +579,8 @@
                                                 <dxmvvm:EventToCommand Command="{Binding MouseDownCommand}" EventName="MouseDown" PassEventArgsToCommand="True" />
                                             </dxmvvm:Interaction.Behaviors>
                                             <dxg:TableView.RowCellMenuCustomizations>
+                                                <dxb:BarButtonItemLink BarItemName="biAddToolTip" />
+                                                <dxb:BarItemLinkSeparator />
                                                 <dxb:BarButtonItemLink BarItemName="biResetForecast" />
                                                 <dxb:BarButtonItemLink BarItemName="biApplyPF" />
                                                 <dxb:BarItemLinkSeparator />
