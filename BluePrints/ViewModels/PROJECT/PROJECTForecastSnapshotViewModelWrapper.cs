@@ -732,7 +732,7 @@ namespace BluePrints.ViewModels
                 ForecastJobSnapshot forecastJobSnapshot = new ForecastJobSnapshot(uniqueForecastJob, isBudgetReadOnly, FORECAST_EACCollection, FORECAST_EACPreviousCommitmentCollection, FORECAST_JOB_SETTINGCollection, COMMODITY_CODECollection, AREACollection, cachedFORECASTCollection, LoadPROJECT, projectLines, FixedDataDate, PreviousDataDate);
                 foreach (DateTime alignedDataDate in alignedDataDateCollection)
                 {
-                    ForecastDateSnapshot forecastDateSnapshot = new ForecastDateSnapshot(uniqueForecastJob.ToDateCollection, firstViewDate, alignedDataDate.Date, FixedDataDate);
+                    ForecastDateSnapshot forecastDateSnapshot = new ForecastDateSnapshot(uniqueForecastJob.ToDateCollection, uniqueForecastJob.ForecastCommentCollection, firstViewDate, alignedDataDate.Date, FixedDataDate);
                     forecastJobSnapshot.DateCosts.Add(forecastDateSnapshot);
                 }
 
