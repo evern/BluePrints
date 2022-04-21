@@ -3,6 +3,8 @@
              xmlns:view1="clr-namespace:BluePrints.Common.ViewModel.Misc" x:Name="userControl" d:DesignHeight="1200" d:DesignWidth="1200" DataContext="{dxmvvm:ViewModelSource viewmodel:PROJECTForecastSnapshotViewModelWrapper}" mc:Ignorable="d">
     <UserControl.Resources>
         <ResourceDictionary>
+            <converter:ForecastFutureCellInfoVisibilityConverter x:Key="ForecastFutureCellInfoVisibilityConverter" />
+            <converter:ForecastFutureCellInfoToolTipConverter x:Key="ForecastFutureCellInfoToolTipConverter" />
             <converter:StringToImageConverter x:Key="StringToImageConverter" />
             <view1:ColumnTemplateSelector x:Key="ColumnTemplateSelector"/>
             <ControlTemplate x:Key="EACRevenueControlTemplate" TargetType="ContentControl">
@@ -192,22 +194,40 @@
                         HeaderToolTip="{Binding Path=(dxci:DependencyObjectExtensions.DataContext).HeaderToolTip, RelativeSource={RelativeSource Self}}" >
                         <dxg:GridColumn.CellTemplate>
                             <DataTemplate>
-                                <dxe:SpinEdit Name="PART_Editor" Increment="1" Mask="c0" MaskType="Numeric" MaskUseAsDisplayFormat="True" Foreground="Black">
-                                    <dxe:SpinEdit.Background>
-                                        <MultiBinding Converter="{StaticResource ForecastFutureCellColorConverter}">
-                                            <Binding Path="RowData.Row.Row" />
-                                            <Binding Path="Column.FieldName" />
-                                            <Binding ElementName="PART_Editor" Path="EditValue" />
-                                        </MultiBinding>
-                                    </dxe:SpinEdit.Background>
-                                    <dxe:SpinEdit.ToolTip>
-                                        <MultiBinding Converter="{StaticResource ForecastFutureCellToolTipConverter}">
-                                            <Binding Path="RowData.Row.Row" />
-                                            <Binding Path="Column.FieldName" />
-                                            <Binding ElementName="PART_Editor" Path="EditValue" />
-                                        </MultiBinding>
-                                    </dxe:SpinEdit.ToolTip>
-                                </dxe:SpinEdit>
+                                <StackPanel Orientation="Horizontal">
+                                    <Image Source="{dxc:DXImage Images/XAF/State_Validation_Information.png}" Width="16" Height="16" Margin="0, 0, 3, 0" >
+                                        <Image.Visibility>
+                                            <MultiBinding Converter="{StaticResource ForecastFutureCellInfoVisibilityConverter}">
+                                                <Binding Path="RowData.Row.Row" />
+                                                <Binding Path="Column.FieldName" />
+                                                <Binding ElementName="PART_Editor" Path="EditValue" />
+                                            </MultiBinding>
+                                        </Image.Visibility>
+                                        <Image.ToolTip>
+                                            <MultiBinding Converter="{StaticResource ForecastFutureCellInfoToolTipConverter}">
+                                                <Binding Path="RowData.Row.Row" />
+                                                <Binding Path="Column.FieldName" />
+                                                <Binding ElementName="PART_Editor" Path="EditValue" />
+                                            </MultiBinding>
+                                        </Image.ToolTip>
+                                    </Image>
+                                    <dxe:SpinEdit Name="PART_Editor" Increment="1" Mask="c0" MaskType="Numeric" MaskUseAsDisplayFormat="True" Foreground="Black">
+                                        <dxe:SpinEdit.Background>
+                                            <MultiBinding Converter="{StaticResource ForecastFutureCellColorConverter}">
+                                                <Binding Path="RowData.Row.Row" />
+                                                <Binding Path="Column.FieldName" />
+                                                <Binding ElementName="PART_Editor" Path="EditValue" />
+                                            </MultiBinding>
+                                        </dxe:SpinEdit.Background>
+                                        <dxe:SpinEdit.ToolTip>
+                                            <MultiBinding Converter="{StaticResource ForecastFutureCellToolTipConverter}">
+                                                <Binding Path="RowData.Row.Row" />
+                                                <Binding Path="Column.FieldName" />
+                                                <Binding ElementName="PART_Editor" Path="EditValue" />
+                                            </MultiBinding>
+                                        </dxe:SpinEdit.ToolTip>
+                                    </dxe:SpinEdit>
+                                </StackPanel>
                             </DataTemplate>
                         </dxg:GridColumn.CellTemplate>
                         <!--For Filtering-->
@@ -340,6 +360,7 @@
                 <dxb:BarSubItem ItemLinksSource="{StaticResource RibbonDefaultGridButtons}" />
                 <dxb:BarButtonItem x:Name="biExportAllActuals" Command="{Binding ExportAllActualsToExcelCommand}" Content="Export All Actuals" Glyph="{dx:DXImage Image=ExportToXLSX_16x16.png}" LargeGlyph="{dx:DXImage Image=ExportToXLSX_32x32.png}" RibbonStyle="SmallWithText" ToolTip="Export all actuals to excel. Includes grouping, sorting and column visibility preferences" />
                 <dxb:BarButtonItem x:Name="biResetForecast" Command="{Binding ResetCellContentCommand}" Content="Reset Forecast" Glyph="{dx:DXImage Image=Reset_16x16.png}" LargeGlyph="{dx:DXImage Image=Reset_32x32.png}" RibbonStyle="SmallWithText" ToolTip="Reset forecast costs to it's underlying immutable values (PO, indirect, actuals, materials). Shortcut: [Delete] Key" />
+                <dxb:BarButtonItem x:Name="biAddToolTip" Command="{Binding AddCellToolTipCommand}" Content="Add Comment" LargeGlyph="{dxc:DXImage Images/Miscellaneous/Comment_32x32.png}" RibbonStyle="SmallWithText" ToolTip="Reset forecast costs to it's underlying immutable values (PO, indirect, actuals, materials). Shortcut: [Delete] Key" Glyph="{dxc:DXImage Images/Miscellaneous/Comment_16x16.png}" />
                 <dxb:BarButtonItem x:Name="biApplyPF" Command="{Binding ApplyCurrentPFCommand}" Content="Apply PF" Glyph="{dxc:DXImage Images/People/PublicFix_32x32.png}" LargeGlyph="{dx:DXImage Images/People/PublicFix_16x16.png}" RibbonStyle="SmallWithText" ToolTip="Apply current PF to selected rows" />
                 <dxb:BarButtonItem x:Name="biUpdatePF" Command="{Binding UpdateCurrentPFCommand}" Content="Update All PF" Glyph="{dxc:DXImage Images/RichEdit/UpdateTableOfContents_32x32.png}" LargeGlyph="{dx:DXImage Images/RichEdit/UpdateTableOfContents_16x16.png}" RibbonStyle="SmallWithText" ToolTip="Update PF for all jobs that had current PF applied before, to verify which job will get updated, right click on columns, find Show Column Chooser and tick Floating PF" />
                 <dxb:BarButtonItem x:Name="biBaselineBudget" Command="{Binding SaveProjectBudgetCommand}" Content="Save Project Budget" LargeGlyph="{dxc:DXImage Images/Chart/DrillDownOnArguments_Chart_32x32.png}" ToolTip="Save Project Budget to Tender Budget and Current EAC to Project Budget" Glyph="{dxc:DXImage Images/Chart/DrillDownOnArguments_Chart_16x16.png}" />
@@ -398,7 +419,7 @@
                         </DataTemplate>
                     </dxb:BarButtonItem.GlyphTemplate>
                 </dxb:BarButtonItem>
-                <dxb:BarCheckItem x:Name="biShowActuals" Content="Show Actuals History" Glyph="{dxc:DXImage Images/Scheduling/SwitchTimeScalesTo_16x16.png}" IsChecked="{Binding IsShowActualsHistory, Mode=TwoWay}" IsEnabled="{Binding IsLoading, Converter={StaticResource BooleanNegationConverter}}" LargeGlyph="{dxc:DXImage Images/Scheduling/SwitchTimeScalesTo_32x32.png}" RibbonStyle="SmallWithText" ToolTip="Toggle historical actuals visibility" />
+                <dxb:BarCheckItem x:Name="biShowActuals" Content="Show Actuals History" Glyph="{dxc:DXImage Images/Scheduling/SwitchTimeScalesTo_16x16.png}" IsChecked="{Binding IsShowActualsHistory, Mode=TwoWay}" IsEnabled="{Binding IsLoading, Converter={StaticResource BooleanNegationConverter}}" RibbonStyle="SmallWithText" ToolTip="Toggle historical actuals visibility" />
                 <dxb:BarCheckItem x:Name="biUninvoicedOnly" Content="Filter Actual by Uninvoiced" IsChecked="{Binding IsShowUninvoicedOnly, Mode=TwoWay}" IsEnabled="{Binding IsLoading, Converter={StaticResource BooleanNegationConverter}}" LargeGlyph="{dxc:DXImage Images/Spreadsheet/ReapplyFilter_32x32.png}" RibbonStyle="SmallWithText" ToolTip="Actuals are filtered by uninvoiced only" Glyph="{dxc:DXImage Images/Spreadsheet/ReapplyFilter_16x16.png}" />
                 <dxb:BarButtonItem x:Name="biSaveSummary" Command="{Binding SaveSummaryCommand}" Content="Save Excel Summary" Glyph="{dx:DXImage Image=SpreadsheetInsertTable_16x16.png}" LargeGlyph="{dx:DXImage Image=SpreadsheetInsertTable_32x32.png}" RibbonStyle="SmallWithText" ToolTip="Saves the summary for excel macro to retrieve values" />
                 <dxb:BarButtonItem x:Name="biRefreshBudgetData" Command="{Binding RefreshBudgetDataCommand}" Content="Update Budget" IsEnabled="{Binding IsLoading, Converter={StaticResource BooleanNegationConverter}}" RibbonStyle="SmallWithText" ToolTip="Refresh Budget Only" Glyph="{dxc:DXImage Images/Actions/Fill_32x32.png}" LargeGlyph="{dxc:DXImage Images/Actions/Fill_16x16.png}" />
@@ -463,6 +484,7 @@
                                 <dxb:BarButtonItemLink BarItemName="biSaveEAC" />
                                 <dxb:BarButtonItemLink BarItemName="biCleanUpOutdatedUncommitted" />
                                 <dxb:BarButtonItemLink BarItemName="biSaveSummary" />
+                                <dxb:BarButtonItemLink BarItemName="biAddToolTip" />
                             </dxr:RibbonPageGroup>
                         </dxr:RibbonPage>
                     </dxr:RibbonDefaultPageCategory>

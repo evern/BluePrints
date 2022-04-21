@@ -24,7 +24,7 @@ namespace BluePrints.Common.ViewModel.Converters
                     return null;
 
                 DataRow dataRow = (DataRow)values[0];
-                if(!dataRow.Table.Columns.Contains("CompareEntities"))
+                if (!dataRow.Table.Columns.Contains("CompareEntities"))
                     return null;
 
                 if (dataRow["CompareEntities"] != DBNull.Value)

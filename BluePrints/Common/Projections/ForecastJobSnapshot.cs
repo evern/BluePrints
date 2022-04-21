@@ -364,7 +364,7 @@ namespace BluePrints.Common.Projections
         #endregion
     }
 
-    public class ForecastDateSnapshot : IForecastDateCostViewModel
+    public class ForecastDateSnapshot : IForecastDateCostViewModel, IForecastDateComments
     {
         public readonly DateTime MonthStartDate;
         public readonly DateTime MonthEndDate;
@@ -372,7 +372,8 @@ namespace BluePrints.Common.Projections
         private readonly DateTime firstForecastDate;
         private readonly DateTime actualsCutOffDate;
         readonly List<FORECAST_JOB_HOUR_SNAPSHOT> byDateForecastJobHourSnapshots;
-        public ForecastDateSnapshot(IEnumerable<FORECAST_JOB_HOUR_SNAPSHOT> FORECAST_JOB_HOUR_SNAPSHOTFilteredByJob, DateTime firstViewDate, DateTime date, DateTime dataDate)
+        public FORECAST_COMMENT ByDateForecastComment;
+        public ForecastDateSnapshot(IEnumerable<FORECAST_JOB_HOUR_SNAPSHOT> FORECAST_JOB_HOUR_SNAPSHOTFilteredByJob, IEnumerable<FORECAST_COMMENT> FORECAST_COMMENTFilteredByJob, DateTime firstViewDate, DateTime date, DateTime dataDate)
         {
             QueryDate = date;
             this.firstViewDate = firstViewDate;
@@ -385,9 +386,9 @@ namespace BluePrints.Common.Projections
             MonthStartDate = new DateTime(date.Date.Year, date.Date.Month, 1);
             MonthEndDate = MonthStartDate.AddMonths(1).AddDays(-1);
 
+            this.ByDateForecastComment = FORECAST_COMMENTFilteredByJob.FirstOrDefault(x => x.FORECAST_DATE != null && ((DateTime)x.FORECAST_DATE).Month == QueryDate.Month && ((DateTime)x.FORECAST_DATE).Year == QueryDate.Year);
             this.byDateForecastJobHourSnapshots = FORECAST_JOB_HOUR_SNAPSHOTFilteredByJob.Where(x => x.FORECAST_DATE != null &&  ((DateTime)x.FORECAST_DATE).Month == QueryDate.Month && ((DateTime)x.FORECAST_DATE).Year == QueryDate.Year).ToList();
         }
-
 
         public IEnumerable<FORECAST_JOB_HOUR_SNAPSHOT> POForecastSnapshots => byDateForecastJobHourSnapshots.Where(x => x.SNAPSHOT_TYPE == ForecastSnapshotValueType.ForecastPO);
         public IEnumerable<FORECAST_JOB_HOUR_SNAPSHOT> IndirectForecastSnapshots => byDateForecastJobHourSnapshots.Where(x => x.SNAPSHOT_TYPE == ForecastSnapshotValueType.ForecastIndirect);
@@ -433,6 +434,8 @@ namespace BluePrints.Common.Projections
 
         //p6 costs needs to be categorised as uncommitted
         public decimal CommittedCosts => ActualCosts + POOutstandingCosts;
+
+        public string Comment => ByDateForecastComment == null ? string.Empty : ByDateForecastComment.COMMENT;
     }
 
 }

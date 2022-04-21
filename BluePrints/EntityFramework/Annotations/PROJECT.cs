@@ -66,6 +66,7 @@ namespace BluePrints.Data
             TRANSACTION_AUDIT = new HashSet<TRANSACTION_AUDIT>();
             TRANSACTION_APPROVAL = new HashSet<TRANSACTION_APPROVAL>();
             USER_PINNED_PROJECT = new HashSet<USER_PINNED_PROJECT>();
+            FORECAST_COMMENT = new HashSet<FORECAST_COMMENT>();
             CONTRACTTYPE = ContractType.LumpSum;
             CURRENCYCONVERSION = 1;
             REVIEWPERCENTAGE = 0.7M;

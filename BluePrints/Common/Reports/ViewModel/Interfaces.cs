@@ -20,6 +20,11 @@ namespace BluePrints.Common.ViewModel.Reporting
         IEnumerable<IForecastDateCostViewModel> ForecastDateCosts { get; }
     }
 
+    public interface IForecastDateComments
+    {
+        string Comment { get; }
+    }
+
     public interface IForecastDateCostViewModel
     {
         decimal ActualCosts { get; }

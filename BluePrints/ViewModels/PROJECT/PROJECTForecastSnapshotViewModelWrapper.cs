@@ -40,6 +40,7 @@ using System.Windows;
 using System.Windows.Input;
 using System.Windows.Threading;
 using System.Diagnostics;
+using BluePrints.Common.Misc;
 using BaseModel.ViewModel.Dialogs;
 
 namespace BluePrints.ViewModels
@@ -93,7 +94,7 @@ namespace BluePrints.ViewModels
 
         #region Database Operations
 
-        private IUnitOfWorkFactory<IBluePrintsEntitiesUnitOfWork> bluePrintsUnitOfWorkFactory = BluePrintsEntitiesUnitOfWorkSource.GetUnitOfWorkFactory();
+        private IUnitOfWorkFactory<IBluePrintsEntitiesUnitOfWork> bluePrintsUnitOfWorkFactory;
         protected IUnitOfWorkFactory<IPrimeroEntitiesUnitOfWork> primeroUnitOfWorkFactory = PrimeroEntitiesUnitOfWorkSource.GetUnitOfWorkFactory();
         protected IUnitOfWorkFactory<IP6EntitiesUnitOfWork> p6UnitOfWorkFactory = P6EntitiesUnitOfWorkSource.GetUnitOfWorkFactory();
         InstantFeedbackActualDetailsCollectionViewModelWrapper instantFeedbackActualDetailViewModel = InstantFeedbackActualDetailsCollectionViewModelWrapper.Create();
@@ -190,8 +191,9 @@ namespace BluePrints.ViewModels
         protected override void resolveParameters(object parameter)
         {
             var PROJECTParameter = (EntitiesParameter<Data.PROJECT>)parameter;
-            bluePrintsUnitOfWork = bluePrintsUnitOfWorkFactory.CreateUnitOfWork();
+            bluePrintsUnitOfWork = BluePrintsEntitiesUnitOfWorkSource.GetUnitOfWorkFactory().CreateUnitOfWork();
             primeroUnitOfWork = primeroUnitOfWorkFactory.CreateUnitOfWork();
+            bluePrintsUnitOfWorkFactory = BluePrintsEntitiesUnitOfWorkSource.GetUnitOfWorkFactory(bluePrintsUnitOfWork);
             LoadPROJECT = PROJECTParameter.GetEntity();
             EACRevenueDateCosts = new ObservableCollection<EACRevenueDateCost>();
         }
@@ -200,6 +202,7 @@ namespace BluePrints.ViewModels
         {
             loaderCollection.AddLoaderDescription(bluePrintsUnitOfWorkFactory, x => x.PROJECTS, PROJECTProjectionFunc, x => setProject(x));
             loaderCollection.AddLoaderDescription(bluePrintsUnitOfWorkFactory, x => x.FORECAST_JOB_HOUR_SNAPSHOTS, FORECAST_JOB_HOUR_SNAPSHOTProjectionFunc);
+            loaderCollection.AddLoaderDescription(bluePrintsUnitOfWorkFactory, x => x.FORECAST_COMMENTS, FORECAST_COMMENTProjectionFunc);
             loaderCollection.AddLoaderDescription(bluePrintsUnitOfWorkFactory, x => x.DISCIPLINE_DESCS, DISCIPLINE_DESCProjectionFunc);
             loaderCollection.AddLoaderDescription(bluePrintsUnitOfWorkFactory, x => x.AREAS, AREAProjectionFunc);
             loaderCollection.AddLoaderDescription(bluePrintsUnitOfWorkFactory, x => x.COMMODITY_CODES, COMMODITY_CODEProjectionFunc);
@@ -241,6 +244,11 @@ namespace BluePrints.ViewModels
         protected virtual Func<IRepositoryQuery<FORECAST_JOB_HOUR_SNAPSHOT>, IQueryable<FORECAST_JOB_HOUR_SNAPSHOT>> FORECAST_JOB_HOUR_SNAPSHOTProjectionFunc()
         {
             return query => query.Where(x => x.GUID_PROJECT == LoadPROJECT.GUID && (x.DATA_DATE == FixedDataDate || x.DATA_DATE == PreviousDataDate));
+        }
+
+        protected virtual Func<IRepositoryQuery<FORECAST_COMMENT>, IQueryable<FORECAST_COMMENT>> FORECAST_COMMENTProjectionFunc()
+        {
+            return query => query.Where(x => x.GUID_PROJECT == LoadPROJECT.GUID);
         }
 
         protected virtual Func<IRepositoryQuery<DISCIPLINE_DESC>, IQueryable<DISCIPLINE_DESC>> DISCIPLINE_DESCProjectionFunc()
@@ -923,7 +931,7 @@ namespace BluePrints.ViewModels
                 //only describe actuals when it's less than data date
                 if (dateCost.QueryDate <= FixedDataDateMonthEnd)
                 {
-                    if(IsShowActualsHistory)
+                    if (IsShowActualsHistory)
                         actualRow[dateCost.QueryDate.ToString(BluePrintsResources.ColumnDateFormat)] = dateCost.ActualCosts;
 
                     commodityRow[dateCost.QueryDate.ToString(BluePrintsResources.ColumnDateFormat)] = dateCost.ActualCosts;
@@ -1112,7 +1120,7 @@ namespace BluePrints.ViewModels
                         foreach (DataRow costRow in costRows)
                         {
                             string parseDecimalStr = costRow[dateFieldName].ToString();
-                            if(parseDecimalStr != string.Empty)
+                            if (parseDecimalStr != string.Empty)
                             {
                                 decimal parseDecimal = 0;
                                 if (decimal.TryParse(parseDecimalStr, out parseDecimal))
@@ -1337,6 +1345,65 @@ namespace BluePrints.ViewModels
             FullRefresh();
         }
 
+        public void AddCellToolTip()
+        {
+            var selected_cells = getSelectedCells();
+            if (selected_cells.Count() == 0)
+                return;
+
+            //try to get default value to edit if comment already exist
+            string editComment = string.Empty;
+            GridCell focusedCell = selected_cells.First();
+            DataRowView focusedCellRow = (DataRowView)GridControlService.GridControl.GetRow(focusedCell.RowHandle);
+            DateTime focusedCellDate;
+            if (DateTime.TryParse(focusedCell.Column.FieldName, out focusedCellDate))
+            {
+                ForecastDateSnapshot dateCost = findForecastDateSnapshot(focusedCellRow.Row, focusedCellDate);
+                editComment = dateCost.Comment;
+            }
+
+            var bulkEditStringsViewModel = BulkEditStringsViewModel.Create(editComment, "Please enter comments");
+            if (BulkColumnEditDialogService.ShowDialog(MessageButton.OKCancel, "Comments", "BulkEditStrings", bulkEditStringsViewModel) == MessageResult.OK)
+            {
+                editComment = bulkEditStringsViewModel.EditValue;
+            }
+
+            if(editComment == null || editComment == string.Empty)
+            {
+                MessageBoxService.ShowMessage("Cannot enter empty comments", "Error", MessageButton.OK, MessageIcon.Information);
+                return;
+            }
+
+            foreach (var selected_cell in selected_cells)
+            {
+                int row_handle = selected_cell.RowHandle;
+                DataRowView editing_row_view = (DataRowView)GridControlService.GridControl.GetRow(row_handle);
+                if (editing_row_view == null)
+                    continue;
+
+                DataRow editing_row = editing_row_view.Row;
+                DataColumn editing_column = editing_row.Table.Columns[selected_cell.Column.FieldName];
+
+                string columnFieldName = selected_cell.Column.FieldName;
+                DateTime cellDate;
+                if (DateTime.TryParse(columnFieldName, out cellDate))
+                {
+                    if (cellDate <= FixedDataDate)
+                        continue;
+
+                    findExistingOrAddNewForecastComment(editing_row, cellDate, editComment, false);
+                    GridColumn findColumn = GridControlService.GridControl.Columns.FirstOrDefault(x => x.FieldName == columnFieldName);
+                    if(findColumn != null)
+                    {
+                        //workaround to invoke ForecastFutureCellToolTipConverter
+                        GridControlService.GridControl.CurrentColumn = findColumn;
+                        TableViewService.TableView.ShowEditor();
+                        TableViewService.TableView.CloseEditor();
+                    }
+                }
+            }
+        }
+
         public void ResetCellContent()
         {
             EntitiesUndoRedoManager.PauseActionId();
@@ -1359,7 +1426,6 @@ namespace BluePrints.ViewModels
                     if (deleteCellDate <= FixedDataDate)
                         continue;
 
-                    resetViewRemainingOnJob(editing_row, columnFieldName, true);
                     findExistingOrAddNewForecast(editing_row, deleteCellDate, null);
                     //editing_row[columnFieldName] = 0.00m;
                 }
@@ -1832,11 +1898,11 @@ namespace BluePrints.ViewModels
             }
 
             List<ForecastJobSnapshot> jobs = getJobDataFromDatatable();
-            //if (jobs.Any(x => x.IsPOError))
-            //{
-            //    MessageBoxService.ShowMessage("Some PO forecast aren't completed yet or misaligned\nPlease go to PO forecast and click Align Actuals\nThen refresh this screen", "Error", MessageButton.OK, MessageIcon.Exclamation);
-            //    return false;
-            //}
+            if (jobs.Any(x => x.IsPOError))
+            {
+                MessageBoxService.ShowMessage("Some PO forecast aren't completed yet or misaligned\nPlease go to PO forecast and click Align Actuals\nThen refresh this screen", "Error", MessageButton.OK, MessageIcon.Exclamation);
+                return false;
+            }
 
             return true;
         }
@@ -2748,6 +2814,53 @@ namespace BluePrints.ViewModels
             }
         }
 
+        private void findExistingOrAddNewForecastComment(DataRow dataRow, DateTime forecastDate, string viewNewValue, bool skipRowSavingAndRefresh = false)
+        {
+            ForecastJobSnapshot job = (ForecastJobSnapshot)dataRow[columnEntity];
+            string dateFieldName = forecastDate.ToString(BluePrintsResources.ColumnDateFormat);
+            string saveNewValue = viewNewValue;
+            ForecastDateSnapshot dateCost = findForecastDateSnapshot(dataRow, forecastDate);
+            FORECAST_COMMENT editFORECAST_COMMENT = dateCost.ByDateForecastComment;;
+            //search repository
+            if (editFORECAST_COMMENT == null)
+            {
+                IQueryable<FORECAST_COMMENT> projectFORECAST_COMMENTS = FORECAST_COMMENTProjectionFunc()(bluePrintsUnitOfWork.FORECAST_COMMENTS);
+                editFORECAST_COMMENT = projectFORECAST_COMMENTS.FirstOrDefault(x => x.FORECAST_DATE == forecastDate.Date && x.SUBJOB_CODE == job.SubJobCode && x.DISCIPLINE_CODE == job.DisciplineCode && x.COMMODITY_CODE == job.CommodityCode && x.VARIATION_CODE == job.VariationCode);
+            }
+
+            if (editFORECAST_COMMENT == null)
+            {
+                editFORECAST_COMMENT = new FORECAST_COMMENT();
+                editFORECAST_COMMENT.GUID = Guid.Empty;
+                editFORECAST_COMMENT.GUID_PROJECT = LoadPROJECT.GUID;
+                editFORECAST_COMMENT.SUBJOB_CODE = job.SubJobCode;
+                editFORECAST_COMMENT.DISCIPLINE_CODE = DataUtils.NormalizeString(job.DisciplineCode);
+                editFORECAST_COMMENT.COMMODITY_CODE = DataUtils.NormalizeString(job.CommodityCode);
+                editFORECAST_COMMENT.VARIATION_CODE = DataUtils.NormalizeString(job.VariationCode);
+                editFORECAST_COMMENT.FORECAST_DATE = forecastDate.Date;
+                editFORECAST_COMMENT.COMMENT = saveNewValue;
+                bluePrintsUnitOfWork.FORECAST_COMMENTS.Add(editFORECAST_COMMENT);
+            }
+            else
+            {
+                editFORECAST_COMMENT.COMMENT = saveNewValue;
+            }
+
+            dateCost.ByDateForecastComment = editFORECAST_COMMENT;
+            if (!skipRowSavingAndRefresh)
+            {
+                bluePrintsUnitOfWork.SaveChanges();
+            }
+        }
+
+        private ForecastDateSnapshot findForecastDateSnapshot(DataRow dataRow, DateTime forecastDate)
+        {
+            ForecastJobSnapshot job = (ForecastJobSnapshot)dataRow[columnEntity];
+            string dateFieldName = forecastDate.ToString(BluePrintsResources.ColumnDateFormat);
+            //this is definitely present because the view is generated from datecost model
+            return job.DateCosts.First(x => x.QueryDate == forecastDate.Date);
+        }
+
         /// <summary>
         /// update view and database at the same time
         /// </summary>
@@ -3231,7 +3344,7 @@ namespace BluePrints.ViewModels
         /// </summary>
         public override string ViewName
         {
-            get { return "PROJECTForecastSnapshotViewModelWrapper_v5"; }
+            get { return "PROJECTForecastSnapshotViewModelWrapper_v6"; }
         }
 
         ObservableCollection<DataRowView> selectedDataRows { get; set; }
@@ -3767,6 +3880,8 @@ namespace BluePrints.ViewModels
 
         private decimal tenderBudget;
         public decimal TenderBudget => tenderBudget;
+        public List<FORECAST_JOB_HOUR_SNAPSHOT> AllCollection { get; set; }
+        public List<FORECAST_COMMENT> ForecastCommentCollection { get; set; }
         public List<FORECAST_JOB_HOUR_SNAPSHOT> ToDateCollection { get; set; }
         public List<FORECAST_JOB_HOUR_SNAPSHOT> PreviousDataDateCollection { get; set; }
         public List<FORECAST_JOB_HOUR_SNAPSHOT> BudgetCollection { get; set; }
