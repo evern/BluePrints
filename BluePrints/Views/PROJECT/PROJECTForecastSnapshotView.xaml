@@ -753,7 +753,7 @@
                                                 <dxe:SpinEdit Style="{StaticResource SingleObjectView.SpinEditControlContainer}" Tag="UNAPPROVED_VAR_REVENUE" Mask="c0" MaskType="Numeric" MaskUseAsDisplayFormat="True" EditValue="{Binding ForecastSummary.Unapproved_Var_Revenue, Mode=OneWay}" />
                                             </dxlc:LayoutItem>
                                             <dxlc:LayoutItem Label="" LabelPosition="Left">
-                                                <Button Command="{Binding SaveRevenueChangesCommand}" ToolTip="Export all actuals to excel. Includes grouping, sorting and column visibility preferences">
+                                                <Button Command="{Binding SaveRevenueChangesCommand}" ToolTip="Saves All Revenue Changes Including Original, Variation and Unapproved">
                                                     <StackPanel Orientation="Horizontal">
                                                         <Image Source="{dx:DXImage Image=Save_16x16.png}" Width="16" Height="16" Margin="0, 0, 3, 0" />
                                                         <TextBlock Text="Save Changes" VerticalAlignment="Center" />
@@ -780,7 +780,7 @@
                                                 </dxg:GridControl>
                                             </dxlc:LayoutItem>
                                             <dxlc:LayoutGroup View="Group" Orientation="Horizontal">
-                                                <dxlc:LayoutItem x:Name="EACRevenueDetails" Label="EAC Revenue" dx:DXSerializer.Enabled="False" >
+                                                <dxlc:LayoutItem x:Name="EACRevenueDetails" Label="EAC Revenue" Margin="-3, 0, 0, 0" dx:DXSerializer.Enabled="False" >
                                                     <dxg:LookUpEdit x:Name="lookupEACRevenue" AutoPopulateColumns="False" NullText="Expand to View" IsReadOnly="True" DisplayMember="EACRevenueStr" ItemsSource="{Binding EACRevenueDateCosts}" EditValue="{Binding SelectedEACRevenue, Mode=OneWay}" NullValueButtonPlacement="None" >
                                                         <dxg:LookUpEdit.PopupContentTemplate>
                                                             <ControlTemplate>
@@ -806,9 +806,9 @@
                                                     </dxg:LookUpEdit>
                                                 </dxlc:LayoutItem>
                                                 <dxlc:LayoutItem HorizontalAlignment="Right">
-                                                    <Button Command="{Binding ExportRevenueHistoryToExcelCommand}" ToolTip="Export revenue history to excel">
+                                                    <Button Command="{Binding ExportRevenueHistoryToExcelCommand}" ToolTip="Export revenue history to excel" Width="37">
                                                         <StackPanel Orientation="Horizontal">
-                                                            <Image Source="{dx:DXImage Image=ExportToXLSX_16x16.png}" Width="16" Height="16" Margin="0, 0, 3, 0" />
+                                                            <Image Source="{dx:DXImage Image=ExportToXLSX_16x16.png}" Width="14" Height="14" Margin="0, 0, 2, 0" />
                                                         </StackPanel>
                                                     </Button>
                                                 </dxlc:LayoutItem>
