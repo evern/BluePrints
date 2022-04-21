@@ -27,7 +27,8 @@ namespace BluePrints.Common.Projections
             DateCosts = new List<ForecastDateSnapshot>();
         }
 
-        public ForecastJobSnapshot(UniqueForecastJob uniqueForecastJob, bool isBudgetReadOnly, IEnumerable<FORECAST_EAC> FORECAST_EACCollection, IEnumerable<FORECAST_EAC> FORECAST_EACPreviousCommitmentCollection, IEnumerable<FORECAST_JOB_SETTING> FORECAST_JOB_SETTINGCollection, IEnumerable<COMMODITY_CODE> COMMODITY_CODECollection, IEnumerable<AREA> AREACollection, PROJECT project, List<ExoSubJobProjection> projectLines, DateTime previousDataDate)
+        public ForecastJobSnapshot(UniqueForecastJob uniqueForecastJob, bool isBudgetReadOnly, IEnumerable<FORECAST_EAC> FORECAST_EACCollection, IEnumerable<FORECAST_EAC> FORECAST_EACPreviousCommitmentCollection, IEnumerable<FORECAST_JOB_SETTING> FORECAST_JOB_SETTINGCollection, IEnumerable<COMMODITY_CODE> COMMODITY_CODECollection, IEnumerable<AREA> AREACollection,
+            List<FORECAST> FORECASTCollection, PROJECT project, List<ExoSubJobProjection> projectLines, DateTime dataDate, DateTime previousDataDate)
         {
             this.uniqueForecastJob = uniqueForecastJob;
             DateCosts = new List<ForecastDateSnapshot>();
@@ -67,13 +68,15 @@ namespace BluePrints.Common.Projections
             EarnedUnits = uniqueForecastJob.EarnedCollection.Sum(x => x.FORECAST_QTY);
             PORemainingCosts = uniqueForecastJob.POForecastCosts;
             ProgressETC = uniqueForecastJob.ProgressETCCollection.Sum(x => x.FORECAST_QTY);
-            ActualCostsPreviousDataDate = uniqueForecastJob.PreviousActualCollection.Sum(x => x.FORECAST_COST);
-            ActualUnitsPreviousDataDate = uniqueForecastJob.PreviousActualCollection.Sum(x => x.FORECAST_QTY);
+            ActualCumulativeCostsPreviousDataDate = uniqueForecastJob.PreviousCumulativeActualCollection.Sum(x => x.FORECAST_COST);
+            ActualCostsOnDataDate = uniqueForecastJob.DataDateActualCollection.Sum(x => x.FORECAST_COST);
+            ActualUnitsPreviousDataDate = uniqueForecastJob.PreviousCumulativeActualCollection.Sum(x => x.FORECAST_QTY);
             ActualCostsPostDataDate = uniqueForecastJob.FutureActualCollection.Sum(x => x.FORECAST_COST);
             ActualUnitsPostDataDate = uniqueForecastJob.FutureActualCollection.Sum(x => x.FORECAST_QTY);
             IsBudgetReadOnly = isBudgetReadOnly;
 
             ForecastHelper.PopulatePreviousEAC(this, FORECAST_EACCollection, previousDataDate);
+            ForecastHelper.PopulateDataDateForecast(this, FORECASTCollection, dataDate);
             ForecastHelper.PopulatePreviousCommitment(this, FORECAST_EACPreviousCommitmentCollection, previousDataDate);
             ForecastHelper.PopulateLookupAttributes(this, projectLines, FORECAST_JOB_SETTINGCollection);
             PopulateCommodityCodes(COMMODITY_CODECollection);
@@ -168,7 +171,9 @@ namespace BluePrints.Common.Projections
         public decimal ActualUnitsPostDataDate { get; set; }
         public decimal ActualCostsPostDataDate { get; set; }
         public decimal ActualUnitsPreviousDataDate { get; set; }
-        public decimal ActualCostsPreviousDataDate { get; set; }
+        public decimal ActualCumulativeCostsPreviousDataDate { get; set; }
+        public decimal ActualCostsOnDataDate { get; set; }
+        public decimal VarianceCostsOnDataDate => PreviousForecast - ActualCostsOnDataDate;
         public decimal PctCompleteCosts => EstimateAtCompletion == 0 ? 1 : ActualCosts / EstimateAtCompletion;
         public decimal PctCompleteUnits => P6BudgetedUnits == 0 ? 1 : (P6BudgetedUnits - P6RemainingUnits) / P6BudgetedUnits;
         public decimal PctComplete => IsProcurement ? PctCompleteCosts : PctCompleteUnits;
@@ -324,9 +329,10 @@ namespace BluePrints.Common.Projections
         public decimal PeriodMovement => PreviousEAC - EstimateAtCompletion;
         public decimal PercentagePeriodMovement => PreviousEAC == 0 ? 0 : PeriodMovement / PreviousEAC;
         public decimal? TotalCommitmentPreviousSaved { get; set; }
-        public decimal TotalCommitmentPrevious => TotalCommitmentPreviousSaved != null ? (decimal)TotalCommitmentPreviousSaved : ActualCostsPreviousDataDate + PreviousOutstanding;
+        public decimal TotalCommitmentPrevious => TotalCommitmentPreviousSaved != null ? (decimal)TotalCommitmentPreviousSaved : ActualCumulativeCostsPreviousDataDate + PreviousOutstanding;
         public decimal TotalCommitmentDifference => TotalCommitment - TotalCommitmentPrevious;
         public decimal PreviousEAC { get; set; }
+        public decimal PreviousForecast { get; set; }
         #endregion
 
         #region Codes Validation
@@ -368,8 +374,7 @@ namespace BluePrints.Common.Projections
         readonly List<FORECAST_JOB_HOUR_SNAPSHOT> byDateForecastJobHourSnapshots;
         public ForecastDateSnapshot(IEnumerable<FORECAST_JOB_HOUR_SNAPSHOT> FORECAST_JOB_HOUR_SNAPSHOTFilteredByJob, DateTime firstViewDate, DateTime date, DateTime dataDate)
         {
-            QueryDate = date; 
-            
+            QueryDate = date;
             this.firstViewDate = firstViewDate;
 
             //do not show actuals on forecast columns

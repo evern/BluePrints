@@ -304,6 +304,22 @@ namespace BluePrints.Common.ViewModel.Misc
             }
         }
 
+
+        public static void PopulateDataDateForecast(ForecastJobSnapshot forecastProjection, IEnumerable<FORECAST> FORECASTCollection, DateTime dataDate)
+        {
+            //populate previous estimate to completion
+            FORECAST previousFORECAST = FORECASTCollection.FirstOrDefault(x => x.FORECAST_TYPE == ForecastDataType.DataDateForecast && x.FORECAST_DATE.Date == dataDate.Date && x.SUBJOB_CODE == forecastProjection.SubJobCode && x.DISCIPLINE_CODE == forecastProjection.DisciplineCode && x.COMMODITY_CODE == forecastProjection.CommodityCode && x.VARIATION_CODE == forecastProjection.VariationCode);
+            if (previousFORECAST != null)
+            {
+                if (previousFORECAST.FORECAST_UNITS != null)
+                    forecastProjection.PreviousForecast = (decimal)previousFORECAST.FORECAST_UNITS;
+            }
+            else
+            {
+                forecastProjection.PreviousForecast = 0.00m;
+            }
+        }
+
         public static void PopulatePreviousCommitment(ForecastJobSnapshot forecastProjection, IEnumerable<FORECAST_EAC> FORECAST_EACPreviousCommitmentCollection, DateTime previousDataDate)
         {
             //get previous total commitment

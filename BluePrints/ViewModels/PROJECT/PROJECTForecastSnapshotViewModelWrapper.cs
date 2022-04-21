@@ -240,7 +240,7 @@ namespace BluePrints.ViewModels
 
         protected virtual Func<IRepositoryQuery<FORECAST_JOB_HOUR_SNAPSHOT>, IQueryable<FORECAST_JOB_HOUR_SNAPSHOT>> FORECAST_JOB_HOUR_SNAPSHOTProjectionFunc()
         {
-            return query => query.Where(x => x.GUID_PROJECT == LoadPROJECT.GUID && x.DATA_DATE == FixedDataDate);
+            return query => query.Where(x => x.GUID_PROJECT == LoadPROJECT.GUID && (x.DATA_DATE == FixedDataDate || x.DATA_DATE == PreviousDataDate));
         }
 
         protected virtual Func<IRepositoryQuery<DISCIPLINE_DESC>, IQueryable<DISCIPLINE_DESC>> DISCIPLINE_DESCProjectionFunc()
@@ -591,7 +591,7 @@ namespace BluePrints.ViewModels
         protected override bool loadDataPointsTable()
         {            
             //Auto refresh forecast data on load
-            if (FORECAST_JOB_HOUR_SNAPSHOTCollection.Count() == 0)
+            if (DataDateFORECAST_JOB_HOUR_SNAPSHOTCollection.Count() == 0)
             {
                 if(MessageBoxService.ShowMessage("It appears that snapshot for " + FixedDataDate.ToShortDateString() + " hasn't been created, do you wish to create a snapshot for this data date?", "Info", MessageButton.YesNo, MessageIcon.Information) == MessageResult.Yes)
                     RefreshAllActualData(true);
@@ -628,7 +628,7 @@ namespace BluePrints.ViewModels
             Jobs = new ConcurrentBag<ForecastJobSnapshot>();
             //GridControlService.GridControl?.BeginDataUpdate();
 
-            DateTime actualsEarliestDate = FORECAST_JOB_HOUR_SNAPSHOTCollection.Where(x => x.SNAPSHOT_TYPE == ForecastSnapshotValueType.Actual && x.FORECAST_DATE != null).Count() == 0 ? DateTime.Now : FORECAST_JOB_HOUR_SNAPSHOTCollection.Where(x => x.SNAPSHOT_TYPE == ForecastSnapshotValueType.Actual && x.FORECAST_DATE != null).Min(x => (DateTime)x.FORECAST_DATE);
+            DateTime actualsEarliestDate = DataDateFORECAST_JOB_HOUR_SNAPSHOTCollection.Where(x => x.SNAPSHOT_TYPE == ForecastSnapshotValueType.Actual && x.FORECAST_DATE != null).Count() == 0 ? DateTime.Now : DataDateFORECAST_JOB_HOUR_SNAPSHOTCollection.Where(x => x.SNAPSHOT_TYPE == ForecastSnapshotValueType.Actual && x.FORECAST_DATE != null).Min(x => (DateTime)x.FORECAST_DATE);
             DateTime firstDataPointDate = isShowActualsHistory ? actualsEarliestDate : FixedDataDate;
             alignedDataDateCollection = generateDates(firstDataPointDate);
             InitializeColumnSource(ParentViewColumns, ParentSummaries, alignedDataDateCollection, false);
@@ -638,7 +638,7 @@ namespace BluePrints.ViewModels
             HashSet<string> uniqueWBSNames = new HashSet<string>();
 
             //Earned and P6 planned may generate outdated entries, omit it when generating unique entries
-            foreach (string uniqueWBSName in FORECAST_JOB_HOUR_SNAPSHOTCollection.Where(x => x.SNAPSHOT_TYPE != ForecastSnapshotValueType.P6Planned && x.SNAPSHOT_TYPE != ForecastSnapshotValueType.Earned).Select(x => x.ForecastViewCode).Distinct())
+            foreach (string uniqueWBSName in DataDateFORECAST_JOB_HOUR_SNAPSHOTCollection.Where(x => x.SNAPSHOT_TYPE != ForecastSnapshotValueType.P6Planned && x.SNAPSHOT_TYPE != ForecastSnapshotValueType.Earned).Select(x => x.ForecastViewCode).Distinct())
                 uniqueWBSNames.Add(uniqueWBSName);
 
             foreach (string uniqueWBSName in projectLines.Select(x => x.ForecastViewCode).Distinct())
@@ -667,7 +667,7 @@ namespace BluePrints.ViewModels
                 //{
 
                 //}
-                UniqueForecastJob uniqueForecastJob = new UniqueForecastJob(projectLines, subJobCode, disciplineCode, commodityCode, variationCode, FixedDataDate, PreviousDataDate, FORECAST_JOB_HOUR_SNAPSHOTCollection, IsShowUninvoicedOnly);
+                UniqueForecastJob uniqueForecastJob = new UniqueForecastJob(projectLines, subJobCode, disciplineCode, commodityCode, variationCode, FixedDataDate, PreviousDataDate, AllFORECAST_JOB_HOUR_SNAPSHOTCollection, IsShowUninvoicedOnly);
                 uniqueForecastJob.UpdateTenderBudget(TenderBudgetCollection.AsQueryable());
                 uniqueForecastJob.UpdateErrorMessage(JOBCOST_LINES_AUDITCollection.AsQueryable());
                 uniqueForecastJobs.Add(uniqueForecastJob);
@@ -694,31 +694,32 @@ namespace BluePrints.ViewModels
                 dataPointsTable.Columns.Add(columnFieldName, typeof(decimal));
             }
 
+            Common.LoadingScreenManager.ShowLoadingScreen(1);
+            Common.LoadingScreenManager.SetMessage("Loading Forecast Overrides...");
+            List<FORECAST> cachedFORECASTCollection = QueryableFORECASTCollection.ToList();
+
             bool isBudgetReadOnly = LoginCredentials.getPermissionStatus(DataUtils.GetNameOf(() => NavigationResources.Permission_EXO_ChangeBudget)) == LoginCredentials.PermissionStatus.None;
             //child data table is used to record original value of actuals + committed + remaining values before it is overridden by forecasts
             Parallel.ForEach(uniqueForecastJobs,
                 uniqueForecastJob =>
                 {
-                    ForecastJobSnapshot forecastJobSnapshot = new ForecastJobSnapshot(uniqueForecastJob, isBudgetReadOnly, FORECAST_EACCollection, FORECAST_EACPreviousCommitmentCollection, FORECAST_JOB_SETTINGCollection, COMMODITY_CODECollection, AREACollection, LoadPROJECT, projectLines, PreviousDataDate);
-                    foreach (DateTime alignedDataDate in alignedDataDateCollection)
-                    {
-                        ForecastDateSnapshot forecastDateSnapshot = new ForecastDateSnapshot(uniqueForecastJob.AllCollection, firstViewDate, alignedDataDate.Date, FixedDataDate);
-                        forecastJobSnapshot.DateCosts.Add(forecastDateSnapshot);
-                    }
 
-                    Jobs.Add(forecastJobSnapshot);
-                    Common.LoadingScreenManager.Progress();
                 });
 
+
             ////For Debugging
-            //foreach(var uniqueForecastJob in uniqueForecastJobs)
-            //{
+            foreach (var uniqueForecastJob in uniqueForecastJobs)
+            {
+                ForecastJobSnapshot forecastJobSnapshot = new ForecastJobSnapshot(uniqueForecastJob, isBudgetReadOnly, FORECAST_EACCollection, FORECAST_EACPreviousCommitmentCollection, FORECAST_JOB_SETTINGCollection, COMMODITY_CODECollection, AREACollection, cachedFORECASTCollection, LoadPROJECT, projectLines, FixedDataDate, PreviousDataDate);
+                foreach (DateTime alignedDataDate in alignedDataDateCollection)
+                {
+                    ForecastDateSnapshot forecastDateSnapshot = new ForecastDateSnapshot(uniqueForecastJob.ToDateCollection, firstViewDate, alignedDataDate.Date, FixedDataDate);
+                    forecastJobSnapshot.DateCosts.Add(forecastDateSnapshot);
+                }
 
-            //}
-
-            Common.LoadingScreenManager.ShowLoadingScreen(1);
-            Common.LoadingScreenManager.SetMessage("Loading Forecast Overrides...");
-            List<FORECAST> cachedFORECASTCollection = QueryableFORECASTCollection.ToList();
+                Jobs.Add(forecastJobSnapshot);
+                Common.LoadingScreenManager.Progress();
+            }
 
             Common.LoadingScreenManager.ResetCurrentProgress();
             Common.LoadingScreenManager.SetMaxProgress(Jobs.Count() + 1);
@@ -1120,7 +1121,7 @@ namespace BluePrints.ViewModels
 
         private List<DateTime> generateDates(DateTime firstDataPointDate)
         {
-            List<FORECAST_JOB_HOUR_SNAPSHOT> snapShots = FORECAST_JOB_HOUR_SNAPSHOTCollection.Where(x => x.FORECAST_DATE != null).ToList();
+            List<FORECAST_JOB_HOUR_SNAPSHOT> snapShots = DataDateFORECAST_JOB_HOUR_SNAPSHOTCollection.Where(x => x.FORECAST_DATE != null).ToList();
             DateTime endDateToGenerate = snapShots.Count == 0 ? DateTime.Now.AddMonths(1) : snapShots.Max(x => (DateTime)x.FORECAST_DATE);
             if (FixedEndDate > endDateToGenerate)
                 endDateToGenerate = FixedEndDate;
@@ -1235,8 +1236,8 @@ namespace BluePrints.ViewModels
                 columns.Add(new ColumnDescriptor() { FieldName = "Entity.IsProductivityFloating", Visible = false, ReadOnly = true, Header = "Floating PF", Fixed = FixedStyle.Left, Width = 50, Settings = SettingsType.Default, GroupIndex = -1, SortIndex = -1, HeaderToolTip = "Productivity on job with floating productivity can be updated to match current productivity" });
                 columns.Add(new ColumnDescriptor() { FieldName = "Entity.ActualCostsPostDataDate", ReadOnly = true, Header = "Actual Costs Post DD", Fixed = FixedStyle.Left, Width = 50, Settings = SettingsType.Number, Mask = "c0", HeaderToolTip = "Actual costs post data date" });
                 summaries.Add(new SummaryDescriptor() { FieldName = "Entity.ActualCostsPostDataDate", DisplayFormat = "c0", Type = SummaryItemType.Sum });
-                columns.Add(new ColumnDescriptor() { FieldName = "Entity.ActualCostsPreviousDataDate", ReadOnly = true, Header = "Actual Costs Post DD", Visible = false, Fixed = FixedStyle.Left, Width = 50, Settings = SettingsType.Number, Mask = "c0", HeaderToolTip = "Actual costs post data date" });
-                summaries.Add(new SummaryDescriptor() { FieldName = "Entity.ActualCostsPreviousDataDate", DisplayFormat = "c0", Type = SummaryItemType.Sum });
+                columns.Add(new ColumnDescriptor() { FieldName = "Entity.ActualCumulativeCostsPreviousDataDate", ReadOnly = true, Header = "Actual Costs Post DD", Visible = false, Fixed = FixedStyle.Left, Width = 50, Settings = SettingsType.Number, Mask = "c0", HeaderToolTip = "Actual costs post data date" });
+                summaries.Add(new SummaryDescriptor() { FieldName = "Entity.ActualCumulativeCostsPreviousDataDate", DisplayFormat = "c0", Type = SummaryItemType.Sum });
                 columns.Add(new ColumnDescriptor() { FieldName = "Entity.PctComplete", ReadOnly = true, Visible = false, Header = "% Complete", Fixed = FixedStyle.Left, Width = 40, Settings = SettingsType.Number, Mask = "p0", HeaderToolTip = "Procurement: Actuals / EAC, Others: (Budgeted Units - Remaining Units)/ Budgeted Units" });
                 columns.Add(new ColumnDescriptor() { FieldName = "Entity.Outstanding", ReadOnly = true, Header = "Outstanding (C)", Fixed = FixedStyle.Left, Width = 70, Settings = SettingsType.POError, Mask = "c0", HeaderToolTip = "Open Commitment, amount left on purchase order (outstanding PO) or amount left on P6 forecasts" });
                 summaries.Add(new SummaryDescriptor() { FieldName = "Entity.Outstanding", DisplayFormat = "c0", Type = SummaryItemType.Sum });
@@ -1264,6 +1265,14 @@ namespace BluePrints.ViewModels
                 summaries.Add(new SummaryDescriptor() { FieldName = "Entity.Variance", DisplayFormat = "c0", Type = SummaryItemType.Sum });
                 columns.Add(new ColumnDescriptor() { FieldName = "Entity.PeriodMovement", Header = "Period Move (G)", Fixed = FixedStyle.Left, Width = 75, Settings = SettingsType.Number, Mask = "c0", HeaderToolTip = "Difference from previous EAC" });
                 summaries.Add(new SummaryDescriptor() { FieldName = "Entity.PeriodMovement", DisplayFormat = "c0", Type = SummaryItemType.Sum });
+
+                columns.Add(new ColumnDescriptor() { FieldName = "Entity.ActualCostsOnDataDate", ReadOnly = true, ColumnDate = FixedDataDate, Header = "Prev. Period Actuals", Fixed = FixedStyle.Left, Width = 70, Settings = SettingsType.Number, Mask = "c0" });
+                summaries.Add(new SummaryDescriptor() { FieldName = "Entity.ActualCostsOnDataDate", DisplayFormat = "c0", Type = SummaryItemType.Sum });
+                columns.Add(new ColumnDescriptor() { FieldName = "Entity.PreviousForecast", ReadOnly = true, ColumnDate = FixedDataDate, Header = "Prev. Period Forecast", Fixed = FixedStyle.Left, Width = 70, Settings = SettingsType.Number, Mask = "c0" });
+                summaries.Add(new SummaryDescriptor() { FieldName = "Entity.PreviousForecast", DisplayFormat = "c0", Type = SummaryItemType.Sum });
+                columns.Add(new ColumnDescriptor() { FieldName = "Entity.VarianceCostsOnDataDate", ReadOnly = true, ColumnDate = FixedDataDate, Header = "Forecast Variance", Fixed = FixedStyle.Left, Width = 70, Settings = SettingsType.Number, Mask = "c0" });
+                summaries.Add(new SummaryDescriptor() { FieldName = "Entity.VarianceCostsOnDataDate", DisplayFormat = "c0", Type = SummaryItemType.Sum });
+                
                 columns.Add(new ColumnDescriptor() { FieldName = "Entity.PercentagePeriodMovement", Header = "Percentage Period Move (G / F)", Fixed = FixedStyle.Left, Width = 75, Settings = SettingsType.Number, Mask = "p0", HeaderToolTip = "Period Movement / Previous EAC" });
                 summaries.Add(new SummaryDescriptor() { FieldName = "Entity.PercentagePeriodMovement", DisplayFormat = "{0} Record(s)", Type = SummaryItemType.Count });columns.Add(new ColumnDescriptor() { FieldName = "Entity.PercentagePeriodMovement", Header = "Percentage Period Move (G / F)", Fixed = FixedStyle.Left, Width = 75, Settings = SettingsType.Number, Mask = "p0", HeaderToolTip = "Period Movement / Previous EAC" });
                 columns.Add(new ColumnDescriptor() { FieldName = "Entity.IsPOError", Header = "PO Error", Visible = false, Fixed = FixedStyle.Left, Width = 50, Settings = SettingsType.Default, GroupIndex = -1, SortIndex = -1, HeaderToolTip = "Checked when there is PO forecast error" });
@@ -1748,6 +1757,11 @@ namespace BluePrints.ViewModels
                 ForecastJobSnapshot entity = (ForecastJobSnapshot)masterRow[columnEntity];
                 findExistingOrAddNewEAC(FixedDataDateMonthEnd, entity, bluePrintsUnitOfWork, entity.EstimateAtCompletion, false, ForecastEACType.EAC);
                 findExistingOrAddNewEAC(FixedDataDateMonthEnd, entity, bluePrintsUnitOfWork, entity.TotalCommitment, false, ForecastEACType.PreviousCommitment);
+
+                ForecastDateSnapshot firstForecastMonthDateCost = entity.DateCosts.FirstOrDefault(x => x.QueryDate.Date == firstForecastDate.Date);
+                if(firstForecastMonthDateCost != null)
+                    findExistingOrAddNewEAC(FixedDataDateMonthEnd, entity, bluePrintsUnitOfWork, firstForecastMonthDateCost.TotalCosts, false, ForecastEACType.PreviousForecast);
+
                 decimal firstForecastDateValue = (decimal)masterRow[firstForecastDate.ToString(BluePrintsResources.ColumnDateFormat)];
 
                 FORECAST findFORECASTS = bluePrintsUnitOfWork.FORECASTS.FirstOrDefault(x => x.FORECAST_TYPE == ForecastDataType.DataDateForecast && x.FORECAST_DATE == firstForecastDate && x.SUBJOB_CODE == entity.SubJobCode && x.DISCIPLINE_CODE == entity.DisciplineCode && x.COMMODITY_CODE == entity.CommodityCode && x.VARIATION_CODE == entity.VariationCode);
@@ -1807,11 +1821,11 @@ namespace BluePrints.ViewModels
             }
 
             List<ForecastJobSnapshot> jobs = getJobDataFromDatatable();
-            if (jobs.Any(x => x.IsPOError))
-            {
-                MessageBoxService.ShowMessage("Some PO forecast aren't completed yet or misaligned\nPlease go to PO forecast and click Align Actuals\nThen refresh this screen", "Error", MessageButton.OK, MessageIcon.Exclamation);
-                return false;
-            }
+            //if (jobs.Any(x => x.IsPOError))
+            //{
+            //    MessageBoxService.ShowMessage("Some PO forecast aren't completed yet or misaligned\nPlease go to PO forecast and click Align Actuals\nThen refresh this screen", "Error", MessageButton.OK, MessageIcon.Exclamation);
+            //    return false;
+            //}
 
             return true;
         }
@@ -2047,6 +2061,11 @@ namespace BluePrints.ViewModels
             return null;
         }
 
+        private DateTime getLastSecondOfDay(DateTime date)
+        {
+            return new DateTime(date.Year, date.Month, date.Day).AddDays(1).AddSeconds(-1);
+        }
+
         public bool CanEditDataDates()
         {
             return !IsLoading;
@@ -2055,12 +2074,12 @@ namespace BluePrints.ViewModels
         public void EditDataDates()
         {
             var dateFromToViewModel = DateFromToDialogViewModel.Create("Data Date:", "End Date:");
-            if (DateFromToDialogService.ShowDialog(MessageButton.OKCancel, "Select Data Date and End Date", "DateFromTo", dateFromToViewModel) == MessageResult.OK)
+            if (DateFromToDialogService.ShowDialog(MessageButton.OKCancel, "Pick any date in the month. Dates will auto adjust to last day of the month", "DateFromTo", dateFromToViewModel) == MessageResult.OK)
             {
                 DateTime dataDate = dateFromToViewModel.DateFrom;
                 DateTime endDate = dateFromToViewModel.DateTo;
 
-                DateTime? dataDateLastDayOfMonth = getLastDayOfMonth(dataDate, true);
+                DateTime? dataDateLastDayOfMonth = getLastDayOfMonth(dataDate, false);
                 DateTime? endDateLastDayOfMonth = getLastDayOfMonth(endDate, false);
                 if (dataDateLastDayOfMonth == null)
                 {
@@ -2074,8 +2093,8 @@ namespace BluePrints.ViewModels
                     return;
                 }
 
-                fixedDataDate = (DateTime)dataDateLastDayOfMonth;
-                fixedEndDate = (DateTime)endDateLastDayOfMonth;
+                fixedDataDate = getLastSecondOfDay((DateTime)dataDateLastDayOfMonth);
+                fixedEndDate = getLastSecondOfDay((DateTime)endDateLastDayOfMonth);
                 SaveDateAndRefresh();
             }
         }
@@ -3029,7 +3048,7 @@ namespace BluePrints.ViewModels
             if (DateTime.TryParse(gridColumn.ActualColumnChooserHeaderCaption.ToString(), out parseEndDate))
             {
                 ForecastJobSnapshot entity = (ForecastJobSnapshot)dataRowView[columnEntity];
-                parseEndDate = parseEndDate.AddDays(1).AddSeconds(-1);
+                parseEndDate = getLastSecondOfDay(parseEndDate);
                 EndSelectionDate = parseEndDate;
 
                 if (EndSelectionDate.Year == FixedMonthEndingSundayDate.Year && EndSelectionDate.Month == FixedMonthEndingSundayDate.Month)
@@ -3098,23 +3117,31 @@ namespace BluePrints.ViewModels
             else if (gridColumn.FieldName.ToUpper().Contains("ACTUAL"))
             {
                 DateTime dataDate = (DateTime)FixedDataDate;
+                bool isActualOnlyDate = gridColumn.FieldName.Contains(BindableBase.GetPropertyName(() => new ForecastJobSnapshot().ActualCostsOnDataDate));
                 ForecastJobSnapshot entity = (ForecastJobSnapshot)dataRowView[columnEntity];
+                string criteriaString = string.Empty;
 
                 if(isShowUninvoicedOnly)
                 {
                     if (entity.CommodityCode != string.Empty)
-                        ActualFilterCriteria = CriteriaOperator.Parse("[SUB_JOBCODE] = '" + entity.SubJobCode + "' And [DISCIPLINE_CODE] = '" + entity.DisciplineCode + "' And [VARIATION_CODE] = '" + entity.VariationCode + "' And [COMMODITY_CODE] = '" + entity.CommodityCode + "' And [LINE_STATUS] <> 'I' And [TRANSDATE] <= #" + dataDate.Year + "-" + dataDate.Month + "-" + dataDate.Day + "#");
+                        criteriaString = "[SUB_JOBCODE] = '" + entity.SubJobCode + "' And [DISCIPLINE_CODE] = '" + entity.DisciplineCode + "' And [VARIATION_CODE] = '" + entity.VariationCode + "' And [COMMODITY_CODE] = '" + entity.CommodityCode + "' And [LINE_STATUS] <> 'I'";
                     else
-                        ActualFilterCriteria = CriteriaOperator.Parse("[SUB_JOBCODE] = '" + entity.SubJobCode + "' And [DISCIPLINE_CODE] = '" + entity.DisciplineCode + "' And [VARIATION_CODE] = '" + entity.VariationCode + "' And [LINE_STATUS] <> 'I' And [TRANSDATE] <= #" + dataDate.Year + "-" + dataDate.Month + "-" + dataDate.Day + "#");
+                        criteriaString = "[SUB_JOBCODE] = '" + entity.SubJobCode + "' And [DISCIPLINE_CODE] = '" + entity.DisciplineCode + "' And [VARIATION_CODE] = '" + entity.VariationCode + "' And [LINE_STATUS] <> 'I'";
                 }
                 else
                 {
                     if (entity.CommodityCode != string.Empty)
-                        ActualFilterCriteria = CriteriaOperator.Parse("[SUB_JOBCODE] = '" + entity.SubJobCode + "' And [DISCIPLINE_CODE] = '" + entity.DisciplineCode + "' And [VARIATION_CODE] = '" + entity.VariationCode + "' And [COMMODITY_CODE] = '" + entity.CommodityCode + "' And [TRANSDATE] <= #" + dataDate.Year + "-" + dataDate.Month + "-" + dataDate.Day + "#");
+                        criteriaString = "[SUB_JOBCODE] = '" + entity.SubJobCode + "' And [DISCIPLINE_CODE] = '" + entity.DisciplineCode + "' And [VARIATION_CODE] = '" + entity.VariationCode + "' And [COMMODITY_CODE] = '" + entity.CommodityCode;
                     else
-                        ActualFilterCriteria = CriteriaOperator.Parse("[SUB_JOBCODE] = '" + entity.SubJobCode + "' And [DISCIPLINE_CODE] = '" + entity.DisciplineCode + "' And [VARIATION_CODE] = '" + entity.VariationCode + "' And [TRANSDATE] <= #" + dataDate.Year + "-" + dataDate.Month + "-" + dataDate.Day + "#");
+                        criteriaString = "[SUB_JOBCODE] = '" + entity.SubJobCode + "' And [DISCIPLINE_CODE] = '" + entity.DisciplineCode + "' And [VARIATION_CODE] = '" + entity.VariationCode;
                 }
 
+                if(isActualOnlyDate)
+                    criteriaString += "' And [TRANSDATE] == #" + dataDate.Year + "-" + dataDate.Month + "-" + dataDate.Day + "#";
+                else
+                    criteriaString += "' And [TRANSDATE] <= #" + dataDate.Year + "-" + dataDate.Month + "-" + dataDate.Day + "#";
+
+                ActualFilterCriteria = CriteriaOperator.Parse(criteriaString);
                 IsHidden = false;
                 IsPoDetailsVisible = false;
                 this.RaisePropertyChanged(x => x.ActualsDetail);
@@ -3318,11 +3345,29 @@ namespace BluePrints.ViewModels
             Common.LoadingScreenManager.CloseLoadingScreen();
         }
 
-        public IEnumerable<FORECAST_JOB_HOUR_SNAPSHOT> FORECAST_JOB_HOUR_SNAPSHOTCollection
+        public IEnumerable<FORECAST_JOB_HOUR_SNAPSHOT> AllFORECAST_JOB_HOUR_SNAPSHOTCollection
         {
             get
             {
                 return GetEntities<FORECAST_JOB_HOUR_SNAPSHOT>();
+            }
+        }
+
+        public IEnumerable<FORECAST_JOB_HOUR_SNAPSHOT> DataDateFORECAST_JOB_HOUR_SNAPSHOTCollection
+        {
+            get
+            {
+                var collection = GetEntities<FORECAST_JOB_HOUR_SNAPSHOT>();
+                return collection.Where(x => x.DATA_DATE == FixedDataDate);
+            }
+        }
+
+        public IEnumerable<FORECAST_JOB_HOUR_SNAPSHOT> PreviousDataDateFORECAST_JOB_HOUR_SNAPSHOTCollection
+        {
+            get
+            {
+                var collection = GetEntities<FORECAST_JOB_HOUR_SNAPSHOT>();
+                return collection.Where(x => x.DATA_DATE == PreviousDataDate);
             }
         }
 
@@ -3385,6 +3430,14 @@ namespace BluePrints.ViewModels
             get
             {
                 return GetEntities<FORECAST_EAC>().Where(x => x.TYPE == ForecastEACType.EAC);
+            }
+        }
+
+        public IEnumerable<FORECAST_EAC> FORECAST_EACPreviousForecastCollection
+        {
+            get
+            {
+                return GetEntities<FORECAST_EAC>().Where(x => x.TYPE == ForecastEACType.PreviousForecast);
             }
         }
 
@@ -3557,7 +3610,7 @@ namespace BluePrints.ViewModels
 
     public class UniqueForecastJob
     {
-        public UniqueForecastJob(IEnumerable<ExoSubJobProjection> projectLines, string subJobCode, string disciplineCode, string commodityCode, string variationCode, DateTime dataDate, DateTime previousDataDate, IEnumerable<FORECAST_JOB_HOUR_SNAPSHOT> FORECAST_JOB_HOURByDataDateCollection, bool isShowUninvoicedOnly)
+        public UniqueForecastJob(IEnumerable<ExoSubJobProjection> projectLines, string subJobCode, string disciplineCode, string commodityCode, string variationCode, DateTime dataDate, DateTime previousDataDate, IEnumerable<FORECAST_JOB_HOUR_SNAPSHOT> AllFORECAST_JOB_HOURCollection, bool isShowUninvoicedOnly)
         {
             SUBJOB_CODE = subJobCode;
             DISCIPLINE_CODE = disciplineCode;
@@ -3565,12 +3618,14 @@ namespace BluePrints.ViewModels
             VARIATION_CODE = variationCode;
             ProjectLine = projectLines.FirstOrDefault(x => x.SubJobCode == subJobCode && x.DisciplineCode == disciplineCode && x.CommodityCode == commodityCode && x.VariationCode == variationCode);
 
-            IEnumerable<FORECAST_JOB_HOUR_SNAPSHOT> filteredForecastJobHourSnapshot = FORECAST_JOB_HOURByDataDateCollection.Where(x => x.SUBJOB_CODE == subJobCode && x.DISCIPLINE_CODE == disciplineCode && x.COMMODITY_CODE == commodityCode && x.VARIATION_CODE == variationCode);
-            AllCollection = filteredForecastJobHourSnapshot.ToList();
-            BudgetCollection = filteredForecastJobHourSnapshot.Where(x => x.SNAPSHOT_TYPE == ForecastSnapshotValueType.Budget).ToList();
-            PreviousActualCollection = filteredForecastJobHourSnapshot.Where(x => x.SNAPSHOT_TYPE == ForecastSnapshotValueType.Actual && x.FORECAST_DATE <= previousDataDate).ToList();
+            IEnumerable<FORECAST_JOB_HOUR_SNAPSHOT> filteredForecastJobHourSnapshot = AllFORECAST_JOB_HOURCollection.Where(x => x.SUBJOB_CODE == subJobCode && x.DISCIPLINE_CODE == disciplineCode && x.COMMODITY_CODE == commodityCode && x.VARIATION_CODE == variationCode);
+            ToDateCollection = filteredForecastJobHourSnapshot.Where(x => x.DATA_DATE.Date == dataDate.Date).ToList();
+            PreviousDataDateCollection = filteredForecastJobHourSnapshot.Where(x => x.DATA_DATE.Date == previousDataDate.Date).ToList();
+            BudgetCollection = ToDateCollection.Where(x => x.SNAPSHOT_TYPE == ForecastSnapshotValueType.Budget).ToList();
+            PreviousCumulativeActualCollection = ToDateCollection.Where(x => x.SNAPSHOT_TYPE == ForecastSnapshotValueType.Actual && x.FORECAST_DATE <= previousDataDate).ToList();
+            DataDateActualCollection = PreviousDataDateCollection.Where(x => x.FORECAST_DATE != null).Where(x => x.SNAPSHOT_TYPE == ForecastSnapshotValueType.Actual).ToList();
 
-            if(isShowUninvoicedOnly)
+            if (isShowUninvoicedOnly)
                 ActualCollection = filteredForecastJobHourSnapshot.Where(x => x.SNAPSHOT_TYPE == ForecastSnapshotValueType.Actual && x.STATUS_CODE != "I" && x.FORECAST_DATE <= dataDate).ToList();
             else
                 ActualCollection = filteredForecastJobHourSnapshot.Where(x => x.SNAPSHOT_TYPE == ForecastSnapshotValueType.Actual && x.FORECAST_DATE <= dataDate).ToList();
@@ -3682,9 +3737,11 @@ namespace BluePrints.ViewModels
 
         private decimal tenderBudget;
         public decimal TenderBudget => tenderBudget;
-        public List<FORECAST_JOB_HOUR_SNAPSHOT> AllCollection { get; set; }
+        public List<FORECAST_JOB_HOUR_SNAPSHOT> ToDateCollection { get; set; }
+        public List<FORECAST_JOB_HOUR_SNAPSHOT> PreviousDataDateCollection { get; set; }
         public List<FORECAST_JOB_HOUR_SNAPSHOT> BudgetCollection { get; set; }
-        public List<FORECAST_JOB_HOUR_SNAPSHOT> PreviousActualCollection { get; set; }
+        public List<FORECAST_JOB_HOUR_SNAPSHOT> PreviousCumulativeActualCollection { get; set; }
+        public List<FORECAST_JOB_HOUR_SNAPSHOT> DataDateActualCollection { get; set; }
         public List<FORECAST_JOB_HOUR_SNAPSHOT> ActualCollection { get; set; }
         public List<FORECAST_JOB_HOUR_SNAPSHOT> FutureActualCollection { get; set; }
         public List<FORECAST_JOB_HOUR_SNAPSHOT> P6RemainingCollection { get; set; }
