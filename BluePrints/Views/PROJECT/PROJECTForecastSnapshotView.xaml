@@ -195,22 +195,6 @@
                         <dxg:GridColumn.CellTemplate>
                             <DataTemplate>
                                 <StackPanel Orientation="Horizontal">
-                                    <Image Source="{dxc:DXImage Images/XAF/State_Validation_Information.png}" Width="16" Height="16" Margin="0, 0, 3, 0" >
-                                        <Image.Visibility>
-                                            <MultiBinding Converter="{StaticResource ForecastFutureCellInfoVisibilityConverter}">
-                                                <Binding Path="RowData.Row.Row" />
-                                                <Binding Path="Column.FieldName" />
-                                                <Binding ElementName="PART_Editor" Path="EditValue" />
-                                            </MultiBinding>
-                                        </Image.Visibility>
-                                        <Image.ToolTip>
-                                            <MultiBinding Converter="{StaticResource ForecastFutureCellInfoToolTipConverter}">
-                                                <Binding Path="RowData.Row.Row" />
-                                                <Binding Path="Column.FieldName" />
-                                                <Binding ElementName="PART_Editor" Path="EditValue" />
-                                            </MultiBinding>
-                                        </Image.ToolTip>
-                                    </Image>
                                     <dxe:SpinEdit Name="PART_Editor" Increment="1" Mask="c0" MaskType="Numeric" MaskUseAsDisplayFormat="True" Foreground="Black">
                                         <dxe:SpinEdit.Background>
                                             <MultiBinding Converter="{StaticResource ForecastFutureCellColorConverter}">
@@ -227,6 +211,24 @@
                                             </MultiBinding>
                                         </dxe:SpinEdit.ToolTip>
                                     </dxe:SpinEdit>
+                                    <Image Source="{dxc:DXImage Images/XAF/State_Validation_Information.png}" Width="16" Height="16" Margin="0, 0, 3, 0" >
+                                        <Image.Visibility>
+                                            <MultiBinding Converter="{StaticResource ForecastFutureCellInfoVisibilityConverter}">
+                                                <Binding Path="RowData.Row.Row" />
+                                                <Binding Path="Column.FieldName" />
+                                                <!--Need to bind to edit value so that raise property change will update the cell-->
+                                                <Binding ElementName="PART_Editor" Path="EditValue" />
+                                            </MultiBinding>
+                                        </Image.Visibility>
+                                        <Image.ToolTip>
+                                            <MultiBinding Converter="{StaticResource ForecastFutureCellInfoToolTipConverter}">
+                                                <Binding Path="RowData.Row.Row" />
+                                                <Binding Path="Column.FieldName" />
+                                                <!--Need to bind to edit value so that raise property change will update the cell-->
+                                                <Binding ElementName="PART_Editor" Path="EditValue" />
+                                            </MultiBinding>
+                                        </Image.ToolTip>
+                                    </Image>
                                 </StackPanel>
                             </DataTemplate>
                         </dxg:GridColumn.CellTemplate>

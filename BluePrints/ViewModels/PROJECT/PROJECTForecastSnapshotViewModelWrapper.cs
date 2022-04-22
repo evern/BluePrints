@@ -1285,11 +1285,11 @@ namespace BluePrints.ViewModels
                 columns.Add(new ColumnDescriptor() { FieldName = "Entity.PeriodMovement", Header = "Period Move (G)", Fixed = FixedStyle.Left, Width = 75, Settings = SettingsType.Number, Mask = "c0", HeaderToolTip = "Difference from previous EAC" });
                 summaries.Add(new SummaryDescriptor() { FieldName = "Entity.PeriodMovement", DisplayFormat = "c0", Type = SummaryItemType.Sum });
 
-                columns.Add(new ColumnDescriptor() { FieldName = "Entity.ActualCostsOnDataDate", ReadOnly = true, ColumnDate = FixedDataDate, Header = "Prev. Period Actuals", Fixed = FixedStyle.Left, Width = 70, Settings = SettingsType.Number, Mask = "c0" });
+                columns.Add(new ColumnDescriptor() { FieldName = "Entity.ActualCostsOnDataDate", ReadOnly = true, Visible = false, ColumnDate = FixedDataDate, Header = "Prev. Period Actuals", Fixed = FixedStyle.Left, Width = 70, Settings = SettingsType.Number, Mask = "c0" });
                 summaries.Add(new SummaryDescriptor() { FieldName = "Entity.ActualCostsOnDataDate", DisplayFormat = "c0", Type = SummaryItemType.Sum });
-                columns.Add(new ColumnDescriptor() { FieldName = "Entity.PreviousForecast", ReadOnly = true, ColumnDate = FixedDataDate, Header = "Prev. Period Forecast", Fixed = FixedStyle.Left, Width = 70, Settings = SettingsType.Number, Mask = "c0" });
+                columns.Add(new ColumnDescriptor() { FieldName = "Entity.PreviousForecast", ReadOnly = true, Visible = false, ColumnDate = FixedDataDate, Header = "Prev. Period Forecast", Fixed = FixedStyle.Left, Width = 70, Settings = SettingsType.Number, Mask = "c0" });
                 summaries.Add(new SummaryDescriptor() { FieldName = "Entity.PreviousForecast", DisplayFormat = "c0", Type = SummaryItemType.Sum });
-                columns.Add(new ColumnDescriptor() { FieldName = "Entity.VarianceCostsOnDataDate", ReadOnly = true, ColumnDate = FixedDataDate, Header = "Forecast Variance", Fixed = FixedStyle.Left, Width = 70, Settings = SettingsType.Number, Mask = "c0" });
+                columns.Add(new ColumnDescriptor() { FieldName = "Entity.VarianceCostsOnDataDate", ReadOnly = true, Visible = false, ColumnDate = FixedDataDate, Header = "Forecast Variance", Fixed = FixedStyle.Left, Width = 70, Settings = SettingsType.Number, Mask = "c0" });
                 summaries.Add(new SummaryDescriptor() { FieldName = "Entity.VarianceCostsOnDataDate", DisplayFormat = "c0", Type = SummaryItemType.Sum });
                 
                 columns.Add(new ColumnDescriptor() { FieldName = "Entity.PercentagePeriodMovement", Header = "Percentage Period Move (G / F)", Fixed = FixedStyle.Left, Width = 75, Settings = SettingsType.Number, Mask = "p0", HeaderToolTip = "Period Movement / Previous EAC" });
@@ -3344,7 +3344,7 @@ namespace BluePrints.ViewModels
         /// </summary>
         public override string ViewName
         {
-            get { return "PROJECTForecastSnapshotViewModelWrapper_v6"; }
+            get { return "PROJECTForecastSnapshotViewModelWrapper_v7"; }
         }
 
         ObservableCollection<DataRowView> selectedDataRows { get; set; }
