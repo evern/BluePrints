@@ -1365,13 +1365,13 @@ namespace BluePrints.ViewModels
             var bulkEditStringsViewModel = BulkEditStringsViewModel.Create(editComment, "Please enter comments");
             if (BulkColumnEditDialogService.ShowDialog(MessageButton.OKCancel, "Comments", "BulkEditStrings", bulkEditStringsViewModel) == MessageResult.OK)
             {
-                editComment = bulkEditStringsViewModel.EditValue;
-            }
+                if (editComment == null || editComment == string.Empty)
+                {
+                    MessageBoxService.ShowMessage("Cannot enter empty comments", "Error", MessageButton.OK, MessageIcon.Information);
+                    return;
+                }
 
-            if(editComment == null || editComment == string.Empty)
-            {
-                MessageBoxService.ShowMessage("Cannot enter empty comments", "Error", MessageButton.OK, MessageIcon.Information);
-                return;
+                editComment = bulkEditStringsViewModel.EditValue;
             }
 
             foreach (var selected_cell in selected_cells)
