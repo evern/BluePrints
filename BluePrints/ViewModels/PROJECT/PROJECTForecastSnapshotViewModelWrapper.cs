@@ -460,8 +460,8 @@ namespace BluePrints.ViewModels
             }
         }
 
-        DateTime snapshotDateTime;
-        public DateTime SnapshotDataDate
+        DateTime? snapshotDateTime;
+        public DateTime? SnapshotDataDate
         {
             get => snapshotDateTime;
             set
@@ -506,7 +506,7 @@ namespace BluePrints.ViewModels
             }
 
             fixedDataDate = dataDate;
-            SnapshotDataDate = LoadPROJECT.SNAPSHOT_LAST_UPDATED == null ? FixedDataDate : (DateTime)LoadPROJECT.SNAPSHOT_LAST_UPDATED;
+            SnapshotDataDate = LoadPROJECT.SNAPSHOT_LAST_UPDATED;
             this.RaisePropertyChanged(x => x.FixedDataDate);
             this.RaisePropertyChanged(x => x.FixedMonthEndingSundayDate);
 
@@ -3384,7 +3384,6 @@ namespace BluePrints.ViewModels
             //else
             //    return;
 
-            SnapshotDataDate = FixedDataDate;
             if (!disableMessage)
                 if (MessageBoxService.ShowMessage("Are you sure you want to update actuals? This may cause forecast result of PO/EH PO's and Indirect's inaccurate", "Warning", MessageButton.YesNo, MessageIcon.Warning) == MessageResult.No)
                     return;
@@ -3393,13 +3392,13 @@ namespace BluePrints.ViewModels
             Common.LoadingScreenManager.ShowLoadingScreen(1);
 
             Common.LoadingScreenManager.SetMessage("Updating actuals, indirect, P6 and PO data...");
-            BluePrintsContextHelper.RefreshAllDataExceptForecast(LoadPROJECT.NUMBER, SnapshotDataDate);
+            BluePrintsContextHelper.RefreshAllDataExceptForecast(LoadPROJECT.NUMBER, FixedDataDate);
             Common.LoadingScreenManager.CloseLoadingScreen();
             snapshotLastUpdated = DateTime.Now;
             this.RaisePropertyChanged(x => x.SnapshotLastUpdated);
 
             resetIsLoading();
-            LoadPROJECT.SNAPSHOT_LAST_UPDATED = SnapshotDataDate;
+            LoadPROJECT.SNAPSHOT_LAST_UPDATED = DateTime.Now;
             LoadPROJECT.SNAPSHOT_LAST_UPDATED_BY = LoginCredentials.CurrentUserGuid;
             PROJECTCollectionViewModel.Save(LoadPROJECT);
             FullRefresh();
