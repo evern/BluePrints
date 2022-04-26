@@ -3768,7 +3768,7 @@ namespace BluePrints.ViewModels
             BudgetCollection = DataDateCollection.Where(x => x.SNAPSHOT_TYPE == ForecastSnapshotValueType.Budget).ToList();
             PreviousCumulativeActualCollection = DataDateCollection.Where(x => x.SNAPSHOT_TYPE == ForecastSnapshotValueType.Actual && x.FORECAST_DATE <= previousDataDate).ToList();
 
-            PreviousDataDateCollection = filteredForecastJobHourSnapshot.Where(x => x.DATA_DATE.Date == previousDataDate.Date).ToList();
+            PreviousDataDateCollection = filteredForecastJobHourSnapshot.Where(x => x.FORECAST_DATE != null).Where(x => ((DateTime)x.FORECAST_DATE).Year == previousDataDate.Year && ((DateTime)x.FORECAST_DATE).Month == previousDataDate.Month).ToList();
             DataDateActualCollection = PreviousDataDateCollection.Where(x => x.FORECAST_DATE != null).Where(x => x.SNAPSHOT_TYPE == ForecastSnapshotValueType.Actual).ToList();
 
             IEnumerable<FORECAST_COMMENT> filteredForecastComment = FORECAST_COMMENTCollection.Where(x => x.SUBJOB_CODE == subJobCode && x.DISCIPLINE_CODE == disciplineCode && x.COMMODITY_CODE == commodityCode && x.VARIATION_CODE == variationCode);
