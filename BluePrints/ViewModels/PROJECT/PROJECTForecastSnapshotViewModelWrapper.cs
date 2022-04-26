@@ -670,11 +670,6 @@ namespace BluePrints.ViewModels
             refreshTenderBudgetCollection();
             refreshJOBCOST_LINES_AUDIT();
 
-
-            Common.LoadingScreenManager.ShowLoadingScreen(1);
-            Common.LoadingScreenManager.SetMessage("Loading Forecast Overrides...");
-            List<FORECAST> cachedFORECASTCollection = QueryableFORECASTCollection.ToList();
-
             Common.LoadingScreenManager.ShowLoadingScreen(uniqueForecastJobs.Count() + 1);
             Common.LoadingScreenManager.SetMessage("Generating Unique Job Codes...");
             Parallel.ForEach(uniqueWBSNames,
@@ -691,7 +686,7 @@ namespace BluePrints.ViewModels
                 //{
 
                 //}
-                UniqueForecastJob uniqueForecastJob = new UniqueForecastJob(projectLines, subJobCode, disciplineCode, commodityCode, variationCode, FixedDataDate, PreviousDataDate, AllFORECAST_JOB_HOUR_SNAPSHOTCollection, FORECAST_COMMENTCollection, cachedFORECASTCollection, IsShowUninvoicedOnly);
+                UniqueForecastJob uniqueForecastJob = new UniqueForecastJob(projectLines, subJobCode, disciplineCode, commodityCode, variationCode, FixedDataDate, PreviousDataDate, AllFORECAST_JOB_HOUR_SNAPSHOTCollection, FORECAST_COMMENTCollection, IsShowUninvoicedOnly);
                 uniqueForecastJob.UpdateTenderBudget(TenderBudgetCollection.AsQueryable());
                 uniqueForecastJob.UpdateErrorMessage(JOBCOST_LINES_AUDITCollection.AsQueryable());
                 uniqueForecastJobs.Add(uniqueForecastJob);
@@ -717,6 +712,10 @@ namespace BluePrints.ViewModels
                 string columnFieldName = alignedDataDate.Date.ToString(BluePrintsResources.ColumnDateFormat);
                 dataPointsTable.Columns.Add(columnFieldName, typeof(decimal));
             }
+
+            Common.LoadingScreenManager.ShowLoadingScreen(1);
+            Common.LoadingScreenManager.SetMessage("Loading Forecast Overrides...");
+            List<FORECAST> cachedFORECASTCollection = QueryableFORECASTCollection.ToList();
 
             bool isBudgetReadOnly = LoginCredentials.getPermissionStatus(DataUtils.GetNameOf(() => NavigationResources.Permission_EXO_ChangeBudget)) == LoginCredentials.PermissionStatus.None;
             //child data table is used to record original value of actuals + committed + remaining values before it is overridden by forecasts
@@ -3756,7 +3755,7 @@ namespace BluePrints.ViewModels
 
     public class UniqueForecastJob
     {
-        public UniqueForecastJob(IEnumerable<ExoSubJobProjection> projectLines, string subJobCode, string disciplineCode, string commodityCode, string variationCode, DateTime dataDate, DateTime previousDataDate, IEnumerable<FORECAST_JOB_HOUR_SNAPSHOT> AllFORECAST_JOB_HOURCollection, IEnumerable<FORECAST_COMMENT> FORECAST_COMMENTCollection, IEnumerable<FORECAST> FORECASTCollection, bool isShowUninvoicedOnly)
+        public UniqueForecastJob(IEnumerable<ExoSubJobProjection> projectLines, string subJobCode, string disciplineCode, string commodityCode, string variationCode, DateTime dataDate, DateTime previousDataDate, IEnumerable<FORECAST_JOB_HOUR_SNAPSHOT> AllFORECAST_JOB_HOURCollection, IEnumerable<FORECAST_COMMENT> FORECAST_COMMENTCollection, bool isShowUninvoicedOnly)
         {
             SUBJOB_CODE = subJobCode;
             DISCIPLINE_CODE = disciplineCode;
@@ -3769,7 +3768,8 @@ namespace BluePrints.ViewModels
             BudgetCollection = DataDateCollection.Where(x => x.SNAPSHOT_TYPE == ForecastSnapshotValueType.Budget).ToList();
             PreviousCumulativeActualCollection = DataDateCollection.Where(x => x.SNAPSHOT_TYPE == ForecastSnapshotValueType.Actual && x.FORECAST_DATE <= previousDataDate).ToList();
 
-            DataDateActualCollection = FORECASTCollection.Where(x => x.FORECAST_DATE != null).Where(x => x.FORECAST_DATE.Date == dataDate.Date).Where(x => x.SUBJOB_CODE == subJobCode && x.DISCIPLINE_CODE == disciplineCode && x.COMMODITY_CODE == commodityCode && x.VARIATION_CODE == variationCode).Where(x => x.FORECAST_TYPE == ForecastDataType.DataDateForecast).ToList();
+            PreviousDataDateCollection = filteredForecastJobHourSnapshot.Where(x => x.DATA_DATE.Date == previousDataDate.Date).ToList();
+            DataDateActualCollection = PreviousDataDateCollection.Where(x => x.FORECAST_DATE != null).Where(x => x.SNAPSHOT_TYPE == ForecastSnapshotValueType.Actual).ToList();
 
             IEnumerable<FORECAST_COMMENT> filteredForecastComment = FORECAST_COMMENTCollection.Where(x => x.SUBJOB_CODE == subJobCode && x.DISCIPLINE_CODE == disciplineCode && x.COMMODITY_CODE == commodityCode && x.VARIATION_CODE == variationCode);
             ForecastCommentCollection = filteredForecastComment.ToList();
@@ -3889,9 +3889,10 @@ namespace BluePrints.ViewModels
         public List<FORECAST_JOB_HOUR_SNAPSHOT> AllCollection { get; set; }
         public List<FORECAST_COMMENT> ForecastCommentCollection { get; set; }
         public List<FORECAST_JOB_HOUR_SNAPSHOT> DataDateCollection { get; set; }
+        public List<FORECAST_JOB_HOUR_SNAPSHOT> PreviousDataDateCollection { get; set; }
         public List<FORECAST_JOB_HOUR_SNAPSHOT> BudgetCollection { get; set; }
         public List<FORECAST_JOB_HOUR_SNAPSHOT> PreviousCumulativeActualCollection { get; set; }
-        public List<FORECAST> DataDateActualCollection { get; set; }
+        public List<FORECAST_JOB_HOUR_SNAPSHOT> DataDateActualCollection { get; set; }
         public List<FORECAST_JOB_HOUR_SNAPSHOT> ActualCollection { get; set; }
         public List<FORECAST_JOB_HOUR_SNAPSHOT> FutureActualCollection { get; set; }
         public List<FORECAST_JOB_HOUR_SNAPSHOT> P6RemainingCollection { get; set; }
