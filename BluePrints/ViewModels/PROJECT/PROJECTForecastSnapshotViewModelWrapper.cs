@@ -1365,13 +1365,12 @@ namespace BluePrints.ViewModels
             var bulkEditStringsViewModel = BulkEditStringsViewModel.Create(editComment, "Please enter comments");
             if (BulkColumnEditDialogService.ShowDialog(MessageButton.OKCancel, "Comments", "BulkEditStrings", bulkEditStringsViewModel) == MessageResult.OK)
             {
+                editComment = bulkEditStringsViewModel.EditValue;
                 if (editComment == null || editComment == string.Empty)
                 {
                     MessageBoxService.ShowMessage("Cannot enter empty comments", "Error", MessageButton.OK, MessageIcon.Information);
                     return;
                 }
-
-                editComment = bulkEditStringsViewModel.EditValue;
             }
 
             foreach (var selected_cell in selected_cells)
@@ -3252,7 +3251,7 @@ namespace BluePrints.ViewModels
                     else
                         criteriaString = "[SUB_JOBCODE] = '" + entity.SubJobCode + "' And [DISCIPLINE_CODE] = '" + entity.DisciplineCode + "' And [VARIATION_CODE] = '" + entity.VariationCode + "' And [LINE_STATUS] <> 'I'";
                 }
-                else
+                else 
                 {
                     if (entity.CommodityCode != string.Empty)
                         criteriaString = "[SUB_JOBCODE] = '" + entity.SubJobCode + "' And [DISCIPLINE_CODE] = '" + entity.DisciplineCode + "' And [VARIATION_CODE] = '" + entity.VariationCode + "' And [COMMODITY_CODE] = '" + entity.CommodityCode;
@@ -3261,7 +3260,11 @@ namespace BluePrints.ViewModels
                 }
 
                 if(isActualOnlyDate)
-                    criteriaString += "' And [TRANSDATE] == #" + dataDate.Year + "-" + dataDate.Month + "-" + dataDate.Day + "#";
+                {
+                    DateTime monthStartDate = new DateTime(dataDate.Year, dataDate.Month, 1);
+                    DateTime monthEndDate = new DateTime(dataDate.Year, dataDate.Month, 1).AddMonths(1).AddSeconds(-1);
+                    criteriaString += "' And [TRANSDATE] >= #" + monthStartDate.Year + "-" + monthStartDate.Month + "-" + monthStartDate.Day + "# And [TRANSDATE] <= #" + monthEndDate.Year + "-" + monthEndDate.Month + "-" + monthEndDate.Day + "#";
+                }
                 else
                     criteriaString += "' And [TRANSDATE] <= #" + dataDate.Year + "-" + dataDate.Month + "-" + dataDate.Day + "#";
 
@@ -3768,7 +3771,7 @@ namespace BluePrints.ViewModels
             BudgetCollection = DataDateCollection.Where(x => x.SNAPSHOT_TYPE == ForecastSnapshotValueType.Budget).ToList();
             PreviousCumulativeActualCollection = DataDateCollection.Where(x => x.SNAPSHOT_TYPE == ForecastSnapshotValueType.Actual && x.FORECAST_DATE <= previousDataDate).ToList();
 
-            PreviousDataDateCollection = filteredForecastJobHourSnapshot.Where(x => x.FORECAST_DATE != null).Where(x => ((DateTime)x.FORECAST_DATE).Year == previousDataDate.Year && ((DateTime)x.FORECAST_DATE).Month == previousDataDate.Month).ToList();
+            PreviousDataDateCollection = filteredForecastJobHourSnapshot.Where(x => x.FORECAST_DATE != null).Where(x => ((DateTime)x.FORECAST_DATE).Year == dataDate.Year && ((DateTime)x.FORECAST_DATE).Month == dataDate.Month).ToList();
             DataDateActualCollection = PreviousDataDateCollection.Where(x => x.FORECAST_DATE != null).Where(x => x.SNAPSHOT_TYPE == ForecastSnapshotValueType.Actual).ToList();
 
             IEnumerable<FORECAST_COMMENT> filteredForecastComment = FORECAST_COMMENTCollection.Where(x => x.SUBJOB_CODE == subJobCode && x.DISCIPLINE_CODE == disciplineCode && x.COMMODITY_CODE == commodityCode && x.VARIATION_CODE == variationCode);
