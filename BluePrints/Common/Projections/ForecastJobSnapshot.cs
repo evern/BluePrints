@@ -69,7 +69,7 @@ namespace BluePrints.Common.Projections
             PORemainingCosts = uniqueForecastJob.POForecastCosts;
             ProgressETC = uniqueForecastJob.ProgressETCCollection.Sum(x => x.FORECAST_QTY);
             ActualCumulativeCostsPreviousDataDate = uniqueForecastJob.PreviousCumulativeActualCollection.Sum(x => x.FORECAST_COST);
-            ActualCostsOnDataDate = uniqueForecastJob.DataDateActualCollection.Sum(x => x.FORECAST_COST);
+            ActualCostsOnDataDate = uniqueForecastJob.DataDateActualCollection.Where(x => x.FORECAST_UNITS != null).Sum(x => (decimal)x.FORECAST_UNITS);
             ActualUnitsPreviousDataDate = uniqueForecastJob.PreviousCumulativeActualCollection.Sum(x => x.FORECAST_QTY);
             ActualCostsPostDataDate = uniqueForecastJob.FutureActualCollection.Sum(x => x.FORECAST_COST);
             ActualUnitsPostDataDate = uniqueForecastJob.FutureActualCollection.Sum(x => x.FORECAST_QTY);
