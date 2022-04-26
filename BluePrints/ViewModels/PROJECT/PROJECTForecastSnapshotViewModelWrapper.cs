@@ -732,7 +732,7 @@ namespace BluePrints.ViewModels
                 ForecastJobSnapshot forecastJobSnapshot = new ForecastJobSnapshot(uniqueForecastJob, isBudgetReadOnly, FORECAST_EACCollection, FORECAST_EACPreviousCommitmentCollection, FORECAST_JOB_SETTINGCollection, COMMODITY_CODECollection, AREACollection, cachedFORECASTCollection, LoadPROJECT, projectLines, FixedDataDate, PreviousDataDate);
                 foreach (DateTime alignedDataDate in alignedDataDateCollection)
                 {
-                    ForecastDateSnapshot forecastDateSnapshot = new ForecastDateSnapshot(uniqueForecastJob.ToDateCollection, uniqueForecastJob.ForecastCommentCollection, firstViewDate, alignedDataDate.Date, FixedDataDate);
+                    ForecastDateSnapshot forecastDateSnapshot = new ForecastDateSnapshot(uniqueForecastJob.DataDateCollection, uniqueForecastJob.ForecastCommentCollection, firstViewDate, alignedDataDate.Date, FixedDataDate);
                     forecastJobSnapshot.DateCosts.Add(forecastDateSnapshot);
                 }
 
@@ -3370,31 +3370,27 @@ namespace BluePrints.ViewModels
             //prevent EditValueChanged from being invoked with null NewValue causing spinedit to set a null value
             allowValueEditing = false;
             //there is no need to select date time since material, actuals and POs dates are limited in stored procedure
-            var bulkEditDateTimeViewModel = BulkEditDateTimeViewModel.Create(SnapshotDataDate, "Material and PO's snapshot time");
-            bulkEditDateTimeViewModel.EditValue = fixedDataDate;
-            if (BulkColumnEditDialogService.ShowDialog(MessageButton.OKCancel, "Please select Material and PO's snapshot time", "BulkEditTime", bulkEditDateTimeViewModel) == MessageResult.OK)
-            {
-                SnapshotDataDate = bulkEditDateTimeViewModel.EditValue;
-                if (SnapshotDataDate.Date != FixedDataDate.Date)
-                {
-                    MessageBoxService.ShowMessage("Only the time portion of the data date can be changed", "Warning", MessageButton.OK, MessageIcon.Warning);
-                    return;
-                }
-            }
-            else
-                return;
+            //var bulkEditDateTimeViewModel = BulkEditDateTimeViewModel.Create(SnapshotDataDate, "Material and PO's snapshot time");
+            //bulkEditDateTimeViewModel.EditValue = fixedDataDate;
+            //if (BulkColumnEditDialogService.ShowDialog(MessageButton.OKCancel, "Please select Material and PO's snapshot time", "BulkEditTime", bulkEditDateTimeViewModel) == MessageResult.OK)
+            //{
+            //    SnapshotDataDate = bulkEditDateTimeViewModel.EditValue;
+            //    if (SnapshotDataDate.Date != FixedDataDate.Date)
+            //    {
+            //        MessageBoxService.ShowMessage("Only the time portion of the data date can be changed", "Warning", MessageButton.OK, MessageIcon.Warning);
+            //        return;
+            //    }
+            //}
+            //else
+            //    return;
 
+            SnapshotDataDate = FixedDataDate;
             if (!disableMessage)
                 if (MessageBoxService.ShowMessage("Are you sure you want to update actuals? This may cause forecast result of PO/EH PO's and Indirect's inaccurate", "Warning", MessageButton.YesNo, MessageIcon.Warning) == MessageResult.No)
                     return;
 
             IsLoading = true;
             Common.LoadingScreenManager.ShowLoadingScreen(1);
-            //Common.LoadingScreenManager.SetMessage("Fetching P6 remaining data...");
-            //await BluePrintsContextHelper.RefreshDeliverablesRemainingDataPointsByProject(LoadPROJECT.NUMBER, true);
-
-            //Common.LoadingScreenManager.SetMessage("Fetching P6 planned data...");
-            //await BluePrintsContextHelper.RefreshDeliverablesPlannedDataPointsByProject(LoadPROJECT.NUMBER, true);
 
             Common.LoadingScreenManager.SetMessage("Updating actuals, indirect, P6 and PO data...");
             BluePrintsContextHelper.RefreshAllDataExceptForecast(LoadPROJECT.NUMBER, SnapshotDataDate);
@@ -3403,7 +3399,6 @@ namespace BluePrints.ViewModels
             this.RaisePropertyChanged(x => x.SnapshotLastUpdated);
 
             resetIsLoading();
-
             LoadPROJECT.SNAPSHOT_LAST_UPDATED = SnapshotDataDate;
             LoadPROJECT.SNAPSHOT_LAST_UPDATED_BY = LoginCredentials.CurrentUserGuid;
             PROJECTCollectionViewModel.Save(LoadPROJECT);
@@ -3770,29 +3765,30 @@ namespace BluePrints.ViewModels
             ProjectLine = projectLines.FirstOrDefault(x => x.SubJobCode == subJobCode && x.DisciplineCode == disciplineCode && x.CommodityCode == commodityCode && x.VariationCode == variationCode);
 
             IEnumerable<FORECAST_JOB_HOUR_SNAPSHOT> filteredForecastJobHourSnapshot = AllFORECAST_JOB_HOURCollection.Where(x => x.SUBJOB_CODE == subJobCode && x.DISCIPLINE_CODE == disciplineCode && x.COMMODITY_CODE == commodityCode && x.VARIATION_CODE == variationCode);
-            ToDateCollection = filteredForecastJobHourSnapshot.Where(x => x.DATA_DATE.Date == dataDate.Date).ToList();
+            DataDateCollection = filteredForecastJobHourSnapshot.Where(x => x.DATA_DATE.Date == dataDate.Date).ToList();
+            BudgetCollection = DataDateCollection.Where(x => x.SNAPSHOT_TYPE == ForecastSnapshotValueType.Budget).ToList();
+            PreviousCumulativeActualCollection = DataDateCollection.Where(x => x.SNAPSHOT_TYPE == ForecastSnapshotValueType.Actual && x.FORECAST_DATE <= previousDataDate).ToList();
+
             PreviousDataDateCollection = filteredForecastJobHourSnapshot.Where(x => x.DATA_DATE.Date == previousDataDate.Date).ToList();
-            BudgetCollection = ToDateCollection.Where(x => x.SNAPSHOT_TYPE == ForecastSnapshotValueType.Budget).ToList();
-            PreviousCumulativeActualCollection = ToDateCollection.Where(x => x.SNAPSHOT_TYPE == ForecastSnapshotValueType.Actual && x.FORECAST_DATE <= previousDataDate).ToList();
             DataDateActualCollection = PreviousDataDateCollection.Where(x => x.FORECAST_DATE != null).Where(x => x.SNAPSHOT_TYPE == ForecastSnapshotValueType.Actual).ToList();
 
             IEnumerable<FORECAST_COMMENT> filteredForecastComment = FORECAST_COMMENTCollection.Where(x => x.SUBJOB_CODE == subJobCode && x.DISCIPLINE_CODE == disciplineCode && x.COMMODITY_CODE == commodityCode && x.VARIATION_CODE == variationCode);
             ForecastCommentCollection = filteredForecastComment.ToList();
 
             if (isShowUninvoicedOnly)
-                ActualCollection = filteredForecastJobHourSnapshot.Where(x => x.SNAPSHOT_TYPE == ForecastSnapshotValueType.Actual && x.STATUS_CODE != "I" && x.FORECAST_DATE <= dataDate).ToList();
+                ActualCollection = DataDateCollection.Where(x => x.SNAPSHOT_TYPE == ForecastSnapshotValueType.Actual && x.STATUS_CODE != "I" && x.FORECAST_DATE <= dataDate).ToList();
             else
-                ActualCollection = filteredForecastJobHourSnapshot.Where(x => x.SNAPSHOT_TYPE == ForecastSnapshotValueType.Actual && x.FORECAST_DATE <= dataDate).ToList();
+                ActualCollection = DataDateCollection.Where(x => x.SNAPSHOT_TYPE == ForecastSnapshotValueType.Actual && x.FORECAST_DATE <= dataDate).ToList();
 
-            FutureActualCollection = filteredForecastJobHourSnapshot.Where(x => x.SNAPSHOT_TYPE == ForecastSnapshotValueType.Actual && x.FORECAST_DATE > dataDate).ToList();
-            P6RemainingCollection = filteredForecastJobHourSnapshot.Where(x => x.SNAPSHOT_TYPE == ForecastSnapshotValueType.P6Remaining).ToList();
-            P6PlannedCollection = filteredForecastJobHourSnapshot.Where(x => x.SNAPSHOT_TYPE == ForecastSnapshotValueType.P6Planned).ToList();
-            PreviousPOCollection = filteredForecastJobHourSnapshot.Where(x => x.SNAPSHOT_TYPE == ForecastSnapshotValueType.PreviousOutstandingPO).ToList();
-            POCollection = filteredForecastJobHourSnapshot.Where(x => x.SNAPSHOT_TYPE == ForecastSnapshotValueType.CurrentOutstandingPO).ToList();
-            POForecastCollection = filteredForecastJobHourSnapshot.Where(x => x.SNAPSHOT_TYPE == ForecastSnapshotValueType.ForecastPO).ToList();
-            ProgressETCCollection = filteredForecastJobHourSnapshot.Where(x => x.SNAPSHOT_TYPE == ForecastSnapshotValueType.ProgressETC).ToList();
-            EarnedCollection = filteredForecastJobHourSnapshot.Where(x => x.SNAPSHOT_TYPE == ForecastSnapshotValueType.Earned).ToList();
-            IndirectCollection = filteredForecastJobHourSnapshot.Where(x => x.SNAPSHOT_TYPE == ForecastSnapshotValueType.ForecastIndirect).ToList();
+            FutureActualCollection = DataDateCollection.Where(x => x.SNAPSHOT_TYPE == ForecastSnapshotValueType.Actual && x.FORECAST_DATE > dataDate).ToList();
+            P6RemainingCollection = DataDateCollection.Where(x => x.SNAPSHOT_TYPE == ForecastSnapshotValueType.P6Remaining).ToList();
+            P6PlannedCollection = DataDateCollection.Where(x => x.SNAPSHOT_TYPE == ForecastSnapshotValueType.P6Planned).ToList();
+            PreviousPOCollection = DataDateCollection.Where(x => x.SNAPSHOT_TYPE == ForecastSnapshotValueType.PreviousOutstandingPO).ToList();
+            POCollection = DataDateCollection.Where(x => x.SNAPSHOT_TYPE == ForecastSnapshotValueType.CurrentOutstandingPO).ToList();
+            POForecastCollection = DataDateCollection.Where(x => x.SNAPSHOT_TYPE == ForecastSnapshotValueType.ForecastPO).ToList();
+            ProgressETCCollection = DataDateCollection.Where(x => x.SNAPSHOT_TYPE == ForecastSnapshotValueType.ProgressETC).ToList();
+            EarnedCollection = DataDateCollection.Where(x => x.SNAPSHOT_TYPE == ForecastSnapshotValueType.Earned).ToList();
+            IndirectCollection = DataDateCollection.Where(x => x.SNAPSHOT_TYPE == ForecastSnapshotValueType.ForecastIndirect).ToList();
         }
 
         public ExoSubJobProjection ProjectLine { get; set; }
@@ -3893,7 +3889,7 @@ namespace BluePrints.ViewModels
         public decimal TenderBudget => tenderBudget;
         public List<FORECAST_JOB_HOUR_SNAPSHOT> AllCollection { get; set; }
         public List<FORECAST_COMMENT> ForecastCommentCollection { get; set; }
-        public List<FORECAST_JOB_HOUR_SNAPSHOT> ToDateCollection { get; set; }
+        public List<FORECAST_JOB_HOUR_SNAPSHOT> DataDateCollection { get; set; }
         public List<FORECAST_JOB_HOUR_SNAPSHOT> PreviousDataDateCollection { get; set; }
         public List<FORECAST_JOB_HOUR_SNAPSHOT> BudgetCollection { get; set; }
         public List<FORECAST_JOB_HOUR_SNAPSHOT> PreviousCumulativeActualCollection { get; set; }
