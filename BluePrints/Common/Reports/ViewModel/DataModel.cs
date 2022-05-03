@@ -654,7 +654,7 @@ namespace BluePrints.Common.ViewModel.Reporting
                 //please practice caution when editing this because we might delete all progresses
                 IEnumerable<PROGRESS_ITEM> repositoryPROGRESS_ITEMSExcludingCurrent = PROGRESS_ITEMCollectionViewModel.UnitOfWork.PROGRESS_ITEMS.Where(x => x.GUID_PROGRESS == PROGRESS_ITEM_Current.GUID_PROGRESS)
                     .Where(x => x.GUID_ORIBASEITEM == PROGRESS_ITEM_Current.GUID_ORIBASEITEM)
-                    .Where(x => x.EARNED_DATE == PROGRESS_ITEM_Current.EARNED_DATE)
+                    .Where(x => x.EARNED_DATE.Date == PROGRESS_ITEM_Current.EARNED_DATE.Date)
                     .Where(x => x.GUID != PROGRESS_ITEM_Current.GUID);
 
                 //find duplicate records and remove it
@@ -666,9 +666,7 @@ namespace BluePrints.Common.ViewModel.Reporting
             else
                 edit_PROGRESS_ITEM = createNewProgress(PROGRESS_ITEMCollectionViewModel.FindActualProjectionByExpression);
 
-
             edit_PROGRESS_ITEM.EarnedUnits = getCurrentPeriodEarnedUnits(getNewPercentage());
-
             //use list because overriding member will be a group
             List<PROGRESS_ITEM> editPROGRESS_ITEMS = new List<PROGRESS_ITEM>();
             editPROGRESS_ITEMS.Add(edit_PROGRESS_ITEM);

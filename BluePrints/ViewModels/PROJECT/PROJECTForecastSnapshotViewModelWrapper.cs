@@ -2252,7 +2252,13 @@ namespace BluePrints.ViewModels
                     MessageBoxService.ShowMessage("P6 Schedule Saved", "Information", MessageButton.OK);
                 }
                 else
-                    MessageBoxService.ShowMessage("No P6 schedule selected", "Error", MessageButton.OK, MessageIcon.Warning);
+                {
+                    p6ForecastProject = null;
+                    LoadPROJECT.P6FORECAST_NAME = p6ForecastProject;
+                    savePROJECT();
+                    this.RaisePropertyChanged(x => x.P6ForecastProject);
+                    MessageBoxService.ShowMessage("P6 Schedule Removed", "Information", MessageButton.OK);
+                }
             }
         }
 
