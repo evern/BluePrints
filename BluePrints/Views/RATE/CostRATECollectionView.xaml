@@ -177,7 +177,7 @@
                                 <dxe:SpinEditSettings Mask="n0" MaskType="Numeric" MaskUseAsDisplayFormat="True" />
                             </dxg:GridColumn.EditSettings>
                         </dxg:GridColumn>
-                        <dxg:GridColumn Header="Transaction" HeaderToolTip="Show the transactions which the recommended rate were derived">
+                        <dxg:GridColumn Header="Transaction" AllowPrinting="False" HeaderToolTip="Show the transactions which the recommended rate were derived">
                             <dxg:GridColumn.CellTemplate>
                                 <DataTemplate>
                                     <dxg:LookUpEdit Name="PART_Editor" NullText="Expand to Inspect" AutoComplete="True" PopupMinWidth="600" NullValueButtonPlacement="Popup" AutoPopulateColumns="False" IsTextEditable="true" ItemsSource="{Binding RowData.Row.Transactions}" >
