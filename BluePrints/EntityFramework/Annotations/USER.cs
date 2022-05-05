@@ -131,6 +131,10 @@ namespace BluePrints.Data
             }
         }
 
+        public string DepartmentName => DEPARTMENT1 == null ? string.Empty : DEPARTMENT1.NAME;
+
+        public string DisciplineName => DISCIPLINE == null ? string.Empty : DISCIPLINE.NAME;
+
         public string Office => BluePrintsResources.GlobalOffice;
 
         //making sure office is always queryable because newly added row won't have OFFICE navigational property and OFFICE cannot be set in ViewModel, because it'll give an error when saving

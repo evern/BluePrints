@@ -102,8 +102,8 @@
                                         </dxg:GridColumn.EditSettings>
                                     </dxg:GridColumn>
                                     <dxg:GridColumn AllowEditing="False" FieldName="User.NAME" AllowBestFit="false" Width="*" Header="User" SortIndex="1" />
-                                    <dxg:GridColumn AllowEditing="False" FieldName="User.DEPARTMENT1.NAME" Header="Department" />
-                                    <dxg:GridColumn AllowEditing="False" FieldName="User.DISCIPLINE.NAME" Header="Discipline" />
+                                    <dxg:GridColumn AllowEditing="False" FieldName="User.DepartmentName" Header="Department" />
+                                    <dxg:GridColumn AllowEditing="False" FieldName="User.DisciplineName" Header="Discipline" />
                                     <dxg:GridColumn AllowEditing="False" FieldName="User.TITLE" Header="Title" />
                                     <dxg:GridColumn AllowEditing="False" FieldName="User.DESCRIPTION" Header="Description" />
                                     <dxg:GridColumn FieldName="User.SecurityProfileID" Header="Profile" ReadOnly="True">
