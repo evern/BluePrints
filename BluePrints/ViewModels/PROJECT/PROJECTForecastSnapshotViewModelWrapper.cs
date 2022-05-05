@@ -1282,12 +1282,12 @@ namespace BluePrints.ViewModels
                 summaries.Add(new SummaryDescriptor() { FieldName = "Entity.EstimateAtCompletion", DisplayFormat = "c0", Type = SummaryItemType.Sum });
                 columns.Add(new ColumnDescriptor() { FieldName = "Entity.Variance", ReadOnly = true, Header = "Variance (A - E)", Fixed = FixedStyle.Left, Width = 70, Settings = SettingsType.Number, Mask = "c0", HeaderToolTip = "Variance to budget" });
                 summaries.Add(new SummaryDescriptor() { FieldName = "Entity.Variance", DisplayFormat = "c0", Type = SummaryItemType.Sum });
-                columns.Add(new ColumnDescriptor() { FieldName = "Entity.PeriodMovement", Header = "Period Move (G)", Fixed = FixedStyle.Left, Width = 75, Settings = SettingsType.Number, Mask = "c0", HeaderToolTip = "Difference from previous EAC" });
+                columns.Add(new ColumnDescriptor() { FieldName = "Entity.PeriodMovement", Header = "EAC Period Move (G)", Fixed = FixedStyle.Left, Width = 75, Settings = SettingsType.Number, Mask = "c0", HeaderToolTip = "Difference from previous EAC" });
                 summaries.Add(new SummaryDescriptor() { FieldName = "Entity.PeriodMovement", DisplayFormat = "c0", Type = SummaryItemType.Sum });
 
-                columns.Add(new ColumnDescriptor() { FieldName = "Entity.ActualCostsOnDataDate", ReadOnly = true, Visible = false, ColumnDate = FixedDataDate, Header = "Prev. Period Actuals", Fixed = FixedStyle.Left, Width = 70, Settings = SettingsType.Number, Mask = "c0" });
+                columns.Add(new ColumnDescriptor() { FieldName = "Entity.ActualCostsOnDataDate", ReadOnly = true, Visible = false, ColumnDate = FixedDataDate, Header = "Current Period Actuals", Fixed = FixedStyle.Left, Width = 70, Settings = SettingsType.Number, Mask = "c0" });
                 summaries.Add(new SummaryDescriptor() { FieldName = "Entity.ActualCostsOnDataDate", DisplayFormat = "c0", Type = SummaryItemType.Sum });
-                columns.Add(new ColumnDescriptor() { FieldName = "Entity.PreviousForecast", ReadOnly = true, Visible = false, ColumnDate = FixedDataDate, Header = "Prev. Period Forecast", Fixed = FixedStyle.Left, Width = 70, Settings = SettingsType.Number, Mask = "c0" });
+                columns.Add(new ColumnDescriptor() { FieldName = "Entity.PreviousForecast", ReadOnly = true, Visible = false, ColumnDate = FixedDataDate, Header = "Current Period Forecast", Fixed = FixedStyle.Left, Width = 70, Settings = SettingsType.Number, Mask = "c0" });
                 summaries.Add(new SummaryDescriptor() { FieldName = "Entity.PreviousForecast", DisplayFormat = "c0", Type = SummaryItemType.Sum });
                 columns.Add(new ColumnDescriptor() { FieldName = "Entity.VarianceCostsOnDataDate", ReadOnly = true, Visible = false, ColumnDate = FixedDataDate, Header = "Forecast Variance", Fixed = FixedStyle.Left, Width = 70, Settings = SettingsType.Number, Mask = "c0" });
                 summaries.Add(new SummaryDescriptor() { FieldName = "Entity.VarianceCostsOnDataDate", DisplayFormat = "c0", Type = SummaryItemType.Sum });
@@ -1366,11 +1366,6 @@ namespace BluePrints.ViewModels
             if (BulkColumnEditDialogService.ShowDialog(MessageButton.OKCancel, "Comments", "BulkEditStrings", bulkEditStringsViewModel) == MessageResult.OK)
             {
                 editComment = bulkEditStringsViewModel.EditValue;
-                //if (editComment == null)
-                //{
-                //    MessageBoxService.ShowMessage("Cannot enter empty comments", "Error", MessageButton.OK, MessageIcon.Information);
-                //    return;
-                //}
             }
 
             foreach (var selected_cell in selected_cells)
