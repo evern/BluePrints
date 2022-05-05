@@ -122,7 +122,7 @@
                                 </dxg:GridColumn.CellTemplate>
                                 <!--For Filtering-->
                                 <dxg:GridColumn.EditSettings>
-                                    <dxe:ComboBoxEditSettings AutoComplete="True" DisplayMember="SHORTCODE" IsTextEditable="True" ItemsSource="{Binding JOB_COSTGROUPSCollection}" ValueMember="SEQNO" />
+                                    <dxe:ComboBoxEditSettings AutoComplete="True" DisplayMember="COSTDESC" IsTextEditable="True" ItemsSource="{Binding JOB_COSTGROUPSCollection}" ValueMember="SEQNO" />
                                 </dxg:GridColumn.EditSettings>
                             </custom:EditableColumn>
                             <custom:EditableColumn RealFieldName="{Binding CostTypeFieldName}" AllowBestFit="false" Width="200" Header="Commodity Code" UnboundType="Integer" UnboundExpression="[COST_TYPE_NO]">
@@ -150,7 +150,7 @@
                                 </dxg:GridColumn.CellTemplate>
                                 <!--For Filtering-->
                                 <dxg:GridColumn.EditSettings>
-                                    <dxe:ComboBoxEditSettings AutoComplete="True" DisplayMember="SHORTCODE" IsTextEditable="True" ItemsSource="{Binding JOB_COSTTYPESCollection}" NullValueButtonPlacement="EditBox" ValueMember="SEQNO" />
+                                    <dxe:ComboBoxEditSettings AutoComplete="True" DisplayMember="COSTDESC" IsTextEditable="True" ItemsSource="{Binding JOB_COSTTYPESCollection}" NullValueButtonPlacement="EditBox" ValueMember="SEQNO" />
                                 </dxg:GridColumn.EditSettings>
                             </custom:EditableColumn>
                             <custom:EditableColumn RealFieldName="{Binding StockCodeFieldName}" Header="Stock Code" Width="200" UnboundType="String" UnboundExpression="[STOCKCODE]">
