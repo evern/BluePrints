@@ -160,6 +160,23 @@ namespace BluePrints.Data
             }
         }
 
+        [NotMapped]
+        public DateTime? QualifiedForecastDataDate
+        {
+            get => FORECAST_DATA_DATE;
+            set
+            {
+                if (value != null)
+                {
+                    DateTime qualifiedForecastDataDate = new DateTime(((DateTime)value).Year, ((DateTime)value).Month, ((DateTime)value).Day);
+                    qualifiedForecastDataDate = qualifiedForecastDataDate.AddDays(1).AddSeconds(-1);
+                    FORECAST_DATA_DATE = qualifiedForecastDataDate;
+                }
+                else
+                    FORECAST_DATA_DATE = value;
+            }
+        }
+
         public string Office => this.NUMBER + " " + this.OfficeName;
 
         public Guid project_guid => GUID;

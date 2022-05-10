@@ -2032,7 +2032,7 @@ namespace BluePrints.Common.Utils
 
             DateTime saveDateTime = new DateTime(((DateTime)ChangedStartDataDate).Year, ((DateTime)ChangedStartDataDate).Month, 1).AddMonths(1).AddDays(-1);
             project.FORECAST_END_DATE = endDate;
-            project.FORECAST_DATA_DATE = saveDateTime;
+            project.QualifiedForecastDataDate = saveDateTime;
             PROJECTCollectionViewModel.Save(project);
             ChangedStartDataDate = saveDateTime;
             LoadDataDate = saveDateTime;

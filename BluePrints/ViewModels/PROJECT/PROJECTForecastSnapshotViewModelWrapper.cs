@@ -490,18 +490,18 @@ namespace BluePrints.ViewModels
             LoadPROJECT = project;
 
             DateTime dataDate;
-            if (LoadPROJECT.FORECAST_DATA_DATE == null)
+            if (LoadPROJECT.QualifiedForecastDataDate == null)
             {
                 DateTime endOfCurrentMonth = new DateTime(DateTime.Now.Year, DateTime.Now.Month, 1).AddMonths(1).AddSeconds(-1);
 
-                LoadPROJECT.FORECAST_DATA_DATE = endOfCurrentMonth;
+                LoadPROJECT.QualifiedForecastDataDate = endOfCurrentMonth;
                 dataDate = endOfCurrentMonth;
                 LoadDataDate = dataDate;
                 savePROJECT();
             }
             else
             {
-                dataDate = (DateTime)LoadPROJECT.FORECAST_DATA_DATE;
+                dataDate = (DateTime)LoadPROJECT.QualifiedForecastDataDate;
                 LoadDataDate = dataDate;
             }
 
@@ -2214,7 +2214,7 @@ namespace BluePrints.ViewModels
                     }
                 }
 
-                LoadPROJECT.FORECAST_DATA_DATE = FixedDataDate;
+                LoadPROJECT.QualifiedForecastDataDate = FixedDataDate;
                 LoadPROJECT.FORECAST_END_DATE = FixedEndDate;
                 PROJECTCollectionViewModel.Save(LoadPROJECT);
                 LoadDataDate = FixedDataDate;

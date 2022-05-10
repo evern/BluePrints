@@ -166,10 +166,10 @@ namespace BluePrints.ViewModels
             LoadPROJECT = project;
 
             DateTime dataDate;
-            if (LoadPROJECT.FORECAST_DATA_DATE == null)
+            if (LoadPROJECT.QualifiedForecastDataDate == null)
                 dataDate = DateTime.Now;
             else
-                dataDate = (DateTime)LoadPROJECT.FORECAST_DATA_DATE;
+                dataDate = (DateTime)LoadPROJECT.QualifiedForecastDataDate;
 
             dataDate = new DateTime(dataDate.Year, dataDate.Month, 1).AddMonths(1).AddSeconds(-1);
             LoadDataDate = dataDate;

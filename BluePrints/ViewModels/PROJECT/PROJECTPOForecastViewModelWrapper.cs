@@ -227,16 +227,16 @@ namespace BluePrints.ViewModels
             loadPROJECT = project;
 
             DateTime dataDate;
-            if (loadPROJECT.FORECAST_DATA_DATE != null)
+            if (loadPROJECT.QualifiedForecastDataDate != null)
             {
-                dataDate = (DateTime)loadPROJECT.FORECAST_DATA_DATE;
+                dataDate = (DateTime)loadPROJECT.QualifiedForecastDataDate;
                 LoadDataDate = new DateTime(dataDate.Year, dataDate.Month, 1).AddMonths(1).AddSeconds(-1);
             }
             else
             {
                 DateTime endOfCurrentMonth = new DateTime(DateTime.Now.Year, DateTime.Now.Month, 1).AddMonths(1).AddSeconds(-1);
 
-                loadPROJECT.FORECAST_DATA_DATE = endOfCurrentMonth;
+                loadPROJECT.QualifiedForecastDataDate = endOfCurrentMonth;
                 dataDate = endOfCurrentMonth;
                 LoadDataDate = dataDate;
                 savePROJECT();
