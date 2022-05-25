@@ -889,6 +889,10 @@ namespace BluePrints.ViewModels
             {
                 Modules.Add(new BluePrintsEntitiesModuleDescription(DataUtils.GetNameOf(() => NavigationResources.Permission_EXO_UserTimesheet_Unsubmit), securityKey, parentNavigationId, NavigationResources.Permission_EXO_UserTimesheet_Unsubmit, NavigationResources.Permission_EXO_UserTimesheet_Unsubmit));
             }
+            else if (securityKey == DataUtils.GetNameOf(() => NavigationResources.Menu_EXO_Users))
+            {
+                Modules.Add(new BluePrintsEntitiesModuleDescription(DataUtils.GetNameOf(() => NavigationResources.Permission_EXO_Users_Sync), securityKey, parentNavigationId, NavigationResources.Permission_EXO_Users_Sync, NavigationResources.Permission_EXO_Users_Sync));
+            }
             else if (securityKey == DataUtils.GetNameOf(() => NavigationResources.Menu_Project_EXO_TransactionsApproval))
             {
                 Modules.Add(new BluePrintsEntitiesModuleDescription(DataUtils.GetNameOf(() => NavigationResources.Permission_TransactionApproval_ApproveReject), securityKey, parentNavigationId, NavigationResources.Permission_TransactionApproval_ApproveReject, NavigationResources.Permission_TransactionApproval_ApproveReject));
