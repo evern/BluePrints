@@ -29,6 +29,7 @@
                 <dxb:BarButtonItem x:Name="biTrim" Command="{Binding TrimUsersCommand}" Content="Trim Inactive Users" ToolTip="Set a leave date as today for inactive users in EXO" Glyph="{dx:DXImage SvgImages/Business Objects/BO_User.svg}" LargeGlyph="{dx:DXImage SvgImages/Business Objects/BO_User.svg}" />
                 <dxb:BarCheckItem x:Name="bcHideUser" Content="Hide User" Glyph="{dx:DXImage Image=User_16x16.png}" IsChecked="{Binding HideLeave}" LargeGlyph="{dx:DXImage Image=User_32x32.png}" />
                 <dxb:BarButtonItem x:Name="biImpersonate" Command="{Binding ImpersonateCommand}" IsVisible="{Binding IsImpersonateVisible}" Content="Impersonate" ToolTip="Impersonate selected user" Glyph="{dx:DXImage Images/Business Objects/BORole_16x16.png}" LargeGlyph="{dx:DXImage Images/Business Objects/BORole_32x32.png}" />
+                <dxb:BarButtonItem x:Name="biSyncDatabase" IsVisible="{Binding DataContext.IsSyncDatabaseVisible, ElementName=userControl}" Command="{Binding DataContext.SyncDatabaseCommand, ElementName=userControl}" Content="Sync databases" Glyph="{dx:DXImage Image=RefreshPivotTable_16x16.png}" LargeGlyph="{dx:DXImage Image=RefreshPivotTable_32x32.png}" ToolTip="Sync Database" />
             </dxb:BarManager.Items>
             <DockPanel>
                 <dxr:RibbonControl Style="{StaticResource DefaultRibbonControlStyle}">
@@ -56,6 +57,7 @@
                                 <dxb:BarButtonItemLink BarItemName="biTrim" />
                                 <dxb:BarCheckItemLink BarItemName="bcHideUser" />
                                 <dxb:BarButtonItemLink BarItemName="biImpersonate" />
+                                <dxb:BarButtonItemLink BarItemName="biSyncDatabase" />
                             </dxr:RibbonPageGroup>
                         </dxr:RibbonPage>
                     </dxr:RibbonDefaultPageCategory>
