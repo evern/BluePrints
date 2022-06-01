@@ -567,4 +567,7 @@
   <data name="Category_Project_Forecast_History" xml:space="preserve">
     <value>Project forecast history category</value>
   </data>
+  <data name="Permission_EXO_Users_Sync" xml:space="preserve">
+    <value>Allow user to sync database between Perth/Montreal</value>
+  </data>
 </root>

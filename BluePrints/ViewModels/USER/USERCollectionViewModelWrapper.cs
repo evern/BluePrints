@@ -22,6 +22,7 @@ using BaseModel.ViewModel.Dialogs;
 using BaseModel.Misc;
 using System.Threading.Tasks;
 using System.Collections.Concurrent;
+using BaseModel.Data.Helpers;
 
 namespace BluePrints.ViewModels
 {
@@ -58,6 +59,7 @@ namespace BluePrints.ViewModels
         IPrimeroEntitiesUnitOfWork pgaUnitOfWork;
         IPrimeroEntitiesUnitOfWork usaUnitOfWork;
         IBluePrintsEntitiesUnitOfWork bluePrintsUnitOfWork;
+        public bool IsSyncDatabaseVisible { get; set; }
         //timer to scan serial port
         protected override void resolveParameters(object parameter)
         {
@@ -65,6 +67,8 @@ namespace BluePrints.ViewModels
             primeroUnitOfWork = primeroUnitOfWorkFactory.CreateUnitOfWork();
             pgaUnitOfWork = pgaUnitOfWorkFactory.CreateUnitOfWork();
             usaUnitOfWork = usaUnitOfWorkFactory.CreateUnitOfWork();
+
+            IsSyncDatabaseVisible = LoginCredentials.getPermissionStatus(DataUtils.GetNameOf(() => NavigationResources.Permission_EXO_Users_Sync)) == LoginCredentials.PermissionStatus.All;
         }
 
         protected override void addEntitiesLoader()
@@ -628,6 +632,19 @@ namespace BluePrints.ViewModels
             }
 
             MainViewModel.BaseBulkSave(update_users);
+        }
+
+        private DevExpress.Mvvm.IDialogService ReportDialogService
+        {
+            get { return this.GetRequiredService<DevExpress.Mvvm.IDialogService>("ReportDialogService"); }
+        }
+
+        public void SyncDatabase()
+        {
+            SyncScreenViewModel viewModel = SyncScreenViewModel.Create();
+            viewModel.SetParentViewModel(this);
+            viewModel.SyncUsersOnly();
+            ReportDialogService.ShowDialog(MessageButton.OK, "Sync Status", "SyncScreen", viewModel);
         }
 
         public bool CanImport()

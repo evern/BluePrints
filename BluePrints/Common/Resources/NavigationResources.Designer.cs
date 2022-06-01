@@ -1348,6 +1348,15 @@ namespace BluePrints.Common.Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Allow user to sync database between Perth/Montreal.
+        /// </summary>
+        internal static string Permission_EXO_Users_Sync {
+            get {
+                return ResourceManager.GetString("Permission_EXO_Users_Sync", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Unsubmit EXO timesheet.
         /// </summary>
         internal static string Permission_EXO_UserTimesheet_Unsubmit {
