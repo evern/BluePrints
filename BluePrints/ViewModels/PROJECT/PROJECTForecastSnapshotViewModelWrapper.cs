@@ -1340,7 +1340,7 @@ namespace BluePrints.ViewModels
 
             //remaining have to be after planned for P6 refresh date to be updated
             await BluePrintsContextHelper.RefreshDeliverablesRemainingDataPointsByProject(LoadPROJECT.NUMBER, true);
-            BluePrintsContextHelper.RefreshForecastEarnedByProject(LoadPROJECT.NUMBER, FixedDataDate, true);
+            BluePrintsContextHelper.RefreshForecastEarnedByProject(LoadPROJECT.NUMBER, FixedDataDate);
             BluePrintsContextHelper.RefreshForecastP6ByProject(LoadPROJECT.NUMBER, FixedDataDate, true);
             BluePrintsContextHelper.RefreshForecastP6ByProject(LoadPROJECT.NUMBER, FixedDataDate, false);
             FullRefresh();
@@ -3397,7 +3397,7 @@ namespace BluePrints.ViewModels
             Common.LoadingScreenManager.ShowLoadingScreen(1);
 
             Common.LoadingScreenManager.SetMessage("Updating actuals, indirect, P6 and PO data...");
-            BluePrintsContextHelper.RefreshAllDataExceptForecast(LoadPROJECT.NUMBER, FixedDataDate);
+            BluePrintsContextHelper.RefreshAll(LoadPROJECT.NUMBER, FixedDataDate);
             Common.LoadingScreenManager.CloseLoadingScreen();
             snapshotLastUpdated = DateTime.Now;
             this.RaisePropertyChanged(x => x.SnapshotLastUpdated);

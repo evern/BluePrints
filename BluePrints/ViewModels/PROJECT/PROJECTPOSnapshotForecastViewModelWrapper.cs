@@ -747,7 +747,7 @@ namespace BluePrints.ViewModels
             //await BluePrintsContextHelper.RefreshDeliverablesPlannedDataPointsByProject(LoadPROJECT.NUMBER, true);
 
             Common.LoadingScreenManager.SetMessage("Updating actuals, indirect, P6 and PO data...");
-            BluePrintsContextHelper.RefreshAllDataExceptForecast(loadPROJECT.NUMBER, (DateTime)LoadDataDate);
+            BluePrintsContextHelper.RefreshAll(loadPROJECT.NUMBER, (DateTime)LoadDataDate);
             Common.LoadingScreenManager.CloseLoadingScreen();
 
             resetIsLoading();

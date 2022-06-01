@@ -219,14 +219,16 @@ namespace BluePrints.Data
             }
         }
 
-        public static void RefreshAllDataExceptForecast(string projectNumber, DateTime dataDate)
+        public static void RefreshAll(string projectNumber, DateTime dataDate)
         {
 #pragma warning disable CS4014 // Because this call is not awaited, execution of the current method continues before the call is completed
             RefreshForecastBudgetByProject(projectNumber, dataDate);
             RefreshForecastActualsByProject(projectNumber, dataDate);
             RefreshPOByProject(projectNumber, dataDate);
-            //RefreshForecastP6ByProject(projectNumber, dataDate, true);
-            //RefreshForecastP6ByProject(projectNumber, dataDate, false);
+
+            RefreshForecastEarnedByProject(projectNumber, dataDate);
+            RefreshForecastP6ByProject(projectNumber, dataDate, true);
+            RefreshForecastP6ByProject(projectNumber, dataDate, false);
             UpdateProjectSnapshotDateByProject(projectNumber);
 #pragma warning restore CS4014 // Because this call is not awaited, execution of the current method continues before the call is completed
         }
