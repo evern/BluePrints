@@ -1340,6 +1340,7 @@ namespace BluePrints.ViewModels
 
             //remaining have to be after planned for P6 refresh date to be updated
             await BluePrintsContextHelper.RefreshDeliverablesRemainingDataPointsByProject(LoadPROJECT.NUMBER, true);
+            BluePrintsContextHelper.RefreshForecastEarnedByProject(LoadPROJECT.NUMBER, FixedDataDate, true);
             BluePrintsContextHelper.RefreshForecastP6ByProject(LoadPROJECT.NUMBER, FixedDataDate, true);
             BluePrintsContextHelper.RefreshForecastP6ByProject(LoadPROJECT.NUMBER, FixedDataDate, false);
             FullRefresh();
