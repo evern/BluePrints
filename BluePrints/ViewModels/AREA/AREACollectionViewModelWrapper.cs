@@ -17,6 +17,7 @@ using BluePrints.Common.Resources;
 using DevExpress.Mvvm;
 using BluePrints.Common;
 using BaseModel.Data.Helpers;
+using System.Collections.ObjectModel;
 
 namespace BluePrints.ViewModels
 {
@@ -93,6 +94,35 @@ namespace BluePrints.ViewModels
         #endregion
 
         #region View Properties
+        public override void BulkDelete()
+        {
+            removeDuplicateSelectedEntities();
+            base.BulkDelete();
+        }
+
+        private void removeDuplicateSelectedEntities()
+        {
+            if (selectedEntities == null)
+                return;
+
+            List<AREAMasterDetailProjection> trackedEntities = new List<AREAMasterDetailProjection>();
+            List<AREAMasterDetailProjection> removeEntities = new List<AREAMasterDetailProjection>();
+            foreach (AREAMasterDetailProjection selectedAreaEntity in selectedEntities)
+            {
+                if (trackedEntities.Count == 0)
+                    trackedEntities.Add(selectedAreaEntity);
+                else if (trackedEntities.Any(x => x.GUID == selectedAreaEntity.GUID))
+                    removeEntities.Add(selectedAreaEntity);
+
+                trackedEntities.Add(selectedAreaEntity);
+            }
+
+            foreach(AREAMasterDetailProjection removeEntity in removeEntities)
+            {
+                selectedEntities.Remove(removeEntity);
+            }
+        }
+
         /// <summary>
         /// The view name to be used when saving layout for IDocumentContent
         /// </summary>

@@ -13,6 +13,7 @@
         <dxb:BarManager>
             <dxb:BarManager.Items>
                 <dxb:BarSubItem ItemLinksSource="{StaticResource RibbonDefaultGridButtons}" />
+                <dxb:BarButtonItem x:Name="biChildBulkDelete1" Command="{Binding ChildBulkDeleteCommand}" Content="Delete Row" Glyph="{dx:DXImage Image=Delete_16x16.png}" LargeGlyph="{dx:DXImage Image=Delete_32x32.png}" RibbonStyle="SmallWithText" ToolTip="Delete selected rows" />
             </dxb:BarManager.Items>
             <DockPanel>
                 <dxr:RibbonControl Style="{StaticResource DefaultRibbonControlStyle}">
@@ -57,7 +58,7 @@
                         </dxg:GridControl.Columns>
                         <dxg:GridControl.DetailDescriptor>
                             <dxg:DataControlDetailDescriptor ItemsSourceBinding="{Binding DetailEntities}">
-                                <dxg:GridControl x:Name="gridControlChild" Style="{StaticResource DefaultDetailGridControlTemplate}">
+                                <dxg:GridControl x:Name="gridControlChild" Style="{StaticResource DefaultDetailGridControlTemplate}" >
                                     <dxg:GridControl.Columns>
                                         <dxg:GridColumn FieldName="Entity.INTERNAL_NUM" Header="Internal Number" AllowBestFit="false" Width="50" HeaderToolTip="An identifier for the area. Must be unique" >
                                             <dxg:GridColumn.EditSettings>
@@ -70,12 +71,8 @@
                                     <dxg:GridControl.View>
                                         <dxg:TableView x:Name="tableView1" Style="{StaticResource DefaultDetailTableViewTemplate}">
                                             <dxg:TableView.RowCellMenuCustomizations>
-                                                <dxb:BarButtonItem Command="{Binding View.DataContext.CopyWithHeaderCommand}" Content="Copy With Headers" Glyph="{dx:DXImageOffice2013 Image=AlignHorizontalTop_16x16.png}" />
-                                                <dxb:BarButtonItem Command="{Binding View.DataContext.BulkColumnEditCommand}" CommandParameter="{Binding RelativeSource={RelativeSource Self}}" Content="Bulk Edit" Glyph="{dx:DXImageOffice2013 Image=CustomizeGrid_16x16.png}" />
-                                                <dxb:BarButtonItem Command="{Binding View.DataContext.FillUpCommand}" CommandParameter="{Binding RelativeSource={RelativeSource Self}}" Content="Fill Up" Glyph="{dx:DXImageOffice2013 Image=MoveUp_16x16.png}" />
-                                                <dxb:BarButtonItem Command="{Binding View.DataContext.FillDownCommand}" CommandParameter="{Binding RelativeSource={RelativeSource Self}}" Content="Fill Down" Glyph="{dx:DXImageOffice2013 Image=MoveDown_16x16.png}" />
-                                                <dxb:BarButtonItem Command="{Binding View.DataContext.BulkDeleteCommand}" Content="Delete Row" Glyph="{dx:DXImage Image=Delete_16x16.png}" />
-                                                <dxb:BarButtonItem Command="{Binding View.DataContext.FullRefreshCommand}" Content="Refresh" Glyph="{dx:DXImage Image=Refresh_16x16.png}" />
+                                                <dxb:BarButtonItemLink BarItemName="biBulkDelete1" />
+                                                <dxb:BarButtonItemLink BarItemName="biFullRefresh1" />
                                             </dxg:TableView.RowCellMenuCustomizations>
                                         </dxg:TableView>
                                     </dxg:GridControl.View>
