@@ -145,6 +145,8 @@ namespace BluePrints.Common.Projections
         public bool IsProductivityFloating { get; set; }
         #endregion
 
+        public bool IsPhantomJobError { get; set; }
+        public decimal IsPhantomJobErrorImageWidth => IsPhantomJobError ? 15 : 0;
         public bool IsCommodityCodeError => !IsCommodityCodeValid;
         public decimal IsCommodityCodeErrorImageWidth => IsCommodityCodeError ? 15 : 0;
         public decimal IsErrorMessageImageWidth => JobErrorMessage == null || JobErrorMessage == string.Empty ? 0 : 15;

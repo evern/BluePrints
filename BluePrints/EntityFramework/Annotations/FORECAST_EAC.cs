@@ -48,6 +48,11 @@ namespace BluePrints.Data
             }
         }
 
+        public string SubJobCode => SUBJOB_CODE == null ? string.Empty : SUBJOB_CODE;
+        public string DisciplineCode => DISCIPLINE_CODE == null ? string.Empty : DISCIPLINE_CODE;
+        public string CommodityCode => COMMODITY_CODE == null ? string.Empty : COMMODITY_CODE;
+        public string VariationCode => VARIATION_CODE == null ? string.Empty : VARIATION_CODE;
+        public string ForecastViewCode => string.Concat(SubJobCode, ";", DisciplineCode, ";", CommodityCode, ";", VariationCode);
         public string Office => BluePrintsResources.GlobalOffice;
     }
 }

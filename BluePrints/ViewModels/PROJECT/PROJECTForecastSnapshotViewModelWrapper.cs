@@ -657,11 +657,20 @@ namespace BluePrints.ViewModels
             HashSet<string> uniqueWBSNames = new HashSet<string>();
 
             //Earned and P6 planned may generate outdated entries, omit it when generating unique entries
-            foreach (string uniqueWBSName in DataDateFORECAST_JOB_HOUR_SNAPSHOTCollection.Where(x => x.SNAPSHOT_TYPE != ForecastSnapshotValueType.P6Planned && x.SNAPSHOT_TYPE != ForecastSnapshotValueType.Earned).Select(x => x.ForecastViewCode).Distinct())
+            foreach (string uniqueWBSName in DataDateFORECAST_JOB_HOUR_SNAPSHOTCollection.Where(x => x.STOCK_CODE != null && x.STOCK_CODE.ToUpper() != BluePrintsResources.VariationStockCode && x.SNAPSHOT_TYPE != ForecastSnapshotValueType.P6Planned && x.SNAPSHOT_TYPE != ForecastSnapshotValueType.Earned).Select(x => x.ForecastViewCode).Distinct())
                 uniqueWBSNames.Add(uniqueWBSName);
 
-            foreach (string uniqueWBSName in projectLines.Select(x => x.ForecastViewCode).Distinct())
+            foreach (string uniqueWBSName in projectLines.Where(x => x.StockCode != null && x.StockCode.ToUpper() != BluePrintsResources.VariationStockCode).Select(x => x.ForecastViewCode).Distinct())
                 uniqueWBSNames.Add(uniqueWBSName);
+
+            List<string> phantomWBSs = new List<string>();
+            foreach (string uniqueWBSName in AllFORECAST_EACCollection.Select(x => x.ForecastViewCode).Distinct())
+            {
+                if (!uniqueWBSNames.Any(x => x == uniqueWBSName))
+                    phantomWBSs.Add(uniqueWBSName);
+
+                uniqueWBSNames.Add(uniqueWBSName);
+            }
 
             ConcurrentBag<UniqueForecastJob> uniqueForecastJobs = new ConcurrentBag<UniqueForecastJob>();
 
@@ -675,6 +684,7 @@ namespace BluePrints.ViewModels
             Parallel.ForEach(uniqueWBSNames,
             uniqueWBSName =>
             {
+                bool isPhantomJobError = phantomWBSs.Any(x => x == uniqueWBSName);
                 List<string> delimited = uniqueWBSName.Split(';').ToList();
                 string subJobCode = delimited[0];
                 string disciplineCode = delimited[1];
@@ -687,6 +697,7 @@ namespace BluePrints.ViewModels
 
                 //}
                 UniqueForecastJob uniqueForecastJob = new UniqueForecastJob(projectLines, subJobCode, disciplineCode, commodityCode, variationCode, FixedDataDate, PreviousDataDate, AllFORECAST_JOB_HOUR_SNAPSHOTCollection, FORECAST_COMMENTCollection, IsShowUninvoicedOnly);
+                uniqueForecastJob.IsPhantomJobError = isPhantomJobError;
                 uniqueForecastJob.UpdateTenderBudget(TenderBudgetCollection.AsQueryable());
                 uniqueForecastJob.UpdateErrorMessage(JOBCOST_LINES_AUDITCollection.AsQueryable());
                 uniqueForecastJobs.Add(uniqueForecastJob);
@@ -722,23 +733,23 @@ namespace BluePrints.ViewModels
             Parallel.ForEach(uniqueForecastJobs,
                 uniqueForecastJob =>
                 {
+                    ForecastJobSnapshot forecastJobSnapshot = new ForecastJobSnapshot(uniqueForecastJob, isBudgetReadOnly, FORECAST_EACCollection, FORECAST_EACPreviousCommitmentCollection, FORECAST_JOB_SETTINGCollection, COMMODITY_CODECollection, AREACollection, cachedFORECASTCollection, LoadPROJECT, projectLines, FixedDataDate, PreviousDataDate);
+                    foreach (DateTime alignedDataDate in alignedDataDateCollection)
+                    {
+                        ForecastDateSnapshot forecastDateSnapshot = new ForecastDateSnapshot(uniqueForecastJob.DataDateCollection, uniqueForecastJob.ForecastCommentCollection, firstViewDate, alignedDataDate.Date, FixedDataDate);
+                        forecastJobSnapshot.DateCosts.Add(forecastDateSnapshot);
+                    }
 
+                    forecastJobSnapshot.IsPhantomJobError = uniqueForecastJob.IsPhantomJobError;
+                    Jobs.Add(forecastJobSnapshot);
+                    Common.LoadingScreenManager.Progress();
                 });
 
-
             ////For Debugging
-            foreach (var uniqueForecastJob in uniqueForecastJobs)
-            {
-                ForecastJobSnapshot forecastJobSnapshot = new ForecastJobSnapshot(uniqueForecastJob, isBudgetReadOnly, FORECAST_EACCollection, FORECAST_EACPreviousCommitmentCollection, FORECAST_JOB_SETTINGCollection, COMMODITY_CODECollection, AREACollection, cachedFORECASTCollection, LoadPROJECT, projectLines, FixedDataDate, PreviousDataDate);
-                foreach (DateTime alignedDataDate in alignedDataDateCollection)
-                {
-                    ForecastDateSnapshot forecastDateSnapshot = new ForecastDateSnapshot(uniqueForecastJob.DataDateCollection, uniqueForecastJob.ForecastCommentCollection, firstViewDate, alignedDataDate.Date, FixedDataDate);
-                    forecastJobSnapshot.DateCosts.Add(forecastDateSnapshot);
-                }
+            //foreach (var uniqueForecastJob in uniqueForecastJobs)
+            //{
 
-                Jobs.Add(forecastJobSnapshot);
-                Common.LoadingScreenManager.Progress();
-            }
+            //}
 
             Common.LoadingScreenManager.ResetCurrentProgress();
             Common.LoadingScreenManager.SetMaxProgress(Jobs.Count() + 1);
@@ -1219,7 +1230,7 @@ namespace BluePrints.ViewModels
 
                 columns.Add(new ColumnDescriptor() { FieldName = "Entity.ProjectName", ReadOnly = true, Header = "Project", Fixed = FixedStyle.Left, Width = 100, Settings = SettingsType.Default, GroupIndex = 1, SortIndex = 1 });
                 columns.Add(new ColumnDescriptor() { FieldName = "Entity.PhaseCode", ReadOnly = true, Header = "Phase", Fixed = FixedStyle.Left, Width = 50, Settings = SettingsType.Default, GroupIndex = 4, SortIndex = 4 });
-                columns.Add(new ColumnDescriptor() { FieldName = "Entity.SubJobCode", ReadOnly = true, Header = "Subjob", Fixed = FixedStyle.Left, Width = 110, Settings = SettingsType.Default, GroupIndex = -1, SortIndex = -1 });
+                columns.Add(new ColumnDescriptor() { FieldName = "Entity.SubJobCode", ReadOnly = true, Header = "Subjob", Fixed = FixedStyle.Left, Width = 110, Settings = SettingsType.JobError, GroupIndex = -1, SortIndex = -1 });
                 columns.Add(new ColumnDescriptor() { FieldName = "Entity.AreaCode", ReadOnly = true, Visible = false, Header = "Area", Fixed = FixedStyle.Left, Width = 60, Settings = SettingsType.Default, GroupIndex = -1, SortIndex = -1 });
                 columns.Add(new ColumnDescriptor() { FieldName = "Entity.AreaName", ReadOnly = true, Visible = false, Header = "Area Name", Fixed = FixedStyle.Left, Width = 100, Settings = SettingsType.Default, GroupIndex = 2, SortIndex = 2 });
                 columns.Add(new ColumnDescriptor() { FieldName = "Entity.SubAreaName", ReadOnly = true, Visible = false, Header = "Sub Area Name", Fixed = FixedStyle.Left, Width = 100, Settings = SettingsType.Default, GroupIndex = 3, SortIndex = 3 });
@@ -1835,7 +1846,6 @@ namespace BluePrints.ViewModels
                     findExistingOrAddNewEAC(FixedDataDateMonthEnd, entity, bluePrintsUnitOfWork, firstForecastMonthDateCost.TotalCosts, false, ForecastEACType.PreviousForecast);
 
                 decimal firstForecastDateValue = (decimal)masterRow[firstForecastDate.ToString(BluePrintsResources.ColumnDateFormat)];
-
                 FORECAST findFORECASTS = bluePrintsUnitOfWork.FORECASTS.FirstOrDefault(x => x.FORECAST_TYPE == ForecastDataType.DataDateForecast && x.FORECAST_DATE == firstForecastDate && x.SUBJOB_CODE == entity.SubJobCode && x.DISCIPLINE_CODE == entity.DisciplineCode && x.COMMODITY_CODE == entity.CommodityCode && x.VARIATION_CODE == entity.VariationCode);
                 if (findFORECASTS != null)
                     findFORECASTS.FORECAST_UNITS = firstForecastDateValue;
@@ -2322,7 +2332,11 @@ namespace BluePrints.ViewModels
         }
 
         private void findExistingOrAddNewEAC(DateTime forecastDate, ForecastJobSnapshot entity, IBluePrintsEntitiesUnitOfWork bluePrintsEntitiesUnitOfWork, decimal newPreviousEAC, bool save, ForecastEACType forecastEACType)
-        {
+        {            
+            //skip saving zero EAC jobs
+            if (Math.Round(newPreviousEAC) == 0)
+                return;
+
             if (entity.SubJobCode == null)
                 return;
 
@@ -2350,6 +2364,10 @@ namespace BluePrints.ViewModels
 
         private void findExistingOrAddNewProjectEAC(DateTime forecastDate, decimal newEACRevenue, IBluePrintsEntitiesUnitOfWork bluePrintsEntitiesUnitOfWork, bool save, ForecastEACType forecastEACType)
         {
+            //skip saving zero EAC jobs
+            if (Math.Round(newEACRevenue) == 0)
+                return;
+
             IQueryable<FORECAST_EAC> jobEACRevenue = bluePrintsEntitiesUnitOfWork.FORECAST_EACS.Where(x => x.GUID_PROJECT == LoadPROJECT.GUID && x.DELETED == null && x.FORECAST_DATE == forecastDate && x.TYPE == forecastEACType);
             FORECAST_EAC forecast_EAC = jobEACRevenue.FirstOrDefault();
             if (forecast_EAC != null)
@@ -3575,6 +3593,14 @@ namespace BluePrints.ViewModels
             }
         }
 
+        public IEnumerable<FORECAST_EAC> AllFORECAST_EACCollection
+        {
+            get
+            {
+                return GetEntities<FORECAST_EAC>();
+            }
+        }
+
         public IEnumerable<FORECAST_EAC> FORECAST_EACPreviousForecastCollection
         {
             get
@@ -3800,6 +3826,7 @@ namespace BluePrints.ViewModels
         public string DISCIPLINE_CODE { get; set; }
         public string COMMODITY_CODE { get; set; }
         public string VARIATION_CODE { get; set; }
+        public bool IsPhantomJobError { get; set; }
         public decimal BudgetCosts
         {
             get

@@ -39,6 +39,30 @@
                         HeaderToolTip="{Binding Path=(dxci:DependencyObjectExtensions.DataContext).HeaderToolTip, RelativeSource={RelativeSource Self}}"/>
                 </ContentControl>
             </DataTemplate>
+            <DataTemplate x:Key="JobErrorColumnTemplate">
+                <ContentControl>
+                    <dxg:GridColumn AllowBestFit="False" ColumnFilterMode="DisplayText" FieldName="{Binding Path=(dxci:DependencyObjectExtensions.DataContext).FieldName, RelativeSource={RelativeSource Self}}" 
+                        Header="{Binding Path=(dxci:DependencyObjectExtensions.DataContext).Header, RelativeSource={RelativeSource Self}}" 
+                        Width="{Binding Path=(dxci:DependencyObjectExtensions.DataContext).Width, RelativeSource={RelativeSource Self}}"
+                        Fixed="{Binding Path=(dxci:DependencyObjectExtensions.DataContext).Fixed, RelativeSource={RelativeSource Self}}"
+                        ReadOnly="{Binding Path=(dxci:DependencyObjectExtensions.DataContext).ReadOnly, RelativeSource={RelativeSource Self}}"
+                        Visible="{Binding Path=(dxci:DependencyObjectExtensions.DataContext).Visible, RelativeSource={RelativeSource Self}, Mode=TwoWay}"
+                        HeaderToolTip="{Binding Path=(dxci:DependencyObjectExtensions.DataContext).HeaderToolTip, RelativeSource={RelativeSource Self}}" >
+                        <dxg:GridColumn.CellTemplate>
+                            <DataTemplate>
+                                <Grid>
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="{Binding RowData.Row.Entity.IsPhantomJobErrorImageWidth}" />
+                                        <ColumnDefinition Width="*" />
+                                    </Grid.ColumnDefinitions>
+                                    <Image Grid.Column="0" Visibility="Visible" Source="{dx:DXImage Image=Info_16x16.png}" ToolTip="Job exists in previous EAC snapshot only but not in EXO"/>
+                                    <dxe:TextEdit Grid.Column="1" Name="PART_Editor" />
+                                </Grid>
+                            </DataTemplate>
+                        </dxg:GridColumn.CellTemplate>
+                    </dxg:GridColumn>
+                </ContentControl>
+            </DataTemplate>
             <DataTemplate x:Key="CommodityCodeColumnTemplate">
                 <ContentControl>
                     <dxg:GridColumn AllowBestFit="False" ColumnFilterMode="DisplayText" FieldName="{Binding Path=(dxci:DependencyObjectExtensions.DataContext).FieldName, RelativeSource={RelativeSource Self}}" 
@@ -81,30 +105,6 @@
                                     </Grid.ColumnDefinitions>
                                     <Image Grid.Column="0" Visibility="Visible" Source="{dx:DXImage Image=Cancel_16x16.png}" ToolTip="PO forecasted amount doesn't equal to outstanding PO, please fix it in PO forecast"/>
                                     <dxe:SpinEdit Grid.Column="1" Name="PART_Editor" Mask="c0" MaskType="Numeric" MaskUseAsDisplayFormat="True" />
-                                </Grid>
-                            </DataTemplate>
-                        </dxg:GridColumn.CellTemplate>
-                    </dxg:GridColumn>
-                </ContentControl>
-            </DataTemplate>
-            <DataTemplate x:Key="JobErrorColumnTemplate">
-                <ContentControl>
-                    <dxg:GridColumn AllowBestFit="False" ColumnFilterMode="DisplayText" FieldName="{Binding Path=(dxci:DependencyObjectExtensions.DataContext).FieldName, RelativeSource={RelativeSource Self}}" 
-                        Header="{Binding Path=(dxci:DependencyObjectExtensions.DataContext).Header, RelativeSource={RelativeSource Self}}" 
-                        Width="{Binding Path=(dxci:DependencyObjectExtensions.DataContext).Width, RelativeSource={RelativeSource Self}}"
-                        Fixed="{Binding Path=(dxci:DependencyObjectExtensions.DataContext).Fixed, RelativeSource={RelativeSource Self}}"
-                        ReadOnly="{Binding Path=(dxci:DependencyObjectExtensions.DataContext).ReadOnly, RelativeSource={RelativeSource Self}}"
-                        Visible="{Binding Path=(dxci:DependencyObjectExtensions.DataContext).Visible, RelativeSource={RelativeSource Self}, Mode=TwoWay}"
-                        HeaderToolTip="{Binding Path=(dxci:DependencyObjectExtensions.DataContext).HeaderToolTip, RelativeSource={RelativeSource Self}}" >
-                        <dxg:GridColumn.CellTemplate>
-                            <DataTemplate>
-                                <Grid>
-                                    <Grid.ColumnDefinitions>
-                                        <ColumnDefinition Width="{Binding RowData.Row.Entity.IsErrorMessageImageWidth}" />
-                                        <ColumnDefinition Width="*" />
-                                    </Grid.ColumnDefinitions>
-                                    <Image Grid.Column="0" Visibility="Visible" Source="{dx:DXImage Image=Cancel_16x16.png}" ToolTip="{Binding RowData.Row.Entity.JobErrorMessage}"/>
-                                    <dxe:TextEdit Grid.Column="1" Name="PART_Editor" />
                                 </Grid>
                             </DataTemplate>
                         </dxg:GridColumn.CellTemplate>
