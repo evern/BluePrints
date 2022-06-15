@@ -288,7 +288,10 @@ namespace BluePrints.Data
                 SqlParameter projectNumberParameter = new SqlParameter("@PROJECT_NUMBER", projectNumber);
                 SqlParameter dataDateParameter = new SqlParameter("@DATA_DATE", dataDate);
                 SqlParameter userGuidParameter = new SqlParameter("@USER_GUID", LoginCredentials.CurrentUserGuid);
-                dbContext.Database.ExecuteSqlCommand("RefreshForecastActuals @PROJECT_NUMBER, @DATA_DATE, @USER_GUID", projectNumberParameter, dataDateParameter, userGuidParameter);
+                SqlParameter isFutureActualTrue = new SqlParameter("@IS_FUTURE_ACTUAL", true);
+                SqlParameter isFutureActualFalse = new SqlParameter("@IS_FUTURE_ACTUAL", false);
+                dbContext.Database.ExecuteSqlCommand("RefreshForecastActuals @PROJECT_NUMBER, @DATA_DATE, @USER_GUID, @IS_FUTURE_ACTUAL", projectNumberParameter, dataDateParameter, userGuidParameter, isFutureActualTrue);
+                dbContext.Database.ExecuteSqlCommand("RefreshForecastActuals @PROJECT_NUMBER, @DATA_DATE, @USER_GUID, @IS_FUTURE_ACTUAL", projectNumberParameter, dataDateParameter, userGuidParameter, isFutureActualFalse);
             }
         }
 

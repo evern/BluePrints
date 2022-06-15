@@ -115,7 +115,9 @@ namespace BluePrints.Common
         [Display(Name = "P6 Remaining")]
         P6Remaining = 8,
         [Display(Name = "Progress ETC")]
-        ProgressETC = 9
+        ProgressETC = 9,
+        [Display(Name = "FutureActual")]
+        FutureActual = 10
     }
 
     public enum ForecastDataType

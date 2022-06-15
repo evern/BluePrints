@@ -2341,6 +2341,7 @@ namespace BluePrints.ViewModels
                 return;
 
             string normalizedVariationCode = DataUtils.NormalizeString(entity.VariationCode);
+            //IEnumerable<FORECAST_EAC> jobFORECAST_EACs = AllFORECAST_EACCollection.Where(x => x.SUBJOB_CODE == entity.SubJobCode && x.DISCIPLINE_CODE == entity.DisciplineCode && x.COMMODITY_CODE == entity.CommodityCode && x.VARIATION_CODE == normalizedVariationCode && x.TYPE == forecastEACType && x.DELETED == null && x.FORECAST_DATE == forecastDate);
             IQueryable<FORECAST_EAC> jobFORECAST_EACs = bluePrintsEntitiesUnitOfWork.FORECAST_EACS.Where(x => x.GUID_PROJECT == LoadPROJECT.GUID && x.SUBJOB_CODE == entity.SubJobCode && x.DISCIPLINE_CODE == entity.DisciplineCode && x.COMMODITY_CODE == entity.CommodityCode && x.VARIATION_CODE == normalizedVariationCode && x.TYPE == forecastEACType && x.DELETED == null && x.FORECAST_DATE == forecastDate);
             FORECAST_EAC forecast_EAC = jobFORECAST_EACs.FirstOrDefault();
 
@@ -3810,7 +3811,7 @@ namespace BluePrints.ViewModels
             else
                 ActualCollection = DataDateCollection.Where(x => x.SNAPSHOT_TYPE == ForecastSnapshotValueType.Actual && x.FORECAST_DATE <= dataDate).ToList();
 
-            FutureActualCollection = DataDateCollection.Where(x => x.SNAPSHOT_TYPE == ForecastSnapshotValueType.Actual && x.FORECAST_DATE > dataDate).ToList();
+            FutureActualCollection = DataDateCollection.Where(x => x.SNAPSHOT_TYPE == ForecastSnapshotValueType.FutureActual && x.FORECAST_DATE > dataDate).ToList();
             P6RemainingCollection = DataDateCollection.Where(x => x.SNAPSHOT_TYPE == ForecastSnapshotValueType.P6Remaining).ToList();
             P6PlannedCollection = DataDateCollection.Where(x => x.SNAPSHOT_TYPE == ForecastSnapshotValueType.P6Planned).ToList();
             PreviousPOCollection = DataDateCollection.Where(x => x.SNAPSHOT_TYPE == ForecastSnapshotValueType.PreviousOutstandingPO).ToList();
