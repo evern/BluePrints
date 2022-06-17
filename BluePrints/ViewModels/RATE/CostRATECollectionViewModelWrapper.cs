@@ -16,6 +16,7 @@ using DevExpress.Xpf.Grid;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Diagnostics;
 
 namespace BluePrints.ViewModels
 {
@@ -94,6 +95,17 @@ namespace BluePrints.ViewModels
                 groupedUncommittedTransactionRates = actualDataPoints.GroupBy(x => new { x.PhaseCode, DisciplineCode = x.Discipline_Code, CommodityCode = x.Commodity_Code }).Select(group => new TransactionRate() { RawPhaseCode = group.Key.PhaseCode, RawDisciplineCode = group.Key.DisciplineCode, RawCommodityCode = group.Key.CommodityCode, Transactions = group.ToList() }).ToList();
             }
 
+            //populate charge and cost type
+            foreach (var queryTransactionRate in queryTransactionRates)
+            {
+                PHASE findPHASE = PHASECollection.FirstOrDefault(x => queryTransactionRate.RawPhaseCode == x.INTERNAL_NUM);
+                if (findPHASE != null && findPHASE.CHARGE_TYPE != null && findPHASE.PHASE_TYPE != null)
+                {
+                    queryTransactionRate.ChargeType = (ChargeType)findPHASE.CHARGE_TYPE;
+                    queryTransactionRate.PhaseType = (PhaseType)findPHASE.PHASE_TYPE;
+                }
+            }
+
             //initialise properties for rates committed into the database
             foreach (RATE committedRATE in committedRATES)
             {
@@ -126,6 +138,7 @@ namespace BluePrints.ViewModels
                     //indirects are only for design and should be recommending codes related to document type codes only
                     if((loadPhaseType != PhaseType.Design && !DOCTYPECollection.Any(x => x.CODE == findCOMMODITY_CODE.CODE)) || (loadPhaseType != PhaseType.Construct && DOCTYPECollection.Any(x => x.CODE == findCOMMODITY_CODE.CODE)))
                     {
+
                         //prevent addition of committed rates as uncommitted rates because transactionRates might contain them
                         IEnumerable<RATE> findCommittedRATES = returnRATES.Where(x => x.GUID_AREA == null && x.GUID_DISCIPLINE == findDISCIPLINE.GUID && x.COMMODITY_CODE == findCOMMODITY_CODE.CODE);
                         if (findCommittedRATES.Count() == 0)
@@ -189,7 +202,11 @@ namespace BluePrints.ViewModels
             if (findPHASE == null && rate.GUID_PHASE != null)
                 findPHASE = PHASECollection.FirstOrDefault(x => x.GUID == rate.GUID_PHASE);
 
-            IEnumerable<TransactionRate> transactionRatesByPhase = groupedTransactionRates.Where(x => (findPHASE == null || x.RawPhaseCode == findPHASE.INTERNAL_NUM));
+            string s;
+            if (rate.GUID.ToString() == "2f1bad2a-e21a-42c2-9199-93a9992cffe1")
+                s = string.Empty;
+
+            IEnumerable<TransactionRate> transactionRatesByPhase = groupedTransactionRates.Where(x => findPHASE == null || (x.ChargeType == findPHASE.CHARGE_TYPE && x.PhaseType == findPHASE.PHASE_TYPE));
             IEnumerable<TransactionRate> transactionRatesByArea = transactionRatesByPhase.Where(x => findAREA == null || x.RawAreaCode == findAREA.INTERNAL_NUM);
             IEnumerable<TransactionRate> transactionRatesBySubArea = transactionRatesByArea.Where(x => findSubAREA == null || x.RawSubAreaCode == findSubAREA.INTERNAL_NUM);
             IEnumerable<TransactionRate> transactionRatesByDiscipline = transactionRatesBySubArea.Where(x => findDISCIPLINE == null || x.DisciplineCode == findDISCIPLINE.CODE);
@@ -309,6 +326,12 @@ namespace BluePrints.ViewModels
                 entity.PHASE_TYPE = (PhaseType)selectedPHASE.PHASE_TYPE;
                 entity.COST_TYPE = CostType.Cost;
             }
+        }
+
+        public override void FullRefresh()
+        {
+            actualDataPoints = null;
+            base.FullRefresh();
         }
 
         #endregion
