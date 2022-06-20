@@ -323,7 +323,7 @@ namespace BluePrints.Common.ViewModel.Misc
         public static void PopulatePreviousCommitment(ForecastJobSnapshot forecastProjection, IEnumerable<FORECAST_EAC> FORECAST_EACPreviousCommitmentCollection, DateTime previousDataDate)
         {
             //get previous total commitment
-            IEnumerable<FORECAST_EAC> PreviousCommitmentCollection = FORECAST_EACPreviousCommitmentCollection.Where(x => x.SUBJOB_CODE == forecastProjection.SubJobCode && x.DISCIPLINE_CODE == forecastProjection.DisciplineCode && x.COMMODITY_CODE == forecastProjection.CommodityCode && x.VARIATION_CODE == forecastProjection.VariationCode).Where(x => x.FORECAST_DATE == previousDataDate).ToList();
+            IEnumerable<FORECAST_EAC> PreviousCommitmentCollection = FORECAST_EACPreviousCommitmentCollection.Where(x => x.SUBJOB_CODE == forecastProjection.SubJobCode && x.DISCIPLINE_CODE == forecastProjection.DisciplineCode && x.COMMODITY_CODE == forecastProjection.CommodityCode && x.VARIATION_CODE == forecastProjection.VariationCode).Where(x => x.FORECAST_DATE.Date == previousDataDate.Date).ToList();
             if (PreviousCommitmentCollection.Where(x => x.FORECAST_COSTS != null).Count() > 0)
                 forecastProjection.TotalCommitmentPreviousSaved = PreviousCommitmentCollection.Where(x => x.FORECAST_COSTS != null).Sum(x => (decimal)x.FORECAST_COSTS);
         }

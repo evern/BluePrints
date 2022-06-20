@@ -1064,9 +1064,7 @@ namespace BluePrints.Common
         [Display(Name = "Tender Budget")]
         TenderBudget = 2,
         [Display(Name = "EAC Revenue")]
-        EACRevenue = 3,
-        [Display(Name = "Previous Forecast")]
-        PreviousForecast = 4
+        EACRevenue = 3
     }
 
     public class ReportingEnum

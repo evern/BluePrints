@@ -331,7 +331,10 @@ namespace BluePrints.Common.Projections
         public decimal PeriodMovement => PreviousEAC - EstimateAtCompletion;
         public decimal PercentagePeriodMovement => PreviousEAC == 0 ? 0 : PeriodMovement / PreviousEAC;
         public decimal? TotalCommitmentPreviousSaved { get; set; }
-        public decimal TotalCommitmentPrevious => TotalCommitmentPreviousSaved != null ? (decimal)TotalCommitmentPreviousSaved : ActualCumulativeCostsPreviousDataDate + PreviousOutstanding;
+
+        //this line looks further back into the past (beyond previous data date) to see if there are any actuals/outstanding
+        //public decimal TotalCommitmentPrevious => TotalCommitmentPreviousSaved != null ? (decimal)TotalCommitmentPreviousSaved : ActualCumulativeCostsPreviousDataDate + PreviousOutstanding;
+        public decimal TotalCommitmentPrevious => TotalCommitmentPreviousSaved != null ? (decimal)TotalCommitmentPreviousSaved : 0;
         public decimal TotalCommitmentDifference => TotalCommitment - TotalCommitmentPrevious;
         public decimal PreviousEAC { get; set; }
         public decimal PreviousForecast { get; set; }

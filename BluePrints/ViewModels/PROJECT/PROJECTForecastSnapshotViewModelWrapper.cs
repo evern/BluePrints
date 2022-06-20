@@ -212,6 +212,7 @@ namespace BluePrints.ViewModels
             loaderCollection.AddLoaderDescription(bluePrintsUnitOfWorkFactory, x => x.FORECAST_JOB_SETTINGS, FORECAST_JOB_SETTINGProjectionFunc);
             loaderCollection.AddLoaderDescription(bluePrintsUnitOfWorkFactory, x => x.RATES, RATEProjectionFunc);
             loaderCollection.AddLoaderDescription(bluePrintsUnitOfWorkFactory, x => x.VARIATION_CONSTRUCTIONS, VARIATION_CONSTRUCTIONProjectionFunc);
+            loaderCollection.AddLoaderDescription(bluePrintsUnitOfWorkFactory, x => x.FORECASTS, FORECASTProjectionFunc);
             loaderCollection.AddLoaderDescription<USER, USER, Guid, IBluePrintsEntitiesUnitOfWork>(bluePrintsUnitOfWorkFactory, x => x.USERS);
             loaderCollection.AddLoaderDescription(p6UnitOfWorkFactory, x => x.PROJWBS, P6PROJECTProjectionFunc);
         }
@@ -222,6 +223,11 @@ namespace BluePrints.ViewModels
         }
 
         private Func<IRepositoryQuery<Data.PROJECT>, IQueryable<Data.PROJECT>> PROJECTProjectionFunc()
+        {
+            return query => query.Where(x => x.GUID == LoadPROJECT.GUID);
+        }
+
+        private Func<IRepositoryQuery<Data.FORECAST>, IQueryable<Data.FORECAST>> FORECASTProjectionFunc()
         {
             return query => query.Where(x => x.GUID == LoadPROJECT.GUID);
         }
@@ -1829,24 +1835,41 @@ namespace BluePrints.ViewModels
                 return;
 
             Common.LoadingScreenManager.ShowLoadingScreen(DataPointsTable.Rows.Count);
-
             //save EAC revenue
             findExistingOrAddNewProjectEAC(FixedDataDateMonthEnd, ForecastSummary.EAC_Revenue, bluePrintsUnitOfWork, true, ForecastEACType.EACRevenue);
             RefreshProjectEACRevenueHistory();
 
             DateTime firstForecastDate = new DateTime(FixedDataDateMonthEnd.Year, FixedDataDateMonthEnd.Month, 1).AddMonths(2).AddDays(-1);
-            foreach (DataRow masterRow in DataPointsTable.Rows)
+            int saveCount = 0;
+
+            ConcurrentBag<FORECAST_EAC> newFORECAST_EACS = new ConcurrentBag<FORECAST_EAC>();
+            ConcurrentBag<FORECAST> newFORECASTS = new ConcurrentBag<FORECAST>();
+
+
+            List<DataRow> jobRows = new List<DataRow>();
+            foreach (DataRow jobRow in DataPointsTable.Rows)
             {
-                ForecastJobSnapshot entity = (ForecastJobSnapshot)masterRow[columnEntity];
-                findExistingOrAddNewEAC(FixedDataDateMonthEnd, entity, bluePrintsUnitOfWork, entity.EstimateAtCompletion, false, ForecastEACType.EAC);
-                findExistingOrAddNewEAC(FixedDataDateMonthEnd, entity, bluePrintsUnitOfWork, entity.TotalCommitment, false, ForecastEACType.PreviousCommitment);
+                jobRows.Add(jobRow);
+            }
 
-                ForecastDateSnapshot firstForecastMonthDateCost = entity.DateCosts.FirstOrDefault(x => x.QueryDate.Date == firstForecastDate.Date);
-                if(firstForecastMonthDateCost != null)
-                    findExistingOrAddNewEAC(FixedDataDateMonthEnd, entity, bluePrintsUnitOfWork, firstForecastMonthDateCost.TotalCosts, false, ForecastEACType.PreviousForecast);
+            ConcurrentBag<ForecastJobSnapshot> forecastJobSnapshots = new ConcurrentBag<ForecastJobSnapshot>();
+            Parallel.ForEach(jobRows, jobRow =>
+            {
+                ForecastJobSnapshot entity = (ForecastJobSnapshot)jobRow[columnEntity];
+                forecastJobSnapshots.Add(entity);
+                string normalizedVariationCode = DataUtils.NormalizeString(entity.VariationCode);
+                IEnumerable<FORECAST_EAC> jobFORECAST_EACs = AllFORECAST_EACCollection.Where(x => x.SUBJOB_CODE == entity.SubJobCode && x.DISCIPLINE_CODE == entity.DisciplineCode && x.COMMODITY_CODE == entity.CommodityCode && x.VARIATION_CODE == normalizedVariationCode && x.DELETED == null && x.FORECAST_DATE.Date == FixedDataDateMonthEnd.Date);
 
-                decimal firstForecastDateValue = (decimal)masterRow[firstForecastDate.ToString(BluePrintsResources.ColumnDateFormat)];
-                FORECAST findFORECASTS = bluePrintsUnitOfWork.FORECASTS.FirstOrDefault(x => x.FORECAST_TYPE == ForecastDataType.DataDateForecast && x.FORECAST_DATE == firstForecastDate && x.SUBJOB_CODE == entity.SubJobCode && x.DISCIPLINE_CODE == entity.DisciplineCode && x.COMMODITY_CODE == entity.CommodityCode && x.VARIATION_CODE == entity.VariationCode);
+                newFORECAST_EACS.Add(findExistingOrAddNewEAC(FixedDataDateMonthEnd, entity, bluePrintsUnitOfWork, entity.EstimateAtCompletion, false, ForecastEACType.EAC, jobFORECAST_EACs, true));
+                newFORECAST_EACS.Add(findExistingOrAddNewEAC(FixedDataDateMonthEnd, entity, bluePrintsUnitOfWork, entity.TotalCommitment, false, ForecastEACType.PreviousCommitment, jobFORECAST_EACs, true));
+
+                //this is handled by ForecastDataType.DataDateForecast
+                //ForecastDateSnapshot firstForecastMonthDateCost = entity.DateCosts.FirstOrDefault(x => x.QueryDate.Date == firstForecastDate.Date);
+                //if (firstForecastMonthDateCost != null)
+                //    newFORECAST_EACS.Add(findExistingOrAddNewEAC(FixedDataDateMonthEnd, entity, bluePrintsUnitOfWork, firstForecastMonthDateCost.TotalCosts, false, ForecastEACType.PreviousForecast, jobFORECAST_EACs, true));
+
+                decimal firstForecastDateValue = (decimal)jobRow[firstForecastDate.ToString(BluePrintsResources.ColumnDateFormat)];
+                FORECAST findFORECASTS = DataDateFORECASTCollection.FirstOrDefault(x => x.FORECAST_DATE == firstForecastDate && x.SUBJOB_CODE == entity.SubJobCode && x.DISCIPLINE_CODE == entity.DisciplineCode && x.COMMODITY_CODE == entity.CommodityCode && x.VARIATION_CODE == entity.VariationCode);
                 if (findFORECASTS != null)
                     findFORECASTS.FORECAST_UNITS = firstForecastDateValue;
                 else
@@ -1861,17 +1884,34 @@ namespace BluePrints.ViewModels
                     findFORECASTS.FORECAST_DATE = firstForecastDate;
                     findFORECASTS.FORECAST_UNITS = firstForecastDateValue;
                     findFORECASTS.FORECAST_TYPE = ForecastDataType.DataDateForecast;
-                    bluePrintsUnitOfWork.FORECASTS.Add(findFORECASTS);
+                    newFORECASTS.Add(findFORECASTS);
+                    //bluePrintsUnitOfWork.FORECASTS.Add(findFORECASTS);
                 }
 
+                saveCount += 1;
+                Common.LoadingScreenManager.SetMessage("Saving: " + saveCount + " of " + DataPointsTable.Rows.Count);
                 Common.LoadingScreenManager.Progress();
-            }
+            });
+
+            //remove all unused entries such at it doesn't tarnish the result with deprecated data
+            ConcurrentBag<FORECAST_EAC> forecastEACsToRemove = new ConcurrentBag<FORECAST_EAC>();
+            Parallel.ForEach(bluePrintsUnitOfWork.FORECAST_EACS, forecastEAC =>
+            {
+                if(forecastEAC.FORECAST_DATE.Date == FixedDataDateMonthEnd.Date)
+                    if (!forecastJobSnapshots.Any(x => x.SubJobCode == forecastEAC.SubJobCode && x.DisciplineCode == forecastEAC.DisciplineCode && x.CommodityCode == forecastEAC.CommodityCode && DataUtils.NormalizeString(x.VariationCode) == DataUtils.NormalizeString(x.VariationCode)))
+                        forecastEACsToRemove.Add(forecastEAC);
+            });
+
+            bluePrintsUnitOfWork.FORECAST_EACS.RemoveRange(forecastEACsToRemove);
+            bluePrintsUnitOfWork.SaveChanges();
+            FORECAST_EACCollectionViewModel.Refresh();
 
             findExistingOrAddNewEACHistory(FixedDataDateMonthEnd, ForecastSummary, bluePrintsUnitOfWork);
-
             Common.LoadingScreenManager.CloseLoadingScreen();
             Common.LoadingScreenManager.ShowLoadingScreen(1);
             Common.LoadingScreenManager.SetMessage("Saving changes...");
+            bluePrintsUnitOfWork.FORECAST_EACS.AddRange(newFORECAST_EACS.Where(x => x != null));
+            bluePrintsUnitOfWork.FORECASTS.AddRange(newFORECASTS.Where(x => x != null));
             bluePrintsUnitOfWork.SaveChanges();
             Common.LoadingScreenManager.CloseLoadingScreen();
 
@@ -2331,36 +2371,48 @@ namespace BluePrints.ViewModels
             updateFloatingSummaryMembers();
         }
 
-        private void findExistingOrAddNewEAC(DateTime forecastDate, ForecastJobSnapshot entity, IBluePrintsEntitiesUnitOfWork bluePrintsEntitiesUnitOfWork, decimal newPreviousEAC, bool save, ForecastEACType forecastEACType)
-        {            
+        private FORECAST_EAC findExistingOrAddNewEAC(DateTime forecastDate, ForecastJobSnapshot entity, IBluePrintsEntitiesUnitOfWork bluePrintsEntitiesUnitOfWork, decimal newPreviousEAC, bool save, ForecastEACType forecastEACType, IEnumerable<FORECAST_EAC> relevantForecastEACs = null, bool deferredForecastAddition = false)
+        {
             //skip saving zero EAC jobs
             if (Math.Round(newPreviousEAC) == 0)
-                return;
+                return null;
 
             if (entity.SubJobCode == null)
-                return;
+                return null;
 
-            string normalizedVariationCode = DataUtils.NormalizeString(entity.VariationCode);
-            //IEnumerable<FORECAST_EAC> jobFORECAST_EACs = AllFORECAST_EACCollection.Where(x => x.SUBJOB_CODE == entity.SubJobCode && x.DISCIPLINE_CODE == entity.DisciplineCode && x.COMMODITY_CODE == entity.CommodityCode && x.VARIATION_CODE == normalizedVariationCode && x.TYPE == forecastEACType && x.DELETED == null && x.FORECAST_DATE == forecastDate);
-            IQueryable<FORECAST_EAC> jobFORECAST_EACs = bluePrintsEntitiesUnitOfWork.FORECAST_EACS.Where(x => x.GUID_PROJECT == LoadPROJECT.GUID && x.SUBJOB_CODE == entity.SubJobCode && x.DISCIPLINE_CODE == entity.DisciplineCode && x.COMMODITY_CODE == entity.CommodityCode && x.VARIATION_CODE == normalizedVariationCode && x.TYPE == forecastEACType && x.DELETED == null && x.FORECAST_DATE == forecastDate);
-            FORECAST_EAC forecast_EAC = jobFORECAST_EACs.FirstOrDefault();
-
-            if (forecast_EAC != null)
+            FORECAST_EAC forecastEAC;
+            if(relevantForecastEACs == null)
             {
-                forecast_EAC.FORECAST_COSTS = newPreviousEAC;
-                forecast_EAC.TYPE = forecastEACType;
-                forecast_EAC.UPDATED = DateTime.Now;
-                forecast_EAC.UPDATEDBY = LoginCredentials.CurrentUserGuid;
+                string normalizedVariationCode = DataUtils.NormalizeString(entity.VariationCode);
+                IEnumerable<FORECAST_EAC> jobFORECAST_EACs = AllFORECAST_EACCollection.Where(x => x.SUBJOB_CODE == entity.SubJobCode && x.DISCIPLINE_CODE == entity.DisciplineCode && x.COMMODITY_CODE == entity.CommodityCode && x.VARIATION_CODE == normalizedVariationCode && x.DELETED == null && x.FORECAST_DATE == forecastDate && x.TYPE == forecastEACType);
+                //IQueryable<FORECAST_EAC> jobFORECAST_EACs = bluePrintsEntitiesUnitOfWork.FORECAST_EACS.Where(x => x.GUID_PROJECT == LoadPROJECT.GUID && x.SUBJOB_CODE == entity.SubJobCode && x.DISCIPLINE_CODE == entity.DisciplineCode && x.COMMODITY_CODE == entity.CommodityCode && x.VARIATION_CODE == normalizedVariationCode && x.TYPE == forecastEACType && x.DELETED == null && x.FORECAST_DATE == forecastDate);
+                forecastEAC = jobFORECAST_EACs.FirstOrDefault();
+            }
+            else
+                forecastEAC = relevantForecastEACs.FirstOrDefault(x => x.TYPE == forecastEACType);
+
+            if (forecastEAC != null)
+            {
+                forecastEAC.FORECAST_COSTS = newPreviousEAC;
+                forecastEAC.TYPE = forecastEACType;
+                forecastEAC.UPDATED = DateTime.Now;
+                forecastEAC.UPDATEDBY = LoginCredentials.CurrentUserGuid;
                 if (save)
                     bluePrintsEntitiesUnitOfWork.SaveChanges();
             }
             else
             {
-                FORECAST_EAC newForecast_EAC = createNewEAC(forecastDate, entity, newPreviousEAC, forecastEACType);
-                bluePrintsEntitiesUnitOfWork.FORECAST_EACS.Add(newForecast_EAC);
+                forecastEAC = createNewEAC(forecastDate, entity, newPreviousEAC, forecastEACType);
+                if (deferredForecastAddition)
+                    return forecastEAC;
+                else
+                    bluePrintsEntitiesUnitOfWork.FORECAST_EACS.Add(forecastEAC);
+
                 if (save)
                     bluePrintsEntitiesUnitOfWork.SaveChanges();
             }
+
+            return null;
         }
 
         private void findExistingOrAddNewProjectEAC(DateTime forecastDate, decimal newEACRevenue, IBluePrintsEntitiesUnitOfWork bluePrintsEntitiesUnitOfWork, bool save, ForecastEACType forecastEACType)
@@ -2369,7 +2421,8 @@ namespace BluePrints.ViewModels
             if (Math.Round(newEACRevenue) == 0)
                 return;
 
-            IQueryable<FORECAST_EAC> jobEACRevenue = bluePrintsEntitiesUnitOfWork.FORECAST_EACS.Where(x => x.GUID_PROJECT == LoadPROJECT.GUID && x.DELETED == null && x.FORECAST_DATE == forecastDate && x.TYPE == forecastEACType);
+            IEnumerable<FORECAST_EAC> jobEACRevenue = AllFORECAST_EACCollection.Where(x => x.GUID_PROJECT == LoadPROJECT.GUID && x.DELETED == null && x.FORECAST_DATE == forecastDate && x.TYPE == forecastEACType);
+            //IQueryable<FORECAST_EAC> jobEACRevenue = bluePrintsEntitiesUnitOfWork.FORECAST_EACS.Where(x => x.GUID_PROJECT == LoadPROJECT.GUID && x.DELETED == null && x.FORECAST_DATE == forecastDate && x.TYPE == forecastEACType);
             FORECAST_EAC forecast_EAC = jobEACRevenue.FirstOrDefault();
             if (forecast_EAC != null)
             {
@@ -2405,7 +2458,9 @@ namespace BluePrints.ViewModels
             forecast_history.UNAPPROVED_VARIATION = entity.Unapproved_Var_Revenue;
             forecast_history.TOTAL_UNAPPROVED_VARIATION = entity.Total_Unapproved_Var_Revenue;
             forecast_history.TOTAL_EAC = entity.EstimateAtCompletion;
-            forecast_history.EAC_DATE = forecastDate;
+            //forecast date is saved as raw date without 23:59:59 time in order for excel file to retrieve it
+            DateTime rawForecastDate = forecastDate.Date;
+            forecast_history.EAC_DATE = rawForecastDate;
             forecast_history.GUID_PROJECT = LoadPROJECT.GUID;
             forecast_history.CONTINGENCY = entity.Contingency;
             forecast_history.CASHFLOW = entity.UnderOverClaim;
@@ -3586,6 +3641,14 @@ namespace BluePrints.ViewModels
             }
         }
 
+        public IEnumerable<FORECAST> DataDateFORECASTCollection
+        {
+            get
+            {
+                return GetEntities<FORECAST>().Where(x => x.FORECAST_TYPE == ForecastDataType.DataDateForecast);
+            }
+        }
+
         public IEnumerable<FORECAST_EAC> FORECAST_EACCollection
         {
             get
@@ -3602,13 +3665,14 @@ namespace BluePrints.ViewModels
             }
         }
 
-        public IEnumerable<FORECAST_EAC> FORECAST_EACPreviousForecastCollection
-        {
-            get
-            {
-                return GetEntities<FORECAST_EAC>().Where(x => x.TYPE == ForecastEACType.PreviousForecast);
-            }
-        }
+        //this is handled by datadateforecast
+        //public IEnumerable<FORECAST_EAC> FORECAST_EACPreviousForecastCollection
+        //{
+        //    get
+        //    {
+        //        return GetEntities<FORECAST_EAC>().Where(x => x.TYPE == ForecastEACType.PreviousForecast);
+        //    }
+        //}
 
         public IEnumerable<FORECAST_EAC> FORECAST_EACRevenueCollection
         {
@@ -3780,6 +3844,17 @@ namespace BluePrints.ViewModels
                     return null;
 
                 return (CollectionViewModel<DISCIPLINE_DESC, DISCIPLINE_DESC, Guid, IBluePrintsEntitiesUnitOfWork>)loaderCollection.GetViewModel<DISCIPLINE_DESC>();
+            }
+        }
+
+        public CollectionViewModel<FORECAST_EAC, FORECAST_EAC, Guid, IBluePrintsEntitiesUnitOfWork> FORECAST_EACCollectionViewModel
+        {
+            get
+            {
+                if (MainViewModel == null)
+                    return null;
+
+                return (CollectionViewModel<FORECAST_EAC, FORECAST_EAC, Guid, IBluePrintsEntitiesUnitOfWork>)loaderCollection.GetViewModel<FORECAST_EAC>();
             }
         }
         #endregion
