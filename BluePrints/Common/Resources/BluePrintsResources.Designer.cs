@@ -934,6 +934,15 @@ namespace BluePrints.Common.Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to @.
+        /// </summary>
+        internal static string Revenue_StockCode {
+            get {
+                return ResourceManager.GetString("Revenue_StockCode", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to p4y57zcvp.
         /// </summary>
         internal static string SecurityKey {

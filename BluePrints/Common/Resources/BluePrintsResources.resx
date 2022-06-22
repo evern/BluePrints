@@ -426,4 +426,7 @@
   <data name="AutoGenerateString" xml:space="preserve">
     <value>Generated</value>
   </data>
+  <data name="Revenue_StockCode" xml:space="preserve">
+    <value>@</value>
+  </data>
 </root>

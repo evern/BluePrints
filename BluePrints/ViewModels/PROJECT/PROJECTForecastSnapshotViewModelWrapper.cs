@@ -663,18 +663,19 @@ namespace BluePrints.ViewModels
             HashSet<string> uniqueWBSNames = new HashSet<string>();
 
             //Earned and P6 planned may generate outdated entries, omit it when generating unique entries
-            foreach (string uniqueWBSName in DataDateFORECAST_JOB_HOUR_SNAPSHOTCollection.Where(x => x.STOCK_CODE != null && x.STOCK_CODE.ToUpper() != BluePrintsResources.VariationStockCode && x.SNAPSHOT_TYPE != ForecastSnapshotValueType.P6Planned && x.SNAPSHOT_TYPE != ForecastSnapshotValueType.Earned).Select(x => x.ForecastViewCode).Distinct())
+            foreach (string uniqueWBSName in DataDateFORECAST_JOB_HOUR_SNAPSHOTCollection.Where(x => x.STOCK_CODE != null && x.STOCK_CODE.ToUpper() != BluePrintsResources.VariationStockCode && x.STOCK_CODE != BluePrintsResources.Revenue_StockCode && x.SNAPSHOT_TYPE != ForecastSnapshotValueType.P6Planned && x.SNAPSHOT_TYPE != ForecastSnapshotValueType.Earned).Select(x => x.ForecastViewCode).Distinct())
+            {
                 uniqueWBSNames.Add(uniqueWBSName);
+            }
 
             foreach (string uniqueWBSName in projectLines.Where(x => x.StockCode != null && x.StockCode.ToUpper() != BluePrintsResources.VariationStockCode).Select(x => x.ForecastViewCode).Distinct())
+            {
                 uniqueWBSNames.Add(uniqueWBSName);
+            }
 
             List<string> phantomWBSs = new List<string>();
-            foreach (string uniqueWBSName in AllFORECAST_EACCollection.Select(x => x.ForecastViewCode).Distinct())
+            foreach (string uniqueWBSName in AllFORECAST_EACCollection.Where(x => x.TYPE != ForecastEACType.EACRevenue).Where(x => x.FORECAST_COSTS != 0 && x.FORECAST_DATE.Date == PreviousDataDate.Date).Select(x => x.ForecastViewCode).Distinct())
             {
-                if (!uniqueWBSNames.Any(x => x == uniqueWBSName))
-                    phantomWBSs.Add(uniqueWBSName);
-
                 uniqueWBSNames.Add(uniqueWBSName);
             }
 
@@ -695,13 +696,15 @@ namespace BluePrints.ViewModels
                 string subJobCode = delimited[0];
                 string disciplineCode = delimited[1];
                 string commodityCode = delimited[2];
-                string variationCode = delimited[3]; 
+                string variationCode = delimited[3];
 
+                //string s;
                 //For Debugging
-                //if (subJobCode == "31510-000-00-I0" && disciplineCode == "CM01" && commodityCode == "G01" && variationCode == "")
+                //if (subJobCode == "22204-000-00-I1" && commodityCode == "G45" && variationCode == "VAR-501 Pencil Bins")
                 //{
-
+                //    s = string.Empty;
                 //}
+
                 UniqueForecastJob uniqueForecastJob = new UniqueForecastJob(projectLines, subJobCode, disciplineCode, commodityCode, variationCode, FixedDataDate, PreviousDataDate, AllFORECAST_JOB_HOUR_SNAPSHOTCollection, FORECAST_COMMENTCollection, IsShowUninvoicedOnly);
                 uniqueForecastJob.IsPhantomJobError = isPhantomJobError;
                 uniqueForecastJob.UpdateTenderBudget(TenderBudgetCollection.AsQueryable());
