@@ -365,6 +365,11 @@ namespace BluePrints.ViewModels
             mainThreadDispatcher.BeginInvoke(new Action(() => this.RaisePropertyChanged(x => x.SelectedEntity)));
         }
 
+        public override bool CanFillUp(object button)
+        {
+            return CanFillDown(button);
+        }
+
         public override bool CanFillDown(object button)
         {
             if (!IsCalculationCompleted)
