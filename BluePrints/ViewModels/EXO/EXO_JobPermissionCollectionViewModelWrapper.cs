@@ -217,6 +217,26 @@ namespace BluePrints.ViewModels
             return base.UnifiedValueValidation(projection, field_name, new_value, isPaste);
         }
 
+        public override bool CanFillUp(object button)
+        {
+            return CanFillDown(button);
+        }
+
+        public override bool CanFillDown(object button)
+        {
+            bool canFill = base.CanFillDown(button);
+            if (!canFill)
+                return false;
+
+            GridMenuInfo info = GridPopupMenuBase.GetGridMenuInfo((DependencyObject)button) as GridMenuInfo;
+            if (info.Column.FieldName != BindableBase.GetPropertyName(() => new ExoSubJobProjection().IsLineExistsInExo))
+            {
+                return false;
+            }
+
+            return base.CanFillDown(button);
+        }
+
         protected virtual ITableViewService PermissionTableViewService { get { return this.GetService<ITableViewService>("PermissionTableViewService"); } }
 
         public void PermissionCellValueChanging(CellValueChangedEventArgs e)

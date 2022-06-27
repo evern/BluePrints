@@ -382,11 +382,6 @@ namespace BluePrints.ViewModels
             return false;
         }
 
-        public override bool CanFillUp(object button)
-        {
-            return CanFillDown(button);
-        }
-
         public override void FillDown(object button)
         {
             Fill(button, false);
