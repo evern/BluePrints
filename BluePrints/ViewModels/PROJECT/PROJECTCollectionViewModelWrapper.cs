@@ -28,9 +28,7 @@ using System.Threading;
 
 namespace BluePrints.ViewModels
 {
-    public class PROJECTCollectionViewModelWrapper :
-        BluePrintsEntitiesCollectionWrapper
-        <PROJECT, PROJECT, Guid, IBluePrintsEntitiesUnitOfWork>
+    public class PROJECTCollectionViewModelWrapper : BluePrintsEntitiesCollectionWrapper<PROJECT, PROJECT, Guid, IBluePrintsEntitiesUnitOfWork>
     {
         /// <summary>
         /// Creates a new instance of PROJECT_ITEMSViewModelWrapper as a POCO view model.

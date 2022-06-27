@@ -122,6 +122,8 @@
 
         public decimal? TENDER_BUDGET { get; set; }
 
+        public P6DatabaseVersion P6_DATABASE { get; set; }
+
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
         public virtual ICollection<DAYWORK> DAYWORK { get; set; }
 

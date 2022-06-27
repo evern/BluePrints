@@ -183,6 +183,11 @@
                             </dxg:GridColumn>
                         </dxg:GridControlBand>
                         <dxg:GridControlBand Header="Settings">
+                            <dxg:GridColumn FieldName="P6_DATABASE" Header="P6 Database" SortMode="DisplayText">
+                                <dxg:GridColumn.EditSettings>
+                                    <dxe:ComboBoxEditSettings AutoComplete="True" IsTextEditable="True" ItemsSource="{dxe:EnumItemsSource EnumType={x:Type common:P6DatabaseVersion}}" />
+                                </dxg:GridColumn.EditSettings>
+                            </dxg:GridColumn>
                             <dxg:GridColumn FieldName="CURRENCYCONVERSION" Header="Currency Conversion" HeaderToolTip="Rates in S-Curve will be adjusted based on conversion rate">
                                 <dxg:GridColumn.EditSettings>
                                     <dxe:SpinEditSettings Increment="0.01" Mask="n2" MaskType="Numeric" MaskUseAsDisplayFormat="True" MinValue="0.1" />
