@@ -19,9 +19,9 @@ namespace BluePrints.Common.ViewModel
     public class P6ActivityAssignmentDialogViewModel<TEntity> : DialogCollectionViewModel<TEntity>
         where TEntity : P6ActivityRemap
     {
-        public static P6ActivityAssignmentDialogViewModel<TEntity> CreateViewModel(IEnumerable<TEntity> enumerableObjects, string projectNumber, IEnumerable<TASK> currentProjectTASKs)
+        public static P6ActivityAssignmentDialogViewModel<TEntity> CreateViewModel(IEnumerable<TEntity> enumerableObjects, string projectNumber, IEnumerable<TASK> currentProjectTASKs, bool isNewP6Database)
         {
-            return ViewModelSource.Create(() => new P6ActivityAssignmentDialogViewModel<TEntity>(enumerableObjects, projectNumber, currentProjectTASKs));
+            return ViewModelSource.Create(() => new P6ActivityAssignmentDialogViewModel<TEntity>(enumerableObjects, projectNumber, currentProjectTASKs, isNewP6Database));
         }
 
         public List<string> OldScheduleNames { get; set; }

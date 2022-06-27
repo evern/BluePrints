@@ -1175,7 +1175,7 @@ namespace BluePrints.Common.Base
                         p6_remap_activities.Add(ViewModelSource.Create(() => new P6ActivityRemap() { P6_OLD_ACTIVITY = missing_activity.P6_ACTIVITY }));
                 }
 
-                P6ActivityAssignmentDialogViewModel<P6ActivityRemap> activities_remap_viewmodel = P6ActivityAssignmentDialogViewModel<P6ActivityRemap>.CreateViewModel(p6_remap_activities, loadPROJECT.NUMBER, Activities_Source.Where(x => x.IsTask).Select(x => x.Task));
+                P6ActivityAssignmentDialogViewModel<P6ActivityRemap> activities_remap_viewmodel = P6ActivityAssignmentDialogViewModel<P6ActivityRemap>.CreateViewModel(p6_remap_activities, loadPROJECT.NUMBER, Activities_Source.Where(x => x.IsTask).Select(x => x.Task), loadPROJECT.P6_DATABASE == P6DatabaseVersion.New);
                 if (ActivityDetailDialogService.ShowDialog(MessageButton.OKCancel, "Re-Assign", "MissingAssignmentsRemap", activities_remap_viewmodel) == MessageResult.OK)
                 {
                     IEnumerable<P6ActivityRemap> user_remapped_activities = p6_remap_activities.Where(x => x.P6_NEW_ACTIVITY != null && x.P6_NEW_ACTIVITY != string.Empty);
