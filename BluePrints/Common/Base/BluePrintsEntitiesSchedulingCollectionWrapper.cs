@@ -1246,7 +1246,7 @@ namespace BluePrints.Common.Base
 
         private List<P6_AssignmentProjection> getMissingP6Activities(bool getAllActivities = false)
         {
-            var IP6EntitiesUnitOfWork = P6EntitiesUnitOfWorkSource.GetUnitOfWorkFactory().CreateUnitOfWork();
+            var IP6EntitiesUnitOfWork = P6EntitiesUnitOfWorkSource.GetUnitOfWorkFactory(loadPROJECT.P6_DATABASE == P6DatabaseVersion.New).CreateUnitOfWork();
 
             string project_name;
             if (mappingType == BaselineMappingSelectionType.Modified)
@@ -1297,7 +1297,7 @@ namespace BluePrints.Common.Base
         protected abstract void CreateP6UnitOfWork();
         protected void createP6UnitOfWork()
         {
-            p6EntitiesUnitOfWork = P6EntitiesUnitOfWorkSource.GetUnitOfWorkFactory().CreateUnitOfWork();
+            p6EntitiesUnitOfWork = P6EntitiesUnitOfWorkSource.GetUnitOfWorkFactory(loadPROJECT.P6_DATABASE == P6DatabaseVersion.New).CreateUnitOfWork();
             p6UnitOfWorkFactory = P6EntitiesUnitOfWorkSource.GetUnitOfWorkFactory(p6EntitiesUnitOfWork);
         }
 

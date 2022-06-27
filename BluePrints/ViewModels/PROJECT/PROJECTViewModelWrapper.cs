@@ -88,7 +88,7 @@ namespace BluePrints.ViewModels
         private DispatcherTimer selectAllDispatcher;
         protected IUnitOfWorkFactory<IBluePrintsEntitiesUnitOfWork> bluePrintsUnitOfWorkFactory = BluePrintsEntitiesUnitOfWorkSource.GetUnitOfWorkFactory();
         protected IUnitOfWorkFactory<IPrimeroEntitiesUnitOfWork> primeroUnitOfWorkFactory = PrimeroEntitiesUnitOfWorkSource.GetUnitOfWorkFactory();
-        protected IUnitOfWorkFactory<IP6EntitiesUnitOfWork> p6UnitOfWorkFactory = P6EntitiesUnitOfWorkSource.GetUnitOfWorkFactory();
+        protected IUnitOfWorkFactory<IP6EntitiesUnitOfWork> p6UnitOfWorkFactory;
         protected DispatcherTimer delayedRefreshDispatcher;
         private Action<object> navigateCore;
         public bool ForceRetrieveAllJobs { get; set; } //force exo burned to retrieve subjobs that aren't defined
@@ -105,6 +105,7 @@ namespace BluePrints.ViewModels
             navigateCore = PROJECTParameter.GetSecondEntity();
             isSuppressPropertyChange = true;
 
+            p6UnitOfWorkFactory = P6EntitiesUnitOfWorkSource.GetUnitOfWorkFactory(LoadPROJECT.P6_DATABASE == P6DatabaseVersion.New);
             selectAllDispatcher = new DispatcherTimer();
             selectAllDispatcher.Interval = new TimeSpan(0, 0, 0, 1);
             selectAllDispatcher.Tick += SelectAllDispatcher_Tick;
@@ -120,6 +121,7 @@ namespace BluePrints.ViewModels
             viewType = DashboardViewType.Units;
             usePercentage = true;
             isByWeek = true;
+
         }
 
         private void adjustDataDate()

@@ -71,7 +71,7 @@ namespace BluePrints.ViewModels
         public Func<ESTIMATE_ITEMProgress> SelectedEntityCallBack { get; set; }
         public IEnumerable<ESTIMATE_ITEMProgress> EditableAllEntities { get; set; }
         public bool IsProcurementSubjobVisible { get; set; }
-        private IUnitOfWorkFactory<IP6EntitiesUnitOfWork> p6UnitOfWorkFactory = P6EntitiesUnitOfWorkSource.GetUnitOfWorkFactory();
+        private IUnitOfWorkFactory<IP6EntitiesUnitOfWork> p6UnitOfWorkFactory;
         protected IBluePrintsEntitiesUnitOfWork bluePrintsUnitOfWork;
         protected override void resolveParameters(object parameter)
         {
@@ -86,6 +86,7 @@ namespace BluePrints.ViewModels
             loadPROJECT = receiveParameter.GetFirstEntity();
             loadESTIMATE = (ESTIMATE)receiveParameter.GetSecondEntity();
 
+            p6UnitOfWorkFactory = P6EntitiesUnitOfWorkSource.GetUnitOfWorkFactory(loadPROJECT.P6_DATABASE == P6DatabaseVersion.New);
             primeroUnitOfWork = PrimeroEntitiesUnitOfWorkSource.GetUnitOfWorkFactory(loadPROJECT.OfficeNameForExo).CreateUnitOfWork();
             bluePrintsUnitOfWork = BluePrintsEntitiesUnitOfWorkSource.GetUnitOfWorkFactory().CreateUnitOfWork();
             exoLines = ExoQueries.GetProjectLines(primeroUnitOfWork, loadPROJECT.NUMBER);

@@ -32,6 +32,8 @@ namespace BluePrints.ViewModels
         {
             is_single_project_mode = false;
             _loadUSER = LoginCredentials.CurrentUser;
+
+            //this needs to be revised to support multiple P6 database
             p6UOW = P6EntitiesUnitOfWorkSource.GetUnitOfWorkFactory().CreateUnitOfWork();
             firstLoadProjectStatsSummarizers = new List<FullSummarizer>();
 

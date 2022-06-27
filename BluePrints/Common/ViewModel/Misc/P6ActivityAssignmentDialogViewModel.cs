@@ -31,10 +31,10 @@ namespace BluePrints.Common.ViewModel
         private IP6EntitiesUnitOfWork p6UnitOfWork;
         private IEnumerable<TASK> currentProjectTASKs;
 
-        public P6ActivityAssignmentDialogViewModel(IEnumerable<TEntity> enumerableObjects, string projectNumber, IEnumerable<TASK> currentProjectTASKs)
+        public P6ActivityAssignmentDialogViewModel(IEnumerable<TEntity> enumerableObjects, string projectNumber, IEnumerable<TASK> currentProjectTASKs, bool isNewP6Database)
             : base(enumerableObjects)
         {
-            p6UnitOfWorkFactory = P6EntitiesUnitOfWorkSource.GetUnitOfWorkFactory();
+            p6UnitOfWorkFactory = P6EntitiesUnitOfWorkSource.GetUnitOfWorkFactory(isNewP6Database);
             p6UnitOfWork = p6UnitOfWorkFactory.CreateUnitOfWork();
             this.projectNumber = projectNumber;
             this.currentProjectTASKs = currentProjectTASKs;
