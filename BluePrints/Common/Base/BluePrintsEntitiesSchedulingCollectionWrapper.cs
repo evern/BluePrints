@@ -183,6 +183,9 @@ namespace BluePrints.Common.Base
             var obj = (object[])parameter;
 
             iHaveP6BaselinesEntity = (IHaveP6Baselines)obj[0];
+
+            loadPROJECT = bluePrintsUnitOfWorkFactory.CreateUnitOfWork().PROJECTS.First(x => x.GUID == iHaveP6BaselinesEntity.project_guid);
+            createP6UnitOfWork(loadPROJECT);
             mappingType = (BaselineMappingSelectionType)obj[1];
             mappingMode = ((Data.PROJECT)obj[2]).USE_WORKPACKS ? BaselineMappingMode.ByWorkpack : BaselineMappingMode.Default;
             IsBudget = (bool)obj[3];
@@ -1175,7 +1178,7 @@ namespace BluePrints.Common.Base
                         p6_remap_activities.Add(ViewModelSource.Create(() => new P6ActivityRemap() { P6_OLD_ACTIVITY = missing_activity.P6_ACTIVITY }));
                 }
 
-                P6ActivityAssignmentDialogViewModel<P6ActivityRemap> activities_remap_viewmodel = P6ActivityAssignmentDialogViewModel<P6ActivityRemap>.CreateViewModel(p6_remap_activities, loadPROJECT.NUMBER, Activities_Source.Where(x => x.IsTask).Select(x => x.Task));
+                P6ActivityAssignmentDialogViewModel<P6ActivityRemap> activities_remap_viewmodel = P6ActivityAssignmentDialogViewModel<P6ActivityRemap>.CreateViewModel(p6_remap_activities, loadPROJECT.NUMBER, Activities_Source.Where(x => x.IsTask).Select(x => x.Task), loadPROJECT.P6_DATABASE == P6DatabaseVersion.New);
                 if (ActivityDetailDialogService.ShowDialog(MessageButton.OKCancel, "Re-Assign", "MissingAssignmentsRemap", activities_remap_viewmodel) == MessageResult.OK)
                 {
                     IEnumerable<P6ActivityRemap> user_remapped_activities = p6_remap_activities.Where(x => x.P6_NEW_ACTIVITY != null && x.P6_NEW_ACTIVITY != string.Empty);
@@ -1246,7 +1249,7 @@ namespace BluePrints.Common.Base
 
         private List<P6_AssignmentProjection> getMissingP6Activities(bool getAllActivities = false)
         {
-            var IP6EntitiesUnitOfWork = P6EntitiesUnitOfWorkSource.GetUnitOfWorkFactory().CreateUnitOfWork();
+            var IP6EntitiesUnitOfWork = P6EntitiesUnitOfWorkSource.GetUnitOfWorkFactory(false, loadPROJECT.P6_DATABASE == P6DatabaseVersion.New).CreateUnitOfWork();
 
             string project_name;
             if (mappingType == BaselineMappingSelectionType.Modified)
@@ -1293,11 +1296,10 @@ namespace BluePrints.Common.Base
             P6TASKCollectionViewModel.Save(task);
         }
 
-        //implement this in initialisation of child viewmodels and initialise P6EntitiesUnitOfWork and P6EntitiesUnitOfWorkFactory
-        protected abstract void CreateP6UnitOfWork();
-        protected void createP6UnitOfWork()
+        protected void createP6UnitOfWork(BluePrints.Data.PROJECT project)
         {
-            p6EntitiesUnitOfWork = P6EntitiesUnitOfWorkSource.GetUnitOfWorkFactory().CreateUnitOfWork();
+            p6UnitOfWorkFactory = P6EntitiesUnitOfWorkSource.GetUnitOfWorkFactory(false, project.P6_DATABASE == P6DatabaseVersion.New);
+            p6EntitiesUnitOfWork = p6UnitOfWorkFactory.CreateUnitOfWork();
             p6UnitOfWorkFactory = P6EntitiesUnitOfWorkSource.GetUnitOfWorkFactory(p6EntitiesUnitOfWork);
         }
 

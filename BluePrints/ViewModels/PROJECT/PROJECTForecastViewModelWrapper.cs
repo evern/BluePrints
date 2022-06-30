@@ -235,7 +235,7 @@ namespace BluePrints.ViewModels
         protected List<ExoTimeAuthorisation> queryJobLines { get; set; }
         protected JOBCOST_HDR masterJob;
         protected JOBCOST_LINES copyLine;
-        IP6EntitiesUnitOfWork p6UnitOfWork = P6EntitiesUnitOfWorkSource.GetUnitOfWorkFactory().CreateUnitOfWork();
+        IP6EntitiesUnitOfWork p6UnitOfWork;
         IEnumerable<ExoSubJobProjection> queryJobs;
         List<string> hiddenColumnFieldNames = new List<string>();
         protected List<DateTime> alignedDataDateCollection;
@@ -330,6 +330,7 @@ namespace BluePrints.ViewModels
         {
             base.resolveParameters(parameter);
             primeroEntitiesUnitOfWork = PrimeroEntitiesUnitOfWorkSource.GetUnitOfWorkFactory(LoadPROJECT.OfficeNameForExo).CreateUnitOfWork();
+            p6UnitOfWork = P6EntitiesUnitOfWorkSource.GetUnitOfWorkFactory(false, LoadPROJECT.P6_DATABASE == P6DatabaseVersion.New).CreateUnitOfWork();
             bluePrintsUnitOfWork = BluePrintsEntitiesUnitOfWorkSource.GetUnitOfWorkFactory().CreateUnitOfWork();
             ForecastSummary = new ForecastSummary();
             ForceRetrieveAllJobs = true; //force exo burned to retrieve subjobs that aren't defined
@@ -569,8 +570,8 @@ namespace BluePrints.ViewModels
             if (summaryBackgroundWorker != null)
                 summaryBackgroundWorker.CancelAsync();
             
-            await BluePrintsContextHelper.RefreshDeliverablesRemainingDataPointsByProject(LoadPROJECT.NUMBER, true);
-            await BluePrintsContextHelper.RefreshDeliverablesPlannedDataPointsByProject(LoadPROJECT.NUMBER, true);
+            await BluePrintsContextHelper.RefreshDeliverablesRemainingDataPointsByProject(LoadPROJECT, true);
+            await BluePrintsContextHelper.RefreshDeliverablesPlannedDataPointsByProject(LoadPROJECT, true);
             FullRefresh();
         }
 

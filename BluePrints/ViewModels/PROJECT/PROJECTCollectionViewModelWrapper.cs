@@ -28,9 +28,7 @@ using System.Threading;
 
 namespace BluePrints.ViewModels
 {
-    public class PROJECTCollectionViewModelWrapper :
-        BluePrintsEntitiesCollectionWrapper
-        <PROJECT, PROJECT, Guid, IBluePrintsEntitiesUnitOfWork>
+    public class PROJECTCollectionViewModelWrapper : BluePrintsEntitiesCollectionWrapper<PROJECT, PROJECT, Guid, IBluePrintsEntitiesUnitOfWork>
     {
         /// <summary>
         /// Creates a new instance of PROJECT_ITEMSViewModelWrapper as a POCO view model.
@@ -253,7 +251,7 @@ namespace BluePrints.ViewModels
                 PROJECT findPROJECT = MainViewModel.Entities.FirstOrDefault(x => x.GUID == (Guid)key);
                 if(findPROJECT != null)
 #pragma warning disable CS4014 // Because this call is not awaited, execution of the current method continues before the call is completed
-                    BluePrintsContextHelper.AsyncRefreshDeliverablesDataPointsByProject(findPROJECT.NUMBER);
+                    BluePrintsContextHelper.AsyncRefreshDeliverablesDataPointsByProject(findPROJECT);
 #pragma warning restore CS4014 // Because this call is not awaited, execution of the current method continues before the call is completed
             }
 
@@ -265,7 +263,7 @@ namespace BluePrints.ViewModels
             //Avoid EF exception on PROJECT_DISCIPLINE foreign key: The relationship could not be changed because one or more of the foreign-key properties is non-nullable
             saveProjectDiscipline(projection);
 #pragma warning disable CS4014 // Because this call is not awaited, execution of the current method continues before the call is completed
-            BluePrintsContextHelper.AsyncRefreshDeliverablesDataPointsByProject(projection.NUMBER);
+            BluePrintsContextHelper.AsyncRefreshDeliverablesDataPointsByProject(projection);
 #pragma warning restore CS4014 // Because this call is not awaited, execution of the current method continues before the call is completed
             return base.OnBeforeProjectionDeleteIsContinue(projection, out errorMessages);
         }
@@ -451,7 +449,7 @@ namespace BluePrints.ViewModels
 
             Thread.Sleep(10000);
 #pragma warning disable CS4014 // Because this call is not awaited, execution of the current method continues before the call is completed
-            BluePrintsContextHelper.AsyncRefreshDeliverablesDataPointsByProject(project.NUMBER);
+            BluePrintsContextHelper.AsyncRefreshDeliverablesDataPointsByProject(project);
 #pragma warning restore CS4014 // Because this call is not awaited, execution of the current method continues before the call is completed
         }
 

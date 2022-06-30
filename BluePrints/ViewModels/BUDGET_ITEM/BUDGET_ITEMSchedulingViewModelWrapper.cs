@@ -48,7 +48,6 @@ namespace BluePrints.ViewModels
 
         protected BUDGET_ITEMSchedulingViewModelWrapper()
         {
-            CreateP6UnitOfWork();
         }
 
         #region Database Operation
@@ -185,11 +184,6 @@ namespace BluePrints.ViewModels
 
             P6_ASSIGNMENTSCollectionViewModel.BaseBulkSave(save_assignments);
             FullRefresh();
-        }
-
-        protected override void CreateP6UnitOfWork()
-        {
-            createP6UnitOfWork();
         }
 
         /// <summary>

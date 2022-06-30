@@ -1067,6 +1067,14 @@ namespace BluePrints.Common
         EACRevenue = 3
     }
 
+    public enum P6DatabaseVersion
+    {
+        [Display(Name = "Default")]
+        Default = 0,
+        [Display(Name = "New")]
+        New = 1
+    }
+
     public class ReportingEnum
     {
         /// <summary>

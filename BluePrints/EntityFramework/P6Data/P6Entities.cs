@@ -1,12 +1,32 @@
 namespace BluePrints.P6Data
 {
     using System.Data.Entity;
+    public partial class P6NewEntities : P6Entities
+    {
+        public P6NewEntities()
+            : base("name=P6NewEntities")
+        {
+        }
+
+        protected override void OnModelCreating(DbModelBuilder modelBuilder)
+        {
+            Database.SetInitializer<P6NewEntities>(null);
+            Database.CommandTimeout = 100000;
+            base.OnModelCreating(modelBuilder);
+        }
+    }
 
     public partial class P6Entities : DbContext
     {
         public P6Entities()
             : base("name=P6Entities")
         {
+        }
+
+        public P6Entities(string connectionString)
+            : base(connectionString)
+        {
+            this.Database.CommandTimeout = 100000;
         }
 
         public virtual DbSet<ACCOUNT> ACCOUNT { get; set; }

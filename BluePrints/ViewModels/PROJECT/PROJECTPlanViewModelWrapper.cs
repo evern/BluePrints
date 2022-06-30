@@ -591,7 +591,7 @@ namespace BluePrints.ViewModels
 
                 _bluePrintsUnitOfWork.SaveChanges();
 #pragma warning disable CS4014 // Because this call is not awaited, execution of the current method continues before the call is completed
-                BluePrintsContextHelper.AsyncRefreshDeliverablesDataPointsByProject(projectTenderProfile.Entity.NUMBER);
+                BluePrintsContextHelper.AsyncRefreshDeliverablesDataPointsByProject(projectTenderProfile.Entity);
 #pragma warning restore CS4014 // Because this call is not awaited, execution of the current method continues before the call is completed
                 reload(projectTenderProfile);
 

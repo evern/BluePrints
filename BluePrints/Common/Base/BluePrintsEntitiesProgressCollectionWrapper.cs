@@ -65,7 +65,7 @@ namespace BluePrints.Common.Base
         protected IUnitOfWorkFactory<IBluePrintsEntitiesUnitOfWork> bluePrintsUnitOfWorkFactory = BluePrintsEntitiesUnitOfWorkSource.GetUnitOfWorkFactory();
         IBluePrintsEntitiesUnitOfWork bluePrintsUOW;
         IP6EntitiesUnitOfWork p6UOW;
-        protected IUnitOfWorkFactory<IP6EntitiesUnitOfWork> p6UnitOfWorkFactory = P6EntitiesUnitOfWorkSource.GetUnitOfWorkFactory();
+        protected IUnitOfWorkFactory<IP6EntitiesUnitOfWork> p6UnitOfWorkFactory;
         protected bool is_single_project_mode = true;
         protected bool is_load_p6_task = false;
         protected bool isUseReportDate = false;
@@ -118,6 +118,7 @@ namespace BluePrints.Common.Base
             bool? allowSummaryCalculationOnUpdatePreference = LoginCredentials.GetUserPreferenceBool(DataUtils.GetNameOf(() => UserPreferences.DesignProgress_AllowSummaryUpdate));
             allowSummaryCalculationOnUpdate = allowSummaryCalculationOnUpdatePreference == null ? true : (bool)allowSummaryCalculationOnUpdatePreference;
 
+            p6UnitOfWorkFactory = P6EntitiesUnitOfWorkSource.GetUnitOfWorkFactory(false, loadPROJECT.P6_DATABASE == P6DatabaseVersion.New);
             primeroUnitOfWork = PrimeroEntitiesUnitOfWorkSource.GetUnitOfWorkFactory(loadPROJECT.OfficeNameForExo).CreateUnitOfWork();
             if (loadPROJECT != null)
                 isQueryForLiveStatus = true;
@@ -1333,9 +1334,11 @@ namespace BluePrints.Common.Base
             scheduling_view_model.OnViewModelLoaded = onSchedulingViewModelLoaded;
             scheduling_view_model.OnViewModelLoadFailed = onSchedulingViewModelLoadFailed;
             scheduling_view_model.SetParentViewModel(this);
-            p6ViewModelUOW = scheduling_view_model.P6UnitOfWork;
             var ParameterObj = scheduling_view_model as ISupportParameter;
             ParameterObj.Parameter = new object[] { loadPROGRESS, mappingSelectionType, loadPROJECT, false };
+
+            //p6 unit of work is initialised in scheduling view model after resolving parameter
+            p6ViewModelUOW = scheduling_view_model.P6UnitOfWork;
         }
 
         private void updateP6DatesBackgroundWorker_DoWork(object sender, DoWorkEventArgs e)
@@ -1789,7 +1792,7 @@ namespace BluePrints.Common.Base
             push_units_to_p6(deliverables, false, errorMessages, p6ViewModelUOW);
             destroy_scheduling_view_model();
 
-            mainThreadDispatcher.BeginInvoke(new Action(() => showP6ErrorMessage(BluePrintsResources.P6_Assignment_Progress_Write_Success, "Progress in P6 is synced with the following error", errorMessages)));
+            mainThreadDispatcher.BeginInvoke(new Action(() => showP6ErrorMessage(BluePrintsResources.P6_Assignment_Progress_Write_Success, "Progress has been pushed to P6 successfully", errorMessages)));
         }
 
         private void showP6ErrorMessage(string dialogMessage, string successMessage, List<P6ErrorMessage> errorMessages)
