@@ -192,12 +192,12 @@ namespace BluePrints.ViewModels
         {
             var PROJECTParameter = (EntitiesParameter<Data.PROJECT>)parameter;
             bluePrintsUnitOfWork = BluePrintsEntitiesUnitOfWorkSource.GetUnitOfWorkFactory().CreateUnitOfWork();
-            primeroUnitOfWork = primeroUnitOfWorkFactory.CreateUnitOfWork();
             bluePrintsUnitOfWorkFactory = BluePrintsEntitiesUnitOfWorkSource.GetUnitOfWorkFactory(bluePrintsUnitOfWork);
             LoadPROJECT = PROJECTParameter.GetEntity();
             primeroUnitOfWorkFactory = PrimeroEntitiesUnitOfWorkSource.GetUnitOfWorkFactory(LoadPROJECT.OfficeName);
+            primeroUnitOfWork = primeroUnitOfWorkFactory.CreateUnitOfWork();
             EACRevenueDateCosts = new ObservableCollection<EACRevenueDateCost>();
-            p6UnitOfWorkFactory = P6EntitiesUnitOfWorkSource.GetUnitOfWorkFactory(LoadPROJECT.P6_DATABASE == P6DatabaseVersion.New);
+            p6UnitOfWorkFactory = P6EntitiesUnitOfWorkSource.GetUnitOfWorkFactory(false, LoadPROJECT.P6_DATABASE == P6DatabaseVersion.New);
         }
 
         protected override void addEntitiesLoader()
@@ -1358,10 +1358,10 @@ namespace BluePrints.ViewModels
         {
             IsLoading = true;
             this.RaisePropertyChanged(x => x.IsLoading);
-            await BluePrintsContextHelper.RefreshDeliverablesPlannedDataPointsByProject(LoadPROJECT.NUMBER, true);
+            await BluePrintsContextHelper.RefreshDeliverablesPlannedDataPointsByProject(LoadPROJECT, true);
 
             //remaining have to be after planned for P6 refresh date to be updated
-            await BluePrintsContextHelper.RefreshDeliverablesRemainingDataPointsByProject(LoadPROJECT.NUMBER, true);
+            await BluePrintsContextHelper.RefreshDeliverablesRemainingDataPointsByProject(LoadPROJECT, true);
             BluePrintsContextHelper.RefreshForecastEarnedByProject(LoadPROJECT.NUMBER, FixedDataDate);
             BluePrintsContextHelper.RefreshForecastP6ByProject(LoadPROJECT.NUMBER, FixedDataDate, true);
             BluePrintsContextHelper.RefreshForecastP6ByProject(LoadPROJECT.NUMBER, FixedDataDate, false);
@@ -3874,7 +3874,6 @@ namespace BluePrints.ViewModels
             COMMODITY_CODE = commodityCode;
             VARIATION_CODE = variationCode;
             ProjectLine = projectLines.FirstOrDefault(x => x.SubJobCode == subJobCode && x.DisciplineCode == disciplineCode && x.CommodityCode == commodityCode && x.VariationCode == variationCode);
-
             IEnumerable<FORECAST_JOB_HOUR_SNAPSHOT> filteredForecastJobHourSnapshot = AllFORECAST_JOB_HOURCollection.Where(x => x.SUBJOB_CODE == subJobCode && x.DISCIPLINE_CODE == disciplineCode && x.COMMODITY_CODE == commodityCode && x.VARIATION_CODE == variationCode);
             DataDateCollection = filteredForecastJobHourSnapshot.Where(x => x.DATA_DATE.Date == dataDate.Date).ToList();
             BudgetCollection = DataDateCollection.Where(x => x.SNAPSHOT_TYPE == ForecastSnapshotValueType.Budget).ToList();

@@ -86,7 +86,7 @@ namespace BluePrints.ViewModels
             loadPROJECT = receiveParameter.GetFirstEntity();
             loadESTIMATE = (ESTIMATE)receiveParameter.GetSecondEntity();
 
-            p6UnitOfWorkFactory = P6EntitiesUnitOfWorkSource.GetUnitOfWorkFactory(loadPROJECT.P6_DATABASE == P6DatabaseVersion.New);
+            p6UnitOfWorkFactory = P6EntitiesUnitOfWorkSource.GetUnitOfWorkFactory(false, loadPROJECT.P6_DATABASE == P6DatabaseVersion.New);
             primeroUnitOfWork = PrimeroEntitiesUnitOfWorkSource.GetUnitOfWorkFactory(loadPROJECT.OfficeNameForExo).CreateUnitOfWork();
             bluePrintsUnitOfWork = BluePrintsEntitiesUnitOfWorkSource.GetUnitOfWorkFactory().CreateUnitOfWork();
             exoLines = ExoQueries.GetProjectLines(primeroUnitOfWork, loadPROJECT.NUMBER);

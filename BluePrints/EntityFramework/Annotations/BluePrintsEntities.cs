@@ -134,16 +134,16 @@ namespace BluePrints.Data
 
     public static class BluePrintsContextHelper
     {
-        public static void AsyncRefreshDeliverablesDataPointsByProject(string projectNumber)
+        public static void AsyncRefreshDeliverablesDataPointsByProject(PROJECT project)
         {
 #pragma warning disable CS4014 // Because this call is not awaited, execution of the current method continues before the call is completed
-            Task.WhenAll(RefreshDeliverablesPlannedDataPointsByProject(projectNumber, false), RefreshDeliverablesRemainingDataPointsByProject(projectNumber, false));
+            Task.WhenAll(RefreshDeliverablesPlannedDataPointsByProject(project, false), RefreshDeliverablesRemainingDataPointsByProject(project, false));
 #pragma warning restore CS4014 // Because this call is not awaited, execution of the current method continues before the call is completed
         }
 
-        public static async Task RefreshDeliverablesDataPointsByProject(string projectNumber)
+        public static async Task RefreshDeliverablesDataPointsByProject(PROJECT project)
         {
-            await Task.WhenAll(RefreshDeliverablesPlannedDataPointsByProject(projectNumber, false), RefreshDeliverablesRemainingDataPointsByProject(projectNumber, false));
+            await Task.WhenAll(RefreshDeliverablesPlannedDataPointsByProject(project, false), RefreshDeliverablesRemainingDataPointsByProject(project, false));
         }
 
         public static async Task RefreshAllDataPoints()
@@ -156,26 +156,38 @@ namespace BluePrints.Data
             }
         }
 
-        public static async Task RefreshDeliverablesPlannedDataPointsByProject(string projectNumber, bool isForecast)
+        public static async Task RefreshDeliverablesPlannedDataPointsByProject(BluePrints.Data.PROJECT project, bool isForecast)
         {
             using (BluePrintsEntities dbContext = new BluePrintsEntities())
             {
                 dbContext.Database.CommandTimeout = 5000;
-                SqlParameter projectNumberParameter = new SqlParameter("@PROJECT_NUMBER", projectNumber);
+                SqlParameter projectNumberParameter = new SqlParameter("@PROJECT_NUMBER", project.NUMBER);
                 SqlParameter isForecastParameter = new SqlParameter("@ISFORECAST", isForecast ? 1 : 0);
-                Task<int> returnTask = dbContext.Database.ExecuteSqlCommandAsync("RefreshDeliverablesPlannedDataPointsByProject @PROJECT_NUMBER, @ISFORECAST", projectNumberParameter, isForecastParameter);
+
+                Task<int> returnTask;
+                if (project.P6_DATABASE == P6DatabaseVersion.Default)
+                    returnTask = dbContext.Database.ExecuteSqlCommandAsync("RefreshDeliverablesPlannedDataPointsByProject @PROJECT_NUMBER, @ISFORECAST", projectNumberParameter, isForecastParameter);
+                else
+                    returnTask = dbContext.Database.ExecuteSqlCommandAsync("RefreshDeliverablesPlannedDataPointsByProject_New @PROJECT_NUMBER, @ISFORECAST", projectNumberParameter, isForecastParameter);
+
                 var i = await returnTask;
             }
         }
 
-        public static async Task RefreshDeliverablesRemainingDataPointsByProject(string projectNumber, bool isForecast)
+        public static async Task RefreshDeliverablesRemainingDataPointsByProject(BluePrints.Data.PROJECT project, bool isForecast)
         {
             using (BluePrintsEntities dbContext = new BluePrintsEntities())
             {
                 dbContext.Database.CommandTimeout = 5000;
-                SqlParameter projectNumberParameter = new SqlParameter("@PROJECT_NUMBER", projectNumber);
+                SqlParameter projectNumberParameter = new SqlParameter("@PROJECT_NUMBER", project.NUMBER);
                 SqlParameter isForecastParameter = new SqlParameter("@ISFORECAST", isForecast ? 1 : 0);
-                Task<int> returnTask = dbContext.Database.ExecuteSqlCommandAsync("RefreshDeliverablesRemainingDataPointsByProject @PROJECT_NUMBER, @ISFORECAST", projectNumberParameter, isForecastParameter);
+
+                Task<int> returnTask;
+                if (project.P6_DATABASE == P6DatabaseVersion.Default)
+                    returnTask = dbContext.Database.ExecuteSqlCommandAsync("RefreshDeliverablesRemainingDataPointsByProject @PROJECT_NUMBER, @ISFORECAST", projectNumberParameter, isForecastParameter);
+                else
+                    returnTask = dbContext.Database.ExecuteSqlCommandAsync("RefreshDeliverablesRemainingDataPointsByProject_New @PROJECT_NUMBER, @ISFORECAST", projectNumberParameter, isForecastParameter);
+
                 var i = await returnTask;
             }
         }

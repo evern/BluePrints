@@ -58,7 +58,6 @@ namespace BluePrints.ViewModels
         protected BASELINE_ITEMWorkpackSchedulingViewModelWrapper(
             IUnitOfWorkFactory<IBluePrintsEntitiesUnitOfWork> unitOfWorkFactory = null)
         {
-            CreateP6UnitOfWork();
         }
 
         #region Database Operations
@@ -321,11 +320,6 @@ namespace BluePrints.ViewModels
         public override string UnifiedValueValidation(WORKPACKProjection projection, string field_name, object new_value, bool isPaste)
         {
             return string.Empty;
-        }
-
-        protected override void CreateP6UnitOfWork()
-        {
-            createP6UnitOfWork();
         }
         #endregion
 

@@ -64,7 +64,7 @@ namespace BluePrints.ViewModels
             var PROJECTParameter = (EntitiesParameter<PROJECT>) parameter;
             loadPROJECT = PROJECTParameter.GetEntity();
 
-            p6UnitOfWorkFactory = P6EntitiesUnitOfWorkSource.GetUnitOfWorkFactory(loadPROJECT.P6_DATABASE == P6DatabaseVersion.New);
+            p6UnitOfWorkFactory = P6EntitiesUnitOfWorkSource.GetUnitOfWorkFactory(false, loadPROJECT.P6_DATABASE == P6DatabaseVersion.New);
         }
 
         protected override void addEntitiesLoader()
@@ -254,7 +254,7 @@ namespace BluePrints.ViewModels
                     viewName = "BASELINE_ITEMSchedulingView";
             }
 
-            string tabName = SelectedEntity.NAME + " - " + SelectedEntity.P6PROGRESS_NAME + " Mapping";
+            string tabName = "Design " + SelectedEntity.NAME + " - " + SelectedEntity.P6PROGRESS_NAME + " Mapping";
             DocumentInfo DocumentInfo = new DocumentInfo(tabName, new object[] { SelectedEntity, BaselineMappingSelectionType.Original, loadPROJECT, false }, viewName, tabName);
             DocumentManagerService.ShowExistingEntityDocumentWithLogging(DocumentInfo, this);
         }

@@ -284,7 +284,7 @@ namespace BluePrints.ViewModels
 
         public async void Refresh_From_P6()
         {
-            await BluePrintsContextHelper.RefreshDeliverablesDataPointsByProject(loadPROJECT.NUMBER);
+            await BluePrintsContextHelper.RefreshDeliverablesDataPointsByProject(loadPROJECT);
         }
 
         /// <summary>

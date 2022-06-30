@@ -183,6 +183,9 @@ namespace BluePrints.Common.Base
             var obj = (object[])parameter;
 
             iHaveP6BaselinesEntity = (IHaveP6Baselines)obj[0];
+
+            loadPROJECT = bluePrintsUnitOfWorkFactory.CreateUnitOfWork().PROJECTS.First(x => x.GUID == iHaveP6BaselinesEntity.project_guid);
+            createP6UnitOfWork(loadPROJECT);
             mappingType = (BaselineMappingSelectionType)obj[1];
             mappingMode = ((Data.PROJECT)obj[2]).USE_WORKPACKS ? BaselineMappingMode.ByWorkpack : BaselineMappingMode.Default;
             IsBudget = (bool)obj[3];
@@ -1246,7 +1249,7 @@ namespace BluePrints.Common.Base
 
         private List<P6_AssignmentProjection> getMissingP6Activities(bool getAllActivities = false)
         {
-            var IP6EntitiesUnitOfWork = P6EntitiesUnitOfWorkSource.GetUnitOfWorkFactory(loadPROJECT.P6_DATABASE == P6DatabaseVersion.New).CreateUnitOfWork();
+            var IP6EntitiesUnitOfWork = P6EntitiesUnitOfWorkSource.GetUnitOfWorkFactory(false, loadPROJECT.P6_DATABASE == P6DatabaseVersion.New).CreateUnitOfWork();
 
             string project_name;
             if (mappingType == BaselineMappingSelectionType.Modified)
@@ -1293,11 +1296,10 @@ namespace BluePrints.Common.Base
             P6TASKCollectionViewModel.Save(task);
         }
 
-        //implement this in initialisation of child viewmodels and initialise P6EntitiesUnitOfWork and P6EntitiesUnitOfWorkFactory
-        protected abstract void CreateP6UnitOfWork();
-        protected void createP6UnitOfWork()
+        protected void createP6UnitOfWork(BluePrints.Data.PROJECT project)
         {
-            p6EntitiesUnitOfWork = P6EntitiesUnitOfWorkSource.GetUnitOfWorkFactory(loadPROJECT.P6_DATABASE == P6DatabaseVersion.New).CreateUnitOfWork();
+            p6UnitOfWorkFactory = P6EntitiesUnitOfWorkSource.GetUnitOfWorkFactory(false, project.P6_DATABASE == P6DatabaseVersion.New);
+            p6EntitiesUnitOfWork = p6UnitOfWorkFactory.CreateUnitOfWork();
             p6UnitOfWorkFactory = P6EntitiesUnitOfWorkSource.GetUnitOfWorkFactory(p6EntitiesUnitOfWork);
         }
 

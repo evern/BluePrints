@@ -105,7 +105,7 @@ namespace BluePrints.ViewModels
             navigateCore = PROJECTParameter.GetSecondEntity();
             isSuppressPropertyChange = true;
 
-            p6UnitOfWorkFactory = P6EntitiesUnitOfWorkSource.GetUnitOfWorkFactory(LoadPROJECT.P6_DATABASE == P6DatabaseVersion.New);
+            p6UnitOfWorkFactory = P6EntitiesUnitOfWorkSource.GetUnitOfWorkFactory(false, LoadPROJECT.P6_DATABASE == P6DatabaseVersion.New);
             selectAllDispatcher = new DispatcherTimer();
             selectAllDispatcher.Interval = new TimeSpan(0, 0, 0, 1);
             selectAllDispatcher.Tick += SelectAllDispatcher_Tick;
@@ -671,7 +671,7 @@ namespace BluePrints.ViewModels
             if (field_name == BindableBase.GetPropertyName(() => new PROJECT_Dashboard().Entity) + "." + BindableBase.GetPropertyName(() => new PROJECT().STATUS))
             {
 #pragma warning disable CS4014 // Because this call is not awaited, execution of the current method continues before the call is completed
-                BluePrintsContextHelper.AsyncRefreshDeliverablesDataPointsByProject(projection.Entity.NUMBER);
+                BluePrintsContextHelper.AsyncRefreshDeliverablesDataPointsByProject(projection.Entity);
 #pragma warning restore CS4014 // Because this call is not awaited, execution of the current method continues before the call is completed
             }
 
@@ -1048,7 +1048,7 @@ namespace BluePrints.ViewModels
             //when project is approved to active, tender dates should be removed
             moveTenderDates();
             LoadingScreenManager.ShowLoadingScreen(1);
-            await BluePrintsContextHelper.RefreshDeliverablesDataPointsByProject(LoadPROJECT.NUMBER);
+            await BluePrintsContextHelper.RefreshDeliverablesDataPointsByProject(LoadPROJECT);
             LoadingScreenManager.Progress();
             FullRefresh();
         }
