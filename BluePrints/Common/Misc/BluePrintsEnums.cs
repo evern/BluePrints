@@ -1069,9 +1069,9 @@ namespace BluePrints.Common
 
     public enum P6DatabaseVersion
     {
-        [Display(Name = "Default")]
+        [Display(Name = "REL 8.4")]
         Default = 0,
-        [Display(Name = "New")]
+        [Display(Name = "REL 12")]
         New = 1
     }
 
