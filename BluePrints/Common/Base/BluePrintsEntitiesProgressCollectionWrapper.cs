@@ -127,6 +127,11 @@ namespace BluePrints.Common.Base
         protected override void addEntitiesLoader()
         {
             bluePrintsUOW = bluePrintsUnitOfWorkFactory.CreateUnitOfWork();
+
+            //when this is used by user deliverables, load project couldn't be determined hence it needs to be instantiated as default database
+            if (p6UnitOfWorkFactory == null)
+                p6UnitOfWorkFactory = P6EntitiesUnitOfWorkSource.GetUnitOfWorkFactory();
+
             p6UOW = p6UnitOfWorkFactory.CreateUnitOfWork();
 
             if (is_single_project_mode)
